@@ -8,7 +8,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun main() {
-	embeddedServer(Netty, port = 8080, host = "localhost") {
+	embeddedServer(
+		Netty,
+		port = 8080,
+		host = "localhost",
+		watchPaths = listOf("classes")
+	) {
 		install(Routing)
 		configureRouting()
 	}.start(wait = true)
@@ -17,7 +22,7 @@ fun main() {
 fun Application.configureRouting() {
 	routing {
 		get("/") {
-			call.respondRedirect("/hello/Unknown")
+			call.respondRedirect("/hello/World")
 		}
 		get("/hello/{name}") {
 			call.respond(HttpStatusCode.OK, "Hello ${call.parameters["name"]}!")
