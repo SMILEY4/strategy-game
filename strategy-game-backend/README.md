@@ -27,3 +27,5 @@ Auto-reload detects changes in output files and reloads them at runtime.
    ```
 
    The "-Dev=True"-Flag start the application in Development-Mode and enables auto-reload
+
+3. The application is now available on `http://localhost:8080` 

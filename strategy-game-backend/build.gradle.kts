@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val versionKtor: String by project
 val versionKotlin: String by project
 val versionLogback: String by project
+val versionJUnit: String by project
 
 group = "de.ruegnerlukas"
 version = "0.1"
@@ -26,9 +27,8 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
     implementation("io.ktor:ktor-server-netty-jvm:$versionKtor")
     implementation("io.ktor:ktor-server-websockets:$versionKtor")
+    implementation("io.ktor:ktor-server-call-logging:$versionKtor")
     implementation("ch.qos.logback:logback-classic:$versionLogback")
-    testImplementation("io.ktor:ktor-server-tests-jvm:$versionKtor")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$versionKotlin")
 }
 
 tasks.test {

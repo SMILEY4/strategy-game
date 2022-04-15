@@ -1,13 +1,31 @@
 package de.ruegnerlukas.strategygame.backend
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
-import io.ktor.websocket.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.Routing
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
+import io.ktor.server.websocket.WebSockets
+import io.ktor.server.websocket.webSocket
+import io.ktor.websocket.CloseReason
+import io.ktor.websocket.Frame
+import io.ktor.websocket.close
+import io.ktor.websocket.readText
+import org.slf4j.event.Level
+
+
+class MyClass : Logging {
+	init {
+		log().info("Hello Log")
+	}
+}
 
 fun main() {
 	embeddedServer(
@@ -18,17 +36,22 @@ fun main() {
 	) {
 		install(Routing)
 		install(WebSockets)
+		install(CallLogging) {
+			level = Level.INFO
+		}
 		configureRouting()
 	}.start(wait = true)
 }
 
+
 fun Application.configureRouting() {
 	routing {
 		get("/") {
-			call.respondRedirect("/hello/World")
+			call.respondRedirect("/hello/World", true)
 		}
 		get("/hello/{name}") {
 			call.respond(HttpStatusCode.OK, "Hello ${call.parameters["name"]}!")
+			MyClass()
 		}
 		webSocket("/echo") {
 			send(Frame.Text("Please enter your name"))
