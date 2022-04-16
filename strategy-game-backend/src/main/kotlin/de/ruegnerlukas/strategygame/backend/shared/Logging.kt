@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend
+package de.ruegnerlukas.strategygame.backend.shared
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
