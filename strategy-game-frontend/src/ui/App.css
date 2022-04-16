@@ -1,0 +1,6 @@
+.app {
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: #858585;
+  position: relative;
+}
