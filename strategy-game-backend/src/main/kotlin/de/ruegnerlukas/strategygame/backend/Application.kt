@@ -4,8 +4,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.application.install
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -27,24 +25,18 @@ class MyClass : Logging {
 	}
 }
 
-fun main() {
-	embeddedServer(
-		Netty,
-		port = 8080,
-		host = "localhost",
-		watchPaths = listOf("classes")
-	) {
-		install(Routing)
-		install(WebSockets)
-		install(CallLogging) {
-			level = Level.INFO
-		}
-		configureRouting()
-	}.start(wait = true)
+fun main(args: Array<String>) {
+	io.ktor.server.netty.EngineMain.main(args)
 }
 
 
-fun Application.configureRouting() {
+fun Application.module() {
+	install(Routing)
+	install(WebSockets)
+	install(CallLogging) {
+		level = Level.INFO
+	}
+
 	routing {
 		get("/") {
 			call.respondRedirect("/hello/World", true)

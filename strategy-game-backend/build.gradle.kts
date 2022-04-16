@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val versionKtor: String by project
 val versionKotlin: String by project
 val versionLogback: String by project
-val versionJUnit: String by project
 
 group = "de.ruegnerlukas"
 version = "0.1"
@@ -16,6 +15,7 @@ application {
 plugins {
     application
     kotlin("jvm") version "1.5.31"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 repositories {
@@ -37,4 +37,10 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
+}
+
+tasks.shadowJar {
+    manifest {
+        attributes(Pair("Main-Class", "io.ktor.server.netty.EngineMain"))
+    }
 }
