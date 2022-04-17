@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.core.ports.provided
 /**
  * A handler for test-logic
  */
-interface TestHandler {
+interface TestService {
 
 	/**
 	 * Say hello to the given name

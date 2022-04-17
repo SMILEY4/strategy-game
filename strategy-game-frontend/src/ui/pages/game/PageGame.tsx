@@ -16,6 +16,7 @@ export function PageGame(): ReactElement {
 				<>
 					<div>World loaded:</div>
 					<div>{map.length + " Tiles"}</div>
+					<pre>{JSON.stringify(map, null, "   ")}</pre>
 				</>
 			)}
 		</div>

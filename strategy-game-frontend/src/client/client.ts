@@ -33,13 +33,14 @@ export namespace Client {
 	/**
 	 * Send a request to join a world. The websocket-connection must be opened before
 	 * @param worldId the id of the world
-	 * @param playerId the id/name of the player
 	 */
-	export function joinWorld(worldId: string, playerId: string) {
+	export function joinWorld(worldId: string) {
 		if (isWebsocketOpen()) {
 			websocket?.send(JSON.stringify({
-				worldId: worldId,
-				playerId: playerId
+				type: "join-world",
+				payload: JSON.stringify({
+					worldId: worldId
+				}, null, "   ")
 			}, null, "   "));
 		} else {
 			throw new Error("Websocket is closed.");
@@ -48,16 +49,19 @@ export namespace Client {
 
 
 	/**
-	 * Open a new websocket-connection. Closes the last connection if it is still open.
+	 * Open a new websocket-connection for world messages. Closes the last connection if it is still open.
 	 */
-	export function openWebSocketConnection(): Promise<void> {
+	export function openWorldMessageConnection(): Promise<void> {
 		closeWebSocket();
 		return new Promise((resolve, reject) => {
 			try {
-				websocket = new WebSocket(BASE_WS_URL);
+				websocket = new WebSocket(`${BASE_WS_URL}/api/world/messages`);
 				websocket.onopen = () => resolve();
 				websocket.onclose = () => closeWebSocket();
-				websocket.onmessage = (e: MessageEvent) => messageHandler.onMessage(e.data);
+				websocket.onmessage = (e: MessageEvent) => {
+					const message = JSON.parse(e.data);
+					messageHandler.onMessage(message.type, message.payload);
+				}
 			} catch (e) {
 				reject(e);
 			}

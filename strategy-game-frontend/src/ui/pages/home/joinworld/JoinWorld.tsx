@@ -43,9 +43,9 @@ export function JoinWorld(): ReactElement {
 
 	function onJoin() {
 		if (worldId && playerId) {
-			Client.openWebSocketConnection()
+			Client.openWorldMessageConnection()
 				.then(() => {
-					Client.joinWorld(worldId, playerId);
+					Client.joinWorld(worldId);
 					navigate("/game");
 				})
 				.catch(e => setError(e.toString()));

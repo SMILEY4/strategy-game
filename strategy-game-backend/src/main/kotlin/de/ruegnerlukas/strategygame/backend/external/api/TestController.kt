@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.external.api
 
-import de.ruegnerlukas.strategygame.backend.core.ports.provided.TestHandler
+import de.ruegnerlukas.strategygame.backend.core.ports.provided.TestService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
@@ -16,10 +16,10 @@ import io.ktor.websocket.readText
 /**
  * Configuration for all test routes
  */
-fun Route.testRoutes(testHandler: TestHandler) {
+fun Route.testRoutes(testService: TestService) {
 	route("test") {
 		get("hello/{name}") {
-			val response = testHandler.sayHello(call.parameters["name"].toString())
+			val response = testService.sayHello(call.parameters["name"].toString())
 			call.respond(HttpStatusCode.OK, response)
 		}
 		webSocket("/echo") {

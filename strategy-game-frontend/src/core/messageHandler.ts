@@ -2,15 +2,14 @@ import {GameState} from "../state/gameState";
 
 export class MessageHandler {
 
-	public onMessage(data: any) {
-		console.log("received message:", data)
-
-		if(data.messageType === "send-world-state") {
-			const tiles = data.payload;
+	public onMessage(type: string, payload: string) {
+		console.log("received message:", type);
+		if (type === "world-state") {
+			const worldState = JSON.parse(payload);
 			GameState.useState.setState(() => ({
 				initialized: true,
-				map: tiles
-			}))
+				map: worldState.map.tiles
+			}));
 		}
 
 	}
