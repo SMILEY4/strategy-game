@@ -10,7 +10,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 
 class TestControllerIntegrationTest {
@@ -25,7 +25,6 @@ class TestControllerIntegrationTest {
 			}
 		}
 	}
-
 
 
 	@Test

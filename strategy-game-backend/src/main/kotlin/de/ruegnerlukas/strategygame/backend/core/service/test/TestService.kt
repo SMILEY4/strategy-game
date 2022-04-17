@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.service
+package de.ruegnerlukas.strategygame.backend.core.service.test
 
 import de.ruegnerlukas.strategygame.backend.core.ports.provided.TestHandler
 import de.ruegnerlukas.strategygame.backend.core.ports.required.TestRepository
