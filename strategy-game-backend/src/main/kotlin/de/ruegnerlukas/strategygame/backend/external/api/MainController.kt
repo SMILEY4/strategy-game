@@ -8,6 +8,9 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 
+/**
+ * Main configuration for all routes
+ */
 fun Application.apiRoutes(testHandler: TestHandler) {
 	routing {
 		get("/") {

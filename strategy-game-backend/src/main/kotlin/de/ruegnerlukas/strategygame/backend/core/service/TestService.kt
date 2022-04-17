@@ -4,6 +4,9 @@ import de.ruegnerlukas.strategygame.backend.core.ports.provided.TestHandler
 import de.ruegnerlukas.strategygame.backend.core.ports.required.TestRepository
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
+/**
+ * Implementation of a [TestHandler]
+ */
 class TestService(private val testRepository: TestRepository) : TestHandler, Logging {
 
 	override fun sayHello(name: String): String {

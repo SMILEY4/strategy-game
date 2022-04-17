@@ -13,6 +13,9 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
 
+/**
+ * Configuration for all test routes
+ */
 fun Route.testRoutes(testHandler: TestHandler) {
 	route("test") {
 		get("hello/{name}") {

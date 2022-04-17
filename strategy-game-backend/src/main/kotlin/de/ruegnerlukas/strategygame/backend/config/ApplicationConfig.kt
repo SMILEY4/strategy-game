@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.application
+package de.ruegnerlukas.strategygame.backend.config
 
 import de.ruegnerlukas.strategygame.backend.core.service.TestService
 import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
@@ -10,12 +10,9 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import org.slf4j.event.Level
 
-
-fun main(args: Array<String>) {
-	io.ktor.server.netty.EngineMain.main(args)
-}
-
-
+/**
+ * The main-module for configuring Ktor. Referenced in "application.conf".
+ */
 fun Application.module() {
 	install(Routing)
 	install(WebSockets)
