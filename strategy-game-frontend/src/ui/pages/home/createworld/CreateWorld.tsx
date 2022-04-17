@@ -1,7 +1,7 @@
 import {ReactElement, useState} from "react";
 import "./createWorld.css";
-import {Client} from "../../client/client";
 import WorldMeta = Client.WorldMeta;
+import {Client} from "../../../../client/client";
 
 export function CreateWorld(): ReactElement {
 
@@ -9,9 +9,8 @@ export function CreateWorld(): ReactElement {
 
 	return (
 		<div className="create-world">
-			<button onClick={onCreateWorld}>
-				Create new World
-			</button>
+			<b>Create new World</b>
+			<button onClick={onCreateWorld}>Create</button>
 			<div>{worldId}</div>
 		</div>
 	);

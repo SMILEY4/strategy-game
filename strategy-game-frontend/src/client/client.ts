@@ -25,6 +25,12 @@ export namespace Client {
 	}
 
 
+	export function joinWorld(worldId: string, playerId: string): Promise<void> {
+		// TODO: do something
+		return Promise.resolve();
+	}
+
+
 	function get(url: string): Promise<Response> {
 		return fetch(url);
 	}
