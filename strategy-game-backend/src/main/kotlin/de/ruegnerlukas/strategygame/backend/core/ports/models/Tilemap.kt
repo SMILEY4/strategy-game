@@ -7,5 +7,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Tilemap(
+	/**
+	 * the tiles of this map
+	 */
 	val tiles: List<Tile>
 )

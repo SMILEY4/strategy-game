@@ -24,8 +24,8 @@ fun Application.apiRoutes(
 			call.respondRedirect("/api/test/hello/World", true)
 		}
 		route("api") {
-			testRoutes(testService)
-			worldRoutes(connectionHandler, worldService, worldMessageDispatcher)
+			routingTest(testService)
+			routingWorld(connectionHandler, worldService, worldMessageDispatcher)
 		}
 	}
 }

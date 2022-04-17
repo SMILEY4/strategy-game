@@ -16,7 +16,7 @@ import io.ktor.websocket.readText
 /**
  * Configuration for all test routes
  */
-fun Route.testRoutes(testService: TestService) {
+fun Route.routingTest(testService: TestService) {
 	route("test") {
 		get("hello/{name}") {
 			val response = testService.sayHello(call.parameters["name"].toString())
