@@ -5,3 +5,8 @@
 	align-items:      center;
 	justify-content:  center;
 }
+
+.join-world > .error {
+	font-weight: bold;
+	color:       #940000;
+}

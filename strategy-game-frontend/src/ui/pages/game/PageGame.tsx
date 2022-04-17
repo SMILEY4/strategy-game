@@ -1,10 +1,23 @@
 import {ReactElement} from "react";
-import "./pageGame.css"
+import "./pageGame.css";
+import {GameState} from "../../../state/gameState";
 
 export function PageGame(): ReactElement {
+
+	const initialized = GameState.useState(state => state.initialized);
+	const map = GameState.useState(state => state.map);
+
 	return (
 		<div className="game">
-			Just imagine a game here !
+			{!initialized && (
+				<div>Loading...</div>
+			)}
+			{initialized && (
+				<>
+					<div>World loaded:</div>
+					<div>{map.length + " Tiles"}</div>
+				</>
+			)}
 		</div>
 	);
 }

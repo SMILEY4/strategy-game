@@ -7,7 +7,10 @@ export function JoinWorld(): ReactElement {
 
 	const [playerId, setPlayerId] = useState("");
 	const [worldId, setWorldId] = useState("");
+	const [error, setError] = useState("");
+
 	const navigate = useNavigate();
+
 
 	return (
 		<div className="join-world">
@@ -21,23 +24,34 @@ export function JoinWorld(): ReactElement {
 				<input type="text" value={worldId} onChange={onChangeWorldId}/>
 			</div>
 			<button onClick={onJoin}>Join</button>
+			{error && (<div className={"error"}>{error}</div>)}
 		</div>
 	);
 
 
 	function onChangePlayerId(e: any) {
 		setPlayerId(e.target.value);
+		setError("");
 	}
 
 
 	function onChangeWorldId(e: any) {
 		setWorldId(e.target.value);
+		setError("");
 	}
 
 
 	function onJoin() {
-		Client.joinWorld(worldId, playerId)
-			.then(() => navigate("/game"));
+		if (worldId && playerId) {
+			Client.openWebSocketConnection()
+				.then(() => {
+					Client.joinWorld(worldId, playerId);
+					navigate("/game");
+				})
+				.catch(e => setError(e.toString()));
+		} else {
+			setError("Player Name and World-Id can not be empty!")
+		}
 	}
 
 }

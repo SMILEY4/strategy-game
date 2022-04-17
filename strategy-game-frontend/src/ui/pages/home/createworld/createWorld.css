@@ -5,3 +5,9 @@
 	align-items:      center;
 	justify-content:  center;
 }
+
+
+.create-world > .error {
+	font-weight: bold;
+	color:       #940000;
+}

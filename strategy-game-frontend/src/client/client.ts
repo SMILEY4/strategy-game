@@ -1,20 +1,26 @@
+import {MessageHandler} from "../core/messageHandler";
+
 export namespace Client {
 
 	const BASE_URL = import.meta.env.PUB_BACKEND_URL;
+	const BASE_WS_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
+
+	const messageHandler = new MessageHandler();
+	let websocket: WebSocket | null = null;
 
 
-	export function getHello(name: string): Promise<string> {
-		return get(`${BASE_URL}/api/test/hello/${name}`)
-			.then(response => response.text())
-			.catch(() => "Error");
-	}
-
-
+	/**
+	 * Information about a world
+	 */
 	export interface WorldMeta {
 		worldId: string;
 	}
 
 
+	/**
+	 * Send a request to create new world
+	 * @return information about the created world
+	 */
 	export function createWorld(): Promise<WorldMeta> {
 		return post(`${BASE_URL}/api/world/create`)
 			.then(response => response.json())
@@ -24,30 +30,87 @@ export namespace Client {
 			});
 	}
 
-
-	export function joinWorld(worldId: string, playerId: string): Promise<void> {
-		// TODO: do something
-		return Promise.resolve();
+	/**
+	 * Send a request to join a world. The websocket-connection must be opened before
+	 * @param worldId the id of the world
+	 * @param playerId the id/name of the player
+	 */
+	export function joinWorld(worldId: string, playerId: string) {
+		if (isWebsocketOpen()) {
+			websocket?.send(JSON.stringify({
+				worldId: worldId,
+				playerId: playerId
+			}, null, "   "));
+		} else {
+			throw new Error("Websocket is closed.");
+		}
 	}
 
 
+	/**
+	 * Open a new websocket-connection. Closes the last connection if it is still open.
+	 */
+	export function openWebSocketConnection(): Promise<void> {
+		closeWebSocket();
+		return new Promise((resolve, reject) => {
+			try {
+				websocket = new WebSocket(BASE_WS_URL);
+				websocket.onopen = () => resolve();
+				websocket.onclose = () => closeWebSocket();
+				websocket.onmessage = (e: MessageEvent) => messageHandler.onMessage(e.data);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+
+	/**
+	 * Close the (open) websocket-connection
+	 */
+	export function closeWebSocket() {
+		if (isWebsocketOpen()) {
+			websocket?.close();
+		}
+		websocket = null;
+	}
+
+
+	/**
+	 * @return whether the websocket-connection is open
+	 */
+	export function isWebsocketOpen() {
+		return websocket !== null && websocket.readyState === WebSocket.OPEN;
+	}
+
+
+	/**
+	 * Perform a "GET"-request
+	 * @param url the url
+	 */
 	function get(url: string): Promise<Response> {
 		return fetch(url);
 	}
 
 
-	function post(url: string, body?: any): Promise<Response> {
+	/**
+	 * Perform a "POST"-request
+	 * @param url the url
+	 * @param content the content (optional)
+	 */
+	function post(url: string, content?: object): Promise<Response> {
 		return fetch(url, {
 				method: "POST",
 				headers: {
 					"Accept": "application/json",
 					"Content-Type": "application/json"
 				},
-				body: (body !== undefined && body != null)
-					? JSON.stringify(body, null, "   ")
+				body: (content !== undefined && content != null)
+					? JSON.stringify(content, null, "   ")
 					: undefined
 			}
 		);
 	}
+
 
 }
