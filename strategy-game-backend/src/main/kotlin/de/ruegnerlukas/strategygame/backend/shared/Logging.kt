@@ -4,7 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * Implement this interface to receive access a logger-object
+ * Implement this interface to receive access to a logger-object
  */
 interface Logging {
 

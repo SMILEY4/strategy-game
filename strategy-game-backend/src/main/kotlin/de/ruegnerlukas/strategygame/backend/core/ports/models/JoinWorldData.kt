@@ -2,13 +2,14 @@ package de.ruegnerlukas.strategygame.backend.core.ports.models
 
 import kotlinx.serialization.Serializable
 
+
 /**
- * Information about a specific world
+ * The data of a join-world message
  */
 @Serializable
-data class WorldMeta(
+data class JoinWorldData(
 	/**
-	 * the id of the world
+	 * the id of the world to join
 	 */
-	val worldId: String,
+	val worldId: String
 )

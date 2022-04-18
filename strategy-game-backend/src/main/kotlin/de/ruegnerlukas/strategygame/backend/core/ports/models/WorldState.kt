@@ -3,12 +3,12 @@ package de.ruegnerlukas.strategygame.backend.core.ports.models
 import kotlinx.serialization.Serializable
 
 /**
- * Information about a specific world
+ * The (current) state of a world
  */
 @Serializable
-data class WorldMeta(
+data class WorldState(
 	/**
-	 * the id of the world
+	 * the map
 	 */
-	val worldId: String,
+	val map: Tilemap
 )

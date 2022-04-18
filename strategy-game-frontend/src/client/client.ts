@@ -1,22 +1,31 @@
-export namespace Client {
+import {MessageHandler} from "../core/messageHandler";
+import {BaseClient} from "./baseClient";
 
-	const BASE_URL = import.meta.env.PUB_BACKEND_URL;
+const BASE_URL = import.meta.env.PUB_BACKEND_URL;
+const BASE_WS_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
+
+/**
+ * Information about a world
+ */
+export interface WorldMeta {
+	worldId: string;
+}
 
 
-	export function getHello(name: string): Promise<string> {
-		return get(`${BASE_URL}/api/test/hello/${name}`)
-			.then(response => response.text())
-			.catch(() => "Error");
+export class Client extends BaseClient {
+
+	messageHandler = new MessageHandler();
+
+	constructor() {
+		super(BASE_URL, `${BASE_WS_URL}/api/world/messages`);
 	}
 
-
-	export interface WorldMeta {
-		worldId: string;
-	}
-
-
-	export function createWorld(): Promise<WorldMeta> {
-		return post(`${BASE_URL}/api/world/create`)
+	/**
+	 * Send a request to create new world
+	 * @return information about the created world
+	 */
+	public createWorld(): Promise<WorldMeta> {
+		return this.post(`${BASE_URL}/api/world/create`)
 			.then(response => response.json())
 			.then(data => ({worldId: data.worldId}))
 			.catch(() => {
@@ -24,24 +33,35 @@ export namespace Client {
 			});
 	}
 
-
-	function get(url: string): Promise<Response> {
-		return fetch(url);
+	/**
+	 * Send a request to join a world. The websocket-connection must be opened before
+	 * @param worldId the id of the world
+	 */
+	public joinWorld(worldId: string) {
+		if (this.isWebsocketOpen()) {
+			this.websocket?.send(JSON.stringify({
+				type: "join-world",
+				payload: JSON.stringify({
+					worldId: worldId
+				}, null, "   ")
+			}, null, "   "));
+		} else {
+			throw new Error("Websocket is closed.");
+		}
 	}
 
 
-	function post(url: string, body?: any): Promise<Response> {
-		return fetch(url, {
-				method: "POST",
-				headers: {
-					"Accept": "application/json",
-					"Content-Type": "application/json"
-				},
-				body: (body !== undefined && body != null)
-					? JSON.stringify(body, null, "   ")
-					: undefined
-			}
-		);
+	/**
+	 * Open a new websocket-connection for world messages. Closes all other connections.
+	 */
+	public openWorldMessageConnection(): Promise<void> {
+		return this.openWebsocket((msg: string) => {
+			const messageData = JSON.parse(msg);
+			this.messageHandler.onMessage(messageData.type, messageData.payload);
+		});
 	}
+
 
 }
+
+export const CLIENT = new Client();

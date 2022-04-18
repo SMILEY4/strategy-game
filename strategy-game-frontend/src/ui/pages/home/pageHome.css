@@ -1,4 +1,4 @@
-.app {
+.home {
 	width:            100vw;
 	min-width:        100vw;
 	height:           100vh;
@@ -7,7 +7,7 @@
 	position:         relative;
 }
 
-.app-content {
+.home-content {
 	border:          1px solid black;
 	width:           100%;
 	height:          100%;
@@ -20,7 +20,7 @@
 }
 
 
-.app-content > * {
+.home-content > * {
 	padding:          2em;
 	background-color: white;
 	border-radius:    5px;

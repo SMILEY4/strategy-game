@@ -12,7 +12,7 @@ class WorldServiceTest : StringSpec({
 		val worldRepository = WorldRepositoryImpl()
 		val worldHandler = TestFactories.buildWorldHandler(worldRepository)
 
-		val createResult = worldHandler.create()
+		val createResult = worldHandler.createNew()
 		createResult.shouldBeSuccess()
 
 		val fetchResult = worldRepository.getTilemap(createResult.getOrThrow().worldId)

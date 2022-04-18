@@ -1,14 +1,17 @@
-import {CreateWorld} from "./createworld/CreateWorld";
-import "./app.css";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {PageHome} from "./pages/home/PageHome";
+import {PageGame} from "./pages/game/PageGame";
+import {PageNotFound} from "./pages/notfound/PageNotFound";
 
 export function App() {
-
 	return (
-		<div className="app">
-			<div className="app-content">
-				<CreateWorld/>
-			</div>
-		</div>
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<Navigate to="home" replace/>}/>
+				<Route path="home" element={<PageHome/>}/>
+				<Route path="game" element={<PageGame/>}/>
+				<Route path="*" element={<PageNotFound/>}/>
+			</Routes>
+		</BrowserRouter>
 	);
-
 }
