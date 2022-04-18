@@ -1,4 +1,3 @@
-import "./app.css";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {PageHome} from "./pages/home/PageHome";
 import {PageGame} from "./pages/game/PageGame";

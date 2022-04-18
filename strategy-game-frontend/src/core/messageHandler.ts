@@ -6,12 +6,8 @@ export class MessageHandler {
 		console.log("received message:", type);
 		if (type === "world-state") {
 			const worldState = JSON.parse(payload);
-			GameState.useState.setState(() => ({
-				initialized: true,
-				map: worldState.map.tiles
-			}));
+			GameState.useState.getState().setActive(worldState.map.tiles);
 		}
-
 	}
 
 }
