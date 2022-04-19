@@ -30,6 +30,10 @@ export class InputHandler {
 		isMouseClick: false
 	};
 
+	public getCurrentState(): InputState {
+		return this.inputState;
+	}
+
 	public reset() {
 		this.inputState = {
 			canvasBounds: null,
@@ -45,7 +49,7 @@ export class InputHandler {
 
 	public onMouseMove(x: number, y: number, dx: number, dy: number, width: number, height: number, btnLeftDown: boolean, btnRightDown: boolean) {
 		this.inputState.mouseMovement = {
-			dx: dy,
+			dx: dx,
 			dy: dy
 		};
 		this.inputState.mousePosition = {

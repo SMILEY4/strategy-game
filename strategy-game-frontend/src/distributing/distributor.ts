@@ -1,11 +1,11 @@
 import {Client, WorldMeta} from "../client/client";
 import {GlobalState} from "../state/globalState";
-import {GameCore} from "../core/gameCore";
+import {Game} from "../core/game";
 
 export class Distributor {
 
 	private readonly client = new Client();
-	private readonly gameCore = new GameCore();
+	private readonly gameCore = new Game();
 
 	//====================//
 	//   WORLD HANDLING   //
@@ -26,6 +26,7 @@ export class Distributor {
 
 	public receiveInitialWorldState(state: any) {
 		GlobalState.useState.getState().setActive(state.map.tiles);
+		this.gameCore.setTilemapDirty();
 	}
 
 	//====================//

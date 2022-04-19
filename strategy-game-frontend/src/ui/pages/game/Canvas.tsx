@@ -37,13 +37,12 @@ function Canvas() {
 
 	function initialize(canvas: HTMLCanvasElement) {
 		onInitialize(canvas);
+		renderLoop();
 
 		function renderLoop() {
 			onRender();
 			requestAnimationFrame(renderLoop);
 		}
-
-		renderLoop();
 	}
 
 	function mouseMove(e: MouseEvent) {

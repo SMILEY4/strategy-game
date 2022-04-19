@@ -3,6 +3,7 @@ import "./pageGame.css";
 import {GlobalState} from "../../../state/globalState";
 import {useNavigate} from "react-router-dom";
 import Canvas from "./Canvas";
+import {DISTRIBUTOR} from "../../../main";
 
 export function PageGame(): ReactElement {
 
@@ -11,7 +12,9 @@ export function PageGame(): ReactElement {
 
 	useEffect(() => {
 		if (currentState === "idle") {
-			navigate("/home");
+			// TODO temp4testing
+			DISTRIBUTOR.requestJoinWorld("3d560851-1ba0-45f1-9f19-de31168fdc2f", navigate)
+			// navigate("/home");
 		}
 	});
 

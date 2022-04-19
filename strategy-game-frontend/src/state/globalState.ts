@@ -9,7 +9,7 @@ export namespace GlobalState {
 		map: Tile[];
 	}
 
-	interface Tile {
+	export interface Tile {
 		q: number,
 		r: number,
 		tileId: number
