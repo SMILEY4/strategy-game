@@ -2,14 +2,15 @@ import {ReactElement, useState} from "react";
 import "./joinWorld.css";
 import {CLIENT} from "../../../../client/client";
 import {useNavigate} from "react-router-dom";
-import {GameState} from "../../../../state/gameState";
+import {GlobalState} from "../../../../state/globalState";
+import {DISTRIBUTOR} from "../../../../main";
 
 export function JoinWorld(): ReactElement {
 
 	const [playerId, setPlayerId] = useState("");
 	const [worldId, setWorldId] = useState("");
 	const [error, setError] = useState("");
-	const setGameLoading = GameState.useState(state => state.setLoading);
+	const setGameLoading = GlobalState.useState(state => state.setLoading);
 	const navigate = useNavigate();
 
 
@@ -44,10 +45,7 @@ export function JoinWorld(): ReactElement {
 
 	function onJoin() {
 		if (worldId && playerId) {
-			CLIENT.openWorldMessageConnection()
-				.then(() => setGameLoading(worldId))
-				.then(() => CLIENT.joinWorld(worldId))
-				.then(() => navigate("/game"))
+			DISTRIBUTOR.requestJoinWorld(worldId, navigate)
 				.catch(e => setError(e.toString()));
 		} else {
 			setError("Player Name and World-Id can not be empty!");

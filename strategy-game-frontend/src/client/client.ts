@@ -1,5 +1,5 @@
-import {MessageHandler} from "../core/messageHandler";
 import {BaseClient} from "./baseClient";
+import {MessageHandler} from "./messageHandler";
 
 const BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const BASE_WS_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -37,7 +37,7 @@ export class Client extends BaseClient {
 	 * Send a request to join a world. The websocket-connection must be opened before
 	 * @param worldId the id of the world
 	 */
-	public joinWorld(worldId: string) {
+	public sendJoinWorld(worldId: string) {
 		if (this.isWebsocketOpen()) {
 			this.websocket?.send(JSON.stringify({
 				type: "join-world",
