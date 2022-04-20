@@ -77,9 +77,13 @@ export class TilemapRenderDataBuilder {
 	private static readonly DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
 
 	public static build(tiles: Tile[], gl: WebGL2RenderingContext): TilemapChunkRenderData[] {
-		const chunks = TilemapRenderDataBuilder.groupIntoChunks(tiles, TilemapRenderDataBuilder.DEFAULT_CHUNK_SIZE);
-		const arrayData = TilemapRenderDataBuilder.chunksToArrayData(chunks, TilemapRenderDataBuilder.DEFAULT_HEX_LAYOUT);
-		return TilemapRenderDataBuilder.arrayDataToRenderData(arrayData, gl);
+		if (tiles.length === 0) {
+			return [];
+		} else {
+			const chunks = TilemapRenderDataBuilder.groupIntoChunks(tiles, TilemapRenderDataBuilder.DEFAULT_CHUNK_SIZE);
+			const arrayData = TilemapRenderDataBuilder.chunksToArrayData(chunks, TilemapRenderDataBuilder.DEFAULT_HEX_LAYOUT);
+			return TilemapRenderDataBuilder.arrayDataToRenderData(arrayData, gl);
+		}
 	}
 
 

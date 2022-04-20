@@ -1,7 +1,7 @@
-import {ReactElement} from "react";
+import React, {ReactElement} from "react";
 import {CreateWorld} from "./createworld/CreateWorld";
 import {JoinWorld} from "./joinworld/JoinWorld";
-import "./pageHome.css"
+import "./pageHome.css";
 
 export function PageHome(): ReactElement {
 	return (

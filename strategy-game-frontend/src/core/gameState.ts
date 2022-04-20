@@ -19,7 +19,7 @@ export namespace GameState {
 	export function createInitial(): GameState {
 		return {
 			camera: new Camera(),
-			tilemapDirty: false,
+			tilemapDirty: true,
 			tilemap: []
 		};
 	}
