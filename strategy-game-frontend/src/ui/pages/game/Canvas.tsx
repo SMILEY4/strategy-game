@@ -3,7 +3,7 @@ import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
 import {DISTRIBUTOR} from "../../../main";
 
 
-function Canvas() {
+export function Canvas() {
 
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -80,7 +80,7 @@ function Canvas() {
 	}
 
 	function onRender() {
-		DISTRIBUTOR.gameRender();
+		DISTRIBUTOR.gameUpdate();
 	}
 
 	function onDispose() {
@@ -93,5 +93,3 @@ function Canvas() {
 		</div>
 	);
 }
-
-export default Canvas;

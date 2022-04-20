@@ -1,8 +1,6 @@
 import {ReactElement, useState} from "react";
 import "./joinWorld.css";
-import {CLIENT} from "../../../../client/client";
 import {useNavigate} from "react-router-dom";
-import {GlobalState} from "../../../../state/globalState";
 import {DISTRIBUTOR} from "../../../../main";
 
 export function JoinWorld(): ReactElement {
@@ -10,7 +8,6 @@ export function JoinWorld(): ReactElement {
 	const [playerId, setPlayerId] = useState("");
 	const [worldId, setWorldId] = useState("");
 	const [error, setError] = useState("");
-	const setGameLoading = GlobalState.useState(state => state.setLoading);
 	const navigate = useNavigate();
 
 

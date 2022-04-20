@@ -41,6 +41,7 @@ export class Game {
 
 	public dispose() {
 		this.renderer.dispose();
+		this.gameState = GameState.createInitial();
 	}
 
 

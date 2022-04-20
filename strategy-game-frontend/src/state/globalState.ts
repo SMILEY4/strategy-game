@@ -3,17 +3,19 @@ import {mountStoreDevtool} from "simple-zustand-devtools";
 
 export namespace GlobalState {
 
+	export interface Tile {
+		q: number,
+		r: number,
+		tileId: number
+	}
+
+
 	interface StateValues {
 		currentState: "idle" | "loading" | "active";
 		worldId: string | null,
 		map: Tile[];
 	}
 
-	export interface Tile {
-		q: number,
-		r: number,
-		tileId: number
-	}
 
 	const initialStateValues: StateValues = {
 		worldId: null,
@@ -27,6 +29,7 @@ export namespace GlobalState {
 		setLoading: (worldId: string) => void,
 		setActive: (map: Tile[]) => void
 	}
+
 
 	function stateActions(set: SetState<GlobalState.State>): StateActions {
 		return {
@@ -46,8 +49,10 @@ export namespace GlobalState {
 		};
 	}
 
+
 	export interface State extends StateValues, StateActions {
 	}
+
 
 	export const useState = create<State>((set: SetState<GlobalState.State>) => ({
 		...initialStateValues,

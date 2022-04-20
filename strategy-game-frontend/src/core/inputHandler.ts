@@ -30,9 +30,11 @@ export class InputHandler {
 		isMouseClick: false
 	};
 
+
 	public getCurrentState(): InputState {
 		return this.inputState;
 	}
+
 
 	public reset() {
 		this.inputState = {
@@ -64,6 +66,7 @@ export class InputHandler {
 		};
 	}
 
+
 	public onMouseScroll(delta: number, x: number, y: number) {
 		this.inputState.mousePosition = {
 			x: x,
@@ -72,10 +75,12 @@ export class InputHandler {
 		this.inputState.mouseScroll = delta;
 	}
 
+
 	public onMouseLeave() {
 		this.inputState.mouseMovement = null;
 		this.inputState.mousePosition = null;
 	}
+
 
 	public onMouseClick(x: number, y: number, width: number, height: number) {
 		this.inputState.mousePosition = {
