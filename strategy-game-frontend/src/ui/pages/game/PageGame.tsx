@@ -3,6 +3,7 @@ import "./pageGame.css";
 import {GlobalState} from "../../../state/globalState";
 import {useNavigate} from "react-router-dom";
 import {Canvas} from "./Canvas";
+import {GameUI} from "./GameUI";
 
 export function PageGame(): ReactElement {
 
@@ -21,7 +22,11 @@ export function PageGame(): ReactElement {
 				<div>Loading...</div>
 			)}
 			{(currentState === "active") && (
-				<Canvas/>
+				<div className="game-container">
+					<Canvas/>
+					<GameUI/>
+				</div>
+
 			)}
 		</div>
 	);

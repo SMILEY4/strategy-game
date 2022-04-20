@@ -1,6 +1,7 @@
 import {HttpClient} from "./clients/httpClient";
 import {WebsocketClient} from "./clients/websocketClient";
 import {MessageHandler} from "./messageHandler";
+import {GlobalState} from "../state/globalState";
 
 
 /**
@@ -17,12 +18,12 @@ const BASE_WS_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 
 export class ApiClient {
 
-	private static readonly WS_NAME_WORLD: string = "ws-world"
+	private static readonly WS_NAME_WORLD: string = "ws-world";
 	private readonly httpClient = new HttpClient(BASE_URL);
 	private readonly wsClient = new WebsocketClient(BASE_WS_URL);
 	private readonly msgHandler = new MessageHandler();
-	
-	
+
+
 	/**
 	 * Send a request to create new world
 	 * @return information about the created world
@@ -36,7 +37,17 @@ export class ApiClient {
 			});
 	}
 
-	
+
+	/**
+	 * Opens a new websocket connection for world-related messages
+	 */
+	public openWorldConnection(): Promise<void> {
+		return this.wsClient.open(ApiClient.WS_NAME_WORLD, "/api/world/messages", (msg) => {
+			this.msgHandler.onMessage(msg.type, msg.payload);
+		});
+	}
+
+
 	/**
 	 * Send a request to join a world. The websocket-connection must be opened before
 	 * @param worldId the id of the world
@@ -45,16 +56,19 @@ export class ApiClient {
 		this.wsClient.send(ApiClient.WS_NAME_WORLD, {
 			type: "join-world",
 			payload: JSON.stringify({worldId: worldId}, null, "   ")
-		})
+		});
 	}
 
+
 	/**
-	 * Opens a new websocket connection for world-related messages
+	 * Submit the commands of the current turn
+	 * @param worldId the id of the world
+	 * @param playerCommands the commands to submit
 	 */
-	public openWorldConnection(): Promise<void> {
-		return this.wsClient.open(ApiClient.WS_NAME_WORLD, "/api/world/messages", (msg) => {
-			this.msgHandler.onMessage(msg.type, msg.payload);
-		})
+	public submitTurn(worldId: string, playerCommands: GlobalState.PlaceMarkerCommand[]): void {
+		this.wsClient.send(ApiClient.WS_NAME_WORLD, {
+			type: "submit-turn",
+			payload: JSON.stringify({worldId: worldId, commands: playerCommands}, null, "   ")
+		});
 	}
-	
 }

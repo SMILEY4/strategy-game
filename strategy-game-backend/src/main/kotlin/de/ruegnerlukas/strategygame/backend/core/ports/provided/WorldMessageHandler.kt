@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.ports.provided
 
 import de.ruegnerlukas.strategygame.backend.core.ports.models.JoinWorldData
+import de.ruegnerlukas.strategygame.backend.core.ports.models.SubmitTurnData
 
 /**
  * Handler for world-related messages
@@ -13,5 +14,7 @@ interface WorldMessageHandler {
 	 * @param payload the payload of the message
 	 */
 	suspend fun handleJoinWorld(connectionId: Int, payload: JoinWorldData)
+
+	suspend fun handleSubmitWorld(connectionId: Int, payload: SubmitTurnData)
 
 }

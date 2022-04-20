@@ -175,7 +175,7 @@ export class TilemapRenderDataBuilder {
 	}
 
 
-	private static hexToPixel(layout: HexLayout, q: number, r: number, padding: number): number[] {
+	public static hexToPixel(layout: HexLayout, q: number, r: number, padding: number): number[] {
 		const M = layout.orientation;
 		const x = (M.f0 * q + M.f1 * r) * (layout.size[0] + padding);
 		const y = (M.f2 * q + M.f3 * r) * (layout.size[1] + padding);

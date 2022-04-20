@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api
 
 import de.ruegnerlukas.strategygame.backend.core.ports.models.JoinWorldData
+import de.ruegnerlukas.strategygame.backend.core.ports.models.SubmitTurnData
 import de.ruegnerlukas.strategygame.backend.core.ports.provided.WorldMessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.wscore.WebSocketMessage
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -23,9 +24,8 @@ class WorldMessageDispatcher(private val worldMessageHandler: WorldMessageHandle
 		log().info("Received message '${message.type}' from connection $connectionId")
 		when (message.type) {
 			"join-world" -> handleJoinWorld(connectionId, message.payload)
-			else -> {
-				log().info("Unknown message type: ${message.type}")
-			}
+			"submit-turn" -> handleSubmitTurn(connectionId, message.payload)
+			else -> log().info("Unknown message type: ${message.type}")
 		}
 	}
 
@@ -33,6 +33,12 @@ class WorldMessageDispatcher(private val worldMessageHandler: WorldMessageHandle
 	private suspend fun handleJoinWorld(connectionId: Int, strPayload: String) {
 		val payload = Json.decodeFromString<JoinWorldData>(strPayload)
 		worldMessageHandler.handleJoinWorld(connectionId, payload)
+	}
+
+
+	private suspend fun handleSubmitTurn(connectionId: Int, strPayload: String) {
+		val payload = Json.decodeFromString<SubmitTurnData>(strPayload)
+		worldMessageHandler.handleSubmitWorld(connectionId, payload)
 	}
 
 }

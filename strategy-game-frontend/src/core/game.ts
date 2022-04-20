@@ -4,6 +4,8 @@ import {GameState} from "./gameState";
 import {HexLayout, TilemapRenderDataBuilder} from "./rendering/tilemapRenderDataBuilder";
 import {GlobalState} from "../state/globalState";
 import {mat3} from "./rendering/utils/mat3";
+import {DISTRIBUTOR} from "../main";
+import {MarkerRenderDataBuilder} from "./rendering/markerRenderDataBuilder";
 
 export class Game {
 
@@ -21,23 +23,22 @@ export class Game {
 
 		// UPDATE STATE
 		const inputState = this.input.getCurrentState();
-		const map = GlobalState.useState.getState().map;
 
 		// move camera
-		if(inputState.mouseMovement && inputState.isMouseLeftDown) {
-			this.gameState.camera.move(inputState.mouseMovement.dx, inputState.mouseMovement.dy)
+		if (inputState.mouseMovement && inputState.isMouseLeftDown) {
+			this.gameState.camera.move(inputState.mouseMovement.dx, inputState.mouseMovement.dy);
 		}
 
 		// zoom camera
-		if(inputState.mouseScroll) {
-			this.gameState.camera.doZoom(inputState.mouseScroll > 0 ? +0.1 : -0.1)
+		if (inputState.mouseScroll) {
+			this.gameState.camera.doZoom(inputState.mouseScroll > 0 ? +0.1 : -0.1);
 		}
 
 		// update camera matrix
-		this.gameState.camera.updateViewProjectionMatrix(this.renderer.getGL().canvas.width, this.renderer.getGL().canvas.height)
+		this.gameState.camera.updateViewProjectionMatrix(this.renderer.getGL().canvas.width, this.renderer.getGL().canvas.height);
 
 		// mouse-over tile
-		if(inputState.mousePosition && inputState.canvasBounds) {
+		if (inputState.mousePosition && inputState.canvasBounds) {
 			const mouseClipPos: [number, number] = [
 				(inputState.mousePosition.x / inputState.canvasBounds.width) * 2.0 - 1.0,
 				((inputState.canvasBounds.height - inputState.mousePosition.y) / inputState.canvasBounds.height) * 2.0 - 1.0
@@ -45,17 +46,30 @@ export class Game {
 			const viewProjMatrix = this.gameState.camera.getViewProjectionMatrixOrThrow();
 			const invViewProjMatrix = mat3.inverse(viewProjMatrix);
 			const mouseWorldPos = mat3.transformPoint(invViewProjMatrix, mouseClipPos);
-			const hexPos = this.screenToHex(TilemapRenderDataBuilder.DEFAULT_HEX_LAYOUT, [mouseWorldPos[0], mouseWorldPos[1]])
-			const mouseOverTile = map.find(t => t.q === hexPos[0] && t.r === hexPos[1])
+			const hexPos = Game.screenToHex(TilemapRenderDataBuilder.DEFAULT_HEX_LAYOUT, [mouseWorldPos[0], mouseWorldPos[1]]);
+			const mouseOverTile = GlobalState.useState.getState().map.find(t => t.q === hexPos[0] && t.r === hexPos[1]);
 			if (mouseOverTile) {
 				this.gameState.tileMouseOver = [mouseOverTile.q, mouseOverTile.r];
 			}
 		}
 
+		// place marker
+		if (inputState.isMouseClick && this.gameState.tileMouseOver) {
+			if (GlobalState.useState.getState().turnState === "active") {
+				DISTRIBUTOR.placeMarker(this.gameState.tileMouseOver[0], this.gameState.tileMouseOver[1]);
+			}
+		}
+
 		// rebuild dirty tilemap
-		if(this.gameState.tilemapDirty) {
-			this.gameState.tilemap = TilemapRenderDataBuilder.build(map, this.renderer.getGL())
+		if (this.gameState.tilemapDirty) {
+			this.gameState.tilemap = TilemapRenderDataBuilder.build(GlobalState.useState.getState().map, this.renderer.getGL());
 			this.gameState.tilemapDirty = false;
+		}
+
+		// rebuild dirty markers
+		if (this.gameState.markersDirty) {
+			this.gameState.markers = MarkerRenderDataBuilder.build(GlobalState.useState.getState().playerMarkers, GlobalState.useState.getState().playerCommands, this.renderer.getGL());
+			this.gameState.markersDirty = false;
 		}
 
 		// RENDER STATE
@@ -76,8 +90,12 @@ export class Game {
 		this.gameState.tilemapDirty = true;
 	}
 
+	public setMarkersDirty() {
+		this.gameState.markersDirty = true;
+	}
 
-	private screenToHex(layout: HexLayout, p: [number, number]): [number, number] {
+
+	private static screenToHex(layout: HexLayout, p: [number, number]): [number, number] {
 		const M = layout.orientation;
 		const pt = [
 			(p[0] - layout.origin[0]) / layout.size[0],

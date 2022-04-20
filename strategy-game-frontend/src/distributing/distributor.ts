@@ -42,6 +42,34 @@ export class Distributor {
 		this.gameCore.setTilemapDirty();
 	}
 
+
+	/**
+	 * Place a marker at the given tile-position
+	 */
+	public placeMarker(q: number, r: number) {
+		GlobalState.useState.getState().addCommandPlaceMarker(q, r);
+		this.gameCore.setMarkersDirty();
+	}
+
+	/**
+	 * Submit all commands and end the current turn
+	 */
+	public submitTurn() {
+		GlobalState.useState.getState().setTurnState("submitted");
+		this.client.submitTurn(GlobalState.useState.getState().worldId as string, GlobalState.useState.getState().playerCommands);
+	}
+
+	/**
+	 * Apply the given changes and start the next turn
+	 */
+	public startNewTurn(addedMarkers: GlobalState.PlayerMarker[]) {
+		GlobalState.useState.getState().addMarkers(addedMarkers);
+		GlobalState.useState.getState().setTurnState("active");
+		GlobalState.useState.getState().clearCommands();
+		this.gameCore.setMarkersDirty();
+	}
+
+
 	//====================//
 	//   GAME LIFECYCLE   //
 	//====================//
