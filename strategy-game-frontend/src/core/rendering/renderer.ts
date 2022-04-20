@@ -33,13 +33,17 @@ export class Renderer {
 				{
 					name: "in_tiledata",
 					type: ShaderAttributeType.FLOAT,
-					amountComponents: 1
+					amountComponents: 3
 				}
 			],
 			uniforms: [
 				{
 					name: "u_viewProjection",
 					type: ShaderUniformType.MAT3
+				},
+				{
+					name: "u_tileMouseOver",
+					type: ShaderUniformType.VEC2
 				}
 			]
 		}).create(gl);
@@ -59,7 +63,7 @@ export class Renderer {
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
-		const viewProjectionMatrix = state.camera.calculateViewProjectionMatrix(this.gl.canvas.width, this.gl.canvas.height);
+		const viewProjectionMatrix = state.camera.getViewProjectionMatrixOrThrow()
 
 		state.tilemap.forEach(chunk => {
 			this.shader.use(gl, {
@@ -68,7 +72,8 @@ export class Renderer {
 					"in_tiledata": chunk.bufferTileData
 				},
 				uniformValues: {
-					"u_viewProjection": viewProjectionMatrix
+					"u_viewProjection": viewProjectionMatrix,
+					"u_tileMouseOver": state.tileMouseOver
 				}
 			});
 			chunk.bufferIndices.use(gl);

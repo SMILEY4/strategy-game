@@ -3,9 +3,9 @@
 uniform mat3 u_viewProjection;
 
 in vec2 in_position;
-in float in_tiledata;
+in vec3 in_tiledata;
 
-flat out float v_tiledata;
+flat out vec3 v_tiledata;
 
 void main() {
     v_tiledata = in_tiledata;
