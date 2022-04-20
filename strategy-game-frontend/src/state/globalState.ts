@@ -1,7 +1,14 @@
 import create, {SetState} from "zustand";
 import {mountStoreDevtool} from "simple-zustand-devtools";
 
-export namespace GameState {
+export namespace GlobalState {
+
+	export interface Tile {
+		q: number,
+		r: number,
+		tileId: number
+	}
+
 
 	interface StateValues {
 		currentState: "idle" | "loading" | "active";
@@ -9,11 +16,6 @@ export namespace GameState {
 		map: Tile[];
 	}
 
-	interface Tile {
-		q: number,
-		r: number,
-		tileId: number
-	}
 
 	const initialStateValues: StateValues = {
 		worldId: null,
@@ -28,7 +30,8 @@ export namespace GameState {
 		setActive: (map: Tile[]) => void
 	}
 
-	function stateActions(set: SetState<GameState.State>): StateActions {
+
+	function stateActions(set: SetState<GlobalState.State>): StateActions {
 		return {
 			setIdle: () => set(() => ({
 				currentState: "idle",
@@ -46,10 +49,12 @@ export namespace GameState {
 		};
 	}
 
+
 	export interface State extends StateValues, StateActions {
 	}
 
-	export const useState = create<State>((set: SetState<GameState.State>) => ({
+
+	export const useState = create<State>((set: SetState<GlobalState.State>) => ({
 		...initialStateValues,
 		...stateActions(set)
 	}));
@@ -59,5 +64,5 @@ export namespace GameState {
 
 if (import.meta.env.MODE === "development") {
 	// @ts-ignore
-	mountStoreDevtool("GameState", GameState.useState);
+	mountStoreDevtool("GameState", GlobalState.useState);
 }

@@ -1,12 +1,12 @@
 import {ReactElement, useEffect} from "react";
 import "./pageGame.css";
-import {GameState} from "../../../state/gameState";
+import {GlobalState} from "../../../state/globalState";
 import {useNavigate} from "react-router-dom";
+import {Canvas} from "./Canvas";
 
 export function PageGame(): ReactElement {
 
-	const currentState = GameState.useState(state => state.currentState);
-	const map = GameState.useState(state => state.map);
+	const currentState = GlobalState.useState(state => state.currentState);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -21,11 +21,7 @@ export function PageGame(): ReactElement {
 				<div>Loading...</div>
 			)}
 			{(currentState === "active") && (
-				<>
-					<div>World loaded:</div>
-					<div>{map.length + " Tiles"}</div>
-					<pre>{JSON.stringify(map, null, "   ")}</pre>
-				</>
+				<Canvas/>
 			)}
 		</div>
 	);

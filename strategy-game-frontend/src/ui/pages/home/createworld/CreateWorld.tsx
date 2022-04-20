@@ -1,6 +1,6 @@
 import {ReactElement, useState} from "react";
 import "./createWorld.css";
-import {CLIENT, WorldMeta} from "../../../../client/client";
+import {DISTRIBUTOR} from "../../../../main";
 
 export function CreateWorld(): ReactElement {
 
@@ -17,9 +17,8 @@ export function CreateWorld(): ReactElement {
 	);
 
 	function onCreateWorld() {
-		CLIENT.createWorld()
-			.then((meta: WorldMeta) => meta.worldId)
-			.then(setWorldId)
+		DISTRIBUTOR.requestCreateWorld()
+			.then(d => setWorldId(d.worldId))
 			.catch(e => setError(e.toString()));
 	}
 
