@@ -23,12 +23,13 @@ export class Distributor {
 	/**
 	 * Join the world with the given id
 	 * @param worldId the id of the world to join
+	 * @param playerName the name of the player
 	 * @param navigate a function to navigate to a provided url
 	 */
-	public requestJoinWorld(worldId: string, navigate: (url: string) => void): Promise<void> {
+	public requestJoinWorld(worldId: string, playerName: string, navigate: (url: string) => void): Promise<void> {
 		return this.client.openWorldConnection()
 			.then(() => GlobalState.useState.getState().setLoading(worldId))
-			.then(() => this.client.sendJoinWorld(worldId))
+			.then(() => this.client.sendJoinWorld(worldId, playerName))
 			.then(() => navigate("/game"));
 	}
 
@@ -41,6 +42,34 @@ export class Distributor {
 		GlobalState.useState.getState().setActive(state.map.tiles);
 		this.gameCore.setTilemapDirty();
 	}
+
+
+	/**
+	 * Place a marker at the given tile-position
+	 */
+	public placeMarker(q: number, r: number) {
+		GlobalState.useState.getState().addCommandPlaceMarker(q, r);
+		this.gameCore.setMarkersDirty();
+	}
+
+	/**
+	 * Submit all commands and end the current turn
+	 */
+	public submitTurn() {
+		GlobalState.useState.getState().setTurnState("submitted");
+		this.client.submitTurn(GlobalState.useState.getState().worldId as string, GlobalState.useState.getState().playerCommands);
+	}
+
+	/**
+	 * Apply the given changes and start the next turn
+	 */
+	public startNewTurn(addedMarkers: GlobalState.PlayerMarker[]) {
+		GlobalState.useState.getState().addMarkers(addedMarkers);
+		GlobalState.useState.getState().setTurnState("active");
+		GlobalState.useState.getState().clearCommands();
+		this.gameCore.setMarkersDirty();
+	}
+
 
 	//====================//
 	//   GAME LIFECYCLE   //

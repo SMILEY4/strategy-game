@@ -7,6 +7,9 @@ export class MessageHandler {
 		if (type === "world-state") {
 			DISTRIBUTOR.setInitialWorldState(JSON.parse(payload));
 		}
+		if (type === "new-turn") {
+			DISTRIBUTOR.startNewTurn(JSON.parse(payload).addedMarkers);
+		}
 	}
 
 }

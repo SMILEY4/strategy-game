@@ -73,8 +73,8 @@ interface Chunk {
 
 export class TilemapRenderDataBuilder {
 
-	private static readonly DEFAULT_CHUNK_SIZE = 20;
-	private static readonly DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
+	public static readonly DEFAULT_CHUNK_SIZE = 20;
+	public static readonly DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
 
 	public static build(tiles: Tile[], gl: WebGL2RenderingContext): TilemapChunkRenderData[] {
 		if (tiles.length === 0) {
@@ -175,7 +175,7 @@ export class TilemapRenderDataBuilder {
 	}
 
 
-	private static hexToPixel(layout: HexLayout, q: number, r: number, padding: number): number[] {
+	public static hexToPixel(layout: HexLayout, q: number, r: number, padding: number): number[] {
 		const M = layout.orientation;
 		const x = (M.f0 * q + M.f1 * r) * (layout.size[0] + padding);
 		const y = (M.f2 * q + M.f3 * r) * (layout.size[1] + padding);
@@ -222,19 +222,19 @@ export class TilemapRenderDataBuilder {
 
 	private static buildHexTileData(tile: Tile): number[] {
 		return [
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId,
-			tile.tileId
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId,
+			tile.q, tile.r, tile.tileId
 		];
 	}
 

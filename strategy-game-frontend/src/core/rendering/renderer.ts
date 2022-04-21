@@ -1,13 +1,16 @@
 import ShaderProgram, {ShaderAttributeType, ShaderUniformType} from "./utils/shaderProgram";
-import SRC_SHADER_VERTEX from "./shader.vsh?raw";
-import SRC_SHADER_FRAGMENT from "./shader.fsh?raw";
+import SRC_MAP_SHADER_VERTEX from "./mapShader.vsh?raw";
+import SRC_MAP_SHADER_FRAGMENT from "./mapShader.fsh?raw";
+import SRC_MARKER_SHADER_VERTEX from "./markerShader.vsh?raw";
+import SRC_MARKER_SHADER_FRAGMENT from "./markerShader.fsh?raw";
 import {GameState} from "../gameState";
 
 
 export class Renderer {
 
 	private gl: WebGL2RenderingContext = null as any;
-	private shader: ShaderProgram = null as any;
+	private shaderMap: ShaderProgram = null as any;
+	private shaderMarkers: ShaderProgram = null as any;
 
 
 	public initialize(canvas: HTMLCanvasElement) {
@@ -20,10 +23,10 @@ export class Renderer {
 		this.gl = gl;
 
 		// create shader
-		this.shader = new ShaderProgram({
+		this.shaderMap = new ShaderProgram({
 			debugName: "tilemap",
-			sourceVertex: SRC_SHADER_VERTEX,
-			sourceFragment: SRC_SHADER_FRAGMENT,
+			sourceVertex: SRC_MAP_SHADER_VERTEX,
+			sourceFragment: SRC_MAP_SHADER_FRAGMENT,
 			attributes: [
 				{
 					name: "in_position",
@@ -32,6 +35,34 @@ export class Renderer {
 				},
 				{
 					name: "in_tiledata",
+					type: ShaderAttributeType.FLOAT,
+					amountComponents: 3
+				}
+			],
+			uniforms: [
+				{
+					name: "u_viewProjection",
+					type: ShaderUniformType.MAT3
+				},
+				{
+					name: "u_tileMouseOver",
+					type: ShaderUniformType.VEC2
+				}
+			]
+		}).create(gl);
+
+		this.shaderMarkers = new ShaderProgram({
+			debugName: "markers",
+			sourceVertex: SRC_MARKER_SHADER_VERTEX,
+			sourceFragment: SRC_MARKER_SHADER_FRAGMENT,
+			attributes: [
+				{
+					name: "in_position",
+					type: ShaderAttributeType.FLOAT,
+					amountComponents: 2
+				},
+				{
+					name: "in_markerdata",
 					type: ShaderAttributeType.FLOAT,
 					amountComponents: 1
 				}
@@ -48,7 +79,8 @@ export class Renderer {
 
 	public dispose() {
 		const gl = this.gl;
-		this.shader.dispose(gl);
+		this.shaderMap.dispose(gl);
+		this.shaderMarkers.dispose(gl);
 	}
 
 
@@ -59,16 +91,18 @@ export class Renderer {
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
-		const viewProjectionMatrix = state.camera.calculateViewProjectionMatrix(this.gl.canvas.width, this.gl.canvas.height);
+		const viewProjectionMatrix = state.camera.getViewProjectionMatrixOrThrow();
 
+		// render map
 		state.tilemap.forEach(chunk => {
-			this.shader.use(gl, {
+			this.shaderMap.use(gl, {
 				attributeBuffers: {
 					"in_position": chunk.bufferPositions,
 					"in_tiledata": chunk.bufferTileData
 				},
 				uniformValues: {
-					"u_viewProjection": viewProjectionMatrix
+					"u_viewProjection": viewProjectionMatrix,
+					"u_tileMouseOver": state.tileMouseOver
 				}
 			});
 			chunk.bufferIndices.use(gl);
@@ -79,6 +113,26 @@ export class Renderer {
 				0
 			);
 		});
+
+		// render markers
+		if (state.markers) {
+			this.shaderMarkers.use(gl, {
+				attributeBuffers: {
+					"in_position": state.markers.bufferPositions,
+					"in_markerdata": state.markers.bufferMarkerData
+				},
+				uniformValues: {
+					"u_viewProjection": viewProjectionMatrix
+				}
+			});
+			state.markers.bufferIndices.use(gl);
+			gl.drawElements(
+				gl.TRIANGLES,
+				state.markers.bufferIndices.getSize(),
+				gl.UNSIGNED_SHORT,
+				0
+			);
+		}
 
 	}
 

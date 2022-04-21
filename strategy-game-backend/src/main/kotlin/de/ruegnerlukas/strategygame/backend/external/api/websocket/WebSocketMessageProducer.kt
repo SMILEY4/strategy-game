@@ -1,15 +1,15 @@
-package de.ruegnerlukas.strategygame.backend.external.api.wscore
+package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
-import de.ruegnerlukas.strategygame.backend.core.ports.required.MessageProducer
+import de.ruegnerlukas.strategygame.backend.core.ports.required.GenericMessageProducer
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.websocket.Frame
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
- * Implementation of a [MessageProducer] sending messages via a websocket
+ * Implementation of a [GenericMessageProducer] sending messages via a websocket
  */
-class WebSocketMessageProducer(private val connectionHandler: ConnectionHandler) : MessageProducer, Logging {
+class WebSocketMessageProducer(private val connectionHandler: ConnectionHandler) : GenericMessageProducer, Logging {
 
 	override suspend fun sendToAll(type: String, payload: String) {
 		log().info("Sending message '$type' to all")

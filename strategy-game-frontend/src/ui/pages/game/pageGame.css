@@ -6,3 +6,11 @@
 	background-color: #777f9d;
 	position:         relative;
 }
+
+.game-container > * {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}

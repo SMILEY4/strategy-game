@@ -5,6 +5,7 @@ export class Camera {
 	private x = 0;
 	private y = 0;
 	private zoom = 1;
+	private viewProjectionMatrix: Float32Array | null = null;
 
 	public setPosition(x: number, y: number): void {
 		this.x = x;
@@ -37,12 +38,28 @@ export class Camera {
 		return this.zoom;
 	}
 
-	public calculateViewProjectionMatrix(width: number, height: number): Float32Array {
+	public updateViewProjectionMatrix(width: number, height: number) {
 		const mat = mat3.identity();
 		mat3.scale(mat, 1 / (width / 2), 1 / (height / 2), mat);
 		mat3.scale(mat, this.zoom, this.zoom, mat);
 		mat3.translate(mat, this.x, this.y, mat);
-		return mat;
+		this.viewProjectionMatrix = mat;
+	}
+
+	public getViewProjectionMatrix(calculateIfNotExists?: boolean, width?: number, height?: number): Float32Array | null {
+		if (calculateIfNotExists === true && !this.viewProjectionMatrix && width && height) {
+			this.updateViewProjectionMatrix(width, height);
+		}
+		return this.viewProjectionMatrix;
+	}
+
+	public getViewProjectionMatrixOrThrow(calculateIfNotExists?: boolean, width?: number, height?: number): Float32Array {
+		const matrix = this.getViewProjectionMatrix(calculateIfNotExists, width, height);
+		if (!matrix) {
+			throw new Error("Camera view-projection-matrix does not exist.");
+		} else {
+			return matrix;
+		}
 	}
 
 

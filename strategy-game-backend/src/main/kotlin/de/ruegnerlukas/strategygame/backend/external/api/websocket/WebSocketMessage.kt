@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.external.api.wscore
+package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
 import kotlinx.serialization.Serializable
 
