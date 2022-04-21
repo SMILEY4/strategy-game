@@ -35,7 +35,6 @@ export class MarkerRenderDataBuilder {
 
 		markerCommands.forEach((marker, index) => {
 			const pixelPos = TilemapRenderDataBuilder.hexToPixel(layout, marker.q, marker.r, 0);
-			console.log("marker cmd:", marker, index, "@", pixelPos)
 			indices.push(...MarkerRenderDataBuilder.buildIndices(index+markers.length));
 			positions.push(...MarkerRenderDataBuilder.buildPositions(layout.size, pixelPos[0], pixelPos[1]));
 			markerData.push(...MarkerRenderDataBuilder.buildMarkerData(-1));
