@@ -10,9 +10,10 @@ class CloseConnectionActionImpl(
 ) : CloseConnectionAction, Logging {
 
 	override suspend fun perform(connectionId: Int) {
+		val connectedWorlds = repository.getWorldsByParticipant(connectionId)
 		repository.removeParticipant(connectionId)
 		log().info("Connection $connectionId closed and removed from worlds")
-		repository.getWorldsByParticipant(connectionId).forEach { worldId ->
+		connectedWorlds.forEach { worldId ->
 			if (repository.countPlayingParticipants(worldId).getOrThrow() == 0) {
 				log().info("Ending turn due to closing of connection $connectionId")
 				endTurnAction.perform(worldId)
