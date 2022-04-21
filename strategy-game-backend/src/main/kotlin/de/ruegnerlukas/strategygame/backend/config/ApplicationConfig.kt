@@ -1,12 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.config
 
 import de.ruegnerlukas.strategygame.backend.core.service.test.TestServiceImpl
-import de.ruegnerlukas.strategygame.backend.core.service.world.WorldMessageHandlerImpl
 import de.ruegnerlukas.strategygame.backend.core.service.world.WorldServiceImpl
 import de.ruegnerlukas.strategygame.backend.external.api.WorldMessageDispatcher
 import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
-import de.ruegnerlukas.strategygame.backend.external.api.wscore.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.wscore.WebSocketMessageProducer
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.TestRepositoryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.WorldRepositoryImpl
 import io.ktor.serialization.kotlinx.json.json
@@ -43,11 +42,9 @@ fun Application.module() {
 	}
 
 	val connectionHandler = ConnectionHandler()
-	val messageProducer = WebSocketMessageProducer(connectionHandler)
 	val testHandler = TestServiceImpl(TestRepositoryImpl())
-	val worldService = WorldServiceImpl(WorldRepositoryImpl())
-	val worldMessageHandler = WorldMessageHandlerImpl(messageProducer, worldService)
-	val worldMessageDispatcher = WorldMessageDispatcher(worldMessageHandler)
+	val worldService = WorldServiceImpl(WebSocketMessageProducer(connectionHandler), WorldRepositoryImpl())
+	val worldMessageDispatcher = WorldMessageDispatcher(worldService)
 
 	apiRoutes(connectionHandler, testHandler, worldService, worldMessageDispatcher)
 }

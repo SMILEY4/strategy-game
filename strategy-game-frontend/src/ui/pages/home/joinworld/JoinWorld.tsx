@@ -42,7 +42,7 @@ export function JoinWorld(): ReactElement {
 
 	function onJoin() {
 		if (worldId && playerId) {
-			DISTRIBUTOR.requestJoinWorld(worldId, navigate)
+			DISTRIBUTOR.requestJoinWorld(worldId, playerId, navigate)
 				.catch(e => setError(e.toString()));
 		} else {
 			setError("Player Name and World-Id can not be empty!");

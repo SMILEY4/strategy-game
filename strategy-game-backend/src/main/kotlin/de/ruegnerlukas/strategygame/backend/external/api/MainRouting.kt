@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.external.api
 
 import de.ruegnerlukas.strategygame.backend.core.ports.provided.TestService
 import de.ruegnerlukas.strategygame.backend.core.ports.provided.WorldService
-import de.ruegnerlukas.strategygame.backend.external.api.wscore.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.response.respondRedirect

@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.ports.models
+package de.ruegnerlukas.strategygame.backend.external.api.models
 
 import kotlinx.serialization.Serializable
 

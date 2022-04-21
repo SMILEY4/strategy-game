@@ -51,11 +51,12 @@ export class ApiClient {
 	/**
 	 * Send a request to join a world. The websocket-connection must be opened before
 	 * @param worldId the id of the world
+	 * @param playerName the name of the player
 	 */
-	public sendJoinWorld(worldId: string) {
+	public sendJoinWorld(worldId: string, playerName: string) {
 		this.wsClient.send(ApiClient.WS_NAME_WORLD, {
 			type: "join-world",
-			payload: JSON.stringify({worldId: worldId}, null, "   ")
+			payload: JSON.stringify({worldId: worldId, playerName: playerName}, null, "   ")
 		});
 	}
 

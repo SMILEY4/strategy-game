@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.ports.models
+package de.ruegnerlukas.strategygame.backend.external.api.models
 
 import kotlinx.serialization.Serializable
 
@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * The data of a turn submission
  */
 @Serializable
-data class SubmitTurnData(
+data class SubmitTurnMessage(
 	/**
 	 * the id of the world to join
 	 */
@@ -16,12 +16,12 @@ data class SubmitTurnData(
 	/**
 	 * a list of submitted commands
 	 */
-	val commands: List<CommandPlaceMarker>
+	val commands: List<PlaceMarkerCommand>
 )
 
 
 @Serializable
-data class CommandPlaceMarker(
+data class PlaceMarkerCommand(
 	val q: Int,
 	val r: Int
 )

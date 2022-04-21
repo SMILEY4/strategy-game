@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.core.ports.required
 
 /**
- * Sends messages to clients
+ * Sends raw messages to clients
  */
-interface MessageProducer {
+interface GenericMessageProducer {
 
 	/**
 	 * Send a message to all currently active connections

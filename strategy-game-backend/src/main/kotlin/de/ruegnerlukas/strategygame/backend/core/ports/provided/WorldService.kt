@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.ports.provided
 
 import de.ruegnerlukas.strategygame.backend.core.ports.models.WorldMeta
-import de.ruegnerlukas.strategygame.backend.core.ports.models.WorldState
 
 /**
  * Handler for world-related logic
@@ -16,8 +15,10 @@ interface WorldService {
 
 
 	/**
-	 * Get the current state of the world with the given id
+	 * Handle a player closing the connection
+	 * @param connectionId the id of the closed connection
 	 */
-	fun getWorldState(worldId: String): WorldState
+	suspend fun handleCloseConnection(connectionId: Int)
+
 
 }

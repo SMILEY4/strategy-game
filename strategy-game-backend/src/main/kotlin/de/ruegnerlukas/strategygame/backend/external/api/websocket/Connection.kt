@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.external.api.wscore
+package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
 import io.ktor.websocket.DefaultWebSocketSession
 import java.util.concurrent.atomic.AtomicInteger

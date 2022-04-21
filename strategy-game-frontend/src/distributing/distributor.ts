@@ -23,12 +23,13 @@ export class Distributor {
 	/**
 	 * Join the world with the given id
 	 * @param worldId the id of the world to join
+	 * @param playerName the name of the player
 	 * @param navigate a function to navigate to a provided url
 	 */
-	public requestJoinWorld(worldId: string, navigate: (url: string) => void): Promise<void> {
+	public requestJoinWorld(worldId: string, playerName: string, navigate: (url: string) => void): Promise<void> {
 		return this.client.openWorldConnection()
 			.then(() => GlobalState.useState.getState().setLoading(worldId))
-			.then(() => this.client.sendJoinWorld(worldId))
+			.then(() => this.client.sendJoinWorld(worldId, playerName))
 			.then(() => navigate("/game"));
 	}
 
