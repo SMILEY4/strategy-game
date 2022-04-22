@@ -6,12 +6,13 @@ import {GlobalState} from "../state/globalState";
 import {mat3} from "./rendering/utils/mat3";
 import {DISTRIBUTOR} from "../main";
 import {MarkerRenderDataBuilder} from "./rendering/markerRenderDataBuilder";
+import {TestRenderer} from "./renderingNew/TestRenderer";
 
 export class Game {
 
 	public readonly input = new InputHandler();
-	private readonly renderer = new Renderer();
-	// private readonly renderer = new TestRenderer();
+	// private readonly renderer = new Renderer();
+	private readonly renderer = new TestRenderer();
 	private gameState = GameState.createInitial();
 
 

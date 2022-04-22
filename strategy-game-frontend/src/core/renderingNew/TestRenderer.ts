@@ -6,12 +6,13 @@ import SRC_SHADER_FRAGMENT from "./testShader.fsh?raw";
 
 export class TestRenderer {
 
-	randomValues: number[] = [...Array(100*2)].map(e => Math.random())
+	randomValues: number[] = [...Array(1000000)].map(e => Math.random())
 
 
 	private gl: WebGL2RenderingContext = null as any;
 	private shader: ShaderProgram = null as any;
-	private batch = new BatchRenderer();
+	private batch: BatchRenderer = null as any;
+
 
 	public initialize(canvas: HTMLCanvasElement) {
 		console.log(this.randomValues)
@@ -22,6 +23,7 @@ export class TestRenderer {
 		}
 		this.gl = gl;
 
+		this.batch = new BatchRenderer(gl)
 
 		this.shader = new ShaderProgram({
 			debugName: "test",
@@ -51,8 +53,9 @@ export class TestRenderer {
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
-		this.batch.begin(gl, state.camera);
-		for (let i = 0; i < 100; i++) {
+
+		this.batch.begin(state.camera);
+		for (let i = 0; i < 1000; i++) {
 			const x = (this.randomValues[i*2+0] * 2 - 1) * 200;
 			const y = (this.randomValues[i*2+1] * 2 - 1) * 200;
 			this.batch.add(
@@ -74,7 +77,7 @@ export class TestRenderer {
 
 
 	public dispose() {
-		const gl = this.gl;
+		this.batch.dispose()
 	}
 
 
