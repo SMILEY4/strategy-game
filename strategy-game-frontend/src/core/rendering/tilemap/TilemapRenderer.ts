@@ -1,9 +1,9 @@
-import {BatchRenderer} from "../engine/BatchRenderer";
-import {Camera} from "../../rendering/utils/camera";
+import {BatchRenderer} from "../utils/BatchRenderer";
+import {Camera} from "../utils/camera";
 import {GlobalState} from "../../../state/globalState";
 import SRC_SHADER_VERTEX from "./mapShader.vsh?raw";
 import SRC_SHADER_FRAGMENT from "./mapShader.fsh?raw";
-import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../engine/shaderProgram";
+import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import Tile = GlobalState.Tile;
 
 class HexOrientation {
@@ -68,7 +68,7 @@ export class HexLayout {
 
 export class TilemapRenderer {
 
-	private static readonly DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
+	public static readonly DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
 
 	private readonly batchRenderer: BatchRenderer;
 	private readonly shader: ShaderProgram;
@@ -109,7 +109,7 @@ export class TilemapRenderer {
 		});
 	}
 
-	public render(camera: Camera, map: Tile[]) {
+	public render(camera: Camera, map: Tile[], tileMouseOver: [number, number]) {
 		this.batchRenderer.begin(camera);
 		map.forEach(tile => {
 			const vertices = TilemapRenderer.buildVertexData(tile);
@@ -119,7 +119,7 @@ export class TilemapRenderer {
 		this.batchRenderer.end(this.shader, {
 			attributes: ["in_position", "in_tiledata"],
 			uniforms: {
-				"u_tileMouseOver": [0, 0]
+				"u_tileMouseOver": tileMouseOver
 			}
 		});
 	}
@@ -161,7 +161,7 @@ export class TilemapRenderer {
 		return TilemapRenderer.HEX_INDEX_DATA;
 	}
 
-	private static hexToPixel(layout: HexLayout, q: number, r: number): number[] {
+	public static hexToPixel(layout: HexLayout, q: number, r: number): number[] {
 		const M = layout.orientation;
 		const x = (M.f0 * q + M.f1 * r) * (layout.size[0]);
 		const y = (M.f2 * q + M.f3 * r) * (layout.size[1]);

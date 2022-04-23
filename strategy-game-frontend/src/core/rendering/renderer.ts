@@ -1,57 +1,31 @@
-import ShaderProgram, {ShaderAttributeType, ShaderUniformType} from "./utils/shaderProgram";
-import SRC_MAP_SHADER_VERTEX from "./mapShader.vsh?raw";
-import SRC_MAP_SHADER_FRAGMENT from "./mapShader.fsh?raw";
 import SRC_MARKER_SHADER_VERTEX from "./markerShader.vsh?raw";
 import SRC_MARKER_SHADER_FRAGMENT from "./markerShader.fsh?raw";
-import {GameState} from "../gameState";
+import {GlobalState} from "../../state/globalState";
+import {Camera} from "./utils/camera";
+import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "./utils/shaderProgram";
+import {BatchRenderer} from "./utils/BatchRenderer";
+import {TilemapRenderer} from "./tilemap/TilemapRenderer";
 
 
 export class Renderer {
 
 	private gl: WebGL2RenderingContext = null as any;
-	private shaderMap: ShaderProgram = null as any;
 	private shaderMarkers: ShaderProgram = null as any;
 
+	private batchRenderer: BatchRenderer = null as any;
+	private tilemapRenderer: TilemapRenderer = null as any;
 
 	public initialize(canvas: HTMLCanvasElement) {
 
-		// get webgl-context
 		const gl = canvas.getContext("webgl2");
 		if (!gl) {
 			throw Error("webgl not supported");
 		}
 		this.gl = gl;
 
-		// create shader
-		this.shaderMap = new ShaderProgram({
-			debugName: "tilemap",
-			sourceVertex: SRC_MAP_SHADER_VERTEX,
-			sourceFragment: SRC_MAP_SHADER_FRAGMENT,
-			attributes: [
-				{
-					name: "in_position",
-					type: ShaderAttributeType.FLOAT,
-					amountComponents: 2,
-				},
-				{
-					name: "in_tiledata",
-					type: ShaderAttributeType.FLOAT,
-					amountComponents: 3,
-				}
-			],
-			uniforms: [
-				{
-					name: "u_viewProjection",
-					type: ShaderUniformType.MAT3
-				},
-				{
-					name: "u_tileMouseOver",
-					type: ShaderUniformType.VEC2
-				}
-			]
-		}).create(gl);
+		this.tilemapRenderer = new TilemapRenderer(gl);
 
-		this.shaderMarkers = new ShaderProgram({
+		this.shaderMarkers = new ShaderProgram(gl, {
 			debugName: "markers",
 			sourceVertex: SRC_MARKER_SHADER_VERTEX,
 			sourceFragment: SRC_MARKER_SHADER_FRAGMENT,
@@ -59,12 +33,16 @@ export class Renderer {
 				{
 					name: "in_position",
 					type: ShaderAttributeType.FLOAT,
-					amountComponents: 2
+					amountComponents: 2,
+					stride: 3,
+					offset: 0,
 				},
 				{
 					name: "in_markerdata",
 					type: ShaderAttributeType.FLOAT,
-					amountComponents: 1
+					amountComponents: 1,
+					stride: 3,
+					offset: 2,
 				}
 			],
 			uniforms: [
@@ -73,72 +51,54 @@ export class Renderer {
 					type: ShaderUniformType.MAT3
 				}
 			]
-		}).create(gl);
+		});
+
+		this.batchRenderer = new BatchRenderer(gl);
 	}
 
 
 	public dispose() {
-		const gl = this.gl;
-		this.shaderMap.dispose(gl);
-		this.shaderMarkers.dispose(gl);
+		this.shaderMarkers.dispose();
+		this.tilemapRenderer.dispose();
 	}
 
 
-	public render(state: GameState) {
+	public render(globalState: GlobalState.State, camera: Camera, tileMouseOver: [number, number]) {
 		const gl = this.gl;
 
 		gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
-		const viewProjectionMatrix = state.camera.getViewProjectionMatrixOrThrow();
 
 		// render map
-		state.tilemap.forEach(chunk => {
-			this.shaderMap.use(gl, {
-				attributeBuffers: {
-					"in_position": chunk.bufferPositions,
-					"in_tiledata": chunk.bufferTileData
-				},
-				uniformValues: {
-					"u_viewProjection": viewProjectionMatrix,
-					"u_tileMouseOver": state.tileMouseOver
-				}
-			});
-			chunk.bufferIndices.use(gl);
-			gl.drawElements(
-				gl.TRIANGLES,
-				chunk.bufferIndices.getSize(),
-				gl.UNSIGNED_SHORT,
-				0
-			);
-		});
+		this.tilemapRenderer.render(camera, globalState.map, tileMouseOver);
 
 		// render markers
-		if (state.markers) {
-			this.shaderMarkers.use(gl, {
-				attributeBuffers: {
-					"in_position": state.markers.bufferPositions,
-					"in_markerdata": state.markers.bufferMarkerData
-				},
-				uniformValues: {
-					"u_viewProjection": viewProjectionMatrix
-				}
-			});
-			state.markers.bufferIndices.use(gl);
-			gl.drawElements(
-				gl.TRIANGLES,
-				state.markers.bufferIndices.getSize(),
-				gl.UNSIGNED_SHORT,
-				0
-			);
-		}
+		this.batchRenderer.begin(camera);
+		globalState.playerMarkers.forEach(m => {
+			const [offX, offY] = TilemapRenderer.hexToPixel(TilemapRenderer.DEFAULT_HEX_LAYOUT, m.q, m.r);
+			const size = TilemapRenderer.DEFAULT_HEX_LAYOUT.size;
+			this.batchRenderer.add([
+				[offX, offY, m.playerId],
+				[offX - (size[0] / 3), offY + size[1], m.playerId],
+				[offX + (size[0] / 3), offY + size[1], m.playerId],
+			]);
+		});
+		globalState.playerCommands.forEach(m => {
+			const [offX, offY] = TilemapRenderer.hexToPixel(TilemapRenderer.DEFAULT_HEX_LAYOUT, m.q, m.r);
+			const size = TilemapRenderer.DEFAULT_HEX_LAYOUT.size;
+			this.batchRenderer.add([
+				[offX, offY, -1],
+				[offX - (size[0] / 3), offY + size[1], -1],
+				[offX + (size[0] / 3), offY + size[1], -1],
+			]);
+		});
+		this.batchRenderer.end(this.shaderMarkers, {
+			attributes: ["in_position", "in_markerdata"],
+			uniforms: {}
+		});
 
-	}
-
-
-	public getGL(): WebGL2RenderingContext {
-		return this.gl;
 	}
 
 

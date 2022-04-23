@@ -1,4 +1,4 @@
-import {Camera} from "../../rendering/utils/camera";
+import {Camera} from "./camera";
 import {GLBuffer, GLBufferType, GLBufferUsage} from "./glBuffer";
 import {ShaderProgram} from "./shaderProgram";
 
@@ -159,7 +159,7 @@ export class BatchRenderer {
 					...shaderData.uniforms
 				}
 			});
-			batch.buffers.indices.use(gl);
+			batch.buffers.indices.use();
 			gl.drawElements(
 				gl.TRIANGLES,
 				batch.arrays.indices.length,
@@ -172,8 +172,8 @@ export class BatchRenderer {
 
 	protected static disposeContext(gl: WebGL2RenderingContext, context: BatchContext) {
 		context.batches.forEach(batch => {
-			batch.buffers.indices?.dispose(gl);
-			batch.buffers.vertices?.dispose(gl);
+			batch.buffers.indices?.dispose();
+			batch.buffers.vertices?.dispose();
 		});
 	}
 

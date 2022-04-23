@@ -9,91 +9,80 @@ export enum GLBufferUsage {
 	STREAM_DRAW
 }
 
-export interface GLBufferData {
-	debugName?: string,
-	type: GLBufferType,
-	usage: GLBufferUsage,
-	data?: number[],
-}
+export class GLBuffer {
 
-class GLBuffer {
+	private readonly gl: WebGL2RenderingContext;
+	private readonly debugName: string;
+	private readonly type: GLBufferType;
+	private readonly usage: GLBufferUsage;
+	private readonly handle: WebGLBuffer;
+	private size: number = 0;
 
-	data: GLBufferData;
-	handle: WebGLBuffer | null = null;
-	size: number = 0;
 
-	constructor(data: GLBufferData) {
-		this.data = data;
-		this.data.debugName = this.data.debugName ? this.data.debugName : "noname";
-	}
-
-	public create(gl: WebGL2RenderingContext): GLBuffer {
-		this.handle = gl.createBuffer();
-		if (this.handle === null) {
-			throw new Error("Could not create buffer '" + this.data.debugName + "'");
-		}
-		if (this.data.data) {
-			this.setData(gl, this.data.data);
-		}
-		return this;
+	constructor(gl: WebGL2RenderingContext, type: GLBufferType, usage: GLBufferUsage, debugName?: string) {
+		this.gl = gl;
+		this.type = type;
+		this.usage = usage;
+		this.debugName = debugName ? debugName : "noname";
+		this.handle = this.generateHandle();
 	}
 
 
-	public setData(gl: WebGL2RenderingContext, data: number[]) {
+	private generateHandle(): WebGLBuffer {
+		const handle = this.gl.createBuffer();
+		if (handle === null) {
+			throw new Error("Could not create buffer '" + this.debugName + "'");
+		}
+		return handle;
+	}
+
+
+	public setData(array: number[]): GLBuffer {
 		if (this.handle) {
-			const type = GLBuffer.convertBufferType(this.data.type);
-			const usage = GLBuffer.convertBufferUsage(this.data.usage);
-			gl.bindBuffer(type, this.handle);
-			gl.bufferData(type, this.createData(data), usage);
-			gl.bindBuffer(type,null);
+			const type = GLBuffer.convertBufferType(this.type);
+			const usage = GLBuffer.convertBufferUsage(this.usage);
+			const data = GLBuffer.packageData(this.type, array);
+			this.gl.bindBuffer(type, this.handle);
+			this.gl.bufferData(type, data, usage);
 			this.size = data.length;
+			return this;
 		} else {
-			throw new Error("Could not set data for buffer '" + this.data.debugName + "'. Buffer has not been created yet.");
+			throw new Error("Could not set data for buffer '" + this.debugName + "'. Buffer has not been created yet.");
 		}
 	}
 
 	/**
 	 * Deletes this buffer
-	 * @param gl the rendering context
 	 */
-	public dispose(gl: WebGL2RenderingContext) {
-		if (this.handle) {
-			gl.deleteBuffer(this.handle);
-		}
+	public dispose() {
+		this.gl.deleteBuffer(this.handle);
 	}
 
-	public use(gl: WebGL2RenderingContext) {
-		gl.bindBuffer(GLBuffer.convertBufferType(this.data.type), this.handle);
+
+	public use() {
+		this.gl.bindBuffer(GLBuffer.convertBufferType(this.type), this.handle);
 	}
 
-	public stop(gl: WebGL2RenderingContext) {
-		gl.bindBuffer(GLBuffer.convertBufferType(this.data.type), null);
-	}
 
 	public getHandle(): WebGLBuffer {
-		if (this.handle === null) {
-			throw new Error("handle is null. Buffer has not been created yet.");
-		} else {
-			return this.handle;
-		}
-	}
-
-	public getHandleOrNull(): WebGLBuffer | null {
 		return this.handle;
 	}
+
 
 	public getSize(): number {
 		return this.size;
 	}
 
-	private createData(data: number[]) {
-		switch (this.data.type) {
+
+	private static packageData(type: GLBufferType, data: number[]) {
+		switch (type) {
 			case GLBufferType.ARRAY_BUFFER:
 				return new Float32Array(data);
 			case GLBufferType.ELEMENT_ARRAY_BUFFER:
 				return new Uint16Array(data);
 		}
 	}
+
 
 	private static convertBufferType(type: GLBufferType): number {
 		switch (type) {
@@ -117,5 +106,3 @@ class GLBuffer {
 	}
 
 }
-
-export default GLBuffer;

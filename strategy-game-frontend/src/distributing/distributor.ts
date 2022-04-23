@@ -40,7 +40,6 @@ export class Distributor {
 	 */
 	public setInitialWorldState(state: any) {
 		GlobalState.useState.getState().setActive(state.map.tiles);
-		this.gameCore.setTilemapDirty();
 	}
 
 
@@ -49,7 +48,6 @@ export class Distributor {
 	 */
 	public placeMarker(q: number, r: number) {
 		GlobalState.useState.getState().addCommandPlaceMarker(q, r);
-		this.gameCore.setMarkersDirty();
 	}
 
 	/**
@@ -67,7 +65,6 @@ export class Distributor {
 		GlobalState.useState.getState().addMarkers(addedMarkers);
 		GlobalState.useState.getState().setTurnState("active");
 		GlobalState.useState.getState().clearCommands();
-		this.gameCore.setMarkersDirty();
 	}
 
 

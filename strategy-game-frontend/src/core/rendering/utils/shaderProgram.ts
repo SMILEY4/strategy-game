@@ -1,5 +1,5 @@
-import {glErrorToString} from "./webglErrors";
-import GLBuffer from "./glBuffer";
+import {GLBuffer} from "./glBuffer";
+import {glErrorToString} from "../../rendering/utils/webglErrors";
 
 
 export enum ShaderAttributeType {
@@ -73,60 +73,52 @@ export interface ShaderRuntimeData {
 	uniformValues?: Map<string, number[]> | object
 }
 
-class ShaderProgram {
+export class ShaderProgram {
 
-	data: ShaderProgramData;
-	programHandle: WebGLProgram | null = null;
-	attributeLocations: Map<string, GLint> = new Map();
-	uniformLocations: Map<string, WebGLUniformLocation> = new Map();
+	private readonly gl: WebGL2RenderingContext;
+	private readonly data: ShaderProgramData;
+	private readonly programHandle: WebGLProgram;
+	private readonly attributeLocations: Map<string, GLint> = new Map();
+	private readonly uniformLocations: Map<string, WebGLUniformLocation> = new Map();
 
 	/**
 	 * Constructor. Will not automatically create the webgl-handles and is not immediately usable.
 	 */
-	constructor(data: ShaderProgramData) {
+	constructor(gl: WebGL2RenderingContext, data: ShaderProgramData) {
+		this.gl = gl;
 		this.data = data;
 		this.data.debugName = this.data.debugName ? this.data.debugName : "noname";
-	}
 
-
-	/**
-	 * Creates the webgl-handles. Shader is usable after a successful create.
-	 * @param gl the rendering context
-	 * @return this for chaining
-	 */
-	public create(gl: WebGL2RenderingContext): ShaderProgram {
 		const shaderVertex = ShaderProgram.createShader(gl, "vertex", this.data.sourceVertex);
 		const shaderFragment = ShaderProgram.createShader(gl, "fragment", this.data.sourceFragment);
 		this.programHandle = ShaderProgram.createShaderProgram(gl, shaderVertex, shaderFragment);
 		this.attributeLocations = ShaderProgram.getAttributeLocations(gl, this.programHandle, this.data.attributes);
 		this.uniformLocations = ShaderProgram.getUniformLocations(gl, this.programHandle, this.data.uniforms);
-		return this;
 	}
+
 
 	/**
 	 * Deletes this shader program
-	 * @param gl the rendering context
 	 */
-	public dispose(gl: WebGL2RenderingContext) {
+	public dispose() {
 		if (this.programHandle) {
-			gl.deleteProgram(this.programHandle);
+			this.gl.deleteProgram(this.programHandle);
 		}
 	}
 
 	/**
 	 * Starts using this shader
-	 * @param gl the rendering context
 	 * @param data the data/values for attributes and uniforms (if required)
 	 */
-	public use(gl: WebGL2RenderingContext, data: ShaderRuntimeData) {
+	public use(data: ShaderRuntimeData) {
 		if (this.programHandle != null) {
 			// start using this program
-			gl.useProgram(this.programHandle);
+			this.gl.useProgram(this.programHandle);
 			// set attribute values
 			const attributeBufferMap = data.attributeBuffers ? (data.attributeBuffers instanceof Map ? data.attributeBuffers : new Map(Object.entries(data.attributeBuffers))) : new Map();
 			this.data.attributes.forEach((attribute) => {
 				if (this.attributeLocations.has(attribute.name) && attributeBufferMap.has(attribute.name)) {
-					this.setAttributeValue(gl, attribute, attributeBufferMap.get(attribute.name)!);
+					this.setAttributeValue(attribute, attributeBufferMap.get(attribute.name)!);
 				}
 			});
 			// set uniform values
@@ -135,7 +127,7 @@ class ShaderProgram {
 				if (this.uniformLocations.has(uniform.name)) {
 					const value = uniformValuesMap.has(uniform.name) ? uniformValuesMap.get(uniform.name)! : uniform.defaultValue;
 					if (value !== null && value !== undefined) {
-						this.setUniformValue(gl, uniform, value);
+						this.setUniformValue(uniform, value);
 					}
 				}
 			});
@@ -145,15 +137,15 @@ class ShaderProgram {
 	}
 
 
-	private setAttributeValue(gl: WebGL2RenderingContext, attribute: ShaderAttributeData, buffer: WebGLBuffer | GLBuffer) {
+	private setAttributeValue(attribute: ShaderAttributeData, buffer: WebGLBuffer | GLBuffer) {
 		const bufferHandle: WebGLBuffer = (buffer instanceof GLBuffer) ? buffer.getHandle() : buffer;
 		// start using a buffer for the current attribute
-		gl.bindBuffer(gl.ARRAY_BUFFER, bufferHandle);
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, bufferHandle);
 		// enable the current attribute
 		const location = this.attributeLocations.get(attribute.name)!;
-		gl.enableVertexAttribArray(location);
+		this.gl.enableVertexAttribArray(location);
 		// tell webgl how to get data out of the currently bound buffer
-		gl.vertexAttribPointer(
+		this.gl.vertexAttribPointer(
 			location,
 			attribute.amountComponents,
 			ShaderProgram.shaderAttributeTypeToGLType(attribute.type),
@@ -164,99 +156,81 @@ class ShaderProgram {
 	}
 
 
-	private setUniformValue(gl: WebGL2RenderingContext, uniform: ShaderUniformData, values: number[]) {
+	private setUniformValue(uniform: ShaderUniformData, values: number[]) {
 		const location = this.uniformLocations.get(uniform.name);
 		if (location === null || location === undefined) {
 			return;
 		}
 		switch (uniform.type) {
 			case ShaderUniformType.FLOAT:
-				gl.uniform1f(location, values[0]);
+				this.gl.uniform1f(location, values[0]);
 				break;
 			case ShaderUniformType.FLOAT_ARRAY:
-				gl.uniform1fv(location, values);
+				this.gl.uniform1fv(location, values);
 				break;
 			case ShaderUniformType.VEC2:
-				gl.uniform2f(location, values[0], values[1]);
+				this.gl.uniform2f(location, values[0], values[1]);
 				break;
 			case ShaderUniformType.VEC2_ARRAY:
-				gl.uniform2fv(location, values);
+				this.gl.uniform2fv(location, values);
 				break;
 			case ShaderUniformType.VEC3:
-				gl.uniform3f(location, values[0], values[1], values[2]);
+				this.gl.uniform3f(location, values[0], values[1], values[2]);
 				break;
 			case ShaderUniformType.VEC3_ARRAY:
-				gl.uniform3fv(location, values);
+				this.gl.uniform3fv(location, values);
 				break;
 			case ShaderUniformType.VEC4:
-				gl.uniform4f(location, values[0], values[1], values[2], values[3]);
+				this.gl.uniform4f(location, values[0], values[1], values[2], values[3]);
 				break;
 			case ShaderUniformType.VEC4_ARRAY:
-				gl.uniform4fv(location, values);
+				this.gl.uniform4fv(location, values);
 				break;
 			case ShaderUniformType.BOOL:
 			case ShaderUniformType.SAMPLER_2D:
 			case ShaderUniformType.SAMPLER_CUBE:
 			case ShaderUniformType.INT:
-				gl.uniform1i(location, values[0]);
+				this.gl.uniform1i(location, values[0]);
 				break;
 			case ShaderUniformType.SAMPLER_2D_ARRAY:
 			case ShaderUniformType.SAMPLER_CUBE_ARRAY:
 			case ShaderUniformType.INT_ARRAY:
-				gl.uniform1iv(location, values);
+				this.gl.uniform1iv(location, values);
 				break;
 			case ShaderUniformType.BOOL_VEC2:
 			case ShaderUniformType.INT_VEC2:
-				gl.uniform2i(location, values[0], values[1]);
+				this.gl.uniform2i(location, values[0], values[1]);
 				break;
 			case ShaderUniformType.INT_VEC2_ARRAY:
-				gl.uniform2iv(location, values);
+				this.gl.uniform2iv(location, values);
 				break;
 			case ShaderUniformType.BOOL_VEC3:
 			case ShaderUniformType.INT_VEC3:
-				gl.uniform3i(location, values[0], values[1], values[2]);
+				this.gl.uniform3i(location, values[0], values[1], values[2]);
 				break;
 			case ShaderUniformType.INT_VEC3_ARRAY:
-				gl.uniform3iv(location, values);
+				this.gl.uniform3iv(location, values);
 				break;
 			case ShaderUniformType.BOOL_VEC4:
 			case ShaderUniformType.INT_VEC4:
-				gl.uniform4i(location, values[0], values[1], values[2], values[3]);
+				this.gl.uniform4i(location, values[0], values[1], values[2], values[3]);
 				break;
 			case ShaderUniformType.INT_VEC4_ARRAY:
-				gl.uniform4iv(location, values);
+				this.gl.uniform4iv(location, values);
 				break;
 			case ShaderUniformType.MAT2:
 			case ShaderUniformType.MAT2_ARRAY:
-				gl.uniformMatrix2fv(location, false, values);
+				this.gl.uniformMatrix2fv(location, false, values);
 				break;
 			case ShaderUniformType.MAT3:
 			case ShaderUniformType.MAT3_ARRAY:
-				gl.uniformMatrix3fv(location, false, values);
+				this.gl.uniformMatrix3fv(location, false, values);
 				break;
 			case ShaderUniformType.MAT4:
 			case ShaderUniformType.MAT4_ARRAY:
-				gl.uniformMatrix4fv(location, false, values);
+				this.gl.uniformMatrix4fv(location, false, values);
 				break;
 		}
-	}
-
-
-	public getHandle(): WebGLProgram {
-		if (this.programHandle === null) {
-			throw new Error("handle is null. Shader has not been created yet.");
-		} else {
-			return this.programHandle;
-		}
-	}
-
-	public getHandleOrNull(): WebGLProgram | null {
-		return this.programHandle;
-	}
-
-	public getAttributeLocation(name: string): GLint | null {
-		const loc = this.attributeLocations.get(name);
-		return loc !== undefined ? loc : null;
 	}
 
 
@@ -369,5 +343,3 @@ class ShaderProgram {
 	}
 
 }
-
-export default ShaderProgram;

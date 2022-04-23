@@ -35,11 +35,7 @@ export namespace GlobalState {
 		worldId: null,
 		map: [],
 		playerCommands: [],
-		playerMarkers: [
-			{q: 0, r: 0, playerId: 0},
-			{q: 1, r: 0, playerId: 1},
-			{q: 0, r: 1, playerId: 2}
-		],
+		playerMarkers: [],
 		turnState: "active"
 	};
 

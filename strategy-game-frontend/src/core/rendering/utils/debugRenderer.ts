@@ -1,7 +1,7 @@
 import SRC_SHADER_VERTEX from "./debugShader.vsh?raw";
 import SRC_SHADER_FRAGMENT from "./debugShader.fsh?raw";
-import ShaderProgram, {ShaderAttributeType, ShaderUniformType} from "./shaderProgram";
-import GLBuffer, {GLBufferType, GLBufferUsage} from "./glBuffer";
+import {ShaderProgram, ShaderAttributeType, ShaderUniformType} from "./shaderProgram";
+import {GLBuffer, GLBufferType, GLBufferUsage} from "./glBuffer";
 
 export class DebugRenderer {
 
@@ -13,7 +13,7 @@ export class DebugRenderer {
 
 
 	public constructor(gl: WebGL2RenderingContext) {
-		this.shader = new ShaderProgram({
+		this.shader = new ShaderProgram(gl, {
 			debugName: "debug",
 			sourceVertex: SRC_SHADER_VERTEX,
 			sourceFragment: SRC_SHADER_FRAGMENT,
@@ -39,7 +39,7 @@ export class DebugRenderer {
 					type: ShaderUniformType.MAT3
 				}
 			]
-		}).create(gl);
+		});
 	}
 
 
@@ -86,18 +86,13 @@ export class DebugRenderer {
 
 		if (this.dirty) {
 			if(this.bufferData) {
-				this.bufferData.dispose(gl);
+				this.bufferData.dispose();
 			}
-			this.bufferData = new GLBuffer({
-				debugName: "debug-data",
-				type: GLBufferType.ARRAY_BUFFER,
-				usage: GLBufferUsage.STATIC_DRAW,
-				data: this.data
-			}).create(gl);
+			this.bufferData = new GLBuffer(gl, GLBufferType.ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, "debug.data").setData(this.data);
 		}
 
 		// draw
-		this.shader.use(gl, {
+		this.shader.use({
 			attributeBuffers: {
 				"in_position": this.bufferData,
 				"in_color": this.bufferData
@@ -115,5 +110,10 @@ export class DebugRenderer {
 
 	}
 
+
+	public dispose() {
+		this.shader.dispose();
+		this.bufferData?.dispose()
+	}
 
 }

@@ -1,22 +1,21 @@
 import {Renderer} from "./rendering/renderer";
 import {InputHandler} from "./inputHandler";
 import {GameState} from "./gameState";
-import {HexLayout, TilemapRenderDataBuilder} from "./rendering/tilemapRenderDataBuilder";
 import {GlobalState} from "../state/globalState";
 import {mat3} from "./rendering/utils/mat3";
 import {DISTRIBUTOR} from "../main";
-import {MarkerRenderDataBuilder} from "./rendering/markerRenderDataBuilder";
-import {TestRenderer} from "./renderingNew/TestRenderer";
+import {HexLayout, TilemapRenderer} from "./rendering/tilemap/TilemapRenderer";
 
 export class Game {
 
 	public readonly input = new InputHandler();
-	// private readonly renderer = new Renderer();
-	private readonly renderer = new TestRenderer();
+	private readonly renderer = new Renderer();
+	private canvas: HTMLCanvasElement = null as any;
 	private gameState = GameState.createInitial();
 
 
 	public initialize(canvas: HTMLCanvasElement) {
+		this.canvas = canvas;
 		this.renderer.initialize(canvas);
 	}
 
@@ -37,7 +36,7 @@ export class Game {
 		}
 
 		// update camera matrix
-		this.gameState.camera.updateViewProjectionMatrix(this.renderer.getGL().canvas.width, this.renderer.getGL().canvas.height);
+		this.gameState.camera.updateViewProjectionMatrix(this.canvas.width, this.canvas.height);
 
 		// mouse-over tile
 		if (inputState.mousePosition && inputState.canvasBounds) {
@@ -48,10 +47,12 @@ export class Game {
 			const viewProjMatrix = this.gameState.camera.getViewProjectionMatrixOrThrow();
 			const invViewProjMatrix = mat3.inverse(viewProjMatrix);
 			const mouseWorldPos = mat3.transformPoint(invViewProjMatrix, mouseClipPos);
-			const hexPos = Game.screenToHex(TilemapRenderDataBuilder.DEFAULT_HEX_LAYOUT, [mouseWorldPos[0], mouseWorldPos[1]]);
+			const hexPos = Game.screenToHex(TilemapRenderer.DEFAULT_HEX_LAYOUT, [mouseWorldPos[0], mouseWorldPos[1]]);
 			const mouseOverTile = GlobalState.useState.getState().map.find(t => t.q === hexPos[0] && t.r === hexPos[1]);
 			if (mouseOverTile) {
 				this.gameState.tileMouseOver = [mouseOverTile.q, mouseOverTile.r];
+			} else {
+				this.gameState.tileMouseOver = null;
 			}
 		}
 
@@ -62,22 +63,10 @@ export class Game {
 			}
 		}
 
-		// rebuild dirty tilemap
-		if (this.gameState.tilemapDirty) {
-			this.gameState.tilemap = TilemapRenderDataBuilder.build(GlobalState.useState.getState().map, this.renderer.getGL());
-			this.gameState.tilemapDirty = false;
-		}
-
-		// rebuild dirty markers
-		if (this.gameState.markersDirty) {
-			this.gameState.markers = MarkerRenderDataBuilder.build(GlobalState.useState.getState().playerMarkers, GlobalState.useState.getState().playerCommands, this.renderer.getGL());
-			this.gameState.markersDirty = false;
-		}
-
 		// RENDER STATE
-		this.renderer.render(this.gameState);
+		this.renderer.render(GlobalState.useState.getState(), this.gameState.camera, this.gameState.tileMouseOver ? this.gameState.tileMouseOver : [100000, 100000]);
 
-		// RESET STATE
+		// RESET INPUT-STATE
 		this.input.reset();
 	}
 
@@ -85,15 +74,6 @@ export class Game {
 	public dispose() {
 		this.renderer.dispose();
 		this.gameState = GameState.createInitial();
-	}
-
-
-	public setTilemapDirty() {
-		this.gameState.tilemapDirty = true;
-	}
-
-	public setMarkersDirty() {
-		this.gameState.markersDirty = true;
 	}
 
 
