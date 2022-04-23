@@ -65,16 +65,9 @@ export class HexLayout {
 	}
 }
 
-interface Chunk {
-	i: number,
-	j: number,
-	tiles: Tile[]
-}
-
 
 export class TilemapRenderer {
 
-	private static readonly DEFAULT_CHUNK_SIZE = 20;
 	private static readonly DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
 
 	private readonly batchRenderer: BatchRenderer;
@@ -116,64 +109,24 @@ export class TilemapRenderer {
 		});
 	}
 
-
 	public render(camera: Camera, map: Tile[]) {
-		const chunks = TilemapRenderer.groupIntoChunks(map, TilemapRenderer.DEFAULT_CHUNK_SIZE);
-		chunks.forEach(chunk => {
-			this.batchRenderer.begin(camera);
-			chunk.tiles.forEach(tile => {
-				const vertices = TilemapRenderer.buildVertexData(tile);
-				const indices = TilemapRenderer.buildIndexData();
-				this.batchRenderer.add(vertices, indices);
-			});
-			this.batchRenderer.end(this.shader, {
-				attributes: ["in_position", "in_tiledata"],
-				uniforms: {
-					"u_tileMouseOver": [0, 0]
-				}
-			});
+		this.batchRenderer.begin(camera);
+		map.forEach(tile => {
+			const vertices = TilemapRenderer.buildVertexData(tile);
+			const indices = TilemapRenderer.buildIndexData();
+			this.batchRenderer.add(vertices, indices);
+		});
+		this.batchRenderer.end(this.shader, {
+			attributes: ["in_position", "in_tiledata"],
+			uniforms: {
+				"u_tileMouseOver": [0, 0]
+			}
 		});
 	}
 
 	public dispose() {
 		this.batchRenderer.dispose();
 		this.shader.dispose();
-	}
-
-
-	private static groupIntoChunks(tiles: Tile[], chunkSize: number): Chunk[] {
-
-		const chunks: Chunk[] = [];
-
-		function getChunkOrInsert(i: number, j: number): Chunk {
-			const existing = chunks.find(c => Math.abs(c.i - i) < 0.1 && Math.abs(c.j - j) < 0.1);
-			if (existing) {
-				return existing;
-			} else {
-				const newChunk = {
-					i: i,
-					j: j,
-					tiles: []
-				};
-				chunks.push(newChunk);
-				return newChunk;
-			}
-		}
-
-		function getChunkCoords(q: number, r: number): [number, number] {
-			return [
-				Math.floor(q / chunkSize),
-				Math.floor(r / chunkSize)
-			];
-		}
-
-		tiles.forEach(tile => {
-			const chunkCoords = getChunkCoords(tile.q, tile.r);
-			const chunk = getChunkOrInsert(chunkCoords[0], chunkCoords[1]);
-			chunk.tiles.push(tile);
-		});
-
-		return chunks;
 	}
 
 
@@ -195,16 +148,17 @@ export class TilemapRenderer {
 		return vertices;
 	}
 
+	private static readonly HEX_INDEX_DATA = [
+		0, 2, 3,
+		0, 4, 5,
+		0, 6, 7,
+		0, 8, 9,
+		0, 10, 11,
+		0, 12, 1
+	];
 
 	private static buildIndexData(): number[] {
-		return [
-			0, 2, 3,
-			0, 4, 5,
-			0, 6, 7,
-			0, 8, 9,
-			0, 10, 11,
-			0, 12, 1
-		];
+		return TilemapRenderer.HEX_INDEX_DATA;
 	}
 
 	private static hexToPixel(layout: HexLayout, q: number, r: number): number[] {

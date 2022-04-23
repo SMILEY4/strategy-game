@@ -8,8 +8,6 @@ import {GlobalState} from "../../state/globalState";
 
 export class TestRenderer {
 
-	randomValues: number[] = [...Array(1000000)].map(e => Math.random());
-
 	private gl: WebGL2RenderingContext = null as any;
 	private shader: ShaderProgram = null as any;
 	private batch: BatchRenderer = null as any;
