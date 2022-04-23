@@ -31,12 +31,12 @@ export class Renderer {
 				{
 					name: "in_position",
 					type: ShaderAttributeType.FLOAT,
-					amountComponents: 2
+					amountComponents: 2,
 				},
 				{
 					name: "in_tiledata",
 					type: ShaderAttributeType.FLOAT,
-					amountComponents: 3
+					amountComponents: 3,
 				}
 			],
 			uniforms: [

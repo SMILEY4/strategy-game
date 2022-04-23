@@ -92,7 +92,7 @@ export class TilemapRenderDataBuilder {
 		const chunks: Chunk[] = [];
 
 		function getChunkOrInsert(i: number, j: number): Chunk {
-			const existing = chunks.find(c => c.i === j && c.j === j);
+			const existing = chunks.find(c => Math.abs(c.i-i) < 0.1 && Math.abs(c.j-j) < 0.1);
 			if (existing) {
 				return existing;
 			} else {

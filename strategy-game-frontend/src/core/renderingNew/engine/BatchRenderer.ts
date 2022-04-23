@@ -1,9 +1,13 @@
 import {Camera} from "../../rendering/utils/camera";
-import ShaderProgram from "../../rendering/utils/shaderProgram";
-import GLBuffer, {GLBufferType, GLBufferUsage} from "../../rendering/utils/glBuffer";
+import {GLBuffer, GLBufferType, GLBufferUsage} from "./glBuffer";
+import {ShaderProgram} from "./shaderProgram";
 
 export interface BatchContext {
 	camera: Camera,
+	batches: Batch[]
+}
+
+export interface Batch {
 	arrays: {
 		currentIndexOffset: number,
 		indices: number[],
@@ -16,6 +20,8 @@ export interface BatchContext {
 }
 
 export class BatchRenderer {
+
+	public static readonly UNIFORM_VIEW_PROJECTION_MATRIX = "u_viewProjection"
 
 	private readonly gl: WebGL2RenderingContext;
 	private readonly maxIndicesCount: number;
@@ -37,18 +43,19 @@ export class BatchRenderer {
 		if (!this.context) {
 			throw new Error("No context found. Call 'begin' before adding vertices");
 		}
+		if (BatchRenderer.willOverflowBatch(BatchRenderer.getLatestBatch(this.context), vertices.length, indices, this.maxIndicesCount)) {
+			BatchRenderer.addNewBatch(this.context);
+		}
 		BatchRenderer.appendIndices(this.context, vertices.length, indices);
 		BatchRenderer.appendVertices(this.context, vertices);
 	}
 
 
-	public end(shader: ShaderProgram) {
+	public end(shader: ShaderProgram, shaderData: { attributes: string[], uniforms: object }) {
 		if (!this.context) {
 			throw new Error("No context found. Call 'begin' before rendering");
 		}
-		BatchRenderer.initializeVertexBuffer(this.gl, this.context);
-		BatchRenderer.initializeIndexBuffer(this.gl, this.context);
-		BatchRenderer.flushContext(this.gl, this.context, shader);
+		BatchRenderer.flushContext(this.gl, this.context, shader, shaderData);
 	}
 
 
@@ -62,6 +69,34 @@ export class BatchRenderer {
 	private static createInitialContext(camera: Camera): BatchContext {
 		return {
 			camera: camera,
+			batches: [{
+				arrays: {
+					currentIndexOffset: 0,
+					indices: [],
+					vertices: []
+				},
+				buffers: {
+					indices: null,
+					vertices: null
+				}
+			}]
+		};
+	}
+
+
+	protected static getLatestBatch(context: BatchContext): Batch {
+		return context.batches[context.batches.length - 1];
+	}
+
+
+	protected static willOverflowBatch(batch: Batch, vertexCount: number, indices: number[] | undefined, maxIndicesAmount: number) {
+		const nextSize = batch.arrays.indices.length + (indices ? indices.length : vertexCount);
+		return nextSize > maxIndicesAmount;
+	}
+
+
+	protected static addNewBatch(context: BatchContext) {
+		context.batches.push({
 			arrays: {
 				currentIndexOffset: 0,
 				indices: [],
@@ -71,74 +106,75 @@ export class BatchRenderer {
 				indices: null,
 				vertices: null
 			}
-		};
+		});
 	}
 
-
 	protected static appendIndices(context: BatchContext, amountVertices: number, indices?: number[]) {
-		const indexData: number[] = (indices ? indices : [...Array(amountVertices).keys()]).map(index => index + context.arrays.currentIndexOffset);
-		context.arrays.indices.push(...indexData);
-		context.arrays.currentIndexOffset = Math.max(...indexData) + 1;
+		const batch = BatchRenderer.getLatestBatch(context);
+		const indexData: number[] = (indices ? indices : [...Array(amountVertices).keys()]).map(index => index + batch.arrays.currentIndexOffset);
+		batch.arrays.indices.push(...indexData);
+		batch.arrays.currentIndexOffset = Math.max(...indexData) + 1;
 	}
 
 
 	protected static appendVertices(context: BatchContext, vertices: (number[])[]) {
-		vertices.forEach(v => context.arrays.vertices.push(...v));
+		const batch = BatchRenderer.getLatestBatch(context);
+		vertices.forEach(v => batch.arrays.vertices.push(...v));
 	}
 
 
-	protected static initializeVertexBuffer(gl: WebGL2RenderingContext, context: BatchContext) {
-		if (!context.buffers.vertices) {
-			context.buffers.vertices = new GLBuffer({
-				debugName: "vertexData",
-				type: GLBufferType.ARRAY_BUFFER,
-				usage: GLBufferUsage.STATIC_DRAW,
-				data: context.arrays.vertices
-			}).create(gl);
+	protected static initializeVertexBuffer(gl: WebGL2RenderingContext, batch: Batch) {
+		if (!batch.buffers.vertices) {
+			batch.buffers.vertices = new GLBuffer(gl, GLBufferType.ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, "vertexData").setData(batch.arrays.vertices)
 		} else {
-			context.buffers.vertices.setData(gl, context.arrays.vertices);
+			batch.buffers.vertices.setData(batch.arrays.vertices);
 		}
 	}
 
 
-	protected static initializeIndexBuffer(gl: WebGL2RenderingContext, context: BatchContext) {
-		if (!context.buffers.indices) {
-			context.buffers.indices = new GLBuffer({
-				debugName: "indexBuffer",
-				type: GLBufferType.ELEMENT_ARRAY_BUFFER,
-				usage: GLBufferUsage.STATIC_DRAW,
-				data: context.arrays.indices
-			}).create(gl);
+	protected static initializeIndexBuffer(gl: WebGL2RenderingContext, batch: Batch) {
+		if (!batch.buffers.indices) {
+			batch.buffers.indices = new GLBuffer(gl, GLBufferType.ELEMENT_ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, "indexBuffer").setData(batch.arrays.indices)
 		} else {
-			context.buffers.indices.setData(gl, context.arrays.indices);
+			batch.buffers.indices.setData(batch.arrays.indices);
 		}
 	}
 
 
-	protected static flushContext(gl: WebGL2RenderingContext, context: BatchContext, shader: ShaderProgram) {
-		if (context.buffers.indices && context.buffers.vertices) {
-			shader.use(gl, {
-				attributeBuffers: {
-					"in_position": context.buffers.vertices
-				},
+	protected static flushContext(gl: WebGL2RenderingContext, context: BatchContext, shader: ShaderProgram, shaderData: { attributes: string[], uniforms: object }) {
+		context.batches.forEach(batch => BatchRenderer.flushBatch(gl, batch, context.camera, shader, shaderData));
+	}
+
+
+	protected static flushBatch(gl: WebGL2RenderingContext, batch: Batch, camera: Camera, shader: ShaderProgram, shaderData: { attributes: string[], uniforms: object }) {
+		BatchRenderer.initializeVertexBuffer(gl, batch);
+		BatchRenderer.initializeIndexBuffer(gl, batch);
+		if (batch.buffers.indices && batch.buffers.vertices) {
+			shader.use({
+				attributeBuffers: Object.fromEntries(
+					shaderData.attributes.map(attrib => [attrib, batch.buffers.vertices])
+				),
 				uniformValues: {
-					"u_viewProjection": context.camera.getViewProjectionMatrixOrThrow()
+					"u_viewProjection": camera.getViewProjectionMatrixOrThrow(),
+					...shaderData.uniforms
 				}
 			});
-			context.buffers.indices.use(gl);
+			batch.buffers.indices.use(gl);
 			gl.drawElements(
 				gl.TRIANGLES,
-				context.arrays.indices.length,
+				batch.arrays.indices.length,
 				gl.UNSIGNED_SHORT,
 				0
 			);
 		}
 	}
 
-	
+
 	protected static disposeContext(gl: WebGL2RenderingContext, context: BatchContext) {
-		context?.buffers.indices?.dispose(gl);
-		context?.buffers.vertices?.dispose(gl);
+		context.batches.forEach(batch => {
+			batch.buffers.indices?.dispose(gl);
+			batch.buffers.vertices?.dispose(gl);
+		});
 	}
 
 }
