@@ -63,13 +63,17 @@ export class Renderer {
 	}
 
 
-	public render(globalState: GlobalState.State, camera: Camera, tileMouseOver: [number, number]) {
+	public render(globalState: GlobalState.State, cameraOld: Camera, tileMouseOver: [number, number]) {
 		const gl = this.gl;
 
 		gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
+		const camera = new Camera()
+		camera.setPosition(globalState.camera.x, globalState.camera.y)
+		camera.setZoom(globalState.camera.zoom)
+		camera.updateViewProjectionMatrix(this.gl.canvas.width, this.gl.canvas.height)
 
 		// render map
 		this.tilemapRenderer.render(camera, globalState.map, tileMouseOver);

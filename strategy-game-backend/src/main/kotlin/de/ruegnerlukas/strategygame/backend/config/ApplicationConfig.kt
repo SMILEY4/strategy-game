@@ -10,11 +10,14 @@ import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.shared.websocket.WebSocketMessageProducer
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.CORS
 import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
@@ -41,6 +44,18 @@ fun Application.module() {
 		json(Json {
 			prettyPrint = true
 		})
+	}
+	install(CORS) {
+		allowMethod(HttpMethod.Options)
+		allowMethod(HttpMethod.Put)
+		allowMethod(HttpMethod.Delete)
+		allowMethod(HttpMethod.Patch)
+		allowHeader(HttpHeaders.Authorization)
+		allowHeader(HttpHeaders.AccessControlAllowOrigin)
+		allowHost("*", listOf("http", "https"))
+		allowNonSimpleContentTypes = true
+		allowCredentials = true
+		allowSameOrigin = true
 	}
 
 	val connectionHandler = ConnectionHandler()

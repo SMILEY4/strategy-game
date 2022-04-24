@@ -5,6 +5,7 @@ import {GlobalState} from "../state/globalState";
 import {mat3} from "./rendering/utils/mat3";
 import {DISTRIBUTOR} from "../main";
 import {HexLayout, TilemapRenderer} from "./rendering/tilemap/TilemapRenderer";
+import {Camera} from "./rendering/utils/camera";
 
 export class Game {
 
@@ -44,7 +45,14 @@ export class Game {
 				(inputState.mousePosition.x / inputState.canvasBounds.width) * 2.0 - 1.0,
 				((inputState.canvasBounds.height - inputState.mousePosition.y) / inputState.canvasBounds.height) * 2.0 - 1.0
 			];
-			const viewProjMatrix = this.gameState.camera.getViewProjectionMatrixOrThrow();
+			// const viewProjMatrix = this.gameState.camera.getViewProjectionMatrixOrThrow();
+
+			const camera = new Camera()
+			camera.setPosition(GlobalState.useState.getState().camera.x, GlobalState.useState.getState().camera.y)
+			camera.setZoom(GlobalState.useState.getState().camera.zoom)
+			camera.updateViewProjectionMatrix(this.canvas.width, this.canvas.height)
+			const viewProjMatrix = camera.getViewProjectionMatrixOrThrow();
+
 			const invViewProjMatrix = mat3.inverse(viewProjMatrix);
 			const mouseWorldPos = mat3.transformPoint(invViewProjMatrix, mouseClipPos);
 			const hexPos = Game.screenToHex(TilemapRenderer.DEFAULT_HEX_LAYOUT, [mouseWorldPos[0], mouseWorldPos[1]]);

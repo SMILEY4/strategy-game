@@ -1,5 +1,6 @@
 import create, {SetState} from "zustand";
 import {mountStoreDevtool} from "simple-zustand-devtools";
+import {GameState} from "../core/gameState";
 
 export namespace GlobalState {
 
@@ -21,12 +22,17 @@ export namespace GlobalState {
 	}
 
 	interface StateValues {
-		currentState: "idle" | "loading" | "active";
+		currentState: "idle" | "loading" | "active",
 		worldId: string | null,
-		map: Tile[];
-		playerCommands: PlaceMarkerCommand[];
-		playerMarkers: PlayerMarker[];
-		turnState: "active" | "submitted";
+		map: Tile[],
+		playerCommands: PlaceMarkerCommand[],
+		playerMarkers: PlayerMarker[],
+		turnState: "active" | "submitted",
+		camera: {
+			x: number,
+			y: number,
+			zoom: number
+		}
 	}
 
 
@@ -36,7 +42,12 @@ export namespace GlobalState {
 		map: [],
 		playerCommands: [],
 		playerMarkers: [],
-		turnState: "active"
+		turnState: "active",
+		camera: {
+			x: 0,
+			y: 0,
+			zoom: 1
+		}
 	};
 
 
@@ -48,6 +59,8 @@ export namespace GlobalState {
 		clearCommands: () => void,
 		addMarkers: (markers: PlayerMarker[]) => void,
 		setTurnState: (state: "active" | "submitted") => void,
+		moveCamera: (dx: number, dy: number) => void,
+		zoomCamera: (dz: number) => void
 	}
 
 
@@ -77,6 +90,21 @@ export namespace GlobalState {
 			})),
 			setTurnState: (state: "active" | "submitted") => set(() => ({
 				turnState: state
+			})),
+
+			moveCamera: (dx: number, dy: number) => set((state: GlobalState.State) => ({
+				camera: {
+					x: state.camera.x + (dx) / state.camera.zoom,
+					y: state.camera.y - (dy) / state.camera.zoom,
+					zoom: state.camera.zoom
+				}
+			})),
+			zoomCamera: (dz: number) => set((state: GlobalState.State) => ({
+				camera: {
+					x: state.camera.x,
+					y: state.camera.y,
+					zoom: Math.max(0.01, state.camera.zoom - dz)
+				}
 			}))
 		};
 	}

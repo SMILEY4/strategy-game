@@ -109,6 +109,9 @@ export class Distributor {
 	 */
 	public gameInputMouseMove(x: number, y: number, dx: number, dy: number, width: number, height: number, btnLeftDown: boolean, btnRightDown: boolean) {
 		this.gameCore.input.onMouseMove(x, y, dx, dy, width, height, btnLeftDown, btnRightDown);
+		if (btnLeftDown) {
+			GlobalState.useState.getState().moveCamera(dx, dy);
+		}
 	}
 
 	/**
@@ -118,6 +121,7 @@ export class Distributor {
 	 */
 	public gameInputMouseScroll(delta: number, x: number, y: number) {
 		this.gameCore.input.onMouseScroll(delta, x, y);
+		GlobalState.useState.getState().zoomCamera(delta > 0 ? 0.1 : -0.1);
 	}
 
 	/**
