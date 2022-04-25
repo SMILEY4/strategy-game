@@ -2,21 +2,14 @@ import {HttpClient} from "./clients/httpClient";
 import {WebsocketClient} from "./clients/websocketClient";
 import {MessageHandler} from "./messageHandler";
 import {GlobalState} from "../state/globalState";
-
-
-/**
- * Information about a world
- */
-export interface WorldMeta {
-	worldId: string;
-}
+import {ApiClient, WorldMeta} from "../core/ports/required/apiClient";
 
 
 const BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const BASE_WS_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 
 
-export class ApiClient {
+export class ApiClientImpl implements ApiClient {
 
 	private static readonly WS_NAME_WORLD: string = "ws-world";
 	private readonly httpClient = new HttpClient(BASE_URL);
@@ -42,7 +35,7 @@ export class ApiClient {
 	 * Opens a new websocket connection for world-related messages
 	 */
 	public openWorldConnection(): Promise<void> {
-		return this.wsClient.open(ApiClient.WS_NAME_WORLD, "/api/world/messages", (msg) => {
+		return this.wsClient.open(ApiClientImpl.WS_NAME_WORLD, "/api/world/messages", (msg) => {
 			this.msgHandler.onMessage(msg.type, msg.payload);
 		});
 	}
@@ -54,7 +47,7 @@ export class ApiClient {
 	 * @param playerName the name of the player
 	 */
 	public sendJoinWorld(worldId: string, playerName: string) {
-		this.wsClient.send(ApiClient.WS_NAME_WORLD, {
+		this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
 			type: "join-world",
 			payload: JSON.stringify({worldId: worldId, playerName: playerName}, null, "   ")
 		});
@@ -67,7 +60,7 @@ export class ApiClient {
 	 * @param playerCommands the commands to submit
 	 */
 	public submitTurn(worldId: string, playerCommands: GlobalState.PlaceMarkerCommand[]): void {
-		this.wsClient.send(ApiClient.WS_NAME_WORLD, {
+		this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
 			type: "submit-turn",
 			payload: JSON.stringify({worldId: worldId, commands: playerCommands}, null, "   ")
 		});

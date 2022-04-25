@@ -1,6 +1,6 @@
 import "./gameUI.css";
-import {DISTRIBUTOR} from "../../../main";
 import {GlobalState} from "../../../state/globalState";
+import {Game} from "../../../core/game";
 
 export function GameUI() {
 
@@ -13,7 +13,7 @@ export function GameUI() {
 	);
 
 	function submitTurn() {
-		DISTRIBUTOR.submitTurn();
+		Game.turn.submit();
 	}
 
 }

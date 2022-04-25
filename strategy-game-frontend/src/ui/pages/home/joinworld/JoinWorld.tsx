@@ -1,7 +1,7 @@
 import {ReactElement, useState} from "react";
 import "./joinWorld.css";
 import {useNavigate} from "react-router-dom";
-import {DISTRIBUTOR} from "../../../../main";
+import {Game} from "../../../../core/game";
 
 export function JoinWorld(): ReactElement {
 
@@ -42,7 +42,8 @@ export function JoinWorld(): ReactElement {
 
 	function onJoin() {
 		if (worldId && playerId) {
-			DISTRIBUTOR.requestJoinWorld(worldId, playerId, navigate)
+			Game.world.join(worldId, playerId)
+				.then(() => navigate("/game"))
 				.catch(e => setError(e.toString()));
 		} else {
 			setError("Player Name and World-Id can not be empty!");

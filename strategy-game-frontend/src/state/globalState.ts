@@ -1,6 +1,5 @@
 import create, {SetState} from "zustand";
 import {mountStoreDevtool} from "simple-zustand-devtools";
-import {GameState} from "../core/gameState";
 
 export namespace GlobalState {
 
@@ -32,7 +31,8 @@ export namespace GlobalState {
 			x: number,
 			y: number,
 			zoom: number
-		}
+		},
+		tileMouseOver: null | [number, number]
 	}
 
 
@@ -47,7 +47,8 @@ export namespace GlobalState {
 			x: 0,
 			y: 0,
 			zoom: 1
-		}
+		},
+		tileMouseOver: null
 	};
 
 
@@ -60,7 +61,8 @@ export namespace GlobalState {
 		addMarkers: (markers: PlayerMarker[]) => void,
 		setTurnState: (state: "active" | "submitted") => void,
 		moveCamera: (dx: number, dy: number) => void,
-		zoomCamera: (dz: number) => void
+		zoomCamera: (dz: number) => void,
+		setTileMouseOver: (tile: null | [number, number]) => void,
 	}
 
 
@@ -105,6 +107,9 @@ export namespace GlobalState {
 					y: state.camera.y,
 					zoom: Math.max(0.01, state.camera.zoom - dz)
 				}
+			})),
+			setTileMouseOver: (tile: null | [number, number]) => set(() => ({
+				tileMouseOver: tile
 			}))
 		};
 	}
