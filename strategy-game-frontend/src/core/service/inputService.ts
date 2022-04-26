@@ -1,6 +1,6 @@
 import {InputHandler} from "../ports/provided/inputHandler";
 import {StateProvider} from "../ports/required/stateProvider";
-import {TilePicker} from "./tilePicker";
+import {TilePicker} from "./tilemap/tilePicker";
 
 export class InputService implements InputHandler {
 

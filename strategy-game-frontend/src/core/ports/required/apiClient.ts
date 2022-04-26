@@ -1,12 +1,5 @@
-/**
- * Information about a world
- */
-import {GlobalState} from "../../../state/globalState";
-
-
-export interface WorldMeta {
-	worldId: string;
-}
+import {WorldMeta} from "../../../state/models/WorldMeta";
+import {PlaceMarkerCommand} from "../../../state/models/PlaceMarkerCommand";
 
 export interface ApiClient {
 
@@ -33,5 +26,5 @@ export interface ApiClient {
 	 * @param worldId the id of the world
 	 * @param playerCommands the commands to submit
 	 */
-	submitTurn: (worldId: string, playerCommands: GlobalState.PlaceMarkerCommand[]) => void;
+	submitTurn: (worldId: string, playerCommands: PlaceMarkerCommand[]) => void;
 }

@@ -4,10 +4,9 @@ import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/sh
 import SRC_MARKER_SHADER_VERTEX from "./markerShader.vsh?raw";
 import SRC_MARKER_SHADER_FRAGMENT from "./markerShader.fsh?raw";
 import {Camera} from "../utils/camera";
-import {GlobalState} from "../../../../state/globalState";
-import PlayerMarker = GlobalState.PlayerMarker;
-import PlaceMarkerCommand = GlobalState.PlaceMarkerCommand;
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
+import {PlayerMarker} from "../../../../state/models/PlayerMarker";
+import {PlaceMarkerCommand} from "../../../../state/models/PlaceMarkerCommand";
 
 export class MarkerRenderer {
 

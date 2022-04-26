@@ -1,10 +1,10 @@
 import {GlobalState} from "../../../state/globalState";
 import {StateProvider} from "../../ports/required/stateProvider";
-import Tile = GlobalState.Tile;
 import {GameCanvas} from "../gameCanvas";
 import {mat3} from "../rendering/utils/mat3";
 import {TilemapUtils} from "./tilemapUtils";
 import {Camera} from "../rendering/utils/camera";
+import {Tile} from "../../../state/models/Tile";
 
 export class TilePicker {
 

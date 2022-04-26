@@ -4,9 +4,8 @@ import SRC_SHADER_VERTEX from "./mapShader.vsh?raw";
 import SRC_SHADER_FRAGMENT from "./mapShader.fsh?raw";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import {GameCanvas} from "../../gameCanvas";
-import {GlobalState} from "../../../../state/globalState";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
-import Tile = GlobalState.Tile;
+import {Tile} from "../../../../state/models/Tile";
 
 
 export class TilemapRenderer {

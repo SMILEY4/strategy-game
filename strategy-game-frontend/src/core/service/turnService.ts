@@ -1,7 +1,7 @@
 import {TurnHandler} from "../ports/provided/turnHandler";
-import {GlobalState} from "../../state/globalState";
 import {StateProvider} from "../ports/required/stateProvider";
 import {ApiClient} from "../ports/required/apiClient";
+import {PlayerMarker} from "../../state/models/PlayerMarker";
 
 export class TurnService implements TurnHandler {
 
@@ -30,7 +30,7 @@ export class TurnService implements TurnHandler {
 	}
 
 
-	public startNext(addedMarkers: GlobalState.PlayerMarker[]): void {
+	public startNext(addedMarkers: PlayerMarker[]): void {
 		if (this.stateProvider.getState().currentState === "active") {
 			this.stateProvider.getState().addMarkers(addedMarkers);
 			this.stateProvider.getState().setTurnState("active");

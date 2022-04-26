@@ -1,18 +1,9 @@
 import create, {SetState} from "zustand";
 import {mountStoreDevtool} from "simple-zustand-devtools";
+import {Tile} from "./models/Tile";
+import {PlaceMarkerCommand} from "./models/PlaceMarkerCommand";
 
 export namespace GlobalState {
-
-	export interface Tile {
-		q: number,
-		r: number,
-		tileId: number
-	}
-
-	export interface PlaceMarkerCommand {
-		q: number,
-		r: number,
-	}
 
 	export interface PlayerMarker {
 		q: number,

@@ -1,8 +1,9 @@
 import {HttpClient} from "./clients/httpClient";
 import {WebsocketClient} from "./clients/websocketClient";
 import {MessageHandler} from "./messageHandler";
-import {GlobalState} from "../state/globalState";
-import {ApiClient, WorldMeta} from "../core/ports/required/apiClient";
+import {ApiClient} from "../core/ports/required/apiClient";
+import {WorldMeta} from "../state/models/WorldMeta";
+import {PlaceMarkerCommand} from "../state/models/PlaceMarkerCommand";
 
 
 const BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -59,7 +60,7 @@ export class ApiClientImpl implements ApiClient {
 	 * @param worldId the id of the world
 	 * @param playerCommands the commands to submit
 	 */
-	public submitTurn(worldId: string, playerCommands: GlobalState.PlaceMarkerCommand[]): void {
+	public submitTurn(worldId: string, playerCommands: PlaceMarkerCommand[]): void {
 		this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
 			type: "submit-turn",
 			payload: JSON.stringify({worldId: worldId, commands: playerCommands}, null, "   ")
