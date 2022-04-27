@@ -1,8 +1,12 @@
-# Backend Documentation
+---
+title: Backend Documentation
+---
 
 
 
-## Running the Application
+
+
+# Running the Application
 
 **Intellij**
 
@@ -36,7 +40,7 @@ Auto-reload detects changes in output files and reloads them at runtime.
 
 
 
-## Building the Application
+# Building the Application
 
 Creates a runnable .jar
 
@@ -48,7 +52,7 @@ The created jar can be found in `./build/libs/strategy-game-backend-x.y-all.jar`
 
 
 
-## Used Technologies
+# Used Technologies
 
 **Kotlin**
 
@@ -64,11 +68,11 @@ Framework for building web applications. [Link to documentation](https://ktor.io
 
 
 
-## Architecture
+# Architecture
 
 The backend-architecture is based on the "[Hexagonal Architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))".
 
-### File/Directory Structure
+## File/Directory Structure
 
 - *Application.kt* - the entry-point of the application. Contains no code besides starting the app.
 - */config* - Configures the whole application. Only package that depends on all other packages.
@@ -82,9 +86,9 @@ The backend-architecture is based on the "[Hexagonal Architecture](https://en.wi
 
 
 
-## API
+# API
 
-### Endpoints
+## Endpoints
 
 **Create World**
 
@@ -120,7 +124,7 @@ WS /api/world/messages
 
 
 
-### WebSocket-Messages
+## WebSocket-Messages
 
 All messages follow the following format
 
