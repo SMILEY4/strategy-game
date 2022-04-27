@@ -1,6 +1,6 @@
 <style type="text/css">
 
-/*FROM https://github.com/jez/pandoc-markdown-css-theme*/
+/*FROM https://github.com/jez/pandoc-markdown-css-theme  (modified)*/
 
 
 /* ----- Global settings ----------------------------------------------- {{{ */
@@ -38,6 +38,7 @@
 
   --line-height: 26px;
   --font-size: 17px;
+  --paragraph-height: 17px;
 
   --inline-code-font-size: 15px;
   --code-block-font-size: 14px;
@@ -55,26 +56,28 @@
   --side-note-number-hang-left: -6px;
   --side-note-text-indent: -9px;
 
-  --heading-font-weight: 500;
+  --heading-font-weight: 600;
 
   --title-font-size: 42px;
   --title-code-font-size: 40px;
   --title-line-height: 48px;
   --title-margin-top: 92px;
 
-  --h1-font-size: 32px;
+  --h1-font-size: 38px;
   --h1-code-font-size: 29px;
   --h1-line-height: 36px;
   --h1-word-spacing: 1px;
   --h1-margin-top: 30px;
   --h1-margin-bottom: 12px;
 
-  --h2-font-size: 22px;
+  --h2-font-size: 26px;
   --h2-code-font-size: 20px;
   --h2-line-height: 28px;
   --h2-word-spacing: 0.5px;
   --h2-margin-top: 18px;
   --h2-margin-bottom: 6px;
+
+  --h3-font-size: 22px;
 
   --ul-indent-size: 23px;
   --ol-indent-size: 19px;
@@ -295,7 +298,7 @@ h2 code {
 }
 
 h3 {
-  font-size: var(--font-size);
+  font-size: var(--h3-font-size);
   line-height: var(--line-height);
   font-weight: bold;
 }
@@ -304,12 +307,19 @@ h1:not(.title) + *, h1:not(.title) + p { margin-top: var(--h1-margin-bottom); }
 h2 + *, h2 + p                         { margin-top: var(--h2-margin-bottom); }
 h3 + *, h3 + p                         { margin-top: 0; }
 
+h1, h2, h3, h4 {
+  margin-top: 26px;
+  margin-bottom: 14px;
+}
+
+
+
 /* }}} */
 /* ----- Prose --------------------------------------------------------- {{{ */
 
 p, main > ul, main > ol, div.sourceCode, main > pre, img, table {
-  margin-top: var(--line-height);
-  margin-bottom: var(--line-height)
+  margin-top: 14px;
+  margin-bottom: 0;
 }
 
 ul:not(.task-list) {
