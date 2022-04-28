@@ -19,9 +19,9 @@ def handleMarkdown(directory, filename):
                 + " --to html5+smart" \
                 + " --lua-filter ./build_resources/links-to-html.lua" \
                 + " --standalone" \
-                + " --template ./build_resources/template.html5" \
-                + " --include-in-header ./build_resources/style.css" \
-                + " --include-in-header ./build_resources/code-style.css" \
+                + " --template ./build_resources/template.html" \
+                + " --include-in-header ./build_resources/style.html" \
+                + " --include-in-header ./build_resources/code-style.html" \
                 + " --toc" \
                 + " --number-sections"
         print("building " + src + "  ->  " + dst)

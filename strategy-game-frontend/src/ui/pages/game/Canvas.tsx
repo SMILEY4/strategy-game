@@ -1,6 +1,6 @@
 import "./canvas.css";
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
-import {DISTRIBUTOR} from "../../../main";
+import {Game} from "../../../core/game";
 
 
 export function Canvas() {
@@ -46,49 +46,37 @@ export function Canvas() {
 	}
 
 	function mouseMove(e: MouseEvent) {
-		DISTRIBUTOR.gameInputMouseMove(
-			e.clientX,
-			e.clientY,
+		Game.input.onMouseMove(
 			e.movementX,
 			e.movementY,
-			(e.target as any).clientWidth,
-			(e.target as any).clientHeight,
-			e.buttons === 1,
-			e.buttons === 2
+			e.clientX,
+			e.clientY,
+			e.buttons === 1
 		);
 	}
 
 	function scroll(e: WheelEvent) {
-		DISTRIBUTOR.gameInputMouseScroll(e.deltaY, e.clientX, e.clientY);
-	}
-
-	function mouseLeave() {
-		DISTRIBUTOR.gameInputMouseLeave();
+		Game.input.onMouseScroll(e.deltaY);
 	}
 
 	function click(e: MouseEvent) {
-		DISTRIBUTOR.gameInputMouseClick(
-			e.clientX,
-			e.clientY,
-			(e.target as any).clientWidth,
-			(e.target as any).clientHeight
-		);
+		Game.input.onMouseClick(e.clientX, e.clientY);
 	}
 
 	function onInitialize(canvas: HTMLCanvasElement) {
-		DISTRIBUTOR.gameInitialize(canvas);
+		Game.lifecycle.initialize(canvas);
 	}
 
 	function onRender() {
-		DISTRIBUTOR.gameUpdate();
+		Game.lifecycle.update();
 	}
 
 	function onDispose() {
-		DISTRIBUTOR.gameDestroy();
+		Game.lifecycle.dispose();
 	}
 
 	return (
-		<div className="game-canvas" onMouseMove={mouseMove} onWheel={scroll} onMouseLeave={mouseLeave} onClick={click}>
+		<div className="game-canvas" onMouseMove={mouseMove} onWheel={scroll} onClick={click}>
 			<canvas ref={canvasRef}/>
 		</div>
 	);

@@ -1,6 +1,6 @@
 import {ReactElement, useState} from "react";
 import "./createWorld.css";
-import {DISTRIBUTOR} from "../../../../main";
+import {Game} from "../../../../core/game";
 
 export function CreateWorld(): ReactElement {
 
@@ -17,7 +17,7 @@ export function CreateWorld(): ReactElement {
 	);
 
 	function onCreateWorld() {
-		DISTRIBUTOR.requestCreateWorld()
+		Game.world.create()
 			.then(d => setWorldId(d.worldId))
 			.catch(e => setError(e.toString()));
 	}

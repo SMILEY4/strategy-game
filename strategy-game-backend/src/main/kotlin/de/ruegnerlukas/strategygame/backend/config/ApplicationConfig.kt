@@ -1,18 +1,23 @@
 package de.ruegnerlukas.strategygame.backend.config
 
-import de.ruegnerlukas.strategygame.backend.core.service.test.TestServiceImpl
-import de.ruegnerlukas.strategygame.backend.core.service.world.WorldServiceImpl
-import de.ruegnerlukas.strategygame.backend.external.api.WorldMessageDispatcher
+import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.CreateNewWorldActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
+import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
+import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
-import de.ruegnerlukas.strategygame.backend.external.persistence.TestRepositoryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.WorldRepositoryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
+import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.shared.websocket.WebSocketMessageProducer
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.CORS
 import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
@@ -40,11 +45,28 @@ fun Application.module() {
 			prettyPrint = true
 		})
 	}
+	install(CORS) {
+		allowMethod(HttpMethod.Options)
+		allowMethod(HttpMethod.Put)
+		allowMethod(HttpMethod.Delete)
+		allowMethod(HttpMethod.Patch)
+		allowHeader(HttpHeaders.Authorization)
+		allowHeader(HttpHeaders.AccessControlAllowOrigin)
+		allowHost("*", listOf("http", "https"))
+		allowNonSimpleContentTypes = true
+		allowCredentials = true
+		allowSameOrigin = true
+	}
 
 	val connectionHandler = ConnectionHandler()
-	val testHandler = TestServiceImpl(TestRepositoryImpl())
-	val worldService = WorldServiceImpl(WebSocketMessageProducer(connectionHandler), WorldRepositoryImpl())
-	val worldMessageDispatcher = WorldMessageDispatcher(worldService)
+	val messageProducer = WebSocketMessageProducer(connectionHandler)
+	val repository = RepositoryImpl()
+	val endTurnAction = EndTurnAction(messageProducer, repository)
+	val joinWorldAction = JoinWorldActionImpl(messageProducer, repository)
+	val submitTurnAction = SubmitTurnActionImpl(repository, endTurnAction)
+	val createWorldAction = CreateNewWorldActionImpl(repository)
+	val closeConnectionAction = CloseConnectionActionImpl(repository, endTurnAction)
+	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
 
-	apiRoutes(connectionHandler, testHandler, worldService, worldMessageDispatcher)
+	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction)
 }

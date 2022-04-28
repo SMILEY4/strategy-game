@@ -4,6 +4,7 @@ export class WebsocketClient {
 	private readonly websockets = new Map<string, WebSocket>();
 
 	constructor(baseUrl?: string) {
+		console.log("CONSTRUCT NEW")
 		this.baseUrl = baseUrl ? baseUrl : "";
 	}
 
@@ -15,6 +16,7 @@ export class WebsocketClient {
 	 * @param consumer the function that will be called for received messages
 	 */
 	public open(name: string, url: string, consumer: (msg: any) => void): Promise<void> {
+		console.log("OPEN", name, this.websockets);
 		this.close(name);
 		return new Promise((resolve, reject) => {
 			try {
@@ -22,7 +24,7 @@ export class WebsocketClient {
 				ws.onopen = () => resolve();
 				ws.onclose = () => this.close(name);
 				ws.onmessage = (e: MessageEvent) => consumer(JSON.parse(e.data));
-				this.websockets.set(name, ws)
+				this.websockets.set(name, ws);
 			} catch (e) {
 				reject(e);
 			}
@@ -34,9 +36,11 @@ export class WebsocketClient {
 	 * Close the websocket-connection with the given name.
 	 */
 	public close(name: string) {
+		console.log("TRY CLOSE", name, this.websockets);
 		if (this.isWebsocketOpen(name)) {
 			const ws = this.findWebSocket(name);
 			if (ws) {
+				console.log("CLOSE", name, this.websockets);
 				ws.onclose = null;
 				ws.close();
 			}
@@ -51,9 +55,11 @@ export class WebsocketClient {
 	 * @param data the data to send
 	 */
 	public send(name: string, data: object) {
+		console.log("TRY SEND", name, this.websockets);
 		if (this.isWebsocketOpen(name)) {
 			const ws = this.findWebSocket(name);
 			if (ws) {
+				console.log("SEND", name, this.websockets);
 				ws.send(JSON.stringify(data, null, "   "));
 			}
 		} else {

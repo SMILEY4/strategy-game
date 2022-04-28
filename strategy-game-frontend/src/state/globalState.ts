@@ -1,18 +1,9 @@
 import create, {SetState} from "zustand";
 import {mountStoreDevtool} from "simple-zustand-devtools";
+import {Tile} from "./models/Tile";
+import {PlaceMarkerCommand} from "./models/PlaceMarkerCommand";
 
 export namespace GlobalState {
-
-	export interface Tile {
-		q: number,
-		r: number,
-		tileId: number
-	}
-
-	export interface PlaceMarkerCommand {
-		q: number,
-		r: number,
-	}
 
 	export interface PlayerMarker {
 		q: number,
@@ -21,12 +12,18 @@ export namespace GlobalState {
 	}
 
 	interface StateValues {
-		currentState: "idle" | "loading" | "active";
+		currentState: "idle" | "loading" | "active",
 		worldId: string | null,
-		map: Tile[];
-		playerCommands: PlaceMarkerCommand[];
-		playerMarkers: PlayerMarker[];
-		turnState: "active" | "submitted";
+		map: Tile[],
+		playerCommands: PlaceMarkerCommand[],
+		playerMarkers: PlayerMarker[],
+		turnState: "active" | "submitted",
+		camera: {
+			x: number,
+			y: number,
+			zoom: number
+		},
+		tileMouseOver: null | [number, number]
 	}
 
 
@@ -35,12 +32,14 @@ export namespace GlobalState {
 		worldId: null,
 		map: [],
 		playerCommands: [],
-		playerMarkers: [
-			{q: 0, r: 0, playerId: 0},
-			{q: 1, r: 0, playerId: 1},
-			{q: 0, r: 1, playerId: 2}
-		],
-		turnState: "active"
+		playerMarkers: [],
+		turnState: "active",
+		camera: {
+			x: 0,
+			y: 0,
+			zoom: 1
+		},
+		tileMouseOver: null
 	};
 
 
@@ -52,6 +51,9 @@ export namespace GlobalState {
 		clearCommands: () => void,
 		addMarkers: (markers: PlayerMarker[]) => void,
 		setTurnState: (state: "active" | "submitted") => void,
+		moveCamera: (dx: number, dy: number) => void,
+		zoomCamera: (dz: number) => void,
+		setTileMouseOver: (tile: null | [number, number]) => void,
 	}
 
 
@@ -81,6 +83,24 @@ export namespace GlobalState {
 			})),
 			setTurnState: (state: "active" | "submitted") => set(() => ({
 				turnState: state
+			})),
+
+			moveCamera: (dx: number, dy: number) => set((state: GlobalState.State) => ({
+				camera: {
+					x: state.camera.x + (dx) / state.camera.zoom,
+					y: state.camera.y - (dy) / state.camera.zoom,
+					zoom: state.camera.zoom
+				}
+			})),
+			zoomCamera: (dz: number) => set((state: GlobalState.State) => ({
+				camera: {
+					x: state.camera.x,
+					y: state.camera.y,
+					zoom: Math.max(0.01, state.camera.zoom - dz)
+				}
+			})),
+			setTileMouseOver: (tile: null | [number, number]) => set(() => ({
+				tileMouseOver: tile
 			}))
 		};
 	}
