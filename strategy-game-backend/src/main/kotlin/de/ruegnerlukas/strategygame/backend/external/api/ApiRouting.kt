@@ -1,11 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.external.api
 
+import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.CreateNewWorldAction
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
@@ -23,10 +26,24 @@ fun Application.apiRoutes(
 	connectionHandler: ConnectionHandler,
 	messageHandler: MessageHandler,
 	createNewWorldAction: CreateNewWorldAction,
-	closeConnectionAction: CloseConnectionAction
+	closeConnectionAction: CloseConnectionAction,
+	cognito: AwsCognito
 ) {
 	routing {
 		route("api") {
+			route("user") {
+				post("signup") {
+					val userData = call.receive<AuthData>()
+					println("signup user: name=${userData.username}, pw=${userData.password}")
+					val result = cognito.signUp(userData.username, userData.password)
+					println("signup result: confirmed=${result.userConfirmed}, sub=${result.userSub}")
+				}
+				post("auth") {
+					val data = call.receive<AuthData>()
+					println(data)
+					call.respond(HttpStatusCode.Accepted)
+				}
+			}
 			route("world") {
 				post("create") {
 					createNewWorldAction.perform()

@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.config
 
+import com.auth0.jwk.JwkProviderBuilder
 import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.CreateNewWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
@@ -7,6 +8,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
+import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
 import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.shared.websocket.WebSocketMessageProducer
@@ -15,6 +17,9 @@ import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.CORS
@@ -25,6 +30,7 @@ import io.ktor.server.websocket.timeout
 import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 /**
  * The main-module for configuring Ktor. Referenced in "application.conf".
@@ -58,6 +64,33 @@ fun Application.module() {
 		allowSameOrigin = true
 	}
 
+
+	install(Authentication) {
+		jwt {
+			val region = "eu-central-1"
+			val poolId = "eu-central-1_N33kTLDfh"
+			val issuer = "https://cognito-idp.$region.amazonaws.com/$poolId"
+			val jwtAudience = "7c8nl10q9bqnnf4akpd65048q3" // = clientId
+			val jwkProvider = JwkProviderBuilder(issuer)
+				.cached(10, 24, TimeUnit.HOURS)
+				.rateLimited(10, 1, TimeUnit.MINUTES) // todo: understand
+				.build()
+
+			realm = "ktor sample app" // todo
+			verifier(jwkProvider, issuer) {
+				acceptLeeway(3)
+			}
+			validate { credential ->
+				if (credential.payload.audience.contains(jwtAudience)) {
+					JWTPrincipal(credential.payload)
+				} else {
+					null
+				}
+			}
+
+		}
+	}
+
 	val connectionHandler = ConnectionHandler()
 	val messageProducer = WebSocketMessageProducer(connectionHandler)
 	val repository = RepositoryImpl()
@@ -68,5 +101,12 @@ fun Application.module() {
 	val closeConnectionAction = CloseConnectionActionImpl(repository, endTurnAction)
 	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
 
-	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction)
+	val cognitoClient = AwsCognito.create(
+		clientId = "7c8nl10q9bqnnf4akpd65048q3",
+		accessKey = "AKIAZEJW4RW2HQGYZDWF",
+		secretKey = "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",
+		region = "eu-central-1"
+	)
+
+	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction, cognitoClient)
 }

@@ -24,7 +24,6 @@ plugins {
 
 repositories {
 	mavenCentral()
-	maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
 }
 
 dependencies {
@@ -35,7 +34,15 @@ dependencies {
 	implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
 	implementation("io.ktor:ktor-server-cors:$versionKtor")
 	implementation("io.ktor:ktor-serialization-kotlinx-json:$versionKtor")
+	implementation("io.ktor:ktor-server-auth:$versionKtor")
+	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
+
 	implementation("ch.qos.logback:logback-classic:$versionLogback")
+
+	implementation("com.amazonaws:aws-java-sdk:1.12.208")
+	implementation("com.amazonaws:aws-java-sdk-core:1.12.208")
+	implementation("com.amazonaws:aws-java-sdk-cognitoidp:1.12.208")
+
 
 	testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
 	testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
