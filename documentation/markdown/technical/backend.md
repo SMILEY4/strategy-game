@@ -86,6 +86,21 @@ The backend-architecture is based on the "[Hexagonal Architecture](https://en.wi
 
 
 
+# Configuration
+
+All configuration is kept in [HOCON](https://github.com/lightbend/config/blob/main/HOCON.md)-Files in "src/main/resources/application.<...>.conf". More specific "".conf"-files overwrite values from lower files. Files ending with ".local.conf" are not checked into git
+
+- *application.conf* - base configuration
+- *application.local.conf* - base configuration for secrets (not checked into git)
+- *application.[envname].conf* - configurationfor the current environment
+- *application.[envname].local.conf* - configuration for the current environment for secrets (not checked into git)
+
+The name of the current environment can be set in `CustomNettyEngineMain.main(environment, args)`.
+
+Values from the configuration files can be accessed in a typesafe way via `Config.get().myValue`.
+
+
+
 # API
 
 ## Authentication
@@ -228,4 +243,4 @@ All messages follow the following format
   }
   ```
 
-  
+

@@ -1,17 +1,40 @@
 package de.ruegnerlukas.strategygame.backend.ports.required
 
 import de.ruegnerlukas.strategygame.backend.ports.models.AuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.ExtendedAuthResult
+import de.ruegnerlukas.strategygame.backend.shared.results.Result
+import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 
 interface UserManagementClient {
 
-	fun signUp(email: String, password: String, username: String)
+	/**
+	 * Create a new user identified by the given email and password
+	 */
+	fun createUser(email: String, password: String, username: String): VoidResult
 
-	fun confirmSignUp(email: String, confirmationCode: String)
 
-	fun authenticate(email: String, password: String): AuthResult
+	/**
+	 * Confirm the given email with the given code. (The code was sent to that email)
+	 */
+	fun confirmUser(email: String, confirmationCode: String): VoidResult
 
-	fun refreshAuthentication(refreshToken: String): AuthResult
 
-	fun delete()
+	/**
+	 * Authenticate the given user.
+	 */
+	fun authenticate(email: String, password: String): Result<ExtendedAuthResult>
+
+
+	/**
+	 * Refresh the authentication for a given user
+	 */
+	fun refreshAuthentication(refreshToken: String): Result<AuthResult>
+
+
+	/**
+	 * Delete the user with the given email and password
+	 * @return whether the user has been deleted successfully
+	 */
+	fun deleteUser(email: String, password: String): VoidResult
 
 }
