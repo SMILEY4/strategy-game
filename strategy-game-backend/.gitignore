@@ -1,3 +1,5 @@
 .idea
 .gradle
 build
+# hide secret configs
+*.local.conf

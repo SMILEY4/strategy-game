@@ -10,6 +10,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
 import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
+import de.ruegnerlukas.strategygame.backend.shared.config.Config
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.shared.websocket.WebSocketMessageProducer
 import io.ktor.http.HttpHeaders
@@ -36,9 +37,6 @@ import java.util.concurrent.TimeUnit
  * The main-module for configuring Ktor. Referenced in "application.conf".
  */
 fun Application.module() {
-	val env = environment.config.propertyOrNull("ktor.environment")?.getString()
-	println("ENV: $env")
-
 	install(Routing)
 	install(WebSockets) {
 		pingPeriod = Duration.ofSeconds(15)
@@ -103,13 +101,12 @@ fun Application.module() {
 	val createWorldAction = CreateNewWorldActionImpl(repository)
 	val closeConnectionAction = CloseConnectionActionImpl(repository, endTurnAction)
 	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
-
 	val cognitoClient = AwsCognito.create(
-		poolId = "eu-central-1_N33kTLDfh",
-		clientId = "",
-		accessKey = "",
-		secretKey = "",
-		region = "eu-central-1"
+		poolId = Config.get().aws.cognito.poolId,
+		clientId = Config.get().aws.cognito.clientId,
+		accessKey = Config.get().aws.user.accessKey,
+		secretKey = Config.get().aws.user.secretAccess,
+		region = Config.get().aws.region
 	)
 
 	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction, cognitoClient)
