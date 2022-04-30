@@ -36,6 +36,9 @@ import java.util.concurrent.TimeUnit
  * The main-module for configuring Ktor. Referenced in "application.conf".
  */
 fun Application.module() {
+	val env = environment.config.propertyOrNull("ktor.environment")?.getString()
+	println("ENV: $env")
+
 	install(Routing)
 	install(WebSockets) {
 		pingPeriod = Duration.ofSeconds(15)
@@ -73,10 +76,10 @@ fun Application.module() {
 			val jwtAudience = "7c8nl10q9bqnnf4akpd65048q3" // = clientId
 			val jwkProvider = JwkProviderBuilder(issuer)
 				.cached(10, 24, TimeUnit.HOURS)
-				.rateLimited(10, 1, TimeUnit.MINUTES) // todo: understand
+				.rateLimited(10, 1, TimeUnit.MINUTES)
 				.build()
 
-			realm = "ktor sample app" // todo
+			realm = "strategy-game"
 			verifier(jwkProvider, issuer) {
 				acceptLeeway(3)
 			}
@@ -102,9 +105,10 @@ fun Application.module() {
 	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
 
 	val cognitoClient = AwsCognito.create(
-		clientId = "7c8nl10q9bqnnf4akpd65048q3",
-		accessKey = "AKIAZEJW4RW2HQGYZDWF",
-		secretKey = "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",
+		poolId = "eu-central-1_N33kTLDfh",
+		clientId = "",
+		accessKey = "",
+		secretKey = "",
 		region = "eu-central-1"
 	)
 

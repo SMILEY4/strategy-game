@@ -1,15 +1,21 @@
 package de.ruegnerlukas.strategygame.backend.external.api
 
 import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.external.api.models.AuthData
+import de.ruegnerlukas.strategygame.backend.external.api.models.UserConfirmationData
 import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.CreateNewWorldAction
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
@@ -33,15 +39,32 @@ fun Application.apiRoutes(
 		route("api") {
 			route("user") {
 				post("signup") {
-					val userData = call.receive<AuthData>()
-					println("signup user: name=${userData.username}, pw=${userData.password}")
-					val result = cognito.signUp(userData.username, userData.password)
-					println("signup result: confirmed=${result.userConfirmed}, sub=${result.userSub}")
+					call.receive<AuthData>().let {
+						cognito.signUp(it.email, it.password, it.username)
+						call.respond(HttpStatusCode.OK)
+					}
 				}
-				post("auth") {
-					val data = call.receive<AuthData>()
-					println(data)
-					call.respond(HttpStatusCode.Accepted)
+				post("login") {
+					call.receive<AuthData>().let {
+						val result = cognito.authenticate(it.email, it.password)
+						call.respond(HttpStatusCode.OK, result)
+					}
+				}
+				post("confirm") {
+					call.receive<UserConfirmationData>().let {
+						cognito.confirmSignUp(it.email, it.code)
+						call.respond(HttpStatusCode.OK)
+					}
+				}
+				authenticate {
+					// requires header
+					// "Authorization" = Bearer {AuthResult.idToken}
+					get("protected") {
+						val principal = call.principal<JWTPrincipal>()
+						val username = principal!!.payload.getClaim("username").asString()
+						val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
+						call.respondText("Hello, $username! Token is expired at $expiresAt ms.")
+					}
 				}
 			}
 			route("world") {

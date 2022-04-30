@@ -13,22 +13,23 @@ import de.ruegnerlukas.strategygame.backend.ports.models.AuthResult
 import de.ruegnerlukas.strategygame.backend.ports.required.UserManagementClient
 
 
-class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val clientId: String) : UserManagementClient {
+class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val clientId: String, private val poolId: String) : UserManagementClient {
 
 	companion object {
 		/**
-		 * @param clientId The ID of the client associated with the user pool
+		 * @param poolId the id of the user pool
+		 * @param clientId the id of the client associated with the user pool
 		 * @param accessKey the AWS-User access key
 		 * @param secretKey the AWS-User secret access key
 		 * @param region the region to use
 		 */
-		fun create(clientId: String, accessKey: String, secretKey: String, region: String): AwsCognito {
+		fun create(poolId: String, clientId: String, accessKey: String, secretKey: String, region: String): AwsCognito {
 			val provider = AWSCognitoIdentityProviderClientBuilder
 				.standard()
 				.withRegion(region)
 				.withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey)))
 				.build()
-			return AwsCognito(provider, clientId)
+			return AwsCognito(provider, poolId, clientId)
 		}
 	}
 
@@ -58,7 +59,7 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 	override fun authenticate(email: String, password: String): AuthResult {
 		val authRequest = AdminInitiateAuthRequest()
 			.withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
-			.withUserPoolId("TODO") // TODO
+			.withUserPoolId(poolId)
 			.withClientId(clientId)
 			.withAuthParameters(
 				mapOf(
@@ -69,7 +70,6 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 		val authResult = provider.adminInitiateAuth(authRequest).authenticationResult
 		return AuthResult(
 			idToken = authResult.idToken,
-			accessToken = authResult.accessToken,
 			refreshToken = authResult.refreshToken,
 		)
 	}
@@ -82,7 +82,6 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 		val authResult = provider.adminInitiateAuth(authRequest).authenticationResult
 		return AuthResult(
 			idToken = authResult.idToken,
-			accessToken = authResult.accessToken,
 			refreshToken = authResult.refreshToken,
 		)
 	}

@@ -88,6 +88,29 @@ The backend-architecture is based on the "[Hexagonal Architecture](https://en.wi
 
 # API
 
+## Authentication
+
+### Creating a new User
+
+1. The client sends the users email (must be unique), password and username to the server
+2. A verification email is sent to the provided email-address with a confirmation code
+3. The client sends the users email and confirmation-code to the server
+4. The user is now created and verified and can now be authenticated
+
+### Sign-In as a valid User
+
+1. send email and password to the server
+
+2. the response contains the jwt-token (idToken)
+
+3. to access restricted routes, send the token in the "Authentication"-header
+
+   ```
+   Bearer <idToken>
+   ```
+
+
+
 ## Endpoints
 
 **Create World**
