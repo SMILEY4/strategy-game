@@ -66,7 +66,7 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 			return VoidResult.success()
 		} catch (e: Exception) {
 			log().info("Failed to create user $email: ${e.message}")
-			log().debug("Failed to create user $email", e)
+			log().debug("", e)
 			return when (e) {
 				is UsernameExistsException -> VoidResult.error("USER_EXISTS")
 				is InvalidParameterException -> VoidResult.error("INVALID_EMAIL_OR_PASSWORD")
@@ -88,7 +88,7 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 			return VoidResult.success()
 		} catch (e: Exception) {
 			log().info("Failed to confirm user $email: ${e.message}")
-			log().debug("Failed to confirm user $email", e)
+			log().debug("", e)
 			return when (e) {
 				is TooManyFailedAttemptsException -> VoidResult.error("TOO_MANY_FAILED_ATTEMPTS")
 				is CodeMismatchException -> VoidResult.error("CODE_MISMATCH")
@@ -123,7 +123,7 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 			)
 		} catch (e: Exception) {
 			log().info("Failed to authenticate user $email: ${e.message}")
-			log().debug("Failed to authenticate user $email", e)
+			log().debug("", e)
 			return when (e) {
 				is NotAuthorizedException -> Result.error("NOT_AUTHORIZED")
 				is UserNotConfirmedException -> Result.error("USER_NOT_CONFIRMED")
@@ -152,7 +152,7 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 		} catch (e: Exception) {
 			e.printStackTrace()
 			log().info("Failed to refresh user-authentication: ${e.message}")
-			log().debug("Failed to refresh user-authentication", e)
+			log().debug("", e)
 			return when (e) {
 				is NotAuthorizedException -> Result.error("NOT_AUTHORIZED")
 				is UserNotConfirmedException -> Result.error("USER_NOT_CONFIRMED")
@@ -171,7 +171,7 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 			return VoidResult.success()
 		} catch (e: Exception) {
 			log().info("Failed to delete user $email: ${e.message}")
-			log().debug("Failed to delete user $email", e)
+			log().debug("", e)
 			return when (e) {
 				is IllegalStateException -> VoidResult.error("NOT_AUTHORIZED")
 				else -> VoidResult.error("INTERNAL_ERROR")
