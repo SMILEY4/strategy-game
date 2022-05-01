@@ -66,6 +66,14 @@ Build automation tool. Manages dependencies and build-tasks. [Link to documentat
 
 Framework for building web applications. [Link to documentation](https://ktor.io/docs/welcome.html)
 
+**AWS-Cognito**
+
+Simple and Secure User Sign-Up, Sign-In, and Access Control
+
+- https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-dg.pdf
+- https://medium.com/@warrenferns/integrate-java-with-aws-cognito-developer-tutorial-679e6e608951
+- https://gist.github.com/saggie/38e5979cb813224666af4b3d90e6120f
+
 
 
 # Architecture
@@ -127,6 +135,232 @@ Values from the configuration files can be accessed in a typesafe way via `Confi
 
 
 ## Endpoints
+
+### User
+
+**Sign-Up**
+
+Creates a new user. The email must be unique.
+
+```
+POST /api/user/signup
+```
+
+- Request
+
+  ```json
+  {
+  	"email": "example@email.com",
+  	"password": "password123",
+      "username": "example"
+  }
+  ```
+
+- Responses
+
+  - 200 OK
+
+  - 400 Bad Request
+
+    ```
+    INVALID_EMAIL_OR_PASSWORD
+    ```
+
+    The email or password is invalid, e.g. too short
+
+  - 400 Bad Request
+
+    ```
+    CODE_DELIVERY_FAILURE
+    ```
+
+    The confirmation code could not be sent to the given email
+
+  - 409 Conflict
+
+    ```
+    USER_EXISTS
+    ```
+
+    A user with the given email already exists
+
+**Confirm Email**
+
+Confirm the user by sending the code sent to the given email-address
+
+```
+POST /api/user/confirm
+```
+
+- Request
+
+  ```json
+  {
+      "email": "example@email.com",
+      "code": "123456"
+  }
+  ```
+
+- Responses
+
+  - 200 OK
+
+  - 400 Bad Request
+
+    ```
+    TOO_MANY_FAILED_ATTEMPTS
+    ```
+
+    The user send too many "confirm"-requests with an incorrect code
+
+  - 400 Bad Request
+
+    ```
+    EXPIRED_CODE
+    ```
+
+    The provided code  has expired
+
+  - 404 Not Found
+
+    ```
+    USER_NOT_FOUND
+    ```
+
+    The user with the given email does not exist
+
+  - 409 Conflict
+
+    ```
+    CODE_MISMATCH
+    ```
+
+    The code is not correct
+
+**Login**
+
+Login with username and password to receive a JWT (JSON Web Token) for further authentications
+
+```
+POST /api/user/login
+```
+
+- Request
+
+  ```json
+  {
+  	"email": "example@email.com",
+  	"password": "password123",
+  }
+  ```
+
+- Responses
+
+  - 200 OK
+
+    ```json
+    {
+    	"idToken": "the (jwt) token used for authentication (short lifetime)",
+        "refreshToken": "the token used to get a new idToken without manual login"
+    }
+    ```
+
+  - 401 Unauthorized
+
+    ```
+    NOT_AUTHORIZED
+    ```
+
+    The given email and password do not match any existing user 
+
+  - 404 Not Found
+
+    ```
+    USER_NOT_FOUND
+    ```
+
+    The user with the given email does not exist
+
+  - 409 Conflict
+
+    ```
+    USER_NOT_CONFIRMED
+    ```
+
+    The user has not yet confirmed the email
+
+**Refresh**
+
+Get a new (jwt) idToken without sending email and password again.
+
+```
+POST /api/user/refresh
+```
+
+- Request
+
+  ```
+  "the refresh-token as plain-text"
+  ```
+
+- Responses
+
+  - 200 OK
+
+    ```json
+    {
+    	"idToken": "the (jwt) token used for authentication (short lifetime)",
+        "refreshToken": null
+    }
+    ```
+
+  - 401 Unauthorized
+
+    ```
+    NOT_AUTHORIZED
+    ```
+
+    The given refresh token is invalid
+
+  - 404 Not Found
+
+    ```
+    USER_NOT_FOUND
+    ```
+
+    The user does not exist
+
+  - 409 Conflict
+
+    ```
+    USER_NOT_CONFIRMED
+    ```
+
+    The user has not yet confirmed the email
+
+**Delete (protected)**
+
+Delete the given user. The email and password must be send again, even though the user is already "logged in".
+
+```
+DELETE /api/user/delete
+```
+
+- Request
+
+  ```json
+  {
+  	"email": "example@email.com",
+  	"password": "password123",
+  }
+  ```
+
+- Responses
+
+  - 200 OK
+  - 401 Unauthorized (token, email or password incorrect)
+
+### World
 
 **Create World**
 
@@ -242,5 +476,4 @@ All messages follow the following format
       ]
   }
   ```
-
 

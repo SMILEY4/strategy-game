@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.shared.engine
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
-import com.typesafe.config.ConfigValueFactory
 import io.ktor.server.application.ApplicationEnvironment
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.config.HoconApplicationConfig

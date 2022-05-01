@@ -12,6 +12,7 @@ import com.amazonaws.services.cognitoidp.model.CodeMismatchException
 import com.amazonaws.services.cognitoidp.model.ConfirmSignUpRequest
 import com.amazonaws.services.cognitoidp.model.DeleteUserRequest
 import com.amazonaws.services.cognitoidp.model.ExpiredCodeException
+import com.amazonaws.services.cognitoidp.model.InvalidParameterException
 import com.amazonaws.services.cognitoidp.model.InvalidPasswordException
 import com.amazonaws.services.cognitoidp.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidp.model.SignUpRequest
@@ -64,10 +65,11 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 			log().info("Successfully created user $email")
 			return VoidResult.success()
 		} catch (e: Exception) {
-			log().info("Failed to created user $email", e.message)
+			log().info("Failed to create user $email: ${e.message}")
+			log().debug("Failed to create user $email", e)
 			return when (e) {
-				is UsernameExistsException -> VoidResult.error("USERNAME_EXISTS")
-				is InvalidPasswordException -> VoidResult.error("INVALID_PASSWORD")
+				is UsernameExistsException -> VoidResult.error("USER_EXISTS")
+				is InvalidParameterException -> VoidResult.error("INVALID_EMAIL_OR_PASSWORD")
 				is CodeDeliveryFailureException -> VoidResult.error("CODE_DELIVERY_FAILURE")
 				else -> VoidResult.error("INTERNAL_ERROR")
 			}
@@ -85,12 +87,13 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 			log().info("Successfully confirmed user $email")
 			return VoidResult.success()
 		} catch (e: Exception) {
-			log().info("Failed to confirm user $email", e.message)
+			log().info("Failed to confirm user $email: ${e.message}")
+			log().debug("Failed to confirm user $email", e)
 			return when (e) {
 				is TooManyFailedAttemptsException -> VoidResult.error("TOO_MANY_FAILED_ATTEMPTS")
 				is CodeMismatchException -> VoidResult.error("CODE_MISMATCH")
-				is ExpiredCodeException -> VoidResult.error("EXPIRED_CODE")
 				is UserNotFoundException -> VoidResult.error("USER_NOT_FOUND")
+				is ExpiredCodeException -> VoidResult.error("EXPIRED_CODE")
 				else -> VoidResult.error("INTERNAL_ERROR")
 			}
 		}
@@ -119,7 +122,8 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 				)
 			)
 		} catch (e: Exception) {
-			log().info("Failed to authenticate user $email", e.message)
+			log().info("Failed to authenticate user $email: ${e.message}")
+			log().debug("Failed to authenticate user $email", e)
 			return when (e) {
 				is NotAuthorizedException -> Result.error("NOT_AUTHORIZED")
 				is UserNotConfirmedException -> Result.error("USER_NOT_CONFIRMED")
@@ -133,6 +137,7 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
+					.withUserPoolId(poolId)
 					.withAuthFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
 					.withClientId(clientId)
 					.withAuthParameters(mapOf("REFRESH_TOKEN" to refreshToken))
@@ -145,7 +150,9 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 				)
 			)
 		} catch (e: Exception) {
-			log().info("Failed to refresh user-authentication", e.message)
+			e.printStackTrace()
+			log().info("Failed to refresh user-authentication: ${e.message}")
+			log().debug("Failed to refresh user-authentication", e)
 			return when (e) {
 				is NotAuthorizedException -> Result.error("NOT_AUTHORIZED")
 				is UserNotConfirmedException -> Result.error("USER_NOT_CONFIRMED")
@@ -163,10 +170,10 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 			log().info("Successfully deleted user $email")
 			return VoidResult.success()
 		} catch (e: Exception) {
-			log().info("Failed to delete user $email", e.message)
+			log().info("Failed to delete user $email: ${e.message}")
+			log().debug("Failed to delete user $email", e)
 			return when (e) {
-				is IllegalStateException -> VoidResult.error(e.message!!)
-				is UserNotFoundException -> VoidResult.error("USER_NOT_FOUND")
+				is IllegalStateException -> VoidResult.error("NOT_AUTHORIZED")
 				else -> VoidResult.error("INTERNAL_ERROR")
 			}
 		}

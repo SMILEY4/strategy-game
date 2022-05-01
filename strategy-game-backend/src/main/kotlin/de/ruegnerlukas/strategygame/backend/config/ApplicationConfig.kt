@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.config
 
+import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
 import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.CreateNewWorldActionImpl
@@ -7,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
 import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
-import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
+import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
 import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
 import de.ruegnerlukas.strategygame.backend.shared.config.Config
@@ -19,6 +20,7 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
@@ -64,31 +66,13 @@ fun Application.module() {
 		allowCredentials = true
 		allowSameOrigin = true
 	}
-
-
 	install(Authentication) {
 		jwt {
-			val region = "eu-central-1"
-			val poolId = "eu-central-1_N33kTLDfh"
-			val issuer = "https://cognito-idp.$region.amazonaws.com/$poolId"
-			val jwtAudience = "7c8nl10q9bqnnf4akpd65048q3" // = clientId
-			val jwkProvider = JwkProviderBuilder(issuer)
-				.cached(10, 24, TimeUnit.HOURS)
-				.rateLimited(10, 1, TimeUnit.MINUTES)
-				.build()
-
 			realm = "strategy-game"
-			verifier(jwkProvider, issuer) {
+			verifier(jwkProvider(), jwkIssuer()) {
 				acceptLeeway(3)
 			}
-			validate { credential ->
-				if (credential.payload.audience.contains(jwtAudience)) {
-					JWTPrincipal(credential.payload)
-				} else {
-					null
-				}
-			}
-
+			validate { credential -> validateJwt(credential) }
 		}
 	}
 
@@ -110,4 +94,30 @@ fun Application.module() {
 	)
 
 	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction, cognitoClient)
+}
+
+
+fun jwkIssuer(): String {
+	val region = Config.get().aws.region
+	val poolId = Config.get().aws.cognito.poolId
+	return "https://cognito-idp.$region.amazonaws.com/$poolId"
+}
+
+
+fun jwkProvider(): JwkProvider {
+	// jwk = "json web key" ( = public keys)
+	return JwkProviderBuilder(jwkIssuer())
+		.cached(10, 24, TimeUnit.HOURS)
+		.rateLimited(10, 1, TimeUnit.MINUTES)
+		.build()
+}
+
+
+fun validateJwt(credential: JWTCredential): JWTPrincipal? {
+	val jwtAudience = Config.get().aws.cognito.clientId
+	return if (credential.payload.audience.contains(jwtAudience)) {
+		JWTPrincipal(credential.payload)
+	} else {
+		null
+	}
 }
