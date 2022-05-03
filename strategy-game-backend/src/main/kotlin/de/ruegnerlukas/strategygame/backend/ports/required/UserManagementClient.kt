@@ -14,12 +14,6 @@ interface UserManagementClient {
 
 
 	/**
-	 * Confirm the given email with the given code. (The code was sent to that email)
-	 */
-	fun confirmUser(email: String, confirmationCode: String): VoidResult
-
-
-	/**
 	 * Authenticate the given user.
 	 */
 	fun authenticate(email: String, password: String): Result<ExtendedAuthResult>

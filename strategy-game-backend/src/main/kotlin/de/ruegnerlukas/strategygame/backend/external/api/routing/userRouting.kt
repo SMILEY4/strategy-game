@@ -49,19 +49,6 @@ fun Route.userRoutes(cognito: AwsCognito) {
 				}
 			}
 		}
-		post("confirm") {
-			call.receive<UserConfirmationData>().let {
-				val result = cognito.confirmUser(it.email, it.code)
-				when {
-					result.isSuccess() -> call.respond(HttpStatusCode.OK)
-					result.isError("TOO_MANY_FAILED_ATTEMPTS") -> call.respond(HttpStatusCode.BadRequest, result.getError())
-					result.isError("CODE_MISMATCH") -> call.respond(HttpStatusCode.Conflict, result.getError())
-					result.isError("EXPIRED_CODE") -> call.respond(HttpStatusCode.BadRequest, result.getError())
-					result.isError("USER_NOT_FOUND") -> call.respond(HttpStatusCode.NotFound, result.getError())
-					result.isError() -> call.respond(HttpStatusCode.InternalServerError)
-				}
-			}
-		}
 		post("refresh") {
 			call.receive<String>().let {
 				val result = cognito.refreshAuthentication(it)

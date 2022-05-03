@@ -76,29 +76,6 @@ class AwsCognito(private val provider: AWSCognitoIdentityProvider, private val c
 		}
 	}
 
-	override fun confirmUser(email: String, confirmationCode: String): VoidResult {
-		try {
-			provider.confirmSignUp(
-				ConfirmSignUpRequest()
-					.withClientId(clientId)
-					.withUsername(email)
-					.withConfirmationCode(confirmationCode)
-			)
-			log().info("Successfully confirmed user $email")
-			return VoidResult.success()
-		} catch (e: Exception) {
-			log().info("Failed to confirm user $email: ${e.message}")
-			log().debug("", e)
-			return when (e) {
-				is TooManyFailedAttemptsException -> VoidResult.error("TOO_MANY_FAILED_ATTEMPTS")
-				is CodeMismatchException -> VoidResult.error("CODE_MISMATCH")
-				is UserNotFoundException -> VoidResult.error("USER_NOT_FOUND")
-				is ExpiredCodeException -> VoidResult.error("EXPIRED_CODE")
-				else -> VoidResult.error("INTERNAL_ERROR")
-			}
-		}
-	}
-
 	override fun authenticate(email: String, password: String): Result<ExtendedAuthResult> {
 		try {
 			val result = provider.adminInitiateAuth(

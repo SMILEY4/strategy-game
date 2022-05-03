@@ -184,59 +184,6 @@ POST /api/user/signup
 
     A user with the given email already exists
 
-**Confirm Email**
-
-Confirm the user by sending the code sent to the given email-address
-
-```
-POST /api/user/confirm
-```
-
-- Request
-
-  ```json
-  {
-      "email": "example@email.com",
-      "code": "123456"
-  }
-  ```
-
-- Responses
-
-  - 200 OK
-
-  - 400 Bad Request
-
-    ```
-    TOO_MANY_FAILED_ATTEMPTS
-    ```
-
-    The user send too many "confirm"-requests with an incorrect code
-
-  - 400 Bad Request
-
-    ```
-    EXPIRED_CODE
-    ```
-
-    The provided code  has expired
-
-  - 404 Not Found
-
-    ```
-    USER_NOT_FOUND
-    ```
-
-    The user with the given email does not exist
-
-  - 409 Conflict
-
-    ```
-    CODE_MISMATCH
-    ```
-
-    The code is not correct
-
 **Login**
 
 Login with username and password to receive a JWT (JSON Web Token) for further authentications
