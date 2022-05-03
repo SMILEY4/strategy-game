@@ -1,6 +1,7 @@
 import {WorldHandler} from "../ports/provided/worldHandler";
 import {StateProvider} from "../ports/required/stateProvider";
-import {ApiClient, WorldMeta} from "../ports/required/apiClient";
+import {ApiClient} from "../ports/required/apiClient";
+import {WorldMeta} from "../../state/models/WorldMeta";
 
 
 export class WorldService implements WorldHandler {

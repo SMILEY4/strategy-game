@@ -4,7 +4,6 @@ export class WebsocketClient {
 	private readonly websockets = new Map<string, WebSocket>();
 
 	constructor(baseUrl?: string) {
-		console.log("CONSTRUCT NEW")
 		this.baseUrl = baseUrl ? baseUrl : "";
 	}
 

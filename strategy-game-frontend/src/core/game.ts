@@ -20,8 +20,8 @@ export namespace Game {
 	const gameCanvas: GameCanvas = new GameCanvas();
 	const renderer: Renderer = new Renderer(gameCanvas, stateProvider);
 	const tilePicker: TilePicker = new TilePicker(stateProvider, gameCanvas);
-	const client: ApiClient = new ApiClientImpl();
 
+	export const client: ApiClient = new ApiClientImpl();
 	export const lifecycle: GameLifecycle = new GameLifecycleService(gameCanvas, renderer);
 	export const input: InputHandler = new InputService(stateProvider, tilePicker);
 	export const world: WorldHandler = new WorldService(stateProvider, client);
