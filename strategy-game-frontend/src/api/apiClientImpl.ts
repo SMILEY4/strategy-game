@@ -4,6 +4,8 @@ import {MessageHandler} from "./messageHandler";
 import {ApiClient} from "../core/ports/required/apiClient";
 import {WorldMeta} from "../state/models/WorldMeta";
 import {PlaceMarkerCommand} from "../state/models/PlaceMarkerCommand";
+import {UserAuthData} from "../state/models/UserAuthData";
+import {AuthProvider} from "../core/ports/provided/authProvider";
 
 
 const BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -13,15 +15,35 @@ const BASE_WS_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 export class ApiClientImpl implements ApiClient {
 
 	private static readonly WS_NAME_WORLD: string = "ws-world";
-	private readonly httpClient = new HttpClient(BASE_URL);
-	private readonly wsClient = new WebsocketClient(BASE_WS_URL);
+	private readonly httpClient;
+	private readonly wsClient;
 	private readonly msgHandler = new MessageHandler();
 
 
-	/**
-	 * Send a request to create new world
-	 * @return information about the created world
-	 */
+	constructor(authProvider: AuthProvider) {
+		this.httpClient = new HttpClient(BASE_URL, authProvider);
+		this.wsClient =  new WebsocketClient(BASE_WS_URL, authProvider);
+	}
+
+	public login(email: String, password: String): Promise<UserAuthData> {
+		return this.httpClient.post("/api/user/login", {
+			email: email,
+			password: password
+		})
+			.then(response => response.json())
+			.then(data => ({idToken: data.idToken, refreshToken: data.refreshToken}));
+	}
+
+
+	public signUp(email: String, password: String, username: String): Promise<void> {
+		return this.httpClient.post("/api/user/signup", {
+			email: email,
+			password: password,
+			username: username
+		}).then(() => undefined);
+	}
+
+
 	public createWorld(): Promise<WorldMeta> {
 		return this.httpClient.post("/api/world/create")
 			.then(response => response.json())
@@ -32,38 +54,26 @@ export class ApiClientImpl implements ApiClient {
 	}
 
 
-	/**
-	 * Opens a new websocket connection for world-related messages
-	 */
 	public openWorldConnection(): Promise<void> {
-		return this.wsClient.open(ApiClientImpl.WS_NAME_WORLD, "/api/world/messages", (msg) => {
+		return this.wsClient.open(ApiClientImpl.WS_NAME_WORLD, "/api/messages", (msg) => {
 			this.msgHandler.onMessage(msg.type, msg.payload);
 		});
 	}
 
 
-	/**
-	 * Send a request to join a world. The websocket-connection must be opened before
-	 * @param worldId the id of the world
-	 * @param playerName the name of the player
-	 */
-	public sendJoinWorld(worldId: string, playerName: string) {
+	public sendJoinWorld(worldId: string) {
 		this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
 			type: "join-world",
-			payload: JSON.stringify({worldId: worldId, playerName: playerName}, null, "   ")
+			payload: JSON.stringify({worldId: worldId}, null, "   ")
 		});
 	}
 
 
-	/**
-	 * Submit the commands of the current turn
-	 * @param worldId the id of the world
-	 * @param playerCommands the commands to submit
-	 */
 	public submitTurn(worldId: string, playerCommands: PlaceMarkerCommand[]): void {
 		this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
 			type: "submit-turn",
 			payload: JSON.stringify({worldId: worldId, commands: playerCommands}, null, "   ")
 		});
 	}
+
 }

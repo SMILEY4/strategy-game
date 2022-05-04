@@ -6,8 +6,10 @@ import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
 import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
-import de.ruegnerlukas.strategygame.backend.external.api.apiRoutes
+import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
+import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
 import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
+import de.ruegnerlukas.strategygame.backend.shared.config.Config
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.shared.websocket.WebSocketMessageProducer
 import io.ktor.http.HttpHeaders
@@ -15,6 +17,8 @@ import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.CORS
@@ -25,6 +29,7 @@ import io.ktor.server.websocket.timeout
 import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 import java.time.Duration
+
 
 /**
  * The main-module for configuring Ktor. Referenced in "application.conf".
@@ -57,6 +62,15 @@ fun Application.module() {
 		allowCredentials = true
 		allowSameOrigin = true
 	}
+	install(Authentication) {
+		jwt {
+			realm = "strategy-game"
+			verifier(jwkProvider(), jwkIssuer()) {
+				acceptLeeway(3)
+			}
+			validate { credential -> validateJwt(credential) }
+		}
+	}
 
 	val connectionHandler = ConnectionHandler()
 	val messageProducer = WebSocketMessageProducer(connectionHandler)
@@ -67,6 +81,13 @@ fun Application.module() {
 	val createWorldAction = CreateNewWorldActionImpl(repository)
 	val closeConnectionAction = CloseConnectionActionImpl(repository, endTurnAction)
 	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
+	val cognitoClient = AwsCognito.create(
+		poolId = Config.get().aws.cognito.poolId,
+		clientId = Config.get().aws.cognito.clientId,
+		accessKey = Config.get().aws.user.accessKey,
+		secretKey = Config.get().aws.user.secretAccess,
+		region = Config.get().aws.region
+	)
 
-	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction)
+	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction, cognitoClient)
 }

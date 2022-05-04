@@ -13,6 +13,8 @@ import {Renderer} from "./service/rendering/renderer";
 import {TilePicker} from "./service/tilemap/tilePicker";
 import {ApiClientImpl} from "../api/apiClientImpl";
 import {ApiClient} from "./ports/required/apiClient";
+import {AuthProvider} from "./ports/provided/authProvider";
+import {AuthProviderImpl} from "./service/AuthProviderImpl";
 
 export namespace Game {
 
@@ -20,8 +22,9 @@ export namespace Game {
 	const gameCanvas: GameCanvas = new GameCanvas();
 	const renderer: Renderer = new Renderer(gameCanvas, stateProvider);
 	const tilePicker: TilePicker = new TilePicker(stateProvider, gameCanvas);
-	const client: ApiClient = new ApiClientImpl();
+	const authProvider: AuthProvider = new AuthProviderImpl();
 
+	export const client: ApiClient = new ApiClientImpl(authProvider);
 	export const lifecycle: GameLifecycle = new GameLifecycleService(gameCanvas, renderer);
 	export const input: InputHandler = new InputService(stateProvider, tilePicker);
 	export const world: WorldHandler = new WorldService(stateProvider, client);

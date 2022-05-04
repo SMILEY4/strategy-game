@@ -61,6 +61,10 @@ Frontend bundler + pre-configured dev server. [Link to Documentation](https://vi
 
 SSR Frontend UI-Library. [Link to Documentation](https://reactjs.org/docs/getting-started.html)
 
+**React Router v6**
+
+Client side routing. [Link to Documentation](https://reactrouter.com/docs/en/v6/api)
+
 **Zustand**
 
 React global state-management. [Link to Documentation](https://github.com/pmndrs/zustand)

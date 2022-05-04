@@ -19,28 +19,29 @@ class MessageHandler(
 
 	/**
 	 * Called for any incoming message
+	 * @param userId the id of the user sending the message
 	 * @param connectionId the id of the connection sending the message
 	 * @param message the message
 	 */
-	suspend fun onMessage(connectionId: Int, message: WebSocketMessage) {
+	suspend fun onMessage(userId: String, connectionId: Int, message: WebSocketMessage) {
 		log().info("Received message '${message.type}' from connection $connectionId")
 		when (message.type) {
-			"join-world" -> handleJoinWorld(connectionId, message.payload)
-			"submit-turn" -> handleSubmitTurn(connectionId, message.payload)
+			"join-world" -> handleJoinWorld(userId, connectionId, message.payload)
+			"submit-turn" -> handleSubmitTurn(userId, connectionId, message.payload)
 			else -> log().info("Unknown message type: ${message.type}")
 		}
 	}
 
-	private suspend fun handleJoinWorld(connectionId: Int, strPayload: String) {
+	private suspend fun handleJoinWorld(userId: String, connectionId: Int, strPayload: String) {
 		handleMessage<JoinWorldMessage>(strPayload) {
-			joinWorldAction.perform(connectionId, it.playerName, it.worldId)
+			joinWorldAction.perform(userId, connectionId, it.worldId)
 		}
 	}
 
 
-	private suspend fun handleSubmitTurn(connectionId: Int, strPayload: String) {
+	private suspend fun handleSubmitTurn(userId: String, connectionId: Int, strPayload: String) {
 		handleMessage<SubmitTurnMessage>(strPayload) {
-			submitTurnAction.perform(connectionId, it.worldId, it.commands)
+			submitTurnAction.perform(userId, connectionId, it.worldId, it.commands)
 		}
 	}
 

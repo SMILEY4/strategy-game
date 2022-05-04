@@ -120,5 +120,5 @@ export namespace GlobalState {
 
 if (import.meta.env.MODE === "development") {
 	// @ts-ignore
-	mountStoreDevtool("GameState", GlobalState.useState);
+	mountStoreDevtool("GlobalState", GlobalState.useState);
 }
