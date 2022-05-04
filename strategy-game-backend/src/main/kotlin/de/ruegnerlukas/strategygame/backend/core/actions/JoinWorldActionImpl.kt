@@ -13,13 +13,13 @@ class JoinWorldActionImpl(
 	private val repository: Repository
 ) : JoinWorldAction, Logging {
 
-	override suspend fun perform(connectionId: Int, playerName: String, worldId: String) {
+	override suspend fun perform(userId: String, connectionId: Int, worldId: String) {
 		repository.getTilemap(worldId)
 			.onSuccess { tilemap ->
 				val state = WorldState(tilemap)
-				repository.addParticipant(worldId, connectionId, playerName)
+				repository.addParticipant(worldId, connectionId, userId)
 				messageProducer.sendToSingle(connectionId, "world-state", Json.encodeToString(state))
-				log().info("Player $playerName (connectionId=$connectionId) joined world $worldId")
+				log().info("Player $userId (connectionId=$connectionId) joined world $worldId")
 			}
 			.onFailure {
 				log().warn("Cant join world that does not exist ($worldId)")

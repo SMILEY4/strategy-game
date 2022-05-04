@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
+import de.ruegnerlukas.strategygame.backend.config.extractUserIdFromJwt
 import de.ruegnerlukas.strategygame.backend.config.verifyJwt
 import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
 import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
@@ -22,6 +23,12 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 /**
+ * The name of the query-param field for the jwt-token
+ */
+private const val QUERY_PARAM_TOKEN = "token"
+
+
+/**
  * configuration for world-actions
  */
 fun Route.websocketRoutes(
@@ -34,10 +41,11 @@ fun Route.websocketRoutes(
 		interceptWsAuth {
 			webSocket {
 				val connectionId = connectionHandler.openSession(this)
+				val userId = extractUserIdFromJwt(call.request.queryParameters[QUERY_PARAM_TOKEN]!!)
 				try {
 					for (frame in incoming) {
 						when (frame) {
-							is Frame.Text -> messageHandler.onMessage(connectionId, Json.decodeFromString(frame.readText()))
+							is Frame.Text -> messageHandler.onMessage(userId, connectionId, Json.decodeFromString(frame.readText()))
 							else -> logger.warn("Unknown frame-type: ${frame.frameType}")
 						}
 					}
@@ -66,7 +74,7 @@ fun Route.interceptWsAuth(callback: Route.() -> Unit): Route {
 
 
 fun authenticateWebsocket(request: ApplicationRequest): Boolean {
-	val token: String? = request.queryParameters["token"]
+	val token: String? = request.queryParameters[QUERY_PARAM_TOKEN]
 	return if (token == null) {
 		false
 	} else {

@@ -33,9 +33,8 @@ export interface ApiClient {
 	/**
 	 * Send a request to join a world. The websocket-connection must be opened before
 	 * @param worldId the id of the world
-	 * @param playerName the name of the player
 	 */
-	sendJoinWorld: (worldId: string, playerName: string) => void;
+	sendJoinWorld: (worldId: string) => void;
 
 	/**
 	 * Submit the commands of the current turn
@@ -43,7 +42,5 @@ export interface ApiClient {
 	 * @param playerCommands the commands to submit
 	 */
 	submitTurn: (worldId: string, playerCommands: PlaceMarkerCommand[]) => void;
-
-	testProtected: () => Promise<string>;
 
 }

@@ -72,13 +72,6 @@ fun Route.userRoutes(cognito: AwsCognito) {
 					}
 				}
 			}
-			get("protected") {
-				// temporary test route
-				val principal = call.principal<JWTPrincipal>()
-				val userId = principal!!.payload.getClaim("sub").asString()
-				val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
-				call.respond("Hello, $userId! Token is expired at $expiresAt ms.")
-			}
 		}
 	}
 }

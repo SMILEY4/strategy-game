@@ -369,7 +369,6 @@ All messages follow the following format
   ```json
   {
       "worldId": "String - the id of the world to join",
-      "playerName": "String - the name of the joining player"
   }
   ```
 
@@ -421,7 +420,7 @@ All messages follow the following format
           {
               "q": "Int - the q-coordinate of the added marker",
               "r": "Int - the r-coordinate of the added marker",
-              "playerId": "Int - the current id of the player owning the marker"
+              "playerId": "Int - the current (arbitrary) id of the player owning the marker"
           }
       ]
   }

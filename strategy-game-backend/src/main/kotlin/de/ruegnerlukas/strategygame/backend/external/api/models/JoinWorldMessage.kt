@@ -12,8 +12,4 @@ data class JoinWorldMessage(
 	 * the id of the world to join
 	 */
 	val worldId: String,
-	/**
-	 * The name of the player
-	 */
-	val playerName: String
 )

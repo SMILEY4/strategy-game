@@ -61,10 +61,10 @@ export class ApiClientImpl implements ApiClient {
 	}
 
 
-	public sendJoinWorld(worldId: string, playerName: string) {
+	public sendJoinWorld(worldId: string) {
 		this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
 			type: "join-world",
-			payload: JSON.stringify({worldId: worldId, playerName: playerName}, null, "   ")
+			payload: JSON.stringify({worldId: worldId}, null, "   ")
 		});
 	}
 
@@ -74,11 +74,6 @@ export class ApiClientImpl implements ApiClient {
 			type: "submit-turn",
 			payload: JSON.stringify({worldId: worldId, commands: playerCommands}, null, "   ")
 		});
-	}
-
-	public testProtected(): Promise<string> {
-		return this.httpClient.get("/api/user/protected")
-			.then(response => response.text())
 	}
 
 }

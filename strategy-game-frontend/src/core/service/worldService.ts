@@ -21,10 +21,10 @@ export class WorldService implements WorldHandler {
 	}
 
 
-	public join(worldId: string, playerName: string): Promise<void> {
+	public join(worldId: string): Promise<void> {
 		return this.client.openWorldConnection()
 			.then(() => this.stateProvider.getState().setLoading(worldId))
-			.then(() => this.client.sendJoinWorld(worldId, playerName));
+			.then(() => this.client.sendJoinWorld(worldId));
 	}
 
 

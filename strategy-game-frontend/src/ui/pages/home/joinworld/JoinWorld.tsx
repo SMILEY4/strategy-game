@@ -5,7 +5,6 @@ import {Game} from "../../../../core/game";
 
 export function JoinWorld(): ReactElement {
 
-	const [playerId, setPlayerId] = useState("");
 	const [worldId, setWorldId] = useState("");
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
@@ -14,10 +13,6 @@ export function JoinWorld(): ReactElement {
 	return (
 		<div className="join-world">
 			<b>Join World</b>
-			<div>
-				<div>Player Name:</div>
-				<input type="text" value={playerId} onChange={onChangePlayerId}/>
-			</div>
 			<div>
 				<div>World-Id:</div>
 				<input type="text" value={worldId} onChange={onChangeWorldId}/>
@@ -28,12 +23,6 @@ export function JoinWorld(): ReactElement {
 	);
 
 
-	function onChangePlayerId(e: any) {
-		setPlayerId(e.target.value);
-		setError("");
-	}
-
-
 	function onChangeWorldId(e: any) {
 		setWorldId(e.target.value);
 		setError("");
@@ -41,8 +30,8 @@ export function JoinWorld(): ReactElement {
 
 
 	function onJoin() {
-		if (worldId && playerId) {
-			Game.world.join(worldId, playerId)
+		if (worldId) {
+			Game.world.join(worldId)
 				.then(() => navigate("/game"))
 				.catch(e => setError(e.toString()));
 		} else {
