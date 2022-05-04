@@ -21,7 +21,11 @@ export class GameLifecycleService implements GameLifecycle {
 
 
 	public update(): void {
+		try {
 		this.renderer.render();
+		} catch (e) {
+
+		}
 	}
 
 

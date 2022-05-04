@@ -1,5 +1,5 @@
 import {GLBuffer} from "./glBuffer";
-import {glErrorToString} from "../../rendering/utils/webglErrors";
+import {glErrorToString} from "./webglErrors";
 
 
 export enum ShaderAttributeType {

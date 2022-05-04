@@ -9,7 +9,8 @@ export function GameUI() {
 	return (
 		<div className="game-ui">
 			<button onClick={submitTurn} disabled={turnState === "submitted"}>Submit Turn</button>
-			<button onClick={debugLooseContext} disabled={turnState === "submitted"}>Loose WebGL context</button>
+			<button onClick={debugLooseContext}>Loose WebGL context</button>
+			<button onClick={debugRestoreContext}>Restore WebGL context</button>
 		</div>
 	);
 
@@ -21,4 +22,7 @@ export function GameUI() {
 		Game.debugLooseWebglContext()
 	}
 
+	function debugRestoreContext() {
+		Game.debugRestoreWebglContext()
+	}
 }

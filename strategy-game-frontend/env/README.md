@@ -47,6 +47,7 @@ The default mode can be changed (to any value) with the "--mode" flag. Example: 
 
 - Variables/Values in ".env.production" or ".env.development" have a higher priority than those in ".env"
 
+- To support IntelliSense for custom env-variables, add them to the typescript-definition file "src/env.d.ts"
 
 
 #### Required Secret-Environment variables
