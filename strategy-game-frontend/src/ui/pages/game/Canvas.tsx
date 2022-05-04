@@ -11,13 +11,19 @@ export function Canvas() {
 		if (canvasRef.current) {
 			resizeCanvas(canvasRef.current);
 			addEventListener("resize", handleResize);
+			canvasRef.current.addEventListener("webglcontextlost", handleContextLoss);
 			initialize(canvasRef.current);
 			return () => {
 				onDispose();
 				removeEventListener("resize", handleResize);
+				canvasRef.current?.removeEventListener("webglcontextlost", handleContextLoss)
 			};
 		}
 	}, []);
+
+	function handleContextLoss() {
+		console.log("DETECTED CONTEXT LOSS")
+	}
 
 	function handleResize() {
 		if (canvasRef.current) {

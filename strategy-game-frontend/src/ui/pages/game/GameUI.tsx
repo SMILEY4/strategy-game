@@ -9,11 +9,16 @@ export function GameUI() {
 	return (
 		<div className="game-ui">
 			<button onClick={submitTurn} disabled={turnState === "submitted"}>Submit Turn</button>
+			<button onClick={debugLooseContext} disabled={turnState === "submitted"}>Loose WebGL context</button>
 		</div>
 	);
 
 	function submitTurn() {
 		Game.turn.submit();
+	}
+
+	function debugLooseContext() {
+		Game.debugLooseWebglContext()
 	}
 
 }
