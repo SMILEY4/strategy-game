@@ -1,7 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.config
 
-import com.auth0.jwk.JwkProvider
-import com.auth0.jwk.JwkProviderBuilder
 import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.CreateNewWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
@@ -20,8 +18,6 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.jwt.JWTCredential
-import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -33,7 +29,7 @@ import io.ktor.server.websocket.timeout
 import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 import java.time.Duration
-import java.util.concurrent.TimeUnit
+
 
 /**
  * The main-module for configuring Ktor. Referenced in "application.conf".
@@ -94,30 +90,4 @@ fun Application.module() {
 	)
 
 	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction, cognitoClient)
-}
-
-
-fun jwkIssuer(): String {
-	val region = Config.get().aws.region
-	val poolId = Config.get().aws.cognito.poolId
-	return "https://cognito-idp.$region.amazonaws.com/$poolId"
-}
-
-
-fun jwkProvider(): JwkProvider {
-	// jwk = "json web key" ( = public keys)
-	return JwkProviderBuilder(jwkIssuer())
-		.cached(10, 24, TimeUnit.HOURS)
-		.rateLimited(10, 1, TimeUnit.MINUTES)
-		.build()
-}
-
-
-fun validateJwt(credential: JWTCredential): JWTPrincipal? {
-	val jwtAudience = Config.get().aws.cognito.clientId
-	return if (credential.payload.audience.contains(jwtAudience)) {
-		JWTPrincipal(credential.payload)
-	} else {
-		null
-	}
 }

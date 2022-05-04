@@ -8,15 +8,10 @@ import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest
 import com.amazonaws.services.cognitoidp.model.AttributeType
 import com.amazonaws.services.cognitoidp.model.AuthFlowType
 import com.amazonaws.services.cognitoidp.model.CodeDeliveryFailureException
-import com.amazonaws.services.cognitoidp.model.CodeMismatchException
-import com.amazonaws.services.cognitoidp.model.ConfirmSignUpRequest
 import com.amazonaws.services.cognitoidp.model.DeleteUserRequest
-import com.amazonaws.services.cognitoidp.model.ExpiredCodeException
 import com.amazonaws.services.cognitoidp.model.InvalidParameterException
-import com.amazonaws.services.cognitoidp.model.InvalidPasswordException
 import com.amazonaws.services.cognitoidp.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidp.model.SignUpRequest
-import com.amazonaws.services.cognitoidp.model.TooManyFailedAttemptsException
 import com.amazonaws.services.cognitoidp.model.UserNotConfirmedException
 import com.amazonaws.services.cognitoidp.model.UserNotFoundException
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException

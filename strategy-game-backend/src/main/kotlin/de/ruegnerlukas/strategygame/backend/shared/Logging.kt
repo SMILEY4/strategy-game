@@ -15,4 +15,10 @@ interface Logging {
 		return KotlinLogging.logger {}
 	}
 
+	companion object {
+		fun create(): Logger {
+			return KotlinLogging.logger {}
+		}
+	}
+
 }

@@ -22,7 +22,8 @@ fun Application.apiRoutes(
 	routing {
 		route("api") {
 			userRoutes(cognito)
-			worldRoutes(connectionHandler, messageHandler, createNewWorldAction, closeConnectionAction)
+			worldRoutes(createNewWorldAction)
+			websocketRoutes(connectionHandler, messageHandler, closeConnectionAction)
 		}
 	}
 }

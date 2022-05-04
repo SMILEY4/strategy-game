@@ -77,7 +77,7 @@ fun Route.userRoutes(cognito: AwsCognito) {
 				val principal = call.principal<JWTPrincipal>()
 				val userId = principal!!.payload.getClaim("sub").asString()
 				val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
-				call.respondText("Hello, $userId! Token is expired at $expiresAt ms.")
+				call.respond("Hello, $userId! Token is expired at $expiresAt ms.")
 			}
 		}
 	}

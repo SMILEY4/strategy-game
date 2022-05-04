@@ -73,6 +73,7 @@ Simple and Secure User Sign-Up, Sign-In, and Access Control
 - https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-dg.pdf
 - https://medium.com/@warrenferns/integrate-java-with-aws-cognito-developer-tutorial-679e6e608951
 - https://gist.github.com/saggie/38e5979cb813224666af4b3d90e6120f
+- https://stackoverflow.com/questions/48356287/is-there-any-java-example-of-verification-of-jwt-for-aws-cognito-api
 
 
 
@@ -112,6 +113,8 @@ Values from the configuration files can be accessed in a typesafe way via `Confi
 # API
 
 ## Authentication
+
+The backend uses JSON-Web Tokens (RS256) managed by "AWS Cognito" as authentication
 
 ### Creating a new User
 
@@ -338,7 +341,7 @@ POST /api/world/create
 **World WebSocket-Connection**
 
 ```
-WS /api/world/messages
+WS /api/messages?token=<jwtToken>
 ```
 
 
