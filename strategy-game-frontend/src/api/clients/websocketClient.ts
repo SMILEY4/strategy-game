@@ -1,10 +1,14 @@
+import {AuthProvider} from "../../core/ports/provided/authProvider";
+
 export class WebsocketClient {
 
 	private readonly baseUrl: string;
+	private readonly authProvider: AuthProvider;
 	private readonly websockets = new Map<string, WebSocket>();
 
-	constructor(baseUrl?: string) {
-		this.baseUrl = baseUrl ? baseUrl : "";
+	constructor(baseUrl: string, authProvider: AuthProvider) {
+		this.baseUrl = baseUrl;
+		this.authProvider = authProvider;
 	}
 
 
@@ -15,11 +19,10 @@ export class WebsocketClient {
 	 * @param consumer the function that will be called for received messages
 	 */
 	public open(name: string, url: string, consumer: (msg: any) => void): Promise<void> {
-		console.log("OPEN", name, this.websockets);
 		this.close(name);
 		return new Promise((resolve, reject) => {
 			try {
-				const ws = new WebSocket(this.baseUrl + url);
+				const ws = new WebSocket(this.baseUrl + url + this.buildQueryParams())
 				ws.onopen = () => resolve();
 				ws.onclose = () => this.close(name);
 				ws.onmessage = (e: MessageEvent) => consumer(JSON.parse(e.data));
@@ -35,11 +38,9 @@ export class WebsocketClient {
 	 * Close the websocket-connection with the given name.
 	 */
 	public close(name: string) {
-		console.log("TRY CLOSE", name, this.websockets);
 		if (this.isWebsocketOpen(name)) {
 			const ws = this.findWebSocket(name);
 			if (ws) {
-				console.log("CLOSE", name, this.websockets);
 				ws.onclose = null;
 				ws.close();
 			}
@@ -54,11 +55,9 @@ export class WebsocketClient {
 	 * @param data the data to send
 	 */
 	public send(name: string, data: object) {
-		console.log("TRY SEND", name, this.websockets);
 		if (this.isWebsocketOpen(name)) {
 			const ws = this.findWebSocket(name);
 			if (ws) {
-				console.log("SEND", name, this.websockets);
 				ws.send(JSON.stringify(data, null, "   "));
 			}
 		} else {
@@ -76,6 +75,11 @@ export class WebsocketClient {
 	private findWebSocket(name: string): WebSocket | null {
 		const ws = this.websockets.get(name);
 		return ws ? ws : null;
+	}
+
+	private buildQueryParams(): string {
+		const jwtToken = this.authProvider.getToken();
+		return "?token=" + jwtToken;
 	}
 
 }

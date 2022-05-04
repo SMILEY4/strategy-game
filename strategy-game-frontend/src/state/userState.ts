@@ -6,14 +6,12 @@ import {PlaceMarkerCommand} from "./models/PlaceMarkerCommand";
 export namespace UserState {
 
 	interface StateValues {
-		isAuthenticated: boolean,
-		idToken: string,
+		idToken: string | null,
 	}
 
 
 	const initialStateValues: StateValues = {
-		isAuthenticated: false,
-		idToken: "",
+		idToken: null,
 	};
 
 
@@ -26,12 +24,10 @@ export namespace UserState {
 	function stateActions(set: SetState<UserState.State>): StateActions {
 		return {
 			setAuth: (idToken: string) => set(() => ({
-				isAuthenticated: true,
 				idToken: idToken,
 			})),
 			clearAuth: () => set(() => ({
-				isAuthenticated: false,
-				idToken: "",
+				idToken: null,
 			})),
 		};
 	}

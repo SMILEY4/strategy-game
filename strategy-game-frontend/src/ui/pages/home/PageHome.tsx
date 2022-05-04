@@ -6,7 +6,7 @@ import {UserHooks} from "../../../core/hooks/userHooks";
 
 export function PageHome(): ReactElement {
 
-	const logOut = UserHooks.useLogOut("/login")
+	const logOut = UserHooks.useLogOut("/login");
 
 	return (
 		<div className="home">

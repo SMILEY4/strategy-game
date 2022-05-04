@@ -5,6 +5,13 @@ import {useNavigate} from "react-router-dom";
 
 export namespace UserHooks {
 
+	export function useAuth() {
+		const idToken = UserState.useState(state => state.idToken);
+		return {
+			isAuthenticated: !!idToken,
+			idToken: idToken
+		};
+	}
 
 	export function useLogIn(targetUrl: string) {
 		const client = Game.client;

@@ -5,6 +5,7 @@ import {ApiClient} from "../core/ports/required/apiClient";
 import {WorldMeta} from "../state/models/WorldMeta";
 import {PlaceMarkerCommand} from "../state/models/PlaceMarkerCommand";
 import {UserAuthData} from "../state/models/UserAuthData";
+import {AuthProvider} from "../core/ports/provided/authProvider";
 
 
 const BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -14,10 +15,15 @@ const BASE_WS_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 export class ApiClientImpl implements ApiClient {
 
 	private static readonly WS_NAME_WORLD: string = "ws-world";
-	private readonly httpClient = new HttpClient(BASE_URL);
-	private readonly wsClient = new WebsocketClient(BASE_WS_URL);
+	private readonly httpClient;
+	private readonly wsClient;
 	private readonly msgHandler = new MessageHandler();
 
+
+	constructor(authProvider: AuthProvider) {
+		this.httpClient = new HttpClient(BASE_URL, authProvider);
+		this.wsClient =  new WebsocketClient(BASE_WS_URL, authProvider);
+	}
 
 	public login(email: String, password: String): Promise<UserAuthData> {
 		return this.httpClient.post("/api/user/login", {
@@ -49,7 +55,7 @@ export class ApiClientImpl implements ApiClient {
 
 
 	public openWorldConnection(): Promise<void> {
-		return this.wsClient.open(ApiClientImpl.WS_NAME_WORLD, "/api/world/messages", (msg) => {
+		return this.wsClient.open(ApiClientImpl.WS_NAME_WORLD, "/api/messages", (msg) => {
 			this.msgHandler.onMessage(msg.type, msg.payload);
 		});
 	}
@@ -69,4 +75,10 @@ export class ApiClientImpl implements ApiClient {
 			payload: JSON.stringify({worldId: worldId, commands: playerCommands}, null, "   ")
 		});
 	}
+
+	public testProtected(): Promise<string> {
+		return this.httpClient.get("/api/user/protected")
+			.then(response => response.text())
+	}
+
 }

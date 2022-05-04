@@ -43,4 +43,7 @@ export interface ApiClient {
 	 * @param playerCommands the commands to submit
 	 */
 	submitTurn: (worldId: string, playerCommands: PlaceMarkerCommand[]) => void;
+
+	testProtected: () => Promise<string>;
+
 }
