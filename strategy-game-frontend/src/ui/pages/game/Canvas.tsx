@@ -6,18 +6,34 @@ import {Game} from "../../../core/game";
 export function Canvas() {
 
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const animationId = useRef<number>();
+	const hasContext = useRef<boolean>(true);
 
 	useEffect(() => {
 		if (canvasRef.current) {
 			resizeCanvas(canvasRef.current);
 			addEventListener("resize", handleResize);
+			canvasRef.current.addEventListener("webglcontextlost", handleContextLoss);
+			canvasRef.current.addEventListener("webglcontextrestored", handleContextRestored);
 			initialize(canvasRef.current);
 			return () => {
 				onDispose();
 				removeEventListener("resize", handleResize);
+				canvasRef.current?.removeEventListener("webglcontextlost", handleContextLoss);
+				canvasRef.current?.removeEventListener("webglcontextrestored", handleContextRestored);
 			};
 		}
 	}, []);
+
+	function handleContextLoss(e: any) {
+		e.preventDefault();
+		hasContext.current = false;
+	}
+
+	function handleContextRestored() {
+		hasContext.current = true;
+		canvasRef.current && initialize(canvasRef.current);
+	}
 
 	function handleResize() {
 		if (canvasRef.current) {
@@ -40,8 +56,12 @@ export function Canvas() {
 		renderLoop();
 
 		function renderLoop() {
-			onRender();
-			requestAnimationFrame(renderLoop);
+			if (hasContext.current) {
+				onRender();
+				animationId.current = requestAnimationFrame(renderLoop);
+			} else {
+				animationId.current && cancelAnimationFrame(animationId.current);
+			}
 		}
 	}
 

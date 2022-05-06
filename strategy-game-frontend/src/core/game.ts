@@ -29,4 +29,24 @@ export namespace Game {
 	export const input: InputHandler = new InputService(stateProvider, tilePicker);
 	export const world: WorldHandler = new WorldService(stateProvider, client);
 	export const turn: TurnHandler = new TurnService(stateProvider, client);
+
+
+	let extContext: any = null;
+
+	export function debugLooseWebglContext() {
+		if (gameCanvas.getGL()) {
+			extContext = gameCanvas.getGL().getExtension("WEBGL_lose_context");
+			if (extContext) {
+				console.log("Simulate loosing context");
+				extContext.loseContext();
+			}
+		}
+	}
+
+	export function debugRestoreWebglContext() {
+		if (extContext) {
+			console.log("Simulate restoring context");
+			extContext.restoreContext();
+		}
+	}
 }

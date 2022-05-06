@@ -26,8 +26,9 @@ export class Renderer {
 
 
 	public render(): void {
-
 		const gl = this.gameCanvas.getGL();
+		this.checkErrors(gl)
+
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT);
@@ -41,6 +42,13 @@ export class Renderer {
 		this.markerRenderer.render(camera, this.stateProvider.getState().playerMarkers, this.stateProvider.getState().playerCommands);
 	}
 
+
+	private checkErrors(gl: WebGL2RenderingContext) {
+		const error = gl.getError();
+		if(error !== gl.NO_ERROR && error !== gl.CONTEXT_LOST_WEBGL) {
+			alert("fail")
+		}
+	}
 
 	private createCamera(): Camera {
 		const camState = this.stateProvider.getState().camera;
