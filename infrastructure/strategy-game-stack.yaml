@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+
+    WebAppS3Bucket:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            AccessControl: PublicRead
+            WebsiteConfiguration:
+                IndexDocument: index.html
+    BucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref WebAppS3Bucket
+            PolicyDocument:
+                Id: WebAppPolicy
+                Version: 2012-10-17
+                Statement:
+                    - Sid: AllowPublicReadAccess
+                      Effect: Allow
+                      Principal: "*"
+                      Action: "s3:GetObject"
+                      Resource: !Join
+                          - ""
+                          -   - "arn:aws:s3:::"
+                              - !Ref WebAppS3Bucket
+                              - /*
+
+    ServerInstance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: ami-015c25ad8763b2f11 # Ubuntu
+            InstanceType: t2.micro
+            KeyName: ec2-kp
+            SecurityGroupIds:
+                - !Ref ServerSecurityGroup
+            UserData:
+                Fn::Base64: !Sub |
+                    sudo apt install openjdk-11-jre-headless -y
+    ServerSecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupName: "strategy-game-server-security-group"
+            GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 8080
+                  ToPort: 8080
+                  CidrIp: 0.0.0.0/0
+                - IpProtocol: tcp
+                  FromPort: 443
+                  ToPort: 443
+                  CidrIp: 0.0.0.0/0
+                - IpProtocol: tcp
+                  FromPort: 22
+                  ToPort: 22
+                  CidrIp: 0.0.0.0/0
+    ServerElasticIp:
+        Type: "AWS::EC2::EIP"
+        Properties:
+            Domain: vpc
+            InstanceId: !Ref ServerInstance
+            Tags:
+                - Key: Name
+                  Value: "strategy-game-server-eip"
+
+Outputs:
+    ServerURL:
+        Value: !Sub http://${ServerElasticIp}
+        Description: URL for the server (ec2-instance)
+    WebsiteURL:
+        Value: !GetAtt
+            - WebAppS3Bucket
+            - WebsiteURL
+        Description: URL for hosted website
+    S3BucketSecureURL:
+        Value: !Join
+            - ""
+            -   - "https://"
+                - !GetAtt
+                    - WebAppS3Bucket
+                    - DomainName
+        Description: Name of S3 bucket to hold website content
