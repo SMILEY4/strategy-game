@@ -56,6 +56,14 @@ def cmd_delete_infra():
     os.system("aws cloudformation delete-stack --stack-name " + stack_name)
 
 
+def cmd_deploy_apps():
+    print("TODO")
+    # get current state of stack
+    #       aws cloudformation describe-stacks --stack-name strategy-game-stack
+    # output: ... "StackStatus": "CREATE_COMPLETE" ...  => stack is ready
+    # somehow find info to connect to instances/s3 -> "output"-section of "describe-stacks" ?
+
+
 def run_command(commands):
     if len(sys.argv) == 2:
         cmd_help()
