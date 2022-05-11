@@ -64,19 +64,18 @@ Resources:
                   Value: "strategy-game-server-eip"
 
 Outputs:
+    ServerPublicDnsName:
+        Value: !GetAtt ServerInstance.PublicDnsName
+        Description: Public dns name of the server (ec2-instance)
     ServerURL:
         Value: !Sub http://${ServerElasticIp}
         Description: URL for the server (ec2-instance)
-    WebsiteURL:
-        Value: !GetAtt
-            - WebAppS3Bucket
-            - WebsiteURL
-        Description: URL for hosted website
-    S3BucketSecureURL:
+    WebAppURL:
         Value: !Join
             - ""
             -   - "https://"
-                - !GetAtt
-                    - WebAppS3Bucket
-                    - DomainName
-        Description: Name of S3 bucket to hold website content
+                - !GetAtt WebAppS3Bucket.DomainName
+        Description: URL of S3 bucket to hold website content
+    WebAppBucketName:
+        Value: !Ref WebAppS3Bucket
+        Description: Name of the s3-bucket holding the webapp
