@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+
+files:
+    - source: /
+      destination: /home/ubuntu/server
+
+permissions:
+    - object: /
+      pattern: "**"
+      owner: ubuntu
+      group: ubuntu
+
+
+hooks:
+    BeforeInstall:
+        - location: server_clear.sh
+          timeout: 300
+    AfterInstall:
+        - location: server_fix_privileges.sh
+          timeout: 300
+    ApplicationStart:
+        - location: server_start.sh
+          timeout: 20
+    ApplicationStop:
+        - location: server_stop.sh
+          timeout: 20

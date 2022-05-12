@@ -1,5 +1,6 @@
 .idea
 .gradle
 build
+strategy-game-backend.log
 # hide secret configs
 *.local.conf

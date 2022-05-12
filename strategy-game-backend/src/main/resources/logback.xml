@@ -3,12 +3,26 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
-                %cyan(%d{YYYY-MM-dd HH:mm:ss.SSS}) %gray(%thread) %highlight(%-5level) %magenta(%logger{36}) - %msg%n
+                %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%-5.5level{5}) | %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>strategy-game-backend.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>
+                %d{YYYY-MM-dd HH:mm:ss.SSS} %-5level %thread %logger{36} - %msg%n
             </pattern>
         </encoder>
     </appender>
 
     <root level="trace">
+        <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>
 

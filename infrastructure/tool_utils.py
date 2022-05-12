@@ -6,6 +6,7 @@ import paramiko
 from paramiko import SSHClient
 from scp import SCPClient
 
+
 # Get information about an aws cloudformation stack with the given name
 def get_aws_stack_data(stack_name):
     return json.loads(run_cmd_returning(["aws", "cloudformation", "describe-stacks", "--stack-name", stack_name]))
@@ -111,6 +112,7 @@ class ssh_ec2:
     def upload_file(self, source, target):
         scp = SCPClient(self.ssh_client.get_transport())
         scp.put(source, target)
+
 
 # return the first element of the given json array matching the given condition
 def search_json_array(json_array, condition):
