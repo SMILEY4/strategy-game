@@ -51,7 +51,6 @@ def cmd_run():
 
 def cmd_create_infra():
     stack_name = "strategy-game-stack"
-    cmd_delete_infra()
     print("Deploying infrastructure...")
     run_cmd_async(["aws", "cloudformation", "create-stack", "--stack-name", stack_name,
              "--template-body", "file://./infrastructure/strategy-game-stack.yaml"])
