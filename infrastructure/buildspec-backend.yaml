@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+    install:
+        runtime-versions:
+            openjdk11
+    build:
+        commands:
+            - ./strategy-game-backend/gradlew shadowJar
+    post_build:
+        commands:
+            - echo Build completed
+
+artifacts:
+    files:
+        - strategy-game-backend/build/libs/strategy-game-backend.jar
+    discard-paths: yes
