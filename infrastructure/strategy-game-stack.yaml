@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+
+#    WebAppS3Bucket:
+#        Type: "AWS::S3::Bucket"
+#        Properties:
+#            AccessControl: PublicRead
+#            WebsiteConfiguration:
+#                IndexDocument: index.html
+#
+#    BucketPolicy:
+#        Type: "AWS::S3::BucketPolicy"
+#        Properties:
+#            Bucket: !Ref WebAppS3Bucket
+#            PolicyDocument:
+#                Id: WebAppPolicy
+#                Version: 2012-10-17
+#                Statement:
+#                    - Sid: AllowPublicReadAccess
+#                      Effect: Allow
+#                      Principal: "*"
+#                      Action: "s3:GetObject"
+#                      Resource: !Join
+#                          - ""
+#                          -   - "arn:aws:s3:::"
+#                              - !Ref WebAppS3Bucket
+#                              - /*
+
+    ServerInstance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: ami-02584c1c9d05efa69 # Ubuntu 20.04 LTS
+            InstanceType: t2.micro
+            KeyName: ec2-kp
+            SecurityGroupIds:
+                - !Ref ServerSecurityGroup
+            UserData:
+                Fn::Base64: !Sub |
+                    #!/bin/bash -xe
+                    
+                    sudo apt update -y
+                    
+                    # install java
+                    sudo apt install openjdk-11-jre-headless -y
+                    
+                    # install CodeDeploy-Agent
+                    # see: https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html
+                    sudo apt-get install ruby-full -y
+                    sudo apt install wget -y
+                    cd /home/ubuntu
+                    wget https://aws-codedeploy-eu-central-1.s3.eu-central-1.amazonaws.com/latest/install
+                    chmod +x ./install
+                    sudo ./install auto
+
+    ServerSecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupName: "strategy-game-server-security-group"
+            GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 8080
+                  ToPort: 8080
+                  CidrIp: 0.0.0.0/0
+                - IpProtocol: tcp
+                  FromPort: 443
+                  ToPort: 443
+                  CidrIp: 0.0.0.0/0
+                - IpProtocol: tcp
+                  FromPort: 22
+                  ToPort: 22
+                  CidrIp: 0.0.0.0/0
+
+    ServerElasticIp:
+        Type: "AWS::EC2::EIP"
+        Properties:
+            Domain: vpc
+            InstanceId: !Ref ServerInstance
+            Tags:
+                - Key: Name
+                  Value: "strategy-game-server-eip"
+
+Outputs:
+    ServerPublicDnsName:
+        Value: !GetAtt ServerInstance.PublicDnsName
+        Description: Public dns name of the server (ec2-instance)
+    ServerURL:
+        Value: !Sub http://${ServerElasticIp}
+        Description: URL for the server (ec2-instance)
+#    WebAppURL:
+#        Value: !Join
+#            - ""
+#            -   - "https://"
+#                - !GetAtt WebAppS3Bucket.DomainName
+#        Description: URL of S3 bucket to hold website content
+#    WebAppBucketName:
+#        Value: !Ref WebAppS3Bucket
+#        Description: Name of the s3-bucket holding the webapp

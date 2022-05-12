@@ -6,6 +6,10 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.CreateNewWorldAction
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
 import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
+import io.ktor.server.response.respond
+import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 
@@ -24,6 +28,14 @@ fun Application.apiRoutes(
 			userRoutes(cognito)
 			worldRoutes(createNewWorldAction)
 			websocketRoutes(connectionHandler, messageHandler, closeConnectionAction)
+			get("/ping") {
+				call.respond("Pong! ${System.currentTimeMillis()}")
+			}
+			authenticate {
+				get("/authping") {
+					call.respond("Auth-Pong! ${System.currentTimeMillis()}")
+				}
+			}
 		}
 	}
 }
