@@ -6,8 +6,9 @@ phases:
             java: corretto11
     build:
         commands:
-            - chmod +x strategy-game-backend/gradlew
-            - ./strategy-game-backend/gradlew shadowJar
+            - cd strategy-game
+            - chmod +x gradlew
+            - gradlew shadowJar
     post_build:
         commands:
             - echo Build completed
