@@ -10,7 +10,7 @@ title: Backend Documentation
 
 **Intellij**
 
-To run the application in the Intellij-IDE, click the "Run Button" or the "Run Button" next to the "main"-Funktion in "de.ruegnerlukas.strategygame.backend.Application.kt"
+To run the application in the Intellij-IDE, click the "Run Button" or the "Run Button" next to the "main"-function in "de.ruegnerlukas.strategygame.backend.Application.kt"
 
 **CLI**
 

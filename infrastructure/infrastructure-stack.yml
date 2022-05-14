@@ -8,7 +8,7 @@ Parameters:
     GitBranch:
         Type: String
         Default: "develop"
-        Description: "Name of the branch to build and deploy"
+        Description: "Name of the git-branch to build and deploy"
     GithubCodeStarConnectionArn:
         Type: String
         Default: "arn:aws:codestar-connections:eu-central-1:627717213620:connection/16c629c9-0240-49a9-a2bf-93ea8ef91b10"

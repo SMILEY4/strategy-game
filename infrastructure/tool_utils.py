@@ -38,7 +38,7 @@ def get_aws_stack_s3_bucket_name(stack):
     return get_aws_stack_outputs_value(stack, "WebAppBucketName")
 
 
-# Get a value from the outputs of the given aws cloudformation stack by the key (or error if )
+# Get a value from the outputs of the given aws cloudformation stack by the key
 # "stack" can be the name of the stack or the (json-) data
 def get_aws_stack_outputs_value(stack, key):
     data = get_aws_stack_data(stack) if isinstance(stack, str) else stack
@@ -48,6 +48,18 @@ def get_aws_stack_outputs_value(stack, key):
         return output_entry["OutputValue"]
     else:
         return None
+
+
+# Get name of all s3-buckets from the outputs of the given aws cloudformation stack
+# "stack" can be the name of the stack or the (json-) data
+def get_aws_bucket_names(stack):
+    data = get_aws_stack_data(stack) if isinstance(stack, str) else stack
+    return [
+        get_aws_stack_outputs_value(data, "BuildLogBucketName"),
+        get_aws_stack_outputs_value(data, "BackendArtifactBucketName"),
+        get_aws_stack_outputs_value(data, "FrontendArtifactBucketName"),
+        get_aws_stack_outputs_value(data, "WebAppBucketName")
+    ]
 
 
 # run the given command provided as a string-array and return the output as a string

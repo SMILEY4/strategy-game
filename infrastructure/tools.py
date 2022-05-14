@@ -2,15 +2,10 @@ import sys
 
 from tool_utils import *
 
-CLOUDFORMATION_STACK_NAME = "strategy-game"
-CLOUDFORMATION_STACK_ENV_NAME = "-test"
+CLOUDFORMATION_FILE = "file://./infrastructure/infrastructure-stack.yml",
+CLOUDFORMATION_STACK_BASE_NAME = "strategy-game"
+CLOUDFORMATION_STACK_ENV_NAME = ""
 CODEPIPELINE_GIT_BRANCH = "develop"
-BUCKET_NAMES = [
-    "strategy-game" + CLOUDFORMATION_STACK_ENV_NAME + ".webapp",
-    "strategy-game" + CLOUDFORMATION_STACK_ENV_NAME + ".backend.artifacts",
-    "strategy-game" + CLOUDFORMATION_STACK_ENV_NAME + ".frontend.artifacts",
-    "strategy-game" + CLOUDFORMATION_STACK_ENV_NAME + ".build-log",
-]
 FILES_SECRETS = [
     [
         "strategy-game-backend/src/main/resources/application.prod.local.conf",
@@ -52,13 +47,17 @@ def cmd_help():
     print("                     (i.e. config files that are not checked into git and are required for production builds)")
     print("   'pull secrets':   pulls the secrets from the cloud storage and overwrites the local files")
     print("                     (i.e. config files that are not checked into git and are required for production builds)")
+    print("")
+    print("'print webappurl':   prints the public url for the webapp")
+    print(" 'print serverid':   prints the instance-id of the ec2-server")
+    print(" 'print serverip':   prints the public ip of the ec2-server")
     print("==============================================================================================================================")
 
 
 def cmd_docu_build_html():
     print("Build html-documentation...")
     with cd("documentation"):
-        os.system("python tools.py")
+        os.system("python build.py")
     print("...done building html-documentation")
 
 
@@ -105,11 +104,11 @@ def cmd_create_infra():
     print("Deploying infrastructure...")
     run_cmd([
         "aws", "cloudformation", "create-stack",
-        "--stack-name", CLOUDFORMATION_STACK_NAME + CLOUDFORMATION_STACK_ENV_NAME,
-        "--template-body", "file://./infrastructure/strategy-game-stack.yml",
+        "--stack-name", CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME,
+        "--template-body", CLOUDFORMATION_FILE,
         "--parameters",
-        "ParameterKey='EnvName',ParameterValue='" + CLOUDFORMATION_STACK_ENV_NAME + "'",
-        "ParameterKey='GitBranch',ParameterValue='" + CODEPIPELINE_GIT_BRANCH + "'",
+                        "ParameterKey='EnvName',ParameterValue='" + CLOUDFORMATION_STACK_ENV_NAME + "'",
+                        "ParameterKey='GitBranch',ParameterValue='" + CODEPIPELINE_GIT_BRANCH + "'",
         "--capabilities", "CAPABILITY_NAMED_IAM"
     ])
     print("...infrastructure deployed")
@@ -117,10 +116,11 @@ def cmd_create_infra():
 
 def cmd_delete_infra():
     print("Deleting infrastructure...")
-    for bucket in BUCKET_NAMES:
+    bucket_names = get_aws_stack_s3_bucket_name(CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME)
+    for bucket in bucket_names:
         print("Emptying bucket: " + bucket)
         run_cmd(["aws", "s3", "rm", "s3://" + bucket, "--recursive"])
-    run_cmd(["aws", "cloudformation", "delete-stack", "--stack-name", CLOUDFORMATION_STACK_NAME + CLOUDFORMATION_STACK_ENV_NAME])
+    run_cmd(["aws", "cloudformation", "delete-stack", "--stack-name", CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME])
     print("...infrastructure deleted")
 
 
@@ -157,11 +157,29 @@ def cmd_pull_secrets():
     print("...done pulling secrets")
 
 
+def cmd_print_webapp_url():
+    print("Printing webapp-url:")
+    value = get_aws_stack_outputs_value(CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME, "WebAppUrl")
+    print("==> " + value)
+
+
+def cmd_print_server_instance_id():
+    print("Printing server instance-id:")
+    value = get_aws_stack_outputs_value(CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME, "ServerInstanceId")
+    print("==> " + value)
+
+
+def cmd_print_server_ip():
+    print("Printing server ip:")
+    value = get_aws_stack_outputs_value(CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME, "ServerElasticIp")
+    print("==> " + value)
+
+
 def handle_input_command(commands):
     if len(sys.argv) == 2:
         cmd_help()
     else:
-        cmd_args = " ".join(sys.argv[2:])
+        cmd_args = (" ".join(sys.argv[2:])).lower()
         if cmd_args in commands:
             commands[cmd_args]()
         else:
@@ -185,6 +203,9 @@ def main():
         "deploy": cmd_deploy,
         "push secrets": cmd_push_secrets,
         "pull secrets": cmd_pull_secrets,
+        "print webappurl": cmd_print_webapp_url,
+        "print serverid": cmd_print_server_instance_id,
+        "print serverip": cmd_print_server_ip
     })
 
 

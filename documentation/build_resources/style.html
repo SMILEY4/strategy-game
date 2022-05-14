@@ -27,6 +27,7 @@
 
 	}
 
+
 	* {
 		box-sizing:                  border-box;
 		position:                    relative;
@@ -36,6 +37,7 @@
 		-webkit-font-smoothing:      antialiased;
 		-moz-osx-font-smoothing:     grayscale;
 	}
+
 
 	body {
 		font-family:                    var(--font-family-prose);
@@ -51,15 +53,17 @@
 		line-height:                    1.6;
 	}
 
+
 	/* === Page Layout =============== */
 
 	body {
-		max-width:    1280px;
-		margin-left:  auto;
-		margin-right: auto;
+		max-width:     1280px;
+		margin-left:   auto;
+		margin-right:  auto;
 		padding-right: 33px;
 		padding-left:  33px;
 	}
+
 
 	#main-content {
 		display:               grid;
@@ -68,6 +72,7 @@
 		grid-template-columns: minmax(0, calc(100% - 320px)) auto;
 	}
 
+
 	@media screen and (max-width: 768px) {
 		#main-content {
 			display:               grid;
@@ -75,6 +80,7 @@
 			grid-gap:              24px;
 			grid-template-columns: auto;
 		}
+
 
 		#main-content > :last-child {
 			grid-row: 1;
@@ -85,11 +91,14 @@
 	/* === Table of Content ========== */
 
 	#TOC {
+		position:      sticky;
+		top:           10px;
 		padding:       16px;
 		border:        1px solid var(--color-border);
 		border-radius: 5px;
 		line-height:   1.8;
 	}
+
 
 	#TOC ul, #TOC ol {
 		list-style-type: none;
@@ -97,10 +106,12 @@
 		margin:          0;
 	}
 
+
 	#TOC a {
 		text-decoration: none;
 		color:           var(--color-text)
 	}
+
 
 	#TOC a:hover {
 		text-decoration: underline;
@@ -112,8 +123,9 @@
 	/* === Headings ================== */
 
 	body > header > h1 {
-		font-size:  2.5rem;
+		font-size: 2.5rem;
 	}
+
 
 	h1, h2, h3, h4, h5, h6 {
 		break-after:   avoid-page;
@@ -126,28 +138,34 @@
 		cursor:        text;
 	}
 
+
 	h1 {
 		margin-top: 4rem;
 		font-size:  2rem;
 	}
+
 
 	h2 {
 		margin-top: 2rem;
 		font-size:  1.8rem;
 	}
 
+
 	h3 {
 		margin-top: 1rem;
 		font-size:  1.6rem;
 	}
 
+
 	h4 {
 		font-size: 1.4rem;
 	}
 
+
 	h5 {
 		font-size: 1.2rem;
 	}
+
 
 	h6 {
 		font-size: 1rem;
@@ -158,6 +176,7 @@
 		padding-bottom: .2em;
 		border-bottom:  1px solid var(--color-border);
 	}
+
 
 	h2 {
 		padding-bottom: .2em;
@@ -171,14 +190,17 @@
 		margin: 0.8em 0;
 	}
 
+
 	strong {
 		font-weight: bold;
 	}
+
 
 	ul, ol {
 		padding-left: 2em;
 		margin:       0.8em 0;
 	}
+
 
 	/* === Code ====================== */
 
@@ -189,9 +211,11 @@
 		border-radius:    5px;
 	}
 
+
 	:not(pre) > code {
 		padding: .2em .4em;
 	}
+
 
 	pre > code {
 		position:    relative;
