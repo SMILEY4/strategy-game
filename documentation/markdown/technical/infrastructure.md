@@ -151,3 +151,28 @@ The files can either be uploaded manually via the AWS-Console or with the "tools
 - `.\tools push secrets` uploads all current local secret files (production-files only) to the s3-bucket (overwriting already existing files)
 - `.\tools pull secrets` downloads all secret files from the s3-bucket and overwrites already existing local files (production-files only)
 
+## Manual Deployment
+
+### Frontend
+
+Build the application and upload the contents of the "dist"-directory to the S3-Bucket
+
+### Backend
+
+Note: A valid key-pair is required to connect to the instance via scp !
+
+1. Upload the .jar file
+
+   ```
+   scp -i "path\to\ec2-kp.pem" path\to\strategy-game-backend.jar ubuntu@<host>:/home/ubuntu
+   ```
+
+2. connect via ssh to the instance
+
+3. start the jar in the background
+
+   ```
+   sudo java -jar *.jar prod > /dev/null 2> /dev/null < /dev/null &
+   ```
+
+   

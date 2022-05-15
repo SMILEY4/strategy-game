@@ -1,10 +1,12 @@
 # Documentation
 
-## Technical Documentation
+- Technical Documentation
 
-### [Infrastructure](./technical/infrastructure.md)
+  - [Infrastructure](./technical/infrastructure.md)
 
-### [Backend](./technical/backend.md)
+  - [Backend](./technical/backend.md)
 
-### [Frontend](./technical/frontend.md)
+  - [Frontend](./technical/frontend.md)
+
+  - [Resources and useful Links](./technical/usefulresources.md)
 

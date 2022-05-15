@@ -2,7 +2,7 @@ import sys
 
 from tool_utils import *
 
-CLOUDFORMATION_FILE = "file://./infrastructure/infrastructure-stack.yml",
+CLOUDFORMATION_FILE_INFRA = "file://./infrastructure/infrastructure-stack.yml"
 CLOUDFORMATION_STACK_BASE_NAME = "strategy-game"
 CLOUDFORMATION_STACK_ENV_NAME = ""
 CODEPIPELINE_GIT_BRANCH = "develop"
@@ -24,33 +24,33 @@ FILES_SECRETS = [
 
 def cmd_help():
     print("==============================================================================================================================")
-    print("           'help':   prints information about all available commands")
+    print("               'help':   prints information about all available commands")
     print("")
-    print("     'build docu':   converts the markdown documentation files into html")
+    print("         'build docu':   converts the markdown documentation files into html")
     print("")
-    print("            'run':   runs frontend and backend (in dev mode)")
-    print("    'run backend':   runs the backend (in dev mode)")
-    print("   'run frontend':   runs the frontend (in dev mode)")
+    print("                'run':   runs frontend and backend (in dev mode)")
+    print("        'run backend':   runs the backend (in dev mode)")
+    print("       'run frontend':   runs the frontend (in dev mode)")
     print("")
-    print("          'build':   builds the backend and frontend")
-    print(" 'build frontend':   builds the frontend")
-    print("  'build backend':   builds the backend")
+    print("              'build':   builds the backend and frontend")
+    print("     'build frontend':   builds the frontend")
+    print("      'build backend':   builds the backend")
     print("")
-    print("   'create infra':   creates the required cloud infrastructure")
-    print("   'delete infra':   deletes the whole cloud infrastructure")
+    print("       'create infra':   creates the required cloud infrastructure")
+    print("       'delete infra':   deletes the whole cloud infrastructure")
     print("")
-    print("         'deploy':   deploys the current state of the backend and frontend on the develop branch to the cloud")
-    print(" 'deploy backend':   deploys the current state of the backend on the develop branch to the cloud")
-    print("'deploy frontend':   deploys the current state of the frontend on the develop branch to the cloud")
+    print("             'deploy':   deploys the current state of the backend and frontend on the develop branch to the cloud")
+    print("     'deploy backend':   deploys the current state of the backend on the develop branch to the cloud")
+    print("    'deploy frontend':   deploys the current state of the frontend on the develop branch to the cloud")
     print("")
-    print("   'push secrets':   pushes the local secrets to the cloud storage")
-    print("                     (i.e. config files that are not checked into git and are required for production builds)")
-    print("   'pull secrets':   pulls the secrets from the cloud storage and overwrites the local files")
-    print("                     (i.e. config files that are not checked into git and are required for production builds)")
+    print("       'push secrets':   pushes the local secrets to the cloud storage")
+    print("                         (i.e. config files that are not checked into git and are required for production builds)")
+    print("       'pull secrets':   pulls the secrets from the cloud storage and overwrites the local files")
+    print("                         (i.e. config files that are not checked into git and are required for production builds)")
     print("")
-    print("'print webappurl':   prints the public url for the webapp")
-    print(" 'print serverid':   prints the instance-id of the ec2-server")
-    print(" 'print serverip':   prints the public ip of the ec2-server")
+    print("    'print webappurl':   prints the public url for the webapp")
+    print("     'print serverid':   prints the instance-id of the ec2-server")
+    print("     'print serverip':   prints the public ip of the ec2-server")
     print("==============================================================================================================================")
 
 
@@ -105,9 +105,8 @@ def cmd_create_infra():
     run_cmd([
         "aws", "cloudformation", "create-stack",
         "--stack-name", CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME,
-        "--template-body", CLOUDFORMATION_FILE,
-        "--parameters",
-                        "ParameterKey='EnvName',ParameterValue='" + CLOUDFORMATION_STACK_ENV_NAME + "'",
+        "--template-body", CLOUDFORMATION_FILE_INFRA,
+        "--parameters", "ParameterKey='EnvName',ParameterValue='" + CLOUDFORMATION_STACK_ENV_NAME + "'",
                         "ParameterKey='GitBranch',ParameterValue='" + CODEPIPELINE_GIT_BRANCH + "'",
         "--capabilities", "CAPABILITY_NAMED_IAM"
     ])
@@ -126,13 +125,17 @@ def cmd_delete_infra():
 
 def cmd_deploy_backend():
     print("Deploying backend...")
-    run_cmd(["aws", "codepipeline", "start-pipeline-execution", "--name", "strategy-game" + CLOUDFORMATION_STACK_ENV_NAME + ".backend"])
+    run_cmd(["aws", "codepipeline", "start-pipeline-execution", "--name",
+             CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME + ".backend"])
     print("...done deploying backend")
 
 
 def cmd_deploy_frontend():
     print("Deploying frontend...")
-    run_cmd(["aws", "codepipeline", "start-pipeline-execution", "--name", "strategy-game" + CLOUDFORMATION_STACK_ENV_NAME + ".frontend"])
+    run_cmd([
+        "aws", "codepipeline", "start-pipeline-execution",
+        "--name", CLOUDFORMATION_STACK_BASE_NAME + CLOUDFORMATION_STACK_ENV_NAME + ".frontend"
+    ])
     print("...done deploying frontend")
 
 
@@ -205,7 +208,7 @@ def main():
         "pull secrets": cmd_pull_secrets,
         "print webappurl": cmd_print_webapp_url,
         "print serverid": cmd_print_server_instance_id,
-        "print serverip": cmd_print_server_ip
+        "print serverip": cmd_print_server_ip,
     })
 
 
