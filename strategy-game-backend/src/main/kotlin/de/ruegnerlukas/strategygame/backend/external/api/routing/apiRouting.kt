@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
 import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.CreateNewWorldAction
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -30,6 +31,9 @@ fun Application.apiRoutes(
 			websocketRoutes(connectionHandler, messageHandler, closeConnectionAction)
 			get("/ping") {
 				call.respond("Pong! ${System.currentTimeMillis()}")
+			}
+			get("/health") {
+				call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
 			}
 			authenticate {
 				get("/authping") {

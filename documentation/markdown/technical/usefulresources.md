@@ -56,6 +56,9 @@ title: Resources and useful Links
 
 -  How to find Public IP address AWS EC2 (from inside ec2)
   - https://www.cyberciti.biz/faq/how-to-find-public-ip-address-aws-ec2-or-lightsail-vm/
+-  CloudFormation Template for VPC with EC2 and ALB
+  -  https://dev.classmethod.jp/articles/cloudformation-template-for-vpc-with-ec2-and-alb/
+  
 
 # WebGL
 
