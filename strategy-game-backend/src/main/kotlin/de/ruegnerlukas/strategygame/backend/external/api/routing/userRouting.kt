@@ -2,20 +2,15 @@ package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import de.ruegnerlukas.strategygame.backend.external.api.models.AuthData
 import de.ruegnerlukas.strategygame.backend.external.api.models.CreateUserData
-import de.ruegnerlukas.strategygame.backend.external.api.models.UserConfirmationData
 import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
-import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 

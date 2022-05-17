@@ -1,13 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.config
 
 import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.CreateGameLobbyActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.CreateNewWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
 import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
+import de.ruegnerlukas.strategygame.backend.external.api.routing.getUserId
 import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
+import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
 import de.ruegnerlukas.strategygame.backend.shared.config.Config
 import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
@@ -22,6 +25,8 @@ import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.CORS
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.uri
 import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
@@ -44,6 +49,12 @@ fun Application.module() {
 	}
 	install(CallLogging) {
 		level = Level.INFO
+		format { call ->
+			val status = call.response.status()
+			val httpMethod = call.request.httpMethod.value
+			val route = call.request.uri
+			"${status.toString()}: $httpMethod - $route"
+		}
 	}
 	install(ContentNegotiation) {
 		json(Json {
@@ -78,6 +89,7 @@ fun Application.module() {
 	val endTurnAction = EndTurnAction(messageProducer, repository)
 	val joinWorldAction = JoinWorldActionImpl(messageProducer, repository)
 	val submitTurnAction = SubmitTurnActionImpl(repository, endTurnAction)
+	val createGameLobbyAction = CreateGameLobbyActionImpl(InMemoryGameRepository())
 	val createWorldAction = CreateNewWorldActionImpl(repository)
 	val closeConnectionAction = CloseConnectionActionImpl(repository, endTurnAction)
 	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
@@ -89,5 +101,5 @@ fun Application.module() {
 		region = Config.get().aws.region
 	)
 
-	apiRoutes(connectionHandler, messageHandler, createWorldAction, closeConnectionAction, cognitoClient)
+	apiRoutes(connectionHandler, messageHandler, createWorldAction, createGameLobbyAction, closeConnectionAction, cognitoClient)
 }

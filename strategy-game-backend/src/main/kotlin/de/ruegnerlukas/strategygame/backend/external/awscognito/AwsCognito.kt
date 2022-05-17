@@ -15,8 +15,8 @@ import com.amazonaws.services.cognitoidp.model.SignUpRequest
 import com.amazonaws.services.cognitoidp.model.UserNotConfirmedException
 import com.amazonaws.services.cognitoidp.model.UserNotFoundException
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthResult
-import de.ruegnerlukas.strategygame.backend.ports.models.ExtendedAuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthResult
 import de.ruegnerlukas.strategygame.backend.ports.required.UserManagementClient
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.results.Result

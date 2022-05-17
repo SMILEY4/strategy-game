@@ -11,6 +11,7 @@ import io.ktor.server.routing.route
 /**
  * configuration for world-actions
  */
+@Deprecated("use gameLobbyRouting instead", replaceWith = ReplaceWith("Route.gameLobbyRouting()")) // TODO: remove
 fun Route.worldRoutes(createNewWorldAction: CreateNewWorldAction) {
 	route("world") {
 		post("create") {

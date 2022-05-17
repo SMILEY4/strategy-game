@@ -26,4 +26,20 @@ class Result<T>(successful: Boolean, private val value: T?, error: String?) : Vo
 		return this
 	}
 
+	fun mapToVoidResult(successHandler: (value: T) -> VoidResult, errorHandler: (error: String) -> VoidResult): VoidResult {
+		return if (isError()) {
+			errorHandler(getError())
+		} else {
+			successHandler(getOrThrow())
+		}
+	}
+
+	fun mapToResult(successHandler: (value: T) -> Result<T>, errorHandler: (error: String) -> Result<T>): Result<T> {
+		return if (isError()) {
+			errorHandler(getError())
+		} else {
+			successHandler(getOrThrow())
+		}
+	}
+
 }

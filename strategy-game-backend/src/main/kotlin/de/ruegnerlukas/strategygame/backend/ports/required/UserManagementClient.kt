@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.required
 
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthResult
-import de.ruegnerlukas.strategygame.backend.ports.models.ExtendedAuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthResult
 import de.ruegnerlukas.strategygame.backend.shared.results.Result
 import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 
