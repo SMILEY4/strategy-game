@@ -9,7 +9,7 @@ val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
 
 group = "de.ruegnerlukas"
-version = "0.1"
+version = "0.2.0"
 
 application {
 	mainClass.set("de.ruegnerlukas.strategygame.backend.ApplicationKt")
