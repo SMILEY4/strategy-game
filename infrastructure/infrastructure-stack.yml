@@ -889,10 +889,9 @@ Outputs:
         Value: !Join
             - ""
             -   - ""
-                - WebAppDomain
+                - !Ref WebAppDomain
     UrlApi:
         Description: "The public url for the api"
         Value: !Join
             - ""
-            -   - ""
-                - WebAppDomain
+            -   - !Ref ApiAppDomain

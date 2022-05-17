@@ -39,32 +39,34 @@ The system is build to be hosted on AWS and uses the following services
 
 # Setting up the Infrastructure
 
-## The Template-File
+## Prerequisites
 
-The infrastructure-stack is defined and configured in `./infrastructure/infrastructure-stack.yml`
+Required AWS-Resources that are not created with the CloudFormation stack
 
-**Parameters**
+- **Certificate for WebApp**
+  - An SSL-Certificate for the WebApp-Domain registered in "Amazon Certificate Manager"
+  - Must be registered in region us-east-1
+- **Certificate for API**
+  - An SSL-Certificate for the API-Domain registered in "Amazon Certificate Manager"
+  - Can be in any region
+- **Domain + Hosted Zone**
+  - A domain in AWS Route53 with a hosted zone
 
-- *EnvName*
+- **(Optional) Key-Pair for EC2-Instances**
+  - a key-pair to use to ssl/scp into ec2-instances 
 
-  - Name of the created environment added to the names of all created resources (or an empty string). Example: EnvName = "-testing" => all resources start with "strategy-game*-testing*"
+- **CodeStart-Github-Connection**
+  - A connection to GitHub via CodeStar for the deployment-pipeline
 
-  - Default: ""
-
-- *GitBranch*
-
-  - Name of the git-branch to use for building (and deployment)
-  - Default: "develop"
-  - Type: String
-
-- *GithubCodeStarConnectionArn*
-
-  - Amazon Resource Name (ARN) of the already created Codestar-connection to GitHub. This connection is required but not created with the CloudFormation-tempalte 
-  - Default: the arn of an already created connection
+- **S3-Bucket for "Secret" Configs**
+  - S3-Bucket holding configuration files required for building that are not checked into git
+  - Bucket-name = "strategy-game.config" with sub-directories "backend" and "frontend"
 
 ## Creating a new Infrastructure-Stack
 
-A new infrastructure stack can be created via ...
+The CloudFormation stack is defined in `./infrastructure/infrastructure-stack.yml`
+
+A new stack can be created via ...
 
 - the AWS-Console
 
@@ -82,7 +84,7 @@ A new infrastructure stack can be created via ...
   .\tools create infra
   ```
 
-  - creates a new stack with default parameters+
+  - creates a new stack with default parameters
 
 After the creation finished, the outputs of the stack contain the webapp-url, server-ip and other values. These can be displayed in the AWS-Console or via the "tools"-script with the following commands
 
