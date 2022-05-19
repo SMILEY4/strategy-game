@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.ListPlayerGameLobbiesAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.ListPlayerGameLobbiesAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.results.Result
 

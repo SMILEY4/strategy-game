@@ -31,12 +31,6 @@ export interface ApiClient {
 	openWorldConnection: (worldId: string) => Promise<void>;
 
 	/**
-	 * Send a request to join a world. The websocket-connection must be opened before
-	 * @param worldId the id of the world
-	 */
-	sendJoinWorld: (worldId: string) => void;
-
-	/**
 	 * Submit the commands of the current turn
 	 * @param worldId the id of the world
 	 * @param playerCommands the commands to submit

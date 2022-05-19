@@ -46,6 +46,6 @@ internal class MockUserIdentityService(private val userId: String) : UserIdentit
 
 	override fun refreshAuthentication(refreshToken: String) = throw UnsupportedOperationException()
 
-	override fun deleteUser(email: String, password: String) = throw UnsupportedOperationException()
+	override suspend fun deleteUser(email: String, password: String) = throw UnsupportedOperationException()
 
 }

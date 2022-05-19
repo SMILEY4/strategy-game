@@ -1,11 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.messages.PlaceMarkerCommand
 
+/**
+ * Handle a player ending and submitting a turn
+ */
 interface SubmitTurnAction {
 
 	/**
-	 * Handle a turn submission
 	 * @param userId the id of the user
 	 * @param connectionId the id of the connection sending the message
 	 * @param gameId the id of the world

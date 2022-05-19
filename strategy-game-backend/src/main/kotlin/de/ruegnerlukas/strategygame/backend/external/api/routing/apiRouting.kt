@@ -1,14 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
-import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.CreateNewWorldAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.CreateGameLobbyAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.JoinGameLobbyAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.ListPlayerGameLobbiesAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.RequestConnectGameLobbyAction
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
+import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.CreateGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.JoinGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.JoinWorldAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.ListPlayerGameLobbiesAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.RequestConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
@@ -32,12 +33,13 @@ fun Application.apiRoutes(
 	requestConnectLobbyAction: RequestConnectGameLobbyAction,
 	closeConnectionAction: CloseConnectionAction,
 	userIdentityService: UserIdentityService,
+	joinWorldAction: JoinWorldAction
 ) {
 	routing {
 		route("api") {
 			userRoutes(userIdentityService)
 			gameLobbyRoutes(createGameLobbyAction, joinGameLobbyAction, listGameLobbiesAction)
-			gameWebsocketRoutes(connectionHandler, userIdentityService, messageHandler, closeConnectionAction, requestConnectLobbyAction)
+			gameWebsocketRoutes(connectionHandler, userIdentityService, messageHandler, closeConnectionAction, requestConnectLobbyAction, joinWorldAction)
 			get("/health") {
 				call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
 			}
@@ -55,13 +57,11 @@ fun getUserIdOrThrow(call: ApplicationCall): String {
 	val principal = call.principal<JWTPrincipal>() ?: throw Exception("No JWT-Principal attached to call")
 	return principal.payload.subject ?: throw Exception("No subject found in JWT-Principal")
 }
-
-
 /**
- * Get the id of the user making an (authenticated) http-request
+ * Get the id of the user opening an (authenticated) websocket-connection
  * @param call the request
- * @return the user id or null
+ * @return the user id
  * */
-fun getUserId(call: ApplicationCall): String? {
-	return call.principal<JWTPrincipal>()?.payload?.subject
+fun getWebsocketUserIdOrThrow(userService: UserIdentityService, call: ApplicationCall): String {
+	return userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!)
 }

@@ -2,13 +2,13 @@ package de.ruegnerlukas.strategygame.backend.core.actions
 
 import de.ruegnerlukas.strategygame.backend.ports.provided.JoinWorldAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.ports.required.GenericMessageProducer
+import de.ruegnerlukas.strategygame.backend.ports.required.MessageProducer
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class JoinWorldActionImpl(
-	private val messageProducer: GenericMessageProducer,
+	private val messageProducer: MessageProducer,
 	private val repository: GameRepository
 ) : JoinWorldAction, Logging {
 

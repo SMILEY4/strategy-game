@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.RequestConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.RequestConnectGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 

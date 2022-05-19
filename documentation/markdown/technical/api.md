@@ -177,39 +177,81 @@ DELETE /api/user/delete
   - 200 OK
   - 401 Unauthorized (token, email or password incorrect)
 
-## World (Deprecated)
+## Game
 
-### Create World
+### Create new Game (protected)
+
+Create a new game. Other players can join this game via the returned game-id
 
 ```
-POST /api/world/create
+POST /api/game/create
 ```
-
-- Request
-
-  *empty*
 
 - Responses
 
   - 200 OK
 
-    ```json
-    {
-    	"worldId": "String"
-    }
+    ```
+    THE_GAME_ID
     ```
 
-  - 500 Internal Server Error
+  - 401 Unauthorized
 
-    ```
-    // the error message
-    ```
+### Join Game (protected)
 
-### World WebSocket-Connection
+Join a game created by another player as a participant.
 
 ```
-WS /api/messages?token=<jwtToken>
+POST /api/game/join/:gameId
 ```
+
+- Responses
+  - 200 OK
+  - 401 Unauthorized
+
+### List Games (protected)
+
+List all games with the requester as a participant.
+
+```
+GET /api/game/list
+```
+
+- Responses
+
+  - 200 OK
+
+    ```
+    [
+    	GAME_ID_1,
+    	GAME_ID_2,
+    	...
+    ]
+    ```
+
+  - 401 Unauthorized
+
+## Game Websocket
+
+### Connect to a Game
+
+Open a websocket-connection to a game you already joined/created
+
+```
+WS /api/game/:gameId?token=<jwt>
+```
+
+- Responses
+
+  - Accepts request and "opens" connection
+
+  - 401 Unauthorized
+
+  - 409 Conflict
+
+    ```
+    NOT_PARTICIPANT
+    ```
 
 
 
@@ -227,19 +269,7 @@ All messages follow the following format
 - "[IN]" = messages sent by the client(s) and handled by the server/backend
 - "[OUT]" = messages sent by the server/backend and handled by the client(s)
 
-### [IN] Join World
-
-- Type: `join-world`
-
-- Payload
-
-  ```json
-  {
-      "worldId": "String - the id of the world to join",
-  }
-  ```
-
-### [IN] Submit Turn
+## [IN] Submit Turn
 
 - Type: `submit-turn`
 
@@ -257,7 +287,7 @@ All messages follow the following format
   }
   ```
 
-### [OUT] Initial World State
+## [OUT] Initial World State
 
 - Type: `world-state`
 
@@ -265,17 +295,15 @@ All messages follow the following format
 
   ```json
   {
-      "map": {
-          "tiles": [
-              "q": "Int - the q-coordinate of the tile",
-              "r": "Int - the r-coordinate of the tile",
-              "tileId": "Int - the id specifying the type of the tile"
-          ]
-      }
+      "tiles": [
+          "q": "Int - the q-coordinate of the tile",
+          "r": "Int - the r-coordinate of the tile",
+          "tileId": "Int - the id specifying the type of the tile"
+      ]
   }
   ```
 
-### **[OUT] **New Turn
+## [OUT] New Turn
 
 - Type: `new-turn`
 

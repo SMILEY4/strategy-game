@@ -52,7 +52,7 @@ fun Application.module() {
 	val listGameLobbiesAction = ListPlayerGameLobbiesActionImpl(gameRepository)
 	val requestConnectGameLobbyAction = RequestConnectGameLobbyActionImpl(gameRepository)
 	val closeConnectionAction = CloseConnectionActionImpl(gameRepository)
-	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
+	val messageHandler = MessageHandler(submitTurnAction)
 	val userIdentityService = UserIdentityService.create(Config.get())
 
 	install(Routing)
@@ -99,6 +99,7 @@ fun Application.module() {
 		listGameLobbiesAction,
 		requestConnectGameLobbyAction,
 		closeConnectionAction,
-		userIdentityService
+		userIdentityService,
+		joinWorldAction
 	)
 }

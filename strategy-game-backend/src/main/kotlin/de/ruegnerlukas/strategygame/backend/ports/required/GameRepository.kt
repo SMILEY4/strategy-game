@@ -7,19 +7,20 @@ import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 interface GameRepository {
 
 	/**
-	 * Save or update the given game-state. The unique id is the [GameState.gameId]
+	 * Persist the given [GameState]
 	 */
 	fun saveGameState(state: GameState): VoidResult
 
 
 	/**
-	 * Get a game-state by the game-id
+	 * Fetch a [GameState] by its [GameState.gameId]
+	 * @return a success-result or an error-result with the error "GAME_NOT_FOUND:<gameId>"
 	 */
 	fun getGameState(gameId: String): Result<GameState>
 
 
 	/**
-	 * Get all game-states where the user with the given id is participating
+	 * Fetch all [GameState] where the given user is a participant
 	 */
 	fun getGameStates(userId: String): Result<List<GameState>>
 

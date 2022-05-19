@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.LoginData
-import de.ruegnerlukas.strategygame.backend.external.api.models.CreateUserData
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpStatusCode
@@ -16,7 +16,7 @@ import io.ktor.server.routing.route
 
 
 /**
- * configuration for user-actions
+ * configuration for user-routes
  */
 fun Route.userRoutes(userIdentityService: UserIdentityService) {
 	route("user") {

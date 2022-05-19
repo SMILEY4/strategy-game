@@ -1,18 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.JoinWorldMessage
-import de.ruegnerlukas.strategygame.backend.external.api.models.SubmitTurnMessage
-import de.ruegnerlukas.strategygame.backend.ports.provided.JoinWorldAction
+import de.ruegnerlukas.strategygame.backend.ports.models.messages.SubmitTurnMessage
 import de.ruegnerlukas.strategygame.backend.ports.provided.SubmitTurnAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 /**
- * Dispatcher for world-related messages
+ * Message-dispatcher for websocket messages
  */
 class MessageHandler(
-	private val joinWorldAction: JoinWorldAction,
 	private val submitTurnAction: SubmitTurnAction
 ) : Logging {
 
@@ -23,15 +20,8 @@ class MessageHandler(
 	suspend fun onMessage(message: WebSocketMessage) {
 		log().info("Received message '${message.type}' from connection ${message.connectionId}")
 		when (message.type) {
-			"join-world" -> handleJoinWorld(message)
 			"submit-turn" -> handleSubmitTurn(message)
 			else -> log().info("Unknown message type: ${message.type}")
-		}
-	}
-
-	private suspend fun handleJoinWorld(message: WebSocketMessage) {
-		handleMessage<JoinWorldMessage>(message.payload) {
-			joinWorldAction.perform(message.userId, message.connectionId, it.worldId)
 		}
 	}
 

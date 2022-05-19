@@ -9,7 +9,7 @@ object ApplicationMode {
 	const val DEFAULT = DEV
 }
 
-var APPLICATION_MODE = "dev"
+var APPLICATION_MODE = ApplicationMode.DEFAULT
 
 
 /**

@@ -15,7 +15,7 @@ class Connection(val session: DefaultWebSocketSession) {
 
 
 	/**
-	 * The id of this connection.
+	 * The id of this connection (unique among the current connections).
 	 */
 	private val id: Int = lastId.getAndIncrement()
 

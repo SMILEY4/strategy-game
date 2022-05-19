@@ -1,15 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.core.actions
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.NewTurnMessage
-import de.ruegnerlukas.strategygame.backend.external.api.models.PlayerMarker
+import de.ruegnerlukas.strategygame.backend.ports.models.messages.NewTurnMessage
+import de.ruegnerlukas.strategygame.backend.ports.models.messages.PlayerMarker
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.ports.required.GenericMessageProducer
+import de.ruegnerlukas.strategygame.backend.ports.required.MessageProducer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class EndTurnAction(
-	private val messageProducer: GenericMessageProducer,
+	private val messageProducer: MessageProducer,
 	private val repository: GameRepository
 ) {
 

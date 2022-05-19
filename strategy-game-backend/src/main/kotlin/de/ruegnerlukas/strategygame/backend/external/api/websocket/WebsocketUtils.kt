@@ -31,6 +31,10 @@ object WebsocketUtils {
 	 */
 	const val PATH_PARAM_GAME_ID = "gameId"
 
+
+	/**
+	 * Intercept a websocket-request before a proper connection is established
+	 */
 	fun Route.interceptWebsocketRequest(
 		interceptor: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit, callback: Route.() -> Unit
 	): Route {
@@ -44,6 +48,11 @@ object WebsocketUtils {
 		return route
 	}
 
+
+	/**
+	 * Authenticate a websocket-request before a proper connection is established.
+	 * A jwt-token must be provided as a query-parameter with the name [QUERY_PARAM_TOKEN]
+	 */
 	fun Route.websocketAuthenticate(userClient: UserIdentityService, callback: Route.() -> Unit): Route {
 		return interceptWebsocketRequest(
 			interceptor = {
@@ -65,6 +74,9 @@ object WebsocketUtils {
 	}
 
 
+	/**
+	 * Build a [WebSocketMessage]-object from the given data
+	 */
 	fun buildMessage(userService: UserIdentityService, connectionId: Int, call: ApplicationCall, frame: Frame.Text): WebSocketMessage {
 		return buildMessage(
 			userService,
@@ -76,6 +88,9 @@ object WebsocketUtils {
 	}
 
 
+	/**
+	 * Build a [WebSocketMessage]-object from the given data
+	 */
 	fun buildMessage(userClient: UserIdentityService, connectionId: Int, token: String, gameId: String, rawData: String): WebSocketMessage {
 		val data = Json.decodeFromString<Map<String, String>>(rawData)
 		return WebSocketMessage(

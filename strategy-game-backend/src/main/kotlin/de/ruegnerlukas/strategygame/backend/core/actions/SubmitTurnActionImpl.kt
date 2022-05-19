@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.actions
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.messages.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
 import de.ruegnerlukas.strategygame.backend.ports.provided.SubmitTurnAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository

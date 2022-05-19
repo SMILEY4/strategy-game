@@ -13,17 +13,17 @@ import io.ktor.util.logging.KtorSimpleLogger
  * Mirrors: [io.ktor.server.engine.ConfigKeys] (exact same)
  */
 internal object ConfigKeys {
-	val applicationIdPath = "ktor.application.id"
-	val hostConfigPath = "ktor.deployment.host"
-	val hostPortPath = "ktor.deployment.port"
-	val hostWatchPaths = "ktor.deployment.watch"
-	val rootPathPath = "ktor.deployment.rootPath"
-	val hostSslPortPath = "ktor.deployment.sslPort"
-	val hostSslKeyStore = "ktor.security.ssl.keyStore"
-	val hostSslKeyAlias = "ktor.security.ssl.keyAlias"
-	val hostSslKeyStorePassword = "ktor.security.ssl.keyStorePassword"
-	val hostSslPrivateKeyPassword = "ktor.security.ssl.privateKeyPassword"
-	val developmentModeKey = "ktor.development"
+	const val applicationIdPath = "ktor.application.id"
+	const val hostConfigPath = "ktor.deployment.host"
+	const val hostPortPath = "ktor.deployment.port"
+	const val hostWatchPaths = "ktor.deployment.watch"
+	const val rootPathPath = "ktor.deployment.rootPath"
+	const val hostSslPortPath = "ktor.deployment.sslPort"
+	const val hostSslKeyStore = "ktor.security.ssl.keyStore"
+	const val hostSslKeyAlias = "ktor.security.ssl.keyAlias"
+	const val hostSslKeyStorePassword = "ktor.security.ssl.keyStorePassword"
+	const val hostSslPrivateKeyPassword = "ktor.security.ssl.privateKeyPassword"
+	const val developmentModeKey = "ktor.development"
 }
 
 

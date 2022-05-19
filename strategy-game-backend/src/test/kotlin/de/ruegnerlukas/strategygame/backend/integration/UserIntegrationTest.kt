@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.integration
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.LoginData
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
 import io.kotest.assertions.ktor.client.shouldHaveStatus

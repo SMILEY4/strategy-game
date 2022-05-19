@@ -1,8 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.config.engine
 
-//import com.typesafe.config.Config
-//import com.typesafe.config.ConfigFactory
-//import com.typesafe.config.ConfigRenderOptions
 import de.ruegnerlukas.strategygame.backend.shared.config.Config
 import io.ktor.server.application.ApplicationEnvironment
 import io.ktor.server.config.ApplicationConfig
@@ -38,15 +35,7 @@ internal fun buildApplicationConfig(envName: String): ApplicationConfig {
 	val applicationId = combinedConfig.tryGetString(ConfigKeys.applicationIdPath) ?: "Application"
 	val logger = KtorSimpleLogger(applicationId)
 
-//	val contentHiddenValue = ConfigValueFactory.fromAnyRef("***", "Content hidden")
-	if (combinedConfig.hasPath("ktor")) {
-//		logger.trace(
-//			combinedConfig.getObject("ktor")
-//				.withoutKey("security")
-//				.withValue("security", contentHiddenValue)
-//				.render()
-//		)
-	} else {
+	if (!combinedConfig.hasPath("ktor")) {
 		logger.trace(
 			"No configuration provided: neither application.conf " +
 					"nor system properties nor command line options (-config or -P:ktor...=) provided"

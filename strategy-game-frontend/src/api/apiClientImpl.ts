@@ -61,14 +61,6 @@ export class ApiClientImpl implements ApiClient {
     }
 
 
-    public sendJoinWorld(worldId: string) {
-        this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
-            type: "join-world",
-            payload: JSON.stringify({worldId: worldId}, null, "   ")
-        });
-    }
-
-
     public submitTurn(worldId: string, playerCommands: PlaceMarkerCommand[]): void {
         this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
             type: "submit-turn",

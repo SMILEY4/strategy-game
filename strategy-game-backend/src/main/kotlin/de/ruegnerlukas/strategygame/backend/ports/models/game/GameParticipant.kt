@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.game
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.messages.PlaceMarkerCommand
 
 data class GameParticipant(
 	val userId: String,

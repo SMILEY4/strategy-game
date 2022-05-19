@@ -6,7 +6,8 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtil
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
 import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.RequestConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.JoinWorldAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.RequestConnectGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.http.HttpStatusCode
@@ -18,12 +19,16 @@ import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
 
 
+/**
+ * Configuration for game-websocket routes
+ */
 fun Route.gameWebsocketRoutes(
 	connectionHandler: ConnectionHandler,
 	userService: UserIdentityService,
 	messageHandler: MessageHandler,
 	closeConnectionAction: CloseConnectionAction,
-	requestConnectLobbyAction: RequestConnectGameLobbyAction
+	requestConnectLobbyAction: RequestConnectGameLobbyAction,
+	joinWorldAction: JoinWorldAction
 ) {
 	val logger = Logging.create()
 	route("game/{${WebsocketUtils.PATH_PARAM_GAME_ID}}") {
@@ -42,6 +47,11 @@ fun Route.gameWebsocketRoutes(
 				callback = {
 					webSocket {
 						val connectionId = connectionHandler.openSession(this)
+						joinWorldAction.perform(
+							getWebsocketUserIdOrThrow(userService, call),
+							connectionId,
+							call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
+						)
 						try {
 							for (frame in incoming) {
 								when (frame) {
@@ -53,7 +63,7 @@ fun Route.gameWebsocketRoutes(
 							}
 						} finally {
 							connectionHandler.closeSession(connectionId)
-							closeConnectionAction.perform(userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!))
+							closeConnectionAction.perform(getWebsocketUserIdOrThrow(userService, call))
 						}
 					}
 				}

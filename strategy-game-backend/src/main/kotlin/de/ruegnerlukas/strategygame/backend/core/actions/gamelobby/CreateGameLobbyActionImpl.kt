@@ -1,12 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
 import de.ruegnerlukas.strategygame.backend.core.tilemap.TilemapBuilder
-import de.ruegnerlukas.strategygame.backend.ports.models.Tilemap
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.CreateGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.CreateGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.results.Result
 import org.joda.time.Instant
 import java.util.UUID

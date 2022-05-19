@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 object Config {
 
 	init {
+		// reload config in dev mode (to make it work with hot-reload)
 		if (APPLICATION_MODE == ApplicationMode.DEV) {
 			load(ApplicationMode.DEV)
 		}
@@ -48,12 +49,18 @@ object Config {
 	}
 
 
+	/**
+	 * Set/update the config-data
+	 */
 	fun set(data: ConfigData, baseConfig: com.typesafe.config.Config? = null) {
 		Config.configData = data
 		Config.baseConfig = baseConfig
 	}
 
 
+	/**
+	 * @return the config-data (throws an exception if no data is loaded)
+	 */
 	fun get(): ConfigData {
 		if (configData == null) {
 			throw IllegalStateException("No config data set")
@@ -63,6 +70,9 @@ object Config {
 	}
 
 
+	/**
+	 * @return the base [com.typesafe.config.Config] or null
+	 */
 	fun getBaseTypesafeConfig() = baseConfig
 
 }
