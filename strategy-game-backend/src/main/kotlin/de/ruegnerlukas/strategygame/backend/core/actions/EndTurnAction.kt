@@ -1,32 +1,36 @@
 package de.ruegnerlukas.strategygame.backend.core.actions
 
-import de.ruegnerlukas.strategygame.backend.ports.required.GenericMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.Repository
 import de.ruegnerlukas.strategygame.backend.external.api.models.NewTurnMessage
-import de.ruegnerlukas.strategygame.backend.external.api.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.external.api.models.PlayerMarker
+import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
+import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.ports.required.GenericMessageProducer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class EndTurnAction(
 	private val messageProducer: GenericMessageProducer,
-	private val repository: Repository
+	private val repository: GameRepository
 ) {
 
 	suspend fun perform(worldId: String) {
-		repository.setAllParticipantsPlaying(worldId)
-		val commands = repository.getCommands(worldId)
-		val newTurnData = buildNewTurnData(commands)
-		repository.getParticipantConnections(worldId).getOrThrow().forEach {
-			messageProducer.sendToSingle(it, "new-turn", Json.encodeToString(newTurnData))
+		repository.getGameState(worldId).get().let { gameState ->
+			val newTurnData = buildNewTurnData(gameState.participants)
+			gameState.participants
+				.filter { it.connectionId != null }
+				.map { it.connectionId }
+				.forEach { connectionId ->
+					messageProducer.sendToSingle(connectionId!!, "new-turn", Json.encodeToString(newTurnData))
+				}
+			gameState.participants.forEach { it.currentCommands = null }
 		}
 	}
 
-	private fun buildNewTurnData(commands: Map<Int, List<PlaceMarkerCommand>>): NewTurnMessage {
+	private fun buildNewTurnData(participants: List<GameParticipant>): NewTurnMessage {
 		val addedMarkers = mutableListOf<PlayerMarker>()
-		commands.forEach { entry ->
-			entry.value.forEach { cmd ->
-				addedMarkers.add(PlayerMarker(cmd.q, cmd.r, entry.key))
+		participants.filter { it.connectionId != null }.forEach { participant ->
+			participant.currentCommands?.forEach { cmd ->
+				addedMarkers.add(PlayerMarker(cmd.q, cmd.r, participant.connectionId!!))
 			}
 		}
 		return NewTurnMessage(addedMarkers)

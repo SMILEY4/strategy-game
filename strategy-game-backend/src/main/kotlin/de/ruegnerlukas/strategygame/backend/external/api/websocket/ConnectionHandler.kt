@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.shared.websocket
+package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.websocket.DefaultWebSocketSession
@@ -20,7 +20,7 @@ class ConnectionHandler : Logging {
 	fun openSession(session: DefaultWebSocketSession): Int {
 		val connection = Connection(session)
 		connections.add(connection)
-		log().info("Added new connection with id ${connection.getId()}")
+		log().info("Added new websocket-connection with id ${connection.getId()}")
 		return connection.getId()
 	}
 
@@ -32,7 +32,7 @@ class ConnectionHandler : Logging {
 	fun closeSession(connectionId: Int) {
 		val removed = connections.removeIf { it.getId() == connectionId }
 		if (removed) {
-			log().info("Remove connection with id $connectionId")
+			log().info("Remove websocket-connection with id $connectionId")
 		}
 	}
 

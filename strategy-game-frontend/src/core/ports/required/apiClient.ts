@@ -21,14 +21,14 @@ export interface ApiClient {
 
 	/**
 	 * Send a request to create new world
-	 * @return information about the created world
+	 * @return the id of the created world
 	 */
-	createWorld: () => Promise<WorldMeta>;
+	createWorld: () => Promise<string>;
 
 	/**
-	 * Opens a new websocket connection for world-related messages
+	 * Opens a new websocket connection to the world with the given id
 	 */
-	openWorldConnection: () => Promise<void>;
+	openWorldConnection: (worldId: string) => Promise<void>;
 
 	/**
 	 * Send a request to join a world. The websocket-connection must be opened before

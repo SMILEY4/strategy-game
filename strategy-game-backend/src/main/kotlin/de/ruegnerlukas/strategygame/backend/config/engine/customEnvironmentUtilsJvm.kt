@@ -1,8 +1,9 @@
-package de.ruegnerlukas.strategygame.backend.shared.engine
+package de.ruegnerlukas.strategygame.backend.config.engine
 
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigRenderOptions
+//import com.typesafe.config.Config
+//import com.typesafe.config.ConfigFactory
+//import com.typesafe.config.ConfigRenderOptions
+import de.ruegnerlukas.strategygame.backend.shared.config.Config
 import io.ktor.server.application.ApplicationEnvironment
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.config.HoconApplicationConfig
@@ -11,8 +12,6 @@ import io.ktor.server.engine.ApplicationEngineEnvironmentBuilder
 import io.ktor.server.engine.sslConnector
 import io.ktor.util.logging.KtorSimpleLogger
 import io.ktor.util.toCharArray
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.net.URI
@@ -24,31 +23,9 @@ import java.security.KeyStore
  * Build the custom config
  * @param envName the name of the environment. Defines, which config file(s) to load in addition to the base file(s) ( application.<env>.conf, application.<env>.local.conf )
  */
-private fun buildConfig(envName: String): Config {
-
-	val baseConfig = ConfigFactory.parseResources("application.conf")
-	val baseLocalConfig = ConfigFactory.parseResources("application.local.conf")
-	val envConfig = ConfigFactory.parseResources("application.$envName.conf")
-	val envLocalConfig = ConfigFactory.parseResources("application.$envName.local.conf")
-
-	val config = ConfigFactory.load()
-		.withFallback(envLocalConfig)
-		.withFallback(envConfig)
-		.withFallback(baseLocalConfig)
-		.withFallback(baseConfig)
-
-	val jsonConfig = config.root().render(
-		ConfigRenderOptions
-			.defaults()
-			.setOriginComments(false)
-			.setComments(false)
-			.setFormatted(true)
-	)
-
-	val json = Json { ignoreUnknownKeys = true }
-	de.ruegnerlukas.strategygame.backend.shared.config.Config.set(json.decodeFromString(jsonConfig))
-
-	return config
+private fun buildConfig(envName: String): com.typesafe.config.Config {
+	Config.load(envName)
+	return Config.getBaseTypesafeConfig()!!
 }
 
 

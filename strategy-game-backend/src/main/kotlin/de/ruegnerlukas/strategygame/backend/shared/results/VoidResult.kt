@@ -1,7 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.shared.results
 
-import de.ruegnerlukas.strategygame.backend.shared.results.Result
-
 open class VoidResult(private val successful: Boolean, private val error: String?) {
 	companion object {
 		fun success(): VoidResult {
@@ -29,7 +27,7 @@ open class VoidResult(private val successful: Boolean, private val error: String
 		return error ?: ""
 	}
 
-	fun onError(handler: (error: String) -> Unit): VoidResult {
+	suspend fun onError(handler: suspend (error: String) -> Unit): VoidResult {
 		if (isError()) {
 			handler(getError())
 		}

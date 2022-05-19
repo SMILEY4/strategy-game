@@ -8,9 +8,9 @@ interface SubmitTurnAction {
 	 * Handle a turn submission
 	 * @param userId the id of the user
 	 * @param connectionId the id of the connection sending the message
-	 * @param worldId the id of the world
+	 * @param gameId the id of the world
 	 * @param commands the list of commands in the submitted turn
 	 */
-	suspend fun perform(userId: String, connectionId: Int, worldId: String, commands: List<PlaceMarkerCommand>)
+	suspend fun perform(userId: String, connectionId: Int, gameId: String, commands: List<PlaceMarkerCommand>)
 
 }

@@ -1,11 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
-import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
 import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.CreateNewWorldAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.CreateGameLobbyAction
-import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.JoinGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.ListPlayerGameLobbiesAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.RequestConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
@@ -23,17 +26,18 @@ import io.ktor.server.routing.routing
 fun Application.apiRoutes(
 	connectionHandler: ConnectionHandler,
 	messageHandler: MessageHandler,
-	createNewWorldAction: CreateNewWorldAction,
 	createGameLobbyAction: CreateGameLobbyAction,
+	joinGameLobbyAction: JoinGameLobbyAction,
+	listGameLobbiesAction: ListPlayerGameLobbiesAction,
+	requestConnectLobbyAction: RequestConnectGameLobbyAction,
 	closeConnectionAction: CloseConnectionAction,
-	cognito: AwsCognito
+	userIdentityService: UserIdentityService,
 ) {
 	routing {
 		route("api") {
-			userRoutes(cognito)
-			worldRoutes(createNewWorldAction)
-			gameLobbyRoutes(createGameLobbyAction)
-			websocketRoutes(connectionHandler, messageHandler, closeConnectionAction)
+			userRoutes(userIdentityService)
+			gameLobbyRoutes(createGameLobbyAction, joinGameLobbyAction, listGameLobbiesAction)
+			gameWebsocketRoutes(connectionHandler, userIdentityService, messageHandler, closeConnectionAction, requestConnectLobbyAction)
 			get("/health") {
 				call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
 			}

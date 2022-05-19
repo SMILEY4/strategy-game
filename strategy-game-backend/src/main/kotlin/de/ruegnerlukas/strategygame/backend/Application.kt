@@ -1,26 +1,31 @@
 package de.ruegnerlukas.strategygame.backend
 
+import de.ruegnerlukas.strategygame.backend.config.engine.CustomNettyEngineMain
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.engine.CustomNettyEngineMain
+
+object ApplicationMode {
+	const val DEV = "dev"
+	const val PROD = "prod"
+	const val DEFAULT = DEV
+}
+
+var APPLICATION_MODE = "dev"
+
 
 /**
  * Entry point of the application
  */
 fun main(args: Array<String>) {
-	val mode = getMode(args)
-	Logging.create().info("Starting application in $mode mode.")
-	CustomNettyEngineMain.main(mode, args)
+	APPLICATION_MODE = getMode(args)
+	Logging.create().info("Starting application in $APPLICATION_MODE mode.")
+	CustomNettyEngineMain.main(APPLICATION_MODE, args)
 }
 
 
-private const val MODE_DEV = "dev"
-private const val MODE_PROD = "prod"
-private const val MODE_DEFAULT = MODE_DEV
-
 private fun getMode(args: Array<String>): String {
-	return if (args.isNotEmpty() && (args[0] == MODE_DEV || args[0] == MODE_PROD)) {
+	return if (args.isNotEmpty() && (args[0] == ApplicationMode.DEV || args[0] == ApplicationMode.PROD)) {
 		args[0]
 	} else {
-		MODE_DEFAULT
+		ApplicationMode.DEFAULT
 	}
 }

@@ -1,7 +1,6 @@
 import {WorldHandler} from "../ports/provided/worldHandler";
 import {StateProvider} from "../ports/required/stateProvider";
 import {ApiClient} from "../ports/required/apiClient";
-import {WorldMeta} from "../../state/models/WorldMeta";
 
 
 export class WorldService implements WorldHandler {
@@ -16,20 +15,20 @@ export class WorldService implements WorldHandler {
 	}
 
 
-	public create(): Promise<WorldMeta> {
+	public create(): Promise<string> {
 		return this.client.createWorld();
 	}
 
 
 	public join(worldId: string): Promise<void> {
-		return this.client.openWorldConnection()
+		return this.client.openWorldConnection(worldId)
 			.then(() => this.stateProvider.getState().setLoading(worldId))
 			.then(() => this.client.sendJoinWorld(worldId));
 	}
 
 
 	public setInitialState(state: any): void {
-		this.stateProvider.getState().setActive(state.map.tiles);
+		this.stateProvider.getState().setActive(state.tiles);
 	}
 
 }

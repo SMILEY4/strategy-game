@@ -4,8 +4,8 @@ interface CloseConnectionAction {
 
 	/**
 	 * Handle a player closing the connection
-	 * @param connectionId the id of the closed connection
+	 * @param userId the id of the user closing the connection
 	 */
-	suspend fun perform(connectionId: Int)
+	suspend fun perform(userId: String)
 
 }

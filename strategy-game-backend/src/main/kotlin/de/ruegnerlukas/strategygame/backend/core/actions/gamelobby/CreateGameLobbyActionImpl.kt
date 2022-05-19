@@ -1,5 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.core.actions
+package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
+import de.ruegnerlukas.strategygame.backend.core.tilemap.TilemapBuilder
+import de.ruegnerlukas.strategygame.backend.ports.models.Tilemap
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.CreateGameLobbyAction
@@ -9,13 +11,14 @@ import de.ruegnerlukas.strategygame.backend.shared.results.Result
 import org.joda.time.Instant
 import java.util.UUID
 
-class CreateGameLobbyActionImpl(private val gameRepository: GameRepository) : CreateGameLobbyAction, Logging {
+class CreateGameLobbyActionImpl(private val gameRepository: GameRepository) : CreateGameLobbyAction {
 
 	override fun perform(userId: String): Result<String> {
 		val state = GameState(
 			gameId = generateGameId(),
 			createdTimestamp = Instant.now().millis,
-			participants = listOf(GameParticipant.owner(userId))
+			participants = listOf(GameParticipant.owner(userId)),
+			map = generateMap()
 		)
 		return gameRepository.saveGameState(state).mapToResult(
 			{ Result.success(state.gameId) },
@@ -24,5 +27,7 @@ class CreateGameLobbyActionImpl(private val gameRepository: GameRepository) : Cr
 	}
 
 	private fun generateGameId(): String = UUID.randomUUID()!!.toString()
+
+	private fun generateMap() = TilemapBuilder().build()
 
 }

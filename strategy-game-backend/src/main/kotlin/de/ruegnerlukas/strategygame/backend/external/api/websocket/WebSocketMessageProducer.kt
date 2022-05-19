@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.shared.websocket
+package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
 import de.ruegnerlukas.strategygame.backend.ports.required.GenericMessageProducer
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -10,7 +10,6 @@ import kotlinx.serialization.json.Json
  * Implementation of a [GenericMessageProducer] sending messages via a websocket
  */
 class WebSocketMessageProducer(private val connectionHandler: ConnectionHandler) : GenericMessageProducer, Logging {
-
 
 	override suspend fun sendToAll(type: String, payload: String) {
 		log().info("Sending message '$type' to all")
@@ -54,7 +53,12 @@ class WebSocketMessageProducer(private val connectionHandler: ConnectionHandler)
 	 * @return the message as a (json-) string
 	 */
 	private fun buildMessageString(type: String, payload: String): String {
-		return Json.encodeToString(WebSocketMessage(type, payload))
+		return Json.encodeToString(
+			mapOf(
+				"type" to type,
+				"payload" to payload
+			)
+		)
 	}
 
 }

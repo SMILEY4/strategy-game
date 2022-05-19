@@ -11,17 +11,25 @@ class Result<T>(successful: Boolean, private val value: T?, error: String?) : Vo
 		}
 	}
 
-	fun get(): T? {
+	fun getUnsafe(): T? {
 		return value
 	}
 
-	fun getOrThrow(): T {
+	fun get(): T {
 		return value ?: throw IllegalStateException()
 	}
 
-	fun onSuccess(handler: (value: T) -> Unit): Result<T> {
+	fun getOr(default: T): T {
+		return if (isSuccess()) {
+			get()
+		} else {
+			default
+		}
+	}
+
+	suspend fun onSuccess(handler: suspend (value: T) -> Unit): Result<T> {
 		if (isSuccess()) {
-			handler(getOrThrow())
+			handler(get())
 		}
 		return this
 	}
@@ -30,7 +38,7 @@ class Result<T>(successful: Boolean, private val value: T?, error: String?) : Vo
 		return if (isError()) {
 			errorHandler(getError())
 		} else {
-			successHandler(getOrThrow())
+			successHandler(get())
 		}
 	}
 
@@ -38,7 +46,7 @@ class Result<T>(successful: Boolean, private val value: T?, error: String?) : Vo
 		return if (isError()) {
 			errorHandler(getError())
 		} else {
-			successHandler(getOrThrow())
+			successHandler(get())
 		}
 	}
 

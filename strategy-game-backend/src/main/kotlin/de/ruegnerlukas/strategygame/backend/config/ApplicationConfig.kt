@@ -1,20 +1,20 @@
 package de.ruegnerlukas.strategygame.backend.config
 
 import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.CreateGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.CreateNewWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
 import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
-import de.ruegnerlukas.strategygame.backend.external.api.MessageHandler
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.CreateGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.JoinGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.ListPlayerGameLobbiesActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.RequestConnectGameLobbyActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
-import de.ruegnerlukas.strategygame.backend.external.api.routing.getUserId
-import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
-import de.ruegnerlukas.strategygame.backend.external.persistence.RepositoryImpl
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.config.Config
-import de.ruegnerlukas.strategygame.backend.shared.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.shared.websocket.WebSocketMessageProducer
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
@@ -24,7 +24,7 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.plugins.cors.CORS
+import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
 import io.ktor.server.routing.Routing
@@ -40,6 +40,21 @@ import java.time.Duration
  * The main-module for configuring Ktor. Referenced in "application.conf".
  */
 fun Application.module() {
+
+	val connectionHandler = ConnectionHandler()
+	val messageProducer = WebSocketMessageProducer(connectionHandler)
+	val gameRepository = InMemoryGameRepository()
+	val endTurnAction = EndTurnAction(messageProducer, gameRepository)
+	val joinWorldAction = JoinWorldActionImpl(messageProducer, gameRepository)
+	val submitTurnAction = SubmitTurnActionImpl(gameRepository, endTurnAction)
+	val createGameLobbyAction = CreateGameLobbyActionImpl(gameRepository)
+	val joinGameLobbyAction = JoinGameLobbyActionImpl(gameRepository)
+	val listGameLobbiesAction = ListPlayerGameLobbiesActionImpl(gameRepository)
+	val requestConnectGameLobbyAction = RequestConnectGameLobbyActionImpl(gameRepository)
+	val closeConnectionAction = CloseConnectionActionImpl(gameRepository)
+	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
+	val userIdentityService = UserIdentityService.create(Config.get())
+
 	install(Routing)
 	install(WebSockets) {
 		pingPeriod = Duration.ofSeconds(15)
@@ -52,7 +67,7 @@ fun Application.module() {
 		format { call ->
 			val status = call.response.status()
 			val httpMethod = call.request.httpMethod.value
-			val route = call.request.uri
+			val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
 			"${status.toString()}: $httpMethod - $route"
 		}
 	}
@@ -74,32 +89,16 @@ fun Application.module() {
 		allowSameOrigin = true
 	}
 	install(Authentication) {
-		jwt {
-			realm = "strategy-game"
-			verifier(jwkProvider(), jwkIssuer()) {
-				acceptLeeway(3)
-			}
-			validate { credential -> validateJwt(credential) }
-		}
+		jwt { userIdentityService.configureAuthentication(this) }
 	}
-
-	val connectionHandler = ConnectionHandler()
-	val messageProducer = WebSocketMessageProducer(connectionHandler)
-	val repository = RepositoryImpl()
-	val endTurnAction = EndTurnAction(messageProducer, repository)
-	val joinWorldAction = JoinWorldActionImpl(messageProducer, repository)
-	val submitTurnAction = SubmitTurnActionImpl(repository, endTurnAction)
-	val createGameLobbyAction = CreateGameLobbyActionImpl(InMemoryGameRepository())
-	val createWorldAction = CreateNewWorldActionImpl(repository)
-	val closeConnectionAction = CloseConnectionActionImpl(repository, endTurnAction)
-	val messageHandler = MessageHandler(joinWorldAction, submitTurnAction)
-	val cognitoClient = AwsCognito.create(
-		poolId = Config.get().aws.cognito.poolId,
-		clientId = Config.get().aws.cognito.clientId,
-		accessKey = Config.get().aws.user.accessKey,
-		secretKey = Config.get().aws.user.secretAccess,
-		region = Config.get().aws.region
+	apiRoutes(
+		connectionHandler,
+		messageHandler,
+		createGameLobbyAction,
+		joinGameLobbyAction,
+		listGameLobbiesAction,
+		requestConnectGameLobbyAction,
+		closeConnectionAction,
+		userIdentityService
 	)
-
-	apiRoutes(connectionHandler, messageHandler, createWorldAction, createGameLobbyAction, closeConnectionAction, cognitoClient)
 }

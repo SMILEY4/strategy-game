@@ -18,7 +18,7 @@ export function CreateWorld(): ReactElement {
 
 	function onCreateWorld() {
 		Game.world.create()
-			.then(d => setWorldId(d.worldId))
+			.then(wid => setWorldId(wid))
 			.catch(e => setError(e.toString()));
 	}
 

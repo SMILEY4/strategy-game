@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.external.api.models.AuthData
+import de.ruegnerlukas.strategygame.backend.external.api.models.LoginData
 import de.ruegnerlukas.strategygame.backend.external.api.models.CreateUserData
-import de.ruegnerlukas.strategygame.backend.external.awscognito.AwsCognito
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -18,11 +18,11 @@ import io.ktor.server.routing.route
 /**
  * configuration for user-actions
  */
-fun Route.userRoutes(cognito: AwsCognito) {
+fun Route.userRoutes(userIdentityService: UserIdentityService) {
 	route("user") {
 		post("signup") {
 			call.receive<CreateUserData>().let {
-				val result = cognito.createUser(it.email, it.password, it.username)
+				val result = userIdentityService.createUser(it.email, it.password, it.username)
 				when {
 					result.isSuccess() -> call.respond(HttpStatusCode.OK)
 					result.isError("USER_EXISTS") -> call.respond(HttpStatusCode.Conflict, result.getError())
@@ -33,10 +33,10 @@ fun Route.userRoutes(cognito: AwsCognito) {
 			}
 		}
 		post("login") {
-			call.receive<AuthData>().let {
-				val result = cognito.authenticate(it.email, it.password)
+			call.receive<LoginData>().let {
+				val result = userIdentityService.authenticate(it.email, it.password)
 				when {
-					result.isSuccess() -> call.respond(HttpStatusCode.OK, AuthResult(result.getOrThrow()))
+					result.isSuccess() -> call.respond(HttpStatusCode.OK, AuthResult(result.get()))
 					result.isError("NOT_AUTHORIZED") -> call.respond(HttpStatusCode.Unauthorized, result.getError())
 					result.isError("USER_NOT_CONFIRMED") -> call.respond(HttpStatusCode.Conflict, result.getError())
 					result.isError("USER_NOT_FOUND") -> call.respond(HttpStatusCode.NotFound, result.getError())
@@ -46,9 +46,9 @@ fun Route.userRoutes(cognito: AwsCognito) {
 		}
 		post("refresh") {
 			call.receive<String>().let {
-				val result = cognito.refreshAuthentication(it)
+				val result = userIdentityService.refreshAuthentication(it)
 				when {
-					result.isSuccess() -> call.respond(HttpStatusCode.OK, result.getOrThrow())
+					result.isSuccess() -> call.respond(HttpStatusCode.OK, result.get())
 					result.isError("NOT_AUTHORIZED") -> call.respond(HttpStatusCode.Unauthorized, result.getError())
 					result.isError("USER_NOT_CONFIRMED") -> call.respond(HttpStatusCode.Conflict, result.getError())
 					result.isError("USER_NOT_FOUND") -> call.respond(HttpStatusCode.NotFound, result.getError())
@@ -58,8 +58,8 @@ fun Route.userRoutes(cognito: AwsCognito) {
 		}
 		authenticate {
 			delete("delete") {
-				call.receive<AuthData>().let {
-					val result = cognito.deleteUser(it.email, it.password)
+				call.receive<LoginData>().let {
+					val result = userIdentityService.deleteUser(it.email, it.password)
 					when {
 						result.isSuccess() -> call.respond(HttpStatusCode.OK)
 						result.isError("NOT_AUTHORIZED") -> call.respond(HttpStatusCode.Unauthorized)

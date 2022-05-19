@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.shared.engine
+package de.ruegnerlukas.strategygame.backend.config.engine
 
 import io.ktor.server.config.tryGetString
 import io.ktor.server.config.tryGetStringList

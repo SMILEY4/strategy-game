@@ -129,10 +129,16 @@ The backend uses JSON-Web Tokens (RS256) managed by "AWS Cognito" as authenticat
 
 2. the response contains the jwt-token (idToken)
 
-3. to access restricted routes, send the token in the "Authentication"-header
+3. to access restricted routes, send the token in the "Authorization"-header
 
    ```
    Bearer <idToken>
+   ```
+   
+   For protected WebSocket-Connections, the jwt-token (idToken) is send as a query parameter
+   
+   ```
+   ...?token=<idToken>
    ```
 
 

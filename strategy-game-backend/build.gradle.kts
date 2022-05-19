@@ -51,6 +51,7 @@ dependencies {
 	testImplementation("io.kotest:kotest-property:$versionKotest")
 	testImplementation("io.kotest.extensions:kotest-assertions-ktor:$versionKotestExtensions")
 	testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
+	testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
 	testImplementation("org.jetbrains.kotlin:kotlin-test:$versionKotlinTest")
 }
 

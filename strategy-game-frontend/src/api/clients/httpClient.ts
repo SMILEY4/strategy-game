@@ -38,7 +38,7 @@ export class HttpClient {
 				headers: {
 					"Accept": "application/json",
 					"Content-Type": "application/json",
-					...this.buildAuthHeader(!requireAuth)
+					...this.buildAuthHeader(!!requireAuth)
 				},
 				body: (content !== undefined && content != null)
 					? JSON.stringify(content, null, "   ")
@@ -47,7 +47,7 @@ export class HttpClient {
 		);
 	}
 
-	private buildAuthHeader(requireAuth: Boolean): Record<string, string> {
+	private buildAuthHeader(requireAuth: boolean): Record<string, string> {
 		if (requireAuth) {
 			return {
 				"Authorization": "Bearer " + this.authProvider.getToken()
