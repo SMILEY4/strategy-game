@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided
 
-import de.ruegnerlukas.strategygame.backend.ports.models.messages.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 
 /**
  * Handle a player ending and submitting a turn

@@ -277,17 +277,16 @@ All messages follow the following format
 
   ```json
   {
-      "worldId": "String - the id of the world to submit the turns for",
       "commands": [
           {
-              "q": "Int - the q-coordinate of the marker",
-              "r": "Int - the r-coordinate of the marker"
+              "q": "Int - the q-coordinate of the new marker",
+              "r": "Int - the r-coordinate of the new marker"
           }
       ]
   }
   ```
 
-## [OUT] Initial World State
+## [OUT] World State
 
 - Type: `world-state`
 
@@ -295,29 +294,19 @@ All messages follow the following format
 
   ```json
   {
-      "tiles": [
-          "q": "Int - the q-coordinate of the tile",
-          "r": "Int - the r-coordinate of the tile",
-          "tileId": "Int - the id specifying the type of the tile"
-      ]
-  }
-  ```
-
-## [OUT] New Turn
-
-- Type: `new-turn`
-
-- Payload
-
-  ```json
-  {
-      "addedMarkers": [
+      "map": {
+      	"tiles": [
+              "q": "Int - the q-coordinate of the tile",
+              "r": "Int - the r-coordinate of the tile",
+              "tileId": "Int - the id specifying the type of the tile"
+          ]
+  	},
+      "markers": [
           {
-              "q": "Int - the q-coordinate of the added marker",
-              "r": "Int - the r-coordinate of the added marker",
-              "playerId": "Int - the current (arbitrary) id of the player owning the marker"
-          }
+              "q": "Int - the q-coordinate of the marker",
+              "r": "Int - the r-coordinate of the marker",
+              "userId": "String - the id of the owner/user of this marker" 
+          },
       ]
   }
   ```
-

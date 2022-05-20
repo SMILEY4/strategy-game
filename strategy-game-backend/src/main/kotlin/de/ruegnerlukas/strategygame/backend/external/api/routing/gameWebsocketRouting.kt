@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtil
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
 import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.JoinWorldAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.RequestConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.ValidateConnectGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.http.HttpStatusCode
@@ -27,7 +27,7 @@ fun Route.gameWebsocketRoutes(
 	userService: UserIdentityService,
 	messageHandler: MessageHandler,
 	closeConnectionAction: CloseConnectionAction,
-	requestConnectLobbyAction: RequestConnectGameLobbyAction,
+	validateConnectLobbyAction: ValidateConnectGameLobbyAction,
 	joinWorldAction: JoinWorldAction
 ) {
 	val logger = Logging.create()
@@ -35,7 +35,7 @@ fun Route.gameWebsocketRoutes(
 		websocketAuthenticate(userService) {
 			interceptWebsocketRequest(
 				interceptor = {
-					val result = requestConnectLobbyAction.perform(
+					val result = validateConnectLobbyAction.perform(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
 					)

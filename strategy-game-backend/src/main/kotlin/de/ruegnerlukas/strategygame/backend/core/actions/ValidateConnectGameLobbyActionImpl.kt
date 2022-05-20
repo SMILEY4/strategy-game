@@ -1,11 +1,11 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
+package de.ruegnerlukas.strategygame.backend.core.actions
 
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
-import de.ruegnerlukas.strategygame.backend.ports.provided.RequestConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.ValidateConnectGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 
-class RequestConnectGameLobbyActionImpl(private val gameRepository: GameRepository) : RequestConnectGameLobbyAction {
+class ValidateConnectGameLobbyActionImpl(private val gameRepository: GameRepository) : ValidateConnectGameLobbyAction {
 
 	override fun perform(userId: String, gameId: String): VoidResult {
 		val gameState = gameRepository.getGameState(gameId)

@@ -4,10 +4,10 @@ import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionIm
 import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
 import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.CreateGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.JoinGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.ListPlayerGameLobbiesActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.RequestConnectGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.CreateGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.JoinGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.ListPlayerGameLobbiesActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.ValidateConnectGameLobbyActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
@@ -50,7 +50,7 @@ fun Application.module() {
 	val createGameLobbyAction = CreateGameLobbyActionImpl(gameRepository)
 	val joinGameLobbyAction = JoinGameLobbyActionImpl(gameRepository)
 	val listGameLobbiesAction = ListPlayerGameLobbiesActionImpl(gameRepository)
-	val requestConnectGameLobbyAction = RequestConnectGameLobbyActionImpl(gameRepository)
+	val validateConnectGameLobbyAction = ValidateConnectGameLobbyActionImpl(gameRepository)
 	val closeConnectionAction = CloseConnectionActionImpl(gameRepository)
 	val messageHandler = MessageHandler(submitTurnAction)
 	val userIdentityService = UserIdentityService.create(Config.get())
@@ -97,7 +97,7 @@ fun Application.module() {
 		createGameLobbyAction,
 		joinGameLobbyAction,
 		listGameLobbiesAction,
-		requestConnectGameLobbyAction,
+		validateConnectGameLobbyAction,
 		closeConnectionAction,
 		userIdentityService,
 		joinWorldAction

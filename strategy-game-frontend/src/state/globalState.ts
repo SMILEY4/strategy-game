@@ -1,5 +1,4 @@
 import create, {SetState} from "zustand";
-import {mountStoreDevtool} from "simple-zustand-devtools";
 import {Tile} from "./models/Tile";
 import {PlaceMarkerCommand} from "./models/PlaceMarkerCommand";
 
@@ -8,7 +7,7 @@ export namespace GlobalState {
 	export interface PlayerMarker {
 		q: number,
 		r: number,
-		playerId: number
+		userId: string
 	}
 
 	interface StateValues {
@@ -46,11 +45,12 @@ export namespace GlobalState {
 	interface StateActions {
 		setIdle: () => void,
 		setLoading: (worldId: string) => void,
-		setActive: (map: Tile[]) => void,
+		setActive: () => void,
 		addCommandPlaceMarker: (q: number, r: number) => void,
 		clearCommands: () => void,
-		addMarkers: (markers: PlayerMarker[]) => void,
 		setTurnState: (state: "active" | "submitted") => void,
+		setMarkers: (markers: PlayerMarker[]) => void,
+		setTiles: (tiles: Tile[]) => void,
 		moveCamera: (dx: number, dy: number) => void,
 		zoomCamera: (dz: number) => void,
 		setTileMouseOver: (tile: null | [number, number]) => void,
@@ -66,12 +66,8 @@ export namespace GlobalState {
 				currentState: "loading",
 				worldId: worldId
 			})),
-			setActive: (map: Tile[]) => set(() => ({
+			setActive: () => set(() => ({
 				currentState: "active",
-				map: map
-			})),
-			addMarkers: (markers: PlayerMarker[]) => set((state: GlobalState.State) => ({
-				playerMarkers: [...state.playerMarkers, ...markers]
 			})),
 			addCommandPlaceMarker: (q: number, r: number) => set((state: GlobalState.State) => ({
 				playerCommands: state.playerCommands.length === 0
@@ -83,6 +79,12 @@ export namespace GlobalState {
 			})),
 			setTurnState: (state: "active" | "submitted") => set(() => ({
 				turnState: state
+			})),
+			setMarkers: (markers: PlayerMarker[]) => set(() => ({
+				playerMarkers: markers
+			})),
+			setTiles: (tiles: Tile[]) => set(() => ({
+				map: tiles
 			})),
 
 			moveCamera: (dx: number, dy: number) => set((state: GlobalState.State) => ({
@@ -101,7 +103,9 @@ export namespace GlobalState {
 			})),
 			setTileMouseOver: (tile: null | [number, number]) => set(() => ({
 				tileMouseOver: tile
-			}))
+			})),
+
+
 		};
 	}
 

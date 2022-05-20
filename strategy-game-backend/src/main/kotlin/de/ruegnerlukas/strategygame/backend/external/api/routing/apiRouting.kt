@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.CreateGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.JoinGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.JoinWorldAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.ListPlayerGameLobbiesAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.RequestConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.ValidateConnectGameLobbyAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -30,7 +30,7 @@ fun Application.apiRoutes(
 	createGameLobbyAction: CreateGameLobbyAction,
 	joinGameLobbyAction: JoinGameLobbyAction,
 	listGameLobbiesAction: ListPlayerGameLobbiesAction,
-	requestConnectLobbyAction: RequestConnectGameLobbyAction,
+	validateConnectLobbyAction: ValidateConnectGameLobbyAction,
 	closeConnectionAction: CloseConnectionAction,
 	userIdentityService: UserIdentityService,
 	joinWorldAction: JoinWorldAction
@@ -39,7 +39,7 @@ fun Application.apiRoutes(
 		route("api") {
 			userRoutes(userIdentityService)
 			gameLobbyRoutes(createGameLobbyAction, joinGameLobbyAction, listGameLobbiesAction)
-			gameWebsocketRoutes(connectionHandler, userIdentityService, messageHandler, closeConnectionAction, requestConnectLobbyAction, joinWorldAction)
+			gameWebsocketRoutes(connectionHandler, userIdentityService, messageHandler, closeConnectionAction, validateConnectLobbyAction, joinWorldAction)
 			get("/health") {
 				call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
 			}

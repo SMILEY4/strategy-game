@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
+package de.ruegnerlukas.strategygame.backend.core.actions
 
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
@@ -13,18 +13,21 @@ class JoinGameLobbyActionImpl(private val gameRepository: GameRepository) : Join
 		if (gameStateResult.isError()) {
 			return VoidResult.error("GAME_NOT_FOUND")
 		}
-		val gameState = gameStateResult.get()
-
-		val newGameState = GameState(
-			gameId = gameState.gameId,
-			createdTimestamp = gameState.createdTimestamp,
-			participants = addParticipant(gameState.participants, GameParticipant.participant(userId)),
-			map = gameState.map
-		)
-		gameRepository.saveGameState(newGameState)
+		val prevState = gameStateResult.get()
+		val nextState = addParticipant(prevState, userId)
+		gameRepository.saveGameState(nextState)
 		return VoidResult.success()
 	}
 
+
+	private fun addParticipant(gameState: GameState, userId: String): GameState {
+		return GameState(
+			gameId = gameState.gameId,
+			participants = addParticipant(gameState.participants, GameParticipant.participant(userId)),
+			map = gameState.map,
+			markers = gameState.markers
+		)
+	}
 
 	private fun addParticipant(participants: List<GameParticipant>, participant: GameParticipant): List<GameParticipant> {
 		if (participants.find { it.userId == participant.userId } != null) {

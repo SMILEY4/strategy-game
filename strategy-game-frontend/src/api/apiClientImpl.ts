@@ -64,7 +64,7 @@ export class ApiClientImpl implements ApiClient {
     public submitTurn(worldId: string, playerCommands: PlaceMarkerCommand[]): void {
         this.wsClient.send(ApiClientImpl.WS_NAME_WORLD, {
             type: "submit-turn",
-            payload: JSON.stringify({worldId: worldId, commands: playerCommands}, null, "   ")
+            payload: JSON.stringify({commands: playerCommands}, null, "   ")
         });
     }
 

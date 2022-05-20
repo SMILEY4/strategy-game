@@ -57,9 +57,9 @@ export class MarkerRenderer {
 			const [offX, offY] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, m.q, m.r);
 			const size = TilemapUtils.DEFAULT_HEX_LAYOUT.size;
 			this.batchRenderer.add([
-				[offX, offY, m.playerId],
-				[offX - (size[0] / 3), offY + size[1], m.playerId],
-				[offX + (size[0] / 3), offY + size[1], m.playerId],
+				[offX, offY, this.getHash(m.userId, 5)],
+				[offX - (size[0] / 3), offY + size[1], this.getHash(m.userId, 5)],
+				[offX + (size[0] / 3), offY + size[1], this.getHash(m.userId, 5)],
 			]);
 		});
 		commands.forEach(m => {
@@ -82,6 +82,16 @@ export class MarkerRenderer {
 	public dispose() {
 		this.batchRenderer.dispose();
 		this.shader.dispose();
+	}
+
+
+	private getHash(input: string, maxVal: number) {
+		let hash = 0, len = input.length;
+		for (let i = 0; i < len; i++) {
+			hash  = ((hash << 5) - hash) + input.charCodeAt(i);
+			hash |= 0; // to 32bit integer
+		}
+		return Math.abs(hash) % maxVal;
 	}
 
 }

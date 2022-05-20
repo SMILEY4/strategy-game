@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core.actions
 
-import de.ruegnerlukas.strategygame.backend.ports.models.messages.NewTurnMessage
-import de.ruegnerlukas.strategygame.backend.ports.models.messages.PlayerMarker
-import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
+import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
+import de.ruegnerlukas.strategygame.backend.ports.models.game.Marker
+import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.ports.required.MessageProducer
 import kotlinx.serialization.encodeToString
@@ -15,25 +15,32 @@ class EndTurnAction(
 
 	suspend fun perform(worldId: String) {
 		repository.getGameState(worldId).get().let { gameState ->
-			val newTurnData = buildNewTurnData(gameState.participants)
-			gameState.participants
-				.filter { it.connectionId != null }
-				.map { it.connectionId }
-				.forEach { connectionId ->
-					messageProducer.sendToSingle(connectionId!!, "new-turn", Json.encodeToString(newTurnData))
-				}
+			gameState.markers = collectAllMarkers(gameState)
 			gameState.participants.forEach { it.currentCommands = null }
+			sendWorldStateMessage(gameState)
 		}
 	}
 
-	private fun buildNewTurnData(participants: List<GameParticipant>): NewTurnMessage {
-		val addedMarkers = mutableListOf<PlayerMarker>()
-		participants.filter { it.connectionId != null }.forEach { participant ->
-			participant.currentCommands?.forEach { cmd ->
-				addedMarkers.add(PlayerMarker(cmd.q, cmd.r, participant.connectionId!!))
+	private fun collectAllMarkers(gameState: GameState): List<Marker> {
+		val markers = mutableListOf<Marker>()
+		markers.addAll(gameState.markers)
+		gameState.participants
+			.filter { it.connectionId != null }
+			.filter { it.currentCommands != null }
+			.forEach { participant ->
+				markers.addAll(participant.currentCommands!!.map { Marker(it.q, it.r, participant.userId) })
 			}
-		}
-		return NewTurnMessage(addedMarkers)
+		return markers
+	}
+
+	private suspend fun sendWorldStateMessage(gameState: GameState) {
+		val worldStateMessage = WorldStateMessage(gameState.map, gameState.markers)
+		gameState.participants
+			.filter { it.connectionId != null }
+			.map { it.connectionId }
+			.forEach { connectionId ->
+				messageProducer.sendToSingle(connectionId!!, "world-state", Json.encodeToString(worldStateMessage))
+			}
 	}
 
 }

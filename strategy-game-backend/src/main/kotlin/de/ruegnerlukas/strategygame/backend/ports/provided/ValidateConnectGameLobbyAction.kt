@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 /**
  * Connects to the game lobby with the given id. The user must be a participant of the game-lobby
  */
-interface RequestConnectGameLobbyAction {
+interface ValidateConnectGameLobbyAction {
 
 	/**
 	 * @param userId the id of the user connecting the game-lobby

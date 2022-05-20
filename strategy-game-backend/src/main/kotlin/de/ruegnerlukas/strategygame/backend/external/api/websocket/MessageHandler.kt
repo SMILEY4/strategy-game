@@ -27,7 +27,7 @@ class MessageHandler(
 
 	private suspend fun handleSubmitTurn(message: WebSocketMessage) {
 		handleMessage<SubmitTurnMessage>(message.payload) {
-			submitTurnAction.perform(message.userId, message.connectionId, it.worldId, it.commands)
+			submitTurnAction.perform(message.userId, message.connectionId, message.gameId, it.commands)
 		}
 	}
 

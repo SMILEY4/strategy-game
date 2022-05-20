@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
+package de.ruegnerlukas.strategygame.backend.core.actions
 
 import de.ruegnerlukas.strategygame.backend.ports.provided.ListPlayerGameLobbiesAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository

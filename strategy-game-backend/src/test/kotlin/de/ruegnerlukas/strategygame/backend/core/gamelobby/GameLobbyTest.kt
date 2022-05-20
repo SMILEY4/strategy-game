@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.core.gamelobby
 
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.CreateGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.JoinGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.ListPlayerGameLobbiesActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.RequestConnectGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.CreateGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.JoinGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.ListPlayerGameLobbiesActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.ValidateConnectGameLobbyActionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
 import io.kotest.assertions.withClue
@@ -140,7 +140,7 @@ class GameLobbyTest : StringSpec({
 	"request to connect to a game lobby" {
 		val gameRepository = InMemoryGameRepository()
 		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
-		val connectGameLobby = RequestConnectGameLobbyActionImpl(gameRepository)
+		val connectGameLobby = ValidateConnectGameLobbyActionImpl(gameRepository)
 		val userId = "my-test-user"
 
 		val createResult = createGameLobby.perform(userId)
@@ -154,7 +154,7 @@ class GameLobbyTest : StringSpec({
 	"request to connect to a game lobby without being a participant" {
 		val gameRepository = InMemoryGameRepository()
 		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
-		val connectGameLobby = RequestConnectGameLobbyActionImpl(gameRepository)
+		val connectGameLobby = ValidateConnectGameLobbyActionImpl(gameRepository)
 		val userId1 = "my-test-user-1"
 		val userId2 = "my-test-user-2"
 
@@ -169,7 +169,7 @@ class GameLobbyTest : StringSpec({
 
 	"request to connect to a game lobby that does not exist" {
 		val gameRepository = InMemoryGameRepository()
-		val connectGameLobby = RequestConnectGameLobbyActionImpl(gameRepository)
+		val connectGameLobby = ValidateConnectGameLobbyActionImpl(gameRepository)
 		val userId = "my-test-user"
 		val gameId = "invalid-game-id"
 

@@ -25,9 +25,11 @@ export class WorldService implements WorldHandler {
 			.then(() => this.stateProvider.getState().setLoading(worldId))
 	}
 
-
-	public setInitialState(state: any): void {
-		this.stateProvider.getState().setActive(state.tiles);
+	public setWorldState(state: any): void {
+		this.stateProvider.getState().setMarkers(state.markers)
+		this.stateProvider.getState().setTiles(state.map.tiles)
+		this.stateProvider.getState().setActive();
 	}
+
 
 }
