@@ -1,11 +1,14 @@
-package de.ruegnerlukas.strategygame.backend.core.gamelobby
+package de.ruegnerlukas.strategygame.backend.core
 
-import de.ruegnerlukas.strategygame.backend.core.actions.CreateGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.JoinGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.ListPlayerGameLobbiesActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.ValidateConnectGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbiesListActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
-import de.ruegnerlukas.strategygame.backend.ports.models.game.GameParticipant
+import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.new.of
+import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
+import de.ruegnerlukas.strategygame.backend.testutils.shouldBeSuccess
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -17,28 +20,28 @@ class GameLobbyTest : StringSpec({
 
 	"create a new game-lobby" {
 		val gameRepository = InMemoryGameRepository()
-		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
+		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
 		val userId = "my-test-user"
 
 		val createLobbyResult = createGameLobby.perform(userId)
 		withClue("result of creating lobby should be valid") {
-			createLobbyResult.isSuccess() shouldBe true
+			createLobbyResult shouldBeSuccess true
 			createLobbyResult.get() shouldHaveMinLength 1
 		}
 
-		val gameState = gameRepository.getGameState(createLobbyResult.get())
+		val gameState = gameRepository.get(createLobbyResult.get())
 		withClue("saved game-state should be valid") {
-			gameState.isSuccess() shouldBe true
+			gameState shouldBeSuccess true
 			gameState.get().gameId shouldBe createLobbyResult.get()
-			gameState.get().participants shouldContainExactlyInAnyOrder listOf(GameParticipant.owner(userId))
+			gameState.get().participants shouldContainExactlyInAnyOrder listOf(PlayerEntity.of(userId))
 		}
 
 	}
 
 	"join a new lobby as a participant" {
 		val gameRepository = InMemoryGameRepository()
-		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
-		val joinGameLobby = JoinGameLobbyActionImpl(gameRepository)
+		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
+		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
 		val ownerId = "my-test-owner"
 		val participantId = "my-test-participant"
 
@@ -46,24 +49,24 @@ class GameLobbyTest : StringSpec({
 
 		val joinLobbyResult = joinGameLobby.perform(participantId, createLobbyResult.get())
 		withClue("result of joining lobby should be valid") {
-			joinLobbyResult.isSuccess() shouldBe true
+			joinLobbyResult shouldBeSuccess true
 		}
 
-		val gameState = gameRepository.getGameState(createLobbyResult.get())
+		val gameState = gameRepository.get(createLobbyResult.get())
 		withClue("saved game-state should be valid") {
-			gameState.isSuccess() shouldBe true
+			gameState shouldBeSuccess true
 			gameState.get().gameId shouldBe createLobbyResult.get()
 			gameState.get().participants shouldContainExactlyInAnyOrder listOf(
-				GameParticipant.owner(ownerId),
-				GameParticipant.participant(participantId)
+				PlayerEntity.of(ownerId),
+				PlayerEntity.of(participantId)
 			)
 		}
 	}
 
 	"join a lobby already as a participant of that lobby" {
 		val gameRepository = InMemoryGameRepository()
-		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
-		val joinGameLobby = JoinGameLobbyActionImpl(gameRepository)
+		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
+		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
 		val ownerId = "my-test-owner"
 		val participantId = "my-test-participant"
 
@@ -72,56 +75,54 @@ class GameLobbyTest : StringSpec({
 
 		val joinLobbyResult = joinGameLobby.perform(participantId, createLobbyResult.get())
 		withClue("result of joining lobby again should be valid") {
-			joinLobbyResult.isSuccess() shouldBe true
+			joinLobbyResult shouldBeSuccess true
 		}
 
-		val gameState = gameRepository.getGameState(createLobbyResult.get())
+		val gameState = gameRepository.get(createLobbyResult.get())
 		withClue("saved game-state should be valid") {
-			gameState.isSuccess() shouldBe true
+			gameState shouldBeSuccess true
 			gameState.get().gameId shouldBe createLobbyResult.get()
 			gameState.get().participants shouldContainExactlyInAnyOrder listOf(
-				GameParticipant.owner(ownerId),
-				GameParticipant.participant(participantId)
+				PlayerEntity.of(ownerId),
+				PlayerEntity.of(participantId)
 			)
 		}
 	}
 
 	"joining a non-existing lobby as a participant" {
 		val gameRepository = InMemoryGameRepository()
-		val joinGameLobby = JoinGameLobbyActionImpl(gameRepository)
+		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
 		val userId = "my-test-user"
 		val lobbyId = "unknown-game-lobby"
 
 		val joinLobbyResult = joinGameLobby.perform(userId, lobbyId)
 		withClue("result of joining lobby should be valid") {
-			joinLobbyResult.isError() shouldBe true
-			joinLobbyResult.getError() shouldBe "GAME_NOT_FOUND"
+			joinLobbyResult shouldBeError "GAME_NOT_FOUND"
 		}
 
-		val gameState = gameRepository.getGameState(lobbyId)
+		val gameState = gameRepository.get(lobbyId)
 		withClue("no game-state should be saved") {
-			gameState.isSuccess() shouldBe false
-			gameState.getError() shouldBe "GAME_NOT_FOUND:$lobbyId"
+			gameState shouldBeError "NOT_FOUND"
 		}
 	}
 
 	"list game-lobbies of player that is not participating in any" {
 		val gameRepository = InMemoryGameRepository()
-		val listGameLobbies = ListPlayerGameLobbiesActionImpl(gameRepository)
+		val listGameLobbies = GameLobbiesListActionImpl(gameRepository)
 		val userId = "my-test-user"
 
 		val listLobbiesResult = listGameLobbies.perform(userId)
 		withClue("expect result to be valid") {
-			listLobbiesResult.isSuccess() shouldBe true
+			listLobbiesResult shouldBeSuccess true
 			listLobbiesResult.get() shouldHaveSize 0
 		}
 	}
 
 	"list game-lobbies of player that is owning and participating in lobbies" {
 		val gameRepository = InMemoryGameRepository()
-		val listGameLobbies = ListPlayerGameLobbiesActionImpl(gameRepository)
-		val joinGameLobby = JoinGameLobbyActionImpl(gameRepository)
-		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
+		val listGameLobbies = GameLobbiesListActionImpl(gameRepository)
+		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
+		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
 		val userId = "my-test-user-1"
 		val userIdOther = "my-test-user-2"
 
@@ -131,7 +132,7 @@ class GameLobbyTest : StringSpec({
 
 		val listLobbiesResult = listGameLobbies.perform(userId)
 		withClue("expect result to be valid") {
-			listLobbiesResult.isSuccess() shouldBe true
+			listLobbiesResult shouldBeSuccess true
 			listLobbiesResult.get() shouldHaveSize 2
 			listLobbiesResult.get() shouldContainExactlyInAnyOrder listOf(createLobbyResult1.get(), createLobbyResult2.get())
 		}
@@ -139,22 +140,22 @@ class GameLobbyTest : StringSpec({
 
 	"request to connect to a game lobby" {
 		val gameRepository = InMemoryGameRepository()
-		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
-		val connectGameLobby = ValidateConnectGameLobbyActionImpl(gameRepository)
+		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
+		val connectGameLobby = GameLobbyRequestConnectionActionImpl(gameRepository)
 		val userId = "my-test-user"
 
 		val createResult = createGameLobby.perform(userId)
 		val connectResult = connectGameLobby.perform(userId, createResult.get())
 
 		withClue("expect result to be successful") {
-			connectResult.isSuccess() shouldBe true
+			connectResult shouldBeSuccess true
 		}
 	}
 
 	"request to connect to a game lobby without being a participant" {
 		val gameRepository = InMemoryGameRepository()
-		val createGameLobby = CreateGameLobbyActionImpl(gameRepository)
-		val connectGameLobby = ValidateConnectGameLobbyActionImpl(gameRepository)
+		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
+		val connectGameLobby = GameLobbyRequestConnectionActionImpl(gameRepository)
 		val userId1 = "my-test-user-1"
 		val userId2 = "my-test-user-2"
 
@@ -162,21 +163,21 @@ class GameLobbyTest : StringSpec({
 		val connectResult = connectGameLobby.perform(userId2, createResult.get())
 
 		withClue("expect result to be failed") {
-			connectResult.getError() shouldBe "NOT_PARTICIPANT"
+			connectResult shouldBeError "NOT_PARTICIPANT"
 		}
 	}
 
 
 	"request to connect to a game lobby that does not exist" {
 		val gameRepository = InMemoryGameRepository()
-		val connectGameLobby = ValidateConnectGameLobbyActionImpl(gameRepository)
+		val connectGameLobby = GameLobbyRequestConnectionActionImpl(gameRepository)
 		val userId = "my-test-user"
 		val gameId = "invalid-game-id"
 
 		val connectResult = connectGameLobby.perform(userId, gameId)
 
 		withClue("expect result to be failed") {
-			connectResult.getError() shouldBe "GAME_NOT_FOUND:$gameId"
+			connectResult shouldBeError "GAME_NOT_FOUND"
 		}
 	}
 

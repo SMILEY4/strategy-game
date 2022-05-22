@@ -10,3 +10,4 @@
 
   - [Resources and useful Links](./technical/usefulresources.md)
 
+- [Changelog](./changelog/changelog.md)

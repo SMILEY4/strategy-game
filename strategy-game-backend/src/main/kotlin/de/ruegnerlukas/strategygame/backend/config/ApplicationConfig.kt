@@ -1,15 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.config
 
-import de.ruegnerlukas.strategygame.backend.core.actions.CloseConnectionActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.EndTurnAction
-import de.ruegnerlukas.strategygame.backend.core.actions.JoinWorldActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.SubmitTurnActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.CreateGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.JoinGameLobbyActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.ListPlayerGameLobbiesActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.ValidateConnectGameLobbyActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbiesListActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyConnectActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyDisconnectActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequestConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
@@ -42,18 +43,22 @@ import java.time.Duration
 fun Application.module() {
 
 	val connectionHandler = ConnectionHandler()
-	val messageProducer = WebSocketMessageProducer(connectionHandler)
-	val gameRepository = InMemoryGameRepository()
-	val endTurnAction = EndTurnAction(messageProducer, gameRepository)
-	val joinWorldAction = JoinWorldActionImpl(messageProducer, gameRepository)
-	val submitTurnAction = SubmitTurnActionImpl(gameRepository, endTurnAction)
-	val createGameLobbyAction = CreateGameLobbyActionImpl(gameRepository)
-	val joinGameLobbyAction = JoinGameLobbyActionImpl(gameRepository)
-	val listGameLobbiesAction = ListPlayerGameLobbiesActionImpl(gameRepository)
-	val validateConnectGameLobbyAction = ValidateConnectGameLobbyActionImpl(gameRepository)
-	val closeConnectionAction = CloseConnectionActionImpl(gameRepository)
-	val messageHandler = MessageHandler(submitTurnAction)
 	val userIdentityService = UserIdentityService.create(Config.get())
+	val messageProducer = GameMessageProducerImpl(WebSocketMessageProducer(connectionHandler))
+	val gameRepository = InMemoryGameRepository()
+
+	val gameLobbiesListAction = GameLobbiesListActionImpl(gameRepository)
+	val gameLobbyConnectAction = GameLobbyConnectActionImpl(gameRepository, messageProducer)
+	val gameLobbyCreateAction = GameLobbyCreateActionImpl(gameRepository)
+	val gameLobbyDisconnectAction = GameLobbyDisconnectActionImpl(gameRepository)
+	val gameLobbyJoinAction = GameLobbyJoinActionImpl(gameRepository)
+	val gameLobbyRequestConnectionAction = GameLobbyRequestConnectionActionImpl(gameRepository)
+
+	val turnEndAction = TurnEndActionImpl(gameRepository, messageProducer)
+	val turnSubmitAction = TurnSubmitActionImpl(gameRepository, turnEndAction)
+
+	val messageHandler = MessageHandler(turnSubmitAction)
+
 
 	install(Routing)
 	install(WebSockets) {
@@ -94,12 +99,12 @@ fun Application.module() {
 	apiRoutes(
 		connectionHandler,
 		messageHandler,
-		createGameLobbyAction,
-		joinGameLobbyAction,
-		listGameLobbiesAction,
-		validateConnectGameLobbyAction,
-		closeConnectionAction,
 		userIdentityService,
-		joinWorldAction
+		gameLobbyCreateAction,
+		gameLobbyJoinAction,
+		gameLobbiesListAction,
+		gameLobbyDisconnectAction,
+		gameLobbyRequestConnectionAction,
+		gameLobbyConnectAction
 	)
 }

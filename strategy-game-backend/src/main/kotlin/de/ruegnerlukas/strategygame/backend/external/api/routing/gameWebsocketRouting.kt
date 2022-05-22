@@ -5,9 +5,9 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandle
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
-import de.ruegnerlukas.strategygame.backend.ports.provided.CloseConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.JoinWorldAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.ValidateConnectGameLobbyAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyDisconnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.http.HttpStatusCode
@@ -26,16 +26,16 @@ fun Route.gameWebsocketRoutes(
 	connectionHandler: ConnectionHandler,
 	userService: UserIdentityService,
 	messageHandler: MessageHandler,
-	closeConnectionAction: CloseConnectionAction,
-	validateConnectLobbyAction: ValidateConnectGameLobbyAction,
-	joinWorldAction: JoinWorldAction
+	disconnectAction: GameLobbyDisconnectAction,
+	requestConnection: GameLobbyRequestConnectionAction,
+	connectAction: GameLobbyConnectAction
 ) {
 	val logger = Logging.create()
 	route("game/{${WebsocketUtils.PATH_PARAM_GAME_ID}}") {
 		websocketAuthenticate(userService) {
 			interceptWebsocketRequest(
 				interceptor = {
-					val result = validateConnectLobbyAction.perform(
+					val result = requestConnection.perform(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
 					)
@@ -47,7 +47,7 @@ fun Route.gameWebsocketRoutes(
 				callback = {
 					webSocket {
 						val connectionId = connectionHandler.openSession(this)
-						joinWorldAction.perform(
+						connectAction.perform(
 							getWebsocketUserIdOrThrow(userService, call),
 							connectionId,
 							call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
@@ -63,7 +63,7 @@ fun Route.gameWebsocketRoutes(
 							}
 						} finally {
 							connectionHandler.closeSession(connectionId)
-							closeConnectionAction.perform(getWebsocketUserIdOrThrow(userService, call))
+							disconnectAction.perform(getWebsocketUserIdOrThrow(userService, call))
 						}
 					}
 				}

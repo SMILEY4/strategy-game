@@ -1,42 +1,35 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence
 
-import de.ruegnerlukas.strategygame.backend.ports.models.game.GameState
+import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.results.Result
-import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
+import de.ruegnerlukas.strategygame.backend.shared.Rail
 
 class InMemoryGameRepository : GameRepository {
 
-	private val gameStates = mutableMapOf<String, GameState>()
+	private val gameLobbyEntities = mutableMapOf<String, GameLobbyEntity>()
 
 
-	override fun saveGameState(state: GameState): VoidResult {
-		gameStates[state.gameId] = state
-		return VoidResult.success()
+	override fun save(entities: List<GameLobbyEntity>): Rail<List<GameLobbyEntity>> {
+		entities.forEach { save(it) }
+		return Rail.success(entities)
 	}
 
+	override fun save(entity: GameLobbyEntity): Rail<GameLobbyEntity> {
+		gameLobbyEntities[entity.gameId] = entity
+		return Rail.success(entity)
+	}
 
-	override fun getGameState(gameId: String): Result<GameState> {
-		val state = gameStates[gameId]
-		return if (state != null) {
-			Result.success(state)
-		} else {
-			Result.error("GAME_NOT_FOUND:$gameId")
+	override fun get(gameId: String): Rail<GameLobbyEntity> {
+		return when(val e = gameLobbyEntities[gameId]) {
+			null -> Rail.error("NOT_FOUND")
+			else -> Rail.success(e)
 		}
 	}
 
-
-	override fun getGameStates(userId: String): Result<List<GameState>> {
-		return Result.success(
-			gameStates.values.filter { isParticipant(it, userId) }
+	override fun getByUserId(userId: String): Rail<List<GameLobbyEntity>> {
+		return Rail.success(
+			gameLobbyEntities.values.filter { lobby -> lobby.participants.map { p -> p.userId }.contains(userId) }
 		)
-	}
-
-
-	private fun isParticipant(gameState: GameState, userId: String): Boolean {
-		return gameState.participants
-			.map { it.userId }
-			.contains(userId)
 	}
 
 }

@@ -280,7 +280,7 @@ All messages follow the following format
       "commands": [
           {
               "q": "Int - the q-coordinate of the new marker",
-              "r": "Int - the r-coordinate of the new marker"
+              "r": "Int - the r-coordinate of the new marker",
           }
       ]
   }
@@ -294,19 +294,21 @@ All messages follow the following format
 
   ```json
   {
-      "map": {
-      	"tiles": [
-              "q": "Int - the q-coordinate of the tile",
-              "r": "Int - the r-coordinate of the tile",
-              "tileId": "Int - the id specifying the type of the tile"
-          ]
-  	},
-      "markers": [
-          {
-              "q": "Int - the q-coordinate of the marker",
-              "r": "Int - the r-coordinate of the marker",
-              "userId": "String - the id of the owner/user of this marker" 
+  	"world": {
+          "map": {
+              "tiles": [
+                  "q": "Int - the q-coordinate of the tile",
+                  "r": "Int - the r-coordinate of the tile",
+                  "tileId": "Int - the id specifying the type of the tile"
+              ]
           },
-      ]
+          "markers": [
+              {
+                  "q": "Int - the q-coordinate of the marker",
+                  "r": "Int - the r-coordinate of the marker",
+                  "userId": "String - the id of the owner/user of this marker" 
+              },
+          ]
+      }
   }
   ```

@@ -1,13 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
-import de.ruegnerlukas.strategygame.backend.ports.required.MessageProducer
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.websocket.Frame
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
- * Implementation of a [MessageProducer] sending messages via a websocket
+ * a message-producer sending messages via a websocket
  */
 class WebSocketMessageProducer(private val connectionHandler: ConnectionHandler) : MessageProducer, Logging {
 

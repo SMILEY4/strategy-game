@@ -17,7 +17,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import org.junit.jupiter.api.Test
 
-class UserIntegrationTest {
+class UserAuthTest {
 
 	@Test
 	fun loginShouldSucceedWithValidToken() = integrationTest { client ->

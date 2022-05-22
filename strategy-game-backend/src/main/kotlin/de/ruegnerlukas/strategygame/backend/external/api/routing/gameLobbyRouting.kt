@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.ports.provided.CreateGameLobbyAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.JoinGameLobbyAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.ListPlayerGameLobbiesAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbiesListAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -17,9 +17,9 @@ import io.ktor.server.routing.route
  * Configuration for game routes
  */
 fun Route.gameLobbyRoutes(
-	createLobby: CreateGameLobbyAction,
-	joinLobby: JoinGameLobbyAction,
-	listLobbies: ListPlayerGameLobbiesAction,
+	createLobby: GameLobbyCreateAction,
+	joinLobby: GameLobbyJoinAction,
+	listLobbies: GameLobbiesListAction,
 ) {
 	authenticate {
 		route("game") {

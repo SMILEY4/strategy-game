@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.SubmitTurnMessage
-import de.ruegnerlukas.strategygame.backend.ports.provided.SubmitTurnAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
  * Message-dispatcher for websocket messages
  */
 class MessageHandler(
-	private val submitTurnAction: SubmitTurnAction
+	private val turnSubmitAction: TurnSubmitAction
 ) : Logging {
 
 	/**
@@ -27,7 +27,7 @@ class MessageHandler(
 
 	private suspend fun handleSubmitTurn(message: WebSocketMessage) {
 		handleMessage<SubmitTurnMessage>(message.payload) {
-			submitTurnAction.perform(message.userId, message.connectionId, message.gameId, it.commands)
+			turnSubmitAction.perform(message.userId, message.gameId, it.commands)
 		}
 	}
 
