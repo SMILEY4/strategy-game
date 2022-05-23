@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -36,7 +36,7 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
 			call.receive<LoginData>().let {
 				val result = userIdentityService.authenticate(it.email, it.password)
 				when {
-					result.isSuccess() -> call.respond(HttpStatusCode.OK, AuthResult(result.get()))
+					result.isSuccess() -> call.respond(HttpStatusCode.OK, AuthData(result.get()))
 					result.isError("NOT_AUTHORIZED") -> call.respond(HttpStatusCode.Unauthorized, result.getError())
 					result.isError("USER_NOT_CONFIRMED") -> call.respond(HttpStatusCode.Conflict, result.getError())
 					result.isError("USER_NOT_FOUND") -> call.respond(HttpStatusCode.NotFound, result.getError())

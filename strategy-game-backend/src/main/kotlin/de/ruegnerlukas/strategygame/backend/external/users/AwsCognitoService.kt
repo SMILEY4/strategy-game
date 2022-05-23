@@ -22,8 +22,8 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.config.Config
@@ -156,7 +156,7 @@ class AwsCognitoService(
 	}
 
 
-	override fun authenticate(email: String, password: String): Result<ExtendedAuthResult> {
+	override fun authenticate(email: String, password: String): Result<ExtendedAuthData> {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -172,7 +172,7 @@ class AwsCognitoService(
 			)
 			log().info("Successfully authenticated user $email")
 			return Result.success(
-				ExtendedAuthResult(
+				ExtendedAuthData(
 					idToken = result.authenticationResult.idToken,
 					refreshToken = result.authenticationResult.refreshToken,
 					accessToken = result.authenticationResult.accessToken
@@ -190,7 +190,7 @@ class AwsCognitoService(
 	}
 
 
-	override fun refreshAuthentication(refreshToken: String): Result<AuthResult> {
+	override fun refreshAuthentication(refreshToken: String): Result<AuthData> {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -201,7 +201,7 @@ class AwsCognitoService(
 			)
 			log().info("Successfully refreshed user-authentication")
 			return Result.success(
-				AuthResult(
+				AuthData(
 					idToken = result.authenticationResult.idToken,
 					refreshToken = result.authenticationResult.refreshToken,
 				)

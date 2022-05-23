@@ -1,21 +1,21 @@
-import {GameCanvas} from "../../gameCanvas";
+import {CommandPlaceMarker} from "../../../../ports/models/CommandPlaceMarker";
+import {Marker} from "../../../../ports/models/Marker";
+import {GameCanvasHandle} from "../../GameCanvasHandle";
 import {BatchRenderer} from "../utils/BatchRenderer";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import SRC_MARKER_SHADER_VERTEX from "./markerShader.vsh?raw";
 import SRC_MARKER_SHADER_FRAGMENT from "./markerShader.fsh?raw";
 import {Camera} from "../utils/camera";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
-import {PlayerMarker} from "../../../../state/models/PlayerMarker";
-import {PlaceMarkerCommand} from "../../../../state/models/PlaceMarkerCommand";
 
 export class MarkerRenderer {
 
-	private readonly gameCanvas: GameCanvas;
+	private readonly gameCanvas: GameCanvasHandle;
 	private batchRenderer: BatchRenderer = null as any;
 	private shader: ShaderProgram = null as any;
 
 
-	constructor(gameCanvas: GameCanvas) {
+	constructor(gameCanvas: GameCanvasHandle) {
 		this.gameCanvas = gameCanvas;
 	}
 
@@ -51,7 +51,7 @@ export class MarkerRenderer {
 	}
 
 
-	public render(camera: Camera, markers: PlayerMarker[], commands: PlaceMarkerCommand[]) {
+	public render(camera: Camera, markers: Marker[], commands: CommandPlaceMarker[]) {
 		this.batchRenderer.begin(camera);
 		markers.forEach(m => {
 			const [offX, offY] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, m.q, m.r);

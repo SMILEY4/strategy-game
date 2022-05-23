@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.integration
 
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
@@ -29,7 +29,7 @@ class UserAuthTest {
 
 		loginResponse shouldHaveStatus HttpStatusCode.OK
 
-		val token = loginResponse.body<AuthResult>().idToken
+		val token = loginResponse.body<AuthData>().idToken
 		withClue("token should be valid") {
 			token shouldHaveMinLength 6
 			DummyUserIdentityService().verifyJwtToken(token) shouldBe true
@@ -44,7 +44,7 @@ class UserAuthTest {
 		val token = client.post("/api/user/login") {
 			contentType(ContentType.Application.Json)
 			setBody(LoginData("example@test.com", "pw123"))
-		}.body<AuthResult>().idToken
+		}.body<AuthData>().idToken
 
 		val response = client.post("/api/game/create") {
 			header("Authorization", "Bearer  $token")

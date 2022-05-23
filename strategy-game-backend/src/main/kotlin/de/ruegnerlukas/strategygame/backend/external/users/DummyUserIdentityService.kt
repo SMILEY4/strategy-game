@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.results.Result
 import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
@@ -70,9 +70,9 @@ class DummyUserIdentityService : UserIdentityService {
 		}
 	}
 
-	override fun authenticate(email: String, password: String): Result<ExtendedAuthResult> {
+	override fun authenticate(email: String, password: String): Result<ExtendedAuthData> {
 		return Result.success(
-			ExtendedAuthResult(
+			ExtendedAuthData(
 				idToken = makeToken(email),
 				refreshToken = "someRefreshToken",
 				accessToken = "someAccessToken",
@@ -84,7 +84,7 @@ class DummyUserIdentityService : UserIdentityService {
 		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support creating users")
 	}
 
-	override fun refreshAuthentication(refreshToken: String): Result<AuthResult> {
+	override fun refreshAuthentication(refreshToken: String): Result<AuthData> {
 		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support refreshing tokens")
 
 	}

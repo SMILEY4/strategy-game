@@ -2,8 +2,8 @@ package de.ruegnerlukas.strategygame.backend.ports.required
 
 import de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthResult
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthResult
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.shared.config.Config
 import de.ruegnerlukas.strategygame.backend.shared.config.ConfigData
 import de.ruegnerlukas.strategygame.backend.shared.results.Result
@@ -58,13 +58,13 @@ interface UserIdentityService {
 	/**
 	 * Authenticate the given user.
 	 */
-	fun authenticate(email: String, password: String): Result<ExtendedAuthResult>
+	fun authenticate(email: String, password: String): Result<ExtendedAuthData>
 
 
 	/**
 	 * Refresh the authentication for a given user
 	 */
-	fun refreshAuthentication(refreshToken: String): Result<AuthResult>
+	fun refreshAuthentication(refreshToken: String): Result<AuthData>
 
 
 	/**
