@@ -11,19 +11,43 @@ class Result<T>(successful: Boolean, private val value: T?, error: String?) : Vo
 		}
 	}
 
-	fun get(): T? {
+	fun getUnsafe(): T? {
 		return value
 	}
 
-	fun getOrThrow(): T {
+	fun get(): T {
 		return value ?: throw IllegalStateException()
 	}
 
-	fun onSuccess(handler: (value: T) -> Unit): Result<T> {
+	fun getOr(default: T): T {
+		return if (isSuccess()) {
+			get()
+		} else {
+			default
+		}
+	}
+
+	suspend fun onSuccess(handler: suspend (value: T) -> Unit): Result<T> {
 		if (isSuccess()) {
-			handler(getOrThrow())
+			handler(get())
 		}
 		return this
+	}
+
+	fun mapToVoidResult(successHandler: (value: T) -> VoidResult, errorHandler: (error: String) -> VoidResult): VoidResult {
+		return if (isError()) {
+			errorHandler(getError())
+		} else {
+			successHandler(get())
+		}
+	}
+
+	fun mapToResult(successHandler: (value: T) -> Result<T>, errorHandler: (error: String) -> Result<T>): Result<T> {
+		return if (isError()) {
+			errorHandler(getError())
+		} else {
+			successHandler(get())
+		}
 	}
 
 }

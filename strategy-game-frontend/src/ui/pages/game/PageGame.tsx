@@ -1,13 +1,13 @@
 import {ReactElement, useEffect} from "react";
 import "./pageGame.css";
-import {GlobalState} from "../../../state/globalState";
+import {Hooks} from "../../../core/hooks";
 import {useNavigate} from "react-router-dom";
 import {Canvas} from "./Canvas";
 import {GameUI} from "./GameUI";
 
 export function PageGame(): ReactElement {
 
-	const currentState = GlobalState.useState(state => state.currentState);
+	const currentState = Hooks.useCurrentGameState()
 	const navigate = useNavigate();
 
 	useEffect(() => {

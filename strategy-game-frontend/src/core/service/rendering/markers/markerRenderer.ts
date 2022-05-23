@@ -1,21 +1,21 @@
-import {GameCanvas} from "../../gameCanvas";
-import {BatchRenderer} from "../utils/BatchRenderer";
+import {CommandPlaceMarker} from "../../../../ports/models/commandPlaceMarker";
+import {Marker} from "../../../../ports/models/marker";
+import {GameCanvasHandle} from "../../gameCanvasHandle";
+import {BatchRenderer} from "../utils/batchRenderer";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import SRC_MARKER_SHADER_VERTEX from "./markerShader.vsh?raw";
 import SRC_MARKER_SHADER_FRAGMENT from "./markerShader.fsh?raw";
 import {Camera} from "../utils/camera";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
-import {PlayerMarker} from "../../../../state/models/PlayerMarker";
-import {PlaceMarkerCommand} from "../../../../state/models/PlaceMarkerCommand";
 
 export class MarkerRenderer {
 
-	private readonly gameCanvas: GameCanvas;
+	private readonly gameCanvas: GameCanvasHandle;
 	private batchRenderer: BatchRenderer = null as any;
 	private shader: ShaderProgram = null as any;
 
 
-	constructor(gameCanvas: GameCanvas) {
+	constructor(gameCanvas: GameCanvasHandle) {
 		this.gameCanvas = gameCanvas;
 	}
 
@@ -51,15 +51,15 @@ export class MarkerRenderer {
 	}
 
 
-	public render(camera: Camera, markers: PlayerMarker[], commands: PlaceMarkerCommand[]) {
+	public render(camera: Camera, markers: Marker[], commands: CommandPlaceMarker[]) {
 		this.batchRenderer.begin(camera);
 		markers.forEach(m => {
 			const [offX, offY] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, m.q, m.r);
 			const size = TilemapUtils.DEFAULT_HEX_LAYOUT.size;
 			this.batchRenderer.add([
-				[offX, offY, m.playerId],
-				[offX - (size[0] / 3), offY + size[1], m.playerId],
-				[offX + (size[0] / 3), offY + size[1], m.playerId],
+				[offX, offY, this.getHash(m.userId, 5)],
+				[offX - (size[0] / 3), offY + size[1], this.getHash(m.userId, 5)],
+				[offX + (size[0] / 3), offY + size[1], this.getHash(m.userId, 5)],
 			]);
 		});
 		commands.forEach(m => {
@@ -82,6 +82,16 @@ export class MarkerRenderer {
 	public dispose() {
 		this.batchRenderer.dispose();
 		this.shader.dispose();
+	}
+
+
+	private getHash(input: string, maxVal: number) {
+		let hash = 0, len = input.length;
+		for (let i = 0; i < len; i++) {
+			hash  = ((hash << 5) - hash) + input.charCodeAt(i);
+			hash |= 0; // to 32bit integer
+		}
+		return Math.abs(hash) % maxVal;
 	}
 
 }

@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.tilemap
 
-import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.Tilemap
+import de.ruegnerlukas.strategygame.backend.ports.models.game.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.game.Tilemap
 import java.util.Random
 
 

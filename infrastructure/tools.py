@@ -35,6 +35,7 @@ def cmd_help():
     print("              'build':   builds the backend and frontend")
     print("     'build frontend':   builds the frontend")
     print("      'build backend':   builds the backend")
+    print("  'build backend hot':   builds the backend with hot-reloading enabled")
     print("")
     print("       'create infra':   creates the required cloud infrastructure")
     print("       'delete infra':   deletes the whole cloud infrastructure")
@@ -64,7 +65,7 @@ def cmd_docu_build_html():
 def cmd_run_backend():
     print("Starting backend...")
     with cd("strategy-game-backend"):
-        os.system("gradlew run")
+        os.system("gradlew run -Dev=true")
 
 
 def cmd_run_frontend():
@@ -83,8 +84,15 @@ def cmd_run():
 
 def cmd_build_backend():
     print("Building backend...")
-    run_cmd("./strategy-game-backend/gradlew shadowJar")
+    with cd("strategy-game-backend"):
+        run_cmd(["gradlew", "shadowJar"])
     print("...backend built")
+
+
+def cmd_build_backend_hot():
+    print("Building backend (with hot-reloading)...")
+    with cd("strategy-game-backend"):
+        os.system("gradlew -t build -x test -x shadowJar -i")
 
 
 def cmd_build_frontend():
@@ -197,6 +205,7 @@ def main():
         "run frontend": cmd_run_frontend,
         "run": cmd_run,
         "build backend": cmd_build_backend,
+        "build backend hot": cmd_build_backend_hot,
         "build frontend": cmd_build_frontend,
         "build": cmd_build,
         "create infra": cmd_create_infra,
