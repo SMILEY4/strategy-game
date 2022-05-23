@@ -1,5 +1,5 @@
 import {UserStateAccess} from "../../../ports/required/state/userStateAccess";
-import {UserStore} from "./UserStore";
+import {UserStore} from "./userStore";
 
 export class UserStateAccessImpl implements UserStateAccess {
 

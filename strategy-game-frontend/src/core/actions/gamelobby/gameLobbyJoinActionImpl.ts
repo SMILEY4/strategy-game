@@ -10,6 +10,7 @@ export class GameLobbyJoinActionImpl implements GameLobbyJoinAction {
     }
 
     perform(gameId: string): Promise<void> {
+        console.debug("Joining game-lobby")
         return this.gameApi.join(gameId);
     }
 

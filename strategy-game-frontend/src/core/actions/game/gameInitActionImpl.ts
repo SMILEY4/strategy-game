@@ -13,6 +13,7 @@ export class GameInitActionImpl implements GameInitAction {
     }
 
     perform(canvas: HTMLCanvasElement): void {
+        console.debug("Initializing game")
         this.canvasHandle.set(canvas);
         this.renderer.initialize();
     }

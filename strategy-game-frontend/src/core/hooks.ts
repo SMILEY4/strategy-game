@@ -1,5 +1,5 @@
-import {GameStore} from "../external/state/game/GameStore";
-import {UserStore} from "../external/state/user/UserStore";
+import {GameStore} from "../external/state/game/gameStore";
+import {UserStore} from "../external/state/user/userStore";
 
 export namespace Hooks {
 

@@ -10,6 +10,7 @@ export class UserLogOutActionImpl implements UserLogOutAction {
     }
 
     perform(): void {
+        console.debug("Logging Out")
         this.userStateAccess.clearAuth();
     }
 

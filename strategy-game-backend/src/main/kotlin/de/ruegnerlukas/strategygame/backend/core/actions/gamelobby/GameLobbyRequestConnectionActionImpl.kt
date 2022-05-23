@@ -9,7 +9,7 @@ import de.ruegnerlukas.strategygame.backend.shared.Rail
 class GameLobbyRequestConnectionActionImpl(private val repository: GameRepository) : GameLobbyRequestConnectionAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Rail<Unit> {
-		log().info("Request to join game-lobby $gameId from user $userId")
+		log().info("Request to connect to game-lobby $gameId from user $userId")
 		return Rail.begin()
 			.flatMap("GAME_NOT_FOUND") { repository.get(gameId) }
 			.flatMap { validateParticipant(userId, it) }

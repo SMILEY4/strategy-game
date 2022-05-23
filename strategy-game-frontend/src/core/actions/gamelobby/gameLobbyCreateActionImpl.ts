@@ -10,6 +10,7 @@ export class GameLobbyCreateActionImpl implements GameLobbyCreateAction {
     }
 
     perform(): Promise<string> {
+        console.debug("Creating game-lobby")
         return this.gameApi.create();
     }
 

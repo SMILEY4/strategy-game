@@ -14,6 +14,7 @@ export class UserLoginActionImpl implements UserLoginAction {
     }
 
     perform(email: string, password: string): Promise<void> {
+        console.debug("Logging in")
         return this.userApi.login(email, password).then((authData: AuthData) => {
             this.userStateAccess.setAuth(authData.idToken);
         });

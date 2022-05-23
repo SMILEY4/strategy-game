@@ -24,6 +24,7 @@ export class TurnUpdateWorldStateActionImpl implements TurnUpdateWorldStateActio
             userId: string
         })[]
     ): void {
+        console.debug("Updating world state")
         if(this.gameStateAccess.getCurrentState() !== "active") {
             this.gameStateAccess.setCurrentState("active")
         }

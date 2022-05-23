@@ -14,6 +14,7 @@ export class TurnSubmitActionImpl implements TurnSubmitAction {
 
 
     perform(): void {
+        console.debug("Submitting turn")
         if(this.gameStateAccess.getCurrentState() == "active") {
             const commands = this.gameStateAccess.getCommands();
             this.gameMsgApi.sendSubmitTurn(commands);

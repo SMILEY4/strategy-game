@@ -13,6 +13,7 @@ export class GameDisposeActionImpl implements GameDisposeAction {
     }
 
     perform(): void {
+        console.debug("Disposing game")
         this.canvasHandle.set(null);
         this.renderer.dispose();
     }

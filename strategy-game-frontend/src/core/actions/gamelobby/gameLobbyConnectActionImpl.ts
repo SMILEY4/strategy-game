@@ -13,6 +13,7 @@ export class GameLobbyConnectActionImpl implements GameLobbyConnectAction {
     }
 
     perform(gameId: string): Promise<void> {
+        console.debug("Connecting to game-lobby")
         return this.gameMsgApi.open(gameId).then(() => {
             this.gameStateAccess.setLoading(gameId);
         });

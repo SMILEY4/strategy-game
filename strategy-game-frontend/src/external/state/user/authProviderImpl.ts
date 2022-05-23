@@ -1,5 +1,5 @@
 import {AuthProvider} from "../../../ports/required/state/authProvider";
-import {UserStore} from "./UserStore";
+import {UserStore} from "./userStore";
 
 export class AuthProviderImpl implements AuthProvider {
 
