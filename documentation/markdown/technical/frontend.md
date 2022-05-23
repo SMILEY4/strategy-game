@@ -70,3 +70,9 @@ React global state-management. [Link to Documentation](https://github.com/pmndrs
 **WebGL**
 
 High-performance rendering API based on OpenGL. [Link to Documentation](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
+
+**Jest**
+
+JavaScript testing framework. [Link to Documentation](https://jestjs.io/docs/getting-started).
+
+Used together with **ts-jest** for TypeScript support. [Link to Documentation](https://kulshekhar.github.io/ts-jest/docs/getting-started/installation)

@@ -1,4 +1,4 @@
-import {GameInputClickAction} from "../../../ports/provided/game/GameInputClickAction";
+import {GameInputClickAction} from "../../../ports/provided/game/gameInputClickAction";
 import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
 import {TilePicker} from "../../service/tilemap/tilePicker";
 

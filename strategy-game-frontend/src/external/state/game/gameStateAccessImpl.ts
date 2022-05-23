@@ -1,7 +1,7 @@
-import {CameraState} from "../../../ports/models/CameraState";
-import {CommandPlaceMarker} from "../../../ports/models/CommandPlaceMarker";
+import {CameraState} from "../../../ports/models/cameraState";
+import {CommandPlaceMarker} from "../../../ports/models/commandPlaceMarker";
 import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
-import {GameStore} from "./GameStore";
+import {GameStore} from "./gameStore";
 
 export class GameStateAccessImpl implements GameStateAccess {
 

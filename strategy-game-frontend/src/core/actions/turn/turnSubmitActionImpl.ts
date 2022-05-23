@@ -1,4 +1,4 @@
-import {TurnSubmitAction} from "../../../ports/provided/turn/TurnSubmitAction";
+import {TurnSubmitAction} from "../../../ports/provided/turn/turnSubmitAction";
 import {GameMessagingApi} from "../../../ports/required/api/gameMessagingApi";
 import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
 

@@ -1,7 +1,7 @@
-import {PlaceMarkerCommand} from "../../../state/models/PlaceMarkerCommand";
+import {CommandPlaceMarker} from "../../models/commandPlaceMarker";
 
 export interface GameMessagingApi {
     open: (gameId: string) => Promise<void>;
     close: () => void;
-    sendSubmitTurn: (commands: PlaceMarkerCommand[]) => void;
+    sendSubmitTurn: (commands: CommandPlaceMarker[]) => void;
 }

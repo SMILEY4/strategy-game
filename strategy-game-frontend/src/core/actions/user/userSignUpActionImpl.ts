@@ -1,4 +1,4 @@
-import {UserSignUpAction} from "../../../ports/provided/user/UserSignUpAction";
+import {UserSignUpAction} from "../../../ports/provided/user/userSignUpAction";
 import {UserApi} from "../../../ports/required/api/userApi";
 
 export class UserSignUpActionImpl implements UserSignUpAction {

@@ -1,6 +1,6 @@
-import {GameDisposeAction} from "../../../ports/provided/game/GameDisposeAction";
+import {GameDisposeAction} from "../../../ports/provided/game/gameDisposeAction";
+import {GameCanvasHandle} from "../../service/gameCanvasHandle";
 import {Renderer} from "../../service/rendering/renderer";
-import {GameCanvasHandle} from "../../service/GameCanvasHandle";
 
 export class GameDisposeActionImpl implements GameDisposeAction {
 

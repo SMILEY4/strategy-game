@@ -1,4 +1,4 @@
-import {UserLogOutAction} from "../../../ports/provided/user/UserLogOutAction";
+import {UserLogOutAction} from "../../../ports/provided/user/userLogOutAction";
 import {UserStateAccess} from "../../../ports/required/state/userStateAccess";
 
 export class UserLogOutActionImpl implements UserLogOutAction {

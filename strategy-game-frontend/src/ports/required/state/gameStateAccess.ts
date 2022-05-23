@@ -1,5 +1,5 @@
-import {CameraState} from "../../models/CameraState";
-import {CommandPlaceMarker} from "../../models/CommandPlaceMarker";
+import {CameraState} from "../../models/cameraState";
+import {CommandPlaceMarker} from "../../models/commandPlaceMarker";
 
 export interface GameStateAccess {
     setLoading: (gameId: string) => void;

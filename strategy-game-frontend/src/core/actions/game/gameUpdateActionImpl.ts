@@ -1,4 +1,4 @@
-import {GameUpdateAction} from "../../../ports/provided/game/GameUpdateAction";
+import {GameUpdateAction} from "../../../ports/provided/game/gameUpdateAction";
 import {Renderer} from "../../service/rendering/renderer";
 
 export class GameUpdateActionImpl implements GameUpdateAction {

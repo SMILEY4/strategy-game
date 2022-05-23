@@ -1,7 +1,7 @@
-import {Marker} from "../../../ports/models/Marker";
-import {Tile} from "../../../ports/models/Tile";
+import {Marker} from "../../../ports/models/marker";
+import {Tile} from "../../../ports/models/tile";
 import {WorldStateAccess} from "../../../ports/required/state/worldStateAccess";
-import {WorldStore} from "./WorldStore";
+import {WorldStore} from "./worldStore";
 
 export class WorldStateAccessImpl implements WorldStateAccess {
 

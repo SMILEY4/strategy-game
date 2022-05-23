@@ -1,6 +1,6 @@
-import {GameInitAction} from "../../../ports/provided/game/GameInitAction";
+import {GameInitAction} from "../../../ports/provided/game/gameInitAction";
+import {GameCanvasHandle} from "../../service/gameCanvasHandle";
 import {Renderer} from "../../service/rendering/renderer";
-import {GameCanvasHandle} from "../../service/GameCanvasHandle";
 
 export class GameInitActionImpl implements GameInitAction {
 

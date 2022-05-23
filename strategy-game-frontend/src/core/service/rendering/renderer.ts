@@ -1,8 +1,8 @@
 import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
 import {WorldStateAccess} from "../../../ports/required/state/worldStateAccess";
-import {GameCanvasHandle} from "../GameCanvasHandle";
+import {GameCanvasHandle} from "../gameCanvasHandle";
 import {MarkerRenderer} from "./markers/markerRenderer";
-import {TilemapRenderer} from "./tilemap/TilemapRenderer";
+import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {Camera} from "./utils/camera";
 
 export class Renderer {

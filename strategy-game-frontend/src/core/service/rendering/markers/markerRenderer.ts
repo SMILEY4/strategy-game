@@ -1,7 +1,7 @@
-import {CommandPlaceMarker} from "../../../../ports/models/CommandPlaceMarker";
-import {Marker} from "../../../../ports/models/Marker";
-import {GameCanvasHandle} from "../../GameCanvasHandle";
-import {BatchRenderer} from "../utils/BatchRenderer";
+import {CommandPlaceMarker} from "../../../../ports/models/commandPlaceMarker";
+import {Marker} from "../../../../ports/models/marker";
+import {GameCanvasHandle} from "../../gameCanvasHandle";
+import {BatchRenderer} from "../utils/batchRenderer";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import SRC_MARKER_SHADER_VERTEX from "./markerShader.vsh?raw";
 import SRC_MARKER_SHADER_FRAGMENT from "./markerShader.fsh?raw";

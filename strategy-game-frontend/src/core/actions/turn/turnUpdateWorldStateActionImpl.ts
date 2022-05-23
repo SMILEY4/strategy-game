@@ -1,4 +1,4 @@
-import {TurnUpdateWorldStateAction} from "../../../ports/provided/turn/TurnUpdateWorldStateAction";
+import {TurnUpdateWorldStateAction} from "../../../ports/provided/turn/turnUpdateWorldStateAction";
 import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
 import {WorldStateAccess} from "../../../ports/required/state/worldStateAccess";
 

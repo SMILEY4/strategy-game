@@ -1,4 +1,4 @@
-import {CommandPlaceMarker} from "../../ports/models/CommandPlaceMarker";
+import {CommandPlaceMarker} from "../../ports/models/commandPlaceMarker";
 import {GameMessagingApi} from "../../ports/required/api/gameMessagingApi";
 import {AuthProvider} from "../../ports/required/state/authProvider";
 import {MessageHandler} from "./messageHandler";

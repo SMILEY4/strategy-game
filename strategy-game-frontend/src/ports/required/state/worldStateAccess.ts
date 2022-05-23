@@ -1,5 +1,5 @@
-import {Marker} from "../../models/Marker";
-import {Tile} from "../../models/Tile";
+import {Marker} from "../../models/marker";
+import {Tile} from "../../models/tile";
 
 export interface WorldStateAccess {
     getTile: (q: number, r: number) => Tile | null;

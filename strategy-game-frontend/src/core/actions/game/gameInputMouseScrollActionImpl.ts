@@ -1,4 +1,4 @@
-import {GameInputMouseScrollAction} from "../../../ports/provided/game/GameInputMouseScrollAction";
+import {GameInputMouseScrollAction} from "../../../ports/provided/game/gameInputMouseScrollAction";
 import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
 
 export class GameInputMouseScrollActionImpl implements GameInputMouseScrollAction {

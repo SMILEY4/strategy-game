@@ -1,6 +1,6 @@
 import create, {SetState} from "zustand";
-import {Marker} from "../../../ports/models/Marker";
-import {Tile} from "../../../ports/models/Tile";
+import {Marker} from "../../../ports/models/marker";
+import {Tile} from "../../../ports/models/tile";
 
 export namespace WorldStore {
 

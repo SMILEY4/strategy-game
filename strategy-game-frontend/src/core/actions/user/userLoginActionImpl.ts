@@ -1,5 +1,5 @@
 import {AuthData} from "../../../ports/models/authData";
-import {UserLoginAction} from "../../../ports/provided/user/UserLoginAction";
+import {UserLoginAction} from "../../../ports/provided/user/userLoginAction";
 import {UserApi} from "../../../ports/required/api/userApi";
 import {UserStateAccess} from "../../../ports/required/state/userStateAccess";
 
