@@ -33,6 +33,10 @@ export class GameStateAccessImpl implements GameStateAccess {
         GameStore.useState.getState().setTurnState(state);
     }
 
+    getTurnState(): "active" | "submitted" {
+        return GameStore.useState.getState().turnState;
+    }
+
     moveCamera(dx: number, dy: number): void {
         GameStore.useState.getState().moveCamera(dx, dy);
     }

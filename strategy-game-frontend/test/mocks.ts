@@ -1,3 +1,4 @@
+import {TilePicker} from "../src/core/service/tilemap/tilePicker";
 import {GameApi} from "../src/ports/required/api/gameApi";
 import {GameMessagingApi} from "../src/ports/required/api/gameMessagingApi";
 import {UserApi} from "../src/ports/required/api/userApi";
@@ -41,6 +42,7 @@ export function mockGameStateAccess(): GameStateAccess {
     gameStateAccess["setLoading"] = jest.fn().mockReturnValue(undefined)
     gameStateAccess["getCurrentState"] = jest.fn().mockReturnValue(undefined)
     gameStateAccess["setCurrentState"] = jest.fn().mockReturnValue(undefined)
+    gameStateAccess["getTurnState"] = jest.fn().mockReturnValue(undefined)
     gameStateAccess["setTurnState"] = jest.fn().mockReturnValue(undefined)
     gameStateAccess["getCommands"] = jest.fn().mockReturnValue(undefined)
     gameStateAccess["addCommand"] = jest.fn().mockReturnValue(undefined)
@@ -62,4 +64,10 @@ export function mockWorldStateAccess(): WorldStateAccess {
     worldStateAccess["getMarkers"] = jest.fn().mockReturnValue(undefined)
     worldStateAccess["setMarkers"] = jest.fn().mockReturnValue(undefined)
     return worldStateAccess
+}
+
+export function mockTilePicker(): TilePicker {
+    const tilePicker = {} as TilePicker
+    tilePicker["tileAt"] = jest.fn().mockReturnValue(undefined)
+    return tilePicker;
 }

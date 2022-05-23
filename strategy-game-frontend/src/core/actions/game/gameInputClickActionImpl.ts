@@ -13,12 +13,14 @@ export class GameInputClickActionImpl implements GameInputClickAction {
     }
 
     perform(x: number, y: number): void {
-        const tile = this.tilePicker.tileAt(x, y);
-        if (tile) {
-            this.gameStateAccess.addCommand({
-                q: tile.q,
-                r: tile.r
-            });
+        if (this.gameStateAccess.getTurnState() === "active") {
+            const tile = this.tilePicker.tileAt(x, y);
+            if (tile) {
+                this.gameStateAccess.addCommand({
+                    q: tile.q,
+                    r: tile.r
+                });
+            }
         }
     }
 
