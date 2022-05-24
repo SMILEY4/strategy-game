@@ -7,8 +7,10 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequ
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.new.of
+import de.ruegnerlukas.strategygame.backend.shared.get
+import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
-import de.ruegnerlukas.strategygame.backend.testutils.shouldBeSuccess
+import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -25,15 +27,15 @@ class GameLobbyTest : StringSpec({
 
 		val createLobbyResult = createGameLobby.perform(userId)
 		withClue("result of creating lobby should be valid") {
-			createLobbyResult shouldBeSuccess true
+			createLobbyResult shouldBeOk true
 			createLobbyResult.get() shouldHaveMinLength 1
 		}
 
-		val gameState = gameRepository.get(createLobbyResult.get())
+		val gameState = gameRepository.get(createLobbyResult.getOrThrow())
 		withClue("saved game-state should be valid") {
-			gameState shouldBeSuccess true
-			gameState.get().gameId shouldBe createLobbyResult.get()
-			gameState.get().participants shouldContainExactlyInAnyOrder listOf(PlayerEntity.of(userId))
+			gameState shouldBeOk true
+			gameState.getOrThrow().gameId shouldBe createLobbyResult.get()
+			gameState.getOrThrow().participants shouldContainExactlyInAnyOrder listOf(PlayerEntity.of(userId))
 		}
 
 	}
@@ -47,16 +49,16 @@ class GameLobbyTest : StringSpec({
 
 		val createLobbyResult = createGameLobby.perform(ownerId)
 
-		val joinLobbyResult = joinGameLobby.perform(participantId, createLobbyResult.get())
+		val joinLobbyResult = joinGameLobby.perform(participantId, createLobbyResult.getOrThrow())
 		withClue("result of joining lobby should be valid") {
-			joinLobbyResult shouldBeSuccess true
+			joinLobbyResult shouldBeOk true
 		}
 
-		val gameState = gameRepository.get(createLobbyResult.get())
+		val gameState = gameRepository.get(createLobbyResult.getOrThrow())
 		withClue("saved game-state should be valid") {
-			gameState shouldBeSuccess true
-			gameState.get().gameId shouldBe createLobbyResult.get()
-			gameState.get().participants shouldContainExactlyInAnyOrder listOf(
+			gameState shouldBeOk true
+			gameState.getOrThrow().gameId shouldBe createLobbyResult.get()
+			gameState.getOrThrow().participants shouldContainExactlyInAnyOrder listOf(
 				PlayerEntity.of(ownerId),
 				PlayerEntity.of(participantId)
 			)
@@ -71,18 +73,18 @@ class GameLobbyTest : StringSpec({
 		val participantId = "my-test-participant"
 
 		val createLobbyResult = createGameLobby.perform(ownerId)
-		joinGameLobby.perform(participantId, createLobbyResult.get())
+		joinGameLobby.perform(participantId, createLobbyResult.getOrThrow())
 
-		val joinLobbyResult = joinGameLobby.perform(participantId, createLobbyResult.get())
+		val joinLobbyResult = joinGameLobby.perform(participantId, createLobbyResult.getOrThrow())
 		withClue("result of joining lobby again should be valid") {
-			joinLobbyResult shouldBeSuccess true
+			joinLobbyResult shouldBeOk true
 		}
 
-		val gameState = gameRepository.get(createLobbyResult.get())
+		val gameState = gameRepository.get(createLobbyResult.getOrThrow())
 		withClue("saved game-state should be valid") {
-			gameState shouldBeSuccess true
-			gameState.get().gameId shouldBe createLobbyResult.get()
-			gameState.get().participants shouldContainExactlyInAnyOrder listOf(
+			gameState shouldBeOk true
+			gameState.getOrThrow().gameId shouldBe createLobbyResult.get()
+			gameState.getOrThrow().participants shouldContainExactlyInAnyOrder listOf(
 				PlayerEntity.of(ownerId),
 				PlayerEntity.of(participantId)
 			)
@@ -113,8 +115,8 @@ class GameLobbyTest : StringSpec({
 
 		val listLobbiesResult = listGameLobbies.perform(userId)
 		withClue("expect result to be valid") {
-			listLobbiesResult shouldBeSuccess true
-			listLobbiesResult.get() shouldHaveSize 0
+			listLobbiesResult shouldBeOk true
+			listLobbiesResult.getOrThrow() shouldHaveSize 0
 		}
 	}
 
@@ -128,13 +130,13 @@ class GameLobbyTest : StringSpec({
 
 		val createLobbyResult1 = createGameLobby.perform(userId)
 		val createLobbyResult2 = createGameLobby.perform(userIdOther)
-		joinGameLobby.perform(userId, createLobbyResult2.get())
+		joinGameLobby.perform(userId, createLobbyResult2.getOrThrow())
 
 		val listLobbiesResult = listGameLobbies.perform(userId)
 		withClue("expect result to be valid") {
-			listLobbiesResult shouldBeSuccess true
-			listLobbiesResult.get() shouldHaveSize 2
-			listLobbiesResult.get() shouldContainExactlyInAnyOrder listOf(createLobbyResult1.get(), createLobbyResult2.get())
+			listLobbiesResult shouldBeOk true
+			listLobbiesResult.getOrThrow() shouldHaveSize 2
+			listLobbiesResult.getOrThrow() shouldContainExactlyInAnyOrder listOf(createLobbyResult1.get(), createLobbyResult2.get())
 		}
 	}
 
@@ -145,10 +147,10 @@ class GameLobbyTest : StringSpec({
 		val userId = "my-test-user"
 
 		val createResult = createGameLobby.perform(userId)
-		val connectResult = connectGameLobby.perform(userId, createResult.get())
+		val connectResult = connectGameLobby.perform(userId, createResult.getOrThrow())
 
 		withClue("expect result to be successful") {
-			connectResult shouldBeSuccess true
+			connectResult shouldBeOk true
 		}
 	}
 
@@ -160,7 +162,7 @@ class GameLobbyTest : StringSpec({
 		val userId2 = "my-test-user-2"
 
 		val createResult = createGameLobby.perform(userId1)
-		val connectResult = connectGameLobby.perform(userId2, createResult.get())
+		val connectResult = connectGameLobby.perform(userId2, createResult.getOrThrow())
 
 		withClue("expect result to be failed") {
 			connectResult shouldBeError "NOT_PARTICIPANT"

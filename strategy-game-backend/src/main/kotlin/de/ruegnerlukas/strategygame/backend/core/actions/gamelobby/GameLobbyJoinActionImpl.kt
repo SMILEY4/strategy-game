@@ -1,24 +1,31 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
+import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.new.of
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.shared.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.Rail
+import de.ruegnerlukas.strategygame.backend.shared.discardValue
+import de.ruegnerlukas.strategygame.backend.shared.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.map
+import de.ruegnerlukas.strategygame.backend.shared.mapError
 
 /**
  * Join an existing game-lobby
  */
 class GameLobbyJoinActionImpl(private val repository: GameRepository) : GameLobbyJoinAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String): Rail<Unit> {
+	override suspend fun perform(userId: String, gameId: String): Either<Unit, ApplicationError> {
 		log().info("Join game-lobby $gameId (user = $userId)")
-		return Rail.begin()
-			.flatMap("GAME_NOT_FOUND") { repository.get(gameId) }
+		return repository.get(gameId)
 			.map { addParticipant(userId, it) }
-			.flatMap("FAILED_WRITE") { repository.save(it) }
+			.flatMap { repository.save(it) }
+			.mapError(EntityNotFoundError) { GameNotFoundError }
 			.discardValue()
 	}
 

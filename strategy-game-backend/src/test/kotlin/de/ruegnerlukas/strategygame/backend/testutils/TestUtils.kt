@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoin
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
 
 
 object TestUtils {
@@ -19,7 +20,7 @@ object TestUtils {
 		val createGameLobby = GameLobbyCreateActionImpl(repository)
 		val joinGameLobby = GameLobbyJoinActionImpl(repository)
 
-		val gameId = createGameLobby.perform(userIds[0]).get()
+		val gameId = createGameLobby.perform(userIds[0]).getOrThrow()
 		userIds.subList(1, userIds.size).forEach { joinGameLobby.perform(it, gameId) }
 
 		if (connectAllPlayers) {

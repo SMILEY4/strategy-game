@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
 import de.ruegnerlukas.strategygame.backend.core.tilemap.TilemapBuilder
+import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.game.Tilemap
 import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
@@ -8,8 +9,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.new.WorldEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.new.of
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.shared.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.Rail
+import de.ruegnerlukas.strategygame.backend.shared.Ok
+import de.ruegnerlukas.strategygame.backend.shared.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.map
 import java.util.UUID
 
 /**
@@ -20,11 +24,10 @@ class GameLobbyCreateActionImpl(private val repository: GameRepository): GameLob
 	/**
 	 * @param userId the id of the user creating the game-lobby
 	 */
-	override suspend fun perform(userId: String): Rail<String> {
+	override suspend fun perform(userId: String): Either<String, ApplicationError> {
 		log().info("Create new game-lobby with owner $userId")
-		return Rail.begin()
-			.map { buildGameState(userId) }
-			.flatMap("FAILED_WRITE") { repository.save(it) }
+		return Ok(buildGameState(userId))
+			.flatMap { repository.save(it) }
 			.map { it.gameId }
 	}
 

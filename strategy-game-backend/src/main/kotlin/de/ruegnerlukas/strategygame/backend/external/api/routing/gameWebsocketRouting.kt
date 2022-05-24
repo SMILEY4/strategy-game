@@ -5,11 +5,16 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandle
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
+import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.shared.onError
+import de.ruegnerlukas.strategygame.backend.shared.onSuccess
+import de.ruegnerlukas.strategygame.backend.shared.recover
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
@@ -35,14 +40,13 @@ fun Route.gameWebsocketRoutes(
 		websocketAuthenticate(userService) {
 			interceptWebsocketRequest(
 				interceptor = {
-					val result = requestConnection.perform(
+					requestConnection.perform(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
 					)
-					when {
-						result.isError("NOT_PARTICIPANT") -> call.respond(HttpStatusCode.Conflict, result.getError())
-						result.isError() -> call.respond(HttpStatusCode.InternalServerError, result.getError())
-					}
+						.recover(GameNotFoundError) { call.respond(HttpStatusCode.NotFound, it.toString()) }
+						.recover(NotParticipantError) { call.respond(HttpStatusCode.Conflict, it.toString()) }
+						.onError { call.respond(HttpStatusCode.InternalServerError, it.toString()) }
 				},
 				callback = {
 					webSocket {

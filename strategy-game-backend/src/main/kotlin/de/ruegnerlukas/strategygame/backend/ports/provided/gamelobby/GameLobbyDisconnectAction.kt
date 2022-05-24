@@ -1,9 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby
 
-import de.ruegnerlukas.strategygame.backend.shared.Rail
+import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import de.ruegnerlukas.strategygame.backend.shared.Either
+
 
 interface GameLobbyDisconnectAction {
 
-	suspend fun perform(userId: String): Rail<Unit>
+	suspend fun perform(userId: String): Either<Unit, ApplicationError>
 
 }

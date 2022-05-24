@@ -7,9 +7,11 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRep
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.CommandAddMarker
 import de.ruegnerlukas.strategygame.backend.ports.models.new.CommandAddMarkerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.new.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
+import de.ruegnerlukas.strategygame.backend.shared.get
+import de.ruegnerlukas.strategygame.backend.shared.getOr
+import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
-import de.ruegnerlukas.strategygame.backend.testutils.shouldBeSuccess
+import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -35,9 +37,9 @@ class TurnTest : StringSpec({
 			)
 		)
 
-		resultSubmit1 shouldBeSuccess true
+		resultSubmit1 shouldBeOk true
 		withClue("game-state correct after first player submits turn") {
-			val state = repository.get(gameId).get()
+			val state = repository.get(gameId).getOrThrow()
 			state.commands shouldContainExactlyInAnyOrder listOf(
 				CommandAddMarkerEntity(userId1, 0, 0),
 				CommandAddMarkerEntity(userId1, 1, 0),
@@ -52,9 +54,9 @@ class TurnTest : StringSpec({
 			)
 		)
 
-		resultSubmit2 shouldBeSuccess true
+		resultSubmit2 shouldBeOk true
 		withClue("game-state correct after last player submits (and ends) turn") {
-			val state = repository.get(gameId).get()
+			val state = repository.get(gameId).getOrThrow()
 			state.commands shouldHaveSize 0
 			state.world.markers shouldContainExactlyInAnyOrder listOf(
 				MarkerEntity(userId1, 0, 0),

@@ -1,17 +1,18 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.shared.Rail
+import de.ruegnerlukas.strategygame.backend.shared.Either
 import io.kotest.matchers.shouldBe
 
-infix fun <T> Rail<T>.shouldBeSuccess(success: Boolean) {
-	isSuccess() shouldBe success
+
+infix fun <V, E> Either<V, E>.shouldBeOk(success: Boolean) {
+	isOk() shouldBe success
 }
 
-infix fun <T> Rail<T>.shouldBeError(error: Boolean) {
+infix fun <V, E> Either<V, E>.shouldBeError(error: Boolean) {
 	isError() shouldBe error
 }
 
-infix fun <T> Rail<T>.shouldBeError(error: String) {
+infix fun <V, E> Either<V, E>.shouldBeError(error: E) {
 	isError() shouldBe true
-	getError().message shouldBe error
+	error shouldBe error
 }
