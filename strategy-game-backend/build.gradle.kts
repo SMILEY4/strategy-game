@@ -4,6 +4,7 @@ val versionKtor: String by project
 val versionKotlin: String by project
 val versionLogback: String by project
 val versionKotlinLogging: String by project
+val versionAwsSdk: String by project
 val versionKotest: String by project
 val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
@@ -41,9 +42,9 @@ dependencies {
 	implementation("ch.qos.logback:logback-classic:$versionLogback")
 	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
 
-	implementation("com.amazonaws:aws-java-sdk:1.12.208")
-	implementation("com.amazonaws:aws-java-sdk-core:1.12.208")
-	implementation("com.amazonaws:aws-java-sdk-cognitoidp:1.12.208")
+	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
+	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")
+	implementation("com.amazonaws:aws-java-sdk-cognitoidp:$versionAwsSdk")
 
 
 	testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")

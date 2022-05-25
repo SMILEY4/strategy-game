@@ -1,5 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
+import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.CommandAddMarker
 import de.ruegnerlukas.strategygame.backend.ports.models.new.CommandAddMarkerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.new.ConnectionState
@@ -10,20 +13,24 @@ import de.ruegnerlukas.strategygame.backend.ports.models.new.WorldEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.shared.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.Rail
+import de.ruegnerlukas.strategygame.backend.shared.Ok
+import de.ruegnerlukas.strategygame.backend.shared.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.map
+import de.ruegnerlukas.strategygame.backend.shared.mapError
 
 class TurnSubmitActionImpl(
 	private val repository: GameRepository,
 	private val endTurnAction: TurnEndAction
 ) : TurnSubmitAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String, commands: List<CommandAddMarker>): Rail<Unit> {
+	override suspend fun perform(userId: String, gameId: String, commands: List<CommandAddMarker>): Either<Unit, ApplicationError> {
 		log().info("user $userId submits ${commands.size} commands for game $gameId")
-		return Rail.begin()
-			.flatMap("GAME_NOT_FOUND") { repository.get(gameId) }
+		return repository.get(gameId)
 			.map { updateState(it, userId, commands) }
-			.flatMap("FAILED_WRITE") { repository.save(it) }
+			.mapError(EntityNotFoundError) { GameNotFoundError }
+			.flatMap { repository.save(it) }
 			.flatMap { maybeEndTurn(it) }
 	}
 
@@ -48,14 +55,14 @@ class TurnSubmitActionImpl(
 		)
 	}
 
-	private suspend fun maybeEndTurn(state: GameLobbyEntity): Rail<Unit> {
+	private suspend fun maybeEndTurn(state: GameLobbyEntity): Either<Unit, ApplicationError> {
 		val allSubmitted = state.participants
 			.filter { it.connection.state == ConnectionState.CONNECTED }
 			.all { it.state == PlayerState.SUBMITTED }
 		if (allSubmitted) {
 			return endTurnAction.perform(state.gameId)
 		} else {
-			return Rail.success()
+			return Ok(Unit)
 		}
 	}
 

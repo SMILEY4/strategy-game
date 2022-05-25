@@ -1,8 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
+import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbiesListAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
+import de.ruegnerlukas.strategygame.backend.shared.get
+import de.ruegnerlukas.strategygame.backend.shared.getError
+import de.ruegnerlukas.strategygame.backend.shared.onError
+import de.ruegnerlukas.strategygame.backend.shared.onSuccess
+import de.ruegnerlukas.strategygame.backend.shared.recover
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -24,25 +30,20 @@ fun Route.gameLobbyRoutes(
 	authenticate {
 		route("game") {
 			post("create") {
-				val result = createLobby.perform(getUserIdOrThrow(call))
-				when {
-					result.isSuccess() -> call.respond(HttpStatusCode.OK, result.get())
-					result.isError() -> call.respond(HttpStatusCode.InternalServerError, result.getError())
-				}
+				createLobby.perform(getUserIdOrThrow(call))
+					.onSuccess { call.respond(HttpStatusCode.OK, it) }
+					.onError { call.respond(HttpStatusCode.InternalServerError, it.toString()) }
 			}
 			post("join/{gameId}") {
-				val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
-				when {
-					result.isSuccess() -> call.respond(HttpStatusCode.OK, "")
-					result.isError() -> call.respond(HttpStatusCode.InternalServerError, result.getError())
-				}
+				joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
+					.onSuccess { call.respond(HttpStatusCode.OK, "") }
+					.recover(GameNotFoundError) { call.respond(HttpStatusCode.NotFound, it.toString()) }
+					.onError { call.respond(HttpStatusCode.InternalServerError, it.toString()) }
 			}
 			get("list") {
-				val result = listLobbies.perform(getUserIdOrThrow(call))
-				when {
-					result.isSuccess() -> call.respond(HttpStatusCode.OK, result.get())
-					result.isError() -> call.respond(HttpStatusCode.InternalServerError, result.getError())
-				}
+				listLobbies.perform(getUserIdOrThrow(call))
+					.onSuccess { call.respond(HttpStatusCode.OK, it) }
+					.onError { call.respond(HttpStatusCode.InternalServerError, it.toString()) }
 			}
 		}
 	}

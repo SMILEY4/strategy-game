@@ -208,6 +208,7 @@ POST /api/game/join/:gameId
 - Responses
   - 200 OK
   - 401 Unauthorized
+  - 404 Not Found
 
 ### List Games (protected)
 
@@ -247,8 +248,10 @@ WS /api/game/:gameId?token=<jwt>
 
   - 401 Unauthorized
 
-  - 409 Conflict
+  - 404 Not Found
 
+  - 409 Conflict
+  
     ```
     NOT_PARTICIPANT
     ```
