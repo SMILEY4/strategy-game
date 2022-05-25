@@ -5,10 +5,8 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionIm
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.CommandAddMarker
-import de.ruegnerlukas.strategygame.backend.ports.models.new.CommandAddMarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.shared.get
-import de.ruegnerlukas.strategygame.backend.shared.getOr
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandAddMarkerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.MarkerEntity
 import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk

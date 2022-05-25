@@ -7,7 +7,6 @@ sealed class ApplicationError {
 //== Database Errors ============//
 
 object EntityNotFoundError : ApplicationError()
-object DbWriteError : ApplicationError()
 
 //== Game Errors ================//
 

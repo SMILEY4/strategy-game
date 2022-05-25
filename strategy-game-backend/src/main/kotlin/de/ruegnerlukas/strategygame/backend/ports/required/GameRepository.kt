@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.required
 
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.GameLobbyEntity
 import de.ruegnerlukas.strategygame.backend.shared.Either
 
 interface GameRepository {

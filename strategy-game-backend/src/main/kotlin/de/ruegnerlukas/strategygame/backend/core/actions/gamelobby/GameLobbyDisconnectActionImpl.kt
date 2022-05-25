@@ -3,10 +3,10 @@ package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.models.new.ConnectionState
-import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerConnectionEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.ConnectionState
+import de.ruegnerlukas.strategygame.backend.ports.models.game.GameLobbyEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerConnectionEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.Either

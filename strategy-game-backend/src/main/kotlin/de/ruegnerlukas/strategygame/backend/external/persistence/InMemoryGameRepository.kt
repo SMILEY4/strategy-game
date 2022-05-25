@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.external.persistence
 
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.GameLobbyEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.Either
 import de.ruegnerlukas.strategygame.backend.shared.Err
