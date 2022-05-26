@@ -4,10 +4,10 @@ import de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
-import de.ruegnerlukas.strategygame.backend.shared.config.Config
-import de.ruegnerlukas.strategygame.backend.shared.config.ConfigData
-import de.ruegnerlukas.strategygame.backend.shared.results.Result
+import de.ruegnerlukas.strategygame.backend.shared.Config
+import de.ruegnerlukas.strategygame.backend.shared.ConfigData
 import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
+import de.ruegnerlukas.strategygame.backend.shared.results.Result
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {

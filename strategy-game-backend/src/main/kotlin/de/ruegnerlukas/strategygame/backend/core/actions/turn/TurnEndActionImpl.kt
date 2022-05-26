@@ -3,13 +3,11 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.ConnectionState
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerState
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
-import de.ruegnerlukas.strategygame.backend.ports.models.game.ConnectionState
-import de.ruegnerlukas.strategygame.backend.ports.models.game.GameLobbyEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerState
-import de.ruegnerlukas.strategygame.backend.ports.models.game.WorldEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
@@ -35,25 +33,22 @@ class TurnEndActionImpl(
 			.discardValue()
 	}
 
-	private fun updateState(prev: GameLobbyEntity): GameLobbyEntity {
-		return GameLobbyEntity(
-			gameId = prev.gameId,
-			participants = prev.participants.map {
-				PlayerEntity(
-					userId = it.userId,
-					connection = it.connection,
-					state = PlayerState.PLAYING
-				)
-			},
-			world = WorldEntity(
-				map = prev.world.map,
-				markers = prev.world.markers + prev.commands.map { MarkerEntity(it.userId, it.q, it.r) }
+	private fun updateState(prev: Game): Game {
+		return prev.copy(
+			participants = prev.participants.map { it.copy(state = PlayerState.PLAYING) },
+			world = prev.world.copy(
+				tiles = prev.world.tiles.map { tile ->
+					val markerEntities = prev.commands
+						.filter { cmd -> cmd.q == tile.q && cmd.r == tile.r }
+						.map { MarkerTileEntity(it.userId) }
+					tile.copy(entities = tile.entities + markerEntities)
+				}
 			),
 			commands = listOf()
 		)
 	}
 
-	private suspend fun sendMessage(game: GameLobbyEntity) {
+	private suspend fun sendMessage(game: Game) {
 		val message = WorldStateMessage(game.world)
 		val connectionIds = game.participants
 			.filter { it.connection.state == ConnectionState.CONNECTED }

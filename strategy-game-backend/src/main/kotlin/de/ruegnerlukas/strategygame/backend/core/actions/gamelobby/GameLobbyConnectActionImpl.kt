@@ -3,11 +3,10 @@ package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerConnectionEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.connected
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
-import de.ruegnerlukas.strategygame.backend.ports.models.game.ConnectionState
-import de.ruegnerlukas.strategygame.backend.ports.models.game.GameLobbyEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerConnectionEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
@@ -33,29 +32,20 @@ class GameLobbyConnectActionImpl(
 			.discardValue()
 	}
 
-	private fun updateGameParticipant(userId: String, connectionId: Int, prev: GameLobbyEntity): GameLobbyEntity {
-		return GameLobbyEntity(
-			gameId = prev.gameId,
+	private fun updateGameParticipant(userId: String, connectionId: Int, prev: Game): Game {
+		return prev.copy(
 			participants = prev.participants.map {
-				when (it.userId) {
-					userId -> PlayerEntity(
-						userId = it.userId,
-						connection = PlayerConnectionEntity(
-							state = ConnectionState.CONNECTED,
-							connectionId = connectionId
-						),
-						state = it.state
-					)
-					else -> it
+				if (it.userId == userId) {
+					it.copy(connection = PlayerConnectionEntity.connected(connectionId))
+				} else {
+					it
 				}
 			},
-			world = prev.world,
-			commands = prev.commands
 		)
 	}
 
-	private suspend fun sendMessage(connectionId: Int, gameLobby: GameLobbyEntity) {
-		val message = WorldStateMessage(gameLobby.world)
+	private suspend fun sendMessage(connectionId: Int, game: Game) {
+		val message = WorldStateMessage(game.world)
 		messageProducer.sendWorldState(connectionId, message)
 	}
 

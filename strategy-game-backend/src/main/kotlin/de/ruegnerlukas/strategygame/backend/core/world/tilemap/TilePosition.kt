@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.tilemap
+package de.ruegnerlukas.strategygame.backend.core.world.tilemap
 
 /**
  * The position of a single tile

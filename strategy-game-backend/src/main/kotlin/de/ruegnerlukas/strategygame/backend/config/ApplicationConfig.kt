@@ -15,7 +15,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandle
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.shared.config.Config
+import de.ruegnerlukas.strategygame.backend.shared.Config
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json

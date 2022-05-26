@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.tilemap
+package de.ruegnerlukas.strategygame.backend.core.world.tilemap
 
 import java.lang.Integer.min
 import kotlin.math.floor

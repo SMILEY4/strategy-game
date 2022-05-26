@@ -25,8 +25,8 @@ import com.auth0.jwt.interfaces.RSAKeyProvider
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.shared.Config
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.config.Config
 import de.ruegnerlukas.strategygame.backend.shared.results.Result
 import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
@@ -35,7 +35,6 @@ import io.ktor.server.auth.jwt.JWTPrincipal
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.util.concurrent.TimeUnit
-
 
 class AwsCognitoService(
 	private val provider: AWSCognitoIdentityProvider,

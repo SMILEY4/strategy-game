@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models.game
+package de.ruegnerlukas.strategygame.backend.ports.models.gamelobby
 
 import kotlinx.serialization.Serializable
 
@@ -36,4 +36,8 @@ data class PlayerConnectionEntity(
 
 fun PlayerConnectionEntity.Companion.disconnected(): PlayerConnectionEntity {
 	return PlayerConnectionEntity(ConnectionState.DISCONNECTED, -1)
+}
+
+fun PlayerConnectionEntity.Companion.connected(connectionId: Int): PlayerConnectionEntity {
+	return PlayerConnectionEntity(ConnectionState.CONNECTED, connectionId)
 }

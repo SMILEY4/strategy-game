@@ -13,6 +13,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import de.ruegnerlukas.strategygame.backend.shared.results.Result
+import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
 
 
 /**

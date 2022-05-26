@@ -3,9 +3,9 @@ package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.models.game.GameLobbyEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.of
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.of
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.Either
@@ -29,16 +29,11 @@ class GameLobbyJoinActionImpl(private val repository: GameRepository) : GameLobb
 			.discardValue()
 	}
 
-	private fun addParticipant(userId: String, prev: GameLobbyEntity): GameLobbyEntity {
+	private fun addParticipant(userId: String, prev: Game): Game {
 		if (prev.participants.map { it.userId }.contains(userId)) {
 			return prev
 		} else {
-			return GameLobbyEntity(
-				gameId = prev.gameId,
-				participants = prev.participants + listOf(PlayerEntity.of(userId)),
-				world = prev.world,
-				commands = prev.commands
-			)
+			return prev.copy(participants = prev.participants + listOf(PlayerEntity.of(userId)))
 		}
 
 	}

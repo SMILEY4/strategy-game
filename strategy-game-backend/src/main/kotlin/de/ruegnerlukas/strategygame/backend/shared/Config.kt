@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.shared.config
+package de.ruegnerlukas.strategygame.backend.shared
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
@@ -53,7 +53,7 @@ object Config {
 	 * Set/update the config-data
 	 */
 	fun set(data: ConfigData, baseConfig: com.typesafe.config.Config? = null) {
-		Config.configData = data
+		configData = data
 		Config.baseConfig = baseConfig
 	}
 

@@ -5,6 +5,9 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCrea
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
+import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.world.World
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
 
@@ -69,6 +72,10 @@ object TestUtils {
 			throw UnsupportedOperationException()
 		}
 
+	}
+
+	fun collectMarkers(world: World): List<MarkerTileEntity> {
+		return world.tiles.flatMap { it.entities }
 	}
 
 }

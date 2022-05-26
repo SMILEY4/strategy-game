@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.integration
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
+import de.ruegnerlukas.strategygame.backend.shared.Config
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
@@ -38,7 +39,7 @@ fun loadApplicationConfig() {
 			.setFormatted(true)
 	)
 	val json = Json { ignoreUnknownKeys = true }
-	de.ruegnerlukas.strategygame.backend.shared.config.Config.set(json.decodeFromString(jsonConfig))
+	Config.set(json.decodeFromString(jsonConfig))
 }
 
 

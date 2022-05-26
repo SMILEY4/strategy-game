@@ -1,12 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
-import de.ruegnerlukas.strategygame.backend.core.tilemap.TilemapBuilder
+import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.models.game.Tilemap
-import de.ruegnerlukas.strategygame.backend.ports.models.game.GameLobbyEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.WorldEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.of
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.of
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.Either
@@ -19,7 +17,7 @@ import java.util.UUID
 /**
  * Create a new game-lobby
  */
-class GameLobbyCreateActionImpl(private val repository: GameRepository): GameLobbyCreateAction, Logging {
+class GameLobbyCreateActionImpl(private val repository: GameRepository) : GameLobbyCreateAction, Logging {
 
 	/**
 	 * @param userId the id of the user creating the game-lobby
@@ -31,24 +29,17 @@ class GameLobbyCreateActionImpl(private val repository: GameRepository): GameLob
 			.map { it.gameId }
 	}
 
-	private fun buildGameState(userId: String): GameLobbyEntity {
-		return GameLobbyEntity(
+	private fun buildGameState(userId: String): Game {
+		return Game(
 			gameId = generateGameId(),
 			participants = listOf(PlayerEntity.of(userId)),
-			world = WorldEntity(
-				map = generateMap(),
-				markers = listOf()
-			),
+			world = WorldBuilder().build(),
 			commands = listOf()
 		)
 	}
 
 	private fun generateGameId(): String {
 		return UUID.randomUUID()!!.toString()
-	}
-
-	private fun generateMap(): Tilemap {
-		return TilemapBuilder().build()
 	}
 
 }
