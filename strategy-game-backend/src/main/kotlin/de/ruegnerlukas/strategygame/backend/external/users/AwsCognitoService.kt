@@ -34,12 +34,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Config
-import de.ruegnerlukas.strategygame.backend.shared.Either
-import de.ruegnerlukas.strategygame.backend.shared.Err
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Err
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.Ok
-import de.ruegnerlukas.strategygame.backend.shared.onError
-import de.ruegnerlukas.strategygame.backend.shared.onSuccess
+import de.ruegnerlukas.strategygame.backend.shared.either.Ok
+import de.ruegnerlukas.strategygame.backend.shared.either.onError
+import de.ruegnerlukas.strategygame.backend.shared.either.onSuccess
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal

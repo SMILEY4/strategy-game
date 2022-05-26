@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.shared.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import io.kotest.matchers.shouldBe
 
 

@@ -8,8 +8,8 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.shared.Either
-import de.ruegnerlukas.strategygame.backend.shared.Ok
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Ok
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal

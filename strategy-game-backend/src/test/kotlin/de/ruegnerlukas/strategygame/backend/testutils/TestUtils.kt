@@ -6,10 +6,9 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoin
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.World
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
+import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 
 
 object TestUtils {

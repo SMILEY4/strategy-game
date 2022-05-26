@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.shared.Config
 import de.ruegnerlukas.strategygame.backend.shared.ConfigData
-import de.ruegnerlukas.strategygame.backend.shared.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {

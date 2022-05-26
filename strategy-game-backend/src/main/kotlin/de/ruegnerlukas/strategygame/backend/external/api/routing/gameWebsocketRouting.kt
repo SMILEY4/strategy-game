@@ -12,8 +12,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyDi
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.onError
-import de.ruegnerlukas.strategygame.backend.shared.recover
+import de.ruegnerlukas.strategygame.backend.shared.either.onError
+import de.ruegnerlukas.strategygame.backend.shared.either.recover
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond

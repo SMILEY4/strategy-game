@@ -4,9 +4,9 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.Either
-import de.ruegnerlukas.strategygame.backend.shared.Err
-import de.ruegnerlukas.strategygame.backend.shared.Ok
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Err
+import de.ruegnerlukas.strategygame.backend.shared.either.Ok
 
 class InMemoryGameRepository : GameRepository {
 

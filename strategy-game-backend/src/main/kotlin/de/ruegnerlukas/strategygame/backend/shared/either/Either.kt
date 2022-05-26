@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.shared
+package de.ruegnerlukas.strategygame.backend.shared.either
 
 /**
  * Represents either a successful ([Ok]) or a failed ([Err]) result

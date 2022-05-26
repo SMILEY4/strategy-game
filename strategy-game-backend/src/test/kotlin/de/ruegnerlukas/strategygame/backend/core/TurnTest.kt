@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessagePr
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
-import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
+import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.assertions.withClue

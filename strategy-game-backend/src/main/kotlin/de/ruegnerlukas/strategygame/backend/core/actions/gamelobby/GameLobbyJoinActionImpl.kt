@@ -8,12 +8,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.of
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.discardValue
-import de.ruegnerlukas.strategygame.backend.shared.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.map
-import de.ruegnerlukas.strategygame.backend.shared.mapError
+import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
+import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.either.map
+import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 /**
  * Join an existing game-lobby

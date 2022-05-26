@@ -7,8 +7,8 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequ
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.of
-import de.ruegnerlukas.strategygame.backend.shared.get
-import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
+import de.ruegnerlukas.strategygame.backend.shared.either.get
+import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.assertions.withClue
