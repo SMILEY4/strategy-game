@@ -22,13 +22,24 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
+import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import de.ruegnerlukas.strategygame.backend.ports.errors.CodeDeliveryError
+import de.ruegnerlukas.strategygame.backend.ports.errors.InternalApplicationError
+import de.ruegnerlukas.strategygame.backend.ports.errors.InvalidEmailOrPasswordError
+import de.ruegnerlukas.strategygame.backend.ports.errors.NotAuthorizedError
+import de.ruegnerlukas.strategygame.backend.ports.errors.UserAlreadyExistsError
+import de.ruegnerlukas.strategygame.backend.ports.errors.UserNotConfirmedError
+import de.ruegnerlukas.strategygame.backend.ports.errors.UserNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Config
+import de.ruegnerlukas.strategygame.backend.shared.Either
+import de.ruegnerlukas.strategygame.backend.shared.Err
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.results.Result
-import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
+import de.ruegnerlukas.strategygame.backend.shared.Ok
+import de.ruegnerlukas.strategygame.backend.shared.onError
+import de.ruegnerlukas.strategygame.backend.shared.onSuccess
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -128,7 +139,7 @@ class AwsCognitoService(
 	}
 
 
-	override fun createUser(email: String, password: String, username: String): VoidResult {
+	override fun createUser(email: String, password: String, username: String): Either<Unit, ApplicationError> {
 		try {
 			provider.signUp(
 				SignUpRequest()
@@ -142,20 +153,20 @@ class AwsCognitoService(
 					)
 			)
 			log().info("Successfully created user $email")
-			return VoidResult.success()
+			return Ok()
 		} catch (e: Exception) {
 			log().info("Failed to create user $email: ${e.message}", e)
 			return when (e) {
-				is UsernameExistsException -> VoidResult.error("USER_EXISTS")
-				is InvalidParameterException -> VoidResult.error("INVALID_EMAIL_OR_PASSWORD")
-				is CodeDeliveryFailureException -> VoidResult.error("CODE_DELIVERY_FAILURE")
-				else -> VoidResult.error("INTERNAL_ERROR")
+				is UsernameExistsException -> Err(UserAlreadyExistsError)
+				is InvalidParameterException -> Err(InvalidEmailOrPasswordError)
+				is CodeDeliveryFailureException -> Err(CodeDeliveryError)
+				else -> Err(InternalApplicationError)
 			}
 		}
 	}
 
 
-	override fun authenticate(email: String, password: String): Result<ExtendedAuthData> {
+	override fun authenticate(email: String, password: String): Either<ExtendedAuthData, ApplicationError> {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -170,7 +181,7 @@ class AwsCognitoService(
 					)
 			)
 			log().info("Successfully authenticated user $email")
-			return Result.success(
+			return Ok(
 				ExtendedAuthData(
 					idToken = result.authenticationResult.idToken,
 					refreshToken = result.authenticationResult.refreshToken,
@@ -180,16 +191,16 @@ class AwsCognitoService(
 		} catch (e: Exception) {
 			log().info("Failed to authenticate user $email: ${e.message}", e)
 			return when (e) {
-				is NotAuthorizedException -> Result.error("NOT_AUTHORIZED")
-				is UserNotConfirmedException -> Result.error("USER_NOT_CONFIRMED")
-				is UserNotFoundException -> Result.error("USER_NOT_FOUND")
-				else -> Result.error("INTERNAL_ERROR")
+				is NotAuthorizedException -> Err(NotAuthorizedError)
+				is UserNotConfirmedException -> Err(UserNotConfirmedError)
+				is UserNotFoundException -> Err(UserNotFoundError)
+				else -> Err(InternalApplicationError)
 			}
 		}
 	}
 
 
-	override fun refreshAuthentication(refreshToken: String): Result<AuthData> {
+	override fun refreshAuthentication(refreshToken: String): Either<AuthData, ApplicationError> {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -199,7 +210,7 @@ class AwsCognitoService(
 					.withAuthParameters(mapOf("REFRESH_TOKEN" to refreshToken))
 			)
 			log().info("Successfully refreshed user-authentication")
-			return Result.success(
+			return Ok(
 				AuthData(
 					idToken = result.authenticationResult.idToken,
 					refreshToken = result.authenticationResult.refreshToken,
@@ -209,27 +220,27 @@ class AwsCognitoService(
 			e.printStackTrace()
 			log().info("Failed to refresh user-authentication: ${e.message}", e)
 			return when (e) {
-				is NotAuthorizedException -> Result.error("NOT_AUTHORIZED")
-				is UserNotConfirmedException -> Result.error("USER_NOT_CONFIRMED")
-				is UserNotFoundException -> Result.error("USER_NOT_FOUND")
-				else -> Result.error("INTERNAL_ERROR")
+				is NotAuthorizedException -> Err(NotAuthorizedError)
+				is UserNotConfirmedException -> Err(UserNotConfirmedError)
+				is UserNotFoundException -> Err(UserNotFoundError)
+				else -> Err(InternalApplicationError)
 			}
 		}
 	}
 
 
-	override suspend fun deleteUser(email: String, password: String): VoidResult {
+	override suspend fun deleteUser(email: String, password: String): Either<Unit, ApplicationError> {
 		try {
 			authenticate(email, password)
 				.onSuccess { provider.deleteUser(DeleteUserRequest().withAccessToken(it.accessToken)) }
-				.onError { throw IllegalStateException(it) }
+				.onError { throw IllegalStateException(it.toString()) }
 			log().info("Successfully deleted user $email")
-			return VoidResult.success()
+			return Ok()
 		} catch (e: Exception) {
 			log().info("Failed to delete user $email: ${e.message}", e)
 			return when (e) {
-				is IllegalStateException -> VoidResult.error("NOT_AUTHORIZED")
-				else -> VoidResult.error("INTERNAL_ERROR")
+				is IllegalStateException -> Err(NotAuthorizedError)
+				else -> Err(InternalApplicationError)
 			}
 		}
 	}

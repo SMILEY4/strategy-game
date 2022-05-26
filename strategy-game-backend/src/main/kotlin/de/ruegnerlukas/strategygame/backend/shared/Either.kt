@@ -21,7 +21,11 @@ sealed class Either<out V, out E> {
 /**
  * Represents a successful result with the given value
  */
-class Ok<V>(val value: V) : Either<V, Nothing>()
+class Ok<V>(val value: V) : Either<V, Nothing>() {
+	companion object {
+		operator fun invoke() = Ok(Unit)
+	}
+}
 
 
 /**

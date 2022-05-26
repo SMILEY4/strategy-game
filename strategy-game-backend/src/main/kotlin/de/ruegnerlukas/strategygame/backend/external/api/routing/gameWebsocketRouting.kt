@@ -13,7 +13,6 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRe
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.onError
-import de.ruegnerlukas.strategygame.backend.shared.onSuccess
 import de.ruegnerlukas.strategygame.backend.shared.recover
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call

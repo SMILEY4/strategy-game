@@ -4,8 +4,6 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbiesListAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
-import de.ruegnerlukas.strategygame.backend.shared.get
-import de.ruegnerlukas.strategygame.backend.shared.getError
 import de.ruegnerlukas.strategygame.backend.shared.onError
 import de.ruegnerlukas.strategygame.backend.shared.onSuccess
 import de.ruegnerlukas.strategygame.backend.shared.recover
