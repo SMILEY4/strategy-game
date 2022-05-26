@@ -33,9 +33,10 @@ dependencies {
 	implementation("io.ktor:ktor-server-netty-jvm:$versionKtor")
 	implementation("io.ktor:ktor-server-websockets:$versionKtor")
 	implementation("io.ktor:ktor-server-call-logging:$versionKtor")
-	implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
 	implementation("io.ktor:ktor-server-cors:$versionKtor")
-	implementation("io.ktor:ktor-serialization-kotlinx-json:$versionKtor")
+	implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
+	implementation("io.ktor:ktor-serialization-jackson:$versionKtor")
+//	implementation("io.ktor:ktor-serialization-kotlinx-json:$versionKtor")
 	implementation("io.ktor:ktor-server-auth:$versionKtor")
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
 

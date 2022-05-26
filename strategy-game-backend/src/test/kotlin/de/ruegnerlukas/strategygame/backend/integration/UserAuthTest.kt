@@ -39,7 +39,7 @@ class UserAuthTest {
 
 
 	@Test
-	fun userCanCallProtectedRoute() = integrationTest { client ->
+	fun validUserCanCallProtectedRoute() = integrationTest { client ->
 
 		val token = client.post("/api/user/login") {
 			contentType(ContentType.Application.Json)
@@ -52,6 +52,14 @@ class UserAuthTest {
 
 		response shouldHaveStatus HttpStatusCode.OK
 		response.bodyAsText() shouldHaveMinLength 1
+	}
+
+	@Test
+	fun invalidUserCantCallProtectedRoute() = integrationTest { client ->
+		val response = client.post("/api/game/create") {
+			header("Authorization", "Bearer  invalid-token")
+		}
+		response shouldHaveStatus HttpStatusCode.Unauthorized
 	}
 
 

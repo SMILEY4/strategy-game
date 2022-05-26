@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
+import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate

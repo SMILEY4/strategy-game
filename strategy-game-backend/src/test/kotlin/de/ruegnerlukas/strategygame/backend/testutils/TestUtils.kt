@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.World

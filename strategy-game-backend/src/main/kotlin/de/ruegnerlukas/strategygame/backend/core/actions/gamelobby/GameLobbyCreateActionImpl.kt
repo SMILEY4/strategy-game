@@ -4,7 +4,6 @@ import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.of
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.either.Either

@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.world
 
-import kotlinx.serialization.Serializable
 
 enum class TileType {
 	PLAINS,
@@ -9,7 +8,6 @@ enum class TileType {
 }
 
 
-@Serializable
 data class Tile(
 	val q: Int,
 	val r: Int,
@@ -18,8 +16,6 @@ data class Tile(
 )
 
 
-@Serializable
 data class TileData(
 	val type: TileType
 )
-

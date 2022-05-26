@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.shared.Json
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.ApplicationCallPipeline
@@ -14,8 +15,6 @@ import io.ktor.server.routing.RoutingResolveContext
 import io.ktor.util.pipeline.PipelineContext
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 
 object WebsocketUtils {
@@ -92,7 +91,7 @@ object WebsocketUtils {
 	 * Build a [WebSocketMessage]-object from the given data
 	 */
 	fun buildMessage(userClient: UserIdentityService, connectionId: Int, token: String, gameId: String, rawData: String): WebSocketMessage {
-		val data = Json.decodeFromString<Map<String, String>>(rawData)
+		val data = Json.fromString<Map<String, String>>(rawData)
 		return WebSocketMessage(
 			connectionId = connectionId,
 			userId = userClient.extractUserId(token),

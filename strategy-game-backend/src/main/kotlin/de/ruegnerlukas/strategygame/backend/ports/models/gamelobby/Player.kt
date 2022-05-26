@@ -1,43 +1,42 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.gamelobby
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class PlayerEntity(
-	val userId: String,
-	val connection: PlayerConnectionEntity,
-	val state: PlayerState
-)
-
-fun PlayerEntity.Companion.of(userId: String): PlayerEntity {
-	return PlayerEntity(userId, PlayerConnectionEntity.disconnected(), PlayerState.PLAYING)
+    val userId: String,
+    val connection: PlayerConnectionEntity,
+    val state: PlayerState
+) {
+    companion object {
+        fun of(userId: String): PlayerEntity {
+            return PlayerEntity(userId, PlayerConnectionEntity.disconnected(), PlayerState.PLAYING)
+        }
+    }
 }
 
 
-@Serializable
 enum class PlayerState {
-	PLAYING,
-	SUBMITTED,
+    PLAYING,
+    SUBMITTED,
 }
 
 
-@Serializable
 enum class ConnectionState {
-	CONNECTED,
-	DISCONNECTED
+    CONNECTED,
+    DISCONNECTED
 }
 
 
-@Serializable
 data class PlayerConnectionEntity(
-	val state: ConnectionState,
-	val connectionId: Int
-)
+    val state: ConnectionState,
+    val connectionId: Int
+) {
+    companion object {
+        fun disconnected(): PlayerConnectionEntity {
+            return PlayerConnectionEntity(ConnectionState.DISCONNECTED, -1)
+        }
 
-fun PlayerConnectionEntity.Companion.disconnected(): PlayerConnectionEntity {
-	return PlayerConnectionEntity(ConnectionState.DISCONNECTED, -1)
+        fun connected(connectionId: Int): PlayerConnectionEntity {
+            return PlayerConnectionEntity(ConnectionState.CONNECTED, connectionId)
+        }
+    }
 }
 
-fun PlayerConnectionEntity.Companion.connected(connectionId: Int): PlayerConnectionEntity {
-	return PlayerConnectionEntity(ConnectionState.CONNECTED, connectionId)
-}

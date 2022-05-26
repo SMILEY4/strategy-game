@@ -1,16 +1,18 @@
 package de.ruegnerlukas.strategygame.backend.integration
 
+import com.fasterxml.jackson.core.util.DefaultIndenter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import de.ruegnerlukas.strategygame.backend.shared.Config
+import de.ruegnerlukas.strategygame.backend.shared.Json
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.serialization.jackson.*
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 
 fun integrationTest(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) {
@@ -19,9 +21,13 @@ fun integrationTest(block: suspend ApplicationTestBuilder.(client: HttpClient) -
 		val client = createClient {
 			install(WebSockets)
 			install(ContentNegotiation) {
-				json(Json {
-					prettyPrint = true
-				})
+				jackson {
+					configure(SerializationFeature.INDENT_OUTPUT, true)
+					setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
+						indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+						indentObjectsWith(DefaultIndenter("  ", "\n"))
+					})
+				}
 			}
 		}
 		block(this, client)
@@ -38,14 +44,5 @@ fun loadApplicationConfig() {
 			.setComments(false)
 			.setFormatted(true)
 	)
-	val json = Json { ignoreUnknownKeys = true }
-	Config.set(json.decodeFromString(jsonConfig))
+	Config.set(Json.fromString(jsonConfig))
 }
-
-
-fun ApplicationTestBuilder.createTestClient(): HttpClient {
-	return createClient {
-		install(WebSockets)
-	}
-}
-

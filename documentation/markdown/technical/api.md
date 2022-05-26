@@ -192,7 +192,7 @@ POST /api/game/create
   - 200 OK
 
     ```
-    THE_GAME_ID
+    <the-game-id>
     ```
 
   - 401 Unauthorized

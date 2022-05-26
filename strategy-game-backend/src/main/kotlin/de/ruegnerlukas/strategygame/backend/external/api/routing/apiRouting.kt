@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
+import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbiesListAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
@@ -25,15 +25,15 @@ import io.ktor.server.routing.routing
  * Main configuration for all routes
  */
 fun Application.apiRoutes(
-	connectionHandler: ConnectionHandler,
-	messageHandler: MessageHandler,
-	userIdentityService: UserIdentityService,
-	gameLobbyCreateAction: GameLobbyCreateAction,
-	gameLobbyJoinAction: GameLobbyJoinAction,
-	gameLobbiesListAction: GameLobbiesListAction,
-	gameLobbyDisconnectAction: GameLobbyDisconnectAction,
-	gameLobbyRequestConnectionAction: GameLobbyRequestConnectionAction,
-	gameLobbyConnectAction: GameLobbyConnectAction
+    connectionHandler: ConnectionHandler,
+    messageHandler: MessageHandler,
+    userIdentityService: UserIdentityService,
+    gameLobbyCreateAction: GameLobbyCreateAction,
+    gameLobbyJoinAction: GameLobbyJoinAction,
+    gameLobbiesListAction: GameLobbiesListAction,
+    gameLobbyDisconnectAction: GameLobbyDisconnectAction,
+    gameLobbyRequestConnectionAction: GameLobbyRequestConnectionAction,
+    gameLobbyConnectAction: GameLobbyConnectAction
 ) {
 	routing {
 		route("api") {

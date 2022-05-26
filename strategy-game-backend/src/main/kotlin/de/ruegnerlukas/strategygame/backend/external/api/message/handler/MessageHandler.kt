@@ -1,10 +1,10 @@
-package de.ruegnerlukas.strategygame.backend.external.api.websocket
+package de.ruegnerlukas.strategygame.backend.external.api.message.handler
 
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessage
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.SubmitTurnMessage
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 /**
  * Message-dispatcher for websocket messages
@@ -32,7 +32,7 @@ class MessageHandler(
 	}
 
 	private inline fun <reified T> handleMessage(strPayload: String, handler: (payload: T) -> Unit) {
-		val payload = Json.decodeFromString<T>(strPayload)
+		val payload = Json.fromString<T>(strPayload)
 		handler(payload)
 	}
 

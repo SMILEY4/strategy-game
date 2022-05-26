@@ -5,7 +5,6 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerConnectionEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.disconnected
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
 import de.ruegnerlukas.strategygame.backend.shared.either.Either

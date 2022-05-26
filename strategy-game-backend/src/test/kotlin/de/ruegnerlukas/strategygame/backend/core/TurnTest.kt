@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.core
 
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity

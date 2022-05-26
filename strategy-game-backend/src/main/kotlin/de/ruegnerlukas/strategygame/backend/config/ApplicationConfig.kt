@@ -1,5 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.config
 
+import com.fasterxml.jackson.core.util.DefaultIndenter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbiesListActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
@@ -10,15 +13,15 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageHandler
+import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Config
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
@@ -32,7 +35,6 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
-import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 import java.time.Duration
 
@@ -77,9 +79,13 @@ fun Application.module() {
 		}
 	}
 	install(ContentNegotiation) {
-		json(Json {
-			prettyPrint = true
-		})
+		jackson {
+			configure(SerializationFeature.INDENT_OUTPUT, true)
+			setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
+				indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+				indentObjectsWith(DefaultIndenter("  ", "\n"))
+			})
+		}
 	}
 	install(CORS) {
 		allowMethod(HttpMethod.Options)
