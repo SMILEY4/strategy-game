@@ -2,37 +2,37 @@ package de.ruegnerlukas.strategygame.backend.external.persistence
 
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.Either
-import de.ruegnerlukas.strategygame.backend.shared.Err
-import de.ruegnerlukas.strategygame.backend.shared.Ok
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Err
+import de.ruegnerlukas.strategygame.backend.shared.either.Ok
 
 class InMemoryGameRepository : GameRepository {
 
-	private val gameLobbyEntities = mutableMapOf<String, GameLobbyEntity>()
+	private val gameEntities = mutableMapOf<String, Game>()
 
 
-	override fun save(entities: List<GameLobbyEntity>): Either<List<GameLobbyEntity>, ApplicationError> {
+	override fun save(entities: List<Game>): Either<List<Game>, ApplicationError> {
 		entities.forEach { save(it) }
 		return Ok(entities)
 	}
 
-	override fun save(entity: GameLobbyEntity): Either<GameLobbyEntity, ApplicationError> {
-		gameLobbyEntities[entity.gameId] = entity
+	override fun save(entity: Game): Either<Game, ApplicationError> {
+		gameEntities[entity.gameId] = entity
 		return Ok(entity)
 	}
 
-	override fun get(gameId: String): Either<GameLobbyEntity, ApplicationError> {
-		return when(val e = gameLobbyEntities[gameId]) {
+	override fun get(gameId: String): Either<Game, ApplicationError> {
+		return when(val e = gameEntities[gameId]) {
 			null -> Err(EntityNotFoundError)
 			else -> Ok(e)
 		}
 	}
 
-	override fun getByUserId(userId: String): Either<List<GameLobbyEntity>, ApplicationError> {
+	override fun getByUserId(userId: String): Either<List<Game>, ApplicationError> {
 		return Ok(
-			gameLobbyEntities.values.filter { lobby -> lobby.participants.map { p -> p.userId }.contains(userId) }
+			gameEntities.values.filter { lobby -> lobby.participants.map { p -> p.userId }.contains(userId) }
 		)
 	}
 

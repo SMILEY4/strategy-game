@@ -27,8 +27,13 @@ export class GameWebsocketApi implements GameMessagingApi {
     }
 
     sendSubmitTurn(commands: CommandPlaceMarker[]): void {
+        const userId = this.authProvider.getUserId();
         this.websocketClient.send("submit-turn", {
-            commands: commands
+            commands: commands.map(cmd => ({
+                q: cmd.q,
+                r: cmd.r,
+                userId: userId
+            }))
         });
     }
 

@@ -1,16 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.messages
 
-import kotlinx.serialization.Serializable
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
 
 
-@Serializable
 data class SubmitTurnMessage(
-	val commands: List<CommandAddMarker>
-)
-
-
-@Serializable
-data class CommandAddMarker(
-	val q: Int,
-	val r: Int,
+	val commands: List<PlaceMarkerCommand>
 )

@@ -192,7 +192,7 @@ POST /api/game/create
   - 200 OK
 
     ```
-    THE_GAME_ID
+    <the-game-id>
     ```
 
   - 401 Unauthorized
@@ -282,6 +282,7 @@ All messages follow the following format
   {
       "commands": [
           {
+              "userId": "String - the id of the user submitting the command",
               "q": "Int - the q-coordinate of the new marker",
               "r": "Int - the r-coordinate of the new marker",
           }
@@ -298,19 +299,20 @@ All messages follow the following format
   ```json
   {
   	"world": {
-          "map": {
-              "tiles": [
+          "tiles": [
+              {
                   "q": "Int - the q-coordinate of the tile",
                   "r": "Int - the r-coordinate of the tile",
-                  "tileId": "Int - the id specifying the type of the tile"
-              ]
-          },
-          "markers": [
-              {
-                  "q": "Int - the q-coordinate of the marker",
-                  "r": "Int - the r-coordinate of the marker",
-                  "userId": "String - the id of the owner/user of this marker" 
-              },
+                  "data": {
+              	    "type": "String - one of 'PLAINS', 'WATER', 'MOUNTAINS'"
+                  },
+                  "entities": [
+                      {
+                          "entityType": "String - currently only 'MARKER'",
+                   	    "userId": "String - the id of the user owning the marker"
+                      }
+                  ]
+              }
           ]
       }
   }

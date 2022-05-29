@@ -5,10 +5,9 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCrea
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
-import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.of
-import de.ruegnerlukas.strategygame.backend.shared.get
-import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.shared.either.get
+import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.assertions.withClue

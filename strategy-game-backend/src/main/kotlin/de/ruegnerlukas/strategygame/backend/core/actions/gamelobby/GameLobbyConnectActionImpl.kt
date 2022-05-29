@@ -3,20 +3,18 @@ package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerConnectionEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
-import de.ruegnerlukas.strategygame.backend.ports.models.new.ConnectionState
-import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerConnectionEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.discardValue
-import de.ruegnerlukas.strategygame.backend.shared.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.map
-import de.ruegnerlukas.strategygame.backend.shared.mapError
+import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
+import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.either.map
+import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 class GameLobbyConnectActionImpl(
 	private val repository: GameRepository,
@@ -33,29 +31,20 @@ class GameLobbyConnectActionImpl(
 			.discardValue()
 	}
 
-	private fun updateGameParticipant(userId: String, connectionId: Int, prev: GameLobbyEntity): GameLobbyEntity {
-		return GameLobbyEntity(
-			gameId = prev.gameId,
+	private fun updateGameParticipant(userId: String, connectionId: Int, prev: Game): Game {
+		return prev.copy(
 			participants = prev.participants.map {
-				when (it.userId) {
-					userId -> PlayerEntity(
-						userId = it.userId,
-						connection = PlayerConnectionEntity(
-							state = ConnectionState.CONNECTED,
-							connectionId = connectionId
-						),
-						state = it.state
-					)
-					else -> it
+				if (it.userId == userId) {
+					it.copy(connection = PlayerConnectionEntity.connected(connectionId))
+				} else {
+					it
 				}
 			},
-			world = prev.world,
-			commands = prev.commands
 		)
 	}
 
-	private suspend fun sendMessage(connectionId: Int, gameLobby: GameLobbyEntity) {
-		val message = WorldStateMessage(gameLobby.world)
+	private suspend fun sendMessage(connectionId: Int, game: Game) {
+		val message = WorldStateMessage(game.world)
 		messageProducer.sendWorldState(connectionId, message)
 	}
 

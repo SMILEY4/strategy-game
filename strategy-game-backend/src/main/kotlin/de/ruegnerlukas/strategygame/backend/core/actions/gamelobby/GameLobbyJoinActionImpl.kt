@@ -3,17 +3,16 @@ package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.of
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.discardValue
-import de.ruegnerlukas.strategygame.backend.shared.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.map
-import de.ruegnerlukas.strategygame.backend.shared.mapError
+import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
+import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.either.map
+import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 /**
  * Join an existing game-lobby
@@ -29,16 +28,11 @@ class GameLobbyJoinActionImpl(private val repository: GameRepository) : GameLobb
 			.discardValue()
 	}
 
-	private fun addParticipant(userId: String, prev: GameLobbyEntity): GameLobbyEntity {
+	private fun addParticipant(userId: String, prev: Game): Game {
 		if (prev.participants.map { it.userId }.contains(userId)) {
 			return prev
 		} else {
-			return GameLobbyEntity(
-				gameId = prev.gameId,
-				participants = prev.participants + listOf(PlayerEntity.of(userId)),
-				world = prev.world,
-				commands = prev.commands
-			)
+			return prev.copy(participants = prev.participants + listOf(PlayerEntity.of(userId)))
 		}
 
 	}

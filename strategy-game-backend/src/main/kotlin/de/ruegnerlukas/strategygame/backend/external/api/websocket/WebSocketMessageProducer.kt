@@ -1,9 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
+import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.websocket.Frame
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 /**
  * a message-producer sending messages via a websocket
@@ -52,7 +51,7 @@ class WebSocketMessageProducer(private val connectionHandler: ConnectionHandler)
 	 * @return the message as a (json-) string
 	 */
 	private fun buildMessageString(type: String, payload: String): String {
-		return Json.encodeToString(
+		return Json.asString(
 			mapOf(
 				"type" to type,
 				"payload" to payload

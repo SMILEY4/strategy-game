@@ -2,14 +2,11 @@ package de.ruegnerlukas.strategygame.backend.core
 
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
-import de.ruegnerlukas.strategygame.backend.ports.models.messages.CommandAddMarker
-import de.ruegnerlukas.strategygame.backend.ports.models.new.CommandAddMarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.new.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.shared.get
-import de.ruegnerlukas.strategygame.backend.shared.getOr
-import de.ruegnerlukas.strategygame.backend.shared.getOrThrow
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
+import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.assertions.withClue
@@ -31,9 +28,9 @@ class TurnTest : StringSpec({
 
 		val resultSubmit1 = submitTurnAction.perform(
 			userId1, gameId, listOf(
-				CommandAddMarker(0, 0),
-				CommandAddMarker(1, 0),
-				CommandAddMarker(0, 1)
+				PlaceMarkerCommand(userId1, 0, 0),
+				PlaceMarkerCommand(userId1, 1, 0),
+				PlaceMarkerCommand(userId1, 0, 1)
 			)
 		)
 
@@ -41,16 +38,16 @@ class TurnTest : StringSpec({
 		withClue("game-state correct after first player submits turn") {
 			val state = repository.get(gameId).getOrThrow()
 			state.commands shouldContainExactlyInAnyOrder listOf(
-				CommandAddMarkerEntity(userId1, 0, 0),
-				CommandAddMarkerEntity(userId1, 1, 0),
-				CommandAddMarkerEntity(userId1, 0, 1)
+				PlaceMarkerCommand(userId1, 0, 0),
+				PlaceMarkerCommand(userId1, 1, 0),
+				PlaceMarkerCommand(userId1, 0, 1)
 			)
-			state.world.markers shouldHaveSize 0
+			TestUtils.collectMarkers(state.world) shouldHaveSize 0
 		}
 
 		val resultSubmit2 = submitTurnAction.perform(
 			userId2, gameId, listOf(
-				CommandAddMarker(4, 2),
+				PlaceMarkerCommand(userId2, 4, 2),
 			)
 		)
 
@@ -58,11 +55,11 @@ class TurnTest : StringSpec({
 		withClue("game-state correct after last player submits (and ends) turn") {
 			val state = repository.get(gameId).getOrThrow()
 			state.commands shouldHaveSize 0
-			state.world.markers shouldContainExactlyInAnyOrder listOf(
-				MarkerEntity(userId1, 0, 0),
-				MarkerEntity(userId1, 1, 0),
-				MarkerEntity(userId1, 0, 1),
-				MarkerEntity(userId2, 4, 2),
+			TestUtils.collectMarkers(state.world) shouldContainExactlyInAnyOrder listOf(
+				MarkerTileEntity(userId1),
+				MarkerTileEntity(userId1),
+				MarkerTileEntity(userId1),
+				MarkerTileEntity(userId2),
 			)
 		}
 		messageProducer.pullMessagesWithoutPayload().shouldContainExactlyInAnyOrder(
@@ -73,4 +70,5 @@ class TurnTest : StringSpec({
 	}
 
 })
+
 

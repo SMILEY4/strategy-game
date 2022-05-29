@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby
 
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.shared.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
 
 
 interface GameLobbyDisconnectAction {

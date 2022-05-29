@@ -4,15 +4,15 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.models.new.GameLobbyEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.Game
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.Either
-import de.ruegnerlukas.strategygame.backend.shared.Err
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import de.ruegnerlukas.strategygame.backend.shared.either.Err
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.Ok
-import de.ruegnerlukas.strategygame.backend.shared.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.mapError
+import de.ruegnerlukas.strategygame.backend.shared.either.Ok
+import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 class GameLobbyRequestConnectionActionImpl(private val repository: GameRepository) : GameLobbyRequestConnectionAction, Logging {
 
@@ -23,8 +23,8 @@ class GameLobbyRequestConnectionActionImpl(private val repository: GameRepositor
 			.flatMap { validateParticipant(userId, it) }
 	}
 
-	private fun validateParticipant(userId: String, gameLobby: GameLobbyEntity): Either<Unit, NotParticipantError> {
-		val isParticipant = gameLobby.participants.map { it.userId }.contains(userId)
+	private fun validateParticipant(userId: String, game: Game): Either<Unit, NotParticipantError> {
+		val isParticipant = game.participants.map { it.userId }.contains(userId)
 		return when {
 			isParticipant -> Ok(Unit)
 			else -> Err(NotParticipantError)

@@ -2,12 +2,12 @@ package de.ruegnerlukas.strategygame.backend.ports.required
 
 import de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
+import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
-import de.ruegnerlukas.strategygame.backend.shared.config.Config
-import de.ruegnerlukas.strategygame.backend.shared.config.ConfigData
-import de.ruegnerlukas.strategygame.backend.shared.results.Result
-import de.ruegnerlukas.strategygame.backend.shared.results.VoidResult
+import de.ruegnerlukas.strategygame.backend.shared.Config
+import de.ruegnerlukas.strategygame.backend.shared.ConfigData
+import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {
@@ -52,25 +52,25 @@ interface UserIdentityService {
 	/**
 	 * Create a new user identified by the given email and password
 	 */
-	fun createUser(email: String, password: String, username: String): VoidResult
+	fun createUser(email: String, password: String, username: String): Either<Unit, ApplicationError>
 
 
 	/**
 	 * Authenticate the given user.
 	 */
-	fun authenticate(email: String, password: String): Result<ExtendedAuthData>
+	fun authenticate(email: String, password: String): Either<ExtendedAuthData, ApplicationError>
 
 
 	/**
 	 * Refresh the authentication for a given user
 	 */
-	fun refreshAuthentication(refreshToken: String): Result<AuthData>
+	fun refreshAuthentication(refreshToken: String): Either<AuthData, ApplicationError>
 
 
 	/**
 	 * Delete the user with the given email and password
 	 * @return whether the user has been deleted successfully
 	 */
-	suspend fun deleteUser(email: String, password: String): VoidResult
+	suspend fun deleteUser(email: String, password: String): Either<Unit, ApplicationError>
 
 }
