@@ -5,6 +5,7 @@ val versionKotlin: String by project
 val versionLogback: String by project
 val versionKotlinLogging: String by project
 val versionAwsSdk: String by project
+val versionKtorm: String by project
 val versionKotest: String by project
 val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
@@ -36,17 +37,18 @@ dependencies {
 	implementation("io.ktor:ktor-server-cors:$versionKtor")
 	implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
 	implementation("io.ktor:ktor-serialization-jackson:$versionKtor")
-//	implementation("io.ktor:ktor-serialization-kotlinx-json:$versionKtor")
 	implementation("io.ktor:ktor-server-auth:$versionKtor")
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
-
-	implementation("ch.qos.logback:logback-classic:$versionLogback")
-	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
 
 	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-cognitoidp:$versionAwsSdk")
 
+	implementation("ch.qos.logback:logback-classic:$versionLogback")
+	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
+
+	implementation("org.ktorm:ktorm-core:3.4.1")
+	implementation("org.ktorm:ktorm-support-sqlite:3.4.1")
 
 	testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
 	testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
