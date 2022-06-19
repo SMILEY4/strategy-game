@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerConnect
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.ports.required.OldGameRepository
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
@@ -17,7 +17,7 @@ import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 class GameLobbyConnectActionImpl(
-	private val repository: GameRepository,
+	private val repository: OldGameRepository,
 	private val messageProducer: GameMessageProducer
 ) : GameLobbyConnectAction, Logging {
 

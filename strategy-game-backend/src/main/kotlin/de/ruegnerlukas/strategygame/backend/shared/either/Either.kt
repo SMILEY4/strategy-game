@@ -5,6 +5,33 @@ package de.ruegnerlukas.strategygame.backend.shared.either
  */
 sealed class Either<out V, out E> {
 
+	companion object {
+
+		/**
+		 * Start with an empty [Ok]
+		 */
+		fun start() = Ok()
+
+
+		/**
+		 * Return the result of the [block] as an [Ok]
+		 */
+		suspend fun <V> run(block: suspend () -> V) = Ok(block())
+
+
+		/**
+		 * Return the result of the [block] as an [Ok]. If an exception was throw, return it asn an [Err]
+		 */
+		suspend fun <V> runCatching(block: suspend () -> V): Either<V, Throwable> {
+			try {
+				return Ok(block())
+			} catch (e: Throwable) {
+				return Err(e)
+			}
+		}
+	}
+
+
 	/**
 	 * Whether this [Either] represents a failed result
 	 */
@@ -35,6 +62,61 @@ class Err<E>(val error: E) : Either<Nothing, E>()
 
 
 /**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
+ */
+suspend fun <V, E> Either<V, E>.then(action: suspend (V) -> Unit): Either<V, E> {
+	return when (this) {
+		is Ok -> {
+			action(value)
+			this
+		}
+		is Err -> this
+	}
+}
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
+ * If the transformation throws any exception, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, transformException: (e: Exception) -> E): Either<V, E> {
+	try {
+		return when (this) {
+			is Ok -> {
+				action(value)
+				this
+			}
+			is Err -> this
+		}
+	} catch (e: Exception) {
+		return Err(transformException(e))
+	}
+}
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
+ * If the transformation throws any exception, an [Err] is returned with the given error
+ */
+suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, error: E): Either<V, E> {
+	return thenCatching(action) { error }
+}
+
+
+suspend fun <V, E> Either<V, E>.then2(action: suspend (V) -> Either<*, E>): Either<V, E> {
+	return when (this) {
+		is Ok -> {
+			when (val result = action(value)) {
+				is Ok -> this
+				is Err -> result
+			}
+		}
+		is Err -> this
+	}
+}
+
+
+/**
  * Maps this [Either] to a new [Either] by applying the given transform with the current value if this is a [Ok] or by returning this [Err]
  */
 suspend fun <V, E, T> Either<V, E>.map(transform: suspend (V) -> T): Either<T, E> {
@@ -46,12 +128,59 @@ suspend fun <V, E, T> Either<V, E>.map(transform: suspend (V) -> T): Either<T, E
 
 
 /**
- * Maps this [Either] to a new [Either] by applying the given transform with the current value if this is a [Ok] or by returning this [Err]
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E, T> Either<V, E>.mapCatching(
+	transform: suspend (V) -> T,
+	transformException: (e: Exception) -> E
+): Either<T, E> {
+	try {
+		return when (this) {
+			is Ok -> Ok(transform(value))
+			is Err -> this
+		}
+	} catch (e: Exception) {
+		return Err(transformException(e))
+	}
+}
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception, an [Err] is returned with the given error
+ */
+suspend fun <V, E, T> Either<V, E>.mapCatching(transform: suspend (V) -> T, error: E): Either<T, E> {
+	return mapCatching(transform) { error }
+}
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given transform with the current value if this is a [Ok] or by returning this [Err].
  */
 suspend fun <V, E, T> Either<V, E>.flatMap(transform: suspend (V) -> Either<T, E>): Either<T, E> {
 	return when (this) {
 		is Ok -> transform(value)
 		is Err -> this
+	}
+}
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E, T> Either<V, E>.flatMapCatching(
+	transform: suspend (V) -> Either<T, E>,
+	transformException: (e: Exception) -> E
+): Either<T, E> {
+	try {
+		return when (this) {
+			is Ok -> transform(value)
+			is Err -> this
+		}
+	} catch (e: Exception) {
+		return Err(transformException(e))
 	}
 }
 

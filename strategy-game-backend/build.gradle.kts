@@ -26,6 +26,7 @@ plugins {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -47,8 +48,7 @@ dependencies {
 	implementation("ch.qos.logback:logback-classic:$versionLogback")
 	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
 
-	implementation("org.ktorm:ktorm-core:3.4.1")
-	implementation("org.ktorm:ktorm-support-sqlite:3.4.1")
+	implementation("de.ruegnerlukas:kdbl:0.1")
 
 	testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
 	testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
@@ -64,7 +64,7 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.withType<KotlinCompile> {
-	kotlinOptions.jvmTarget = "11"
+	kotlinOptions.jvmTarget = "16"
 }
 
 tasks.shadowJar {

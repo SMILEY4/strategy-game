@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMess
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.ports.required.OldGameRepository
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
@@ -19,7 +19,7 @@ import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 class TurnEndActionImpl(
-	private val repository: GameRepository,
+	private val repository: OldGameRepository,
 	private val messageProducer: GameMessageProducer
 ) : TurnEndAction, Logging {
 

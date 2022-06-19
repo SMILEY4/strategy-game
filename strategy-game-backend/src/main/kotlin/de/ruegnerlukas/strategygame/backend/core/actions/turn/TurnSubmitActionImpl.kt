@@ -9,7 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCo
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerState
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.ports.required.OldGameRepository
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.either.Ok
@@ -18,7 +18,7 @@ import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 class TurnSubmitActionImpl(
-	private val repository: GameRepository,
+	private val repository: OldGameRepository,
 	private val endTurnAction: TurnEndAction
 ) : TurnSubmitAction, Logging {
 

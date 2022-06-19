@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.core
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
+import de.ruegnerlukas.strategygame.backend.external.persistence.old.InMemoryOldGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
@@ -17,7 +17,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 class TurnTest : StringSpec({
 
 	"submit turns" {
-		val repository = InMemoryGameRepository()
+		val repository = InMemoryOldGameRepository()
 		val userId1 = "my-test-user-1"
 		val userId2 = "my-test-user-2"
 		val messageProducer = TestUtils.MockMessageProducer()

@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMe
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.World
-import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
+import de.ruegnerlukas.strategygame.backend.ports.required.OldGameRepository
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 
 
@@ -16,7 +16,7 @@ object TestUtils {
 	suspend fun setupNewGame(
 		userIds: List<String>,
 		connectAllPlayers: Boolean,
-		repository: GameRepository,
+		repository: OldGameRepository,
 		messageProducer: MessageProducer
 	): String {
 		val createGameLobby = GameLobbyCreateActionImpl(repository)

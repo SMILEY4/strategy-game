@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbiesLi
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequestConnectionActionImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
+import de.ruegnerlukas.strategygame.backend.external.persistence.old.InMemoryOldGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.shared.either.get
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
@@ -20,7 +20,7 @@ import io.kotest.matchers.string.shouldHaveMinLength
 class GameLobbyTest : StringSpec({
 
 	"create a new game-lobby" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
 		val userId = "my-test-user"
 
@@ -40,7 +40,7 @@ class GameLobbyTest : StringSpec({
 	}
 
 	"join a new lobby as a participant" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
 		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
 		val ownerId = "my-test-owner"
@@ -65,7 +65,7 @@ class GameLobbyTest : StringSpec({
 	}
 
 	"join a lobby already as a participant of that lobby" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
 		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
 		val ownerId = "my-test-owner"
@@ -91,7 +91,7 @@ class GameLobbyTest : StringSpec({
 	}
 
 	"joining a non-existing lobby as a participant" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
 		val userId = "my-test-user"
 		val lobbyId = "unknown-game-lobby"
@@ -108,7 +108,7 @@ class GameLobbyTest : StringSpec({
 	}
 
 	"list game-lobbies of player that is not participating in any" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val listGameLobbies = GameLobbiesListActionImpl(gameRepository)
 		val userId = "my-test-user"
 
@@ -120,7 +120,7 @@ class GameLobbyTest : StringSpec({
 	}
 
 	"list game-lobbies of player that is owning and participating in lobbies" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val listGameLobbies = GameLobbiesListActionImpl(gameRepository)
 		val joinGameLobby = GameLobbyJoinActionImpl(gameRepository)
 		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
@@ -140,7 +140,7 @@ class GameLobbyTest : StringSpec({
 	}
 
 	"request to connect to a game lobby" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
 		val connectGameLobby = GameLobbyRequestConnectionActionImpl(gameRepository)
 		val userId = "my-test-user"
@@ -154,7 +154,7 @@ class GameLobbyTest : StringSpec({
 	}
 
 	"request to connect to a game lobby without being a participant" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val createGameLobby = GameLobbyCreateActionImpl(gameRepository)
 		val connectGameLobby = GameLobbyRequestConnectionActionImpl(gameRepository)
 		val userId1 = "my-test-user-1"
@@ -170,7 +170,7 @@ class GameLobbyTest : StringSpec({
 
 
 	"request to connect to a game lobby that does not exist" {
-		val gameRepository = InMemoryGameRepository()
+		val gameRepository = InMemoryOldGameRepository()
 		val connectGameLobby = GameLobbyRequestConnectionActionImpl(gameRepository)
 		val userId = "my-test-user"
 		val gameId = "invalid-game-id"

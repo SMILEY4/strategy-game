@@ -11,12 +11,15 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoin
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
+import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
-import de.ruegnerlukas.strategygame.backend.external.persistence.InMemoryGameRepository
+import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
+import de.ruegnerlukas.strategygame.backend.external.persistence.DbSchema
+import de.ruegnerlukas.strategygame.backend.external.persistence.SqlRepository
+import de.ruegnerlukas.strategygame.backend.external.persistence.old.InMemoryOldGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Config
 import io.ktor.http.HttpHeaders
@@ -47,20 +50,23 @@ fun Application.module() {
 	val connectionHandler = ConnectionHandler()
 	val userIdentityService = UserIdentityService.create(Config.get())
 	val messageProducer = GameMessageProducerImpl(WebSocketMessageProducer(connectionHandler))
-	val gameRepository = InMemoryGameRepository()
+	val oldGameRepository = InMemoryOldGameRepository()
 
-	val gameLobbiesListAction = GameLobbiesListActionImpl(gameRepository)
-	val gameLobbyConnectAction = GameLobbyConnectActionImpl(gameRepository, messageProducer)
-	val gameLobbyCreateAction = GameLobbyCreateActionImpl(gameRepository)
-	val gameLobbyDisconnectAction = GameLobbyDisconnectActionImpl(gameRepository)
-	val gameLobbyJoinAction = GameLobbyJoinActionImpl(gameRepository)
-	val gameLobbyRequestConnectionAction = GameLobbyRequestConnectionActionImpl(gameRepository)
+	val database = DatabaseProvider.create(Config.get().db)
+	DbSchema.createTables(database)
+	val gameRepository = SqlRepository(database)
 
-	val turnEndAction = TurnEndActionImpl(gameRepository, messageProducer)
-	val turnSubmitAction = TurnSubmitActionImpl(gameRepository, turnEndAction)
+	val gameLobbiesListAction = GameLobbiesListActionImpl(oldGameRepository)
+	val gameLobbyConnectAction = GameLobbyConnectActionImpl(oldGameRepository, messageProducer)
+	val gameLobbyCreateAction = GameLobbyCreateActionImpl(oldGameRepository)
+	val gameLobbyDisconnectAction = GameLobbyDisconnectActionImpl(oldGameRepository)
+	val gameLobbyJoinAction = GameLobbyJoinActionImpl(oldGameRepository)
+	val gameLobbyRequestConnectionAction = GameLobbyRequestConnectionActionImpl(oldGameRepository)
+
+	val turnEndAction = TurnEndActionImpl(oldGameRepository, messageProducer)
+	val turnSubmitAction = TurnSubmitActionImpl(oldGameRepository, turnEndAction)
 
 	val messageHandler = MessageHandler(turnSubmitAction)
-
 
 	install(Routing)
 	install(WebSockets) {
