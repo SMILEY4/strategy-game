@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCrea
 import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.ports.models.world.World
 import de.ruegnerlukas.strategygame.backend.ports.required.OldGameRepository
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
@@ -73,7 +73,7 @@ object TestUtils {
 
 	}
 
-	fun collectMarkers(world: World): List<MarkerTileEntity> {
+	fun collectMarkers(world: World): List<MarkerTileObject> {
 		return world.tiles.flatMap { it.entities }
 	}
 

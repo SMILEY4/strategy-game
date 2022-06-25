@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.messages
 
-import de.ruegnerlukas.strategygame.backend.ports.models.world.World
+import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 
 data class WorldStateMessage(
-    val world: World
+    val tiles: List<Tile>
 )

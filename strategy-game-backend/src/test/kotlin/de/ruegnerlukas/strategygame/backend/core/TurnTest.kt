@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionIm
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.old.InMemoryOldGameRepository
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
@@ -56,10 +56,10 @@ class TurnTest : StringSpec({
 			val state = repository.get(gameId).getOrThrow()
 			state.commands shouldHaveSize 0
 			TestUtils.collectMarkers(state.world) shouldContainExactlyInAnyOrder listOf(
-				MarkerTileEntity(userId1),
-				MarkerTileEntity(userId1),
-				MarkerTileEntity(userId1),
-				MarkerTileEntity(userId2),
+				MarkerTileObject(userId1),
+				MarkerTileObject(userId1),
+				MarkerTileObject(userId1),
+				MarkerTileObject(userId2),
 			)
 		}
 		messageProducer.pullMessagesWithoutPayload().shouldContainExactlyInAnyOrder(

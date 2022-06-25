@@ -7,17 +7,21 @@ import com.fasterxml.jackson.module.kotlin.readValue
 
 object Json {
 
-    val mapper: ObjectMapper = jacksonObjectMapper()
-    private val writer: ObjectWriter = mapper.writerWithDefaultPrettyPrinter()
+	val mapper: ObjectMapper = jacksonObjectMapper()
+	private val writer: ObjectWriter = mapper.writerWithDefaultPrettyPrinter()
 
 
-    fun asString(value: Any): String {
-        return writer.writeValueAsString(value)
-    }
+	fun asString(value: Any): String {
+		return writer.writeValueAsString(value)
+	}
 
-    inline fun <reified T> fromString(json: String): T {
-        return mapper.readValue(json)
-    }
+	inline fun <reified T> fromString(json: String): T {
+		return mapper.readValue(json)
+	}
+
+	fun fromStringToMap(json: String): Map<String, Any> {
+		return mapper.readValue(json)
+	}
 
 }
 

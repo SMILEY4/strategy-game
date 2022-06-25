@@ -12,7 +12,7 @@ data class Tile(
 	val q: Int,
 	val r: Int,
 	val data: TileData,
-	val entities: List<MarkerTileEntity>
+	val entities: List<MarkerTileObject>
 )
 
 

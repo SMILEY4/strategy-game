@@ -8,19 +8,21 @@ import de.ruegnerlukas.kdbl.dsl.expression.Table
 import de.ruegnerlukas.kdbl.dsl.expression.TableLike
 
 object DbSchema {
-	fun createTables(db: Database) {
-		db.startCreate(SQL.create(GameTbl))
-		db.startCreate(SQL.create(ParticipantTbl))
-		db.startCreate(SQL.create(OrderTbl))
-		db.startCreate(SQL.create(TileTbl))
-		db.startCreate(SQL.create(MarkerTbl))
+	suspend fun createTables(db: Database) {
+		db.startCreate(SQL.create(GameTbl)).execute()
+		db.startCreate(SQL.create(PlayerTbl)).execute()
+		db.startCreate(SQL.create(OrderTbl)).execute()
+		db.startCreate(SQL.create(TileTbl)).execute()
+		db.startCreate(SQL.create(MarkerTbl)).execute()
 	}
 }
 
+
 object GameTbl : GameTableDef()
 
-sealed class GameTableDef : Table("game") {
-	val gameId = text("gameId").notNull().primaryKey()
+sealed class GameTableDef : Table("game", true) {
+	val id = text("id").primaryKey()
+	val turn = integer("turn")
 
 	companion object {
 		class GameTableDefAlias(override val table: TableLike, override val alias: String) : GameTableDef(), AliasTable
@@ -31,30 +33,31 @@ sealed class GameTableDef : Table("game") {
 }
 
 
-object ParticipantTbl : ParticipantTableDef()
+object PlayerTbl : PlayerTableDef()
 
-sealed class ParticipantTableDef : Table("participant") {
-	val participantId = text("participantId").notNull().primaryKey()
-	val userId = text("userId").notNull()
-	val gameId = text("gameId").notNull().foreignKey(GameTbl.gameId, onDelete = RefAction.CASCADE)
+sealed class PlayerTableDef : Table("player", true) {
+	val id = text("id").primaryKey()
+	val userId = text("userId")
+	val gameId = text("gameId").foreignKey(GameTbl.id, onDelete = RefAction.CASCADE)
+	val connectionId = integer("connectionId").nullable()
+	val state = text("state")
 
 	companion object {
-		class ParticipantTableDefAlias(override val table: TableLike, override val alias: String) : ParticipantTableDef(), AliasTable
+		class PlayerTableDefAlias(override val table: TableLike, override val alias: String) : PlayerTableDef(), AliasTable
 	}
 
-	override fun alias(alias: String) = ParticipantTableDefAlias(this, alias)
+	override fun alias(alias: String) = PlayerTableDefAlias(this, alias)
 
 }
 
 
 object OrderTbl : OrderTableDef()
 
-sealed class OrderTableDef : Table("order") {
-	val orderId = text("orderId").primaryKey()
-	val userId = text("userId").notNull()
-	val gameId = text("gameId").notNull().foreignKey(GameTbl.gameId, onDelete = RefAction.CASCADE)
-	val data = text("data").notNull()
+sealed class OrderTableDef : Table("order", true) {
+	val id = text("id").primaryKey()
+	val playerId = text("playerId").foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
 	val turn = integer("turn")
+	val data = text("data")
 
 	companion object {
 		class OrderTableDefAlias(override val table: TableLike, override val alias: String) : OrderTableDef(), AliasTable
@@ -67,11 +70,11 @@ sealed class OrderTableDef : Table("order") {
 
 object TileTbl : TileTableDef()
 
-sealed class TileTableDef : Table("tile") {
-	val tileId = text("tileId").notNull().primaryKey()
-	val q = integer("q").notNull()
-	val r = integer("r").notNull()
-	val gameId = text("gameId").notNull().foreignKey(GameTbl.gameId, onDelete = RefAction.CASCADE)
+sealed class TileTableDef : Table("tile", true) {
+	val id = text("id").primaryKey()
+	val gameId = text("gameId").foreignKey(GameTbl.id, onDelete = RefAction.CASCADE)
+	val q = integer("q")
+	val r = integer("r")
 
 	companion object {
 		class TileTableDefAlias(override val table: TableLike, override val alias: String) : TileTableDef(), AliasTable
@@ -84,10 +87,10 @@ sealed class TileTableDef : Table("tile") {
 
 object MarkerTbl : MarkerTableDef()
 
-sealed class MarkerTableDef : Table("marker") {
-	val markerId = text("markerId").notNull().primaryKey()
-	val tileId = text("tileId").notNull().foreignKey(TileTbl.tileId)
-	val playerId = text("playerId").notNull().foreignKey(ParticipantTbl.participantId)
+sealed class MarkerTableDef : Table("marker", true) {
+	val id = text("id").primaryKey()
+	val tileId = text("tileId").foreignKey(TileTbl.id, onDelete = RefAction.CASCADE)
+	val playerId = text("playerId").foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
 
 	companion object {
 		class MarkerTableDefAlias(override val table: TableLike, override val alias: String) : MarkerTableDef(), AliasTable

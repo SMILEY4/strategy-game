@@ -5,6 +5,6 @@ import de.ruegnerlukas.strategygame.backend.shared.either.Either
 
 interface GameLobbyConnectAction {
 
-	suspend fun perform(userId: String, connectionId: Int, gameId: String): Either<Unit, ApplicationError>
+	suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<Unit, ApplicationError>
 
 }

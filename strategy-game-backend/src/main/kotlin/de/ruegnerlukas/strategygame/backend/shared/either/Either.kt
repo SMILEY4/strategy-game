@@ -103,7 +103,10 @@ suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, error:
 }
 
 
-suspend fun <V, E> Either<V, E>.then2(action: suspend (V) -> Either<*, E>): Either<V, E> {
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
+ */
+suspend fun <V, E> Either<V, E>.thenOrErr(action: suspend (V) -> Either<*, E>): Either<V, E> {
 	return when (this) {
 		is Ok -> {
 			when (val result = action(value)) {
@@ -113,6 +116,39 @@ suspend fun <V, E> Either<V, E>.then2(action: suspend (V) -> Either<*, E>): Eith
 		}
 		is Err -> this
 	}
+}
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
+ * If the transformation throws any exception, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E> Either<V, E>.thenOrErrCatching(
+	action: suspend (V) -> Either<*, E>,
+	transformException: (e: Exception) -> E
+): Either<V, E> {
+	try {
+		return when (this) {
+			is Ok -> {
+				when (val result = action(value)) {
+					is Ok -> this
+					is Err -> result
+				}
+			}
+			is Err -> this
+		}
+	} catch (e: Exception) {
+		return Err(transformException(e))
+	}
+}
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
+ *  If the transformation throws any exception, an [Err] is returned with the given error
+ */
+suspend fun <V, E> Either<V, E>.thenOrErrCatching(action: suspend (V) -> Either<*, E>, error: E): Either<V, E> {
+	return thenOrErrCatching(action) { error }
 }
 
 
@@ -199,7 +235,7 @@ suspend fun <V, E, T> Either<V, E>.mapError(transform: suspend (E) -> T): Either
 /**
  * Maps this [Either] to a new [Either] by applying the given transform with the current error if this is an [Err] or by returning this [Ok]
  */
-suspend fun <V, E> Either<V, E>.mapError(expectedError: E, transform: suspend (E) -> E): Either<V, E> {
+suspend fun <V, E, T: E> Either<V, E>.mapError(expectedError: E, transform: suspend (E) -> T): Either<V, E> {
 	return when (this) {
 		is Ok -> this
 		is Err -> {
@@ -347,12 +383,17 @@ fun <V, E> Either<V, E>.getOrThrow(throwable: Throwable): V {
 
 
 /**
- * @return the current value if this is a [Ok] or throw an [IllegalStateException]
+ * @return the current value if this is a [Ok] or throw an [IllegalStateException] or the error-value if its a [Throwable]
  */
 fun <V, E> Either<V, E>.getOrThrow(): V {
 	return when (this) {
 		is Ok -> value
-		is Err -> throw IllegalStateException("Cannot get value of 'Err'!")
+		is Err ->  {
+			when (error)  {
+				is Throwable -> throw error
+				else -> throw IllegalStateException("Cannot get value of Err!")
+			}
+		}
 	}
 }
 
