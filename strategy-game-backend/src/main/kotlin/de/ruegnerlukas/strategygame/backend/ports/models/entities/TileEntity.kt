@@ -4,5 +4,6 @@ data class TileEntity(
 	val id: String,
 	val gameId: String,
 	val q: Int,
-	val r: Int
+	val r: Int,
+	val type: String
 )

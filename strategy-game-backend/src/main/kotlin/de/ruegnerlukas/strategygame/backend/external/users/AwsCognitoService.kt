@@ -33,7 +33,7 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.UserNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.shared.Config
+import de.ruegnerlukas.strategygame.backend.config.Config
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.Err
 import de.ruegnerlukas.strategygame.backend.shared.Logging

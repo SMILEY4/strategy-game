@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.config.engine
 
-import de.ruegnerlukas.strategygame.backend.shared.Config
+import de.ruegnerlukas.strategygame.backend.config.Config
 import io.ktor.server.application.ApplicationEnvironment
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.config.HoconApplicationConfig

@@ -19,13 +19,14 @@ class TileInsertMultipleImpl(private val database: Database): TileInsertMultiple
 					SQL
 						.insert()
 						.into(TileTbl)
-						.columns(TileTbl.id, TileTbl.gameId, TileTbl.q, TileTbl.r)
+						.columns(TileTbl.id, TileTbl.gameId, TileTbl.q, TileTbl.r, TileTbl.type)
 						.items(batch.map {
 							SQL.item()
 								.set(TileTbl.id, it.id)
 								.set(TileTbl.gameId, it.gameId)
 								.set(TileTbl.q, it.q)
 								.set(TileTbl.r, it.r)
+								.set(TileTbl.type, it.type)
 						})
 				}
 			}

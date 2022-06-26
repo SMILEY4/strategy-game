@@ -75,6 +75,7 @@ sealed class TileTableDef : Table("tile", true) {
 	val gameId = text("gameId").foreignKey(GameTbl.id, onDelete = RefAction.CASCADE)
 	val q = integer("q")
 	val r = integer("r")
+	val type = text("type")
 
 	companion object {
 		class TileTableDefAlias(override val table: TableLike, override val alias: String) : TileTableDef(), AliasTable

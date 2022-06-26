@@ -56,7 +56,8 @@ class GameCreateActionImpl(
 			id = UUID.gen(),
 			gameId = gameId,
 			q = it.q,
-			r = it.r
+			r = it.r,
+			type = it.data.type.name
 		)
 	}
 

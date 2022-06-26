@@ -22,7 +22,7 @@ class TileQueryByGameAndPositionImpl(private val database: Database): TileQueryB
 				database
 					.startQuery("tiles.query.by_game_and_position") {
 						SQL
-							.select(TileTbl.id, TileTbl.gameId, TileTbl.q, TileTbl.r)
+							.select(TileTbl.id, TileTbl.gameId, TileTbl.q, TileTbl.r, TileTbl.type)
 							.from(TileTbl)
 							.where(
 								TileTbl.gameId.isEqual(placeholder("gameId"))
@@ -41,7 +41,8 @@ class TileQueryByGameAndPositionImpl(private val database: Database): TileQueryB
 							id = it.getString(TileTbl.id.columnName),
 							gameId = it.getString(TileTbl.gameId.columnName),
 							q = it.getInt(TileTbl.q.columnName),
-							r = it.getInt(TileTbl.r.columnName)
+							r = it.getInt(TileTbl.r.columnName),
+							type = it.getString(TileTbl.type.columnName)
 						)
 					}
 			}

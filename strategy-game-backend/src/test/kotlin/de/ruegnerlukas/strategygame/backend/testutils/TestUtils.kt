@@ -3,17 +3,25 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.shared.DbConfig
-import de.ruegnerlukas.strategygame.backend.shared.SqliteDbConfig
+import de.ruegnerlukas.strategygame.backend.config.DbConfig
+import de.ruegnerlukas.strategygame.backend.config.DbConnectionConfig
 
 
 object TestUtils {
 
 	suspend fun createTestDatabase(memory: Boolean = true): Database {
 		if (memory) {
-			return DatabaseProvider.create(DbConfig("sqlite", SqliteDbConfig("jdbc:sqlite::memory:")))
+			return DatabaseProvider.create(DbConfig(
+				active = "sqlite-memory",
+				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
+				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
+			))
 		} else {
-			return DatabaseProvider.create(DbConfig("sqlite", SqliteDbConfig("jdbc:sqlite:test.db")))
+			return DatabaseProvider.create(DbConfig(
+				active = "sqlite",
+				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
+				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
+			))
 		}
 	}
 

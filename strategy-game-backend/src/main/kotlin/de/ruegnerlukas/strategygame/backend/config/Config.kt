@@ -1,10 +1,11 @@
-package de.ruegnerlukas.strategygame.backend.shared
+package de.ruegnerlukas.strategygame.backend.config
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import de.ruegnerlukas.strategygame.backend.APPLICATION_MODE
 import de.ruegnerlukas.strategygame.backend.ApplicationMode
+import de.ruegnerlukas.strategygame.backend.shared.Json
 
 object Config {
 
@@ -103,10 +104,11 @@ data class AwsCognitoConfig(
 )
 
 data class DbConfig(
-	val active: String, // currently only "sqlite"
-    val sqlite: SqliteDbConfig
+	val active: String, // currently only "sqlite" or "sqlite-memory
+    val sqliteMemory: DbConnectionConfig,
+	val sqlite: DbConnectionConfig
 )
 
-data class SqliteDbConfig(
+data class DbConnectionConfig(
 	val url: String
 )

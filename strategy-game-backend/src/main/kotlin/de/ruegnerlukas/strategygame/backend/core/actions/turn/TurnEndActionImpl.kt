@@ -91,7 +91,7 @@ class TurnEndActionImpl(
 			Tile(
 				q = it.q,
 				r = it.r,
-				data = TileData(TileType.PLAINS),
+				data = TileData(TileType.valueOf(it.type)),
 				entities = emptyList()
 			)
 		})
