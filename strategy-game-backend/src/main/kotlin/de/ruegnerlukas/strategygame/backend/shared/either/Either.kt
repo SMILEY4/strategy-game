@@ -1,11 +1,19 @@
 package de.ruegnerlukas.strategygame.backend.shared.either
 
+import mu.KotlinLogging
+
 /**
  * Represents either a successful ([Ok]) or a failed ([Err]) result
  */
 sealed class Either<out V, out E> {
 
 	companion object {
+
+		/**
+		 * Whether to log all errors of [Err]
+		 */
+		var logErrors: Boolean = false
+
 
 		/**
 		 * Start with an empty [Ok]
@@ -39,6 +47,12 @@ sealed class Either<out V, out E> {
 
 
 	/**
+	 * Whether this [Either] represents a failed result with the given error
+	 */
+	fun <E> isError(expected: E) = this is Err && this.error == expected
+
+
+	/**
 	 * Whether this [Either] represents a successful result
 	 */
 	fun isOk() = this is Ok
@@ -58,7 +72,17 @@ class Ok<V>(val value: V) : Either<V, Nothing>() {
 /**
  * Represents a failed result with the given error
  */
-class Err<E>(val error: E) : Either<Nothing, E>()
+class Err<E>(val error: E) : Either<Nothing, E>() {
+	init {
+		if (logErrors) {
+			if (error is Throwable) {
+				KotlinLogging.logger {}.warn("Either encountered error", error)
+			} else {
+				KotlinLogging.logger {}.warn("Either encountered error: $error")
+			}
+		}
+	}
+}
 
 
 /**
@@ -235,7 +259,7 @@ suspend fun <V, E, T> Either<V, E>.mapError(transform: suspend (E) -> T): Either
 /**
  * Maps this [Either] to a new [Either] by applying the given transform with the current error if this is an [Err] or by returning this [Ok]
  */
-suspend fun <V, E, T: E> Either<V, E>.mapError(expectedError: E, transform: suspend (E) -> T): Either<V, E> {
+suspend fun <V, E, T : E> Either<V, E>.mapError(expectedError: E, transform: suspend (E) -> T): Either<V, E> {
 	return when (this) {
 		is Ok -> this
 		is Err -> {
@@ -292,6 +316,20 @@ fun <V, E> Either<V, E>.discardValue(): Either<Unit, E> {
  * Map this [Either] to a single value by either applying [onSuccess] with the current value if this is a [Ok] or [onError] with the current error if this is an [Err]
  */
 suspend fun <V, E, T> Either<V, E>.fold(onSuccess: suspend (V) -> T, onError: suspend (E) -> T): T {
+	return when (this) {
+		is Ok -> onSuccess(value)
+		is Err -> onError(error)
+	}
+}
+
+
+/**
+ * Map this [Either] to a single new [Either] by either applying [onSuccess] with the current value if this is a [Ok] or [onError] with the current error if this is an [Err]
+ */
+suspend fun <V, E, TV, TE> Either<V, E>.foldFlat(
+	onSuccess: suspend (V) -> Either<TV, TE>,
+	onError: suspend (E) -> Either<TV, TE>
+): Either<TV, TE> {
 	return when (this) {
 		is Ok -> onSuccess(value)
 		is Err -> onError(error)
@@ -388,8 +426,8 @@ fun <V, E> Either<V, E>.getOrThrow(throwable: Throwable): V {
 fun <V, E> Either<V, E>.getOrThrow(): V {
 	return when (this) {
 		is Ok -> value
-		is Err ->  {
-			when (error)  {
+		is Err -> {
+			when (error) {
 				is Throwable -> throw error
 				else -> throw IllegalStateException("Cannot get value of Err!")
 			}

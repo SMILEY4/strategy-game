@@ -9,6 +9,7 @@ val versionKdbl: String by project
 val versionKotest: String by project
 val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
+val versionSqlite: String by project
 
 group = "de.ruegnerlukas"
 version = "0.2.0"
@@ -49,6 +50,7 @@ dependencies {
 	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
 
 	implementation("de.ruegnerlukas:kdbl:$versionKdbl")
+	implementation("org.xerial:sqlite-jdbc:$versionSqlite")
 
 	testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
 	testImplementation("io.kotest:kotest-assertions-core:$versionKotest")

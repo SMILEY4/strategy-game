@@ -53,7 +53,7 @@ sealed class PlayerTableDef : Table("player", true) {
 
 object OrderTbl : OrderTableDef()
 
-sealed class OrderTableDef : Table("order", true) {
+sealed class OrderTableDef : Table("player_order", true) {
 	val id = text("id").primaryKey()
 	val playerId = text("playerId").foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
 	val turn = integer("turn")

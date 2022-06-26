@@ -8,12 +8,13 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.GameTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameInsert
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class GameInsert(private val database: Database) {
+class GameInsertImpl(private val database: Database): GameInsert {
 
-	suspend fun execute(game: GameEntity): Either<Unit, ApplicationError> {
+	override suspend fun execute(game: GameEntity): Either<Unit, ApplicationError> {
 		return Either
 			.runCatching {
 				database

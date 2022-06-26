@@ -54,8 +54,8 @@ fun Route.gameWebsocketRoutes(
 						val connectionId = connectionHandler.openSession(this)
 						connectAction.perform(
 							getWebsocketUserIdOrThrow(userService, call),
-							connectionId,
-							call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
+							call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!,
+							connectionId
 						)
 						try {
 							for (frame in incoming) {

@@ -9,7 +9,13 @@ import java.sql.DriverManager
 
 object DatabaseProvider {
 
-	fun create(config: DbConfig): Database {
+	suspend fun create(config: DbConfig): Database {
+		val database = createDatabaseInstance(config)
+		DbSchema.createTables(database)
+		return database
+	}
+
+	private fun createDatabaseInstance(config: DbConfig): Database {
 		if (config.active == "sqlite") {
 			return SingleConnectionDatabase(
 				DriverManager.getConnection(config.sqlite.url),

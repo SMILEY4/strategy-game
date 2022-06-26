@@ -10,12 +10,13 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderQueryByGameAndTurn
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class OrderQueryByGameAndTurn(private val database: Database) {
+class OrderQueryByGameAndTurnImpl(private val database: Database): OrderQueryByGameAndTurn {
 
-	suspend fun execute(gameId: String, turn: Int): Either<List<OrderEntity>, ApplicationError> {
+	override suspend fun execute(gameId: String, turn: Int): Either<List<OrderEntity>, ApplicationError> {
 		return Either
 			.runCatching {
 				database

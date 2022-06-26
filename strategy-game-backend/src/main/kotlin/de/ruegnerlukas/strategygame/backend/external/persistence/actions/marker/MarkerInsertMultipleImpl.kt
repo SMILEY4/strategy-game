@@ -6,12 +6,13 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.MarkerTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkerInsertMultiple
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class MarkerInsertMultiple(private val database: Database) {
+class MarkerInsertMultipleImpl(private val database: Database): MarkerInsertMultiple {
 
-	suspend fun execute(markers: List<MarkerEntity>): Either<Unit, ApplicationError> {
+	override suspend fun execute(markers: List<MarkerEntity>): Either<Unit, ApplicationError> {
 		return Either
 			.runCatching {
 				database.insertBatched(50, markers) { batch ->

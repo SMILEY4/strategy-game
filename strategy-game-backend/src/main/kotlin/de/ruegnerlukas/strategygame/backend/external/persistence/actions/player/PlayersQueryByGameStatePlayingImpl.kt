@@ -7,15 +7,15 @@ import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayersQueryByGameStatePlaying
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class PlayersQueryByGameStatePlaying(private val database: Database) {
+class PlayersQueryByGameStatePlayingImpl(private val database: Database): PlayersQueryByGameStatePlaying {
 
-	suspend fun execute(gameId: String): Either<List<PlayerEntity>, ApplicationError> {
+	override suspend fun execute(gameId: String): Either<List<PlayerEntity>, ApplicationError> {
 		return Either
 			.runCatching {
 				database

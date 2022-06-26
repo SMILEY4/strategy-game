@@ -9,12 +9,13 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQuery
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class PlayerQuery(private val database: Database) {
+class PlayerQueryImpl(private val database: Database): PlayerQuery {
 
-	suspend fun execute(id: String): Either<PlayerEntity, ApplicationError> {
+	override suspend fun execute(id: String): Either<PlayerEntity, ApplicationError> {
 		return Either
 			.runCatching {
 				database

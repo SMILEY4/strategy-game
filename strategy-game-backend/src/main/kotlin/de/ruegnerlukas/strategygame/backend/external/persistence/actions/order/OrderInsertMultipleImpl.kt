@@ -6,12 +6,13 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.OrderTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderInsertMultiple
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class OrderInsertMultiple(private val database: Database) {
+class OrderInsertMultipleImpl(private val database: Database): OrderInsertMultiple {
 
-	suspend fun execute(orders: List<OrderEntity>): Either<Unit, ApplicationError> {
+	override suspend fun execute(orders: List<OrderEntity>): Either<Unit, ApplicationError> {
 		return Either
 			.runCatching {
 				database.insertBatched(50, orders) { batch ->

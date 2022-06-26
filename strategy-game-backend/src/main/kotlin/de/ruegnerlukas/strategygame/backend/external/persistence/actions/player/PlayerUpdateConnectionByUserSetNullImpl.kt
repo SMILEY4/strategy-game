@@ -7,14 +7,15 @@ import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateConnectionByUserSetNull
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 import kotlin.collections.set
 
-class PlayerUpdateConnectionByUserSetNull(private val database: Database) {
+class PlayerUpdateConnectionByUserSetNullImpl(private val database: Database): PlayerUpdateConnectionByUserSetNull {
 
-	suspend fun execute(userId: String): Either<Unit, ApplicationError> {
+	override suspend fun execute(userId: String): Either<Unit, ApplicationError> {
 		return Either
 			.runCatching {
 				database

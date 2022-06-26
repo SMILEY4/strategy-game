@@ -17,9 +17,25 @@ import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.external.persistence.DbSchema
-import de.ruegnerlukas.strategygame.backend.external.persistence.SqlRepository
-import de.ruegnerlukas.strategygame.backend.external.persistence.old.InMemoryOldGameRepository
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GamesQueryByUserImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurnImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateConnectionByUserSetNullImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateConnectionImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateStateByGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateStateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameConnectedImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameStatePlayingImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileQueryByGameAndPositionImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Config
 import io.ktor.http.HttpHeaders
@@ -38,6 +54,7 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
+import kotlinx.coroutines.runBlocking
 import org.slf4j.event.Level
 import java.time.Duration
 
@@ -47,26 +64,84 @@ import java.time.Duration
  */
 fun Application.module() {
 
+	// "external" services
 	val connectionHandler = ConnectionHandler()
 	val userIdentityService = UserIdentityService.create(Config.get())
 	val messageProducer = GameMessageProducerImpl(WebSocketMessageProducer(connectionHandler))
-	val oldGameRepository = InMemoryOldGameRepository()
+	val database = runBlocking { DatabaseProvider.create(Config.get().db) }
 
-	val database = DatabaseProvider.create(Config.get().db)
-	DbSchema.createTables(database)
-	val gameRepository = SqlRepository(database)
+	// persistence actions
+	val gameInsert = GameInsertImpl(database)
+	val gameQuery = GameQueryImpl(database)
+	val gamesQueryByUser = GamesQueryByUserImpl(database)
+	val gameUpdateTurn = GameUpdateTurnImpl(database)
+	val markerInsertMultiple = MarkerInsertMultipleImpl(database)
+	val orderInsertMultiple = OrderInsertMultipleImpl(database)
+	val orderQueryByGameAndTurn = OrderQueryByGameAndTurnImpl(database)
+	val playerInsert = PlayerInsertImpl(database)
+	val playerQuery = PlayerQueryImpl(database)
+	val playerQueryByUserAndGame = PlayerQueryByUserAndGameImpl(database)
+	val playersQueryByGameConnected = PlayersQueryByGameConnectedImpl(database)
+	val playersQueryByGameStatePlaying = PlayersQueryByGameStatePlayingImpl(database)
+	val playerUpdateConnection = PlayerUpdateConnectionImpl(database)
+	val playerUpdateConnectionByUserSetNull = PlayerUpdateConnectionByUserSetNullImpl(database)
+	val playerUpdateState = PlayerUpdateStateImpl(database)
+	val playerUpdateStateByGame = PlayerUpdateStateByGameImpl(database)
+	val tileInsertMultiple = TileInsertMultipleImpl(database)
+	val tileQueryByGameAndPosition = TileQueryByGameAndPositionImpl(database)
+	val tilesQueryByGame = TilesQueryByGameImpl(database)
 
-	val gameLobbiesListAction = GameLobbiesListActionImpl(oldGameRepository)
-	val gameLobbyConnectAction = GameLobbyConnectActionImpl(oldGameRepository, messageProducer)
-	val gameLobbyCreateAction = GameLobbyCreateActionImpl(oldGameRepository)
-	val gameLobbyDisconnectAction = GameLobbyDisconnectActionImpl(oldGameRepository)
-	val gameLobbyJoinAction = GameLobbyJoinActionImpl(oldGameRepository)
-	val gameLobbyRequestConnectionAction = GameLobbyRequestConnectionActionImpl(oldGameRepository)
 
-	val turnEndAction = TurnEndActionImpl(oldGameRepository, messageProducer)
-	val turnSubmitAction = TurnSubmitActionImpl(oldGameRepository, turnEndAction)
+	// core actions
+	val gameLobbiesListAction = GameLobbiesListActionImpl(
+		gamesQueryByUser
+	)
+	val gameLobbyConnectAction = GameLobbyConnectActionImpl(
+		playerQueryByUserAndGame,
+		playerUpdateConnection,
+		tilesQueryByGame,
+		messageProducer
+	)
+	val gameLobbyCreateAction = GameLobbyCreateActionImpl(
+		gameInsert,
+		playerInsert,
+		tileInsertMultiple
+	)
+	val gameLobbyDisconnectAction = GameLobbyDisconnectActionImpl(
+		playerUpdateConnectionByUserSetNull
+	)
+	val gameLobbyJoinAction = GameLobbyJoinActionImpl(
+		gameQuery,
+		playerInsert,
+		playerQueryByUserAndGame
+	)
+	val gameLobbyRequestConnectionAction = GameLobbyRequestConnectionActionImpl(
+		gameQuery,
+		playerQueryByUserAndGame
+	)
+	val turnEndAction = TurnEndActionImpl(
+		gameQuery,
+		orderQueryByGameAndTurn,
+		playersQueryByGameConnected,
+		tilesQueryByGame,
+		playerUpdateStateByGame,
+		gameUpdateTurn,
+		markerInsertMultiple,
+		messageProducer
+	)
+	val turnSubmitAction = TurnSubmitActionImpl(
+		gameQuery,
+		playerQueryByUserAndGame,
+		playersQueryByGameStatePlaying,
+		tileQueryByGameAndPosition,
+		playerUpdateState,
+		orderInsertMultiple,
+		turnEndAction,
+	)
 
+	// misc
 	val messageHandler = MessageHandler(turnSubmitAction)
+
 
 	install(Routing)
 	install(WebSockets) {

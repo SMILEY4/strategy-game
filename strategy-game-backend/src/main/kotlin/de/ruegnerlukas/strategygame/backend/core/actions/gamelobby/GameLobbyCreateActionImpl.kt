@@ -1,15 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
-import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsert
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsert
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileInsertMultiple
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameInsert
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerInsert
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileInsertMultiple
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
@@ -19,15 +18,15 @@ import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 /**
  * Create a new game-lobby
  */
-class GameLobbyCreateActionImpl(database: Database) : GameLobbyCreateAction, Logging {
-
-	private val insertGame = GameInsert(database)
-	private val insertPlayer = PlayerInsert(database)
-	private val insertTiles = TileInsertMultiple(database)
-
+class GameLobbyCreateActionImpl(
+	private val insertGame: GameInsert,
+	private val insertPlayer: PlayerInsert,
+	private val insertTiles: TileInsertMultiple
+) : GameLobbyCreateAction, Logging {
 
 	/**
 	 * @param userId the id of the user creating the game-lobby
+	 * @return the id of the game
 	 */
 	override suspend fun perform(userId: String): Either<String, ApplicationError> {
 		log().info("Create new game with owner '$userId'")
@@ -48,7 +47,8 @@ class GameLobbyCreateActionImpl(database: Database) : GameLobbyCreateAction, Log
 		id = UUID.gen(),
 		userId = userId,
 		gameId = gameId,
-		connectionId = null
+		connectionId = null,
+		state = PlayerEntity.STATE_PLAYING
 	)
 
 	private fun createTiles(gameId: String) = WorldBuilder().buildTiles().map {

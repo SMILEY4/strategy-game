@@ -6,12 +6,13 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileInsertMultiple
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class TileInsertMultiple(private val database: Database) {
+class TileInsertMultipleImpl(private val database: Database): TileInsertMultiple {
 
-	suspend fun execute(tiles: List<TileEntity>): Either<Unit, ApplicationError> {
+	override suspend fun execute(tiles: List<TileEntity>): Either<Unit, ApplicationError> {
 		return Either
 			.runCatching {
 				database.insertBatched(50, tiles) { batch ->

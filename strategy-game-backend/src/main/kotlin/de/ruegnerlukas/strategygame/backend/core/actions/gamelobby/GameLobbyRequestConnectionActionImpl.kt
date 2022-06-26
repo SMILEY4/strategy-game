@@ -1,8 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
 
-import de.ruegnerlukas.kdbl.db.Database
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQuery
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGame
 import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
@@ -10,6 +7,8 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.Err
@@ -17,11 +16,10 @@ import de.ruegnerlukas.strategygame.backend.shared.either.Ok
 import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class GameLobbyRequestConnectionActionImpl(database: Database) : GameLobbyRequestConnectionAction, Logging {
-
-	private val queryGame = GameQuery(database)
-	private val queryPlayer = PlayerQueryByUserAndGame(database)
-
+class GameLobbyRequestConnectionActionImpl(
+	private val queryGame: GameQuery,
+	private val queryPlayer: PlayerQueryByUserAndGame
+) : GameLobbyRequestConnectionAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Either<Unit, ApplicationError> {
 		log().info("Request to connect to game-lobby $gameId from user $userId")

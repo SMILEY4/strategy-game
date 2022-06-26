@@ -1,12 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
-import de.ruegnerlukas.kdbl.db.Database
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQuery
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultiple
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGame
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateState
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameStatePlaying
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
@@ -15,6 +8,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderInsertMultiple
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateState
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayersQueryByGameStatePlaying
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.shared.Base64
 import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -28,17 +27,14 @@ import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class TurnSubmitActionImpl(
-	database: Database,
+	private val queryGame: GameQuery,
+	private val queryPlayer: PlayerQueryByUserAndGame,
+	private val queryPlayerPlaying: PlayersQueryByGameStatePlaying,
+	private val queryTile: TileQueryByGameAndPosition,
+	private val updatePlayerState: PlayerUpdateState,
+	private val insertOrders: OrderInsertMultiple,
 	private val endTurnAction: TurnEndAction
 ) : TurnSubmitAction, Logging {
-
-	private val queryGame = GameQuery(database)
-	private val queryPlayer = PlayerQueryByUserAndGame(database)
-	private val queryPlayerPlaying = PlayersQueryByGameStatePlaying(database)
-	private val queryTile = TileQueryByGameAndPosition(database)
-	private val updatePlayerState = PlayerUpdateState(database)
-	private val insertOrders = OrderInsertMultiple(database)
-
 
 	override suspend fun perform(userId: String, gameId: String, commands: List<PlaceMarkerCommand>): Either<Unit, ApplicationError> {
 		log().info("user $userId submits ${commands.size} commands for game $gameId")

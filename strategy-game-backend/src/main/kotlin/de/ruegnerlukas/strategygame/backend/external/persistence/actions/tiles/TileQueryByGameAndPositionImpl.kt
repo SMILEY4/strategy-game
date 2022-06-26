@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles
 
 import de.ruegnerlukas.kdbl.builder.SQL
+import de.ruegnerlukas.kdbl.builder.and
 import de.ruegnerlukas.kdbl.builder.isEqual
 import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
@@ -9,24 +10,33 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class TilesQueryByGame(private val database: Database) {
+class TileQueryByGameAndPositionImpl(private val database: Database): TileQueryByGameAndPosition {
 
-	suspend fun execute(gameId: String): Either<List<TileEntity>, ApplicationError> {
+	override suspend fun execute(gameId: String, q: Int, r: Int): Either<TileEntity, ApplicationError> {
 		return Either
 			.runCatching {
 				database
-					.startQuery("tiles.query.by_game_id") {
+					.startQuery("tiles.query.by_game_and_position") {
 						SQL
 							.select(TileTbl.id, TileTbl.gameId, TileTbl.q, TileTbl.r)
 							.from(TileTbl)
-							.where(TileTbl.gameId.isEqual(placeholder("gameId")))
+							.where(
+								TileTbl.gameId.isEqual(placeholder("gameId"))
+										and TileTbl.q.isEqual(placeholder("q"))
+										and TileTbl.r.isEqual(placeholder("r"))
+							)
 					}
-					.parameter("gameId", gameId)
+					.parameters {
+						it["gameId"] = gameId
+						it["q"] = q
+						it["r"] = r
+					}
 					.execute()
-					.getMultiple {
+					.getOne {
 						TileEntity(
 							id = it.getString(TileTbl.id.columnName),
 							gameId = it.getString(TileTbl.gameId.columnName),

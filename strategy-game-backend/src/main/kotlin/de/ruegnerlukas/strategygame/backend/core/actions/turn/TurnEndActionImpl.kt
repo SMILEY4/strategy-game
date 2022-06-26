@@ -1,13 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
-import de.ruegnerlukas.kdbl.db.Database
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQuery
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurn
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultiple
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurn
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateStateByGame
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameConnected
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
@@ -23,6 +15,13 @@ import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameUpdateTurn
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkerInsertMultiple
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderQueryByGameAndTurn
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateStateByGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayersQueryByGameConnected
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.shared.Base64
 import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -35,18 +34,15 @@ import de.ruegnerlukas.strategygame.backend.shared.either.onSuccess
 import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class TurnEndActionImpl(
-	database: Database,
+	private val queryGame: GameQuery,
+	private val queryOrders: OrderQueryByGameAndTurn,
+	private val queryConnectedPlayers: PlayersQueryByGameConnected,
+	private val queryTiles: TilesQueryByGame,
+	private val updatePlayerState: PlayerUpdateStateByGame,
+	private val updateGameTurn: GameUpdateTurn,
+	private val insertMarkers: MarkerInsertMultiple,
 	private val messageProducer: GameMessageProducer
 ) : TurnEndAction, Logging {
-
-	private val queryGame = GameQuery(database)
-	private val queryOrders = OrderQueryByGameAndTurn(database)
-	private val queryConnectedPlayers = PlayersQueryByGameConnected(database)
-	private val queryTiles = TilesQueryByGame(database)
-	private val updatePlayerState = PlayerUpdateStateByGame(database)
-	private val updateGameTurn = GameUpdateTurn(database)
-	private val insertMarkers = MarkerInsertMultiple(database)
-
 
 	override suspend fun perform(gameId: String): Either<Unit, ApplicationError> {
 		log().info("End turn of game $gameId")
