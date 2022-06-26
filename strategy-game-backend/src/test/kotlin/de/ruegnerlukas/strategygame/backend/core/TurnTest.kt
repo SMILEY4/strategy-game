@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core
 
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
@@ -37,19 +37,19 @@ class TurnTest : StringSpec({
 	"submit orders, expect saved and ending turn" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
 		)
 
-		val joinGame = GameLobbyJoinActionImpl(
+		val joinGame = GameJoinActionImpl(
 			GameQueryImpl(database),
 			PlayerInsertImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
 		)
 
-		val connectToGame = GameLobbyConnectActionImpl(
+		val connectToGame = GameConnectActionImpl(
 			PlayerQueryByUserAndGameImpl(database),
 			PlayerUpdateConnectionImpl(database),
 			TilesQueryByGameImpl(database),

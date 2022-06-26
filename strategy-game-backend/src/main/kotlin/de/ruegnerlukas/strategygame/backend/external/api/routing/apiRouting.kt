@@ -3,12 +3,12 @@ package de.ruegnerlukas.strategygame.backend.external.api.routing
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbiesListAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -25,27 +25,27 @@ import io.ktor.server.routing.routing
  * Main configuration for all routes
  */
 fun Application.apiRoutes(
-    connectionHandler: ConnectionHandler,
-    messageHandler: MessageHandler,
-    userIdentityService: UserIdentityService,
-    gameLobbyCreateAction: GameLobbyCreateAction,
-    gameLobbyJoinAction: GameLobbyJoinAction,
-    gameLobbiesListAction: GameLobbiesListAction,
-    gameLobbyDisconnectAction: GameLobbyDisconnectAction,
-    gameLobbyRequestConnectionAction: GameLobbyRequestConnectionAction,
-    gameLobbyConnectAction: GameLobbyConnectAction
+	connectionHandler: ConnectionHandler,
+	messageHandler: MessageHandler,
+	userIdentityService: UserIdentityService,
+	gameCreateAction: GameCreateAction,
+	gameJoinAction: GameJoinAction,
+	gamesListAction: GamesListAction,
+	gameDisconnectAction: GameDisconnectAction,
+	gameRequestConnectionAction: GameRequestConnectionAction,
+	gameConnectAction: GameConnectAction
 ) {
 	routing {
 		route("api") {
 			userRoutes(userIdentityService)
-			gameLobbyRoutes(gameLobbyCreateAction, gameLobbyJoinAction, gameLobbiesListAction)
+			gameLobbyRoutes(gameCreateAction, gameJoinAction, gamesListAction)
 			gameWebsocketRoutes(
 				connectionHandler,
 				userIdentityService,
 				messageHandler,
-				gameLobbyDisconnectAction,
-				gameLobbyRequestConnectionAction,
-				gameLobbyConnectAction
+				gameDisconnectAction,
+				gameRequestConnectionAction,
+				gameConnectAction
 			)
 			get("/health") {
 				call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")

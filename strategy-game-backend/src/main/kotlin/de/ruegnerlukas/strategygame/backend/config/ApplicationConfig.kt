@@ -3,12 +3,12 @@ package de.ruegnerlukas.strategygame.backend.config
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbiesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyDisconnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequestConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
@@ -93,29 +93,29 @@ fun Application.module() {
 
 
 	// core actions
-	val gameLobbiesListAction = GameLobbiesListActionImpl(
+	val gamesListAction = GamesListActionImpl(
 		gamesQueryByUser
 	)
-	val gameLobbyConnectAction = GameLobbyConnectActionImpl(
+	val gameConnectAction = GameConnectActionImpl(
 		playerQueryByUserAndGame,
 		playerUpdateConnection,
 		tilesQueryByGame,
 		messageProducer
 	)
-	val gameLobbyCreateAction = GameLobbyCreateActionImpl(
+	val gameCreateAction = GameCreateActionImpl(
 		gameInsert,
 		playerInsert,
 		tileInsertMultiple
 	)
-	val gameLobbyDisconnectAction = GameLobbyDisconnectActionImpl(
+	val gameDisconnectAction = GameDisconnectActionImpl(
 		playerUpdateConnectionByUserSetNull
 	)
-	val gameLobbyJoinAction = GameLobbyJoinActionImpl(
+	val gameJoinAction = GameJoinActionImpl(
 		gameQuery,
 		playerInsert,
 		playerQueryByUserAndGame
 	)
-	val gameLobbyRequestConnectionAction = GameLobbyRequestConnectionActionImpl(
+	val gameRequestConnectionAction = GameRequestConnectionActionImpl(
 		gameQuery,
 		playerQueryByUserAndGame
 	)
@@ -187,11 +187,11 @@ fun Application.module() {
 		connectionHandler,
 		messageHandler,
 		userIdentityService,
-		gameLobbyCreateAction,
-		gameLobbyJoinAction,
-		gameLobbiesListAction,
-		gameLobbyDisconnectAction,
-		gameLobbyRequestConnectionAction,
-		gameLobbyConnectAction
+		gameCreateAction,
+		gameJoinAction,
+		gamesListAction,
+		gameDisconnectAction,
+		gameRequestConnectionAction,
+		gameConnectAction
 	)
 }

@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core
 
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbiesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyRequestConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
@@ -34,7 +34,7 @@ class GameTest : StringSpec({
 	"creating a new game, expect success and new game with one player" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
@@ -71,13 +71,13 @@ class GameTest : StringSpec({
 	"joining a game, expect success and game with two players" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
 		)
 
-		val joinGame = GameLobbyJoinActionImpl(
+		val joinGame = GameJoinActionImpl(
 			GameQueryImpl(database),
 			PlayerInsertImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
@@ -116,13 +116,13 @@ class GameTest : StringSpec({
 	"join a game as a player in that game already, expect success and no change" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
 		)
 
-		val joinGame = GameLobbyJoinActionImpl(
+		val joinGame = GameJoinActionImpl(
 			GameQueryImpl(database),
 			PlayerInsertImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
@@ -165,7 +165,7 @@ class GameTest : StringSpec({
 	"join a game that does not exist, expect 'GameNotFoundError'" {
 		val database = TestUtils.createTestDatabase()
 
-		val joinGame = GameLobbyJoinActionImpl(
+		val joinGame = GameJoinActionImpl(
 			GameQueryImpl(database),
 			PlayerInsertImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
@@ -181,7 +181,7 @@ class GameTest : StringSpec({
 	"list games of a user that is not a player in any game, expect success and empty list" {
 		val database = TestUtils.createTestDatabase()
 
-		val listGames = GameLobbiesListActionImpl(
+		val listGames = GamesListActionImpl(
 			GamesQueryByUserImpl(database)
 		)
 
@@ -195,19 +195,19 @@ class GameTest : StringSpec({
 	"list games of a user that is player, expect success and list of game-ids" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
 		)
 
-		val joinGame = GameLobbyJoinActionImpl(
+		val joinGame = GameJoinActionImpl(
 			GameQueryImpl(database),
 			PlayerInsertImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
 		)
 
-		val listGames = GameLobbiesListActionImpl(
+		val listGames = GamesListActionImpl(
 			GamesQueryByUserImpl(database)
 		)
 
@@ -232,13 +232,13 @@ class GameTest : StringSpec({
 	"request to connect to a game as a player, expect success" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
 		)
 
-		val requestConnect = GameLobbyRequestConnectionActionImpl(
+		val requestConnect = GameRequestConnectionActionImpl(
 			GameQueryImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
 		)
@@ -253,13 +253,13 @@ class GameTest : StringSpec({
 	"request to connect to a game without being a player, expect 'NotParticipantError'" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
 		)
 
-		val requestConnect = GameLobbyRequestConnectionActionImpl(
+		val requestConnect = GameRequestConnectionActionImpl(
 			GameQueryImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
 		)
@@ -275,18 +275,18 @@ class GameTest : StringSpec({
 	"request to connect to an already connected game, expect 'AlreadyConnectedError'" {
 		val database = TestUtils.createTestDatabase()
 
-		val createGame = GameLobbyCreateActionImpl(
+		val createGame = GameCreateActionImpl(
 			GameInsertImpl(database),
 			PlayerInsertImpl(database),
 			TileInsertMultipleImpl(database),
 		)
 
-		val requestConnect = GameLobbyRequestConnectionActionImpl(
+		val requestConnect = GameRequestConnectionActionImpl(
 			GameQueryImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
 		)
 
-		val connect = GameLobbyConnectActionImpl(
+		val connect = GameConnectActionImpl(
 			PlayerQueryByUserAndGameImpl(database),
 			PlayerUpdateConnectionImpl(database),
 			TilesQueryByGameImpl(database),
@@ -305,7 +305,7 @@ class GameTest : StringSpec({
 	"request to connect to a game that does not exist, expect 'GameNotFoundError'" {
 		val database = TestUtils.createTestDatabase()
 
-		val requestConnect = GameLobbyRequestConnectionActionImpl(
+		val requestConnect = GameRequestConnectionActionImpl(
 			GameQueryImpl(database),
 			PlayerQueryByUserAndGameImpl(database)
 		)

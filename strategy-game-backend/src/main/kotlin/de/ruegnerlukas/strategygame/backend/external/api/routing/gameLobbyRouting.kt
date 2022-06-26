@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbiesListAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.shared.either.respondCallErr
 import de.ruegnerlukas.strategygame.backend.shared.either.respondCallOk
 import io.ktor.http.HttpStatusCode
@@ -19,9 +19,9 @@ import io.ktor.server.routing.route
  * Configuration for game routes
  */
 fun Route.gameLobbyRoutes(
-	createLobby: GameLobbyCreateAction,
-	joinLobby: GameLobbyJoinAction,
-	listLobbies: GameLobbiesListAction,
+	createLobby: GameCreateAction,
+	joinLobby: GameJoinAction,
+	listLobbies: GamesListAction,
 ) {
 	authenticate {
 		route("game") {

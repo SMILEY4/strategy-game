@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
+package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.UserAlreadyPlayer
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyJoinAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
@@ -25,11 +25,11 @@ import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 /**
  * Join an existing game-lobby
  */
-class GameLobbyJoinActionImpl(
+class GameJoinActionImpl(
 	private val queryGame: GameQuery,
 	private val insertPlayer: PlayerInsert,
 	private val queryPlayer: PlayerQueryByUserAndGame
-) : GameLobbyJoinAction, Logging {
+) : GameJoinAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Either<Unit, ApplicationError> {
 		log().info("Join game-lobby $gameId (user = $userId)")

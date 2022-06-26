@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.gamelobby
+package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -16,10 +16,10 @@ import de.ruegnerlukas.strategygame.backend.shared.either.Ok
 import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class GameLobbyRequestConnectionActionImpl(
+class GameRequestConnectionActionImpl(
 	private val queryGame: GameQuery,
 	private val queryPlayer: PlayerQueryByUserAndGame
-) : GameLobbyRequestConnectionAction, Logging {
+) : GameRequestConnectionAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Either<Unit, ApplicationError> {
 		log().info("Request to connect to game-lobby $gameId from user $userId")
