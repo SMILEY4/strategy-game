@@ -27,11 +27,11 @@ class PlayerQueryByGameImpl(private val database: Database) : PlayerQueryByGame 
 				.execute()
 				.getMultipleOrNone { rs ->
 					PlayerEntity(
-						id = rs.getString(PlayerTbl.id.columnName),
-						userId = rs.getString(PlayerTbl.userId.columnName),
-						gameId = rs.getString(PlayerTbl.gameId.columnName),
-						connectionId = rs.getInt(PlayerTbl.connectionId.columnName).let { if (rs.wasNull()) null else it },
-						state = rs.getString(PlayerTbl.state.columnName)
+						id = rs.getString(PlayerTbl.id),
+						userId = rs.getString(PlayerTbl.userId),
+						gameId = rs.getString(PlayerTbl.gameId),
+						connectionId = rs.getIntOrNull(PlayerTbl.connectionId),
+						state = rs.getString(PlayerTbl.state)
 					)
 				}
 		}

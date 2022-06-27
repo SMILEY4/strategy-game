@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity.Companion.PlaceMarkerOrderData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
@@ -24,6 +24,7 @@ import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
 import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.shared.either.map
+import de.ruegnerlukas.strategygame.backend.shared.either.then
 import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class TurnSubmitActionImpl(

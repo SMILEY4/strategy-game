@@ -27,7 +27,12 @@ class GamesQueryByUserImpl(private val database: Database) : GamesQueryByUser {
 					it["userId"] = userId
 				}
 				.execute()
-				.getMultipleOrNone { GameEntity(id = it.getString(GameTbl.id.columnName), turn = it.getInt(GameTbl.turn.columnName)) }
+				.getMultipleOrNone {
+					GameEntity(
+						id = it.getString(GameTbl.id),
+						turn = it.getInt(GameTbl.turn)
+					)
+				}
 		}
 	}
 

@@ -28,11 +28,11 @@ class TilesQueryByGameImpl(private val database: Database) : TilesQueryByGame {
 					.execute()
 					.getMultiple {
 						TileEntity(
-							id = it.getString(TileTbl.id.columnName),
-							gameId = it.getString(TileTbl.gameId.columnName),
-							q = it.getInt(TileTbl.q.columnName),
-							r = it.getInt(TileTbl.r.columnName),
-							type = it.getString(TileTbl.type.columnName)
+							id = it.getString(TileTbl.id),
+							gameId = it.getString(TileTbl.gameId),
+							q = it.getInt(TileTbl.q),
+							r = it.getInt(TileTbl.r),
+							type = it.getString(TileTbl.type)
 						)
 					}
 			}

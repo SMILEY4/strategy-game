@@ -22,8 +22,8 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.CommandType
-import de.ruegnerlukas.strategygame.backend.ports.models.gamelobby.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandType
+import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk

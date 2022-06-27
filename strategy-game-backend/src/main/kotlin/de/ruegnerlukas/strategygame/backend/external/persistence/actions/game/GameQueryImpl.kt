@@ -28,7 +28,12 @@ class GameQueryImpl(private val database: Database) : GameQuery {
 						it["gameId"] = id
 					}
 					.execute()
-					.getOne { GameEntity(id = it.getString(GameTbl.id.columnName), turn = it.getInt(GameTbl.turn.columnName)) }
+					.getOne {
+						GameEntity(
+							id = it.getString(GameTbl.id),
+							turn = it.getInt(GameTbl.turn)
+						)
+					}
 			}
 			.mapError { EntityNotFoundError }
 	}

@@ -9,11 +9,11 @@ import de.ruegnerlukas.kdbl.dsl.expression.TableLike
 
 object DbSchema {
 	suspend fun createTables(db: Database) {
-		db.startCreate(SQL.create(GameTbl)).execute()
-		db.startCreate(SQL.create(PlayerTbl)).execute()
-		db.startCreate(SQL.create(OrderTbl)).execute()
-		db.startCreate(SQL.create(TileTbl)).execute()
-		db.startCreate(SQL.create(MarkerTbl)).execute()
+		db.startCreate(SQL.createIfNotExists(GameTbl)).execute()
+		db.startCreate(SQL.createIfNotExists(PlayerTbl)).execute()
+		db.startCreate(SQL.createIfNotExists(OrderTbl)).execute()
+		db.startCreate(SQL.createIfNotExists(TileTbl)).execute()
+		db.startCreate(SQL.createIfNotExists(MarkerTbl)).execute()
 	}
 }
 

@@ -217,7 +217,6 @@ class AwsCognitoService(
 				)
 			)
 		} catch (e: Exception) {
-			e.printStackTrace()
 			log().info("Failed to refresh user-authentication: ${e.message}", e)
 			return when (e) {
 				is NotAuthorizedException -> Err(NotAuthorizedError)

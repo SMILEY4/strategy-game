@@ -22,6 +22,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.Ga
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GamesQueryByUserImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
@@ -52,7 +53,6 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
@@ -79,6 +79,7 @@ fun Application.module() {
 	val gamesQueryByUser = GamesQueryByUserImpl(database)
 	val gameUpdateTurn = GameUpdateTurnImpl(database)
 	val markerInsertMultiple = MarkerInsertMultipleImpl(database)
+	val markersQueryByGame = MarkersQueryByGameImpl(database)
 	val orderInsertMultiple = OrderInsertMultipleImpl(database)
 	val orderQueryByGameAndTurn = OrderQueryByGameAndTurnImpl(database)
 	val playerInsert = PlayerInsertImpl(database)
@@ -102,6 +103,7 @@ fun Application.module() {
 		playerQueryByUserAndGame,
 		playerUpdateConnection,
 		tilesQueryByGame,
+		markersQueryByGame,
 		messageProducer
 	)
 	val gameCreateAction = GameCreateActionImpl(
@@ -129,6 +131,7 @@ fun Application.module() {
 		playerUpdateStateByGame,
 		gameUpdateTurn,
 		markerInsertMultiple,
+		markersQueryByGame,
 		messageProducer
 	)
 	val turnSubmitAction = TurnSubmitActionImpl(

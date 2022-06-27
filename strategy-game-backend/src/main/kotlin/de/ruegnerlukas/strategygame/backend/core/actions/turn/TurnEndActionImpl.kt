@@ -10,6 +10,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity.Co
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
+import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
@@ -18,6 +19,7 @@ import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameUpdateTurn
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkerInsertMultiple
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderQueryByGameAndTurn
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateStateByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayersQueryByGameConnected
@@ -29,8 +31,10 @@ import de.ruegnerlukas.strategygame.backend.shared.UUID
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
 import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
+import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 import de.ruegnerlukas.strategygame.backend.shared.either.onSuccess
+import de.ruegnerlukas.strategygame.backend.shared.either.then
 import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class TurnEndActionImpl(
@@ -41,6 +45,7 @@ class TurnEndActionImpl(
 	private val updatePlayerState: PlayerUpdateStateByGame,
 	private val updateGameTurn: GameUpdateTurn,
 	private val insertMarkers: MarkerInsertMultiple,
+	private val queryMarkers: MarkersQueryByGame,
 	private val messageProducer: GameMessageProducer
 ) : TurnEndAction, Logging {
 
@@ -78,24 +83,30 @@ class TurnEndActionImpl(
 			.flatMap { queryTiles.execute(game.id) }
 			.flatMap { tiles ->
 				queryConnectedPlayers.execute(game.id).onSuccess { players ->
-					players.filter { it.connectionId != null }.forEach { player ->
-						sendMessage(player.connectionId!!, tiles)
+					queryMarkers.execute(game.id).onSuccess { markers ->
+						players.filter { it.connectionId != null }.forEach { player ->
+							sendMessage(player.connectionId!!, tiles, markers)
+						}
 					}
 				}
 			}
 			.discardValue()
 	}
 
-	private suspend fun sendMessage(connectionId: Int, tiles: List<TileEntity>) {
-		val message = WorldStateMessage(tiles.map {
-			Tile(
-				q = it.q,
-				r = it.r,
-				data = TileData(TileType.valueOf(it.type)),
-				entities = emptyList()
-			)
-		})
-		messageProducer.sendWorldState(connectionId, message)
+	private suspend fun sendMessage(connectionId: Int, tiles: List<TileEntity>, markers: List<MarkerEntity>) {
+		Either.start()
+			.map {
+				tiles.map { tile ->
+					Tile(
+						q = tile.q,
+						r = tile.r,
+						data = TileData(TileType.valueOf(tile.type)),
+						entities = markers.filter { it.tileId == tile.id }.map { MarkerTileObject(it.userId!!) }
+					)
+				}
+			}
+			.map { extTiles -> WorldStateMessage(extTiles) }
+			.then { msg -> messageProducer.sendWorldState(connectionId, msg) }
 	}
 
 }

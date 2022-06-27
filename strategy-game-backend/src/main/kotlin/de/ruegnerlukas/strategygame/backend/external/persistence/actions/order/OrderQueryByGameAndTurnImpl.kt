@@ -34,10 +34,10 @@ class OrderQueryByGameAndTurnImpl(private val database: Database) : OrderQueryBy
 				.execute()
 				.getMultipleOrNone { rs ->
 					OrderEntity(
-						id = rs.getString(OrderTbl.id.columnName),
-						playerId = rs.getString(OrderTbl.playerId.columnName),
-						turn = rs.getInt(OrderTbl.turn.columnName),
-						data = rs.getString(OrderTbl.data.columnName)
+						id = rs.getString(OrderTbl.id),
+						playerId = rs.getString(OrderTbl.playerId),
+						turn = rs.getInt(OrderTbl.turn),
+						data = rs.getString(OrderTbl.data)
 					)
 				}
 		}

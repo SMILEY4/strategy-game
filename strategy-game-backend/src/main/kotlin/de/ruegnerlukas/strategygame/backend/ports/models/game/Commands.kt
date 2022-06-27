@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models.gamelobby
+package de.ruegnerlukas.strategygame.backend.ports.models.game
 
 enum class CommandType {
 	PLACE_MARKER,
