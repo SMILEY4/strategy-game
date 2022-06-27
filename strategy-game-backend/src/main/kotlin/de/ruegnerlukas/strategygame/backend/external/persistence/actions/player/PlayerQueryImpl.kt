@@ -7,17 +7,16 @@ import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQuery
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class PlayerQueryImpl(private val database: Database): PlayerQuery {
+class PlayerQueryImpl(private val database: Database) : PlayerQuery {
 
 	override suspend fun execute(id: String): Either<PlayerEntity, ApplicationError> {
 		return Either
-			.runCatching {
+			.runCatching(NoSuchElementException::class) {
 				database
 					.startQuery("player.query") {
 						SQL
@@ -39,12 +38,7 @@ class PlayerQueryImpl(private val database: Database): PlayerQuery {
 						)
 					}
 			}
-			.mapError {
-				when (it) {
-					is NoSuchElementException -> EntityNotFoundError
-					else -> GenericDatabaseError
-				}
-			}
+			.mapError { EntityNotFoundError }
 	}
 
 }

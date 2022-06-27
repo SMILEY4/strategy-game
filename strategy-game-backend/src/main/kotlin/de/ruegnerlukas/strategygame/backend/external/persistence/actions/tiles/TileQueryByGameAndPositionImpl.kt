@@ -8,17 +8,16 @@ import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
-class TileQueryByGameAndPositionImpl(private val database: Database): TileQueryByGameAndPosition {
+class TileQueryByGameAndPositionImpl(private val database: Database) : TileQueryByGameAndPosition {
 
 	override suspend fun execute(gameId: String, q: Int, r: Int): Either<TileEntity, ApplicationError> {
 		return Either
-			.runCatching {
+			.runCatching(NoSuchElementException::class) {
 				database
 					.startQuery("tiles.query.by_game_and_position") {
 						SQL
@@ -46,12 +45,7 @@ class TileQueryByGameAndPositionImpl(private val database: Database): TileQueryB
 						)
 					}
 			}
-			.mapError {
-				when (it) {
-					is NoSuchElementException -> EntityNotFoundError
-					else -> GenericDatabaseError
-				}
-			}
+			.mapError { EntityNotFoundError }
 	}
 
 

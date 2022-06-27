@@ -9,8 +9,6 @@ object InternalApplicationError : ApplicationError()
 //== Database Errors ============//
 
 sealed class DatabaseError : ApplicationError()
-
-object GenericDatabaseError: DatabaseError()
 object EntityNotFoundError : DatabaseError()
 
 

@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.shared.either
 
 import mu.KotlinLogging
+import kotlin.reflect.KClass
 
 /**
  * Represents either a successful ([Ok]) or a failed ([Err]) result
@@ -12,7 +13,7 @@ sealed class Either<out V, out E> {
 		/**
 		 * Whether to log all errors of [Err]
 		 */
-		var logErrors: Boolean = false
+		var logErrors: Boolean = true
 
 
 		/**
@@ -28,15 +29,32 @@ sealed class Either<out V, out E> {
 
 
 		/**
-		 * Return the result of the [block] as an [Ok]. If an exception was throw, return it asn an [Err]
+		 * Return the result of the [block] as an [Ok]. If an exception was throw, return it as an [Err]
 		 */
-		suspend fun <V> runCatching(block: suspend () -> V): Either<V, Throwable> {
+		suspend fun <V> runCatching(block: suspend () -> V) = runCatching(listOf(), block)
+
+
+		/**
+		 * Return the result of the [block] as an [Ok]. If an exception contained in the given list was throw, return it as an [Err]
+		 */
+		suspend fun <V> runCatching(vararg exceptions: KClass<*>, block: suspend () -> V) = runCatching(exceptions.toList(), block)
+
+
+		/**
+		 * Return the result of the [block] as an [Ok]. If an exception contained in the given list was throw, return it as an [Err]
+		 */
+		suspend fun <V> runCatching(exceptions: List<KClass<*>>, block: suspend () -> V): Either<V, Throwable> {
 			try {
 				return Ok(block())
 			} catch (e: Throwable) {
-				return Err(e)
+				if (exceptions.isEmpty() || exceptions.contains(e::class)) {
+					return Err(e)
+				} else {
+					throw e
+				}
 			}
 		}
+
 	}
 
 
@@ -56,6 +74,7 @@ sealed class Either<out V, out E> {
 	 * Whether this [Either] represents a successful result
 	 */
 	fun isOk() = this is Ok
+
 }
 
 
@@ -101,9 +120,32 @@ suspend fun <V, E> Either<V, E>.then(action: suspend (V) -> Unit): Either<V, E> 
 
 /**
  * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
- * If the transformation throws any exception, an [Err] is returned with the content of the [transformException]
+ * If the transformation throws any the given list, an [Err] is returned with the content of the [transformException]
  */
-suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, transformException: (e: Exception) -> E): Either<V, E> {
+suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, transformException: (e: Exception) -> E) =
+	thenCatching(emptyList(), action, transformException)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E> Either<V, E>.thenCatching(
+	vararg exceptions: KClass<*>,
+	action: suspend (V) -> Unit,
+	transformException: (e: Exception) -> E
+) = thenCatching(exceptions.toList(), action, transformException)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E> Either<V, E>.thenCatching(
+	exceptions: List<KClass<*>>,
+	action: suspend (V) -> Unit,
+	transformException: (e: Exception) -> E
+): Either<V, E> {
 	try {
 		return when (this) {
 			is Ok -> {
@@ -113,7 +155,11 @@ suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, transf
 			is Err -> this
 		}
 	} catch (e: Exception) {
-		return Err(transformException(e))
+		if (exceptions.isEmpty() || exceptions.contains(e::class)) {
+			return Err(transformException(e))
+		} else {
+			throw e
+		}
 	}
 }
 
@@ -122,8 +168,23 @@ suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, transf
  * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
  * If the transformation throws any exception, an [Err] is returned with the given error
  */
-suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, error: E): Either<V, E> {
-	return thenCatching(action) { error }
+suspend fun <V, E> Either<V, E>.thenCatching(action: suspend (V) -> Unit, error: E) = thenCatching(emptyList(), action, error)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the given error
+ */
+suspend fun <V, E> Either<V, E>.thenCatching(vararg exceptions: KClass<*>, action: suspend (V) -> Unit, error: E) =
+	thenCatching(exceptions.toList(), action, error)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Either].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the given error
+ */
+suspend fun <V, E> Either<V, E>.thenCatching(exceptions: List<KClass<*>>, action: suspend (V) -> Unit, error: E): Either<V, E> {
+	return thenCatching(exceptions, action) { error }
 }
 
 
@@ -145,9 +206,31 @@ suspend fun <V, E> Either<V, E>.thenOrErr(action: suspend (V) -> Either<*, E>): 
 
 /**
  * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
- * If the transformation throws any exception, an [Err] is returned with the content of the [transformException]
+ * If the transformation throws any exception list, an [Err] is returned with the content of the [transformException]
  */
 suspend fun <V, E> Either<V, E>.thenOrErrCatching(
+	action: suspend (V) -> Either<*, E>,
+	transformException: (e: Exception) -> E
+) = thenOrErrCatching(emptyList(), action, transformException)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E> Either<V, E>.thenOrErrCatching(
+	vararg exceptions: KClass<*>,
+	action: suspend (V) -> Either<*, E>,
+	transformException: (e: Exception) -> E
+) = thenOrErrCatching(exceptions.toList(), action, transformException)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E> Either<V, E>.thenOrErrCatching(
+	exceptions: List<KClass<*>>,
 	action: suspend (V) -> Either<*, E>,
 	transformException: (e: Exception) -> E
 ): Either<V, E> {
@@ -162,7 +245,11 @@ suspend fun <V, E> Either<V, E>.thenOrErrCatching(
 			is Err -> this
 		}
 	} catch (e: Exception) {
-		return Err(transformException(e))
+		if (exceptions.isEmpty() || exceptions.contains(e::class)) {
+			return Err(transformException(e))
+		} else {
+			throw e
+		}
 	}
 }
 
@@ -171,8 +258,28 @@ suspend fun <V, E> Either<V, E>.thenOrErrCatching(
  * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
  *  If the transformation throws any exception, an [Err] is returned with the given error
  */
-suspend fun <V, E> Either<V, E>.thenOrErrCatching(action: suspend (V) -> Either<*, E>, error: E): Either<V, E> {
-	return thenOrErrCatching(action) { error }
+suspend fun <V, E> Either<V, E>.thenOrErrCatching(action: suspend (V) -> Either<*, E>, error: E) =
+	thenOrErrCatching(emptyList(), action, error)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
+ *  If the transformation throws any exception from the given list, an [Err] is returned with the given error
+ */
+suspend fun <V, E> Either<V, E>.thenOrErrCatching(vararg exceptions: KClass<*>, action: suspend (V) -> Either<*, E>, error: E) =
+	thenOrErrCatching(exceptions.toList(), action, error)
+
+
+/**
+ * Run the given [action] with the current value if this is an [Ok]. Return the same [Err] if this is an [Err]. If the result of the action is an [Err], return that.
+ *  If the transformation throws any exception, an [Err] is returned with the given error
+ */
+suspend fun <V, E> Either<V, E>.thenOrErrCatching(
+	exceptions: List<KClass<*>>,
+	action: suspend (V) -> Either<*, E>,
+	error: E
+): Either<V, E> {
+	return thenOrErrCatching(exceptions, action) { error }
 }
 
 
@@ -194,6 +301,28 @@ suspend fun <V, E, T> Either<V, E>.map(transform: suspend (V) -> T): Either<T, E
 suspend fun <V, E, T> Either<V, E>.mapCatching(
 	transform: suspend (V) -> T,
 	transformException: (e: Exception) -> E
+) = mapCatching(emptyList(), transform, transformException)
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E, T> Either<V, E>.mapCatching(
+	vararg exceptions: KClass<*>,
+	transform: suspend (V) -> T,
+	transformException: (e: Exception) -> E
+) = mapCatching(exceptions.toList(), transform, transformException)
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E, T> Either<V, E>.mapCatching(
+	exceptions: List<KClass<*>>,
+	transform: suspend (V) -> T,
+	transformException: (e: Exception) -> E
 ): Either<T, E> {
 	try {
 		return when (this) {
@@ -201,7 +330,11 @@ suspend fun <V, E, T> Either<V, E>.mapCatching(
 			is Err -> this
 		}
 	} catch (e: Exception) {
-		return Err(transformException(e))
+		if (exceptions.isEmpty() || exceptions.contains(e::class)) {
+			return Err(transformException(e))
+		} else {
+			throw e
+		}
 	}
 }
 
@@ -210,8 +343,23 @@ suspend fun <V, E, T> Either<V, E>.mapCatching(
  * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
  * If the transformation throws any exception, an [Err] is returned with the given error
  */
-suspend fun <V, E, T> Either<V, E>.mapCatching(transform: suspend (V) -> T, error: E): Either<T, E> {
-	return mapCatching(transform) { error }
+suspend fun <V, E, T> Either<V, E>.mapCatching(transform: suspend (V) -> T, error: E) = mapCatching(emptyList(), transform, error)
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the given error
+ */
+suspend fun <V, E, T> Either<V, E>.mapCatching(vararg exceptions: KClass<*>, transform: suspend (V) -> T, error: E) =
+	mapCatching(exceptions.toList(), transform, error)
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the given error
+ */
+suspend fun <V, E, T> Either<V, E>.mapCatching(exceptions: List<KClass<*>>, transform: suspend (V) -> T, error: E): Either<T, E> {
+	return mapCatching(exceptions, transform) { error }
 }
 
 
@@ -233,6 +381,28 @@ suspend fun <V, E, T> Either<V, E>.flatMap(transform: suspend (V) -> Either<T, E
 suspend fun <V, E, T> Either<V, E>.flatMapCatching(
 	transform: suspend (V) -> Either<T, E>,
 	transformException: (e: Exception) -> E
+) = flatMapCatching(emptyList(), transform, transformException)
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E, T> Either<V, E>.flatMapCatching(
+	vararg exceptions: KClass<*>,
+	transform: suspend (V) -> Either<T, E>,
+	transformException: (e: Exception) -> E
+) = flatMapCatching(exceptions.toList(), transform, transformException)
+
+
+/**
+ * Maps this [Either] to a new [Either] by applying the given [transform] with the current value if this is a [Ok] or by returning this [Err].
+ * If the transformation throws any exception from the given list, an [Err] is returned with the content of the [transformException]
+ */
+suspend fun <V, E, T> Either<V, E>.flatMapCatching(
+	exceptions: List<KClass<*>>,
+	transform: suspend (V) -> Either<T, E>,
+	transformException: (e: Exception) -> E
 ): Either<T, E> {
 	try {
 		return when (this) {
@@ -240,7 +410,11 @@ suspend fun <V, E, T> Either<V, E>.flatMapCatching(
 			is Err -> this
 		}
 	} catch (e: Exception) {
-		return Err(transformException(e))
+		if (exceptions.isEmpty() || exceptions.contains(e::class)) {
+			return Err(transformException(e))
+		} else {
+			throw e
+		}
 	}
 }
 

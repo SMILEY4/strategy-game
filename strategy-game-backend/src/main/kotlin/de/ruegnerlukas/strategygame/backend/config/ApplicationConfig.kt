@@ -39,6 +39,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.T
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -47,8 +48,11 @@ import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
@@ -89,7 +93,6 @@ fun Application.module() {
 	val tileInsertMultiple = TileInsertMultipleImpl(database)
 	val tileQueryByGameAndPosition = TileQueryByGameAndPositionImpl(database)
 	val tilesQueryByGame = TilesQueryByGameImpl(database)
-
 
 	// core actions
 	val gamesListAction = GamesListActionImpl(
@@ -181,6 +184,11 @@ fun Application.module() {
 	}
 	install(Authentication) {
 		jwt { userIdentityService.configureAuthentication(this) }
+	}
+	install(StatusPages) {
+		exception<Throwable> { call, cause ->
+			call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
+		}
 	}
 	apiRoutes(
 		connectionHandler,

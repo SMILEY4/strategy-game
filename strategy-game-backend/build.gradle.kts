@@ -41,6 +41,7 @@ dependencies {
 	implementation("io.ktor:ktor-serialization-jackson:$versionKtor")
 	implementation("io.ktor:ktor-server-auth:$versionKtor")
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
+	implementation("io.ktor:ktor-server-status-pages:$versionKtor")
 
 	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")

@@ -7,19 +7,17 @@ import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GenericDatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateState
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 import kotlin.collections.set
 
-class PlayerUpdateStateImpl(private val database: Database): PlayerUpdateState {
+class PlayerUpdateStateImpl(private val database: Database) : PlayerUpdateState {
 
 	override suspend fun execute(id: String, state: String): Either<Unit, ApplicationError> {
 		return Either
-			.runCatching {
+			.runCatching(NoSuchElementException::class) {
 				database
 					.startUpdate("player.update.state") {
 						SQL
@@ -35,12 +33,7 @@ class PlayerUpdateStateImpl(private val database: Database): PlayerUpdateState {
 					.executeReturning()
 					.checkOne()
 			}
-			.mapError {
-				when (it) {
-					is NoSuchElementException -> EntityNotFoundError
-					else -> GenericDatabaseError
-				}
-			}
+			.mapError { EntityNotFoundError }
 			.discardValue()
 	}
 
