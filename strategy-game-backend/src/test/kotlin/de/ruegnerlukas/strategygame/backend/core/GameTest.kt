@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMe
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GamesQueryByUserImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
@@ -19,6 +20,7 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
 import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
@@ -290,6 +292,7 @@ class GameTest : StringSpec({
 			PlayerQueryByUserAndGameImpl(database),
 			PlayerUpdateConnectionImpl(database),
 			TilesQueryByGameImpl(database),
+			MarkersQueryByGameImpl(database),
 			GameMessageProducerImpl(TestUtils.MockMessageProducer()),
 		)
 

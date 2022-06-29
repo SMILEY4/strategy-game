@@ -10,6 +10,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.Ga
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
@@ -53,6 +54,7 @@ class TurnTest : StringSpec({
 			PlayerQueryByUserAndGameImpl(database),
 			PlayerUpdateConnectionImpl(database),
 			TilesQueryByGameImpl(database),
+			MarkersQueryByGameImpl(database),
 			GameMessageProducerImpl(TestUtils.MockMessageProducer()),
 		)
 
@@ -71,6 +73,7 @@ class TurnTest : StringSpec({
 				PlayerUpdateStateByGameImpl(database),
 				GameUpdateTurnImpl(database),
 				MarkerInsertMultipleImpl(database),
+				MarkersQueryByGameImpl(database),
 				GameMessageProducerImpl(TestUtils.MockMessageProducer()),
 			),
 		)
