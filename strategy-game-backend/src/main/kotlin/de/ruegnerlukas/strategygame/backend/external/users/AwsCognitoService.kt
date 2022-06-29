@@ -33,7 +33,7 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.UserNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.shared.Config
+import de.ruegnerlukas.strategygame.backend.config.Config
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.Err
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -217,7 +217,6 @@ class AwsCognitoService(
 				)
 			)
 		} catch (e: Exception) {
-			e.printStackTrace()
 			log().info("Failed to refresh user-authentication: ${e.message}", e)
 			return when (e) {
 				is NotAuthorizedException -> Err(NotAuthorizedError)

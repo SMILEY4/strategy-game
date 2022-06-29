@@ -16,11 +16,14 @@ class WorldBuilder {
 		.add(2.0, TileType.WATER)
 		.add(1.0, TileType.MOUNTAINS)
 
-	fun build(): World {
+	fun buildTiles(): List<Tile> {
 		val tilePositions = TilemapPositionsBuilder().createHexagon(20)
-		val tiles = tilePositions.map { buildTileAt(it) }
+		return tilePositions.map { buildTileAt(it) }
+	}
+
+	fun build(): World {
 		return World(
-			tiles = tiles,
+			tiles = buildTiles(),
 		)
 	}
 

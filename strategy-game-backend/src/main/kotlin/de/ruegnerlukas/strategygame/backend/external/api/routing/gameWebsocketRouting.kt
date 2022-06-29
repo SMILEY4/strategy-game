@@ -5,11 +5,12 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.handler.Message
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
+import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.gamelobby.GameLobbyRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.either.onError
@@ -30,9 +31,9 @@ fun Route.gameWebsocketRoutes(
 	connectionHandler: ConnectionHandler,
 	userService: UserIdentityService,
 	messageHandler: MessageHandler,
-	disconnectAction: GameLobbyDisconnectAction,
-	requestConnection: GameLobbyRequestConnectionAction,
-	connectAction: GameLobbyConnectAction
+	disconnectAction: GameDisconnectAction,
+	requestConnection: GameRequestConnectionAction,
+	connectAction: GameConnectAction
 ) {
 	val logger = Logging.create()
 	route("game/{${WebsocketUtils.PATH_PARAM_GAME_ID}}") {
@@ -45,6 +46,7 @@ fun Route.gameWebsocketRoutes(
 					)
 						.recover(GameNotFoundError) { call.respond(HttpStatusCode.NotFound, it.toString()) }
 						.recover(NotParticipantError) { call.respond(HttpStatusCode.Conflict, it.toString()) }
+						.recover(AlreadyConnectedError) { call.respond(HttpStatusCode.Conflict, it.toString()) }
 						.onError { call.respond(HttpStatusCode.InternalServerError, it.toString()) }
 				},
 				callback = {
@@ -52,8 +54,8 @@ fun Route.gameWebsocketRoutes(
 						val connectionId = connectionHandler.openSession(this)
 						connectAction.perform(
 							getWebsocketUserIdOrThrow(userService, call),
-							connectionId,
-							call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
+							call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!,
+							connectionId
 						)
 						try {
 							for (frame in incoming) {

@@ -3,6 +3,7 @@ package de.ruegnerlukas.strategygame.backend.integration
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
+import de.ruegnerlukas.strategygame.backend.testutils.integrationTest
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe

@@ -5,9 +5,11 @@ val versionKotlin: String by project
 val versionLogback: String by project
 val versionKotlinLogging: String by project
 val versionAwsSdk: String by project
+val versionKdbl: String by project
 val versionKotest: String by project
 val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
+val versionSqlite: String by project
 
 group = "de.ruegnerlukas"
 version = "0.2.0"
@@ -25,6 +27,7 @@ plugins {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
@@ -36,17 +39,19 @@ dependencies {
 	implementation("io.ktor:ktor-server-cors:$versionKtor")
 	implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
 	implementation("io.ktor:ktor-serialization-jackson:$versionKtor")
-//	implementation("io.ktor:ktor-serialization-kotlinx-json:$versionKtor")
 	implementation("io.ktor:ktor-server-auth:$versionKtor")
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
-
-	implementation("ch.qos.logback:logback-classic:$versionLogback")
-	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
+	implementation("io.ktor:ktor-server-status-pages:$versionKtor")
 
 	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-cognitoidp:$versionAwsSdk")
 
+	implementation("ch.qos.logback:logback-classic:$versionLogback")
+	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
+
+	implementation("de.ruegnerlukas:kdbl:$versionKdbl")
+	implementation("org.xerial:sqlite-jdbc:$versionSqlite")
 
 	testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
 	testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
@@ -62,7 +67,7 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.withType<KotlinCompile> {
-	kotlinOptions.jvmTarget = "11"
+	kotlinOptions.jvmTarget = "16"
 }
 
 tasks.shadowJar {

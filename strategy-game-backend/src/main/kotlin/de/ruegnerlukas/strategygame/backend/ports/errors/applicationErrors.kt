@@ -8,7 +8,9 @@ object InternalApplicationError : ApplicationError()
 
 //== Database Errors ============//
 
-object EntityNotFoundError : ApplicationError()
+sealed class DatabaseError : ApplicationError()
+object EntityNotFoundError : DatabaseError()
+
 
 //== User Errors ================//
 
@@ -26,3 +28,5 @@ object UserNotFoundError: UserApplicationError()
 
 object GameNotFoundError : ApplicationError()
 object NotParticipantError : ApplicationError()
+object AlreadyConnectedError: ApplicationError()
+object UserAlreadyPlayer: ApplicationError()

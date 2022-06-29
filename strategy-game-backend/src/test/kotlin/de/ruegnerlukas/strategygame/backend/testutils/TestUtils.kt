@@ -1,38 +1,28 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.gamelobby.GameLobbyJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.world.World
-import de.ruegnerlukas.strategygame.backend.ports.required.GameRepository
-import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
+import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
+import de.ruegnerlukas.strategygame.backend.config.DbConfig
+import de.ruegnerlukas.strategygame.backend.config.DbConnectionConfig
 
 
 object TestUtils {
 
-	suspend fun setupNewGame(
-		userIds: List<String>,
-		connectAllPlayers: Boolean,
-		repository: GameRepository,
-		messageProducer: MessageProducer
-	): String {
-		val createGameLobby = GameLobbyCreateActionImpl(repository)
-		val joinGameLobby = GameLobbyJoinActionImpl(repository)
-
-		val gameId = createGameLobby.perform(userIds[0]).getOrThrow()
-		userIds.subList(1, userIds.size).forEach { joinGameLobby.perform(it, gameId) }
-
-		if (connectAllPlayers) {
-			val connectGameLobby = GameLobbyConnectActionImpl(repository, GameMessageProducerImpl(messageProducer))
-			userIds.forEachIndexed { index, userID ->
-				connectGameLobby.perform(userID, index, gameId)
-			}
+	suspend fun createTestDatabase(memory: Boolean = true): Database {
+		if (memory) {
+			return DatabaseProvider.create(DbConfig(
+				active = "sqlite-memory",
+				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
+				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
+			))
+		} else {
+			return DatabaseProvider.create(DbConfig(
+				active = "sqlite",
+				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
+				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
+			))
 		}
-
-		return gameId
 	}
 
 	class MockMessageProducer : MessageProducer {
@@ -71,10 +61,6 @@ object TestUtils {
 			throw UnsupportedOperationException()
 		}
 
-	}
-
-	fun collectMarkers(world: World): List<MarkerTileEntity> {
-		return world.tiles.flatMap { it.entities }
 	}
 
 }

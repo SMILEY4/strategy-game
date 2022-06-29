@@ -5,8 +5,8 @@ import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityServ
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
-import de.ruegnerlukas.strategygame.backend.shared.Config
-import de.ruegnerlukas.strategygame.backend.shared.ConfigData
+import de.ruegnerlukas.strategygame.backend.config.Config
+import de.ruegnerlukas.strategygame.backend.config.ConfigData
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
