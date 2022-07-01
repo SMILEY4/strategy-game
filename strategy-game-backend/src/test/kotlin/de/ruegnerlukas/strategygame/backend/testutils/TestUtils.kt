@@ -5,6 +5,9 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProduc
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.config.DbConfig
 import de.ruegnerlukas.strategygame.backend.config.DbConnectionConfig
+import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
+import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl.type
+import de.ruegnerlukas.strategygame.backend.shared.Json
 
 
 object TestUtils {
@@ -43,21 +46,21 @@ object TestUtils {
 			return list
 		}
 
-		override suspend fun sendToSingle(connectionId: Int, type: String, payload: String) {
-			messages.add(Triple(connectionId.toString(), type, payload))
+		override suspend fun <T> sendToSingle(connectionId: Int, message: Message<T>) {
+			messages.add(Triple(connectionId.toString(), message.type, Json.asString(message.payload as Any)))
 		}
 
-		override suspend fun sendToMultiple(connectionIds: Collection<Int>, type: String, payload: String) {
+		override suspend fun <T> sendToMultiple(connectionIds: Collection<Int>, message: Message<T>) {
 			connectionIds.forEach {
-				messages.add(Triple(it.toString(), type, payload))
+				messages.add(Triple(it.toString(), message.type, Json.asString(message.payload as Any)))
 			}
 		}
 
-		override suspend fun sendToAll(type: String, payload: String) {
-			messages.add(Triple("all", type, payload))
+		override suspend fun <T> sendToAll(message: Message<T>) {
+			messages.add(Triple("all", message.type, Json.asString(message.payload as Any)))
 		}
 
-		override suspend fun sendToAllExcept(excludedConnectionId: Int, type: String, payload: String) {
+		override suspend fun <T> sendToAllExcept(excludedConnectionId: Int, message: Message<T>) {
 			throw UnsupportedOperationException()
 		}
 

@@ -1,11 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.external.api.websocket
 
+import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
+
 interface MessageProducer {
-	suspend fun sendToAll(type: String, payload: String)
 
-	suspend fun sendToSingle(connectionId: Int, type: String, payload: String)
+	suspend fun <T> sendToAll(message: Message<T>)
 
-	suspend fun sendToMultiple(connectionIds: Collection<Int>, type: String, payload: String)
+	suspend fun <T> sendToSingle(connectionId: Int, message: Message<T>)
 
-	suspend fun sendToAllExcept(excludedConnectionId: Int, type: String, payload: String)
+	suspend fun <T> sendToMultiple(connectionIds: Collection<Int>, message: Message<T>)
+
+	suspend fun <T> sendToAllExcept(excludedConnectionId: Int, message: Message<T>)
+
 }

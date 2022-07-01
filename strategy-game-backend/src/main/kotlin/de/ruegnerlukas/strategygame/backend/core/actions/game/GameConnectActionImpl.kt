@@ -4,7 +4,6 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
@@ -20,7 +19,6 @@ import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
 import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
-import de.ruegnerlukas.strategygame.backend.shared.either.then
 import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class GameConnectActionImpl(
@@ -54,8 +52,7 @@ class GameConnectActionImpl(
 					)
 				}
 			}
-			.map { extTiles -> WorldStateMessage(extTiles) }
-			.then { msg -> messageProducer.sendWorldState(connectionId, msg) }
+			.map { extTiles -> messageProducer.sendWorldState(connectionId, extTiles) }
 	}
 
 }
