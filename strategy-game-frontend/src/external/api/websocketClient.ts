@@ -38,7 +38,7 @@ export class WebsocketClient {
         if (this.isOpen() && this.websocket) {
             const message: WebsocketMessage = {
                 type: type,
-                payload: JSON.stringify(payload, null, "   ")
+                payload: payload
             };
             this.websocket.send(JSON.stringify(message, null, "   "));
         }

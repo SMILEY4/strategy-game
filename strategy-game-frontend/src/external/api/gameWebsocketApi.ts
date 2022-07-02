@@ -18,7 +18,7 @@ export class GameWebsocketApi implements GameMessagingApi {
 
     open(gameId: string): Promise<void> {
         return this.websocketClient.open(`/api/game/${gameId}?token=${this.authProvider.getToken()}`, message => {
-            this.messageHandler.onMessage(message.type, JSON.parse(message.payload));
+            this.messageHandler.onMessage(message.type, message.payload);
         });
     }
 
