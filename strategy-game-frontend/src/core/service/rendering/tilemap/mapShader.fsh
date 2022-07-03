@@ -2,6 +2,7 @@
 precision mediump float;
 
 uniform vec2 u_tileMouseOver;
+uniform vec2 u_tileSelected;
 
 flat in vec3 v_tiledata;
 
@@ -24,10 +25,17 @@ bool isMouseOver() {
     return abs(u_tileMouseOver.x - qr.x) < 0.01 && abs(u_tileMouseOver.y - qr.y) < 0.01;
 }
 
+bool isSelected() {
+    vec2 qr = v_tiledata.xy;
+    return abs(u_tileSelected.x - qr.x) < 0.01 && abs(u_tileSelected.y - qr.y) < 0.01;
+}
+
 void main() {
     vec3 tileColor = calcTileColor();
-    if (isMouseOver()) {
+    if (isSelected()) {
         tileColor = tileColor * 0.5;
+    } else if (isMouseOver()) {
+        tileColor = tileColor * 0.75;
     }
     outColor = vec4(tileColor, 1.0);
 }

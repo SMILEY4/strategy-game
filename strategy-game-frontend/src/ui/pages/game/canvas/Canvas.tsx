@@ -1,5 +1,5 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
-import {AppConfig} from "../../../main";
+import {AppConfig} from "../../../../main";
 import "./canvas.css";
 
 
@@ -8,6 +8,7 @@ export function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const animationId = useRef<number>();
     const hasContext = useRef<boolean>(true);
+    const extRef  = useRef<any>(null)
 
     useEffect(() => {
         if (canvasRef.current) {
@@ -26,11 +27,13 @@ export function Canvas() {
     }, []);
 
     function handleContextLoss(e: any) {
+        console.log("Detected webgl-context loss")
         e.preventDefault();
         hasContext.current = false;
     }
 
     function handleContextRestored() {
+        console.log("Detected webgl-context restore")
         hasContext.current = true;
         canvasRef.current && initialize(canvasRef.current);
     }

@@ -15,4 +15,8 @@ export namespace Hooks {
         return GameStore.useState(state => state.turnState);
     }
 
+    export function useSelectedTile(): null | [number, number] {
+        return GameStore.useState(state => state.tileSelected);
+    }
+
 }

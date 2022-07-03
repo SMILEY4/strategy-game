@@ -16,4 +16,7 @@ export interface GameStateAccess {
     setTileMouseOver: (q: number, r: number) => void;
     clearTileMouseOver: () => void;
     getTileMouseOver: () => [number, number] | null;
+    setTileSelected: (q: number, r: number) => void;
+    clearTileSelected: () => void;
+    getTileSelected: () => [number, number] | null;
 }

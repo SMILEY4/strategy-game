@@ -1,33 +1,36 @@
 import {ReactElement, useEffect} from "react";
-import "./pageGame.css";
-import {Hooks} from "../../../core/hooks";
 import {useNavigate} from "react-router-dom";
-import {Canvas} from "./Canvas";
-import {GameUI} from "./GameUI";
+import {Hooks} from "../../../core/hooks";
+import {Canvas} from "./canvas/Canvas";
+import "./pageGame.css";
+import {MainSidebar} from "./ui/sidebar/MainSidebar";
 
 export function PageGame(): ReactElement {
 
-	const currentState = Hooks.useCurrentGameState()
-	const navigate = useNavigate();
+    const currentState = Hooks.useCurrentGameState();
+    const navigate = useNavigate();
 
-	useEffect(() => {
-		if (currentState === "idle") {
-			navigate("/home");
-		}
-	});
 
-	return (
-		<div className="game">
-			{(currentState === "loading") && (
-				<div>Loading...</div>
-			)}
-			{(currentState === "active") && (
-				<div className="game-container">
-					<Canvas/>
-					<GameUI/>
-				</div>
+    useEffect(() => {
+        if (currentState === "idle") {
+            navigate("/home");
+        }
+    });
 
-			)}
-		</div>
-	);
+    return (
+        <div className="game">
+            {(currentState === "loading") && (
+                <div>Loading...</div>
+            )}
+            {(currentState === "active") && (
+                <div className="game-container">
+                    <Canvas/>
+                    <div className="game-ui">
+                        <MainSidebar/>
+                    </div>
+                </div>
+
+            )}
+        </div>
+    );
 }

@@ -9,6 +9,7 @@ import {GameUpdateActionImpl} from "./core/actions/game/gameUpdateActionImpl";
 import {GameLobbyConnectActionImpl} from "./core/actions/gamelobby/gameLobbyConnectActionImpl";
 import {GameLobbyCreateActionImpl} from "./core/actions/gamelobby/gameLobbyCreateActionImpl";
 import {GameLobbyJoinActionImpl} from "./core/actions/gamelobby/gameLobbyJoinActionImpl";
+import {TurnAddOrderActionImpl} from "./core/actions/turn/turnAddOrderActionImpl";
 import {TurnSubmitActionImpl} from "./core/actions/turn/turnSubmitActionImpl";
 import {TurnUpdateWorldStateActionImpl} from "./core/actions/turn/turnUpdateWorldStateActionImpl";
 import {UserLoginActionImpl} from "./core/actions/user/userLoginActionImpl";
@@ -36,6 +37,7 @@ import {GameUpdateAction} from "./ports/provided/game/gameUpdateAction";
 import {GameLobbyConnectAction} from "./ports/provided/gamelobby/gameLobbyConnectAction";
 import {GameLobbyCreateAction} from "./ports/provided/gamelobby/gameLobbyCreateAction";
 import {GameLobbyJoinAction} from "./ports/provided/gamelobby/gameLobbyJoinAction";
+import {TurnAddOrderAction} from "./ports/provided/turn/turnAddOrderAction";
 import {TurnSubmitAction} from "./ports/provided/turn/turnSubmitAction";
 import {TurnUpdateWorldStateAction} from "./ports/provided/turn/turnUpdateWorldStateAction";
 import {UserLoginAction} from "./ports/provided/user/userLoginAction";
@@ -92,6 +94,7 @@ export namespace AppConfig {
 
     export const turnSubmit: TurnSubmitAction = new TurnSubmitActionImpl(gameStateAccess, msgApiGame);
     export const turnUpdateWorldState: TurnUpdateWorldStateAction = new TurnUpdateWorldStateActionImpl(gameStateAccess, worldStateAccess);
+    export const turnAddOrder: TurnAddOrderAction = new TurnAddOrderActionImpl(gameStateAccess);
 
     export const gameInit: GameInitAction = new GameInitActionImpl(canvasHandle, renderer);
     export const gameUpdate: GameUpdateAction = new GameUpdateActionImpl(renderer);

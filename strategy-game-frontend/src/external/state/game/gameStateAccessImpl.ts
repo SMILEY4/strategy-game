@@ -61,4 +61,16 @@ export class GameStateAccessImpl implements GameStateAccess {
         return GameStore.useState.getState().tileMouseOver;
     }
 
+    setTileSelected(q: number, r: number): void {
+        GameStore.useState.getState().setTileSelected([q, r]);
+    }
+
+    clearTileSelected(): void {
+        GameStore.useState.getState().setTileSelected(null);
+    }
+
+    getTileSelected(): [number, number] | null {
+        return GameStore.useState.getState().tileSelected;
+    }
+
 }

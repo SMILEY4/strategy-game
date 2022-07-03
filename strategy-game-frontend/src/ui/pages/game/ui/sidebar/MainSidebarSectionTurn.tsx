@@ -1,14 +1,13 @@
-import {Game} from "../../../core/game";
-import {Hooks} from "../../../core/hooks";
-import {AppConfig} from "../../../main";
-import "./gameUI.css";
+import {ReactElement} from "react";
+import {Hooks} from "../../../../../core/hooks";
+import {AppConfig} from "../../../../../main";
 
-export function GameUI() {
+export function MainSidebarSectionTurn(): ReactElement {
 
     const turnState = Hooks.useTurnState();
 
     return (
-        <div className="game-ui">
+        <div className="content-area turn-area">
             <button onClick={submitTurn} disabled={turnState === "submitted"}>Submit Turn</button>
             <button onClick={debugLooseContext}>Loose WebGL context</button>
             <button onClick={debugRestoreContext}>Restore WebGL context</button>
@@ -26,4 +25,5 @@ export function GameUI() {
     function debugRestoreContext() {
         AppConfig.debugRestoreWebglContext();
     }
+
 }
