@@ -1,0 +1,8 @@
+.dialog {
+	background-color: #9c5353;
+	border: 1px solid black;
+	position:         absolute;
+	z-index:          10;
+	cursor:           move;
+
+}

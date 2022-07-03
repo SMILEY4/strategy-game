@@ -1,7 +1,7 @@
 import {ReactElement, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {Hooks} from "../../../core/hooks";
-import {Canvas} from "./canvas/Canvas";
+import {DialogStack} from "../../components/DialogStack";
 import "./pageGame.css";
 import {MainSidebar} from "./ui/sidebar/MainSidebar";
 
@@ -24,10 +24,11 @@ export function PageGame(): ReactElement {
             )}
             {(currentState === "active") && (
                 <div className="game-container">
-                    <Canvas/>
+                    {/*<Canvas/>*/}
                     <div className="game-ui">
                         <MainSidebar/>
                     </div>
+                    <DialogStack/>
                 </div>
 
             )}
