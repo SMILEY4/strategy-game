@@ -9,7 +9,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity.Companion.PlaceMarkerOrderData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.messages.WorldStateMessage
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
@@ -34,7 +33,6 @@ import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
 import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 import de.ruegnerlukas.strategygame.backend.shared.either.onSuccess
-import de.ruegnerlukas.strategygame.backend.shared.either.then
 import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class TurnEndActionImpl(
@@ -105,8 +103,7 @@ class TurnEndActionImpl(
 					)
 				}
 			}
-			.map { extTiles -> WorldStateMessage(extTiles) }
-			.then { msg -> messageProducer.sendWorldState(connectionId, msg) }
+			.map { extTiles -> messageProducer.sendWorldState(connectionId, extTiles) }
 	}
 
 }

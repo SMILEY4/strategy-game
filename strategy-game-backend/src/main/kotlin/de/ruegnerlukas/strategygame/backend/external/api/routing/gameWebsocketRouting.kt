@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
+import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
@@ -60,7 +61,7 @@ fun Route.gameWebsocketRoutes(
 						try {
 							for (frame in incoming) {
 								when (frame) {
-									is Frame.Text -> WebsocketUtils.buildMessage(userService, connectionId, call, frame).let {
+									is Frame.Text -> WebsocketUtils.buildMessage<Message<*>>(userService, connectionId, call, frame).let {
 										messageHandler.onMessage(it)
 									}
 									else -> logger.warn("Unknown frame-type: ${frame.frameType}")
