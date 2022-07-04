@@ -1,8 +1,23 @@
 .dialog {
 	background-color: #9c5353;
-	border: 1px solid black;
+	border:           1px solid black;
 	position:         absolute;
 	z-index:          10;
 	cursor:           move;
 
+	min-width: 100px;
+	min-height: 100px;
+}
+
+
+.dialog > * {
+	cursor: default;
+}
+
+
+.dialog-resizer {
+	position: absolute;
+	bottom:   0;
+	right:    0;
+	cursor:   se-resize;
 }

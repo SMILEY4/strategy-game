@@ -1,60 +1,70 @@
-import React, {ReactElement, useEffect, useRef, useState} from "react";
+import React, {ReactElement, useEffect, useState} from "react";
 import {DialogData} from "../../external/state/ui/uiStore";
 import "./dialog.css";
+import {useDraggable} from "./useDraggable";
+import {useStateRef} from "./useStateRef";
 
 
 export function Dialog(props: { data: DialogData }): ReactElement {
 
-    const dialogRef = useRef<HTMLDivElement>(null);
     const [posX, setPosX] = useState(props.data.initX);
     const [posY, setPosY] = useState(props.data.initY);
-    const relX = useRef(0);
-    const relY = useRef(0);
+    const [width, widthRef, setWidth] = useStateRef(props.data.width);
+    const [height, heightRef, setHeight] = useStateRef(props.data.height);
+
+    const [dialogDragRef, onDragMouseDown] = useDraggable(canDragDialog, onDragDialog);
+    const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResizeDialog, onResizeDialog);
+
 
     useEffect(() => {
-        setPosX(props.data.initX)
-        setPosY(props.data.initY)
-    }, [props.data])
+        setPosX(props.data.initX);
+        setPosY(props.data.initY);
+        setWidth(props.data.width);
+        setHeight(props.data.height);
+    }, [props.data]);
 
-    function onMouseDown(e: any) {
-        if (e.button === 0 && e.target.className == "dialog" && dialogRef && dialogRef.current) {
-            relX.current = (e.pageX - dialogRef.current.getBoundingClientRect().x);
-            relY.current = (e.pageY - dialogRef.current.getBoundingClientRect().y);
-            document.addEventListener("mousemove", onMouseMove);
-            document.addEventListener("mouseup", onMouseUp);
-            e.stopPropagation();
-            e.preventDefault();
-        }
+
+    function canDragDialog(e: any): boolean {
+        return e.button === 0 && e.target.className == "dialog";
     }
 
-    function onMouseUp(e: any) {
-        document.removeEventListener("mousemove", onMouseMove);
-        document.removeEventListener("mouseup", onMouseUp);
-        e.stopPropagation();
-        e.preventDefault();
+
+    function onDragDialog(x: number, y: number, dx: number, dy: number) {
+        setPosX(x);
+        setPosY(y);
     }
 
-    function onMouseMove(e: any) {
-        setPosX(e.pageX - relX.current);
-        setPosY(e.pageY - relY.current);
-        e.stopPropagation();
-        e.preventDefault();
+    function canResizeDialog(e: any): boolean {
+        return e.button === 0 && e.target.className == "dialog-resizer";
+    }
+
+
+    function onResizeDialog(x: number, y: number, dx: number, dy: number) {
+        setWidth(widthRef.current + dx);
+        setHeight(heightRef.current + dy);
     }
 
     return (
         <div
-            ref={dialogRef}
             className={"dialog"}
             style={{
                 left: posX + "px",
                 top: posY + "px",
-                width: props.data.width,
-                height: props.data.height
+                width: width + "px",
+                height: height + "px"
             }}
-            onMouseDown={onMouseDown}
+            ref={dialogDragRef}
+            onMouseDown={onDragMouseDown}
         >
             <button>X</button>
             {props.data.content}
+            <div
+                className={"dialog-resizer"}
+                ref={dialogResizeRef}
+                onMouseDown={onResizeMouseDown}
+            >
+                //
+            </div>
         </div>
     );
 
