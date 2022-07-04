@@ -16,24 +16,7 @@ export namespace UiStore {
     }
 
     const initialStateValues: StateValues = {
-        dialogs: [
-            {
-                id: "test-1",
-                initX: 100,
-                initY: 100,
-                width: 400,
-                height: 200,
-                content: "Hello Content 1"
-            },
-            {
-                id: "test-2",
-                initX: 500,
-                initY: 200,
-                width: 300,
-                height: 300,
-                content: "Hello Content 2"
-            }
-        ]
+        dialogs: []
     };
 
     interface StateActions {
@@ -41,6 +24,8 @@ export namespace UiStore {
         removeDialog: (id: string) => void,
         setAllPositions: (x: number, y: number) => void,
         bringToFront: (id: string) => void
+        setContent: (id: string, content: any) => void
+        changeId: (prevId: string, newId: string) => void
     }
 
     function stateActions(set: SetState<State>): StateActions {
@@ -59,6 +44,30 @@ export namespace UiStore {
                     ...state.dialogs.filter(e => e.id !== id),
                     ...state.dialogs.filter(e => e.id === id)
                 ]
+            })),
+            setContent: (id: string, content: any) => set((state: State) => ({
+                dialogs: state.dialogs.map(e => {
+                    if (e.id === id) {
+                        return {
+                            ...e,
+                            content: content
+                        };
+                    } else {
+                        return e;
+                    }
+                })
+            })),
+            changeId: (prevId: string, newId: string) => set((state: State) => ({
+                dialogs: state.dialogs.map(e => {
+                    if (e.id === prevId) {
+                        return {
+                            ...e,
+                            id: newId
+                        };
+                    } else {
+                        return e;
+                    }
+                })
             })),
         };
     }

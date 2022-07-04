@@ -12,6 +12,7 @@ export function useDraggable(
     const lastY = useRef(0);
 
     function onMouseDown(e: MouseEvent<any>): void {
+            console.log("mouse down", mouseDownFilter(e))
         if (draggableRef && draggableRef.current && mouseDownFilter(e)) {
             relX.current = (e.pageX - draggableRef.current.getBoundingClientRect().x);
             relY.current = (e.pageY - draggableRef.current.getBoundingClientRect().y);
@@ -32,6 +33,7 @@ export function useDraggable(
     }
 
     function onMouseMove(e: any) {
+        console.log("mouse move")
         const x = e.pageX - relX.current;
         const y = e.pageY - relY.current;
         const dx = x - lastX.current;

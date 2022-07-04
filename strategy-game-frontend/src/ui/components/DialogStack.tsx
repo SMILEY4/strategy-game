@@ -10,7 +10,7 @@ export function DialogStack(props: {}): ReactElement {
     return (
         <div className="dialog-stack">
             {dialogs.map(data => (
-                <Dialog data={data}/>
+                <Dialog key={data.id} data={data}/>
             ))}
         </div>
     );
