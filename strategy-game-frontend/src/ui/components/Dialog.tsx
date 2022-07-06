@@ -14,8 +14,8 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     const [width, widthRef, setWidth] = useStateRef(props.data.width);
     const [height, heightRef, setHeight] = useStateRef(props.data.height);
 
-    const closeDialog = UiStore.useState().removeDialog
-    const changeId = UiStore.useState().changeId
+    const closeDialog = UiStore.useState().removeDialog;
+    const changeId = UiStore.useState().changeId;
     const [dialogDragRef, onDragMouseDown] = useDraggable(canDragDialog, onDragDialog);
     const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResizeDialog, onResizeDialog);
 
@@ -39,7 +39,7 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     }
 
     function canResizeDialog(e: any): boolean {
-        return e.button === 0
+        return e.button === 0;
     }
 
 
@@ -49,11 +49,11 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     }
 
     function onRequestClose() {
-        closeDialog(props.data.id)
+        closeDialog(props.data.id);
     }
 
     function onRequestPin() {
-        changeId(props.data.id, crypto.randomUUID())
+        changeId(props.data.id, crypto.randomUUID());
     }
 
     return (
