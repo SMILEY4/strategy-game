@@ -29,7 +29,8 @@ export function Dialog(props: { data: DialogData }): ReactElement {
 
 
     function canDragDialog(e: any): boolean {
-        return e.button === 0 && e.target.className == "dialog";
+        return e.button === 0
+            && (e.target.className == "dialog" || e.target.className == "dialog-header" || e.target.className == "dialog-title");
     }
 
 
@@ -68,10 +69,17 @@ export function Dialog(props: { data: DialogData }): ReactElement {
             ref={dialogDragRef}
             onMouseDown={onDragMouseDown}
         >
-            <div>{props.data.id}</div>
-            <button onClick={onRequestClose}><AiOutlineClose/></button>
-            <button onClick={onRequestPin}><BsPinAngle/></button>
-            {props.data.content}
+
+            <div className="dialog-header">
+                <div className="dialog-title">{props.data.id}</div>
+                <div className="dialog-pin" onClick={onRequestPin}><BsPinAngle size={20}/></div>
+                <div className="dialog-close" onClick={onRequestClose}><AiOutlineClose size={20}/></div>
+            </div>
+
+            <div className="dialog-body">
+                {props.data.content}
+            </div>
+
             <div
                 className={"dialog-resizer"}
                 ref={dialogResizeRef}
@@ -79,6 +87,7 @@ export function Dialog(props: { data: DialogData }): ReactElement {
             >
                 <BsTextareaResize/>
             </div>
+
         </div>
     );
 
