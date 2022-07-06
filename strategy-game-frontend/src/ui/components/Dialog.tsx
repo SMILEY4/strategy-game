@@ -3,6 +3,7 @@ import {AiOutlineClose} from "react-icons/ai";
 import {BsPinAngle, BsTextareaResize} from "react-icons/bs";
 import {DialogData, UiStore} from "../../external/state/ui/uiStore";
 import "./dialog.css";
+import {useDialogManager} from "./useDialogManager";
 import {useDraggable} from "./useDraggable";
 import {useStateRef} from "./useStateRef";
 
@@ -15,7 +16,7 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     const [height, heightRef, setHeight] = useStateRef(props.data.height);
 
     const closeDialog = UiStore.useState().removeDialog;
-    const changeId = UiStore.useState().changeId;
+    const pinDialog = useDialogManager().pinDialog;
     const [dialogDragRef, onDragMouseDown] = useDraggable(canDragDialog, onDragDialog);
     const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResizeDialog, onResizeDialog);
 
@@ -50,11 +51,11 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     }
 
     function onRequestClose() {
-        closeDialog(props.data.id);
+        closeDialog(props.data.windowId);
     }
 
     function onRequestPin() {
-        changeId(props.data.id, crypto.randomUUID());
+        pinDialog(props.data.windowId);
     }
 
     return (
@@ -71,8 +72,10 @@ export function Dialog(props: { data: DialogData }): ReactElement {
         >
 
             <div className="dialog-header">
-                <div className="dialog-title">{props.data.id}</div>
-                <div className="dialog-pin" onClick={onRequestPin}><BsPinAngle size={20}/></div>
+                <div className="dialog-title">{props.data.menuId}</div>
+                {props.data.enablePin && (
+                    <div className="dialog-pin" onClick={onRequestPin}><BsPinAngle size={20}/></div>
+                )}
                 <div className="dialog-close" onClick={onRequestClose}><AiOutlineClose size={20}/></div>
             </div>
 

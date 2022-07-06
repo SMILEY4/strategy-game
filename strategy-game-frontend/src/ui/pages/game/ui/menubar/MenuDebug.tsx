@@ -1,6 +1,5 @@
 import {ReactElement} from "react";
 import {CgDebug} from "react-icons/cg";
-import {Hooks} from "../../../../../core/hooks";
 import {UiStore} from "../../../../../external/state/ui/uiStore";
 import {AppConfig} from "../../../../../main";
 import {useDialogManager} from "../../../../components/useDialogManager";
@@ -25,9 +24,7 @@ export function CategoryDebug(props: {}): ReactElement {
 
 export function MenuDebug(props: {}): ReactElement {
 
-    const turnState = Hooks.useTurnState();
     const setDialogPositions = UiStore.useState().setAllPositions;
-
 
     return (
         <div>
@@ -42,10 +39,6 @@ export function MenuDebug(props: {}): ReactElement {
         const x = 300;
         const y = 300;
         setDialogPositions(x, y);
-    }
-
-    function submitTurn() {
-        AppConfig.turnSubmit.perform();
     }
 
     function debugLooseContext() {

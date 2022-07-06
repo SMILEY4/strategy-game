@@ -7,24 +7,31 @@ export function useDialogManager() {
     const removeDialog = UiStore.useState().removeDialog;
     const bringToFront = UiStore.useState().bringToFront;
     const setContent = UiStore.useState().setContent;
-    const changeId = UiStore.useState().changeId;
+    const updateDialog = UiStore.useState().updateDialog;
 
-    function pinDialog(id: string) {
-        changeId(id, crypto.randomUUID());
+    function pinDialog(windowId: string) {
+        updateDialog(windowId, dialog => ({
+            ...dialog,
+            menuId: crypto.randomUUID(),
+            enablePin: false
+        }))
     }
 
-    function open(id: string, x: number, y: number, width: number, height: number, content: any) {
-        const exists = dialogs.findIndex(e => e.id === id) !== -1;
-        if (exists) {
-            setContent(id, content);
-            focus(id);
+    function open(menuId: string, x: number, y: number, width: number, height: number, content: any) {
+        const dialog = dialogs.find(e => e.menuId === menuId);
+        console.log("existing", dialog)
+        if (dialog) {
+            setContent(dialog.windowId, content);
+            focus(dialog.windowId);
         } else {
             addDialog({
-                id: id,
+                windowId: crypto.randomUUID(),
+                menuId: menuId,
                 initX: x,
                 initY: y,
                 width: width,
                 height: height,
+                enablePin: true,
                 content: content
             });
         }
