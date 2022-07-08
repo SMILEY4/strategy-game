@@ -3,23 +3,27 @@ import "./button.css"
 
 /**
  * Simple button-component for TESTING purposes
+ * style copied from crusader kings 3:
+ * https://web.archive.org/web/20211124025533/https://www.crusaderkings.com/en/pc#about
  */
 export function Button(props: {
 	children: any,
-	style: "default" | "info" | "warn" | "error",
-	disabled: boolean,
 }): ReactElement {
 
 	return (
-		<div className={"button button-" + props.style + (props.disabled ? " button-disabled" : "")} onClick={handleClick}>
-			{props.children}
+		<div className="button">
+			<div className="button__content">
+				{props.children}
+			</div>
+			<div className="button__background">
+				<div className="button__border">
+					<div className={"button__border__top"}/>
+					<div className={"button__border__bottom"}/>
+					<div className={"button__border__left"}/>
+					<div className={"button__border__right"}/>
+				</div>
+			</div>
 		</div>
 	)
-
-	function handleClick() {
-		if (!props.disabled && props.onAction) {
-			props.onAction()
-		}
-	}
 
 }
