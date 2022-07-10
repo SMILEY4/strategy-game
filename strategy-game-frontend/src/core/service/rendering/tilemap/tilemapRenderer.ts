@@ -1,4 +1,4 @@
-import {Tile} from "../../../../ports/models/tile";
+import {Tile} from "../../../../models/tile";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
@@ -49,12 +49,16 @@ export class TilemapRenderer {
 				{
 					name: "u_tileMouseOver",
 					type: ShaderUniformType.VEC2
+				},
+				{
+					name: "u_tileSelected",
+					type: ShaderUniformType.VEC2
 				}
 			]
 		});
 	}
 
-	public render(camera: Camera, map: Tile[], tileMouseOver: [number, number]) {
+	public render(camera: Camera, map: Tile[], tileMouseOver: [number, number], tileSelected: [number, number]) {
 		this.batchRenderer.begin(camera);
 		map.forEach(tile => {
 			const vertices = TilemapRenderer.buildVertexData(tile);
@@ -64,7 +68,8 @@ export class TilemapRenderer {
 		this.batchRenderer.end(this.shader, {
 			attributes: ["in_position", "in_tiledata"],
 			uniforms: {
-				"u_tileMouseOver": tileMouseOver
+				"u_tileMouseOver": tileMouseOver,
+				"u_tileSelected": tileSelected
 			}
 		});
 	}

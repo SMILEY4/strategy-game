@@ -1,5 +1,5 @@
-import {TurnSubmitActionImpl} from "../src/core/actions/turn/turnSubmitActionImpl";
-import {TurnUpdateWorldStateActionImpl} from "../src/core/actions/turn/turnUpdateWorldStateActionImpl";
+import {TurnSubmitAction} from "../src/core/actions/turn/turnSubmitAction";
+import {TurnUpdateWorldStateAction} from "../src/core/actions/turn/turnUpdateWorldStateAction";
 import {mockGameMessagingApi, mockGameStateAccess, mockWorldStateAccess} from "./mocks";
 
 describe("turn", () => {
@@ -7,7 +7,7 @@ describe("turn", () => {
     test("submit turn", async () => {
         const gameStateAccess = mockGameStateAccess();
         const gameMsgApi = mockGameMessagingApi();
-        const submit = new TurnSubmitActionImpl(gameStateAccess, gameMsgApi);
+        const submit = new TurnSubmitAction(gameStateAccess, gameMsgApi);
         gameStateAccess["getCurrentState"] = jest.fn().mockReturnValue("active");
         gameStateAccess["getCommands"] = jest.fn().mockReturnValue([
             {q: 1, r: 2},
@@ -26,7 +26,7 @@ describe("turn", () => {
     test("update world state (e.g. at end of turn)", async () => {
         const gameStateAccess = mockGameStateAccess();
         const worldStateAccess = mockWorldStateAccess();
-        const update = new TurnUpdateWorldStateActionImpl(gameStateAccess, worldStateAccess);
+        const update = new TurnUpdateWorldStateAction(gameStateAccess, worldStateAccess);
         gameStateAccess["getCurrentState"] = jest.fn().mockReturnValue("loading");
         // when
         update.perform(

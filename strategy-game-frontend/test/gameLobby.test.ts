@@ -1,6 +1,6 @@
-import {GameLobbyConnectActionImpl} from "../src/core/actions/gamelobby/gameLobbyConnectActionImpl";
-import {GameLobbyCreateActionImpl} from "../src/core/actions/gamelobby/gameLobbyCreateActionImpl";
-import {GameLobbyJoinActionImpl} from "../src/core/actions/gamelobby/gameLobbyJoinActionImpl";
+import {GameLobbyConnectAction} from "../src/core/actions/gamelobby/gameLobbyConnectAction";
+import {GameLobbyCreateAction} from "../src/core/actions/gamelobby/gameLobbyCreateAction";
+import {GameLobbyJoinAction} from "../src/core/actions/gamelobby/gameLobbyJoinAction";
 import {mockGameApi, mockGameMessagingApi, mockGameStateAccess} from "./mocks";
 
 describe("game lobby", () => {
@@ -8,7 +8,7 @@ describe("game lobby", () => {
     test("create new lobby", async () => {
         const gameApi = mockGameApi();
         gameApi["create"] = jest.fn().mockReturnValue(Promise.resolve("my-game-id"));
-        const create = new GameLobbyCreateActionImpl(gameApi);
+        const create = new GameLobbyCreateAction(gameApi);
         // when
         const result = create.perform();
         // then
@@ -17,7 +17,7 @@ describe("game lobby", () => {
 
     test("join existing lobby", async () => {
         const gameApi = mockGameApi();
-        const join = new GameLobbyJoinActionImpl(gameApi);
+        const join = new GameLobbyJoinAction(gameApi);
         // when
         const result = join.perform("my-game-id");
         // then
@@ -27,7 +27,7 @@ describe("game lobby", () => {
     test("connect to existing lobby", async () => {
         const msgGameApi = mockGameMessagingApi();
         const gameStateAccess = mockGameStateAccess();
-        const connect = new GameLobbyConnectActionImpl(msgGameApi, gameStateAccess);
+        const connect = new GameLobbyConnectAction(msgGameApi, gameStateAccess);
         // when
         const result = connect.perform("my-game-id");
         // then

@@ -1,6 +1,6 @@
 import create, {SetState} from "zustand";
-import {CameraState} from "../../../ports/models/cameraState";
-import {CommandPlaceMarker} from "../../../ports/models/commandPlaceMarker";
+import {CameraState} from "../../../models/cameraState";
+import {CommandPlaceMarker} from "../../../models/commandPlaceMarker";
 
 export namespace GameStore {
 
@@ -10,7 +10,8 @@ export namespace GameStore {
         turnState: "active" | "submitted",
         playerCommands: CommandPlaceMarker[],
         camera: CameraState,
-        tileMouseOver: null | [number, number]
+        tileMouseOver: null | [number, number],
+        tileSelected: null | [number, number]
     }
 
     const initialStateValues: StateValues = {
@@ -23,7 +24,8 @@ export namespace GameStore {
             y: 0,
             zoom: 1
         },
-        tileMouseOver: null
+        tileMouseOver: null,
+        tileSelected: null
     };
 
     interface StateActions {
@@ -34,6 +36,7 @@ export namespace GameStore {
         clearCommands: () => void;
         moveCamera: (dx: number, dy: number) => void;
         setTileMouseOver: (pos: [number, number] | null) => void;
+        setTileSelected: (pos: [number, number] | null) => void;
         zoomCamera: (d: number) => void;
     }
 
@@ -64,6 +67,9 @@ export namespace GameStore {
             })),
             setTileMouseOver: (pos: [number, number] | null) => set(() => ({
                 tileMouseOver: pos
+            })),
+            setTileSelected: (pos: [number, number] | null) => set(() => ({
+                tileSelected: pos
             })),
             zoomCamera: (d: number) => set(prev => ({
                 camera: {
