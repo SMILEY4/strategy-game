@@ -1,19 +1,11 @@
 import {ReactElement} from "react";
 import {GrStatusUnknown} from "react-icons/gr";
-import {UiStore} from "../../../../external/state/ui/uiStore";
+import {Hooks} from "../../../../core/hooks";
 
 export function CategoryOther(): ReactElement {
-
-    const open = UiStore.useOpenDialog();
-
-    function onAction() {
-        open("topbar.category.menu", 10, 50, 320, 650, (
-            <MenuOther/>
-        ));
-    }
-
+    const open = Hooks.useOpenPrimaryMenuDialog(<MenuOther/>);
     return (
-        <div onClick={onAction}>
+        <div onClick={open}>
             <GrStatusUnknown/>
         </div>
     );
@@ -21,11 +13,9 @@ export function CategoryOther(): ReactElement {
 
 
 export function MenuOther(): ReactElement {
-
     return (
         <div>
             <h3>Misc-Menu</h3>
         </div>
     );
-
 }

@@ -3,9 +3,7 @@ import {Hooks} from "../../../../core/hooks";
 import {AppConfig} from "../../../../main";
 
 export function NextTurnAction(): ReactElement {
-
     const turnState = Hooks.useTurnState();
-
     return (
         <div
             onClick={submitTurn}

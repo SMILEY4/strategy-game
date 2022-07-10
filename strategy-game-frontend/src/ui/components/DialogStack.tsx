@@ -1,12 +1,10 @@
 import {ReactElement} from "react";
-import {UiStore} from "../../external/state/ui/uiStore";
+import {Hooks} from "../../core/hooks";
 import {Dialog} from "./Dialog";
-import "./dialogStack.css"
+import "./dialogStack.css";
 
 export function DialogStack(): ReactElement {
-
-    const dialogs = UiStore.useState(state => state.dialogs);
-
+    const dialogs = Hooks.useDialogs();
     return (
         <div className="dialog-stack">
             {dialogs.map(data => (

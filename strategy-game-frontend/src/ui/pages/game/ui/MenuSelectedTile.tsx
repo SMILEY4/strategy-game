@@ -4,9 +4,7 @@ import {AppConfig} from "../../../../main";
 
 
 export function MenuSelectedTile(): ReactElement {
-
     const selectedTile = Hooks.useSelectedTile();
-
     return (
         <div>
             <h3>Selected Tile</h3>

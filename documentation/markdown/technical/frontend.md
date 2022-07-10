@@ -26,6 +26,37 @@ title: Frontend Documentation
 
 The frontend-architecture is loosly based on "[Hexagonal Architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))" or "Clean Architecture".
 
+![Alt text](https://g.gravizo.com/g?
+  digraph G {
+    subgraph cluster_0 {
+        label = "CORE";
+        actions;
+        hooks;
+        rendering;
+    }
+    subgraph cluster_1 {
+      label = "EXTERNAL"
+        clients;
+        state;
+        stateAccess;
+    }
+    subgraph cluster_3 {
+      label = "UI"
+      uiComponents;
+    }
+    rendering -> stateAccess;
+    actions -> stateAccess;
+    actions -> clients;
+    hooks -> stateAccess [dir=both];
+    hooks -> actions;
+    clients -> actions;
+    stateAccess -> state;
+    uiComponents -> hooks [dir=both];
+    uiComponents -> actions;
+  }
+)
+
+
 ## File/Directory Structure
 
 - *main.tsx* - the entry point of the application. Starts the (React-) app and configures other components
@@ -35,6 +66,9 @@ The frontend-architecture is loosly based on "[Hexagonal Architecture](https://e
   - */required* - interfaces required by the core and implemented by external services
 
 - */core* - contains the core frontend logic of the game, completely independent from the ui
+  - structured into individual "actions", one action represents one function/feature/entity
+  - provides react-hooks for ui, hooks either work directly on state or call actions
+
 - */external* - external services, e.g. global state, clients, ...
 - */ui* - contains the react-ui without specific game-logic
 

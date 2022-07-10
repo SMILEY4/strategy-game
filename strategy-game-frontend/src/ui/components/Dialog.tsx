@@ -1,7 +1,8 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import {AiOutlineClose} from "react-icons/ai";
 import {BsPinAngle, BsTextareaResize} from "react-icons/bs";
-import {DialogData, UiStore} from "../../external/state/ui/uiStore";
+import {Hooks} from "../../core/hooks";
+import {DialogData} from "../../external/state/ui/uiStore";
 import "./dialog.css";
 import {useDraggable} from "./useDraggable";
 import {useStateRef} from "./useStateRef";
@@ -14,8 +15,8 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     const [width, widthRef, setWidth] = useStateRef(props.data.width);
     const [height, heightRef, setHeight] = useStateRef(props.data.height);
 
-    const closeDialog = UiStore.useState().removeDialog;
-    const updateDialog = UiStore.useState().updateDialog;
+    const closeDialog = Hooks.useCloseDialog(props.data.windowId);
+    const pinDialog = Hooks.usePinDialog(props.data.windowId);
 
     const [dialogDragRef, onDragMouseDown] = useDraggable(canDragDialog, onDragDialog);
     const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResizeDialog, onResizeDialog);
@@ -50,18 +51,6 @@ export function Dialog(props: { data: DialogData }): ReactElement {
         setHeight(heightRef.current + dy);
     }
 
-    function onRequestClose() {
-        closeDialog(props.data.windowId);
-    }
-
-    function onRequestPin() {
-        updateDialog(props.data.windowId, dialog => ({
-            ...dialog,
-            menuId: crypto.randomUUID(),
-            enablePin: false
-        }))
-    }
-
     return (
         <div
             className={"dialog"}
@@ -78,9 +67,9 @@ export function Dialog(props: { data: DialogData }): ReactElement {
             <div className="dialog-header">
                 <div className="dialog-title">{props.data.menuId}</div>
                 {props.data.enablePin && (
-                    <div className="dialog-pin" onClick={onRequestPin}><BsPinAngle size={20}/></div>
+                    <div className="dialog-pin" onClick={pinDialog}><BsPinAngle size={20}/></div>
                 )}
-                <div className="dialog-close" onClick={onRequestClose}><AiOutlineClose size={20}/></div>
+                <div className="dialog-close" onClick={closeDialog}><AiOutlineClose size={20}/></div>
             </div>
 
             <div className="dialog-body">

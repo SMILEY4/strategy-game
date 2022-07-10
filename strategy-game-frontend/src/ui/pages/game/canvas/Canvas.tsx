@@ -8,7 +8,6 @@ export function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const animationId = useRef<number>();
     const hasContext = useRef<boolean>(true);
-    const extRef  = useRef<any>(null)
 
     useEffect(() => {
         if (canvasRef.current) {
