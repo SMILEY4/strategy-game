@@ -80,4 +80,52 @@ export namespace UiStore {
         ...stateActions(set)
     }));
 
+    export function openDialog(menuId: string, x: number, y: number, width: number, height: number, content: any) {
+        const dialogs = UiStore.useState.getState().dialogs;
+        const addDialog = UiStore.useState.getState().addDialog;
+        const bringToFront = UiStore.useState.getState().bringToFront;
+        const setContent = UiStore.useState.getState().setContent;
+        const dialog = dialogs.find(e => e.menuId === menuId);
+        if (dialog) {
+            setContent(dialog.windowId, content);
+            bringToFront(dialog.windowId);
+        } else {
+            addDialog({
+                windowId: crypto.randomUUID(),
+                menuId: menuId,
+                initX: x,
+                initY: y,
+                width: width,
+                height: height,
+                enablePin: true,
+                content: content
+            });
+        }
+    }
+
+    export function useOpenDialog() {
+        const dialogs = UiStore.useState(state => state.dialogs);
+        const addDialog = UiStore.useState().addDialog;
+        const bringToFront = UiStore.useState().bringToFront;
+        const setContent = UiStore.useState().setContent;
+        return (menuId: string, x: number, y: number, width: number, height: number, content: any) => {
+            const dialog = dialogs.find(e => e.menuId === menuId);
+            if (dialog) {
+                setContent(dialog.windowId, content);
+                bringToFront(dialog.windowId);
+            } else {
+                addDialog({
+                    windowId: crypto.randomUUID(),
+                    menuId: menuId,
+                    initX: x,
+                    initY: y,
+                    width: width,
+                    height: height,
+                    enablePin: true,
+                    content: content
+                });
+            }
+        };
+    }
+
 }

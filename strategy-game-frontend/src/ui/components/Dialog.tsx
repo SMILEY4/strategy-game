@@ -3,7 +3,6 @@ import {AiOutlineClose} from "react-icons/ai";
 import {BsPinAngle, BsTextareaResize} from "react-icons/bs";
 import {DialogData, UiStore} from "../../external/state/ui/uiStore";
 import "./dialog.css";
-import {useDialogManager} from "./useDialogManager";
 import {useDraggable} from "./useDraggable";
 import {useStateRef} from "./useStateRef";
 
@@ -16,7 +15,8 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     const [height, heightRef, setHeight] = useStateRef(props.data.height);
 
     const closeDialog = UiStore.useState().removeDialog;
-    const pinDialog = useDialogManager().pinDialog;
+    const updateDialog = UiStore.useState().updateDialog;
+
     const [dialogDragRef, onDragMouseDown] = useDraggable(canDragDialog, onDragDialog);
     const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResizeDialog, onResizeDialog);
 
@@ -55,7 +55,11 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     }
 
     function onRequestPin() {
-        pinDialog(props.data.windowId);
+        updateDialog(props.data.windowId, dialog => ({
+            ...dialog,
+            menuId: crypto.randomUUID(),
+            enablePin: false
+        }))
     }
 
     return (

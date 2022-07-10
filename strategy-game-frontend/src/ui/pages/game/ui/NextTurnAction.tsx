@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
-import {Hooks} from "../../../../../core/hooks";
-import {AppConfig} from "../../../../../main";
+import {Hooks} from "../../../../core/hooks";
+import {AppConfig} from "../../../../main";
 
 export function NextTurnAction(): ReactElement {
 

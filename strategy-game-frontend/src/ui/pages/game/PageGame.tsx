@@ -3,7 +3,8 @@ import {useNavigate} from "react-router-dom";
 import {Hooks} from "../../../core/hooks";
 import {DialogStack} from "../../components/DialogStack";
 import "./pageGame.css";
-import {GameMenuBar} from "./ui/menubar/GameMenuBar";
+import {Canvas} from "./canvas/Canvas";
+import {GameMenuBar} from "./ui/GameMenuBar";
 
 export function PageGame(): ReactElement {
 
@@ -24,7 +25,7 @@ export function PageGame(): ReactElement {
             )}
             {(currentState === "active") && (
                 <div className="game-container">
-                    {/*<Canvas/>*/}
+                    <Canvas/>
                     <div className="game-ui">
                         <GameMenuBar/>
                     </div>

@@ -1,12 +1,11 @@
 import {ReactElement} from "react";
 import {CgDebug} from "react-icons/cg";
-import {UiStore} from "../../../../../external/state/ui/uiStore";
-import {AppConfig} from "../../../../../main";
-import {useDialogManager} from "../../../../components/useDialogManager";
+import {UiStore} from "../../../../external/state/ui/uiStore";
+import {AppConfig} from "../../../../main";
 
-export function CategoryDebug(props: {}): ReactElement {
+export function CategoryDebug(): ReactElement {
 
-    const open = useDialogManager().open;
+    const open = UiStore.useOpenDialog();
 
     function onAction() {
         open("topbar.category.menu", 10, 50, 320, 650, (
@@ -22,7 +21,7 @@ export function CategoryDebug(props: {}): ReactElement {
 }
 
 
-export function MenuDebug(props: {}): ReactElement {
+export function MenuDebug(): ReactElement {
 
     const setDialogPositions = UiStore.useState().setAllPositions;
 
