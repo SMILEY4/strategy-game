@@ -1,4 +1,4 @@
-.button {
+.ck3button {
 	font-family:    garamond-premier-pro, serif;
 	position:       relative;
 	font-weight:    500;
@@ -19,7 +19,7 @@
 }
 
 
-.button__content {
+.ck3button__content {
 
 	position:        relative;
 	z-index:         2;
@@ -28,12 +28,12 @@
 	align-items:     center;
 	justify-content: center;
 
-	/*button__primary .button__content*/
+	/*button__primary .ck3button__content*/
 	font-weight:     400;
 	color:           #fefaea
 }
 
-.button__background {
+.ck3button__background {
 	background: transparent;
 	position:   absolute;
 	top:        0;
@@ -42,21 +42,21 @@
 	right:      0;
 }
 
-.button__background::after {
+.ck3button__background::after {
 	content:          "";
 	position:         absolute;
 	top:              50%;
 	left:             50%;
 	width:            200%;
 	height:           200%;
-	background-image: url("./public/background.bmp");
+	background-image: url("../../../../../public/background.bmp");
 	background-size:  cover;
 	mix-blend-mode:   multiply;
 	transform:        translate(-60%, -40%);
 	transition:       transform .8s ease-out, opacity .4s ease-out;
 }
 
-.button__border {
+.ck3button__border {
 	position:       absolute;
 	top:            0;
 	left:           0;
@@ -67,29 +67,29 @@
 	z-index:        2;
 }
 
-.button__border__top,
-.button__border__bottom,
-.button__border__left,
-.button__border__right {
+.ck3button__border__top,
+.ck3button__border__bottom,
+.ck3button__border__left,
+.ck3button__border__right {
 	position:         absolute;
-	background-image: url("./public/border.bmp");
+	background-image: url("../../../../../public/border.bmp");
 	background-size:  87.5625rem;
 	width:            100vw;
 	height:           4px;
 }
 
-.button__border__bottom {
+.ck3button__border__bottom {
 	bottom: 0;
 	transform: scaleY(-1);
 }
 
 
-.button__border__left {
+.ck3button__border__left {
 	transform: rotate(90deg) scaleY(-1);
 	transform-origin: top left;
 }
 
-.button__border__right {
+.ck3button__border__right {
 	right: 0;
 	transform: rotate(-90deg) scaleY(-1);
 	transform-origin: top right;

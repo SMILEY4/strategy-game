@@ -1,17 +1,20 @@
-import {Button} from "../ui/components/button/Button";
 import {ComponentMeta, ComponentStory} from "@storybook/react";
+import {Button} from "../ui/components/specific/test/Button";
 
 export default {
 	title: "Button",
 	component: Button,
-	argTypes: {
-		onAction: {action: "action"}
-	}
 } as ComponentMeta<typeof Button>
 
 const Template: ComponentStory<typeof Button> = (args) => (
-	<Button>Click Me</Button>
+	<Button disabled={args.disabled} onAction={() => {
+		return new Promise(resolve => setTimeout(resolve, 1000))
+	}}>
+		Click Me
+	</Button>
 )
 
 export const DefaultButton = Template.bind({})
-DefaultButton.args = {}
+DefaultButton.args = {
+	disabled: false
+}

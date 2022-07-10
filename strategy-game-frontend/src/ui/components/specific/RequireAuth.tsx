@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {Hooks} from "../../core/hooks";
+import {Hooks} from "../../../core/hooks";
 
 export function RequireAuth(props: { loginUrl: string, children: any }) {
 
