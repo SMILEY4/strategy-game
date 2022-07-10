@@ -1,5 +1,5 @@
-import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
-import {WorldStateAccess} from "../../../ports/required/state/worldStateAccess";
+import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
+import {WorldStateAccess} from "../../../external/state/world/worldStateAccess";
 import {GameCanvasHandle} from "../gameCanvasHandle";
 import {MarkerRenderer} from "./markers/markerRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
@@ -39,10 +39,16 @@ export class Renderer {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const camera = this.createCamera();
-
         const map = this.worldStateAccess.getTiles();
         const tileMouseOver = this.gameStateAccess.getTileMouseOver();
-        this.tilemapRenderer.render(camera, map, tileMouseOver ? tileMouseOver : [9999, 9999]);
+        const tileSelected = this.gameStateAccess.getTileSelected();
+
+        this.tilemapRenderer.render(
+            camera,
+            map,
+            tileMouseOver ? tileMouseOver : [9999, 9999],
+            tileSelected ? tileSelected : [9999, 9999]
+        );
 
         this.markerRenderer.render(camera, this.worldStateAccess.getMarkers(), this.gameStateAccess.getCommands());
     }

@@ -1,5 +1,5 @@
-import {CommandPlaceMarker} from "../../../../ports/models/commandPlaceMarker";
-import {Marker} from "../../../../ports/models/marker";
+import {CommandPlaceMarker} from "../../../../models/commandPlaceMarker";
+import {Marker} from "../../../../models/marker";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";

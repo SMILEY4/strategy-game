@@ -115,7 +115,7 @@ class AwsCognitoService(
 	override fun configureAuthentication(config: JWTAuthenticationProvider.Config) {
 		config.realm = "strategy-game"
 		config.verifier(jwkProvider(), jwkIssuer()) {
-			acceptLeeway(3)
+			acceptLeeway(20)
 		}
 		config.validate { credential -> validateJwt(credential) }
 	}

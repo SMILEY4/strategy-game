@@ -1,8 +1,0 @@
-.game-ui {
-	padding:        0.5em;
-	pointer-events: none;
-}
-
-.game-ui > * {
-	pointer-events: all;
-}
