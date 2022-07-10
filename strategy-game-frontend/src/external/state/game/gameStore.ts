@@ -1,6 +1,6 @@
 import create, {SetState} from "zustand";
-import {CameraState} from "../../../ports/models/cameraState";
-import {CommandPlaceMarker} from "../../../ports/models/commandPlaceMarker";
+import {CameraState} from "../../../models/cameraState";
+import {CommandPlaceMarker} from "../../../models/commandPlaceMarker";
 
 export namespace GameStore {
 

@@ -1,5 +1,5 @@
-import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
-import {WorldStateAccess} from "../../../ports/required/state/worldStateAccess";
+import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
+import {WorldStateAccess} from "../../../external/state/world/worldStateAccess";
 import {GameCanvasHandle} from "../gameCanvasHandle";
 import {MarkerRenderer} from "./markers/markerRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";

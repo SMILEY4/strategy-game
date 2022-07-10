@@ -1,55 +1,33 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {GameDisposeActionImpl} from "./core/actions/game/gameDisposeActionImpl";
-import {GameInitActionImpl} from "./core/actions/game/gameInitActionImpl";
-import {GameInputClickActionImpl} from "./core/actions/game/gameInputClickActionImpl";
-import {GameInputMouseMoveActionImpl} from "./core/actions/game/gameInputMouseMoveActionImpl";
-import {GameInputMouseScrollActionImpl} from "./core/actions/game/gameInputMouseScrollActionImpl";
-import {GameUpdateActionImpl} from "./core/actions/game/gameUpdateActionImpl";
-import {GameLobbyConnectActionImpl} from "./core/actions/gamelobby/gameLobbyConnectActionImpl";
-import {GameLobbyCreateActionImpl} from "./core/actions/gamelobby/gameLobbyCreateActionImpl";
-import {GameLobbyJoinActionImpl} from "./core/actions/gamelobby/gameLobbyJoinActionImpl";
-import {TurnAddOrderActionImpl} from "./core/actions/turn/turnAddOrderActionImpl";
-import {TurnSubmitActionImpl} from "./core/actions/turn/turnSubmitActionImpl";
-import {TurnUpdateWorldStateActionImpl} from "./core/actions/turn/turnUpdateWorldStateActionImpl";
-import {UserLoginActionImpl} from "./core/actions/user/userLoginActionImpl";
-import {UserLogOutActionImpl} from "./core/actions/user/userLogOutActionImpl";
-import {UserSignUpActionImpl} from "./core/actions/user/userSignUpActionImpl";
+import {GameDisposeAction} from "./core/actions/game/gameDisposeAction";
+import {GameInitAction} from "./core/actions/game/gameInitAction";
+import {GameInputClickAction} from "./core/actions/game/gameInputClickAction";
+import {GameInputMouseMoveAction} from "./core/actions/game/gameInputMouseMoveAction";
+import {GameInputMouseScrollAction} from "./core/actions/game/gameInputMouseScrollAction";
+import {GameUpdateAction} from "./core/actions/game/gameUpdateAction";
+import {GameLobbyConnectAction} from "./core/actions/gamelobby/gameLobbyConnectAction";
+import {GameLobbyCreateAction} from "./core/actions/gamelobby/gameLobbyCreateAction";
+import {GameLobbyJoinAction} from "./core/actions/gamelobby/gameLobbyJoinAction";
+import {TurnAddOrderAction} from "./core/actions/turn/turnAddOrderActionImpl";
+import {TurnSubmitAction} from "./core/actions/turn/turnSubmitAction";
+import {TurnUpdateWorldStateAction} from "./core/actions/turn/turnUpdateWorldStateAction";
+import {UserLoginAction} from "./core/actions/user/userLoginAction";
+import {UserLogOutAction} from "./core/actions/user/userLogOutAction";
+import {UserSignUpAction} from "./core/actions/user/userSignUpAction";
 import {GameCanvasHandle} from "./core/service/gameCanvasHandle";
 import {Renderer} from "./core/service/rendering/renderer";
 import {TilePicker} from "./core/service/tilemap/tilePicker";
-import {GameApiClient} from "./external/api/gameApiClient";
-import {GameWebsocketApi} from "./external/api/gameWebsocketApi";
+import {GameApi} from "./external/api/gameApi";
+import {GameMessagingApi} from "./external/api/gameMessagingApi";
 import {HttpClient} from "./external/api/httpClient";
 import {MessageHandler} from "./external/api/messageHandler";
-import {UserApiClient} from "./external/api/userApiClient";
+import {UserApi} from "./external/api/userApi";
 import {WebsocketClient} from "./external/api/websocketClient";
-import {GameStateAccessImpl} from "./external/state/game/gameStateAccessImpl";
-import {AuthProviderImpl} from "./external/state/user/authProviderImpl";
-import {UserStateAccessImpl} from "./external/state/user/userStateAccessImpl";
-import {WorldStateAccessImpl} from "./external/state/world/worldStateAccessImpl";
-import {GameDisposeAction} from "./ports/provided/game/gameDisposeAction";
-import {GameInitAction} from "./ports/provided/game/gameInitAction";
-import {GameInputClickAction} from "./ports/provided/game/gameInputClickAction";
-import {GameInputMouseMoveAction} from "./ports/provided/game/gameInputMouseMoveAction";
-import {GameInputMouseScrollAction} from "./ports/provided/game/gameInputMouseScrollAction";
-import {GameUpdateAction} from "./ports/provided/game/gameUpdateAction";
-import {GameLobbyConnectAction} from "./ports/provided/gamelobby/gameLobbyConnectAction";
-import {GameLobbyCreateAction} from "./ports/provided/gamelobby/gameLobbyCreateAction";
-import {GameLobbyJoinAction} from "./ports/provided/gamelobby/gameLobbyJoinAction";
-import {TurnAddOrderAction} from "./ports/provided/turn/turnAddOrderAction";
-import {TurnSubmitAction} from "./ports/provided/turn/turnSubmitAction";
-import {TurnUpdateWorldStateAction} from "./ports/provided/turn/turnUpdateWorldStateAction";
-import {UserLoginAction} from "./ports/provided/user/userLoginAction";
-import {UserLogOutAction} from "./ports/provided/user/userLogOutAction";
-import {UserSignUpAction} from "./ports/provided/user/userSignUpAction";
-import {GameApi} from "./ports/required/api/gameApi";
-import {GameMessagingApi} from "./ports/required/api/gameMessagingApi";
-import {UserApi} from "./ports/required/api/userApi";
-import {AuthProvider} from "./ports/required/state/authProvider";
-import {GameStateAccess} from "./ports/required/state/gameStateAccess";
-import {UserStateAccess} from "./ports/required/state/userStateAccess";
-import {WorldStateAccess} from "./ports/required/state/worldStateAccess";
+import {GameStateAccess} from "./external/state/game/gameStateAccess";
+import {AuthProvider} from "./external/state/user/authProvider";
+import {UserStateAccess} from "./external/state/user/userStateAccess";
+import {WorldStateAccess} from "./external/state/world/worldStateAccess";
 import {App} from "./ui/App";
 import "./ui/index.css";
 
@@ -67,10 +45,10 @@ const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 
 export namespace AppConfig {
 
-    const authProvider: AuthProvider = new AuthProviderImpl();
-    const gameStateAccess: GameStateAccess = new GameStateAccessImpl();
-    const userStateAccess: UserStateAccess = new UserStateAccessImpl();
-    const worldStateAccess: WorldStateAccess = new WorldStateAccessImpl();
+    const authProvider: AuthProvider = new AuthProvider();
+    const gameStateAccess: GameStateAccess = new GameStateAccess();
+    const userStateAccess: UserStateAccess = new UserStateAccess();
+    const worldStateAccess: WorldStateAccess = new WorldStateAccess();
 
     const canvasHandle: GameCanvasHandle = new GameCanvasHandle();
     const renderer: Renderer = new Renderer(canvasHandle, gameStateAccess, worldStateAccess);
@@ -80,28 +58,28 @@ export namespace AppConfig {
     const wsClient = new WebsocketClient(API_WS_BASE_URL);
     const msgHandler = new MessageHandler();
 
-    export const apiGame: GameApi = new GameApiClient(httpClient, authProvider);
-    export const apiUser: UserApi = new UserApiClient(httpClient, authProvider);
-    export const msgApiGame: GameMessagingApi = new GameWebsocketApi(wsClient, authProvider, msgHandler);
+    export const apiGame: GameApi = new GameApi(httpClient, authProvider);
+    export const apiUser: UserApi = new UserApi(httpClient, authProvider);
+    export const msgApiGame: GameMessagingApi = new GameMessagingApi(wsClient, authProvider, msgHandler);
 
-    export const userSignUp: UserSignUpAction = new UserSignUpActionImpl(apiUser);
-    export const userLogin: UserLoginAction = new UserLoginActionImpl(apiUser, userStateAccess);
-    export const userLogOut: UserLogOutAction = new UserLogOutActionImpl(userStateAccess);
+    export const userSignUp: UserSignUpAction = new UserSignUpAction(apiUser);
+    export const userLogin: UserLoginAction = new UserLoginAction(apiUser, userStateAccess);
+    export const userLogOut: UserLogOutAction = new UserLogOutAction(userStateAccess);
 
-    export const gameLobbyCreate: GameLobbyCreateAction = new GameLobbyCreateActionImpl(apiGame);
-    export const gameLobbyJoin: GameLobbyJoinAction = new GameLobbyJoinActionImpl(apiGame);
-    export const gameLobbyConnect: GameLobbyConnectAction = new GameLobbyConnectActionImpl(msgApiGame, gameStateAccess);
+    export const gameLobbyCreate: GameLobbyCreateAction = new GameLobbyCreateAction(apiGame);
+    export const gameLobbyJoin: GameLobbyJoinAction = new GameLobbyJoinAction(apiGame);
+    export const gameLobbyConnect: GameLobbyConnectAction = new GameLobbyConnectAction(msgApiGame, gameStateAccess);
 
-    export const turnSubmit: TurnSubmitAction = new TurnSubmitActionImpl(gameStateAccess, msgApiGame);
-    export const turnUpdateWorldState: TurnUpdateWorldStateAction = new TurnUpdateWorldStateActionImpl(gameStateAccess, worldStateAccess);
-    export const turnAddOrder: TurnAddOrderAction = new TurnAddOrderActionImpl(gameStateAccess);
+    export const turnSubmit: TurnSubmitAction = new TurnSubmitAction(gameStateAccess, msgApiGame);
+    export const turnUpdateWorldState: TurnUpdateWorldStateAction = new TurnUpdateWorldStateAction(gameStateAccess, worldStateAccess);
+    export const turnAddOrder: TurnAddOrderAction = new TurnAddOrderAction(gameStateAccess);
 
-    export const gameInit: GameInitAction = new GameInitActionImpl(canvasHandle, renderer);
-    export const gameUpdate: GameUpdateAction = new GameUpdateActionImpl(renderer);
-    export const gameDispose: GameDisposeAction = new GameDisposeActionImpl(canvasHandle, renderer);
-    export const gameInputClick: GameInputClickAction = new GameInputClickActionImpl(tilePicker, gameStateAccess);
-    export const gameInputMouseMove: GameInputMouseMoveAction = new GameInputMouseMoveActionImpl(tilePicker, gameStateAccess);
-    export const gameInputMouseScroll: GameInputMouseScrollAction = new GameInputMouseScrollActionImpl(gameStateAccess);
+    export const gameInit: GameInitAction = new GameInitAction(canvasHandle, renderer);
+    export const gameUpdate: GameUpdateAction = new GameUpdateAction(renderer);
+    export const gameDispose: GameDisposeAction = new GameDisposeAction(canvasHandle, renderer);
+    export const gameInputClick: GameInputClickAction = new GameInputClickAction(tilePicker, gameStateAccess);
+    export const gameInputMouseMove: GameInputMouseMoveAction = new GameInputMouseMoveAction(tilePicker, gameStateAccess);
+    export const gameInputMouseScroll: GameInputMouseScrollAction = new GameInputMouseScrollAction(gameStateAccess);
 
 
     let extContext: any = null;

@@ -1,13 +1,13 @@
-import {UserLoginActionImpl} from "../src/core/actions/user/userLoginActionImpl";
-import {UserLogOutActionImpl} from "../src/core/actions/user/userLogOutActionImpl";
-import {UserSignUpActionImpl} from "../src/core/actions/user/userSignUpActionImpl";
+import {UserLoginAction} from "../src/core/actions/user/userLoginAction";
+import {UserLogOutAction} from "../src/core/actions/user/userLogOutAction";
+import {UserSignUpAction} from "../src/core/actions/user/userSignUpAction";
 import {mockUserApi, mockUserStateAccess} from "./mocks";
 
 describe("user authentication", () => {
 
     test("sign up", async () => {
         const userApi = mockUserApi();
-        const signUp = new UserSignUpActionImpl(userApi);
+        const signUp = new UserSignUpAction(userApi);
         // when
         const result = signUp.perform("test@mail.com", "pass", "user")
         // then
@@ -22,7 +22,7 @@ describe("user authentication", () => {
             refreshToken: "my-refresh-token"
         }))
         const userStateAccess = mockUserStateAccess();
-        const login = new UserLoginActionImpl(userApi, userStateAccess)
+        const login = new UserLoginAction(userApi, userStateAccess)
         // when
         const result = login.perform("test@mail.com", "pass")
         // then
@@ -32,7 +32,7 @@ describe("user authentication", () => {
 
     test("log out", async () => {
         const userStateAccess = mockUserStateAccess();
-        const logOut = new UserLogOutActionImpl(userStateAccess)
+        const logOut = new UserLogOutAction(userStateAccess)
         // when
         logOut.perform()
         // then

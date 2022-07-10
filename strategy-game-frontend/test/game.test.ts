@@ -1,4 +1,4 @@
-import {GameInputClickActionImpl} from "../src/core/actions/game/gameInputClickActionImpl";
+import {GameInputClickAction} from "../src/core/actions/game/gameInputClickAction";
 import {mockGameStateAccess, mockTilePicker} from "./mocks";
 
 describe("game", () => {
@@ -6,7 +6,7 @@ describe("game", () => {
     test("click on tile", async () => {
         const tilePicker = mockTilePicker();
         const gameStateAccess = mockGameStateAccess();
-        const click = new GameInputClickActionImpl(tilePicker, gameStateAccess);
+        const click = new GameInputClickAction(tilePicker, gameStateAccess);
         gameStateAccess["getTurnState"] = jest.fn().mockReturnValue("active");
         tilePicker["tileAt"] = jest.fn().mockReturnValue({
             q: 3,
@@ -25,7 +25,7 @@ describe("game", () => {
     test("click on nothing", async () => {
         const tilePicker = mockTilePicker();
         const gameStateAccess = mockGameStateAccess();
-        const click = new GameInputClickActionImpl(tilePicker, gameStateAccess);
+        const click = new GameInputClickAction(tilePicker, gameStateAccess);
         gameStateAccess["getTurnState"] = jest.fn().mockReturnValue("active");
         tilePicker["tileAt"] = jest.fn().mockReturnValue(null);
         // when
@@ -37,7 +37,7 @@ describe("game", () => {
     test("click on tile after submitting turn", async () => {
         const tilePicker = mockTilePicker();
         const gameStateAccess = mockGameStateAccess();
-        const click = new GameInputClickActionImpl(tilePicker, gameStateAccess);
+        const click = new GameInputClickAction(tilePicker, gameStateAccess);
         gameStateAccess["getTurnState"] = jest.fn().mockReturnValue("submitted");
         tilePicker["tileAt"] = jest.fn().mockReturnValue({
             q: 3,

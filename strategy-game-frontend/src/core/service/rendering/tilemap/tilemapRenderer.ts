@@ -1,4 +1,4 @@
-import {Tile} from "../../../../ports/models/tile";
+import {Tile} from "../../../../models/tile";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";

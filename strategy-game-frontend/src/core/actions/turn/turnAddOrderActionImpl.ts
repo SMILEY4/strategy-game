@@ -1,8 +1,7 @@
-import {CommandPlaceMarker} from "../../../ports/models/commandPlaceMarker";
-import {TurnAddOrderAction} from "../../../ports/provided/turn/turnAddOrderAction";
-import {GameStateAccess} from "../../../ports/required/state/gameStateAccess";
+import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
+import {CommandPlaceMarker} from "../../../models/commandPlaceMarker";
 
-export class TurnAddOrderActionImpl implements TurnAddOrderAction {
+export class TurnAddOrderAction {
 
     private readonly gameStateAccess: GameStateAccess;
 
