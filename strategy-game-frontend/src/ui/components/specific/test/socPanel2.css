@@ -1,0 +1,43 @@
+.soc-panel2 {
+	position:        relative;
+	overflow:        hidden;
+	padding:         50px;
+
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+
+	background:      radial-gradient(#782027 10%, #251121 80%);
+}
+
+
+.soc-panel2__background {
+	position:         absolute;
+	top:              0;
+	left:             0;
+	width:            600%;
+	height:           600%;
+	background-image: url("../../../../../public/grundge.jpg");
+	background-size:  cover;
+	mix-blend-mode:   multiply;
+	opacity:          80%;
+	pointer-events:   none;
+}
+
+
+.soc-panel2__border {
+	position: absolute;
+	top:      3px;
+	bottom:   3px;
+	left:     3px;
+	right:    3px;
+
+	opacity: 0.5;
+
+	/*
+	9-patches-border:
+	https://developer.mozilla.org/en-US/docs/Web/CSS/border-image
+	*/
+	border: solid 30px;
+	border-image: url("../../../../../public/border.png") 80 round stretch;
+}

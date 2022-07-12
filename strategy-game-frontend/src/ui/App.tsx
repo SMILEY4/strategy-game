@@ -3,7 +3,7 @@ import {PageHome} from "./pages/home/PageHome";
 import {PageGame} from "./pages/game/PageGame";
 import {PageNotFound} from "./pages/notfound/PageNotFound";
 import {PageLogin} from "./pages/login/PageLogin";
-import {RequireAuth} from "./components/RequireAuth";
+import {RequireAuth} from "./components/specific/RequireAuth";
 import {PageSignUp} from "./pages/signup/PageSignUp";
 
 export function App() {
