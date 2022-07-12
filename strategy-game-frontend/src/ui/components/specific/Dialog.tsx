@@ -1,11 +1,11 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import {AiOutlineClose} from "react-icons/ai";
 import {BsPinAngle, BsTextareaResize} from "react-icons/bs";
-import {Hooks} from "../../core/hooks";
-import {DialogData} from "../../external/state/ui/uiStore";
+import {Hooks} from "../../../core/hooks";
+import {DialogData} from "../../../external/state/ui/uiStore";
 import "./dialog.css";
-import {useDraggable} from "./useDraggable";
-import {useStateRef} from "./useStateRef";
+import {useDraggable} from "../primitives/useDraggable";
+import {useStateRef} from "../primitives/useStateRef";
 
 
 export function Dialog(props: { data: DialogData }): ReactElement {

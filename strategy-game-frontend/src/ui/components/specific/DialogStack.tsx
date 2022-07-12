@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {Hooks} from "../../core/hooks";
+import {Hooks} from "../../../core/hooks";
 import {Dialog} from "./Dialog";
 import "./dialogStack.css";
 

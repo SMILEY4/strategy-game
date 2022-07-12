@@ -1,7 +1,7 @@
 import {ReactElement, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {Hooks} from "../../../core/hooks";
-import {DialogStack} from "../../components/DialogStack";
+import {DialogStack} from "../../components/specific/DialogStack";
 import "./pageGame.css";
 import {Canvas} from "./canvas/Canvas";
 import {GameMenuBar} from "./ui/GameMenuBar";
