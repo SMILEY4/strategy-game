@@ -2,9 +2,8 @@ package de.ruegnerlukas.strategygame.backend.ports.models.world
 
 
 enum class TileType {
-	PLAINS,
+	LAND,
 	WATER,
-	MOUNTAINS
 }
 
 

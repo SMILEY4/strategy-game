@@ -25,7 +25,7 @@ export class MessageHandler {
         return payload.tiles.map(tile => ({
             q: tile.q,
             r: tile.r,
-            tileId: ["PLAINS", "WATER", "MOUNTAINS"].indexOf(tile.data.type)
+            tileId: ["WATER", "LAND"].indexOf(tile.data.type)
         }));
     }
 

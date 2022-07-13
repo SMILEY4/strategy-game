@@ -20,7 +20,7 @@ class GameQueryImpl(private val database: Database) : GameQuery {
 				database
 					.startQuery("game.query") {
 						SQL
-							.select(GameTbl.id, GameTbl.turn)
+							.select(GameTbl.id, GameTbl.turn, GameTbl.seed)
 							.from(GameTbl)
 							.where(GameTbl.id.isEqual(placeholder("gameId")))
 					}
@@ -31,7 +31,8 @@ class GameQueryImpl(private val database: Database) : GameQuery {
 					.getOne {
 						GameEntity(
 							id = it.getString(GameTbl.id),
-							turn = it.getInt(GameTbl.turn)
+							turn = it.getInt(GameTbl.turn),
+							seed = it.getInt(GameTbl.seed)
 						)
 					}
 			}

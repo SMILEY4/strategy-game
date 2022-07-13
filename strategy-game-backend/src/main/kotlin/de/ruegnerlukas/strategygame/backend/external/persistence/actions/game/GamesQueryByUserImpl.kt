@@ -19,7 +19,7 @@ class GamesQueryByUserImpl(private val database: Database) : GamesQueryByUser {
 			database
 				.startQuery("game.query.by_user_id") {
 					SQL
-						.select(GameTbl.id, GameTbl.turn)
+						.select(GameTbl.id, GameTbl.turn, GameTbl.seed)
 						.from(GameTbl, PlayerTbl)
 						.where(PlayerTbl.gameId.isEqual(GameTbl.id) and PlayerTbl.userId.isEqual(placeholder("userId")))
 				}
@@ -30,7 +30,8 @@ class GamesQueryByUserImpl(private val database: Database) : GamesQueryByUser {
 				.getMultipleOrNone {
 					GameEntity(
 						id = it.getString(GameTbl.id),
-						turn = it.getInt(GameTbl.turn)
+						turn = it.getInt(GameTbl.turn),
+						seed = it.getInt(GameTbl.seed)
 					)
 				}
 		}
