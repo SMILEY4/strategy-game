@@ -1,14 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker
 
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.ports.errors.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
 
 interface MarkerInsertMultiple {
 
 	/**
 	 * Insert the given markers
 	 */
-	suspend fun execute(markers: List<MarkerEntity>): Either<Unit, ApplicationError>
+	suspend fun execute(markers: List<MarkerEntity>): Either<DatabaseError, Unit>
 
 }

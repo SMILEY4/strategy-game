@@ -1,10 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core
 
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
+import arrow.core.getOrHandle
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
@@ -20,8 +21,6 @@ import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
-import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
@@ -47,19 +46,19 @@ class GameTest : StringSpec({
 		val result = createGame.perform(userId)
 		result shouldBeOk true
 
-		val gameId = result.getOrThrow()
+		val gameId = result.getOrHandle { throw Exception(it.toString()) }
 		gameId shouldHaveMinLength 1
 
 		val game = GameQueryImpl(database).execute(gameId)
 		game shouldBeOk true
-		game.getOrThrow().let {
+		game.getOrHandle { throw Exception(it.toString()) }.let {
 			it.id shouldBe gameId
 			it.turn shouldBe 0
 		}
 
 		val players = PlayerQueryByGameImpl(database).execute(gameId)
 		players shouldBeOk true
-		players.getOrThrow().let {
+		players.getOrHandle { throw Exception(it.toString()) }.let {
 			it shouldHaveSize 1
 			it[0].id shouldHaveMinLength 1
 			it[0].userId shouldBe userId
@@ -88,14 +87,14 @@ class GameTest : StringSpec({
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
 
-		val gameId = createGame.perform(userId1).getOrThrow()
+		val gameId = createGame.perform(userId1).getOrHandle { throw Exception(it.toString()) }
 
 		val result = joinGame.perform(userId2, gameId)
 		result shouldBeOk true
 
 		val players = PlayerQueryByGameImpl(database).execute(gameId)
 		players shouldBeOk true
-		players.getOrThrow().let {
+		players.getOrHandle { throw Exception(it.toString()) }.let {
 			it shouldHaveSize 2
 			it.find { p -> p.userId == userId1 }!!.let { p ->
 				p.id shouldHaveMinLength 1
@@ -133,17 +132,17 @@ class GameTest : StringSpec({
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
 
-		val gameId = createGame.perform(userId1).getOrThrow()
+		val gameId = createGame.perform(userId1).getOrHandle { throw Exception(it.toString()) }
 
 		joinGame.perform(userId2, gameId)
-		val prevPlayerIds = PlayerQueryByGameImpl(database).execute(gameId).getOrThrow().map { it.id }
+		val prevPlayerIds = PlayerQueryByGameImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.map { it.id }
 
 		val result = joinGame.perform(userId2, gameId)
 		result shouldBeOk true
 
 		val players = PlayerQueryByGameImpl(database).execute(gameId)
 		players shouldBeOk true
-		players.getOrThrow().let {
+		players.getOrHandle { throw Exception(it.toString()) }.let {
 			it shouldHaveSize 2
 			it.map { p -> p.id } shouldContainExactlyInAnyOrder prevPlayerIds
 			it.find { p -> p.userId == userId1 }!!.let { p ->
@@ -191,7 +190,7 @@ class GameTest : StringSpec({
 
 		val result = listGames.perform(userId)
 		result shouldBeOk true
-		result.getOrThrow() shouldHaveSize 0
+		result.getOrHandle { throw Exception(it.toString()) } shouldHaveSize 0
 	}
 
 	"list games of a user that is player, expect success and list of game-ids" {
@@ -217,15 +216,15 @@ class GameTest : StringSpec({
 		val userId2 = "test-user-2"
 		val userId3 = "test-user-3"
 
-		val gameId1 = createGame.perform(userId1).getOrThrow()
-		val gameId2 = createGame.perform(userId2).getOrThrow()
-		val gameId3 = createGame.perform(userId3).getOrThrow()
+		val gameId1 = createGame.perform(userId1).getOrHandle { throw Exception(it.toString()) }
+		val gameId2 = createGame.perform(userId2).getOrHandle { throw Exception(it.toString()) }
+		val gameId3 = createGame.perform(userId3).getOrHandle { throw Exception(it.toString()) }
 		joinGame.perform(userId1, gameId2)
 		joinGame.perform(userId1, gameId3)
 
 		val result = listGames.perform(userId1)
 		result shouldBeOk true
-		result.getOrThrow().let {
+		result.getOrHandle { throw Exception(it.toString()) }.let {
 			it shouldHaveSize 3
 			it shouldContainExactlyInAnyOrder listOf(gameId1, gameId2, gameId3)
 		}
@@ -246,7 +245,7 @@ class GameTest : StringSpec({
 		)
 
 		val userId = "test-user"
-		val gameId = createGame.perform(userId).getOrThrow()
+		val gameId = createGame.perform(userId).getOrHandle { throw Exception(it.toString()) }
 
 		val result = requestConnect.perform(userId, gameId)
 		result shouldBeOk true
@@ -268,7 +267,7 @@ class GameTest : StringSpec({
 
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
-		val gameId = createGame.perform(userId1).getOrThrow()
+		val gameId = createGame.perform(userId1).getOrHandle { throw Exception(it.toString()) }
 
 		val result = requestConnect.perform(userId2, gameId)
 		result shouldBeError NotParticipantError
@@ -298,7 +297,7 @@ class GameTest : StringSpec({
 
 		val userId = "test-user"
 		val connectionId = 42
-		val gameId = createGame.perform(userId).getOrThrow()
+		val gameId = createGame.perform(userId).getOrHandle { throw Exception(it.toString()) }
 		connect.perform(userId, gameId, connectionId) shouldBeOk true
 
 		val result = requestConnect.perform(userId, gameId)

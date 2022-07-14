@@ -1,18 +1,18 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import arrow.core.Either
 import io.kotest.matchers.shouldBe
 
 
-infix fun <V, E> Either<V, E>.shouldBeOk(success: Boolean) {
-	isOk() shouldBe success
+infix fun <L, R> Either<L, R>.shouldBeOk(success: Boolean) {
+	isRight() shouldBe success
 }
 
-infix fun <V, E> Either<V, E>.shouldBeError(error: Boolean) {
-	isError() shouldBe error
+infix fun <L, R> Either<L, R>.shouldBeError(error: Boolean) {
+	isLeft() shouldBe error
 }
 
-infix fun <V, E> Either<V, E>.shouldBeError(error: E) {
-	isError() shouldBe true
-	error shouldBe error
+infix fun <L, R> Either<L, R>.shouldBeError(error: L) {
+	isLeft() shouldBe true
+	(this as Either.Left<L>).value shouldBe error
 }

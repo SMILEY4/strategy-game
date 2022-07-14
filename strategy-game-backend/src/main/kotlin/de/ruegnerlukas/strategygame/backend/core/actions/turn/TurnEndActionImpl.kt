@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
+import arrow.core.Either
+import arrow.core.computations.either
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
@@ -27,13 +29,6 @@ import de.ruegnerlukas.strategygame.backend.shared.Base64
 import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
-import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.either.map
-import de.ruegnerlukas.strategygame.backend.shared.either.mapError
-import de.ruegnerlukas.strategygame.backend.shared.either.onSuccess
-import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class TurnEndActionImpl(
 	private val queryGame: GameQuery,
@@ -47,24 +42,28 @@ class TurnEndActionImpl(
 	private val messageProducer: GameMessageProducer
 ) : TurnEndAction, Logging {
 
-	override suspend fun perform(gameId: String): Either<Unit, ApplicationError> {
+	override suspend fun perform(gameId: String): Either<ApplicationError, Unit> {
 		log().info("End turn of game $gameId")
-		return Either.start()
-			.flatMap { queryGame.execute(gameId) }
-			.mapError(EntityNotFoundError) { GameNotFoundError }
-			.thenOrErr { game -> updateState(game) }
-			.thenOrErr { game -> sendMessages(game) }
-			.discardValue()
+		return either {
+			val game = queryGame.execute(gameId).mapLeft { e ->
+				when (e) {
+					is EntityNotFoundError -> GameNotFoundError
+					else -> e
+				}
+			}.bind()
+			updateState(game).bind()
+			sendMessages(game).bind()
+		}
 	}
 
 
-	private suspend fun updateState(game: GameEntity): Either<Unit, ApplicationError> {
-		return Either.start()
-			.flatMap { queryOrders.execute(game.id, game.turn) }
-			.thenOrErr { orders -> insertMarkers.execute(orders.map { mapOrderToMarker(it) }) }
-			.thenOrErr { updatePlayerState.execute(game.id, PlayerEntity.STATE_PLAYING) }
-			.thenOrErr { updateGameTurn.execute(game.id, game.turn + 1) }
-			.discardValue()
+	private suspend fun updateState(game: GameEntity): Either<ApplicationError, Unit> {
+		return either {
+			val orders = queryOrders.execute(game.id, game.turn).bind()
+			insertMarkers.execute(orders.map { mapOrderToMarker(it) }).bind()
+			updatePlayerState.execute(game.id, PlayerEntity.STATE_PLAYING).bind()
+			updateGameTurn.execute(game.id, game.turn + 1)
+		}
 	}
 
 	private fun mapOrderToMarker(order: OrderEntity): MarkerEntity {
@@ -76,34 +75,29 @@ class TurnEndActionImpl(
 		)
 	}
 
-	private suspend fun sendMessages(game: GameEntity): Either<Unit, ApplicationError> {
-		return Either.start()
-			.flatMap { queryTiles.execute(game.id) }
-			.flatMap { tiles ->
-				queryConnectedPlayers.execute(game.id).onSuccess { players ->
-					queryMarkers.execute(game.id).onSuccess { markers ->
-						players.filter { it.connectionId != null }.forEach { player ->
-							sendMessage(player.connectionId!!, tiles, markers)
-						}
+	private suspend fun sendMessages(game: GameEntity): Either<ApplicationError, Unit> {
+		return either {
+			val tiles = queryTiles.execute(game.id).bind()
+			queryConnectedPlayers.execute(game.id).tap { players ->
+				queryMarkers.execute(game.id).tap { markers ->
+					players.filter { it.connectionId != null }.forEach { player ->
+						sendMessage(player.connectionId!!, tiles, markers)
 					}
 				}
 			}
-			.discardValue()
+		}
 	}
 
 	private suspend fun sendMessage(connectionId: Int, tiles: List<TileEntity>, markers: List<MarkerEntity>) {
-		Either.start()
-			.map {
-				tiles.map { tile ->
-					Tile(
-						q = tile.q,
-						r = tile.r,
-						data = TileData(TileType.valueOf(tile.type)),
-						entities = markers.filter { it.tileId == tile.id }.map { MarkerTileObject(it.userId!!) }
-					)
-				}
-			}
-			.map { extTiles -> messageProducer.sendWorldState(connectionId, extTiles) }
+		val msgTiles = tiles.map { tile ->
+			Tile(
+				q = tile.q,
+				r = tile.r,
+				data = TileData(TileType.valueOf(tile.type)),
+				entities = markers.filter { it.tileId == tile.id }.map { MarkerTileObject(it.userId!!) }
+			)
+		}
+		messageProducer.sendWorldState(connectionId, msgTiles)
 	}
 
 }

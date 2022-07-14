@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
+import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
@@ -14,8 +14,6 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAc
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.either.onError
-import de.ruegnerlukas.strategygame.backend.shared.either.recover
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
@@ -45,10 +43,17 @@ fun Route.gameWebsocketRoutes(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
 					)
-						.recover(GameNotFoundError) { call.respond(HttpStatusCode.NotFound, it.toString()) }
-						.recover(NotParticipantError) { call.respond(HttpStatusCode.Conflict, it.toString()) }
-						.recover(AlreadyConnectedError) { call.respond(HttpStatusCode.Conflict, it.toString()) }
-						.onError { call.respond(HttpStatusCode.InternalServerError, it.toString()) }
+						.fold(
+							{ e ->
+								when (e) {
+									is GameNotFoundError -> call.respond(HttpStatusCode.NotFound, e.toString())
+									is NotParticipantError -> call.respond(HttpStatusCode.Conflict, e.toString())
+									is AlreadyConnectedError -> call.respond(HttpStatusCode.Conflict, e.toString())
+									else -> call.respond(HttpStatusCode.InternalServerError, e.toString())
+								}
+							},
+							{}
+						)
 				},
 				callback = {
 					webSocket {

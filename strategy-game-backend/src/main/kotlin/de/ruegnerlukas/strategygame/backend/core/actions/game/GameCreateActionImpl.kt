@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
+import arrow.core.Either
+import arrow.core.computations.either
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
@@ -11,9 +13,6 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.Pl
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileInsertMultiple
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.map
-import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 import java.util.Random
 
 /**
@@ -29,17 +28,18 @@ class GameCreateActionImpl(
 	 * @param userId the id of the user creating the game-lobby
 	 * @return the id of the game
 	 */
-	override suspend fun perform(userId: String): Either<String, ApplicationError> {
+	override suspend fun perform(userId: String): Either<ApplicationError, String> {
 		log().info("Create new game with owner '$userId'")
-		return Either.start()
-			.map { createGame() }
-			.thenOrErr { game -> insertGame.execute(game) }
-			.thenOrErr { game -> insertPlayer.execute(createPlayer(userId, game.id)) }
-			.thenOrErr { game -> insertTiles.execute(createTiles(game.id, game.seed)) }
-			.map { game -> game.id }
+		return either {
+			val game = createGameEntity()
+			insertGame.execute(game).bind()
+			insertPlayer.execute(createPlayer(userId, game.id)).bind()
+			insertTiles.execute(createTiles(game.id, game.seed)).bind()
+			game.id
+		}
 	}
 
-	private fun createGame() = GameEntity(
+	private fun createGameEntity() = GameEntity(
 		id = UUID.gen(),
 		seed = Random().nextInt(),
 		turn = 0

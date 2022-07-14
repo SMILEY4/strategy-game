@@ -1,7 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
+import arrow.core.Either
+import arrow.core.computations.either
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
@@ -15,11 +16,6 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.Pl
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateConnection
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.either.map
-import de.ruegnerlukas.strategygame.backend.shared.either.mapError
-import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class GameConnectActionImpl(
 	private val queryPlayer: PlayerQueryByUserAndGame,
@@ -29,16 +25,15 @@ class GameConnectActionImpl(
 	private val messageProducer: GameMessageProducer,
 ) : GameConnectAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<Unit, ApplicationError> {
+	override suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<ApplicationError, Unit> {
 		log().info("Connect user $userId ($connectionId) to game-lobby $gameId")
-		return Either.start()
-			.flatMap { queryPlayer.execute(userId, gameId) }
-			.mapError(EntityNotFoundError) { NotParticipantError }
-			.thenOrErr { player -> updatePlayerConnection.execute(player.id, connectionId) }
-			.flatMap { player -> queryTiles.execute(player.gameId) }
-			.map { tiles -> sendMessage(connectionId, gameId, tiles) }
+		return either {
+			val player = queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }.bind()
+			updatePlayerConnection.execute(player.id, connectionId)
+			val tiles = queryTiles.execute(gameId).bind()
+			sendMessage(connectionId, gameId, tiles)
+		}
 	}
-
 
 	private suspend fun sendMessage(connectionId: Int, gameId: String, tiles: List<TileEntity>) {
 		queryMarkers.execute(gameId)

@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core
 
+import arrow.core.getOrHandle
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
@@ -25,7 +26,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.T
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandType
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.shared.either.getOrThrow
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.core.spec.style.StringSpec
@@ -80,15 +80,15 @@ class TurnTest : StringSpec({
 
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
-		val gameId = createGame.perform(userId1).getOrThrow()
+		val gameId = createGame.perform(userId1).getOrHandle { throw Exception(it.toString()) }
 
 		joinGame.perform(userId2, gameId) shouldBeOk true
 
 		connectToGame.perform(userId1, gameId, 1) shouldBeOk true
 		connectToGame.perform(userId1, gameId, 2) shouldBeOk true
 
-		val player1 = PlayerQueryByUserAndGameImpl(database).execute(userId1, gameId).getOrThrow().id
-		val player2 = PlayerQueryByUserAndGameImpl(database).execute(userId2, gameId).getOrThrow().id
+		val player1 = PlayerQueryByUserAndGameImpl(database).execute(userId1, gameId).getOrHandle { throw Exception(it.toString()) }.id
+		val player2 = PlayerQueryByUserAndGameImpl(database).execute(userId2, gameId).getOrHandle { throw Exception(it.toString()) }.id
 
 		val resultSubmit1 = submitTurn.perform(
 			userId1, gameId, listOf(
@@ -108,10 +108,10 @@ class TurnTest : StringSpec({
 		)
 
 		resultSubmit1 shouldBeOk true
-		GameQueryImpl(database).execute(gameId).getOrThrow().let { game ->
+		GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.let { game ->
 			game.turn shouldBe 0
 		}
-		OrderQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrThrow().let { orders ->
+		OrderQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
 			orders shouldHaveSize 2
 			orders.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1)
 		}
@@ -128,10 +128,10 @@ class TurnTest : StringSpec({
 		)
 
 		resultSubmit2 shouldBeOk true
-		GameQueryImpl(database).execute(gameId).getOrThrow().let {
+		GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.let {
 			it.turn shouldBe 1
 		}
-		OrderQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrThrow().let { orders ->
+		OrderQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
 			orders shouldHaveSize 3
 			orders.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1, player2)
 		}

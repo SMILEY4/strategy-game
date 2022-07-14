@@ -1,23 +1,22 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles
 
+import arrow.core.Either
 import de.ruegnerlukas.kdbl.builder.SQL
 import de.ruegnerlukas.kdbl.builder.and
 import de.ruegnerlukas.kdbl.builder.isEqual
 import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import de.ruegnerlukas.strategygame.backend.ports.errors.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileQueryByGameAndPosition
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 class TileQueryByGameAndPositionImpl(private val database: Database) : TileQueryByGameAndPosition {
 
-	override suspend fun execute(gameId: String, q: Int, r: Int): Either<TileEntity, ApplicationError> {
+	override suspend fun execute(gameId: String, q: Int, r: Int): Either<DatabaseError, TileEntity> {
 		return Either
-			.runCatching(NoSuchElementException::class) {
+			.catch {
 				database
 					.startQuery("tiles.query.by_game_and_position") {
 						SQL
@@ -45,7 +44,12 @@ class TileQueryByGameAndPositionImpl(private val database: Database) : TileQuery
 						)
 					}
 			}
-			.mapError { EntityNotFoundError }
+			.mapLeft { e ->
+				when (e) {
+					is NoSuchElementException -> EntityNotFoundError
+					else -> throw e
+				}
+			}
 	}
 
 

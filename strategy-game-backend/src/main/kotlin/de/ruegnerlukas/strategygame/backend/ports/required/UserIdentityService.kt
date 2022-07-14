@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.required
 
+import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
@@ -7,7 +8,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.config.Config
 import de.ruegnerlukas.strategygame.backend.config.ConfigData
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {
@@ -52,25 +52,25 @@ interface UserIdentityService {
 	/**
 	 * Create a new user identified by the given email and password
 	 */
-	fun createUser(email: String, password: String, username: String): Either<Unit, ApplicationError>
+	fun createUser(email: String, password: String, username: String): Either<ApplicationError, Unit>
 
 
 	/**
 	 * Authenticate the given user.
 	 */
-	fun authenticate(email: String, password: String): Either<ExtendedAuthData, ApplicationError>
+	fun authenticate(email: String, password: String): Either<ApplicationError, ExtendedAuthData>
 
 
 	/**
 	 * Refresh the authentication for a given user
 	 */
-	fun refreshAuthentication(refreshToken: String): Either<AuthData, ApplicationError>
+	fun refreshAuthentication(refreshToken: String): Either<ApplicationError, AuthData>
 
 
 	/**
 	 * Delete the user with the given email and password
 	 * @return whether the user has been deleted successfully
 	 */
-	suspend fun deleteUser(email: String, password: String): Either<Unit, ApplicationError>
+	suspend fun deleteUser(email: String, password: String): Either<ApplicationError, Unit>
 
 }

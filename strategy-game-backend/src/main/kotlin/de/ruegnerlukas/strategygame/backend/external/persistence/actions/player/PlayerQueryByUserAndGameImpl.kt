@@ -1,23 +1,22 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions.player
 
+import arrow.core.Either
 import de.ruegnerlukas.kdbl.builder.SQL
 import de.ruegnerlukas.kdbl.builder.and
 import de.ruegnerlukas.kdbl.builder.isEqual
 import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import de.ruegnerlukas.strategygame.backend.ports.errors.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 
 class PlayerQueryByUserAndGameImpl(private val database: Database) : PlayerQueryByUserAndGame {
 
-	override suspend fun execute(userId: String, gameId: String): Either<PlayerEntity, ApplicationError> {
+	override suspend fun execute(userId: String, gameId: String): Either<DatabaseError, PlayerEntity> {
 		return Either
-			.runCatching(NoSuchElementException::class) {
+			.catch {
 				database
 					.startQuery("player.query.by_user_and_game") {
 						SQL
@@ -40,7 +39,12 @@ class PlayerQueryByUserAndGameImpl(private val database: Database) : PlayerQuery
 						)
 					}
 			}
-			.mapError { EntityNotFoundError }
+			.mapLeft { e ->
+				when (e) {
+					is NoSuchElementException -> EntityNotFoundError
+					else -> throw e
+				}
+			}
 	}
 
 }
