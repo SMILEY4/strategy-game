@@ -79,8 +79,12 @@ React global state-management. [Link to Documentation](https://github.com/pmndrs
 
 High-performance rendering API based on OpenGL. [Link to Documentation](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
 
-**Jest**
+**Jest (+ts-jest)**
 
 JavaScript testing framework. [Link to Documentation](https://jestjs.io/docs/getting-started).
 
-Used together with **ts-jest** for TypeScript support. [Link to Documentation](https://kulshekhar.github.io/ts-jest/docs/getting-started/installation)
+Used together with "ts-jest" for TypeScript support. [Link to Documentation](https://kulshekhar.github.io/ts-jest/docs/getting-started/installation)
+
+**Storybook (+storybook-builder-vite)**
+
+Tool for building and showcasing ui-components in isolation. [Link to Documentation](https://storybook.js.org/docs/react/get-started/introduction). Uses [builder-vite](https://github.com/storybookjs/builder-vite) to run with "Vite".
