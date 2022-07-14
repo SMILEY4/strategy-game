@@ -10,11 +10,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.shared.respondHttp
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.post
@@ -29,65 +29,49 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
 		post("signup") {
 			call.receive<CreateUserData>().let { requestData ->
 				userIdentityService.createUser(requestData.email, requestData.password, requestData.username)
-					.fold(
-						{ e ->
-							when (e) {
-								is UserAlreadyExistsError -> call.respond(HttpStatusCode.Conflict, e.toString())
-								is InvalidEmailOrPasswordError -> call.respond(HttpStatusCode.Conflict, e.toString())
-								is CodeDeliveryError -> call.respond(HttpStatusCode.Conflict, e.toString())
-								else -> call.respond(HttpStatusCode.InternalServerError, e.toString())
-							}
-						},
-						{ call.respond(HttpStatusCode.OK, it) }
-					)
+					.respondHttp(call) {
+						anyRight(HttpStatusCode.OK, it)
+						left(UserAlreadyExistsError, HttpStatusCode.Conflict)
+						left(InvalidEmailOrPasswordError, HttpStatusCode.Conflict)
+						left(CodeDeliveryError, HttpStatusCode.Conflict)
+						anyLeft(HttpStatusCode.InternalServerError)
+					}
 			}
 		}
 		post("login") {
 			call.receive<LoginData>().let { requestData ->
 				userIdentityService.authenticate(requestData.email, requestData.password)
 					.map { AuthData(it) }
-					.fold(
-						{ e ->
-							when (e) {
-								is NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, e.toString())
-								is UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, e.toString())
-								is UserNotFoundError -> call.respond(HttpStatusCode.NotFound, e.toString())
-								else -> call.respond(HttpStatusCode.InternalServerError, e.toString())
-							}
-						},
-						{ call.respond(HttpStatusCode.OK, it) }
-					)
+					.respondHttp(call) {
+						anyRight(HttpStatusCode.OK, it)
+						left(NotAuthorizedError, HttpStatusCode.Unauthorized)
+						left(UserNotConfirmedError, HttpStatusCode.Conflict)
+						left(UserNotFoundError, HttpStatusCode.NotFound)
+						anyLeft(HttpStatusCode.InternalServerError)
+					}
 			}
 		}
 		post("refresh") {
 			call.receive<String>().let { requestData ->
 				userIdentityService.refreshAuthentication(requestData)
-					.fold(
-						{ e ->
-							when (e) {
-								is NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, e.toString())
-								is UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, e.toString())
-								is UserNotFoundError -> call.respond(HttpStatusCode.NotFound, e.toString())
-								else -> call.respond(HttpStatusCode.InternalServerError, e.toString())
-							}
-						},
-						{ call.respond(HttpStatusCode.OK, it) }
-					)
+					.respondHttp(call) {
+						anyRight(HttpStatusCode.OK, it)
+						left(NotAuthorizedError, HttpStatusCode.Unauthorized)
+						left(UserNotConfirmedError, HttpStatusCode.Conflict)
+						left(UserNotFoundError, HttpStatusCode.NotFound)
+						anyLeft(HttpStatusCode.InternalServerError)
+					}
 			}
 		}
 		authenticate {
 			delete("delete") {
 				call.receive<LoginData>().let { requestData ->
 					userIdentityService.deleteUser(requestData.email, requestData.password)
-						.fold(
-							{ e ->
-								when (e) {
-									is NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, e.toString())
-									else -> call.respond(HttpStatusCode.InternalServerError, e.toString())
-								}
-							},
-							{ call.respond(HttpStatusCode.OK, it) }
-						)
+						.respondHttp(call) {
+							anyRight(HttpStatusCode.OK, it)
+							left(NotAuthorizedError, HttpStatusCode.Unauthorized)
+							anyLeft(HttpStatusCode.InternalServerError)
+						}
 				}
 			}
 		}

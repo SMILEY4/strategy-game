@@ -14,9 +14,9 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAc
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.shared.respondHttp
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import io.ktor.server.websocket.webSocket
@@ -42,18 +42,12 @@ fun Route.gameWebsocketRoutes(
 					requestConnection.perform(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
-					)
-						.fold(
-							{ e ->
-								when (e) {
-									is GameNotFoundError -> call.respond(HttpStatusCode.NotFound, e.toString())
-									is NotParticipantError -> call.respond(HttpStatusCode.Conflict, e.toString())
-									is AlreadyConnectedError -> call.respond(HttpStatusCode.Conflict, e.toString())
-									else -> call.respond(HttpStatusCode.InternalServerError, e.toString())
-								}
-							},
-							{}
-						)
+					).respondHttp(call) {
+						left(GameNotFoundError, HttpStatusCode.NotFound)
+						left(NotParticipantError, HttpStatusCode.Conflict)
+						left(AlreadyConnectedError, HttpStatusCode.Conflict)
+						anyLeft(HttpStatusCode.InternalServerError)
+					}
 				},
 				callback = {
 					webSocket {
