@@ -17,7 +17,13 @@ vec3 hsv2rgb(vec3 c) {
 
 vec3 calcTileColor() {
     float tileId = v_tiledata.z;
-    return hsv2rgb(vec3((tileId)/5.0, 0.5, 0.6));
+    if(tileId < 0.5) { // 0 -> water
+        return vec3(0.0, 0.0, 1.0);
+    }
+    if(tileId > 0.5) { // 1 -> land
+        return vec3(0.0, 1.0, 0.0);
+    }
+    return vec3(0.0);
 }
 
 bool isMouseOver() {

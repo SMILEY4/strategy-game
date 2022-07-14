@@ -5,26 +5,24 @@ import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilemapPositionsB
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
-import de.ruegnerlukas.strategygame.backend.ports.models.world.World
-import de.ruegnerlukas.strategygame.backend.shared.WeightedCollection
-import kotlin.random.Random
+import de.ruegnerlukas.strategygame.backend.shared.FastNoiseLite
 
 class WorldBuilder {
 
-	private val tileTypes = WeightedCollection<TileType>()
-		.add(10.0, TileType.PLAINS)
-		.add(2.0, TileType.WATER)
-		.add(1.0, TileType.MOUNTAINS)
-
-	fun buildTiles(): List<Tile> {
-		val tilePositions = TilemapPositionsBuilder().createHexagon(20)
-		return tilePositions.map { buildTileAt(it) }
+	private val noise = FastNoiseLite().apply {
+		this.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2)
+		this.SetFrequency(0.05f)
+		this.SetFractalType(FastNoiseLite.FractalType.FBm)
+		this.SetFractalOctaves(6)
+		this.SetFractalLacunarity(2.0f)
+		this.SetFractalGain(0.6f)
+		this.SetFractalWeightedStrength(0.2f)
 	}
 
-	fun build(): World {
-		return World(
-			tiles = buildTiles(),
-		)
+	fun buildTiles(seed: Int): List<Tile> {
+		val tilePositions = TilemapPositionsBuilder().createHexagon(20)
+		noise.SetSeed(seed)
+		return tilePositions.map { buildTileAt(it) }
 	}
 
 	private fun buildTileAt(position: TilePosition): Tile {
@@ -39,7 +37,12 @@ class WorldBuilder {
 	}
 
 	private fun tileTypeAt(position: TilePosition): TileType {
-		return tileTypes.chooseRandom(Random(position.q + position.r * 1000))
+		val noiseValue = noise.GetNoise(position.q.toFloat(), position.r.toFloat())
+		return if (noiseValue < 0) {
+			TileType.WATER
+		} else {
+			TileType.LAND
+		}
 	}
 
 }

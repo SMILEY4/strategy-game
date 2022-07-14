@@ -19,16 +19,18 @@ class GameInsertImpl(private val database: Database) : GameInsert {
 					SQL
 						.insert()
 						.into(GameTbl)
-						.columns(GameTbl.id, GameTbl.turn)
+						.columns(GameTbl.id, GameTbl.seed, GameTbl.turn)
 						.items(
 							item()
 								.set(GameTbl.id, placeholder("id"))
 								.set(GameTbl.turn, placeholder("turn"))
+								.set(GameTbl.seed, placeholder("seed"))
 						)
 				}
 				.parameters {
 					it["id"] = game.id
 					it["turn"] = game.turn
+					it["seed"] = game.seed
 				}
 				.execute()
 		}

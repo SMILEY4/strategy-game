@@ -58,6 +58,7 @@ import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import org.slf4j.event.Level
 import java.time.Duration
 
@@ -190,6 +191,7 @@ fun Application.module() {
 	}
 	install(StatusPages) {
 		exception<Throwable> { call, cause ->
+			KotlinLogging.logger {  }.error("Controller received error", cause)
 			call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
 		}
 	}

@@ -14,6 +14,7 @@ import de.ruegnerlukas.strategygame.backend.shared.UUID
 import de.ruegnerlukas.strategygame.backend.shared.either.Either
 import de.ruegnerlukas.strategygame.backend.shared.either.map
 import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
+import java.util.Random
 
 /**
  * Create a new game-lobby
@@ -34,13 +35,14 @@ class GameCreateActionImpl(
 			.map { createGame() }
 			.thenOrErr { game -> insertGame.execute(game) }
 			.thenOrErr { game -> insertPlayer.execute(createPlayer(userId, game.id)) }
-			.thenOrErr { game -> insertTiles.execute(createTiles(game.id)) }
+			.thenOrErr { game -> insertTiles.execute(createTiles(game.id, game.seed)) }
 			.map { game -> game.id }
 	}
 
 	private fun createGame() = GameEntity(
 		id = UUID.gen(),
-		0
+		seed = Random().nextInt(),
+		turn = 0
 	)
 
 	private fun createPlayer(userId: String, gameId: String) = PlayerEntity(
@@ -51,14 +53,19 @@ class GameCreateActionImpl(
 		state = PlayerEntity.STATE_PLAYING
 	)
 
-	private fun createTiles(gameId: String) = WorldBuilder().buildTiles().map {
-		TileEntity(
-			id = UUID.gen(),
-			gameId = gameId,
-			q = it.q,
-			r = it.r,
-			type = it.data.type.name
-		)
+	private fun createTiles(gameId: String, seed: Int): List<TileEntity> {
+		val tiles = WorldBuilder()
+			.buildTiles(seed)
+			.map {
+				TileEntity(
+					id = UUID.gen(),
+					gameId = gameId,
+					q = it.q,
+					r = it.r,
+					type = it.data.type.name
+				)
+			}
+		return tiles
 	}
 
 }

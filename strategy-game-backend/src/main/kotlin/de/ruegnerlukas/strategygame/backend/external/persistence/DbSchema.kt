@@ -22,6 +22,7 @@ object GameTbl : GameTableDef()
 
 sealed class GameTableDef : Table("game", true) {
 	val id = text("id").primaryKey()
+	val seed = integer("seed")
 	val turn = integer("turn")
 
 	companion object {
