@@ -9,12 +9,10 @@ import de.ruegnerlukas.kdbl.dsl.expression.TableLike
 
 object DbSchema {
 	suspend fun createTables(db: Database) {
-		db.startCreate(SQL.createIfNotExists(GameTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(PlayerTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(OrderTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(TileTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(MarkerTbl)).execute()
+		val tables = listOf(GameTbl, PlayerTbl, OrderTbl, TileTbl, MarkerTbl, CountryTbl)
+		tables.forEach { db.startCreate(SQL.createIfNotExists(it)).execute() }
 	}
+
 }
 
 
@@ -83,6 +81,21 @@ sealed class TileTableDef : Table("tile", true) {
 	}
 
 	override fun alias(alias: String) = TileTableDefAlias(this, alias)
+
+}
+
+
+object CountryTbl : CountryTableDef()
+
+sealed class CountryTableDef : Table("country", true) {
+	val playerId = text("playerId").primaryKey().foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
+	val amountMoney = float("amountMoney")
+
+	companion object {
+		class CountryTableDefAlias(override val table: TableLike, override val alias: String) : CountryTableDef(), AliasTable
+	}
+
+	override fun alias(alias: String) = CountryTableDefAlias(this, alias)
 
 }
 
