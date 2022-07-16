@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
-data class CountryEntity(
+data class CityEntity(
 	val id: String,
-	val playerId: String,
-	val amountMoney: Float
+	val countryId: String,
+	val tileId: String,
 )

@@ -21,7 +21,7 @@ class CountriesQueryByGameImpl(private val database: Database) : CountriesQueryB
 				database
 					.startQuery("country.query.by_game") {
 						SQL
-							.select(CountryTbl.playerId, CountryTbl.amountMoney)
+							.select(CountryTbl.id, CountryTbl.playerId, CountryTbl.amountMoney)
 							.from(CountryTbl, PlayerTbl, GameTbl)
 							.where(
 								CountryTbl.playerId.isEqual(PlayerTbl.id)
@@ -34,6 +34,7 @@ class CountriesQueryByGameImpl(private val database: Database) : CountriesQueryB
 					.execute()
 					.getMultipleOrNone {
 						CountryEntity(
+							id = it.getString(CountryTbl.id),
 							playerId = it.getString(CountryTbl.playerId),
 							amountMoney = it.getFloat(CountryTbl.amountMoney),
 						)

@@ -35,6 +35,6 @@ class CreateCityCommand(
 	val r: Int,
 ) : PlayerCommand(TYPE) {
 	companion object {
-		internal const val TYPE = "place-marker"
+		internal const val TYPE = "create-city"
 	}
 }

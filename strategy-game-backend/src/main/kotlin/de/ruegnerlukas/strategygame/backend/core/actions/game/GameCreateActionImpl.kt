@@ -55,6 +55,7 @@ class GameCreateActionImpl(
 	)
 
 	private fun createOwnerCountry(player: PlayerEntity) = CountryEntity(
+		id = UUID.gen(),
 		playerId = player.id,
 		amountMoney = 200f
 	)

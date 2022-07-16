@@ -19,14 +19,16 @@ class CountryInsertImpl(private val database: Database) : CountryInsert {
 						SQL
 							.insert()
 							.into(CountryTbl)
-							.columns(CountryTbl.playerId, CountryTbl.amountMoney)
+							.columns(CountryTbl.id, CountryTbl.playerId, CountryTbl.amountMoney)
 							.items(
 								SQL.item()
+									.set(CountryTbl.id, placeholder("id"))
 									.set(CountryTbl.playerId, placeholder("playerId"))
 									.set(CountryTbl.amountMoney, placeholder("amountMoney"))
 							)
 					}
 					.parameters {
+						it["id"] = country.id
 						it["playerId"] = country.playerId
 						it["amountMoney"] = country.amountMoney
 					}

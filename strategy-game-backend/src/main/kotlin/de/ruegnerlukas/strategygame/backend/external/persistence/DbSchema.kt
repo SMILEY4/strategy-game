@@ -9,10 +9,16 @@ import de.ruegnerlukas.kdbl.dsl.expression.TableLike
 
 object DbSchema {
 	suspend fun createTables(db: Database) {
-		val tables = listOf(GameTbl, PlayerTbl, CommandTbl, TileTbl, MarkerTbl, CountryTbl)
-		tables.forEach { db.startCreate(SQL.createIfNotExists(it)).execute() }
+		listOf(
+			GameTbl,
+			PlayerTbl,
+			CommandTbl,
+			TileTbl,
+			MarkerTbl,
+			CountryTbl,
+			CityTbl
+		).forEach { db.startCreate(SQL.createIfNotExists(it)).execute() }
 	}
-
 }
 
 
@@ -89,7 +95,8 @@ sealed class TileTableDef : Table("tile", true) {
 object CountryTbl : CountryTableDef()
 
 sealed class CountryTableDef : Table("country", true) {
-	val playerId = text("playerId").primaryKey().foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
+	val id = text("id").primaryKey()
+	val playerId = text("playerId").foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
 	val amountMoney = float("amountMoney")
 
 	companion object {
@@ -113,5 +120,21 @@ sealed class MarkerTableDef : Table("marker", true) {
 	}
 
 	override fun alias(alias: String) = MarkerTableDefAlias(this, alias)
+
+}
+
+
+object CityTbl : CityTableDef()
+
+sealed class CityTableDef : Table("city", true) {
+	val id = text("id").primaryKey()
+	val countryId = text("countryId").foreignKey(CountryTbl.id, onDelete = RefAction.CASCADE)
+	val tileId = text("tileId").foreignKey(TileTbl.id, onDelete = RefAction.CASCADE)
+
+	companion object {
+		class CityTableDefAlias(override val table: TableLike, override val alias: String) : MarkerTableDef(), AliasTable
+	}
+
+	override fun alias(alias: String) = CityTableDefAlias(this, alias)
 
 }
