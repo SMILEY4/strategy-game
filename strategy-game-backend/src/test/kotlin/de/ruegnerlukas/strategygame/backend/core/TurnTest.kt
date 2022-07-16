@@ -10,11 +10,14 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMe
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateConnectionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateStateByGameImpl
@@ -26,6 +29,10 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.T
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandType
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.core.spec.style.StringSpec
@@ -39,9 +46,7 @@ class TurnTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -68,12 +73,15 @@ class TurnTest : StringSpec({
 			TurnEndActionImpl(
 				GameQueryImpl(database),
 				OrderQueryByGameAndTurnImpl(database),
-				PlayersQueryByGameConnectedImpl(database),
-				TilesQueryByGameImpl(database),
 				PlayerUpdateStateByGameImpl(database),
 				GameUpdateTurnImpl(database),
 				MarkerInsertMultipleImpl(database),
-				MarkersQueryByGameImpl(database),
+				ExtGameQueryImpl(
+					GameQueryImpl(database),
+					TilesQueryByGameImpl(database),
+					MarkersQueryByGameImpl(database),
+					PlayerQueryByGameImpl(database)
+				),
 				GameMessageProducerImpl(TestUtils.MockMessageProducer()),
 			),
 		)

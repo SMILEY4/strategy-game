@@ -18,6 +18,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.Tu
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameUpdateTurn
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.gameext.ExtGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkerInsertMultiple
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderQueryByGameAndTurn
@@ -32,12 +33,10 @@ import de.ruegnerlukas.strategygame.backend.shared.UUID
 class TurnEndActionImpl(
 	private val queryGame: GameQuery,
 	private val queryOrders: OrderQueryByGameAndTurn,
-	private val queryConnectedPlayers: PlayersQueryByGameConnected,
-	private val queryTiles: TilesQueryByGame,
 	private val updatePlayerState: PlayerUpdateStateByGame,
 	private val updateGameTurn: GameUpdateTurn,
 	private val insertMarkers: MarkerInsertMultiple,
-	private val queryMarkers: MarkersQueryByGame,
+	private val queryExtGame: ExtGameQuery,
 	private val messageProducer: GameMessageProducer
 ) : TurnEndAction, Logging {
 
@@ -75,17 +74,20 @@ class TurnEndActionImpl(
 	}
 
 	private suspend fun sendMessages(game: GameEntity) {
-			val tiles = queryTiles.execute(game.id)
-				.getOrElse { throw Exception("Could not fetch tiles for game ${game.id}") }
-			val markers = queryMarkers.execute(game.id)
-				.getOrElse { throw Exception("Could not fetch markers for game ${game.id}") }
-			val connectedPlayers = queryConnectedPlayers.execute(game.id)
-				.getOrElse { throw Exception("Could not fetch connected players for game ${game.id}") }
-			connectedPlayers
-				.filter { it.connectionId != null }
-				.forEach { player ->
-					sendMessage(player.connectionId!!, tiles, markers)
-				}
+		val extGame = queryExtGame
+			.execute(
+				game.id, ExtGameQuery.Include(
+					includeTiles = true,
+					includeMarkers = true,
+					includePlayers = true
+				)
+			)
+			.getOrElse { throw Exception("Could not fetch ext. game data for game ${game.id}") }
+		extGame.players
+			.filter { it.connectionId != null }
+			.forEach { player ->
+				sendMessage(player.connectionId!!, extGame.tiles, extGame.markers)
+			}
 	}
 
 	private suspend fun sendMessage(connectionId: Int, tiles: List<TileEntity>, markers: List<MarkerEntity>) {

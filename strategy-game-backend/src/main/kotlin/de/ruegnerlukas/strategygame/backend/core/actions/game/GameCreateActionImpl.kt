@@ -2,52 +2,46 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.ExtGameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameInsert
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerInsert
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileInsertMultiple
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.gameext.ExtGameInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
 import java.util.Random
 
 /**
- * Create a new game-lobby
+ * Create a new game
  */
 class GameCreateActionImpl(
-	private val insertGame: GameInsert,
-	private val insertPlayer: PlayerInsert,
-	private val insertTiles: TileInsertMultiple
+	private val insertExtGame: ExtGameInsert
 ) : GameCreateAction, Logging {
 
 	override suspend fun perform(userId: String): String {
 		log().info("Create new game with owner '$userId'")
-		val game = createGameEntity()
-		val player = createOwnerPlayer(userId, game.id)
-		saveGameData(game)
-		savePlayer(player)
+		val game = createExtGameEntity(userId)
+		saveGame(game)
 		return game.id
 	}
 
-	private suspend fun saveGameData(game: GameEntity) {
-		insertGame.execute(game)
-			.getOrElse { throw Exception("Could not save game ${game.id}") }
-		insertTiles.execute(createTiles(game.id, game.seed))
-			.getOrElse { throw Exception("Could not save tiles for game ${game.id}") }
+	private suspend fun saveGame(game: ExtGameEntity) {
+		insertExtGame.execute(game)
+			.getOrElse { throw Exception("Could not save ext-game ${game.id}") }
 	}
 
-	private suspend fun savePlayer(player: PlayerEntity) {
-		return insertPlayer.execute(player)
-			.getOrElse { throw Exception("Could not save player ${player.id} (userId=${player.userId}, gameId=${player.gameId})") }
+	private fun createExtGameEntity(userId: String): ExtGameEntity {
+		val gameId = UUID.gen()
+		val seed = Random().nextInt()
+		return ExtGameEntity(
+			id = gameId,
+			seed = seed,
+			turn = 0,
+			players = listOf(createOwnerPlayer(userId, gameId)),
+			tiles = createTiles(gameId, seed),
+			markers = listOf(),
+		)
 	}
-
-	private fun createGameEntity() = GameEntity(
-		id = UUID.gen(),
-		seed = Random().nextInt(),
-		turn = 0
-	)
 
 	private fun createOwnerPlayer(userId: String, gameId: String) = PlayerEntity(
 		id = UUID.gen(),

@@ -11,6 +11,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMe
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GamesQueryByUserImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
@@ -36,9 +37,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val userId = "test-user"
@@ -72,9 +71,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -117,9 +114,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -196,9 +191,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -230,9 +223,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val requestConnect = GameRequestConnectionActionImpl(
@@ -251,9 +242,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val requestConnect = GameRequestConnectionActionImpl(
@@ -273,9 +262,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			GameInsertImpl(database),
-			PlayerInsertImpl(database),
-			TileInsertMultipleImpl(database),
+			ExtGameInsertImpl(database)
 		)
 
 		val requestConnect = GameRequestConnectionActionImpl(
