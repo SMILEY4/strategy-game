@@ -3,12 +3,12 @@ package de.ruegnerlukas.strategygame.backend.config
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
@@ -21,11 +21,14 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.Ga
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GamesQueryByUserImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateConnectionByUserSetNullImpl
@@ -85,6 +88,7 @@ fun Application.module() {
 	val orderQueryByGameAndTurn = OrderQueryByGameAndTurnImpl(database)
 	val playerInsert = PlayerInsertImpl(database)
 	val playerQuery = PlayerQueryImpl(database)
+	val playerQueryByGame = PlayerQueryByGameImpl(database)
 	val playerQueryByUserAndGame = PlayerQueryByUserAndGameImpl(database)
 	val playersQueryByGameConnected = PlayersQueryByGameConnectedImpl(database)
 	val playersQueryByGameStatePlaying = PlayersQueryByGameStatePlayingImpl(database)
@@ -95,6 +99,13 @@ fun Application.module() {
 	val tileInsertMultiple = TileInsertMultipleImpl(database)
 	val tileQueryByGameAndPosition = TileQueryByGameAndPositionImpl(database)
 	val tilesQueryByGame = TilesQueryByGameImpl(database)
+	val extGameInsert = ExtGameInsertImpl(database)
+	val extGameQuery = ExtGameQueryImpl(
+		gameQuery,
+		tilesQueryByGame,
+		markersQueryByGame,
+		playerQueryByGame
+	)
 
 	// core actions
 	val gamesListAction = GamesListActionImpl(
@@ -108,9 +119,7 @@ fun Application.module() {
 		messageProducer
 	)
 	val gameCreateAction = GameCreateActionImpl(
-		gameInsert,
-		playerInsert,
-		tileInsertMultiple
+		extGameInsert
 	)
 	val gameDisconnectAction = GameDisconnectActionImpl(
 		playerUpdateConnectionByUserSetNull
@@ -127,12 +136,10 @@ fun Application.module() {
 	val turnEndAction = TurnEndActionImpl(
 		gameQuery,
 		orderQueryByGameAndTurn,
-		playersQueryByGameConnected,
-		tilesQueryByGame,
 		playerUpdateStateByGame,
 		gameUpdateTurn,
 		markerInsertMultiple,
-		markersQueryByGame,
+		extGameQuery,
 		messageProducer
 	)
 	val turnSubmitAction = TurnSubmitActionImpl(
@@ -191,7 +198,7 @@ fun Application.module() {
 	}
 	install(StatusPages) {
 		exception<Throwable> { call, cause ->
-			KotlinLogging.logger {  }.error("Controller received error", cause)
+			KotlinLogging.logger { }.error("Controller received error", cause)
 			call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
 		}
 	}

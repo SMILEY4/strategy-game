@@ -1,10 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.game
 
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import arrow.core.Either
 
 interface GameRequestConnectionAction {
 
-	suspend fun perform(userId: String, gameId: String): Either<Unit, ApplicationError>
+	sealed class GameRequestConnectionActionError
+	object GameNotFoundError : GameRequestConnectionActionError()
+	object NotParticipantError : GameRequestConnectionActionError()
+	object AlreadyConnectedError : GameRequestConnectionActionError()
+
+	suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit>
 
 }

@@ -1,14 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
+import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.shared.either.respondCallErr
-import de.ruegnerlukas.strategygame.backend.shared.either.respondCallOk
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
@@ -26,22 +25,25 @@ fun Route.gameLobbyRoutes(
 	authenticate {
 		route("game") {
 			post("create") {
-				createLobby.perform(getUserIdOrThrow(call))
-					.respondCallOk(call, HttpStatusCode.OK)
-					.respondCallErr(call, HttpStatusCode.InternalServerError)
+				val gameId = createLobby.perform(getUserIdOrThrow(call))
+				call.respond(HttpStatusCode.OK, gameId)
 			}
 			post("join/{gameId}") {
-				joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
-					.respondCallOk(call, HttpStatusCode.OK)
-					.respondCallErr(call, GameNotFoundError, HttpStatusCode.NotFound)
-					.respondCallErr(call, HttpStatusCode.InternalServerError)
+				val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
+				when (result) {
+					is Either.Right -> {
+						call.respond(HttpStatusCode.OK, result.value)
+					}
+					is Either.Left -> when (result.value) {
+						GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+						GameJoinAction.UserAlreadyPlayer -> call.respond(HttpStatusCode.OK, result.value)
+					}
+				}
 			}
 			get("list") {
-				listLobbies.perform(getUserIdOrThrow(call))
-					.respondCallOk(call, HttpStatusCode.OK)
-					.respondCallErr(call, HttpStatusCode.InternalServerError)
+				val gameIds = listLobbies.perform(getUserIdOrThrow(call))
+				call.respond(HttpStatusCode.OK, gameIds)
 			}
 		}
 	}
 }
-

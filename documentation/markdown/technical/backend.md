@@ -79,7 +79,9 @@ Simple and Secure User Sign-Up, Sign-In, and Access Control
 
 Small, self-contained sql-database engine ([Link to documentation](https://www.sqlite.org/doclist.html)). Accessed in code via JDBC ([link to guide](https://www.javatpoint.com/java-jdbc)) and all wrapped by own [library](https://github.com/SMILEY4/kdbl).
 
+**Arrow**
 
+Arrow is a library for Typed Functional Programming in Kotlin. [Link to Documentation](https://arrow-kt.io/docs/core/)
 
 
 
@@ -98,6 +100,21 @@ The backend-architecture is based on the "[Hexagonal Architecture](https://en.wi
 - */core* - the core business logic
 - */external* - external services, e.g. databases, clients, controllers, ...
 - */shared* - code used by all/most other packages, contains utility functions and common logic
+
+## Error Handling
+
+- e.g.: when calling a function, three different things can happen -> need to be handled differently
+  - **success** / everything is fine
+    - continue as normal
+  - expected **error** (e.g. cant find user by name)
+    - all errors MUST be handled
+    - handle via "[Either](https://arrow-kt.io/docs/apidocs/arrow-core/arrow.core/-either/)" + strictly defined error-objects
+    - every interface (in "ports") returns its own strictly defined errors 
+  - unexpected **exception** (e.g. no connection to db)
+    - throw exception 
+    - exceptions normally caught by rest-controller
+
+
 
 
 

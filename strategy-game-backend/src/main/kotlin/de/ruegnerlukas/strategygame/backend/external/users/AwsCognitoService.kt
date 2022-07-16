@@ -1,5 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.external.users
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider
@@ -22,24 +25,20 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.CodeDeliveryError
-import de.ruegnerlukas.strategygame.backend.ports.errors.InternalApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.InvalidEmailOrPasswordError
-import de.ruegnerlukas.strategygame.backend.ports.errors.NotAuthorizedError
-import de.ruegnerlukas.strategygame.backend.ports.errors.UserAlreadyExistsError
-import de.ruegnerlukas.strategygame.backend.ports.errors.UserNotConfirmedError
-import de.ruegnerlukas.strategygame.backend.ports.errors.UserNotFoundError
+import de.ruegnerlukas.strategygame.backend.config.Config
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.config.Config
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.Err
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.AuthUserError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.CodeDeliveryError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.CreateUserError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.DeleteUserError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.InvalidEmailOrPasswordError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.NotAuthorizedError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.RefreshAuthError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotConfirmedError
+import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotFoundError
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.either.Ok
-import de.ruegnerlukas.strategygame.backend.shared.either.onError
-import de.ruegnerlukas.strategygame.backend.shared.either.onSuccess
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -139,7 +138,7 @@ class AwsCognitoService(
 	}
 
 
-	override fun createUser(email: String, password: String, username: String): Either<Unit, ApplicationError> {
+	override fun createUser(email: String, password: String, username: String): Either<CreateUserError, Unit> {
 		try {
 			provider.signUp(
 				SignUpRequest()
@@ -153,20 +152,20 @@ class AwsCognitoService(
 					)
 			)
 			log().info("Successfully created user $email")
-			return Ok()
+			return Either.Right("").void()
 		} catch (e: Exception) {
 			log().info("Failed to create user $email: ${e.message}", e)
 			return when (e) {
-				is UsernameExistsException -> Err(UserAlreadyExistsError)
-				is InvalidParameterException -> Err(InvalidEmailOrPasswordError)
-				is CodeDeliveryFailureException -> Err(CodeDeliveryError)
-				else -> Err(InternalApplicationError)
+				is UsernameExistsException -> UserIdentityService.UserAlreadyExistsError.left()
+				is InvalidParameterException -> InvalidEmailOrPasswordError.left()
+				is CodeDeliveryFailureException -> CodeDeliveryError.left()
+				else -> throw Exception("Could not create user. Cause: $e")
 			}
 		}
 	}
 
 
-	override fun authenticate(email: String, password: String): Either<ExtendedAuthData, ApplicationError> {
+	override fun authenticate(email: String, password: String): Either<AuthUserError, ExtendedAuthData> {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -181,7 +180,7 @@ class AwsCognitoService(
 					)
 			)
 			log().info("Successfully authenticated user $email")
-			return Ok(
+			return Either.Right(
 				ExtendedAuthData(
 					idToken = result.authenticationResult.idToken,
 					refreshToken = result.authenticationResult.refreshToken,
@@ -191,16 +190,16 @@ class AwsCognitoService(
 		} catch (e: Exception) {
 			log().info("Failed to authenticate user $email: ${e.message}", e)
 			return when (e) {
-				is NotAuthorizedException -> Err(NotAuthorizedError)
-				is UserNotConfirmedException -> Err(UserNotConfirmedError)
-				is UserNotFoundException -> Err(UserNotFoundError)
-				else -> Err(InternalApplicationError)
+				is NotAuthorizedException -> NotAuthorizedError.left()
+				is UserNotConfirmedException -> UserNotConfirmedError.left()
+				is UserNotFoundException -> UserNotFoundError.left()
+				else -> throw Exception("Could not authenticate user. Cause: $e")
 			}
 		}
 	}
 
 
-	override fun refreshAuthentication(refreshToken: String): Either<AuthData, ApplicationError> {
+	override fun refreshAuthentication(refreshToken: String): Either<RefreshAuthError, AuthData> {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -210,36 +209,35 @@ class AwsCognitoService(
 					.withAuthParameters(mapOf("REFRESH_TOKEN" to refreshToken))
 			)
 			log().info("Successfully refreshed user-authentication")
-			return Ok(
-				AuthData(
-					idToken = result.authenticationResult.idToken,
-					refreshToken = result.authenticationResult.refreshToken,
-				)
-			)
+			return AuthData(
+				idToken = result.authenticationResult.idToken,
+				refreshToken = result.authenticationResult.refreshToken,
+			).right()
 		} catch (e: Exception) {
 			log().info("Failed to refresh user-authentication: ${e.message}", e)
 			return when (e) {
-				is NotAuthorizedException -> Err(NotAuthorizedError)
-				is UserNotConfirmedException -> Err(UserNotConfirmedError)
-				is UserNotFoundException -> Err(UserNotFoundError)
-				else -> Err(InternalApplicationError)
+				is NotAuthorizedException -> NotAuthorizedError.left()
+				is UserNotConfirmedException -> UserNotConfirmedError.left()
+				is UserNotFoundException -> UserNotFoundError.left()
+				else -> throw Exception("Could not refresh auth-token. Cause: $e")
 			}
 		}
 	}
 
 
-	override suspend fun deleteUser(email: String, password: String): Either<Unit, ApplicationError> {
+	override suspend fun deleteUser(email: String, password: String): Either<DeleteUserError, Unit> {
 		try {
-			authenticate(email, password)
-				.onSuccess { provider.deleteUser(DeleteUserRequest().withAccessToken(it.accessToken)) }
-				.onError { throw IllegalStateException(it.toString()) }
+			authenticate(email, password).fold(
+				{ throw IllegalStateException(it.toString()) },
+				{ provider.deleteUser(DeleteUserRequest().withAccessToken(it.accessToken)) }
+			)
 			log().info("Successfully deleted user $email")
-			return Ok()
+			return Unit.right()
 		} catch (e: Exception) {
 			log().info("Failed to delete user $email: ${e.message}", e)
 			return when (e) {
-				is IllegalStateException -> Err(NotAuthorizedError)
-				else -> Err(InternalApplicationError)
+				is IllegalStateException -> NotAuthorizedError.left()
+				else -> throw Exception("Could not delete user. Cause: $e")
 			}
 		}
 	}

@@ -1,23 +1,21 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions.game
 
+import arrow.core.Either
 import de.ruegnerlukas.kdbl.builder.SQL
 import de.ruegnerlukas.kdbl.builder.isEqual
 import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.GameTbl
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameUpdateTurn
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
-import de.ruegnerlukas.strategygame.backend.shared.either.mapError
 import kotlin.collections.set
 
 class GameUpdateTurnImpl(private val database: Database) : GameUpdateTurn {
 
-	override suspend fun execute(id: String, turn: Int): Either<Unit, ApplicationError> {
+	override suspend fun execute(id: String, turn: Int): Either<DatabaseError, Unit> {
 		return Either
-			.runCatching(NoSuchElementException::class) {
+			.catch {
 				database
 					.startUpdate("game.update.turn") {
 						SQL
@@ -33,8 +31,12 @@ class GameUpdateTurnImpl(private val database: Database) : GameUpdateTurn {
 					.executeReturning()
 					.checkOne()
 			}
-			.mapError { EntityNotFoundError }
-			.discardValue()
+			.mapLeft { e ->
+				when (e) {
+					is NoSuchElementException -> EntityNotFoundError
+					else -> throw e
+				}
+			}
 	}
 
 }

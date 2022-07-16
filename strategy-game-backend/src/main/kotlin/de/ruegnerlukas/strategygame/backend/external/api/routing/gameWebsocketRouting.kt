@@ -1,21 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
+import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
-import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.either.onError
-import de.ruegnerlukas.strategygame.backend.shared.either.recover
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
@@ -41,14 +37,20 @@ fun Route.gameWebsocketRoutes(
 		websocketAuthenticate(userService) {
 			interceptWebsocketRequest(
 				interceptor = {
-					requestConnection.perform(
+					val result = requestConnection.perform(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
 					)
-						.recover(GameNotFoundError) { call.respond(HttpStatusCode.NotFound, it.toString()) }
-						.recover(NotParticipantError) { call.respond(HttpStatusCode.Conflict, it.toString()) }
-						.recover(AlreadyConnectedError) { call.respond(HttpStatusCode.Conflict, it.toString()) }
-						.onError { call.respond(HttpStatusCode.InternalServerError, it.toString()) }
+					when (result) {
+						is Either.Right -> {
+							/*do nothing*/
+						}
+						is Either.Left -> when (result.value) {
+							GameRequestConnectionAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+							GameRequestConnectionAction.NotParticipantError -> call.respond(HttpStatusCode.Conflict, result.value)
+							GameRequestConnectionAction.AlreadyConnectedError -> call.respond(HttpStatusCode.Conflict, result.value)
+						}
+					}
 				},
 				callback = {
 					webSocket {

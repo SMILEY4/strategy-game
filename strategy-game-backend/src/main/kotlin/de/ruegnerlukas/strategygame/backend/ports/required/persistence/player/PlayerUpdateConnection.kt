@@ -1,13 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.ports.required.persistence.player
 
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
+import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
 
 interface PlayerUpdateConnection {
 
 	/**
 	 * Update the connection(-id) of the player with the given id
 	 */
-	suspend fun execute(playerId: String, connectionId: Int?): Either<Unit, ApplicationError>
+	suspend fun execute(playerId: String, connectionId: Int?): Either<DatabaseError, Unit>
 
 }

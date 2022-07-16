@@ -1,11 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.turn
 
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
+import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
 
 interface TurnSubmitAction {
 
-	suspend fun perform(userId: String, gameId: String, commands: List<PlaceMarkerCommand>): Either<Unit, ApplicationError>
+	sealed class TurnSubmitActionError
+	object GameNotFoundError : TurnSubmitActionError()
+	object NotParticipantError : TurnSubmitActionError()
+
+	suspend fun perform(userId: String, gameId: String, commands: List<PlaceMarkerCommand>): Either<TurnSubmitActionError, Unit>
 
 }

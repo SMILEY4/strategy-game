@@ -1,25 +1,22 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
+import arrow.core.Either
+import arrow.core.computations.either
+import arrow.core.getOrElse
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateConnection
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.either.map
-import de.ruegnerlukas.strategygame.backend.shared.either.mapError
-import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 class GameConnectActionImpl(
 	private val queryPlayer: PlayerQueryByUserAndGame,
@@ -29,16 +26,33 @@ class GameConnectActionImpl(
 	private val messageProducer: GameMessageProducer,
 ) : GameConnectAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<Unit, ApplicationError> {
+	override suspend fun perform(
+		userId: String,
+		gameId: String,
+		connectionId: Int
+	): Either<GameConnectAction.GameConnectActionError, Unit> {
 		log().info("Connect user $userId ($connectionId) to game-lobby $gameId")
-		return Either.start()
-			.flatMap { queryPlayer.execute(userId, gameId) }
-			.mapError(EntityNotFoundError) { NotParticipantError }
-			.thenOrErr { player -> updatePlayerConnection.execute(player.id, connectionId) }
-			.flatMap { player -> queryTiles.execute(player.gameId) }
-			.map { tiles -> sendMessage(connectionId, gameId, tiles) }
+		return either {
+			val player = findValidPlayer(userId, gameId).bind()
+			updatePlayerConnection(player, connectionId)
+			val tiles = findTiles(gameId)
+			sendMessage(connectionId, gameId, tiles)
+		}
 	}
 
+	private suspend fun findValidPlayer(userId: String, gameId: String): Either<NotParticipantError, PlayerEntity> {
+		return queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }
+	}
+
+	private suspend fun updatePlayerConnection(player: PlayerEntity, connectionId: Int) {
+		updatePlayerConnection.execute(player.id, connectionId)
+			.getOrElse { throw Exception("Could not update player-connection of player ${player.id}") }
+	}
+
+	private suspend fun findTiles(gameId: String): List<TileEntity> {
+		return queryTiles.execute(gameId)
+			.getOrElse { throw Exception("Could not fetch files of game $gameId") }
+	}
 
 	private suspend fun sendMessage(connectionId: Int, gameId: String, tiles: List<TileEntity>) {
 		queryMarkers.execute(gameId)

@@ -1,26 +1,22 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.UserAlreadyPlayer
+import arrow.core.Either
+import arrow.core.computations.either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameJoinActionErrors
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.UserAlreadyPlayer
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
-import de.ruegnerlukas.strategygame.backend.shared.either.Either
-import de.ruegnerlukas.strategygame.backend.shared.either.Err
-import de.ruegnerlukas.strategygame.backend.shared.either.Ok
-import de.ruegnerlukas.strategygame.backend.shared.either.discardValue
-import de.ruegnerlukas.strategygame.backend.shared.either.flatMap
-import de.ruegnerlukas.strategygame.backend.shared.either.getError
-import de.ruegnerlukas.strategygame.backend.shared.either.mapError
-import de.ruegnerlukas.strategygame.backend.shared.either.recover
-import de.ruegnerlukas.strategygame.backend.shared.either.thenOrErr
 
 /**
  * Join an existing game-lobby
@@ -31,25 +27,40 @@ class GameJoinActionImpl(
 	private val queryPlayer: PlayerQueryByUserAndGame
 ) : GameJoinAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String): Either<Unit, ApplicationError> {
+	override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
 		log().info("Join game-lobby $gameId (user = $userId)")
-		return Either.start()
-			.flatMap { queryGame.execute(gameId) }
-			.mapError(EntityNotFoundError) { GameNotFoundError }
-			.thenOrErr { game -> validate(userId, game) }
-			.flatMap { game -> insertPlayer.execute(createPlayer(game.id, userId)) }
-			.recover(UserAlreadyPlayer) { }
-			.discardValue()
+		return either {
+			val game = findGame(gameId).bind()
+			validate(userId, game).bind()
+			insertPlayer(game, userId)
+		}
 	}
 
+	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
+		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
+	}
 
-	private suspend fun validate(userId: String, game: GameEntity): Either<Unit, ApplicationError> {
-		val result = queryPlayer.execute(userId, game.id)
-		return when {
-			result.isOk() -> Err(UserAlreadyPlayer)
-			result.isError(EntityNotFoundError) -> Ok()
-			else -> Err(result.getError()!!)
+	private suspend fun validate(userId: String, game: GameEntity): Either<UserAlreadyPlayer, Unit> {
+		if (existsPlayer(userId, game)) {
+			return UserAlreadyPlayer.left()
+		} else {
+			return Unit.right()
 		}
+	}
+
+	private suspend fun existsPlayer(userId: String, game: GameEntity): Boolean {
+		val result = queryPlayer.execute(userId, game.id)
+		return when (result) {
+			is Either.Left -> when (result.value) {
+				is EntityNotFoundError -> false
+			}
+			is Either.Right -> true
+		}
+	}
+
+	private suspend fun insertPlayer(game: GameEntity, userId: String) {
+		return insertPlayer.execute(createPlayer(game.id, userId))
+			.getOrElse { throw Exception("Could not save player (userId=$userId) for game ${game.id} ") }
 	}
 
 	private fun createPlayer(gameId: String, userId: String) = PlayerEntity(
