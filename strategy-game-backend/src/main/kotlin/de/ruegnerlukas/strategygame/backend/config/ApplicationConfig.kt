@@ -17,6 +17,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountriesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
@@ -99,12 +100,14 @@ fun Application.module() {
 	val tileInsertMultiple = TileInsertMultipleImpl(database)
 	val tileQueryByGameAndPosition = TileQueryByGameAndPositionImpl(database)
 	val tilesQueryByGame = TilesQueryByGameImpl(database)
+	val countriesQueryByGame = CountriesQueryByGameImpl(database)
 	val extGameInsert = ExtGameInsertImpl(database)
 	val extGameQuery = ExtGameQueryImpl(
 		gameQuery,
 		tilesQueryByGame,
 		markersQueryByGame,
-		playerQueryByGame
+		playerQueryByGame,
+		countriesQueryByGame
 	)
 
 	// core actions

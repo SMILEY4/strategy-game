@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameex
 
 import arrow.core.Either
 import arrow.core.computations.either
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountriesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.ExtGameEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
@@ -14,7 +15,8 @@ class ExtGameQueryImpl(
 	private val gameQuery: GameQuery,
 	private val tilesQuery: TilesQueryByGame,
 	private val markersQuery: MarkersQueryByGame,
-	private val playerQuery: PlayerQueryByGame
+	private val playerQuery: PlayerQueryByGame,
+	private val countryQuery: CountriesQueryByGameImpl
 ) : ExtGameQuery {
 
 	override suspend fun execute(gameId: String, include: ExtGameQuery.Include): Either<DatabaseError, ExtGameEntity> {
@@ -32,13 +34,18 @@ class ExtGameQueryImpl(
 				true -> playerQuery.execute(gameId).bind()
 				false -> listOf()
 			}
+			val countries = when (include.includeCountries) {
+				true -> countryQuery.execute(gameId).bind()
+				false -> listOf()
+			}
 			ExtGameEntity(
 				id = game.id,
 				seed = game.seed,
 				turn = game.turn,
 				tiles = tiles,
 				markers = markers,
-				players = players
+				players = players,
+				countries = countries
 			)
 		}
 	}

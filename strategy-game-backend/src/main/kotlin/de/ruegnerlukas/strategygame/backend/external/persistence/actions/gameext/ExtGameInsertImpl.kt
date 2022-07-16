@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameex
 
 import arrow.core.Either
 import de.ruegnerlukas.kdbl.db.Database
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
@@ -17,7 +18,6 @@ class ExtGameInsertImpl(private val database: Database) : ExtGameInsert {
 	override suspend fun execute(extGame: ExtGameEntity): Either<DatabaseError, Unit> {
 		return Either
 			.catch {
-				// GAME
 				database.startTransaction(true) { txDb ->
 					GameInsertImpl(txDb).execute(
 						GameEntity(
@@ -37,8 +37,12 @@ class ExtGameInsertImpl(private val database: Database) : ExtGameInsert {
 							extGame.players.forEach { execute(it) }
 						}
 					}
+					if (extGame.countries.isNotEmpty()) {
+						CountryInsertImpl(txDb).apply {
+							extGame.countries.forEach { execute(it) }
+						}
+					}
 				}
-
 			}
 			.mapLeft { throw it }
 	}

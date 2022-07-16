@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.ExtGameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
@@ -33,13 +34,15 @@ class GameCreateActionImpl(
 	private fun createExtGameEntity(userId: String): ExtGameEntity {
 		val gameId = UUID.gen()
 		val seed = Random().nextInt()
+		val player = createOwnerPlayer(userId, gameId)
 		return ExtGameEntity(
 			id = gameId,
 			seed = seed,
 			turn = 0,
-			players = listOf(createOwnerPlayer(userId, gameId)),
+			players = listOf(player),
 			tiles = createTiles(gameId, seed),
 			markers = listOf(),
+			countries = listOf(createOwnerCountry(player))
 		)
 	}
 
@@ -49,6 +52,11 @@ class GameCreateActionImpl(
 		gameId = gameId,
 		connectionId = null,
 		state = PlayerEntity.STATE_PLAYING
+	)
+
+	private fun createOwnerCountry(player: PlayerEntity) = CountryEntity(
+		playerId = player.id,
+		amountMoney = 200f
 	)
 
 	private fun createTiles(gameId: String, seed: Int): List<TileEntity> {

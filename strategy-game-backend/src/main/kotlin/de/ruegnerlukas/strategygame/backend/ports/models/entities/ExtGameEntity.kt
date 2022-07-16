@@ -6,5 +6,6 @@ data class ExtGameEntity(
 	val turn: Int,
 	val tiles: List<TileEntity>,
 	val markers: List<MarkerEntity>,
-	val players: List<PlayerEntity>
+	val players: List<PlayerEntity>,
+	val countries: List<CountryEntity>
 )

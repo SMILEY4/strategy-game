@@ -7,6 +7,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountriesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
@@ -80,7 +81,8 @@ class TurnTest : StringSpec({
 					GameQueryImpl(database),
 					TilesQueryByGameImpl(database),
 					MarkersQueryByGameImpl(database),
-					PlayerQueryByGameImpl(database)
+					PlayerQueryByGameImpl(database),
+					CountriesQueryByGameImpl(database)
 				),
 				GameMessageProducerImpl(TestUtils.MockMessageProducer()),
 			),

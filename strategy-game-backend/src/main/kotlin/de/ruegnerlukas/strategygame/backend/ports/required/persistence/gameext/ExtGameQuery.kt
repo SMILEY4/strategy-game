@@ -10,6 +10,7 @@ interface ExtGameQuery {
 		val includeTiles: Boolean = false,
 		val includeMarkers: Boolean = false,
 		val includePlayers: Boolean = false,
+		val includeCountries: Boolean = false,
 	)
 
 	/**
