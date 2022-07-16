@@ -25,7 +25,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameStatePlayingImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.ports.models.game.OrderType
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
@@ -96,16 +96,12 @@ class TurnTest : StringSpec({
 		val resultSubmit1 = submitTurn.perform(
 			userId1, gameId, listOf(
 				PlaceMarkerCommand(
-					userId = userId1,
 					q = 4,
 					r = 2,
-					orderType = OrderType.PLACE_MARKER
 				),
-				PlaceMarkerCommand(
-					userId = userId1,
+				CreateCityCommand(
 					q = 4,
 					r = 3,
-					orderType = OrderType.PLACE_MARKER
 				)
 			)
 		)
@@ -114,18 +110,17 @@ class TurnTest : StringSpec({
 		GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.let { game ->
 			game.turn shouldBe 0
 		}
-		CommandsQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
-			orders shouldHaveSize 2
-			orders.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1)
+		CommandsQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { commands ->
+			commands shouldHaveSize 2
+			commands.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1)
+			commands.map { it.type } shouldContainExactlyInAnyOrder listOf(PlaceMarkerCommand.TYPE, CreateCityCommand.TYPE)
 		}
 
 		val resultSubmit2 = submitTurn.perform(
 			userId2, gameId, listOf(
 				PlaceMarkerCommand(
-					userId = userId2,
 					q = 0,
 					r = 0,
-					orderType = OrderType.PLACE_MARKER
 				)
 			)
 		)
@@ -134,9 +129,11 @@ class TurnTest : StringSpec({
 		GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.let {
 			it.turn shouldBe 1
 		}
-		CommandsQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
-			orders shouldHaveSize 3
-			orders.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1, player2)
+		CommandsQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { commands ->
+			commands shouldHaveSize 3
+			commands.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1, player2)
+			commands.map { it.type } shouldContainExactlyInAnyOrder listOf(PlaceMarkerCommand.TYPE, PlaceMarkerCommand.TYPE, CreateCityCommand.TYPE)
+
 		}
 
 	}

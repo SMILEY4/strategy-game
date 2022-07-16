@@ -4,6 +4,7 @@ data class CommandEntity(
 	val id: String,
 	val playerId: String,
 	val turn: Int,
+	val type: String,
 	val data: String
 ) {
 

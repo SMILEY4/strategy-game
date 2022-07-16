@@ -56,6 +56,7 @@ sealed class CommandTableDef : Table("commands", true) {
 	val id = text("id").primaryKey()
 	val playerId = text("playerId").foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
 	val turn = integer("turn")
+	val type = text("type")
 	val data = text("data")
 
 	companion object {

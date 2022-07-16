@@ -80,6 +80,7 @@ class TurnSubmitActionImpl(
 			playerId = playerId,
 			turn = game.turn,
 			data = Base64.toBase64(Json.asString(PlaceMarkerCommandData(tile.id))),
+			type = cmd.type
 		)
 	}
 
@@ -91,6 +92,7 @@ class TurnSubmitActionImpl(
 			playerId = playerId,
 			turn = game.turn,
 			data = Base64.toBase64(Json.asString(CreateCityCommandData(tile.id))),
+			type = cmd.type
 		)
 	}
 

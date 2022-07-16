@@ -18,13 +18,13 @@ sealed class PlayerCommand(
 )
 
 
-@JsonTypeName(PlaceMarkerCommand.Type)
+@JsonTypeName(PlaceMarkerCommand.TYPE)
 class PlaceMarkerCommand(
 	val q: Int,
 	val r: Int,
-) : PlayerCommand(Type) {
+) : PlayerCommand(TYPE) {
 	companion object {
-		internal const val Type = "place-marker"
+		internal const val TYPE = "place-marker"
 	}
 }
 

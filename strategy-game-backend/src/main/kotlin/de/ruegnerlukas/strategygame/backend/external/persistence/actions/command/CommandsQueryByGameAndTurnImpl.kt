@@ -8,8 +8,8 @@ import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.CommandTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.command.CommandsQueryByGameAndTurn
 
 class CommandsQueryByGameAndTurnImpl(private val database: Database) : CommandsQueryByGameAndTurn {
@@ -20,7 +20,7 @@ class CommandsQueryByGameAndTurnImpl(private val database: Database) : CommandsQ
 				database
 					.startQuery("command.query.by_game_and_turn") {
 						SQL
-							.select(CommandTbl.id, CommandTbl.playerId, CommandTbl.turn, CommandTbl.data)
+							.select(CommandTbl.id, CommandTbl.playerId, CommandTbl.turn, CommandTbl.type, CommandTbl.data)
 							.from(CommandTbl, PlayerTbl)
 							.where(
 								CommandTbl.playerId.isEqual(PlayerTbl.id)
@@ -38,6 +38,7 @@ class CommandsQueryByGameAndTurnImpl(private val database: Database) : CommandsQ
 							id = rs.getString(CommandTbl.id),
 							playerId = rs.getString(CommandTbl.playerId),
 							turn = rs.getInt(CommandTbl.turn),
+							type = rs.getString(CommandTbl.type),
 							data = rs.getString(CommandTbl.data)
 						)
 					}

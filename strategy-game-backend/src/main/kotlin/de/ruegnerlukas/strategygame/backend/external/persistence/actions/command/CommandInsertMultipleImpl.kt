@@ -17,12 +17,13 @@ class CommandInsertMultipleImpl(private val database: Database) : CommandsInsert
 					SQL
 						.insert()
 						.into(CommandTbl)
-						.columns(CommandTbl.id, CommandTbl.playerId, CommandTbl.turn, CommandTbl.data)
+						.columns(CommandTbl.id, CommandTbl.playerId, CommandTbl.turn, CommandTbl.type, CommandTbl.data)
 						.items(batch.map {
 							SQL.item()
 								.set(CommandTbl.id, it.id)
 								.set(CommandTbl.playerId, it.playerId)
 								.set(CommandTbl.turn, it.turn)
+								.set(CommandTbl.type, it.type)
 								.set(CommandTbl.data, it.data)
 						})
 				}
