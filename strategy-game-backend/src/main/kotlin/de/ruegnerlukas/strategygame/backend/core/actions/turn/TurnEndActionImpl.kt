@@ -2,9 +2,7 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import arrow.core.Either
 import arrow.core.computations.either
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
+import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
@@ -16,6 +14,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.TurnEndActionError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameUpdateTurn
@@ -42,28 +41,28 @@ class TurnEndActionImpl(
 	private val messageProducer: GameMessageProducer
 ) : TurnEndAction, Logging {
 
-	override suspend fun perform(gameId: String): Either<ApplicationError, Unit> {
+	override suspend fun perform(gameId: String): Either<TurnEndActionError, Unit> {
 		log().info("End turn of game $gameId")
 		return either {
-			val game = queryGame.execute(gameId).mapLeft { e ->
-				when (e) {
-					is EntityNotFoundError -> GameNotFoundError
-					else -> e
-				}
-			}.bind()
-			updateState(game).bind()
-			sendMessages(game).bind()
+			val game = findGame(gameId).bind()
+			updateState(game)
+			sendMessages(game)
 		}
 	}
 
+	private suspend fun findGame(gameId: String): Either<TurnEndAction.GameNotFoundError, GameEntity> {
+		return queryGame.execute(gameId).mapLeft { TurnEndAction.GameNotFoundError }
+	}
 
-	private suspend fun updateState(game: GameEntity): Either<ApplicationError, Unit> {
-		return either {
-			val orders = queryOrders.execute(game.id, game.turn).bind()
-			insertMarkers.execute(orders.map { mapOrderToMarker(it) }).bind()
-			updatePlayerState.execute(game.id, PlayerEntity.STATE_PLAYING).bind()
-			updateGameTurn.execute(game.id, game.turn + 1)
-		}
+	private suspend fun updateState(game: GameEntity) {
+		val orders = queryOrders.execute(game.id, game.turn)
+			.getOrElse { throw Exception("Could not fetch orders for game ${game.id} in turn ${game.turn}") }
+		insertMarkers.execute(orders.map { mapOrderToMarker(it) })
+			.getOrElse { throw Exception("Could not insert markers") }
+		updatePlayerState.execute(game.id, PlayerEntity.STATE_PLAYING)
+			.getOrElse { throw Exception("Could not update state of players in game ${game.id}") }
+		updateGameTurn.execute(game.id, game.turn + 1)
+			.getOrElse { throw Exception("Could not update turn of game ${game.id}") }
 	}
 
 	private fun mapOrderToMarker(order: OrderEntity): MarkerEntity {
@@ -75,17 +74,18 @@ class TurnEndActionImpl(
 		)
 	}
 
-	private suspend fun sendMessages(game: GameEntity): Either<ApplicationError, Unit> {
-		return either {
-			val tiles = queryTiles.execute(game.id).bind()
-			queryConnectedPlayers.execute(game.id).tap { players ->
-				queryMarkers.execute(game.id).tap { markers ->
-					players.filter { it.connectionId != null }.forEach { player ->
-						sendMessage(player.connectionId!!, tiles, markers)
-					}
+	private suspend fun sendMessages(game: GameEntity) {
+			val tiles = queryTiles.execute(game.id)
+				.getOrElse { throw Exception("Could not fetch tiles for game ${game.id}") }
+			val markers = queryMarkers.execute(game.id)
+				.getOrElse { throw Exception("Could not fetch markers for game ${game.id}") }
+			val connectedPlayers = queryConnectedPlayers.execute(game.id)
+				.getOrElse { throw Exception("Could not fetch connected players for game ${game.id}") }
+			connectedPlayers
+				.filter { it.connectionId != null }
+				.forEach { player ->
+					sendMessage(player.connectionId!!, tiles, markers)
 				}
-			}
-		}
 	}
 
 	private suspend fun sendMessage(connectionId: Int, tiles: List<TileEntity>, markers: List<MarkerEntity>) {

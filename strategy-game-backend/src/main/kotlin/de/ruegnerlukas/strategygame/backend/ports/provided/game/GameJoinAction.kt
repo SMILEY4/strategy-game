@@ -1,11 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.game
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 
 
 interface GameJoinAction {
 
-	suspend fun perform(userId: String, gameId: String): Either<ApplicationError, Unit>
+	sealed class GameJoinActionErrors
+	object UserAlreadyPlayer: GameJoinActionErrors()
+	object GameNotFoundError: GameJoinActionErrors()
+
+	suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit>
 
 }

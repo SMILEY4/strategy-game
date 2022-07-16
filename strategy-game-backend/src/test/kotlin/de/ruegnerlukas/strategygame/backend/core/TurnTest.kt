@@ -80,7 +80,7 @@ class TurnTest : StringSpec({
 
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
-		val gameId = createGame.perform(userId1).getOrHandle { throw Exception(it.toString()) }
+		val gameId = createGame.perform(userId1)
 
 		joinGame.perform(userId2, gameId) shouldBeOk true
 

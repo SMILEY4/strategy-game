@@ -1,22 +1,20 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
+import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
-import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.respondHttp
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import io.ktor.server.websocket.webSocket
@@ -39,14 +37,19 @@ fun Route.gameWebsocketRoutes(
 		websocketAuthenticate(userService) {
 			interceptWebsocketRequest(
 				interceptor = {
-					requestConnection.perform(
+					val result = requestConnection.perform(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
-					).respondHttp(call) {
-						left(GameNotFoundError, HttpStatusCode.NotFound)
-						left(NotParticipantError, HttpStatusCode.Conflict)
-						left(AlreadyConnectedError, HttpStatusCode.Conflict)
-						anyLeft(HttpStatusCode.InternalServerError)
+					)
+					when (result) {
+						is Either.Right -> {
+							/*do nothing*/
+						}
+						is Either.Left -> when (result.value) {
+							GameRequestConnectionAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+							GameRequestConnectionAction.NotParticipantError -> call.respond(HttpStatusCode.Conflict, result.value)
+							GameRequestConnectionAction.AlreadyConnectedError -> call.respond(HttpStatusCode.Conflict, result.value)
+						}
 					}
 				},
 				callback = {

@@ -3,14 +3,14 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.flatMap
-import de.ruegnerlukas.strategygame.backend.ports.errors.AlreadyConnectedError
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
+import arrow.core.left
+import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.AlreadyConnectedError
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameRequestConnectionActionError
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -20,7 +20,7 @@ class GameRequestConnectionActionImpl(
 	private val queryPlayer: PlayerQueryByUserAndGame
 ) : GameRequestConnectionAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String): Either<ApplicationError, Unit> {
+	override suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit> {
 		log().info("Request to connect to game-lobby $gameId from user $userId")
 		return either {
 			val game = findGame(gameId).bind()
@@ -28,31 +28,18 @@ class GameRequestConnectionActionImpl(
 		}
 	}
 
-
-	private suspend fun findGame(gameId: String): Either<ApplicationError, GameEntity> {
-		return queryGame.execute(gameId)
-			.mapLeft { e ->
-				when (e) {
-					is EntityNotFoundError -> GameNotFoundError
-					else -> e
-				}
-			}
+	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
+		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
-
-	private suspend fun validatePlayer(game: GameEntity, userId: String): Either<ApplicationError, Unit> {
+	private suspend fun validatePlayer(game: GameEntity, userId: String): Either<GameRequestConnectionActionError, Unit> {
 		return queryPlayer.execute(userId, game.id)
-			.mapLeft { e ->
-				when (e) {
-					is EntityNotFoundError -> NotParticipantError
-					else -> e
-				}
-			}
-			.flatMap { player: PlayerEntity ->
+			.mapLeft { NotParticipantError }
+			.flatMap { player ->
 				if (player.connectionId == null) {
-					Either.Right("").void()
+					Unit.right()
 				} else {
-					Either.Left(AlreadyConnectedError)
+					AlreadyConnectedError.left()
 				}
 			}
 	}

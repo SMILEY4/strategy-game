@@ -4,7 +4,7 @@ import arrow.core.Either
 import de.ruegnerlukas.kdbl.builder.SQL
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
-import de.ruegnerlukas.strategygame.backend.ports.errors.DatabaseError
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TileInsertMultiple
 

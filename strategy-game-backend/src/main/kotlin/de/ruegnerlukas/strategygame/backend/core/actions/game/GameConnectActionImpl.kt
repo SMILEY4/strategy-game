@@ -2,14 +2,15 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import arrow.core.Either
 import arrow.core.computations.either
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
-import de.ruegnerlukas.strategygame.backend.ports.errors.NotParticipantError
+import arrow.core.getOrElse
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
@@ -25,14 +26,32 @@ class GameConnectActionImpl(
 	private val messageProducer: GameMessageProducer,
 ) : GameConnectAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<ApplicationError, Unit> {
+	override suspend fun perform(
+		userId: String,
+		gameId: String,
+		connectionId: Int
+	): Either<GameConnectAction.GameConnectActionError, Unit> {
 		log().info("Connect user $userId ($connectionId) to game-lobby $gameId")
 		return either {
-			val player = queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }.bind()
-			updatePlayerConnection.execute(player.id, connectionId)
-			val tiles = queryTiles.execute(gameId).bind()
+			val player = findValidPlayer(userId, gameId).bind()
+			updatePlayerConnection(player, connectionId)
+			val tiles = findTiles(gameId)
 			sendMessage(connectionId, gameId, tiles)
 		}
+	}
+
+	private suspend fun findValidPlayer(userId: String, gameId: String): Either<NotParticipantError, PlayerEntity> {
+		return queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }
+	}
+
+	private suspend fun updatePlayerConnection(player: PlayerEntity, connectionId: Int) {
+		updatePlayerConnection.execute(player.id, connectionId)
+			.getOrElse { throw Exception("Could not update player-connection of player ${player.id}") }
+	}
+
+	private suspend fun findTiles(gameId: String): List<TileEntity> {
+		return queryTiles.execute(gameId)
+			.getOrElse { throw Exception("Could not fetch files of game $gameId") }
 	}
 
 	private suspend fun sendMessage(connectionId: Int, gameId: String, tiles: List<TileEntity>) {

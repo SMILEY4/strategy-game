@@ -8,7 +8,7 @@ import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.GameTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
-import de.ruegnerlukas.strategygame.backend.ports.errors.DatabaseError
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GamesQueryByUser
 

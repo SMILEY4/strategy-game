@@ -6,9 +6,9 @@ import de.ruegnerlukas.kdbl.builder.isEqual
 import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.GameTbl
-import de.ruegnerlukas.strategygame.backend.ports.errors.DatabaseError
-import de.ruegnerlukas.strategygame.backend.ports.errors.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
 
 class GameQueryImpl(private val database: Database) : GameQuery {

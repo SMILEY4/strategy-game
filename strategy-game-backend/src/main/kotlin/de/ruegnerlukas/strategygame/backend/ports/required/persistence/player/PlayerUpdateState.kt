@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.required.persistence.player
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.errors.DatabaseError
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.DatabaseError
 
 interface PlayerUpdateState {
 

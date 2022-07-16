@@ -5,7 +5,6 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
-import de.ruegnerlukas.strategygame.backend.ports.errors.ApplicationError
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
@@ -70,7 +69,7 @@ class DummyUserIdentityService : UserIdentityService {
 		}
 	}
 
-	override fun authenticate(email: String, password: String): Either<ApplicationError, ExtendedAuthData> {
+	override fun authenticate(email: String, password: String): Either<UserIdentityService.AuthUserError, ExtendedAuthData> {
 		return Either.Right(
 			ExtendedAuthData(
 				idToken = makeToken(email),
@@ -80,16 +79,16 @@ class DummyUserIdentityService : UserIdentityService {
 		)
 	}
 
-	override fun createUser(email: String, password: String, username: String): Either<ApplicationError, Unit> {
+	override fun createUser(email: String, password: String, username: String): Either<UserIdentityService.CreateUserError, Unit> {
 		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support creating users")
 	}
 
-	override fun refreshAuthentication(refreshToken: String): Either<ApplicationError, AuthData> {
+	override fun refreshAuthentication(refreshToken: String): Either<UserIdentityService.RefreshAuthError, AuthData> {
 		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support refreshing tokens")
 
 	}
 
-	override suspend fun deleteUser(email: String, password: String): Either<ApplicationError, Unit> {
+	override suspend fun deleteUser(email: String, password: String): Either<UserIdentityService.DeleteUserError, Unit> {
 		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support deleting users")
 	}
 
