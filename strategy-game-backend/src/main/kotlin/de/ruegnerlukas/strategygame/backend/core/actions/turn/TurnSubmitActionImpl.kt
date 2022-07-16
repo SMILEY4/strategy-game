@@ -5,17 +5,20 @@ import arrow.core.computations.either
 import arrow.core.getOrElse
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity.Companion.PlaceMarkerOrderData
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.TurnSubmitActionError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderInsertMultiple
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.command.CommandsInsertMultiple
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateState
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayersQueryByGameStatePlaying
@@ -31,11 +34,11 @@ class TurnSubmitActionImpl(
 	private val queryPlayerPlaying: PlayersQueryByGameStatePlaying,
 	private val queryTile: TileQueryByGameAndPosition,
 	private val updatePlayerState: PlayerUpdateState,
-	private val insertOrders: OrderInsertMultiple,
+	private val insertCommands: CommandsInsertMultiple,
 	private val endTurnAction: TurnEndAction
 ) : TurnSubmitAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String, commands: List<PlaceMarkerCommand>): Either<TurnSubmitActionError, Unit> {
+	override suspend fun perform(userId: String, gameId: String, commands: List<PlayerCommand>): Either<TurnSubmitActionError, Unit> {
 		log().info("user $userId submits ${commands.size} commands for game $gameId")
 		return either {
 			val player = findPlayer(userId, gameId).bind()
@@ -48,28 +51,46 @@ class TurnSubmitActionImpl(
 		return queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }
 	}
 
-	private suspend fun updateState(player: PlayerEntity, commands: List<PlaceMarkerCommand>): Either<TurnSubmitActionError, Unit> {
+	private suspend fun updateState(player: PlayerEntity, commands: List<PlayerCommand>): Either<TurnSubmitActionError, Unit> {
 		return either {
 			val game = queryGame.execute(player.gameId).mapLeft { GameNotFoundError }.bind()
-			insertOrders.execute(createOrders(game, player, commands))
-				.getOrElse { throw Exception("Could not insert orders of player ${player.id}") }
+			insertCommands.execute(createCommands(game, player, commands))
+				.getOrElse { throw Exception("Could not insert commands of player ${player.id}") }
 			updatePlayerState.execute(player.id, PlayerEntity.STATE_SUBMITTED)
 				.getOrElse { throw Exception("Could not update state of player ${player.id}") }
 		}
 	}
 
-	private suspend fun createOrders(game: GameEntity, player: PlayerEntity, commands: List<PlaceMarkerCommand>): List<OrderEntity> {
-		return commands.map { command -> createOrder(game, player.id, command) }
+	private suspend fun createCommands(game: GameEntity, player: PlayerEntity, commands: List<PlayerCommand>): List<CommandEntity> {
+		return commands.map { command -> createCommand(game, player.id, command) }
 	}
 
-	private suspend fun createOrder(game: GameEntity, playerId: String, cmd: PlaceMarkerCommand): OrderEntity {
+	private suspend fun createCommand(game: GameEntity, playerId: String, cmd: PlayerCommand): CommandEntity {
+		return when (cmd) {
+			is PlaceMarkerCommand -> createCommandPlaceMarker(game, playerId, cmd)
+			is CreateCityCommand -> createCommandCreateCity(game, playerId, cmd)
+		}
+	}
+
+	private suspend fun createCommandPlaceMarker(game: GameEntity, playerId: String, cmd: PlaceMarkerCommand): CommandEntity {
 		val tile = queryTile.execute(game.id, cmd.q, cmd.r)
 			.getOrElse { throw Exception("Could not find tile at ${cmd.q},${cmd.q} for game ${game.id}") }
-		return OrderEntity(
+		return CommandEntity(
 			id = UUID.gen(),
 			playerId = playerId,
 			turn = game.turn,
-			data = Base64.toBase64(Json.asString(PlaceMarkerOrderData(tile.id))),
+			data = Base64.toBase64(Json.asString(PlaceMarkerCommandData(tile.id))),
+		)
+	}
+
+	private suspend fun createCommandCreateCity(game: GameEntity, playerId: String, cmd: CreateCityCommand): CommandEntity {
+		val tile = queryTile.execute(game.id, cmd.q, cmd.r)
+			.getOrElse { throw Exception("Could not find tile at ${cmd.q},${cmd.q} for game ${game.id}") }
+		return CommandEntity(
+			id = UUID.gen(),
+			playerId = playerId,
+			turn = game.turn,
+			data = Base64.toBase64(Json.asString(CreateCityCommandData(tile.id))),
 		)
 	}
 

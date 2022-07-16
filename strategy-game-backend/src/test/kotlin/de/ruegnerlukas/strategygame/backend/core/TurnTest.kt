@@ -8,32 +8,25 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountriesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurnImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandsQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateConnectionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateStateByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateStateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameConnectedImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameStatePlayingImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandType
+import de.ruegnerlukas.strategygame.backend.ports.models.game.OrderType
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.core.spec.style.StringSpec
@@ -70,10 +63,10 @@ class TurnTest : StringSpec({
 			PlayersQueryByGameStatePlayingImpl(database),
 			TileQueryByGameAndPositionImpl(database),
 			PlayerUpdateStateImpl(database),
-			OrderInsertMultipleImpl(database),
+			CommandInsertMultipleImpl(database),
 			TurnEndActionImpl(
 				GameQueryImpl(database),
-				OrderQueryByGameAndTurnImpl(database),
+				CommandsQueryByGameAndTurnImpl(database),
 				PlayerUpdateStateByGameImpl(database),
 				GameUpdateTurnImpl(database),
 				MarkerInsertMultipleImpl(database),
@@ -106,13 +99,13 @@ class TurnTest : StringSpec({
 					userId = userId1,
 					q = 4,
 					r = 2,
-					commandType = CommandType.PLACE_MARKER
+					orderType = OrderType.PLACE_MARKER
 				),
 				PlaceMarkerCommand(
 					userId = userId1,
 					q = 4,
 					r = 3,
-					commandType = CommandType.PLACE_MARKER
+					orderType = OrderType.PLACE_MARKER
 				)
 			)
 		)
@@ -121,7 +114,7 @@ class TurnTest : StringSpec({
 		GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.let { game ->
 			game.turn shouldBe 0
 		}
-		OrderQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
+		CommandsQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
 			orders shouldHaveSize 2
 			orders.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1)
 		}
@@ -132,7 +125,7 @@ class TurnTest : StringSpec({
 					userId = userId2,
 					q = 0,
 					r = 0,
-					commandType = CommandType.PLACE_MARKER
+					orderType = OrderType.PLACE_MARKER
 				)
 			)
 		)
@@ -141,7 +134,7 @@ class TurnTest : StringSpec({
 		GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.let {
 			it.turn shouldBe 1
 		}
-		OrderQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
+		CommandsQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { orders ->
 			orders shouldHaveSize 3
 			orders.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1, player2)
 		}

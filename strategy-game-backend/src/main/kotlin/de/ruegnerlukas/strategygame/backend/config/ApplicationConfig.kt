@@ -26,8 +26,8 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderInsertMultipleImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.order.OrderQueryByGameAndTurnImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandsQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
@@ -85,8 +85,8 @@ fun Application.module() {
 	val gameUpdateTurn = GameUpdateTurnImpl(database)
 	val markerInsertMultiple = MarkerInsertMultipleImpl(database)
 	val markersQueryByGame = MarkersQueryByGameImpl(database)
-	val orderInsertMultiple = OrderInsertMultipleImpl(database)
-	val orderQueryByGameAndTurn = OrderQueryByGameAndTurnImpl(database)
+	val commandInsertMultiple = CommandInsertMultipleImpl(database)
+	val commandsQueryByGameAndTurn = CommandsQueryByGameAndTurnImpl(database)
 	val playerInsert = PlayerInsertImpl(database)
 	val playerQuery = PlayerQueryImpl(database)
 	val playerQueryByGame = PlayerQueryByGameImpl(database)
@@ -138,7 +138,7 @@ fun Application.module() {
 	)
 	val turnEndAction = TurnEndActionImpl(
 		gameQuery,
-		orderQueryByGameAndTurn,
+		commandsQueryByGameAndTurn,
 		playerUpdateStateByGame,
 		gameUpdateTurn,
 		markerInsertMultiple,
@@ -151,7 +151,7 @@ fun Application.module() {
 		playersQueryByGameStatePlaying,
 		tileQueryByGameAndPosition,
 		playerUpdateState,
-		orderInsertMultiple,
+		commandInsertMultiple,
 		turnEndAction,
 	)
 

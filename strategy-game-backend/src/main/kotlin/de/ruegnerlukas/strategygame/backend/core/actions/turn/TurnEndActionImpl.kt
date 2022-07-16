@@ -5,8 +5,8 @@ import arrow.core.computations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity.Companion.PlaceMarkerOrderData
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
@@ -20,11 +20,8 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.Game
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameUpdateTurn
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.gameext.ExtGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkerInsertMultiple
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderQueryByGameAndTurn
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.command.CommandsQueryByGameAndTurn
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateStateByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayersQueryByGameConnected
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.shared.Base64
 import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -32,7 +29,7 @@ import de.ruegnerlukas.strategygame.backend.shared.UUID
 
 class TurnEndActionImpl(
 	private val queryGame: GameQuery,
-	private val queryOrders: OrderQueryByGameAndTurn,
+	private val queryCommands: CommandsQueryByGameAndTurn,
 	private val updatePlayerState: PlayerUpdateStateByGame,
 	private val updateGameTurn: GameUpdateTurn,
 	private val insertMarkers: MarkerInsertMultiple,
@@ -54,9 +51,9 @@ class TurnEndActionImpl(
 	}
 
 	private suspend fun updateState(game: GameEntity) {
-		val orders = queryOrders.execute(game.id, game.turn)
-			.getOrElse { throw Exception("Could not fetch orders for game ${game.id} in turn ${game.turn}") }
-		insertMarkers.execute(orders.map { mapOrderToMarker(it) })
+		val commands = queryCommands.execute(game.id, game.turn)
+			.getOrElse { throw Exception("Could not fetch commands for game ${game.id} in turn ${game.turn}") }
+		insertMarkers.execute(commands.map { mapCommandToMarker(it) })
 			.getOrElse { throw Exception("Could not insert markers") }
 		updatePlayerState.execute(game.id, PlayerEntity.STATE_PLAYING)
 			.getOrElse { throw Exception("Could not update state of players in game ${game.id}") }
@@ -64,11 +61,11 @@ class TurnEndActionImpl(
 			.getOrElse { throw Exception("Could not update turn of game ${game.id}") }
 	}
 
-	private fun mapOrderToMarker(order: OrderEntity): MarkerEntity {
-		val data: PlaceMarkerOrderData = Json.fromString(Base64.fromBase64(order.data))
+	private fun mapCommandToMarker(command: CommandEntity): MarkerEntity {
+		val data: PlaceMarkerCommandData = Json.fromString(Base64.fromBase64(command.data))
 		return MarkerEntity(
 			id = UUID.gen(),
-			playerId = order.playerId,
+			playerId = command.playerId,
 			tileId = data.tileId
 		)
 	}

@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
-data class OrderEntity(
+data class CommandEntity(
 	val id: String,
 	val playerId: String,
 	val turn: Int,
@@ -9,7 +9,11 @@ data class OrderEntity(
 
 	companion object {
 
-		data class PlaceMarkerOrderData(
+		data class PlaceMarkerCommandData(
+			val tileId: String
+		)
+
+		data class CreateCityCommandData(
 			val tileId: String
 		)
 

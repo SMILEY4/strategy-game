@@ -7,7 +7,7 @@ import de.ruegnerlukas.kdbl.dsl.expression.Table
 import de.ruegnerlukas.strategygame.backend.external.persistence.CountryTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.GameTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.MarkerTbl
-import de.ruegnerlukas.strategygame.backend.external.persistence.OrderTbl
+import de.ruegnerlukas.strategygame.backend.external.persistence.CommandTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
 
@@ -17,7 +17,7 @@ fun main() {
 			listOf(
 				GameTbl,
 				PlayerTbl,
-				OrderTbl,
+				CommandTbl,
 				TileTbl,
 				MarkerTbl,
 				CountryTbl,

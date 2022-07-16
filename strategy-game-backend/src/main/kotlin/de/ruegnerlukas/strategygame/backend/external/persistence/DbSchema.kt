@@ -9,7 +9,7 @@ import de.ruegnerlukas.kdbl.dsl.expression.TableLike
 
 object DbSchema {
 	suspend fun createTables(db: Database) {
-		val tables = listOf(GameTbl, PlayerTbl, OrderTbl, TileTbl, MarkerTbl, CountryTbl)
+		val tables = listOf(GameTbl, PlayerTbl, CommandTbl, TileTbl, MarkerTbl, CountryTbl)
 		tables.forEach { db.startCreate(SQL.createIfNotExists(it)).execute() }
 	}
 
@@ -50,19 +50,19 @@ sealed class PlayerTableDef : Table("player", true) {
 }
 
 
-object OrderTbl : OrderTableDef()
+object CommandTbl : CommandTableDef()
 
-sealed class OrderTableDef : Table("player_order", true) {
+sealed class CommandTableDef : Table("commands", true) {
 	val id = text("id").primaryKey()
 	val playerId = text("playerId").foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
 	val turn = integer("turn")
 	val data = text("data")
 
 	companion object {
-		class OrderTableDefAlias(override val table: TableLike, override val alias: String) : OrderTableDef(), AliasTable
+		class CommandTableDefAlias(override val table: TableLike, override val alias: String) : CommandTableDef(), AliasTable
 	}
 
-	override fun alias(alias: String) = OrderTableDefAlias(this, alias)
+	override fun alias(alias: String) = CommandTableDefAlias(this, alias)
 
 }
 
