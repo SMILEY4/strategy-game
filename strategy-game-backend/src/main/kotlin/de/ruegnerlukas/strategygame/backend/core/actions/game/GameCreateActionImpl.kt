@@ -1,39 +1,41 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
-import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameCreateEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldCreateEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.gameext.CreateGameInsert
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
 import java.util.Random
 
 class GameCreateActionImpl(
-	private val insertExtGame: CreateGameInsert
+	private val insertGame: InsertGame,
 ) : GameCreateAction, Logging {
 
 	override suspend fun perform(): String {
 		log().info("Creating new game")
-		val game = build()
+		val world = buildWorld()
+		val game = buildGame(world)
 		save(game)
 		log().info("Created new game with id ${game.id}")
 		return game.id
 	}
 
 
-	private fun build(): GameCreateEntity {
-		val gameId = UUID.gen()
+	/**
+	 * Build the world entity
+	 */
+	private fun buildWorld(): WorldCreateEntity {
+		val worldId = UUID.gen()
 		val seed = Random().nextInt()
-		return GameCreateEntity(
-			id = gameId,
-			seed = seed,
-			turn = 0,
+		return WorldCreateEntity(
+			id = worldId,
 			tiles = WorldBuilder().buildTiles(seed).map {
 				TileEntity(
 					id = UUID.gen(),
-					gameId = gameId,
+					worldId = worldId,
 					q = it.q,
 					r = it.r,
 					type = it.data.type.name
@@ -43,9 +45,24 @@ class GameCreateActionImpl(
 	}
 
 
+	/**
+	 * Build the game entity
+	 */
+	private fun buildGame(world: WorldCreateEntity): GameCreateEntity {
+		val gameId = UUID.gen()
+		return GameCreateEntity(
+			id = gameId,
+			turn = 0,
+			world = world,
+		)
+	}
+
+
+	/**
+	 * Write the given game entity to the database
+	 */
 	private suspend fun save(game: GameCreateEntity) {
-		insertExtGame.execute(game)
-			.getOrElse { throw Exception("Could not save ext-game ${game.id}") }
+		insertGame.execute(game)
 	}
 
 }

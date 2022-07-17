@@ -8,7 +8,7 @@ import arrow.core.Either
 interface GameJoinAction {
 
 	sealed class GameJoinActionErrors
-	object UserAlreadyPlayer: GameJoinActionErrors()
+	object UserAlreadyPlayerError: GameJoinActionErrors()
 	object GameNotFoundError: GameJoinActionErrors()
 
 	suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit>

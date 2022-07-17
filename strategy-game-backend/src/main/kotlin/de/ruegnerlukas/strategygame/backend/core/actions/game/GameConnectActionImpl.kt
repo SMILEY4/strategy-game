@@ -3,25 +3,22 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.getOrElse
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
-import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateConnection
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.world.WorldQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryPlayer
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdatePlayerConnection
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameConnectActionImpl(
-	private val queryPlayer: PlayerQueryByUserAndGame,
-	private val updatePlayerConnection: PlayerUpdateConnection,
-	private val queryWorld: WorldQuery,
+	private val queryPlayer: QueryPlayer,
+	private val queryGameExtended: QueryGameExtended,
+	private val updatePlayerConnection: UpdatePlayerConnection,
 	private val messageProducer: GameMessageProducer,
 ) : GameConnectAction, Logging {
 
@@ -30,39 +27,43 @@ class GameConnectActionImpl(
 		return either {
 			val player = findPlayer(userId, gameId).bind()
 			setConnection(player, connectionId)
-			val world = getWorld(gameId)
-			sendMessage(connectionId, world)
+			val gameState = getCompleteGameState(gameId)
+			sendInitialGameStateMessage(connectionId, gameState)
 		}
 	}
 
 
+	/**
+	 * Find and return the player or an [NotParticipantError] if the player does not exist
+	 */
 	private suspend fun findPlayer(userId: String, gameId: String): Either<NotParticipantError, PlayerEntity> {
 		return queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }
 	}
 
 
+	/**
+	 * Write the new connection of the player to the db.
+	 */
 	private suspend fun setConnection(player: PlayerEntity, connectionId: Int) {
 		updatePlayerConnection.execute(player.id, connectionId)
-			.getOrElse { throw Exception("Could not update player-connection of player ${player.id}") }
 	}
 
 
-	private suspend fun getWorld(gameId: String): WorldEntity {
-		return queryWorld.execute(gameId)
-			.getOrElse { throw Exception("Could not fetch world of game $gameId") }
+	/**
+	 * Fetch the complete current state of the game as a [GameExtendedEntity].
+	 * Since we already successfully found the player, we can assume the game, world, ... exists
+	 */
+	private suspend fun getCompleteGameState(gameId: String): GameExtendedEntity {
+		return queryGameExtended.execute(gameId)
+			.getOrElse { throw Exception("Could not fetch complete state for game $gameId") }
 	}
 
 
-	private suspend fun sendMessage(connectionId: Int, world: WorldEntity) {
-		val msgTiles = world.tiles.map { tileEntity ->
-			Tile(
-				q = tileEntity.q,
-				r = tileEntity.r,
-				data = TileData(TileType.valueOf(tileEntity.type)),
-				entities = world.markers.filter { it.tileId == tileEntity.id }.map { MarkerTileObject(it.userId!!) }
-			)
-		}
-		messageProducer.sendWorldState(connectionId, msgTiles)
+	/**
+	 * Send the initial game-state to the player
+	 */
+	private suspend fun sendInitialGameStateMessage(connectionId: Int, game: GameExtendedEntity) {
+		messageProducer.sendWorldState(connectionId, game.world)
 	}
 
 }

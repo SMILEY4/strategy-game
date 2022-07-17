@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
-import arrow.core.computations.result
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
@@ -35,7 +34,7 @@ fun Route.gameLobbyRoutes(
 					}
 					is Either.Left -> when (joinResult.value) {
 						GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, joinResult.value)
-						GameJoinAction.UserAlreadyPlayer -> call.respond(HttpStatusCode.OK, joinResult.value)
+						GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, joinResult.value)
 					}
 				}
 			}
@@ -47,7 +46,7 @@ fun Route.gameLobbyRoutes(
 					}
 					is Either.Left -> when (result.value) {
 						GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
-						GameJoinAction.UserAlreadyPlayer -> call.respond(HttpStatusCode.OK, result.value)
+						GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, result.value)
 					}
 				}
 			}

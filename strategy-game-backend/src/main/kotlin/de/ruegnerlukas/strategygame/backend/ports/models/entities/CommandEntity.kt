@@ -11,11 +11,13 @@ data class CommandEntity(
 	companion object {
 
 		data class PlaceMarkerCommandData(
-			val tileId: String
+			val q: Int,
+			val r: Int
 		)
 
 		data class CreateCityCommandData(
-			val tileId: String
+			val q: Int,
+			val r: Int
 		)
 
 	}
