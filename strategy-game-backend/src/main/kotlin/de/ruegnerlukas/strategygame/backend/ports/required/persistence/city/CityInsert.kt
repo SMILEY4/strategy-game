@@ -9,6 +9,6 @@ interface CityInsert {
 	/**
 	 * Insert the given city
 	 */
-	suspend fun execute(country: CityEntity): Either<DatabaseError, Unit>
+	suspend fun execute(city: CityEntity): Either<DatabaseError, Unit>
 
 }

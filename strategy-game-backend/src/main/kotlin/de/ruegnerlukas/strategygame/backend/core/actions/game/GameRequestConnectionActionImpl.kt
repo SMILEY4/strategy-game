@@ -21,16 +21,18 @@ class GameRequestConnectionActionImpl(
 ) : GameRequestConnectionAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit> {
-		log().info("Request to connect to game-lobby $gameId from user $userId")
+		log().info("Request to connect to game $gameId as user $userId")
 		return either {
 			val game = findGame(gameId).bind()
 			validatePlayer(game, userId).bind()
 		}
 	}
 
+
 	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
 		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
 	}
+
 
 	private suspend fun validatePlayer(game: GameEntity, userId: String): Either<GameRequestConnectionActionError, Unit> {
 		return queryPlayer.execute(userId, game.id)

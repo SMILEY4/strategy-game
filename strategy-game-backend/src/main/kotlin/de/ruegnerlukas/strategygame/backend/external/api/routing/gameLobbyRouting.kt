@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
+import arrow.core.computations.result
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
@@ -25,8 +26,18 @@ fun Route.gameLobbyRoutes(
 	authenticate {
 		route("game") {
 			post("create") {
-				val gameId = createLobby.perform(getUserIdOrThrow(call))
-				call.respond(HttpStatusCode.OK, gameId)
+				val userId = getUserIdOrThrow(call)
+				val gameId = createLobby.perform()
+				val joinResult = joinLobby.perform(userId, gameId)
+				when (joinResult) {
+					is Either.Right -> {
+						call.respond(HttpStatusCode.OK, joinResult.value)
+					}
+					is Either.Left -> when (joinResult.value) {
+						GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, joinResult.value)
+						GameJoinAction.UserAlreadyPlayer -> call.respond(HttpStatusCode.OK, joinResult.value)
+					}
+				}
 			}
 			post("join/{gameId}") {
 				val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)

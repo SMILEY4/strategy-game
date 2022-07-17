@@ -2,7 +2,9 @@ package de.ruegnerlukas.strategygame.backend.ports.provided.game
 
 import arrow.core.Either
 
-
+/**
+ * Join an existing game
+ */
 interface GameJoinAction {
 
 	sealed class GameJoinActionErrors

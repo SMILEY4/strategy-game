@@ -9,7 +9,7 @@ class GameDisconnectActionImpl(
 ) : GameDisconnectAction, Logging {
 
 	override suspend fun perform(userId: String) {
-		log().info("Disconnect user $userId from currently connected games")
+		log().info("Disconnect user $userId from all currently connected games")
 		updatePlayerConnection.execute(userId)
 	}
 

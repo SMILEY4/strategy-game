@@ -8,17 +8,17 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountriesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GamesQueryByUserImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.CreateGameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerUpdateConnectionImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.world.WorldQueryImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
@@ -37,14 +37,20 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
+		)
+
+		val joinGame = GameJoinActionImpl(
+			GameQueryImpl(database),
+			PlayerInsertImpl(database),
+			PlayerQueryByUserAndGameImpl(database)
 		)
 
 		val userId = "test-user"
 
-		val result = createGame.perform(userId)
+		val gameId = createGame.perform()
+		joinGame.perform(userId, gameId)
 
-		val gameId = result
 		gameId shouldHaveMinLength 1
 
 		val game = GameQueryImpl(database).execute(gameId)
@@ -71,7 +77,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -83,7 +89,8 @@ class GameTest : StringSpec({
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
 
-		val gameId = createGame.perform(userId1)
+		val gameId = createGame.perform()
+		joinGame.perform(userId1, gameId)
 
 		val result = joinGame.perform(userId2, gameId)
 		result shouldBeOk true
@@ -114,7 +121,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -126,7 +133,8 @@ class GameTest : StringSpec({
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
 
-		val gameId = createGame.perform(userId1)
+		val gameId = createGame.perform()
+		joinGame.perform(userId1, gameId)
 
 		joinGame.perform(userId2, gameId)
 		val prevPlayerIds = PlayerQueryByGameImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }.map { it.id }
@@ -191,7 +199,7 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -208,9 +216,15 @@ class GameTest : StringSpec({
 		val userId2 = "test-user-2"
 		val userId3 = "test-user-3"
 
-		val gameId1 = createGame.perform(userId1)
-		val gameId2 = createGame.perform(userId2)
-		val gameId3 = createGame.perform(userId3)
+		val gameId1 = createGame.perform()
+		joinGame.perform(userId1, gameId1)
+
+		val gameId2 = createGame.perform()
+		joinGame.perform(userId2, gameId2)
+
+		val gameId3 = createGame.perform()
+		joinGame.perform(userId3, gameId3)
+
 		joinGame.perform(userId1, gameId2)
 		joinGame.perform(userId1, gameId3)
 
@@ -223,7 +237,13 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
+		)
+
+		val joinGame = GameJoinActionImpl(
+			GameQueryImpl(database),
+			PlayerInsertImpl(database),
+			PlayerQueryByUserAndGameImpl(database)
 		)
 
 		val requestConnect = GameRequestConnectionActionImpl(
@@ -232,7 +252,8 @@ class GameTest : StringSpec({
 		)
 
 		val userId = "test-user"
-		val gameId = createGame.perform(userId)
+		val gameId = createGame.perform()
+		joinGame.perform(userId, gameId)
 
 		val result = requestConnect.perform(userId, gameId)
 		result shouldBeOk true
@@ -242,7 +263,13 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
+		)
+
+		val joinGame = GameJoinActionImpl(
+			GameQueryImpl(database),
+			PlayerInsertImpl(database),
+			PlayerQueryByUserAndGameImpl(database)
 		)
 
 		val requestConnect = GameRequestConnectionActionImpl(
@@ -252,7 +279,8 @@ class GameTest : StringSpec({
 
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
-		val gameId = createGame.perform(userId1)
+		val gameId = createGame.perform()
+		joinGame.perform(userId1, gameId)
 
 		val result = requestConnect.perform(userId2, gameId)
 		result shouldBeError GameRequestConnectionAction.NotParticipantError
@@ -262,7 +290,13 @@ class GameTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
+		)
+
+		val joinGame = GameJoinActionImpl(
+			GameQueryImpl(database),
+			PlayerInsertImpl(database),
+			PlayerQueryByUserAndGameImpl(database)
 		)
 
 		val requestConnect = GameRequestConnectionActionImpl(
@@ -273,14 +307,19 @@ class GameTest : StringSpec({
 		val connect = GameConnectActionImpl(
 			PlayerQueryByUserAndGameImpl(database),
 			PlayerUpdateConnectionImpl(database),
-			TilesQueryByGameImpl(database),
-			MarkersQueryByGameImpl(database),
+			WorldQueryImpl(
+				TilesQueryByGameImpl(database),
+				MarkersQueryByGameImpl(database),
+				CountriesQueryByGameImpl(database),
+			),
 			GameMessageProducerImpl(TestUtils.MockMessageProducer()),
 		)
 
 		val userId = "test-user"
 		val connectionId = 42
-		val gameId = createGame.perform(userId)
+		val gameId = createGame.perform()
+		joinGame.perform(userId, gameId)
+
 		connect.perform(userId, gameId, connectionId) shouldBeOk true
 
 		val result = requestConnect.perform(userId, gameId)

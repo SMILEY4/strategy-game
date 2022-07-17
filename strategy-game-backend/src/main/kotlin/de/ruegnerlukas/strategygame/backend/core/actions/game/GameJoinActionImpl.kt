@@ -18,9 +18,6 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.Pl
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
 
-/**
- * Join an existing game-lobby
- */
 class GameJoinActionImpl(
 	private val queryGame: GameQuery,
 	private val insertPlayer: PlayerInsert,
@@ -28,17 +25,19 @@ class GameJoinActionImpl(
 ) : GameJoinAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
-		log().info("Join game-lobby $gameId (user = $userId)")
+		log().info("Joining game $gameId as user $userId)")
 		return either {
 			val game = findGame(gameId).bind()
 			validate(userId, game).bind()
-			insertPlayer(game, userId)
+			addPlayer(game, userId)
 		}
 	}
+
 
 	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
 		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
 	}
+
 
 	private suspend fun validate(userId: String, game: GameEntity): Either<UserAlreadyPlayer, Unit> {
 		if (existsPlayer(userId, game)) {
@@ -47,6 +46,7 @@ class GameJoinActionImpl(
 			return Unit.right()
 		}
 	}
+
 
 	private suspend fun existsPlayer(userId: String, game: GameEntity): Boolean {
 		val result = queryPlayer.execute(userId, game.id)
@@ -58,17 +58,17 @@ class GameJoinActionImpl(
 		}
 	}
 
-	private suspend fun insertPlayer(game: GameEntity, userId: String) {
-		return insertPlayer.execute(createPlayer(game.id, userId))
-			.getOrElse { throw Exception("Could not save player (userId=$userId) for game ${game.id} ") }
-	}
 
-	private fun createPlayer(gameId: String, userId: String) = PlayerEntity(
-		id = UUID.gen(),
-		userId = userId,
-		gameId = gameId,
-		connectionId = null,
-		state = PlayerEntity.STATE_PLAYING
-	)
+	private suspend fun addPlayer(game: GameEntity, userId: String) {
+		val player = PlayerEntity(
+			id = UUID.gen(),
+			userId = userId,
+			gameId = game.id,
+			connectionId = null,
+			state = PlayerEntity.STATE_PLAYING
+		)
+		return insertPlayer.execute(player)
+			.getOrElse { throw Exception("Could not save new player (userId=$userId) for game ${game.id} ") }
+	}
 
 }

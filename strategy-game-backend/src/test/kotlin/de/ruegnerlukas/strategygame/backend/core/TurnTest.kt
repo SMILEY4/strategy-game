@@ -7,15 +7,15 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.city.CityInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandInsertMultipleImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandsQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountriesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.CreateGameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandInsertMultipleImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandsQueryByGameAndTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayerQueryByUserAndGameImpl
@@ -25,6 +25,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.PlayersQueryByGameStatePlayingImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.world.WorldQueryImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
@@ -40,7 +41,7 @@ class TurnTest : StringSpec({
 		val database = TestUtils.createTestDatabase()
 
 		val createGame = GameCreateActionImpl(
-			ExtGameInsertImpl(database)
+			CreateGameInsertImpl(database)
 		)
 
 		val joinGame = GameJoinActionImpl(
@@ -52,8 +53,11 @@ class TurnTest : StringSpec({
 		val connectToGame = GameConnectActionImpl(
 			PlayerQueryByUserAndGameImpl(database),
 			PlayerUpdateConnectionImpl(database),
-			TilesQueryByGameImpl(database),
-			MarkersQueryByGameImpl(database),
+			WorldQueryImpl(
+				TilesQueryByGameImpl(database),
+				MarkersQueryByGameImpl(database),
+				CountriesQueryByGameImpl(database)
+			),
 			GameMessageProducerImpl(TestUtils.MockMessageProducer()),
 		)
 
@@ -70,11 +74,11 @@ class TurnTest : StringSpec({
 				PlayerUpdateStateByGameImpl(database),
 				GameUpdateTurnImpl(database),
 				MarkerInsertMultipleImpl(database),
-				ExtGameQueryImpl(
-					GameQueryImpl(database),
+				CityInsertImpl(database),
+				PlayerQueryByGameImpl(database),
+				WorldQueryImpl(
 					TilesQueryByGameImpl(database),
 					MarkersQueryByGameImpl(database),
-					PlayerQueryByGameImpl(database),
 					CountriesQueryByGameImpl(database)
 				),
 				GameMessageProducerImpl(TestUtils.MockMessageProducer()),
@@ -83,8 +87,9 @@ class TurnTest : StringSpec({
 
 		val userId1 = "test-user-1"
 		val userId2 = "test-user-2"
-		val gameId = createGame.perform(userId1)
+		val gameId = createGame.perform()
 
+		joinGame.perform(userId1, gameId) shouldBeOk true
 		joinGame.perform(userId2, gameId) shouldBeOk true
 
 		connectToGame.perform(userId1, gameId, 1) shouldBeOk true
@@ -132,7 +137,11 @@ class TurnTest : StringSpec({
 		CommandsQueryByGameAndTurnImpl(database).execute(gameId, 0).getOrHandle { throw Exception(it.toString()) }.let { commands ->
 			commands shouldHaveSize 3
 			commands.map { it.playerId } shouldContainExactlyInAnyOrder listOf(player1, player1, player2)
-			commands.map { it.type } shouldContainExactlyInAnyOrder listOf(PlaceMarkerCommand.TYPE, PlaceMarkerCommand.TYPE, CreateCityCommand.TYPE)
+			commands.map { it.type } shouldContainExactlyInAnyOrder listOf(
+				PlaceMarkerCommand.TYPE,
+				PlaceMarkerCommand.TYPE,
+				CreateCityCommand.TYPE
+			)
 
 		}
 

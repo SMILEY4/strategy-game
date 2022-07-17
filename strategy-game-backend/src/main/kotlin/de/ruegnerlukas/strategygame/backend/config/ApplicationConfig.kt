@@ -17,13 +17,13 @@ import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.city.CityInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.country.CountriesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GameUpdateTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.game.GamesQueryByUserImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.ExtGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.gameext.CreateGameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkerInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.marker.MarkersQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.command.CommandInsertMultipleImpl
@@ -41,7 +41,9 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.player.
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileInsertMultipleImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TileQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.tiles.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.world.WorldQueryImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.city.CityInsert
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -101,14 +103,13 @@ fun Application.module() {
 	val tileQueryByGameAndPosition = TileQueryByGameAndPositionImpl(database)
 	val tilesQueryByGame = TilesQueryByGameImpl(database)
 	val countriesQueryByGame = CountriesQueryByGameImpl(database)
-	val extGameInsert = ExtGameInsertImpl(database)
-	val extGameQuery = ExtGameQueryImpl(
-		gameQuery,
+	val extGameInsert = CreateGameInsertImpl(database)
+	val worldQuery = WorldQueryImpl(
 		tilesQueryByGame,
 		markersQueryByGame,
-		playerQueryByGame,
 		countriesQueryByGame
 	)
+	val cityInsert = CityInsertImpl(database)
 
 	// core actions
 	val gamesListAction = GamesListActionImpl(
@@ -117,8 +118,7 @@ fun Application.module() {
 	val gameConnectAction = GameConnectActionImpl(
 		playerQueryByUserAndGame,
 		playerUpdateConnection,
-		tilesQueryByGame,
-		markersQueryByGame,
+		worldQuery,
 		messageProducer
 	)
 	val gameCreateAction = GameCreateActionImpl(
@@ -142,7 +142,9 @@ fun Application.module() {
 		playerUpdateStateByGame,
 		gameUpdateTurn,
 		markerInsertMultiple,
-		extGameQuery,
+		cityInsert,
+		playerQueryByGame,
+		worldQuery,
 		messageProducer
 	)
 	val turnSubmitAction = TurnSubmitActionImpl(
