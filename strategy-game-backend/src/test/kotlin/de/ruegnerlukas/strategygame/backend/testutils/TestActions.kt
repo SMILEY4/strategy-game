@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionIm
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastBroadcastWorldStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
@@ -43,17 +44,19 @@ object TestActions {
 	)
 
 	fun gameConnectAction(database: Database) = GameConnectActionImpl(
-		QueryPlayerImpl(database),
-		QueryGameExtendedImpl(
-			QueryGameImpl(database),
-			QueryPlayersByGameImpl(database),
-			QueryWorldExtendedImpl(
-				QueryWorldImpl(database),
-				QueryTilesImpl(database),
-			)
+		BroadcastBroadcastWorldStateActionImpl(
+			QueryGameExtendedImpl(
+				QueryGameImpl(database),
+				QueryPlayersByGameImpl(database),
+				QueryWorldExtendedImpl(
+					QueryWorldImpl(database),
+					QueryTilesImpl(database),
+				)
+			),
+			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),
+		QueryPlayerImpl(database),
 		UpdatePlayerConnectionImpl(database),
-		GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 	)
 
 	fun turnSubmitAction(database: Database) = TurnSubmitActionImpl(
@@ -66,19 +69,21 @@ object TestActions {
 				InsertMarkerImpl(database),
 				InsertCityImpl(database)
 			),
-			QueryGameImpl(database),
-			QueryGameExtendedImpl(
-				QueryGameImpl(database),
-				QueryPlayersByGameImpl(database),
-				QueryWorldExtendedImpl(
-					QueryWorldImpl(database),
-					QueryTilesImpl(database),
-				)
+			BroadcastBroadcastWorldStateActionImpl(
+				QueryGameExtendedImpl(
+					QueryGameImpl(database),
+					QueryPlayersByGameImpl(database),
+					QueryWorldExtendedImpl(
+						QueryWorldImpl(database),
+						QueryTilesImpl(database),
+					)
+				),
+				GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 			),
+			QueryGameImpl(database),
 			QueryCommandsByGameImpl(database),
 			UpdateGameTurnImpl(database),
 			UpdatePlayerStatesByGameIdImpl(database),
-			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),
 		QueryPlayerImpl(database),
 		QueryPlayersByGameAndStateImpl(database),

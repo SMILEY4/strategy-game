@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActi
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastBroadcastWorldStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
@@ -98,14 +99,17 @@ fun Application.module() {
 	val updatePlayerStatesByGameId = UpdatePlayerStatesByGameIdImpl(database)
 
 	// core actions
+	val worldStateBroadcasterAction = BroadcastBroadcastWorldStateActionImpl(
+		queryGameExtended,
+		messageProducer
+	)
 	val gamesListAction = GamesListActionImpl(
 		queryGamesByUser
 	)
 	val gameConnectAction = GameConnectActionImpl(
+		worldStateBroadcasterAction,
 		queryPlayer,
-		queryGameExtended,
 		updatePlayerConnection,
-		messageProducer
 	)
 	val gameCreateAction = GameCreateActionImpl(
 		insertGame
@@ -129,12 +133,11 @@ fun Application.module() {
 	)
 	val turnEndAction = TurnEndActionImpl(
 		resolveCommandsAction,
+		worldStateBroadcasterAction,
 		queryGame,
-		queryGameExtended,
 		queryCommandsByGame,
 		updateGameTurn,
 		updatePlayerStatesByGameId,
-		messageProducer
 	)
 	val turnSubmitAction = TurnSubmitActionImpl(
 		turnEndAction,

@@ -5,11 +5,11 @@ import arrow.core.computations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.TurnEndActionError
-import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryCommandsByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
@@ -19,12 +19,11 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class TurnEndActionImpl(
 	private val actionResolveCommands: ResolveCommandsAction,
+	private val actionBroadcastWorldState: BroadcastWorldStateAction,
 	private val queryGame: QueryGame,
-	private val queryGameExtended: QueryGameExtended,
 	private val queryCommandsByGame: QueryCommandsByGame,
 	private val updateGameTurn: UpdateGameTurn,
 	private val updatePlayerStatesByGameId: UpdatePlayerStatesByGameId,
-	private val messageProducer: GameMessageProducer
 ) : TurnEndAction, Logging {
 
 	override suspend fun perform(gameId: String): Either<TurnEndActionError, Unit> {
@@ -34,7 +33,7 @@ class TurnEndActionImpl(
 			incrementTurn(game)
 			updatePlayerStates(game)
 			resolveCommands(game)
-//			sendGameStateMessages(game)
+			sendGameStateMessages(game)
 		}
 	}
 
@@ -76,13 +75,8 @@ class TurnEndActionImpl(
 	 * Send the new game-state to the connected players
 	 */
 	private suspend fun sendGameStateMessages(game: GameEntity) {
-		val completeGameState = queryGameExtended.execute(game.id)
-			.getOrElse { throw Exception("Could not get complete state for game ${game.id}") }
-		completeGameState.players
-			.filter { it.connectionId != null }
-			.forEach { player ->
-				messageProducer.sendWorldState(player.connectionId!!, completeGameState.world)
-			}
+		actionBroadcastWorldState.perform(game.id)
+			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 
 }

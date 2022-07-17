@@ -5,21 +5,19 @@ import arrow.core.computations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryPlayer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdatePlayerConnection
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameConnectActionImpl(
+	private val actionBroadcastWorldState: BroadcastWorldStateAction,
 	private val queryPlayer: QueryPlayer,
-	private val queryGameExtended: QueryGameExtended,
 	private val updatePlayerConnection: UpdatePlayerConnection,
-	private val messageProducer: GameMessageProducer,
 ) : GameConnectAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<GameConnectActionError, Unit> {
@@ -27,8 +25,7 @@ class GameConnectActionImpl(
 		return either {
 			val player = findPlayer(userId, gameId).bind()
 			setConnection(player, connectionId)
-			val gameState = getCompleteGameState(gameId)
-			sendInitialGameStateMessage(connectionId, gameState)
+			sendInitialGameStateMessage(connectionId, gameId)
 		}
 	}
 
@@ -50,20 +47,11 @@ class GameConnectActionImpl(
 
 
 	/**
-	 * Fetch the complete current state of the game as a [GameExtendedEntity].
-	 * Since we already successfully found the player, we can assume the game, world, ... exists
-	 */
-	private suspend fun getCompleteGameState(gameId: String): GameExtendedEntity {
-		return queryGameExtended.execute(gameId)
-			.getOrElse { throw Exception("Could not fetch complete state for game $gameId") }
-	}
-
-
-	/**
 	 * Send the initial game-state to the player
-	 */
-	private suspend fun sendInitialGameStateMessage(connectionId: Int, game: GameExtendedEntity) {
-		messageProducer.sendWorldState(connectionId, game.world)
+	 * */
+	private suspend fun sendInitialGameStateMessage(connectionId: Int, gameId: String) {
+		actionBroadcastWorldState.perform(gameId, listOf(connectionId))
+			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 
 }
