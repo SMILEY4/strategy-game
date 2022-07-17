@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.shared
 
+import kotlin.math.sqrt
+
 // MIT License
 //
 // Copyright(c) 2020 Jordan Peck (jordan.me2@gmail.com)
@@ -52,6 +54,10 @@ package de.ruegnerlukas.strategygame.backend.shared
 // perform a file-wide replace on the following strings (including /*FNLfloat*/)
 // /*FNLfloat*/ float
 // /*FNLfloat*/ double
+@Suppress(
+	"FunctionName", "WrapUnaryOperator", "FloatingPointLiteralPrecision", "unused", "NAME_SHADOWING", "LocalVariableName",
+	"DuplicatedCode", "JoinDeclarationAndAssignment", "REDUNDANT_ELSE_IN_WHEN", "ReplaceWithOperatorAssignment"
+)
 class FastNoiseLite {
 	enum class NoiseType {
 		OpenSimplex2, OpenSimplex2S, Cellular, Perlin, ValueCubic, Value
@@ -104,7 +110,7 @@ class FastNoiseLite {
 	/// <summary>
 	/// Create new FastNoise object with default seed
 	/// </summary>
-	constructor() {}
+	constructor()
 
 
 	/// <summary>
@@ -441,7 +447,6 @@ class FastNoiseLite {
 			NoiseType.Perlin -> SinglePerlin(seed, x, y)
 			NoiseType.ValueCubic -> SingleValueCubic(seed, x, y)
 			NoiseType.Value -> SingleValue(seed, x, y)
-			else -> 0f
 		}
 	}
 
@@ -458,7 +463,6 @@ class FastNoiseLite {
 			NoiseType.Perlin -> SinglePerlin(seed, x, y, z)
 			NoiseType.ValueCubic -> SingleValueCubic(seed, x, y, z)
 			NoiseType.Value -> SingleValue(seed, x, y, z)
-			else -> 0f
 		}
 	}
 
@@ -4130,7 +4134,7 @@ class FastNoiseLite {
 		}
 
 		private fun FastSqrt(f: Float): Float {
-			return Math.sqrt(f.toDouble()).toFloat()
+			return sqrt(f.toDouble()).toFloat()
 		}
 
 		private fun FastFloor( /*FNLfloat*/
