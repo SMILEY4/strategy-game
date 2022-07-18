@@ -5,6 +5,8 @@ import arrow.core.computations.either
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl.gameId
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldExtendedEntity
@@ -57,40 +59,40 @@ class ResolveCommandsActionImpl(
 	 */
 	private suspend fun resolveCommand(world: WorldExtendedEntity, command: CommandEntity) {
 		when (command.type) {
-			PlaceMarkerCommand.TYPE -> {
-				val marker = mapCommandToMarker(world, command)
-				insertMarker.execute(marker)
-			}
-			CreateCityCommand.TYPE -> {
-				val city = mapCommandToCity(world, command)
-				insertCity.execute(city)
-			}
+			PlaceMarkerCommand.TYPE -> resolvePlaceMarkerCommand(world, command)
+			CreateCityCommand.TYPE -> resolveCreateCityCommand(world, command)
 		}
 	}
 
 
-	/**
-	 * create a [MarkerEntity] from the given command
-	 */
-	private fun mapCommandToMarker(world: WorldExtendedEntity, command: CommandEntity): MarkerEntity {
-		val data: CommandEntity.Companion.PlaceMarkerCommandData = Json.fromString(Base64.fromBase64(command.data))
-		return MarkerEntity(
+	private suspend fun resolvePlaceMarkerCommand(world: WorldExtendedEntity, command: CommandEntity) {
+		val data: PlaceMarkerCommandData = Json.fromString(Base64.fromBase64(command.data))
+		val marker = MarkerEntity(
 			id = UUID.gen(),
 			playerId = command.playerId,
 			tileId = findTile(world, data.q, data.r).id
 		)
+		insertMarker.execute(marker)
 	}
 
 
-	/**
-	 * create a [CityEntity] from the given command
-	 */
-	private fun mapCommandToCity(world: WorldExtendedEntity, command: CommandEntity): CityEntity {
-		val data: CommandEntity.Companion.CreateCityCommandData = Json.fromString(Base64.fromBase64(command.data))
-		return CityEntity(
+	private suspend fun resolveCreateCityCommand(world: WorldExtendedEntity, command: CommandEntity) {
+		val data: CreateCityCommandData = Json.fromString(Base64.fromBase64(command.data))
+		/*
+		 * TODO:
+		 *
+		 *  - validate target position
+		 * 		- valid tile type for city
+		 * 		- tile is empty (no other city)
+		 * 		- is far enough away from other cities
+		 * - save city to db
+		 * - remove resources from country
+		 */
+		val city = CityEntity(
 			id = UUID.gen(),
 			tileId = findTile(world, data.q, data.r).id,
 		)
+		insertCity.execute(city)
 	}
 
 
