@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.changes.DataChange
 import de.ruegnerlukas.strategygame.backend.ports.models.changes.InsertCityChange
 import de.ruegnerlukas.strategygame.backend.ports.models.changes.ModifyMoneyChange
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
@@ -15,12 +14,14 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionResult
+import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.shared.Base64
 import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.UUID
+import kotlin.math.sqrt
 
 class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 
@@ -35,27 +36,42 @@ class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 	): Either<ResolveCommandsActionError, CommandResolutionResult> {
 		val data: CreateCityCommandData = Json.fromString(Base64.fromBase64(command.data))
 		return either {
+
 			val player = findPlayer(command, world).bind()
 			val country = findCountry(player, world).bind()
 			val tile = findTile(data, world).bind()
 
-			// TODO: implement validation
-			validateTileType(tile)
-			validateCitySpacing(world.cities)
-			validateResourceCost(country)
+			val validationErrors = mutableListOf<String>().apply {
+				addAll(validateTileType(tile))
+				addAll(validateCitySpacing(world.cities))
+				addAll(validateResourceCost(country))
+			}
 
-			result(
-				InsertCityChange(
-					CityEntity(
-						id = UUID.gen(),
-						tileId = tile.id,
-					)
-				),
-				ModifyMoneyChange(
-					countryId = country.id,
-					change = -CITY_COST
+			if (validationErrors.isEmpty()) {
+				CommandResolutionResult(
+					changes = listOf(
+						InsertCityChange(
+							CityEntity(
+								id = UUID.gen(),
+								tileId = tile.id,
+							)
+						),
+						ModifyMoneyChange(
+							countryId = country.id,
+							change = -CITY_COST
+						)
+					),
+					errors = emptyMap()
 				)
-			)
+			} else {
+				CommandResolutionResult(
+					changes = emptyList(),
+					errors = mutableMapOf<CommandEntity, String>().apply {
+						validationErrors.forEach { put(command, it) }
+					}
+				)
+			}
+
 		}
 	}
 
@@ -89,48 +105,47 @@ class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 	}
 
 
-	private fun validateTileType(tile: TileEntity) {
-		// check if tile is of valid type
-		/*
-		* if (targetTile.type != TileType.LAND.name) { ... }
-		* */
-	}
-
-
-	private fun validateCitySpacing(cities: List<CityEntity>) {
-		// check if new city is far enough away from existing cities
-		/*
-		* val nearestCity = world.cities
-		* 	.map { city ->
-		* 		val dq = 0
-		* 		val dr = 0
-		* 		val dist = sqrt((dq * dq + dr * dr).toDouble())
-		* 		city to dist
-		* 	}
-		* 	.minByOrNull { it.second }
-		* if (nearestCity != null && nearestCity.second < MIN_DIST_BETWEEN_CITIES) {
-		* 	return CommandResolutionResult.EMPTY
-		* }
-		* */
-	}
-
-
-	private fun validateResourceCost(country: CountryEntity) {
-		// check if country has enough initial resources
-		/*
-		* if (country.amountMoney < CITY_COST) { ... }
-		* */
+	/**
+	 * @returns a list of validation errors
+	 */
+	private fun validateTileType(tile: TileEntity): List<String> {
+		if (tile.type == TileType.LAND.name) {
+			return emptyList()
+		} else {
+			return listOf("invalid tile type")
+		}
 	}
 
 
 	/**
-	 * @return a [CommandResolutionResult] with the given changes
+	 * @returns a list of validation errors
 	 */
-	private fun result(vararg changes: DataChange): CommandResolutionResult {
-		return CommandResolutionResult(
-			changes = changes.toList(),
-			errors = emptyMap()
-		)
+	private fun validateCitySpacing(cities: List<CityEntity>): List<String> {
+		val closestCity = cities
+			.map { city ->
+				val dq = 0
+				val dr = 0
+				val dist = sqrt((dq * dq + dr * dr).toDouble())
+				city to dist
+			}
+			.minByOrNull { it.second }
+		if (closestCity != null && closestCity.second < MIN_DIST_BETWEEN_CITIES) {
+			return listOf("too close to another city")
+		} else {
+			return emptyList()
+		}
+	}
+
+
+	/**
+	 * @returns a list of validation errors
+	 */
+	private fun validateResourceCost(country: CountryEntity): List<String> {
+		if (country.amountMoney < CITY_COST) {
+			return listOf("not enough money")
+		} else {
+			return emptyList()
+		}
 	}
 
 }

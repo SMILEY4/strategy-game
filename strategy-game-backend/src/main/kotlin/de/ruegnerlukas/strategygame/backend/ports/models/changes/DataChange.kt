@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models.changes
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
 
-interface DataChange
+sealed interface DataChange
 
 data class InsertMarkerChange(
 	val marker: MarkerEntity
