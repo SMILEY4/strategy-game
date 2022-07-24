@@ -3,6 +3,9 @@ package de.ruegnerlukas.strategygame.backend.config
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
@@ -10,7 +13,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastBroadcastWorldStateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
@@ -27,6 +29,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertP
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameExtendedImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameStateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGamesByUserImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameAndStateImpl
@@ -34,12 +37,14 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryTilesImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryWorldExtendedImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryWorldImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameStateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdatePlayerConnectionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdatePlayerConnectionsSetNullImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdatePlayerStateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdatePlayerStatesByGameIdImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGameState
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -85,20 +90,26 @@ fun Application.module() {
 	val queryCommandsByGame = QueryCommandsByGameImpl(database)
 	val queryGame = QueryGameImpl(database)
 	val queryGamesByUser = QueryGamesByUserImpl(database)
+	val queryGameState = QueryGameStateImpl(database)
 	val queryPlayer = QueryPlayerImpl(database)
 	val queryPlayersByGameAndState = QueryPlayersByGameAndStateImpl(database)
 	val queryPlayersByGame = QueryPlayersByGameImpl(database)
 	val queryTiles = QueryTilesImpl(database)
 	val queryWorld = QueryWorldImpl(database)
-	val queryWorldExtended = QueryWorldExtendedImpl(queryWorld, queryTiles)
+	val queryWorldExtended = QueryWorldExtendedImpl(queryWorld, queryPlayersByGame, queryTiles)
 	val queryGameExtended = QueryGameExtendedImpl(queryGame, queryPlayersByGame, queryWorldExtended)
 	val updateGameTurn = UpdateGameTurnImpl(database)
 	val updatePlayerConnection = UpdatePlayerConnectionImpl(database)
 	val updatePlayerConnectionsSetNull = UpdatePlayerConnectionsSetNullImpl(database)
 	val updatePlayerState = UpdatePlayerStateImpl(database)
 	val updatePlayerStatesByGameId = UpdatePlayerStatesByGameIdImpl(database)
+	val updateGameState = UpdateGameStateImpl(database)
 
 	// core actions
+	val resolvePlaceMarkerCommandAction = ResolvePlaceMarkerCommandImpl()
+
+	val resolveCreateCityCommandAction = ResolveCreateCityCommandImpl()
+
 	val worldStateBroadcasterAction = BroadcastBroadcastWorldStateActionImpl(
 		queryGameExtended,
 		messageProducer
@@ -127,9 +138,10 @@ fun Application.module() {
 		queryPlayer
 	)
 	val resolveCommandsAction = ResolveCommandsActionImpl(
-		queryWorldExtended,
-		insertMarker,
-		insertCity
+		queryGameState,
+		updateGameState,
+		resolvePlaceMarkerCommandAction,
+		resolveCreateCityCommandAction
 	)
 	val turnEndAction = TurnEndActionImpl(
 		resolveCommandsAction,

@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
@@ -12,6 +13,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import java.util.Random
 
 
 /**
@@ -26,7 +28,7 @@ fun Route.gameLobbyRoutes(
 		route("game") {
 			post("create") {
 				val userId = getUserIdOrThrow(call)
-				val gameId = createLobby.perform()
+				val gameId = createLobby.perform(WorldSettings.default())
 				val joinResult = joinLobby.perform(userId, gameId)
 				when (joinResult) {
 					is Either.Right -> {

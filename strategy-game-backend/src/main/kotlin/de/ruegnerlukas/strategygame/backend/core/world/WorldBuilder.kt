@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilemapPositionsB
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.shared.FastNoiseLite
 
 class WorldBuilder {
@@ -19,18 +20,18 @@ class WorldBuilder {
 		this.SetFractalWeightedStrength(0.2f)
 	}
 
-	fun buildTiles(seed: Int): List<Tile> {
+	fun buildTiles(settings: WorldSettings): List<Tile> {
 		val tilePositions = TilemapPositionsBuilder().createHexagon(20)
-		noise.SetSeed(seed)
-		return tilePositions.map { buildTileAt(it) }
+		noise.SetSeed(settings.seed)
+		return tilePositions.map { buildTileAt(it, settings) }
 	}
 
-	private fun buildTileAt(position: TilePosition): Tile {
+	private fun buildTileAt(position: TilePosition, settings: WorldSettings): Tile {
 		return Tile(
 			q = position.q,
 			r = position.r,
 			data = TileData(
-				type = tileTypeAt(position)
+				type = settings.singleTileType ?: tileTypeAt(position)
 			),
 			entities = listOf()
 		)

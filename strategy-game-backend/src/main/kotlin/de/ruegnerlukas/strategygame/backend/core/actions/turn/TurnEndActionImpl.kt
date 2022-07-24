@@ -5,9 +5,11 @@ import arrow.core.computations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.TurnEndActionError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryCommandsByGame
@@ -31,7 +33,7 @@ class TurnEndActionImpl(
 			val game = findGame(gameId).bind()
 			incrementTurn(game)
 			updatePlayerStates(game)
-			resolveCommands(game)
+			resolveCommands(game).bind()
 			sendGameStateMessages(game)
 		}
 	}
@@ -64,9 +66,9 @@ class TurnEndActionImpl(
 	/**
 	 * Resolve/Apply the commands of the (ended) turn
 	 */
-	private suspend fun resolveCommands(game: GameEntity) {
+	private suspend fun resolveCommands(game: GameEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
 		val commands = queryCommandsByGame.execute(game.id, game.turn)
-		actionResolveCommands.perform(game.worldId, commands)
+		return actionResolveCommands.perform(game.id, game.worldId, commands).mapLeft { CommandResolutionFailedError }
 	}
 
 

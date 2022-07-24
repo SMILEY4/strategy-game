@@ -4,6 +4,7 @@ import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameCreateEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldCreateEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -14,9 +15,9 @@ class GameCreateActionImpl(
 	private val insertGame: InsertGame,
 ) : GameCreateAction, Logging {
 
-	override suspend fun perform(): String {
+	override suspend fun perform(worldSettings: WorldSettings): String {
 		log().info("Creating new game")
-		val world = buildWorld()
+		val world = buildWorld(worldSettings)
 		val game = buildGame(world)
 		save(game)
 		log().info("Created new game with id ${game.id}")
@@ -27,12 +28,11 @@ class GameCreateActionImpl(
 	/**
 	 * Build the world entity
 	 */
-	private fun buildWorld(): WorldCreateEntity {
+	private fun buildWorld(worldSettings: WorldSettings): WorldCreateEntity {
 		val worldId = UUID.gen()
-		val seed = Random().nextInt()
 		return WorldCreateEntity(
 			id = worldId,
-			tiles = WorldBuilder().buildTiles(seed).map {
+			tiles = WorldBuilder().buildTiles(worldSettings).map {
 				TileEntity(
 					id = UUID.gen(),
 					worldId = worldId,

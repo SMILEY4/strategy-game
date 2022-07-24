@@ -4,16 +4,13 @@ import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.changes.InsertCityChange
-import de.ruegnerlukas.strategygame.backend.ports.models.changes.ModifyMoneyChange
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionResult
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.gamestate.CityState
+import de.ruegnerlukas.strategygame.backend.ports.models.gamestate.CountryState
+import de.ruegnerlukas.strategygame.backend.ports.models.gamestate.GameState
+import de.ruegnerlukas.strategygame.backend.ports.models.gamestate.TileState
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
@@ -23,7 +20,7 @@ import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.UUID
 import kotlin.math.sqrt
 
-class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
+class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 
 	companion object {
 		const val MIN_DIST_BETWEEN_CITIES = 4.0f
@@ -32,62 +29,39 @@ class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 
 	override suspend fun perform(
 		command: CommandEntity,
-		world: WorldExtendedEntity
-	): Either<ResolveCommandsActionError, CommandResolutionResult> {
+		state: GameState
+	): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
 		val data: CreateCityCommandData = Json.fromString(Base64.fromBase64(command.data))
 		return either {
 
-			val player = findPlayer(command, world).bind()
-			val country = findCountry(player, world).bind()
-			val tile = findTile(data, world).bind()
+			val country = findCountry(command, state).bind()
+			val tile = findTile(data, state).bind()
 
 			val validationErrors = mutableListOf<String>().apply {
 				addAll(validateTileType(tile))
-				addAll(validateCitySpacing(world.cities))
+				addAll(validateCitySpacing(state.cities.get(), tile))
 				addAll(validateResourceCost(country))
 			}
 
 			if (validationErrors.isEmpty()) {
-				CommandResolutionResult(
-					changes = listOf(
-						InsertCityChange(
-							CityEntity(
-								id = UUID.gen(),
-								tileId = tile.id,
-							)
-						),
-						ModifyMoneyChange(
-							countryId = country.id,
-							change = -CITY_COST
-						)
-					),
-					errors = emptyMap()
+				val city = CityState(
+					id = UUID.gen(),
+					tileId = tile.id,
+					q = tile.q,
+					r = tile.r,
 				)
+				state.cities.get().add(city)
+				country.amountMoney.set(country.amountMoney.get() - CITY_COST)
+				emptyList()
 			} else {
-				CommandResolutionResult(
-					changes = emptyList(),
-					errors = mutableMapOf<CommandEntity, String>().apply {
-						validationErrors.forEach { put(command, it) }
-					}
-				)
+				validationErrors.map { CommandResolutionError(command, it) }
 			}
-
 		}
 	}
 
 
-	private fun findPlayer(command: CommandEntity, world: WorldExtendedEntity): Either<ResolveCommandsActionError, PlayerEntity> {
-		val player = world.players.find { it.id == command.playerId }
-		if (player == null) {
-			return ResolveCommandsAction.PlayerNotFoundError.left()
-		} else {
-			return player.right()
-		}
-	}
-
-
-	private fun findTile(data: CreateCityCommandData, world: WorldExtendedEntity): Either<ResolveCommandsActionError, TileEntity> {
-		val targetTile = world.tiles.find { it.q == data.q && it.r == data.r }
+	private fun findTile(data: CreateCityCommandData, state: GameState): Either<ResolveCommandsActionError, TileState> {
+		val targetTile = state.tiles.find { it.q == data.q && it.r == data.r }
 		if (targetTile == null) {
 			return ResolveCommandsAction.TileNotFoundError.left()
 		} else {
@@ -95,8 +69,9 @@ class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 		}
 	}
 
-	private fun findCountry(player: PlayerEntity, world: WorldExtendedEntity): Either<ResolveCommandsActionError, CountryEntity> {
-		val country = world.countries.find { it.id == player.countryId }
+
+	private fun findCountry(command: CommandEntity, state: GameState): Either<ResolveCommandsActionError, CountryState> {
+		val country = state.countries.find { it.playerId == command.playerId }
 		if (country == null) {
 			return ResolveCommandsAction.CountryNotFoundError.left()
 		} else {
@@ -108,8 +83,8 @@ class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 	/**
 	 * @returns a list of validation errors
 	 */
-	private fun validateTileType(tile: TileEntity): List<String> {
-		if (tile.type == TileType.LAND.name) {
+	private fun validateTileType(tile: TileState): List<String> {
+		if (tile.type == TileType.LAND) {
 			return emptyList()
 		} else {
 			return listOf("invalid tile type")
@@ -120,11 +95,11 @@ class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 	/**
 	 * @returns a list of validation errors
 	 */
-	private fun validateCitySpacing(cities: List<CityEntity>): List<String> {
+	private fun validateCitySpacing(cities: List<CityState>, target: TileState): List<String> {
 		val closestCity = cities
 			.map { city ->
-				val dq = 0
-				val dr = 0
+				val dq = target.q - city.q
+				val dr = target.r - city.r
 				val dist = sqrt((dq * dq + dr * dr).toDouble())
 				city to dist
 			}
@@ -140,8 +115,8 @@ class ResolveCreateCityCommandImpl() : ResolveCreateCityCommand {
 	/**
 	 * @returns a list of validation errors
 	 */
-	private fun validateResourceCost(country: CountryEntity): List<String> {
-		if (country.amountMoney < CITY_COST) {
+	private fun validateResourceCost(country: CountryState): List<String> {
+		if (country.amountMoney.get() < CITY_COST) {
 			return listOf("not enough money")
 		} else {
 			return emptyList()

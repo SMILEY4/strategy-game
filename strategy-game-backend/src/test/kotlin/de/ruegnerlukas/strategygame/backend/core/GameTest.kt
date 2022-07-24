@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.core
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
@@ -25,7 +26,7 @@ class GameTest : StringSpec({
 		val userId = "test-user"
 
 		// create new game -> expect valid game exists
-		val gameId = createGame.perform()
+		val gameId = createGame.perform(WorldSettings.default())
 		TestUtils.getGame(database, gameId).let {
 			it.id shouldBe gameId
 			it.turn shouldBe 0
@@ -55,7 +56,7 @@ class GameTest : StringSpec({
 		val userId2 = "test-user-2"
 
 		// user1: create and join new game
-		val gameId = createGame.perform()
+		val gameId = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId1, gameId)
 
 		// user2: join game -> expect success and two valid players
@@ -90,7 +91,7 @@ class GameTest : StringSpec({
 		val userId2 = "test-user-2"
 
 		// create and both users join game -> expect two players
-		val gameId = createGame.perform()
+		val gameId = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId1, gameId)
 		joinGame.perform(userId2, gameId)
 		val prevPlayerIds = TestUtils.getPlayers(database, gameId).map { it.id }
@@ -145,11 +146,11 @@ class GameTest : StringSpec({
 		val userId2 = "test-user-2"
 		val userId3 = "test-user-3"
 		// create and join 3 seperate games
-		val gameId1 = createGame.perform()
+		val gameId1 = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId1, gameId1)
-		val gameId2 = createGame.perform()
+		val gameId2 = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId2, gameId2)
-		val gameId3 = createGame.perform()
+		val gameId3 = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId3, gameId3)
 		// user1 joins other two games
 		joinGame.perform(userId1, gameId2)
@@ -167,7 +168,7 @@ class GameTest : StringSpec({
 		val requestConnect = TestActions.gameRequestConnectionAction(database)
 		// create and join new game
 		val userId = "test-user"
-		val gameId = createGame.perform()
+		val gameId = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId, gameId)
 		// request to connect to game -> expect success
 		val result = requestConnect.perform(userId, gameId)
@@ -180,7 +181,7 @@ class GameTest : StringSpec({
 		val joinGame = TestActions.gameJoinAction(database)
 		val requestConnect = TestActions.gameRequestConnectionAction(database)
 		// user1: create and join new game
-		val gameId = createGame.perform()
+		val gameId = createGame.perform(WorldSettings.default())
 		joinGame.perform("test-user-1", gameId)
 		// user2: request to connect to game -> expect correct error
 		val result = requestConnect.perform("test-user-2", gameId)
@@ -196,7 +197,7 @@ class GameTest : StringSpec({
 
 		// create and join new game
 		val userId = "test-user"
-		val gameId = createGame.perform()
+		val gameId = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId, gameId)
 
 		// connect to game

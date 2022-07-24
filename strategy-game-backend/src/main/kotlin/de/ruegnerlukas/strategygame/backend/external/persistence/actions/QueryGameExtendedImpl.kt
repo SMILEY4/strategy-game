@@ -19,7 +19,7 @@ class QueryGameExtendedImpl(
 		return either {
 			val game = queryGame.execute(gameId).bind()
 			val players = queryPlayersByGame.execute(gameId)
-			val world = queryWorldExtended.execute(game.worldId).bind()
+			val world = queryWorldExtended.execute(game.id, game.worldId).bind()
 			GameExtendedEntity(
 				id = game.id,
 				turn = game.turn,

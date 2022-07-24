@@ -3,6 +3,8 @@ package de.ruegnerlukas.strategygame.backend.core
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
@@ -14,7 +16,7 @@ import io.kotest.matchers.shouldBe
 
 class TurnTest : StringSpec({
 
-	"submit commands, expect save commands and ending turn" {
+	"submit commands, expect saved commands, ending turn and resolved commands" {
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
@@ -25,7 +27,7 @@ class TurnTest : StringSpec({
 		val userId2 = "test-user-2"
 
 		// create a new game
-		val gameId = createGame.perform()
+		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 
 		// users players join game
 		joinGame.perform(userId1, gameId) shouldBeOk true
@@ -62,6 +64,18 @@ class TurnTest : StringSpec({
 				CreateCityCommand.TYPE
 			)
 		}
+
+		// assert that commands have correctly resolved and saved
+		TestUtils.getMarkers(database, gameId) shouldHaveSize 2
+		TestUtils.getMarkersAt(database, gameId, 4, 2).let { markers ->
+			markers shouldHaveSize 1
+			markers[0].playerId shouldBe playerId1
+		}
+		TestUtils.getMarkersAt(database, gameId, 0, 0).let { markers ->
+			markers shouldHaveSize 1
+			markers[0].playerId shouldBe playerId2
+		}
+		TestUtils.getCities(database, gameId) shouldHaveSize 1
 	}
 
 })
