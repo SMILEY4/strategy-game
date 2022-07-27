@@ -2,8 +2,6 @@
 title: API
 ---
 
-
-
 # Http-Endpoints
 
 ## User

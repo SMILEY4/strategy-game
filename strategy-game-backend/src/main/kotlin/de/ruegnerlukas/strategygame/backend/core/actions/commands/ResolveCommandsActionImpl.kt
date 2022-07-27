@@ -58,8 +58,7 @@ class ResolveCommandsActionImpl(
 	): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
 		val errors = mutableListOf<CommandResolutionError>()
 		for (command in commands) {
-			val result = resolveCommand(gameState, command)
-			when (result) {
+			when (val result = resolveCommand(gameState, command)) {
 				is Either.Left -> return result
 				is Either.Right -> errors.addAll(result.value)
 			}
