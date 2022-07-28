@@ -131,6 +131,7 @@ class TurnSubmitActionImpl(
 			if (result is Either.Left) {
 				when (result.value) {
 					TurnEndAction.GameNotFoundError -> throw Exception("Could not find game $gameId when ending turn")
+					TurnEndAction.CommandResolutionFailedError-> throw Exception("Could not resolve turn for game $gameId")
 				}
 			}
 		}

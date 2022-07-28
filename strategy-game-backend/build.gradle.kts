@@ -22,7 +22,7 @@ application {
 
 plugins {
 	application
-	kotlin("jvm") version "1.5.31"
+	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.serialization").version("1.6.20")
 	id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -72,7 +72,12 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.withType<KotlinCompile> {
-	kotlinOptions.jvmTarget = "16"
+	kotlinOptions.jvmTarget = "17"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.shadowJar {
