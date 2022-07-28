@@ -8,13 +8,26 @@ export class MessageHandler {
         if (type === "world-state") {
             this.onWorldState(payload);
         }
+        if (type === "turn-result") {
+            this.onTurnResult(payload);
+        }
     }
 
     onWorldState(payload: WorldStatePayload) {
         AppConfig.turnUpdateWorldState.perform(
             MessageHandler.extractTiles(payload),
-            MessageHandler.extractMarkers(payload)
+            MessageHandler.extractMarkers(payload),
+            MessageHandler.extractCities(payload)
         );
+    }
+
+    onTurnResult(payload: any) {
+        AppConfig.turnUpdateWorldState.perform(
+            MessageHandler.extractTiles(payload),
+            MessageHandler.extractMarkers(payload),
+            MessageHandler.extractCities(payload)
+        );
+        // TODO: add notifications with errors from command resolution (-> payload.errors)
     }
 
     private static extractTiles(payload: WorldStatePayload): ({
@@ -41,6 +54,21 @@ export class MessageHandler {
                 q: tile ? tile.q : 999999,
                 r: tile ? tile.r : 999999,
                 userId: marker.playerId
+            };
+        });
+    }
+
+
+    private static extractCities(payload: WorldStatePayload): ({
+        q: number,
+        r: number
+    })[] {
+
+        return payload.game.cities.map(city => {
+            const tile = payload.game.tiles.find(t => t.id == city.tileId);
+            return {
+                q: tile ? tile.q : 999999,
+                r: tile ? tile.r : 999999,
             };
         });
     }

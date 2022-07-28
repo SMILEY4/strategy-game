@@ -1,3 +1,4 @@
+import {City} from "../../../../models/city";
 import {CommandCreateCity} from "../../../../models/commandCreateCity";
 import {CommandPlaceMarker} from "../../../../models/commandPlaceMarker";
 import {Marker} from "../../../../models/marker";
@@ -52,7 +53,7 @@ export class MarkerRenderer {
     }
 
 
-    public render(camera: Camera, markers: Marker[], commands: (CommandPlaceMarker | CommandCreateCity)[]) {
+    public render(camera: Camera, markers: Marker[], cities: City[], commands: (CommandPlaceMarker | CommandCreateCity)[]) {
         this.batchRenderer.begin(camera);
         markers.forEach(m => {
             const [offX, offY] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, m.q, m.r);
@@ -74,17 +75,26 @@ export class MarkerRenderer {
                     [offX + (size[0] / 3), offY + size[1], -1],
                 ]);
             });
-		commands // TODO(temp) render cities as inverse markers for now
-			.filter(cmd => cmd.commandType === "create-city")
-			.forEach(c => {
-				const [offX, offY] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, c.q, c.r);
-				const size = TilemapUtils.DEFAULT_HEX_LAYOUT.size;
-				this.batchRenderer.add([
-					[offX, offY + 4, -1],
-					[offX - (size[0] / 3), offY - size[1] + 4, -1],
-					[offX + (size[0] / 3), offY - size[1] + 4, -1],
-				]);
-			});
+        cities.forEach(c => {
+            const [offX, offY] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, c.q, c.r);
+            const size = TilemapUtils.DEFAULT_HEX_LAYOUT.size;
+            this.batchRenderer.add([
+                [offX, offY + 4, -1],
+                [offX - (size[0] / 3), offY - size[1] + 4, -1],
+                [offX + (size[0] / 3), offY - size[1] + 4, -1],
+            ]);
+        });
+        commands
+            .filter(cmd => cmd.commandType === "create-city")
+            .forEach(c => {
+                const [offX, offY] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, c.q, c.r);
+                const size = TilemapUtils.DEFAULT_HEX_LAYOUT.size;
+                this.batchRenderer.add([
+                    [offX, offY + 4, -1],
+                    [offX - (size[0] / 3), offY - size[1] + 4, -1],
+                    [offX + (size[0] / 3), offY - size[1] + 4, -1],
+                ]);
+            });
         this.batchRenderer.end(this.shader, {
             attributes: ["in_position", "in_markerdata"],
             uniforms: {}

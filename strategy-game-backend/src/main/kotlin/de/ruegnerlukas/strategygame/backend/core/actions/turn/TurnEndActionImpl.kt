@@ -33,8 +33,8 @@ class TurnEndActionImpl(
 			val game = findGame(gameId).bind()
 			incrementTurn(game)
 			updatePlayerStates(game)
-			resolveCommands(game).bind()
-			sendGameStateMessages(game)
+			val errors = resolveCommands(game).bind()
+			sendGameStateMessages(game, errors)
 		}
 	}
 
@@ -75,8 +75,8 @@ class TurnEndActionImpl(
 	/**
 	 * Send the new game-state to the connected players
 	 */
-	private suspend fun sendGameStateMessages(game: GameEntity) {
-		actionBroadcastWorldState.perform(game.id)
+	private suspend fun sendGameStateMessages(game: GameEntity, errors: List<CommandResolutionError>) {
+		actionBroadcastWorldState.perform(game.id, errors)
 			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 

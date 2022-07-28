@@ -3,6 +3,7 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 import arrow.core.Either
 import arrow.core.computations.either
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction.WorldStateBroadcasterActionError
@@ -15,11 +16,11 @@ class BroadcastTurnResultActionImpl(
 	private val messageProducer: GameMessageProducer,
 ) : BroadcastTurnResultAction, Logging {
 
-	override suspend fun perform(gameId: String, connectionIds: List<Int>?): Either<WorldStateBroadcasterActionError, Unit> {
+	override suspend fun perform(gameId: String, errors: List<CommandResolutionError>): Either<WorldStateBroadcasterActionError, Unit> {
 		log().info("Sending world-state of game $gameId to connected player(s)")
 		return either {
 			val game = findGame(gameId).bind()
-			sendGameStateMessages(getConnectionIds(connectionIds, game), game)
+			sendGameStateMessages(getConnectionIds(game), game)
 		}
 	}
 
@@ -32,14 +33,10 @@ class BroadcastTurnResultActionImpl(
 	}
 
 
-	private fun getConnectionIds(connectionIds: List<Int>?, game: GameExtendedEntity): List<Int> {
-		if (connectionIds == null) {
-			return game.players
-				.filter { it.connectionId !== null }
-				.map { it.connectionId!! }
-		} else {
-			return connectionIds
-		}
+	private fun getConnectionIds(game: GameExtendedEntity): List<Int> {
+		return game.players
+			.filter { it.connectionId !== null }
+			.map { it.connectionId!! }
 	}
 
 
