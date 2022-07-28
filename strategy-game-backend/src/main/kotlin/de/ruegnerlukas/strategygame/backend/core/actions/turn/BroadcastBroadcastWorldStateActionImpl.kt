@@ -18,7 +18,7 @@ class BroadcastBroadcastWorldStateActionImpl(
 	override suspend fun perform(gameId: String, connectionIds: List<Int>?): Either<WorldStateBroadcasterActionError, Unit> {
 		log().info("Sending world-state of game $gameId to connected player(s)")
 		return either {
-			val game = findGameState(gameId).bind()
+			val game = findGame(gameId).bind()
 			sendGameStateMessages(getConnectionIds(connectionIds, game), game)
 		}
 	}
@@ -27,7 +27,7 @@ class BroadcastBroadcastWorldStateActionImpl(
 	/**
 	 * Find and return the game or a [GameNotFoundError] if a game with that id does not exist
 	 */
-	private suspend fun findGameState(gameId: String): Either<GameNotFoundError, GameExtendedEntity> {
+	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameExtendedEntity> {
 		return queryGameExtended.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
@@ -48,7 +48,7 @@ class BroadcastBroadcastWorldStateActionImpl(
 	 */
 	private suspend fun sendGameStateMessages(connectionIds: List<Int>, game: GameExtendedEntity) {
 		connectionIds.forEach { connectionId ->
-			messageProducer.sendWorldState(connectionId, game.world)
+			messageProducer.sendWorldState(connectionId, game)
 		}
 	}
 

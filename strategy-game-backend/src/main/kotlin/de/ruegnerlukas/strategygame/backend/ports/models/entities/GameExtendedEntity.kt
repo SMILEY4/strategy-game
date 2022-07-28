@@ -2,8 +2,10 @@ package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
 
 data class GameExtendedEntity(
-	val id: String,
 	val turn: Int,
-	val world: WorldExtendedEntity,
-	val players: List<PlayerEntity>
+	val players: List<PlayerEntity>,
+	val countries: List<CountryEntity>,
+	val tiles: List<TileEntity>,
+	val cities: List<CityEntity>,
+	val markers: List<MarkerEntity>,
 )

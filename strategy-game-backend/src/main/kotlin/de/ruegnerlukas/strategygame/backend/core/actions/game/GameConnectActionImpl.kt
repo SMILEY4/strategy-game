@@ -3,13 +3,11 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.getOrElse
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryPlayer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdatePlayerConnection
 import de.ruegnerlukas.strategygame.backend.shared.Logging

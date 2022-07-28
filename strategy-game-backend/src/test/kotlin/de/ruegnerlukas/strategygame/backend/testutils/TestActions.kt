@@ -48,13 +48,9 @@ object TestActions {
 	fun gameConnectAction(database: Database) = GameConnectActionImpl(
 		BroadcastBroadcastWorldStateActionImpl(
 			QueryGameExtendedImpl(
+				database,
 				QueryGameImpl(database),
 				QueryPlayersByGameImpl(database),
-				QueryWorldExtendedImpl(
-					QueryWorldImpl(database),
-					QueryPlayersByGameImpl(database),
-					QueryTilesImpl(database),
-				)
 			),
 			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),
@@ -72,13 +68,9 @@ object TestActions {
 			),
 			BroadcastBroadcastWorldStateActionImpl(
 				QueryGameExtendedImpl(
+					database,
 					QueryGameImpl(database),
 					QueryPlayersByGameImpl(database),
-					QueryWorldExtendedImpl(
-						QueryWorldImpl(database),
-						QueryPlayersByGameImpl(database),
-						QueryTilesImpl(database),
-					)
 				),
 				GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 			),

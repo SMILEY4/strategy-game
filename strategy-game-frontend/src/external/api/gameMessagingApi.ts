@@ -29,9 +29,9 @@ export class GameMessagingApi {
         const userId = this.authProvider.getUserId();
         this.websocketClient.send("submit-turn", {
             commands: commands.map(cmd => ({
+                type: "place-marker",
                 q: cmd.q,
                 r: cmd.r,
-                userId: userId
             }))
         });
     }

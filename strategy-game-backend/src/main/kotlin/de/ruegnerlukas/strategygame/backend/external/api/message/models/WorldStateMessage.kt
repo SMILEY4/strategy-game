@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.external.api.message.models
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.WorldStateMessage.Companion.WorldStatePayload
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldExtendedEntity
 
 
@@ -12,7 +13,7 @@ class WorldStateMessage(payload: WorldStatePayload) : Message<WorldStatePayload>
 		const val TYPE = "world-state"
 
 		data class WorldStatePayload(
-			val world: WorldExtendedEntity
+			val game: GameExtendedEntity
 		)
 
 	}
