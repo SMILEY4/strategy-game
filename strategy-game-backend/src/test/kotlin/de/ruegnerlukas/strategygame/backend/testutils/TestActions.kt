@@ -4,12 +4,13 @@ import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.BroadcastInitialGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastBroadcastWorldStateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResultActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
@@ -24,9 +25,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGa
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameAndStateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryTilesImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryWorldExtendedImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryWorldImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameStateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdatePlayerConnectionImpl
@@ -46,7 +44,7 @@ object TestActions {
 	)
 
 	fun gameConnectAction(database: Database) = GameConnectActionImpl(
-		BroadcastBroadcastWorldStateActionImpl(
+		BroadcastInitialGameStateActionImpl(
 			QueryGameExtendedImpl(
 				database,
 				QueryGameImpl(database),
@@ -66,7 +64,7 @@ object TestActions {
 				ResolvePlaceMarkerCommandImpl(),
 				ResolveCreateCityCommandImpl()
 			),
-			BroadcastBroadcastWorldStateActionImpl(
+			BroadcastTurnResultActionImpl(
 				QueryGameExtendedImpl(
 					database,
 					QueryGameImpl(database),

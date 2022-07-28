@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.ports.provided.turn
 
 import arrow.core.Either
 
-interface BroadcastWorldStateAction {
+interface BroadcastInitialGameStateAction {
 
 	sealed class WorldStateBroadcasterActionError
 	object GameNotFoundError : WorldStateBroadcasterActionError()

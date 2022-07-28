@@ -1,19 +1,19 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.turn
+package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import arrow.core.Either
 import arrow.core.computations.either
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction.WorldStateBroadcasterActionError
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction.WorldStateBroadcasterActionError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
-class BroadcastBroadcastWorldStateActionImpl(
+class BroadcastInitialGameStateActionImpl(
 	private val queryGameExtended: QueryGameExtended,
 	private val messageProducer: GameMessageProducer,
-) : BroadcastWorldStateAction, Logging {
+) : BroadcastInitialGameStateAction, Logging {
 
 	override suspend fun perform(gameId: String, connectionIds: List<Int>?): Either<WorldStateBroadcasterActionError, Unit> {
 		log().info("Sending world-state of game $gameId to connected player(s)")

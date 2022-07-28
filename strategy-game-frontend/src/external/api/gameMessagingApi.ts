@@ -1,3 +1,4 @@
+import {CommandCreateCity} from "../../models/commandCreateCity";
 import {CommandPlaceMarker} from "../../models/commandPlaceMarker";
 import {AuthProvider} from "../state/user/authProvider";
 import {MessageHandler} from "./messageHandler";
@@ -25,15 +26,27 @@ export class GameMessagingApi {
         this.websocketClient.close();
     }
 
-    sendSubmitTurn(commands: CommandPlaceMarker[]): void {
-        const userId = this.authProvider.getUserId();
+    sendSubmitTurn(commands: (CommandPlaceMarker | CommandCreateCity)[]): void {
         this.websocketClient.send("submit-turn", {
-            commands: commands.map(cmd => ({
-                type: "place-marker",
-                q: cmd.q,
-                r: cmd.r,
-            }))
-        });
+                commands: commands.map(cmd => {
+                    if (cmd.commandType === "place-marker") {
+                        return {
+                            type: "place-marker",
+                            q: cmd.q,
+                            r: cmd.r,
+                        };
+                    }
+                    if (cmd.commandType === "create-city") {
+                        return {
+                            type: "create-city",
+                            q: cmd.q,
+                            r: cmd.r,
+                        };
+                    }
+                    return undefined;
+                })
+            }
+        );
     }
 
 }

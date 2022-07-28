@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError
@@ -20,7 +20,7 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class TurnEndActionImpl(
 	private val actionResolveCommands: ResolveCommandsAction,
-	private val actionBroadcastWorldState: BroadcastWorldStateAction,
+	private val actionBroadcastWorldState: BroadcastTurnResultAction,
 	private val queryGame: QueryGame,
 	private val queryCommandsByGame: QueryCommandsByGame,
 	private val updateGameTurn: UpdateGameTurn,

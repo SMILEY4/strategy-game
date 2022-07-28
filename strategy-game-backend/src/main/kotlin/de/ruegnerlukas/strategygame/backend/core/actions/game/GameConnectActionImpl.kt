@@ -7,13 +7,13 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastWorldStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryPlayer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdatePlayerConnection
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameConnectActionImpl(
-	private val actionBroadcastWorldState: BroadcastWorldStateAction,
+	private val actionBroadcastWorldState: BroadcastInitialGameStateAction,
 	private val queryPlayer: QueryPlayer,
 	private val updatePlayerConnection: UpdatePlayerConnection,
 ) : GameConnectAction, Logging {
