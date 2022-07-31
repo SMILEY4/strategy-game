@@ -280,9 +280,14 @@ All messages follow the following format
   {
       "commands": [
           {
-              "userId": "String - the id of the user submitting the command",
+              "type": "place-marker",
               "q": "Int - the q-coordinate of the new marker",
               "r": "Int - the r-coordinate of the new marker",
+          },
+          {
+              "type": "create-city",
+              "q": "Int - the q-coordinate of the new city",
+              "r": "Int - the r-coordinate of the new city",
           }
       ]
   }
@@ -296,20 +301,60 @@ All messages follow the following format
 
   ```json
   {
-  	"world": {
+  	"game": {
           "tiles": [
               {
+                  "id": "String - the unique id of the tile",
                   "q": "Int - the q-coordinate of the tile",
                   "r": "Int - the r-coordinate of the tile",
-                  "data": {
-              	    "type": "String - one of 'PLAINS', 'WATER', 'MOUNTAINS'"
-                  },
-                  "entities": [
-                      {
-                          "entityType": "String - currently only 'MARKER'",
-                   	    "userId": "String - the id of the user owning the marker"
-                      }
-                  ]
+                  "type": "String - the type of this tile ('WATER','LAND')"
+              }
+          ],
+          "markers": [
+              {
+                  "id": "String - the unique id of the marker",
+                  "tileId": "String - the id of the tile this marker is placed on",
+                  "playerId": "String - the id of the player that placed the marker"
+              }
+          ],
+          "cities": [
+              {
+                  "id": "String - the unique id of the city",
+                  "tileId": "String - the id of the tile this city is placed on"
+              }
+          ]
+      }
+  }
+  ```
+
+## [OUT] Turn Result
+
+- Type: `turn-result`
+
+- Payload
+
+  ```json
+  {
+  	"game": {
+          "tiles": [
+              {
+                  "id": "String - the unique id of the tile",
+                  "q": "Int - the q-coordinate of the tile",
+                  "r": "Int - the r-coordinate of the tile",
+                  "type": "String - the type of this tile ('WATER','LAND')"
+              }
+          ],
+          "markers": [
+              {
+                  "id": "String - the unique id of the marker",
+                  "tileId": "String - the id of the tile this marker is placed on",
+                  "playerId": "String - the id of the player that placed the marker"
+              }
+          ],
+          "cities": [
+              {
+                  "id": "String - the unique id of the city",
+                  "tileId": "String - the id of the tile this city is placed on"
               }
           ]
       }
