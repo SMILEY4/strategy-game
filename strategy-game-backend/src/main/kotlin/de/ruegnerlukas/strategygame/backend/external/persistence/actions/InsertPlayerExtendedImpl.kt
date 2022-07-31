@@ -17,18 +17,18 @@ class InsertPlayerExtendedImpl(val database: Database) : InsertPlayerExtended {
 					SQL
 						.insert()
 						.into(CountryTbl)
-						.columns(CountryTbl.id, CountryTbl.worldId, CountryTbl.amountMoney)
+						.columns(CountryTbl.id, CountryTbl.gameId, CountryTbl.amountMoney)
 						.items(
 							SQL.item()
 								.set(CountryTbl.id, placeholder("id"))
-								.set(CountryTbl.worldId, placeholder("worldId"))
+								.set(CountryTbl.gameId, placeholder("gameId"))
 								.set(CountryTbl.amountMoney, placeholder("amountMoney"))
 
 						)
 				}
 				.parameters {
 					it["id"] = extPlayer.country.id
-					it["worldId"] = extPlayer.country.worldId
+					it["gameId"] = extPlayer.country.gameId
 					it["amountMoney"] = extPlayer.country.amountMoney
 				}
 				.execute()

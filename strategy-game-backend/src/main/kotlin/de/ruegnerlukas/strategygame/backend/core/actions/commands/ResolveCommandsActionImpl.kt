@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.commands
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
@@ -28,12 +28,11 @@ class ResolveCommandsActionImpl(
 
 	override suspend fun perform(
 		gameId: String,
-		worldId: String,
 		commands: List<CommandEntity>
 	): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
 		log().info("Resolving ${commands.size} commands for game $gameId")
 		return either {
-			val state = findGameState(worldId).bind()
+			val state = findGameState(gameId).bind()
 			val errors = resolveCommands(state, commands).bind()
 			saveGameState(state)
 			errors

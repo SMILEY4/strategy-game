@@ -3,13 +3,11 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameCreateEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldCreateEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
-import java.util.Random
 
 class GameCreateActionImpl(
 	private val insertGame: InsertGame,
@@ -17,8 +15,7 @@ class GameCreateActionImpl(
 
 	override suspend fun perform(worldSettings: WorldSettings): String {
 		log().info("Creating new game")
-		val world = buildWorld(worldSettings)
-		val game = buildGame(world)
+		val game = buildGame(worldSettings)
 		save(game)
 		log().info("Created new game with id ${game.id}")
 		return game.id
@@ -26,34 +23,22 @@ class GameCreateActionImpl(
 
 
 	/**
-	 * Build the world entity
+	 * Build the game entity
 	 */
-	private fun buildWorld(worldSettings: WorldSettings): WorldCreateEntity {
-		val worldId = UUID.gen()
-		return WorldCreateEntity(
-			id = worldId,
+	private fun buildGame(worldSettings: WorldSettings): GameCreateEntity {
+		val gameId = UUID.gen()
+		return GameCreateEntity(
+			id = gameId,
+			turn = 0,
 			tiles = WorldBuilder().buildTiles(worldSettings).map {
 				TileEntity(
 					id = UUID.gen(),
-					worldId = worldId,
+					gameId = gameId,
 					q = it.q,
 					r = it.r,
 					type = it.data.type.name
 				)
 			}
-		)
-	}
-
-
-	/**
-	 * Build the game entity
-	 */
-	private fun buildGame(world: WorldCreateEntity): GameCreateEntity {
-		val gameId = UUID.gen()
-		return GameCreateEntity(
-			id = gameId,
-			turn = 0,
-			world = world,
 		)
 	}
 

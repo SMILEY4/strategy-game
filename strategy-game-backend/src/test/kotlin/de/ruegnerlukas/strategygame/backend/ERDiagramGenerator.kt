@@ -11,7 +11,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.MarkerTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.CommandTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
-import de.ruegnerlukas.strategygame.backend.external.persistence.WorldTbl
 
 fun main() {
 	println(
@@ -20,7 +19,6 @@ fun main() {
 				GameTbl,
 				PlayerTbl,
 				CommandTbl,
-				WorldTbl,
 				TileTbl,
 				MarkerTbl,
 				CountryTbl,

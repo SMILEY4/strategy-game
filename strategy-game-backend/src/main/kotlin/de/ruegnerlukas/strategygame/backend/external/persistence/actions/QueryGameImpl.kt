@@ -33,8 +33,7 @@ class QueryGameImpl(private val database: Database) : QueryGame {
 				.getOne { row ->
 					GameEntity(
 						id = row.getString(GameTbl.id),
-						turn = row.getInt(GameTbl.turn),
-						worldId = row.getString(GameTbl.worldId),
+						turn = row.getInt(GameTbl.turn)
 					)
 				}
 				.right()

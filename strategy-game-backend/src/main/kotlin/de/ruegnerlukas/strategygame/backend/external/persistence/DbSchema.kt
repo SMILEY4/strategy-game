@@ -13,7 +13,6 @@ object DbSchema {
 			GameTbl,
 			PlayerTbl,
 			CommandTbl,
-			WorldTbl,
 			TileTbl,
 			MarkerTbl,
 			CountryTbl,
@@ -28,7 +27,6 @@ object GameTbl : GameTableDef()
 sealed class GameTableDef : Table("game", true) {
 	val id = text("id").primaryKey()
 	val turn = integer("turn")
-	val worldId = text("worldId")
 
 	companion object {
 		class GameTableDefAlias(override val table: TableLike, override val alias: String) : GameTableDef(), AliasTable
@@ -76,25 +74,11 @@ sealed class CommandTableDef : Table("commands", true) {
 }
 
 
-object WorldTbl : WorldTableDef()
-
-sealed class WorldTableDef : Table("world", true) {
-	val id = text("id").primaryKey()
-
-	companion object {
-		class WorldTableDefAlias(override val table: TableLike, override val alias: String) : WorldTableDef(), AliasTable
-	}
-
-	override fun alias(alias: String) = WorldTableDefAlias(this, alias)
-
-}
-
-
 object TileTbl : TileTableDef()
 
 sealed class TileTableDef : Table("tile", true) {
 	val id = text("id").primaryKey()
-	val worldId = text("worldId").foreignKey(WorldTbl.id, onDelete = RefAction.CASCADE)
+	val gameId = text("gameId").foreignKey(GameTbl.id, onDelete = RefAction.CASCADE)
 	val q = integer("q")
 	val r = integer("r")
 	val type = text("type")
@@ -112,7 +96,7 @@ object CountryTbl : CountryTableDef()
 
 sealed class CountryTableDef : Table("country", true) {
 	val id = text("id").primaryKey()
-	val worldId = text("worldId").foreignKey(WorldTbl.id, onDelete = RefAction.CASCADE)
+	val gameId = text("gameId").foreignKey(GameTbl.id, onDelete = RefAction.CASCADE)
 	val amountMoney = float("amountMoney")
 
 	companion object {

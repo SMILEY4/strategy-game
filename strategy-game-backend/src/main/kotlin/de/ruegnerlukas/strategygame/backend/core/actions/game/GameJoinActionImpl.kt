@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
@@ -76,7 +76,7 @@ class GameJoinActionImpl(
 				),
 				country = CountryEntity(
 					id = countryId,
-					worldId = game.worldId,
+					gameId = game.id,
 					amountMoney = 200f
 				)
 			)

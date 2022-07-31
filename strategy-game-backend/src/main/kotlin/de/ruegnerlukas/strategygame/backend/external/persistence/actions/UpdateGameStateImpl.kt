@@ -23,11 +23,11 @@ class UpdateGameStateImpl(private val database: Database) : UpdateGameState {
 		db.insertBatched(50, dirtyCountries) { batch ->
 			SQL.insertOrUpdate()
 				.into(CountryTbl)
-				.columns(CountryTbl.id, CountryTbl.worldId, CountryTbl.amountMoney)
+				.columns(CountryTbl.id, CountryTbl.gameId, CountryTbl.amountMoney)
 				.items(batch.map {
 					SQL.item()
 						.set(CountryTbl.id, it.id)
-						.set(CountryTbl.worldId, gameState.worldId)
+						.set(CountryTbl.gameId, gameState.gameId)
 						.set(CountryTbl.amountMoney, it.amountMoney.get())
 				})
 		}

@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
@@ -68,7 +68,7 @@ class TurnEndActionImpl(
 	 */
 	private suspend fun resolveCommands(game: GameEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
 		val commands = queryCommandsByGame.execute(game.id, game.turn)
-		return actionResolveCommands.perform(game.id, game.worldId, commands).mapLeft { CommandResolutionFailedError }
+		return actionResolveCommands.perform(game.id, commands).mapLeft { CommandResolutionFailedError }
 	}
 
 

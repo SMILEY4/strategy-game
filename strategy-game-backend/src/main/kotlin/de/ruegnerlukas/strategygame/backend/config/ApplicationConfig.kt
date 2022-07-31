@@ -22,10 +22,8 @@ import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertCityImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertCommandsImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertMarkerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertPlayerExtendedImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameExtendedImpl
@@ -34,7 +32,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGa
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGamesByUserImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameAndStateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameStateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdatePlayerConnectionImpl
@@ -79,10 +76,8 @@ fun Application.module() {
 	val database = runBlocking { DatabaseProvider.create(Config.get().db) }
 
 	// persistence actions
-	val insertCity = InsertCityImpl(database)
 	val insertCommands = InsertCommandsImpl(database)
 	val insertGame = InsertGameImpl(database)
-	val insertMarker = InsertMarkerImpl(database)
 	val insertPlayerExtended = InsertPlayerExtendedImpl(database)
 	val queryCommandsByGame = QueryCommandsByGameImpl(database)
 	val queryGame = QueryGameImpl(database)
@@ -90,8 +85,7 @@ fun Application.module() {
 	val queryGameState = QueryGameStateImpl(database)
 	val queryPlayer = QueryPlayerImpl(database)
 	val queryPlayersByGameAndState = QueryPlayersByGameAndStateImpl(database)
-	val queryPlayersByGame = QueryPlayersByGameImpl(database)
-	val queryGameExtended = QueryGameExtendedImpl(database, queryGame, queryPlayersByGame)
+	val queryGameExtended = QueryGameExtendedImpl(database, queryGame)
 	val updateGameTurn = UpdateGameTurnImpl(database)
 	val updatePlayerConnection = UpdatePlayerConnectionImpl(database)
 	val updatePlayerConnectionsSetNull = UpdatePlayerConnectionsSetNullImpl(database)

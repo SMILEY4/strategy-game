@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction.GameNotFoundError

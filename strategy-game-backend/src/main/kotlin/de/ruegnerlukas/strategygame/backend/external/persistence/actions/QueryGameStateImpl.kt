@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import de.ruegnerlukas.kdbl.builder.SQL
 import de.ruegnerlukas.kdbl.builder.alias
 import de.ruegnerlukas.kdbl.builder.and
@@ -25,14 +25,14 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
 
 class QueryGameStateImpl(private val database: Database) : QueryGameState {
 
-	override suspend fun execute(worldId: String): Either<EntityNotFoundError, GameState> {
+	override suspend fun execute(gameId: String): Either<EntityNotFoundError, GameState> {
 		return either {
-			val countries = fetchCountries(worldId)
-			val tiles = fetchTiles(worldId)
-			val cities = fetchCities(worldId)
-			val markers = fetchMarkers(worldId)
+			val countries = fetchCountries(gameId)
+			val tiles = fetchTiles(gameId)
+			val cities = fetchCities(gameId)
+			val markers = fetchMarkers(gameId)
 			GameState(
-				worldId = worldId,
+				gameId = gameId,
 				countries = countries,
 				tiles = tiles,
 				cities = cities,
@@ -41,7 +41,7 @@ class QueryGameStateImpl(private val database: Database) : QueryGameState {
 		}
 	}
 
-	private suspend fun fetchCountries(worldId: String): List<CountryState> {
+	private suspend fun fetchCountries(gameId: String): List<CountryState> {
 		return database
 			.startQuery("gamestate.query#countries") {
 				SQL
@@ -50,11 +50,11 @@ class QueryGameStateImpl(private val database: Database) : QueryGameState {
 					.where(
 						PlayerTbl.countryId.isEqual(CountryTbl.id)
 								and PlayerTbl.gameId.isEqual(GameTbl.id)
-								and GameTbl.worldId.isEqual(placeholder("worldId"))
+								and GameTbl.id.isEqual(placeholder("gameId"))
 					)
 			}
 			.parameters {
-				it["worldId"] = worldId
+				it["gameId"] = gameId
 			}
 			.execute()
 			.getMultipleOrNone { row ->
@@ -67,16 +67,16 @@ class QueryGameStateImpl(private val database: Database) : QueryGameState {
 	}
 
 
-	private suspend fun fetchTiles(worldId: String): List<TileState> {
+	private suspend fun fetchTiles(gameId: String): List<TileState> {
 		return database
 			.startQuery("gamestate.query#tiles") {
 				SQL
 					.select(TileTbl.id, TileTbl.q, TileTbl.r, TileTbl.type)
 					.from(TileTbl)
-					.where(TileTbl.worldId.isEqual(placeholder("worldId")))
+					.where(TileTbl.gameId.isEqual(placeholder("gameId")))
 			}
 			.parameters {
-				it["worldId"] = worldId
+				it["gameId"] = gameId
 			}
 			.execute()
 			.getMultipleOrNone { row ->
@@ -89,7 +89,7 @@ class QueryGameStateImpl(private val database: Database) : QueryGameState {
 			}
 	}
 
-	private suspend fun fetchCities(worldId: String): List<CityState> {
+	private suspend fun fetchCities(gameId: String): List<CityState> {
 		return database
 			.startQuery("gamestate.query#cities") {
 				SQL
@@ -97,11 +97,11 @@ class QueryGameStateImpl(private val database: Database) : QueryGameState {
 					.from(CityTbl, TileTbl)
 					.where(
 						CityTbl.tileId.isEqual(TileTbl.id)
-								and TileTbl.worldId.isEqual(placeholder("worldId"))
+								and TileTbl.gameId.isEqual(placeholder("gameId"))
 					)
 			}
 			.parameters {
-				it["worldId"] = worldId
+				it["gameId"] = gameId
 			}
 			.execute()
 			.getMultipleOrNone { row ->
@@ -114,7 +114,7 @@ class QueryGameStateImpl(private val database: Database) : QueryGameState {
 			}
 	}
 
-	private suspend fun fetchMarkers(worldId: String): List<MarkerState> {
+	private suspend fun fetchMarkers(gameId: String): List<MarkerState> {
 		return database
 			.startQuery("gamestate.query#markers") {
 				SQL
@@ -122,11 +122,11 @@ class QueryGameStateImpl(private val database: Database) : QueryGameState {
 					.from(MarkerTbl, TileTbl)
 					.where(
 						MarkerTbl.tileId.isEqual(TileTbl.id)
-								and TileTbl.worldId.isEqual(placeholder("worldId"))
+								and TileTbl.gameId.isEqual(placeholder("gameId"))
 					)
 			}
 			.parameters {
-				it["worldId"] = worldId
+				it["gameId"] = gameId
 			}
 			.execute()
 			.getMultipleOrNone { row ->

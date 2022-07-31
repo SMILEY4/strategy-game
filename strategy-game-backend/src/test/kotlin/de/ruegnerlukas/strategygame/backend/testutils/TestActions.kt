@@ -24,7 +24,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGa
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGamesByUserImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameAndStateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameStateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameTurnImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdatePlayerConnectionImpl
@@ -48,7 +47,6 @@ object TestActions {
 			QueryGameExtendedImpl(
 				database,
 				QueryGameImpl(database),
-				QueryPlayersByGameImpl(database),
 			),
 			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),
@@ -68,7 +66,6 @@ object TestActions {
 				QueryGameExtendedImpl(
 					database,
 					QueryGameImpl(database),
-					QueryPlayersByGameImpl(database),
 				),
 				GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 			),

@@ -9,12 +9,11 @@ import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.CityTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.MarkerTbl
+import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayersByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryTilesImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
@@ -37,7 +36,24 @@ object TestUtils {
 	}
 
 	suspend fun getPlayers(database: Database, gameId: String): List<PlayerEntity> {
-		return QueryPlayersByGameImpl(database).execute(gameId)
+		return database
+			.startQuery {
+				SQL
+					.select(PlayerTbl.allColumns())
+					.from(PlayerTbl)
+					.where(PlayerTbl.gameId.isEqual(gameId))
+			}
+			.execute()
+			.getMultipleOrNone { row ->
+				PlayerEntity(
+					id = row.getString(PlayerTbl.id),
+					userId = row.getString(PlayerTbl.userId),
+					gameId = row.getString(PlayerTbl.gameId),
+					connectionId = row.getIntOrNull(PlayerTbl.connectionId),
+					state = row.getString(PlayerTbl.state),
+					countryId = row.getString(PlayerTbl.countryId)
+				)
+			}
 	}
 
 	suspend fun getMarkersAt(database: Database, gameId: String, q: Int, r: Int): List<MarkerEntity> {
@@ -46,7 +62,6 @@ object TestUtils {
 	}
 
 	suspend fun getMarkers(database: Database, gameId: String): List<MarkerEntity> {
-		val worldId = getGame(database, gameId).worldId
 		return database
 			.startQuery {
 				SQL
@@ -54,11 +69,8 @@ object TestUtils {
 					.from(MarkerTbl, TileTbl)
 					.where(
 						MarkerTbl.tileId.isEqual(TileTbl.id)
-								and TileTbl.worldId.isEqual(placeholder("worldId"))
+								and TileTbl.gameId.isEqual(gameId)
 					)
-			}
-			.parameters {
-				it["worldId"] = worldId
 			}
 			.execute()
 			.getMultipleOrNone { row ->
@@ -76,7 +88,6 @@ object TestUtils {
 	}
 
 	suspend fun getCities(database: Database, gameId: String): List<CityEntity> {
-		val worldId = getGame(database, gameId).worldId
 		return database
 			.startQuery {
 				SQL
@@ -84,11 +95,8 @@ object TestUtils {
 					.from(CityTbl, TileTbl)
 					.where(
 						CityTbl.tileId.isEqual(TileTbl.id)
-								and TileTbl.worldId.isEqual(placeholder("worldId"))
+								and TileTbl.gameId.isEqual(gameId)
 					)
-			}
-			.parameters {
-				it["worldId"] = worldId
 			}
 			.execute()
 			.getMultipleOrNone { row ->
@@ -100,8 +108,23 @@ object TestUtils {
 	}
 
 	suspend fun getTiles(database: Database, gameId: String): List<TileEntity> {
-		val worldId = getGame(database, gameId).worldId
-		return QueryTilesImpl(database).execute(worldId)
+		return database
+			.startQuery {
+				SQL
+					.select(TileTbl.id, TileTbl.q, TileTbl.r, TileTbl.type)
+					.from(TileTbl)
+					.where(TileTbl.gameId.isEqual(gameId))
+			}
+			.execute()
+			.getMultipleOrNone { row ->
+				TileEntity(
+					id = row.getString(TileTbl.id),
+					gameId = gameId,
+					q = row.getInt(TileTbl.q),
+					r = row.getInt(TileTbl.r),
+					type = row.getString(TileTbl.type)
+				)
+			}
 	}
 
 

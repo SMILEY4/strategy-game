@@ -32,7 +32,6 @@ class QueryGamesByUserImpl(private val database: Database) : QueryGamesByUser {
 				GameEntity(
 					id = row.getString(GameTbl.id),
 					turn = row.getInt(GameTbl.turn),
-					worldId = row.getString(GameTbl.worldId),
 				)
 			}
 	}

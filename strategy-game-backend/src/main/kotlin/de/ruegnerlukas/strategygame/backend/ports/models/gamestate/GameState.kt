@@ -4,8 +4,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.shared.dirty.DirtyObject
 
 
-class GameState( // TODO: = WorldState ?
-	val worldId: String,
+class GameState(
+	val gameId: String,
 	val countries: List<CountryState>,
 	val tiles: List<TileState>,
 	cities: List<CityState>,
