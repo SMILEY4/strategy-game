@@ -5,7 +5,8 @@ data class PlayerEntity(
 	val userId: String,
 	val gameId: String,
 	val connectionId: Int?,
-	val state: String
+	val state: String,
+	val countryId: String,
 ) {
 	companion object {
 		const val STATE_PLAYING = "playing"

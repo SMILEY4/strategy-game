@@ -1,72 +1,55 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
-import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerQueryByUserAndGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateConnection
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryPlayer
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdatePlayerConnection
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameConnectActionImpl(
-	private val queryPlayer: PlayerQueryByUserAndGame,
-	private val updatePlayerConnection: PlayerUpdateConnection,
-	private val queryTiles: TilesQueryByGame,
-	private val queryMarkers: MarkersQueryByGame,
-	private val messageProducer: GameMessageProducer,
+	private val actionBroadcastWorldState: BroadcastInitialGameStateAction,
+	private val queryPlayer: QueryPlayer,
+	private val updatePlayerConnection: UpdatePlayerConnection,
 ) : GameConnectAction, Logging {
 
-	override suspend fun perform(
-		userId: String,
-		gameId: String,
-		connectionId: Int
-	): Either<GameConnectAction.GameConnectActionError, Unit> {
-		log().info("Connect user $userId ($connectionId) to game-lobby $gameId")
+	override suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<GameConnectActionError, Unit> {
+		log().info("Connect user $userId ($connectionId) to game $gameId")
 		return either {
-			val player = findValidPlayer(userId, gameId).bind()
-			updatePlayerConnection(player, connectionId)
-			val tiles = findTiles(gameId)
-			sendMessage(connectionId, gameId, tiles)
+			val player = findPlayer(userId, gameId).bind()
+			setConnection(player, connectionId)
+			sendInitialGameStateMessage(connectionId, gameId)
 		}
 	}
 
-	private suspend fun findValidPlayer(userId: String, gameId: String): Either<NotParticipantError, PlayerEntity> {
+
+	/**
+	 * Find and return the player or an [NotParticipantError] if the player does not exist
+	 */
+	private suspend fun findPlayer(userId: String, gameId: String): Either<NotParticipantError, PlayerEntity> {
 		return queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }
 	}
 
-	private suspend fun updatePlayerConnection(player: PlayerEntity, connectionId: Int) {
+
+	/**
+	 * Write the new connection of the player to the db.
+	 */
+	private suspend fun setConnection(player: PlayerEntity, connectionId: Int) {
 		updatePlayerConnection.execute(player.id, connectionId)
-			.getOrElse { throw Exception("Could not update player-connection of player ${player.id}") }
 	}
 
-	private suspend fun findTiles(gameId: String): List<TileEntity> {
-		return queryTiles.execute(gameId)
-			.getOrElse { throw Exception("Could not fetch files of game $gameId") }
-	}
 
-	private suspend fun sendMessage(connectionId: Int, gameId: String, tiles: List<TileEntity>) {
-		queryMarkers.execute(gameId)
-			.map { markers ->
-				tiles.map { tile ->
-					Tile(
-						q = tile.q,
-						r = tile.r,
-						data = TileData(TileType.valueOf(tile.type)),
-						entities = markers.filter { it.tileId == tile.id }.map { MarkerTileObject(it.userId!!) }
-					)
-				}
-			}
-			.map { extTiles -> messageProducer.sendWorldState(connectionId, extTiles) }
+	/**
+	 * Send the initial game-state to the player
+	 * */
+	private suspend fun sendInitialGameStateMessage(connectionId: Int, gameId: String) {
+		actionBroadcastWorldState.perform(gameId, listOf(connectionId))
+			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 
 }

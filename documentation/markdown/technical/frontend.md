@@ -2,10 +2,6 @@
 title: Frontend Documentation
 ---
 
-
-
-
-
 # Running the Application
 
 1. Install the required npm-packages

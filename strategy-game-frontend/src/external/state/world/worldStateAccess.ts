@@ -1,3 +1,4 @@
+import {City} from "../../../models/city";
 import {Marker} from "../../../models/marker";
 import {Tile} from "../../../models/tile";
 import {WorldStore} from "./worldStore";
@@ -23,6 +24,14 @@ export class WorldStateAccess {
 
     setMarkers(markers: Marker[]): void {
         WorldStore.useState.getState().setMarkers(markers);
+    }
+
+    setCities(cities: City[]): void {
+        WorldStore.useState.getState().setCities(cities);
+    }
+
+    getCities(): City[] {
+        return WorldStore.useState.getState().cities;
     }
 
 }

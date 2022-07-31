@@ -1,60 +1,36 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
-import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ExtGameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameCreateEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.gameext.ExtGameInsert
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.UUID
-import java.util.Random
 
-/**
- * Create a new game
- */
 class GameCreateActionImpl(
-	private val insertExtGame: ExtGameInsert
+	private val insertGame: InsertGame,
 ) : GameCreateAction, Logging {
 
-	override suspend fun perform(userId: String): String {
-		log().info("Create new game with owner '$userId'")
-		val game = createExtGameEntity(userId)
-		saveGame(game)
+	override suspend fun perform(worldSettings: WorldSettings): String {
+		log().info("Creating new game")
+		val game = buildGame(worldSettings)
+		save(game)
+		log().info("Created new game with id ${game.id}")
 		return game.id
 	}
 
-	private suspend fun saveGame(game: ExtGameEntity) {
-		insertExtGame.execute(game)
-			.getOrElse { throw Exception("Could not save ext-game ${game.id}") }
-	}
 
-	private fun createExtGameEntity(userId: String): ExtGameEntity {
+	/**
+	 * Build the game entity
+	 */
+	private fun buildGame(worldSettings: WorldSettings): GameCreateEntity {
 		val gameId = UUID.gen()
-		val seed = Random().nextInt()
-		return ExtGameEntity(
+		return GameCreateEntity(
 			id = gameId,
-			seed = seed,
 			turn = 0,
-			players = listOf(createOwnerPlayer(userId, gameId)),
-			tiles = createTiles(gameId, seed),
-			markers = listOf(),
-		)
-	}
-
-	private fun createOwnerPlayer(userId: String, gameId: String) = PlayerEntity(
-		id = UUID.gen(),
-		userId = userId,
-		gameId = gameId,
-		connectionId = null,
-		state = PlayerEntity.STATE_PLAYING
-	)
-
-	private fun createTiles(gameId: String, seed: Int): List<TileEntity> {
-		val tiles = WorldBuilder()
-			.buildTiles(seed)
-			.map {
+			tiles = WorldBuilder().buildTiles(worldSettings).map {
 				TileEntity(
 					id = UUID.gen(),
 					gameId = gameId,
@@ -63,7 +39,15 @@ class GameCreateActionImpl(
 					type = it.data.type.name
 				)
 			}
-		return tiles
+		)
+	}
+
+
+	/**
+	 * Write the given game entity to the database
+	 */
+	private suspend fun save(game: GameCreateEntity) {
+		insertGame.execute(game)
 	}
 
 }

@@ -1,70 +1,131 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
+import arrow.core.getOrHandle
+import de.ruegnerlukas.kdbl.builder.SQL
+import de.ruegnerlukas.kdbl.builder.allColumns
+import de.ruegnerlukas.kdbl.builder.and
+import de.ruegnerlukas.kdbl.builder.isEqual
+import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.config.DbConfig
-import de.ruegnerlukas.strategygame.backend.config.DbConnectionConfig
-import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
-import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl.type
-import de.ruegnerlukas.strategygame.backend.shared.Json
-
+import de.ruegnerlukas.strategygame.backend.external.persistence.CityTbl
+import de.ruegnerlukas.strategygame.backend.external.persistence.MarkerTbl
+import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
+import de.ruegnerlukas.strategygame.backend.external.persistence.TileTbl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryPlayerImpl
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 
 object TestUtils {
 
-	suspend fun createTestDatabase(memory: Boolean = true): Database {
-		if (memory) {
-			return DatabaseProvider.create(DbConfig(
-				active = "sqlite-memory",
-				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
-				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
-			))
-		} else {
-			return DatabaseProvider.create(DbConfig(
-				active = "sqlite",
-				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
-				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
-			))
-		}
+	suspend fun getPlayer(database: Database, userId: String, gameId: String): PlayerEntity {
+		return QueryPlayerImpl(database).execute(userId, gameId).getOrHandle { throw Exception(it.toString()) }
 	}
 
-	class MockMessageProducer : MessageProducer {
+	suspend fun getGame(database: Database, gameId: String): GameEntity {
+		return QueryGameImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
+	}
 
-		private val messages = mutableListOf<Triple<String, String, String>>() // <target, type, payload>
+	suspend fun getCommands(database: Database, gameId: String, turn: Int): List<CommandEntity> {
+		return QueryCommandsByGameImpl(database).execute(gameId, turn)
+	}
 
-		fun pullMessages(): List<Triple<String, String, String>> {
-			val list = mutableListOf<Triple<String, String, String>>()
-			list.addAll(messages)
-			messages.clear()
-			return list
-		}
-
-		fun pullMessagesWithoutPayload(): List<Pair<String, String>> {
-			val list = mutableListOf<Pair<String, String>>()
-			list.addAll(messages.map { Pair(it.first, it.second) })
-			messages.clear()
-			return list
-		}
-
-		override suspend fun <T> sendToSingle(connectionId: Int, message: Message<T>) {
-			messages.add(Triple(connectionId.toString(), message.type, Json.asString(message.payload as Any)))
-		}
-
-		override suspend fun <T> sendToMultiple(connectionIds: Collection<Int>, message: Message<T>) {
-			connectionIds.forEach {
-				messages.add(Triple(it.toString(), message.type, Json.asString(message.payload as Any)))
+	suspend fun getPlayers(database: Database, gameId: String): List<PlayerEntity> {
+		return database
+			.startQuery {
+				SQL
+					.select(PlayerTbl.allColumns())
+					.from(PlayerTbl)
+					.where(PlayerTbl.gameId.isEqual(gameId))
 			}
-		}
-
-		override suspend fun <T> sendToAll(message: Message<T>) {
-			messages.add(Triple("all", message.type, Json.asString(message.payload as Any)))
-		}
-
-		override suspend fun <T> sendToAllExcept(excludedConnectionId: Int, message: Message<T>) {
-			throw UnsupportedOperationException()
-		}
-
+			.execute()
+			.getMultipleOrNone { row ->
+				PlayerEntity(
+					id = row.getString(PlayerTbl.id),
+					userId = row.getString(PlayerTbl.userId),
+					gameId = row.getString(PlayerTbl.gameId),
+					connectionId = row.getIntOrNull(PlayerTbl.connectionId),
+					state = row.getString(PlayerTbl.state),
+					countryId = row.getString(PlayerTbl.countryId)
+				)
+			}
 	}
+
+	suspend fun getMarkersAt(database: Database, gameId: String, q: Int, r: Int): List<MarkerEntity> {
+		val tile = getTiles(database, gameId).first { it.q == q && it.r == r }
+		return getMarkers(database, gameId).filter { it.tileId == tile.id }
+	}
+
+	suspend fun getMarkers(database: Database, gameId: String): List<MarkerEntity> {
+		return database
+			.startQuery {
+				SQL
+					.select(MarkerTbl.allColumns())
+					.from(MarkerTbl, TileTbl)
+					.where(
+						MarkerTbl.tileId.isEqual(TileTbl.id)
+								and TileTbl.gameId.isEqual(gameId)
+					)
+			}
+			.execute()
+			.getMultipleOrNone { row ->
+				MarkerEntity(
+					id = row.getString(CityTbl.id),
+					tileId = row.getString(MarkerTbl.tileId),
+					playerId = row.getString(MarkerTbl.playerId)
+				)
+			}
+	}
+
+	suspend fun getCitiesAt(database: Database, gameId: String, q: Int, r: Int): List<CityEntity> {
+		val tile = getTiles(database, gameId).first { it.q == q && it.r == r }
+		return getCities(database, gameId).filter { it.tileId == tile.id }
+	}
+
+	suspend fun getCities(database: Database, gameId: String): List<CityEntity> {
+		return database
+			.startQuery {
+				SQL
+					.select(CityTbl.allColumns())
+					.from(CityTbl, TileTbl)
+					.where(
+						CityTbl.tileId.isEqual(TileTbl.id)
+								and TileTbl.gameId.isEqual(gameId)
+					)
+			}
+			.execute()
+			.getMultipleOrNone { row ->
+				CityEntity(
+					id = row.getString(CityTbl.id),
+					tileId = row.getString(CityTbl.tileId)
+				)
+			}
+	}
+
+	suspend fun getTiles(database: Database, gameId: String): List<TileEntity> {
+		return database
+			.startQuery {
+				SQL
+					.select(TileTbl.id, TileTbl.q, TileTbl.r, TileTbl.type)
+					.from(TileTbl)
+					.where(TileTbl.gameId.isEqual(gameId))
+			}
+			.execute()
+			.getMultipleOrNone { row ->
+				TileEntity(
+					id = row.getString(TileTbl.id),
+					gameId = gameId,
+					q = row.getInt(TileTbl.q),
+					r = row.getInt(TileTbl.r),
+					type = row.getString(TileTbl.type)
+				)
+			}
+	}
+
 
 }
-

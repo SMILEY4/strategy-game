@@ -14,12 +14,24 @@ export function MenuSelectedTile(): ReactElement {
                 {!selectedTile && <li>no tile selected</li>}
             </ul>
             <button onClick={placeMarker} disabled={false}>Place Marker</button>
+            <button onClick={createCity} disabled={false}>Create City</button>
         </div>
     );
 
     function placeMarker() {
         if (selectedTile) {
-            AppConfig.turnAddOrder.perform({
+            AppConfig.turnAddCommand.perform({
+                commandType: "place-marker",
+                q: selectedTile[0],
+                r: selectedTile[1]
+            });
+        }
+    }
+
+    function createCity() {
+        if (selectedTile) {
+            AppConfig.turnAddCommand.perform({
+                commandType: "create-city",
                 q: selectedTile[0],
                 r: selectedTile[1]
             });

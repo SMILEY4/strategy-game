@@ -2,8 +2,6 @@
 title: Infrastructure Documentation
 ---
 
-
-
 # Overview
 
 The system is build to be hosted on AWS and uses the following services

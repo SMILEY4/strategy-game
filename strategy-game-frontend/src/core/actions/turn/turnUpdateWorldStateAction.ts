@@ -21,6 +21,10 @@ export class TurnUpdateWorldStateAction {
             q: number,
             r: number,
             userId: string
+        })[],
+        cities: ({
+            q: number,
+            r: number,
         })[]
     ): void {
         console.debug("Updating world state")
@@ -29,6 +33,7 @@ export class TurnUpdateWorldStateAction {
         }
         this.worldStateAccess.setMarkers(markers);
         this.worldStateAccess.setTiles(tiles);
+        this.worldStateAccess.setCities(cities);
         this.gameStateAccess.setTurnState("active");
         this.gameStateAccess.clearCommands();
     }

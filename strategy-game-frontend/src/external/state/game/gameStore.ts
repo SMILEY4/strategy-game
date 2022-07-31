@@ -1,5 +1,6 @@
 import create, {SetState} from "zustand";
 import {CameraState} from "../../../models/cameraState";
+import {CommandCreateCity} from "../../../models/commandCreateCity";
 import {CommandPlaceMarker} from "../../../models/commandPlaceMarker";
 
 export namespace GameStore {
@@ -8,7 +9,7 @@ export namespace GameStore {
         gameId: null | string
         currentState: "idle" | "loading" | "active",
         turnState: "active" | "submitted",
-        playerCommands: CommandPlaceMarker[],
+        playerCommands: (CommandPlaceMarker | CommandCreateCity)[],
         camera: CameraState,
         tileMouseOver: null | [number, number],
         tileSelected: null | [number, number]
@@ -32,7 +33,7 @@ export namespace GameStore {
         setLoading: (gameId: string) => void;
         setCurrentState: (state: "idle" | "loading" | "active") => void;
         setTurnState: (state: "active" | "submitted") => void;
-        addCommand: (command: CommandPlaceMarker) => void;
+        addCommand: (command: CommandPlaceMarker | CommandCreateCity) => void;
         clearCommands: () => void;
         moveCamera: (dx: number, dy: number) => void;
         setTileMouseOver: (pos: [number, number] | null) => void;
@@ -52,7 +53,7 @@ export namespace GameStore {
             setTurnState: (state: "active" | "submitted") => set(() => ({
                 turnState: state,
             })),
-            addCommand: (command: CommandPlaceMarker) => set(prev => ({
+            addCommand: (command: CommandPlaceMarker | CommandCreateCity) => set(prev => ({
                 playerCommands: [...prev.playerCommands, command],
             })),
             clearCommands: () => set(() => ({

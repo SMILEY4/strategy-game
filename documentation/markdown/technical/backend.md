@@ -2,10 +2,6 @@
 title: Backend Documentation
 ---
 
-
-
-
-
 # Running the Application
 
 **Intellij**

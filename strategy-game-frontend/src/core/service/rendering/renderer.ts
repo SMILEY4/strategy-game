@@ -50,7 +50,12 @@ export class Renderer {
             tileSelected ? tileSelected : [9999, 9999]
         );
 
-        this.markerRenderer.render(camera, this.worldStateAccess.getMarkers(), this.gameStateAccess.getCommands());
+        this.markerRenderer.render(
+            camera,
+            this.worldStateAccess.getMarkers(),
+            this.worldStateAccess.getCities(),
+            this.gameStateAccess.getCommands()
+        );
     }
 
 

@@ -1,105 +1,83 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.OrderEntity.Companion.PlaceMarkerOrderData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.world.MarkerTileObject
-import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.CommandResolutionFailedError
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.TurnEndActionError
-import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameQuery
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.game.GameUpdateTurn
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.gameext.ExtGameQuery
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkerInsertMultiple
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.marker.MarkersQueryByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.order.OrderQueryByGameAndTurn
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayerUpdateStateByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.player.PlayersQueryByGameConnected
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.tiles.TilesQueryByGame
-import de.ruegnerlukas.strategygame.backend.shared.Base64
-import de.ruegnerlukas.strategygame.backend.shared.Json
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryCommandsByGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGameTurn
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdatePlayerStatesByGameId
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.UUID
 
 class TurnEndActionImpl(
-	private val queryGame: GameQuery,
-	private val queryOrders: OrderQueryByGameAndTurn,
-	private val updatePlayerState: PlayerUpdateStateByGame,
-	private val updateGameTurn: GameUpdateTurn,
-	private val insertMarkers: MarkerInsertMultiple,
-	private val queryExtGame: ExtGameQuery,
-	private val messageProducer: GameMessageProducer
+	private val actionResolveCommands: ResolveCommandsAction,
+	private val actionBroadcastWorldState: BroadcastTurnResultAction,
+	private val queryGame: QueryGame,
+	private val queryCommandsByGame: QueryCommandsByGame,
+	private val updateGameTurn: UpdateGameTurn,
+	private val updatePlayerStatesByGameId: UpdatePlayerStatesByGameId,
 ) : TurnEndAction, Logging {
 
 	override suspend fun perform(gameId: String): Either<TurnEndActionError, Unit> {
 		log().info("End turn of game $gameId")
 		return either {
 			val game = findGame(gameId).bind()
-			updateState(game)
-			sendMessages(game)
+			incrementTurn(game)
+			updatePlayerStates(game)
+			val errors = resolveCommands(game).bind()
+			sendGameStateMessages(game, errors)
 		}
 	}
 
-	private suspend fun findGame(gameId: String): Either<TurnEndAction.GameNotFoundError, GameEntity> {
-		return queryGame.execute(gameId).mapLeft { TurnEndAction.GameNotFoundError }
+
+	/**
+	 * Find and return the game or a [GameNotFoundError] if a game with that id does not exist
+	 */
+	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
+		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
-	private suspend fun updateState(game: GameEntity) {
-		val orders = queryOrders.execute(game.id, game.turn)
-			.getOrElse { throw Exception("Could not fetch orders for game ${game.id} in turn ${game.turn}") }
-		insertMarkers.execute(orders.map { mapOrderToMarker(it) })
-			.getOrElse { throw Exception("Could not insert markers") }
-		updatePlayerState.execute(game.id, PlayerEntity.STATE_PLAYING)
-			.getOrElse { throw Exception("Could not update state of players in game ${game.id}") }
+
+	/**
+	 * Increment the turn counter of the given game
+	 */
+	private suspend fun incrementTurn(game: GameEntity) {
 		updateGameTurn.execute(game.id, game.turn + 1)
-			.getOrElse { throw Exception("Could not update turn of game ${game.id}") }
 	}
 
-	private fun mapOrderToMarker(order: OrderEntity): MarkerEntity {
-		val data: PlaceMarkerOrderData = Json.fromString(Base64.fromBase64(order.data))
-		return MarkerEntity(
-			id = UUID.gen(),
-			playerId = order.playerId,
-			tileId = data.tileId
-		)
+
+	/**
+	 * set the state of all players to "playing"
+	 */
+	private suspend fun updatePlayerStates(game: GameEntity) {
+		updatePlayerStatesByGameId.execute(game.id, PlayerEntity.STATE_PLAYING)
 	}
 
-	private suspend fun sendMessages(game: GameEntity) {
-		val extGame = queryExtGame
-			.execute(
-				game.id, ExtGameQuery.Include(
-					includeTiles = true,
-					includeMarkers = true,
-					includePlayers = true
-				)
-			)
-			.getOrElse { throw Exception("Could not fetch ext. game data for game ${game.id}") }
-		extGame.players
-			.filter { it.connectionId != null }
-			.forEach { player ->
-				sendMessage(player.connectionId!!, extGame.tiles, extGame.markers)
-			}
+
+	/**
+	 * Resolve/Apply the commands of the (ended) turn
+	 */
+	private suspend fun resolveCommands(game: GameEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
+		val commands = queryCommandsByGame.execute(game.id, game.turn)
+		return actionResolveCommands.perform(game.id, commands).mapLeft { CommandResolutionFailedError }
 	}
 
-	private suspend fun sendMessage(connectionId: Int, tiles: List<TileEntity>, markers: List<MarkerEntity>) {
-		val msgTiles = tiles.map { tile ->
-			Tile(
-				q = tile.q,
-				r = tile.r,
-				data = TileData(TileType.valueOf(tile.type)),
-				entities = markers.filter { it.tileId == tile.id }.map { MarkerTileObject(it.userId!!) }
-			)
-		}
-		messageProducer.sendWorldState(connectionId, msgTiles)
+
+	/**
+	 * Send the new game-state to the connected players
+	 */
+	private suspend fun sendGameStateMessages(game: GameEntity, errors: List<CommandResolutionError>) {
+		actionBroadcastWorldState.perform(game.id, errors)
+			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 
 }

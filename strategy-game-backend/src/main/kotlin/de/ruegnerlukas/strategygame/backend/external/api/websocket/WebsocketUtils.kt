@@ -85,34 +85,6 @@ object WebsocketUtils {
 		}
 	}
 
-//	/**
-//	 * Build a [WebSocketMessage]-object from the given data
-//	 */
-//	fun buildMessage(userService: UserIdentityService, connectionId: Int, call: ApplicationCall, frame: Frame.Text): WebSocketMessage {
-//		return buildMessage(
-//			userService,
-//			connectionId,
-//			call.request.queryParameters[QUERY_PARAM_TOKEN]!!,
-//			call.parameters[PATH_PARAM_GAME_ID]!!,
-//			frame.readText()
-//		)
-//	}
-//
-//
-//	/**
-//	 * Build a [WebSocketMessage]-object from the given data
-//	 */
-//	fun buildMessage(userClient: UserIdentityService, connectionId: Int, token: String, gameId: String, rawData: String): WebSocketMessage {
-//		val data = Json.fromString<Map<String, String>>(rawData)
-//		return WebSocketMessage(
-//			connectionId = connectionId,
-//			userId = userClient.extractUserId(token),
-//			gameId = gameId,
-//			type = data["type"]!!,
-//			payload = data["payload"]!!, // todo: make message safer -> validation + proper error handling
-//		)
-//	}
-
 }
 
 

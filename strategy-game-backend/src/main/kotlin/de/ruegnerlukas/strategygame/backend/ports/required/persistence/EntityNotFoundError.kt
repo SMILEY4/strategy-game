@@ -1,0 +1,3 @@
+package de.ruegnerlukas.strategygame.backend.ports.required.persistence
+
+object EntityNotFoundError

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 	JsonSubTypes.Type(value = SubmitTurnMessage::class),
 	JsonSubTypes.Type(value = WorldStateMessage::class),
 )
-open class Message<T>(
+sealed class Message<T>(
 	val type: String,
 	val payload: T,
 	@JsonIgnore var meta: MessageMetadata? = null

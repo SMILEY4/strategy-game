@@ -1,4 +1,5 @@
 import {CameraState} from "../../../models/cameraState";
+import {CommandCreateCity} from "../../../models/commandCreateCity";
 import {CommandPlaceMarker} from "../../../models/commandPlaceMarker";
 import {GameStore} from "./gameStore";
 
@@ -16,11 +17,11 @@ export class GameStateAccess {
         return GameStore.useState.getState().setCurrentState(state);
     }
 
-    getCommands(): CommandPlaceMarker[] {
+    getCommands(): (CommandPlaceMarker | CommandCreateCity)[] {
         return GameStore.useState.getState().playerCommands;
     }
 
-    addCommand(command: CommandPlaceMarker): void {
+    addCommand(command: CommandPlaceMarker | CommandCreateCity): void {
         GameStore.useState.getState().addCommand(command);
     }
 

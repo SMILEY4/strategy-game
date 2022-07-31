@@ -9,7 +9,7 @@ import {GameUpdateAction} from "./core/actions/game/gameUpdateAction";
 import {GameLobbyConnectAction} from "./core/actions/gamelobby/gameLobbyConnectAction";
 import {GameLobbyCreateAction} from "./core/actions/gamelobby/gameLobbyCreateAction";
 import {GameLobbyJoinAction} from "./core/actions/gamelobby/gameLobbyJoinAction";
-import {TurnAddOrderAction} from "./core/actions/turn/turnAddOrderActionImpl";
+import {TurnAddCommandAction} from "./core/actions/turn/turnAddCommandActionImpl";
 import {TurnSubmitAction} from "./core/actions/turn/turnSubmitAction";
 import {TurnUpdateWorldStateAction} from "./core/actions/turn/turnUpdateWorldStateAction";
 import {UserLoginAction} from "./core/actions/user/userLoginAction";
@@ -72,7 +72,7 @@ export namespace AppConfig {
 
     export const turnSubmit: TurnSubmitAction = new TurnSubmitAction(gameStateAccess, msgApiGame);
     export const turnUpdateWorldState: TurnUpdateWorldStateAction = new TurnUpdateWorldStateAction(gameStateAccess, worldStateAccess);
-    export const turnAddOrder: TurnAddOrderAction = new TurnAddOrderAction(gameStateAccess);
+    export const turnAddCommand: TurnAddCommandAction = new TurnAddCommandAction(gameStateAccess);
 
     export const gameInit: GameInitAction = new GameInitAction(canvasHandle, renderer);
     export const gameUpdate: GameUpdateAction = new GameUpdateAction(renderer);

@@ -9,11 +9,15 @@ import de.ruegnerlukas.kdbl.dsl.expression.TableLike
 
 object DbSchema {
 	suspend fun createTables(db: Database) {
-		db.startCreate(SQL.createIfNotExists(GameTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(PlayerTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(OrderTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(TileTbl)).execute()
-		db.startCreate(SQL.createIfNotExists(MarkerTbl)).execute()
+		listOf(
+			GameTbl,
+			PlayerTbl,
+			CommandTbl,
+			TileTbl,
+			MarkerTbl,
+			CountryTbl,
+			CityTbl
+		).forEach { db.startCreate(SQL.createIfNotExists(it)).execute() }
 	}
 }
 
@@ -22,7 +26,6 @@ object GameTbl : GameTableDef()
 
 sealed class GameTableDef : Table("game", true) {
 	val id = text("id").primaryKey()
-	val seed = integer("seed")
 	val turn = integer("turn")
 
 	companion object {
@@ -42,6 +45,7 @@ sealed class PlayerTableDef : Table("player", true) {
 	val gameId = text("gameId").foreignKey(GameTbl.id, onDelete = RefAction.CASCADE)
 	val connectionId = integer("connectionId").nullable()
 	val state = text("state")
+	val countryId = text("countryId").foreignKey(CountryTbl.id, onDelete = RefAction.CASCADE)
 
 	companion object {
 		class PlayerTableDefAlias(override val table: TableLike, override val alias: String) : PlayerTableDef(), AliasTable
@@ -52,19 +56,20 @@ sealed class PlayerTableDef : Table("player", true) {
 }
 
 
-object OrderTbl : OrderTableDef()
+object CommandTbl : CommandTableDef()
 
-sealed class OrderTableDef : Table("player_order", true) {
+sealed class CommandTableDef : Table("commands", true) {
 	val id = text("id").primaryKey()
 	val playerId = text("playerId").foreignKey(PlayerTbl.id, onDelete = RefAction.CASCADE)
 	val turn = integer("turn")
+	val type = text("type")
 	val data = text("data")
 
 	companion object {
-		class OrderTableDefAlias(override val table: TableLike, override val alias: String) : OrderTableDef(), AliasTable
+		class CommandTableDefAlias(override val table: TableLike, override val alias: String) : CommandTableDef(), AliasTable
 	}
 
-	override fun alias(alias: String) = OrderTableDefAlias(this, alias)
+	override fun alias(alias: String) = CommandTableDefAlias(this, alias)
 
 }
 
@@ -87,6 +92,22 @@ sealed class TileTableDef : Table("tile", true) {
 }
 
 
+object CountryTbl : CountryTableDef()
+
+sealed class CountryTableDef : Table("country", true) {
+	val id = text("id").primaryKey()
+	val gameId = text("gameId").foreignKey(GameTbl.id, onDelete = RefAction.CASCADE)
+	val amountMoney = float("amountMoney")
+
+	companion object {
+		class CountryTableDefAlias(override val table: TableLike, override val alias: String) : CountryTableDef(), AliasTable
+	}
+
+	override fun alias(alias: String) = CountryTableDefAlias(this, alias)
+
+}
+
+
 object MarkerTbl : MarkerTableDef()
 
 sealed class MarkerTableDef : Table("marker", true) {
@@ -99,5 +120,20 @@ sealed class MarkerTableDef : Table("marker", true) {
 	}
 
 	override fun alias(alias: String) = MarkerTableDefAlias(this, alias)
+
+}
+
+
+object CityTbl : CityTableDef()
+
+sealed class CityTableDef : Table("city", true) {
+	val id = text("id").primaryKey()
+	val tileId = text("tileId").foreignKey(TileTbl.id, onDelete = RefAction.CASCADE)
+
+	companion object {
+		class CityTableDefAlias(override val table: TableLike, override val alias: String) : CityTableDef(), AliasTable
+	}
+
+	override fun alias(alias: String) = CityTableDefAlias(this, alias)
 
 }
