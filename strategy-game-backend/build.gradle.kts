@@ -11,6 +11,8 @@ val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
 val versionSqlite: String by project
 val versionArrow: String by project
+val versionArangoDb: String by project
+val versionJacksonDataformatVelocypack: String by project
 
 group = "de.ruegnerlukas"
 version = "0.2.0"
@@ -53,6 +55,9 @@ dependencies {
 
 	implementation("de.ruegnerlukas:kdbl:$versionKdbl")
 	implementation("org.xerial:sqlite-jdbc:$versionSqlite")
+
+	implementation("com.arangodb:arangodb-java-driver:$versionArangoDb")
+	implementation("com.arangodb:jackson-dataformat-velocypack:$versionJacksonDataformatVelocypack")
 
 	implementation("io.arrow-kt:arrow-core:$versionArrow")
 	implementation("io.arrow-kt:arrow-fx-coroutines:$versionArrow")

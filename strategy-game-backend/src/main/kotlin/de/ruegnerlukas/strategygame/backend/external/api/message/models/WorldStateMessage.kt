@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.external.api.message.models
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.WorldStateMessage.Companion.WorldStatePayload
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.WorldExtendedEntity
 
 
 @JsonTypeName(WorldStateMessage.TYPE)
