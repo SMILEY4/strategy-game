@@ -13,12 +13,11 @@ class GamesListActionImpl(
 		return getGameIds(userId)
 	}
 
-
 	/**
 	 * Find all games with the given user as a player and return the ids
 	 */
 	private suspend fun getGameIds(userId: String): List<String> {
-		return queryGamesByUser.execute(userId).map { it.id }
+		return queryGamesByUser.execute(userId).map { it.id!! }
 	}
 
 }

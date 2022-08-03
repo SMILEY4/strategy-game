@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.OldPlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
@@ -41,7 +41,7 @@ class GameTest : StringSpec({
 				player.userId shouldBe userId
 				player.gameId shouldBe gameId
 				player.connectionId shouldBe null
-				player.state shouldBe PlayerEntity.STATE_PLAYING
+				player.state shouldBe OldPlayerEntity.STATE_PLAYING
 			}
 		}
 
@@ -69,14 +69,14 @@ class GameTest : StringSpec({
 				p.userId shouldBe userId1
 				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe PlayerEntity.STATE_PLAYING
+				p.state shouldBe OldPlayerEntity.STATE_PLAYING
 			}
 			it.find { p -> p.userId == userId2 }!!.let { p ->
 				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId2
 				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe PlayerEntity.STATE_PLAYING
+				p.state shouldBe OldPlayerEntity.STATE_PLAYING
 			}
 		}
 
@@ -109,14 +109,14 @@ class GameTest : StringSpec({
 				p.userId shouldBe userId1
 				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe PlayerEntity.STATE_PLAYING
+				p.state shouldBe OldPlayerEntity.STATE_PLAYING
 			}
 			it.find { p -> p.userId == userId2 }!!.let { p ->
 				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId2
 				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe PlayerEntity.STATE_PLAYING
+				p.state shouldBe OldPlayerEntity.STATE_PLAYING
 			}
 		}
 

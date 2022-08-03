@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.shared.arango
 
+import com.arangodb.ArangoDBException
 import com.arangodb.DbName
 import com.arangodb.async.ArangoCollectionAsync
 import com.arangodb.async.ArangoCursorAsync
@@ -18,6 +19,11 @@ import kotlinx.coroutines.future.await
 class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 
 	companion object {
+
+		/**
+		 * Create a new database instance with the given host, port and credentials.
+		 * If no database with the given name exists, a new one will be created
+		 */
 		suspend fun create(host: String, port: Int, username: String?, password: String?, name: String): ArangoDatabase {
 			val arango = ArangoDBAsync.Builder()
 				.serializer(ArangoJack().apply {
@@ -95,11 +101,11 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 	 *
 	 * @param key  The key of the document
 	 * @param type The type of the document (POJO class, VPackSlice or String for Json)
-	 * @return the document identified by the key
+	 * @return the document identified by the key or null
 	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#read-document">API
 	 * Documentation</a>
 	 */
-	suspend fun <T> getDocument(collection: String, key: String, type: Class<T>): T {
+	suspend fun <T> getDocument(collection: String, key: String, type: Class<T>): T? {
 		return getCollection(collection).getDocument(key, type).await()
 	}
 
@@ -122,12 +128,20 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 	 *
 	 * @param key   The key of the document
 	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
-	 * @return information about the document
+	 * @return information about the document or null if no document with the given key exists
 	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#replace-document">API
 	 * Documentation</a>
 	 */
-	suspend fun <T> replaceDocument(collection: String, key: String, value: T): DocumentUpdateEntity<T> {
-		return getCollection(collection).replaceDocument(key, value).await()
+	suspend fun <T> replaceDocument(collection: String, key: String, value: T): DocumentUpdateEntity<T>? {
+		try {
+			return getCollection(collection).replaceDocument(key, value).await()
+		} catch (e: ArangoDBException) {
+			if (e.errorNum == 1202) {
+				return null
+			} else {
+				throw e
+			}
+		}
 	}
 
 
@@ -152,12 +166,20 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 	 *
 	 * @param key   The key of the document
 	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
-	 * @return information about the document
+	 * @return information about the document or null if no document with the given key exists
 	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#update-document">API
 	 * Documentation</a>
 	 */
-	suspend fun <T> updateDocument(collection: String, key: String, value: T): DocumentUpdateEntity<T> {
-		return getCollection(collection).updateDocument(key, value).await()
+	suspend fun <T> updateDocument(collection: String, key: String, value: T): DocumentUpdateEntity<T>? {
+		try {
+			return getCollection(collection).updateDocument(key, value).await()
+		} catch (e: ArangoDBException) {
+			if (e.errorNum == 1202) {
+				return null
+			} else {
+				throw e
+			}
+		}
 	}
 
 
@@ -185,8 +207,16 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#removes-a-document">API
 	 * Documentation</a>
 	 */
-	suspend fun deleteDocument(collection: String, key: String): DocumentDeleteEntity<Void> {
-		return getCollection(collection).deleteDocument(key).await()
+	suspend fun deleteDocument(collection: String, key: String): DocumentDeleteEntity<Void>? {
+		try {
+			return getCollection(collection).deleteDocument(key).await()
+		} catch (e: ArangoDBException) {
+			if (e.errorNum == 1202) {
+				return null
+			} else {
+				throw e
+			}
+		}
 	}
 
 

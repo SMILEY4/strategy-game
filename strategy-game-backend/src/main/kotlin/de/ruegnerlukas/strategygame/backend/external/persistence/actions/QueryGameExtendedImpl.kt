@@ -20,7 +20,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.OldPlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
@@ -54,7 +54,7 @@ class QueryGameExtendedImpl(
 	}
 
 
-	private suspend fun fetchPlayers(gameId: String): List<PlayerEntity> {
+	private suspend fun fetchPlayers(gameId: String): List<OldPlayerEntity> {
 		return database
 			.startQuery("gameext.query#players") {
 				SQL
@@ -67,7 +67,7 @@ class QueryGameExtendedImpl(
 			}
 			.execute()
 			.getMultipleOrNone { row ->
-				PlayerEntity(
+				OldPlayerEntity(
 					id = row.getString(PlayerTbl.id),
 					userId = row.getString(PlayerTbl.userId),
 					gameId = row.getString(PlayerTbl.gameId),
@@ -105,26 +105,27 @@ class QueryGameExtendedImpl(
 
 
 	private suspend fun fetchTiles(gameId: String): List<TileEntity> {
-		return database
-			.startQuery("gameext.query#tiles") {
-				SQL
-					.select(TileTbl.id, TileTbl.q, TileTbl.r, TileTbl.type)
-					.from(TileTbl)
-					.where(TileTbl.gameId.isEqual(placeholder("gameId")))
-			}
-			.parameters {
-				it["gameId"] = gameId
-			}
-			.execute()
-			.getMultipleOrNone { row ->
-				TileEntity(
-					id = row.getString(TileTbl.id),
-					gameId = gameId,
-					q = row.getInt(TileTbl.q),
-					r = row.getInt(TileTbl.r),
-					type = row.getString(TileTbl.type)
-				)
-			}
+		TODO()
+//		return database
+//			.startQuery("gameext.query#tiles") {
+//				SQL
+//					.select(TileTbl.id, TileTbl.q, TileTbl.r, TileTbl.type)
+//					.from(TileTbl)
+//					.where(TileTbl.gameId.isEqual(placeholder("gameId")))
+//			}
+//			.parameters {
+//				it["gameId"] = gameId
+//			}
+//			.execute()
+//			.getMultipleOrNone { row ->
+//				TileEntity(
+//					id = row.getString(TileTbl.id),
+//					gameId = gameId,
+//					q = row.getInt(TileTbl.q),
+//					r = row.getInt(TileTbl.r),
+//					type = row.getString(TileTbl.type)
+//				)
+//			}
 	}
 
 	private suspend fun fetchCities(gameId: String): List<CityEntity> {

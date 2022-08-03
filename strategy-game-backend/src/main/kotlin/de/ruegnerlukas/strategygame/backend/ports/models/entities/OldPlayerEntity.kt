@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
-data class PlayerEntity(
+data class OldPlayerEntity(
 	val id: String,
 	val userId: String,
 	val gameId: String,

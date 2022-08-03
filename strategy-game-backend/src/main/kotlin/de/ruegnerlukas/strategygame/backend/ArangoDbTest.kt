@@ -9,7 +9,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.future.await
 
 suspend fun main() {
-
 	val arango = ArangoDBAsync.Builder()
 		.serializer(ArangoJack().apply {
 			configure { it.registerModule(KotlinModule.Builder().build()) }
@@ -22,40 +21,39 @@ suspend fun main() {
 		database.create()
 	}
 
-	val collection = database.collection("perf-test")
+	val collection = database.collection("test-collection")
 	if (!collection.exists().await()) {
 		collection.create()
 	}
 
-	measure {
-		for (i in 0..1000) {
-			insert(collection)
-		}
+	try {
+
+		val result = collection.deleteDocument(
+			"sfdhfuz",
+		).await()
+
+		println(result)
+
+	} catch (e: Exception) {
+		e.printStackTrace()
 	}
 
-//	println(Json.asString(collection.getDocument("776", GameEntity::class.java)))
-//
-//	val strQuery = "FOR game IN ${collection.name()} FILTER game.turn == @turn RETURN game"
-//	val result = database.query(strQuery, mapOf("turn" to 42), null, GameEntity::class.java).await()
-//	result.forEach {
-//		println(Json.asString(it))
-//	}
 
 	arango.shutdown()
 }
 
 
 suspend fun insert(collection: ArangoCollectionAsync) {
-	val game = GameEntity(
+	val game = TestGameEntity(
 		key = null,
 		turn = 42,
 		players = listOf(
-			PlayerEntity(
+			TestPlayerEntity(
 				userId = "user1",
 				connectionId = null,
 				state = "loading"
 			),
-			PlayerEntity(
+			TestPlayerEntity(
 				userId = "user2",
 				connectionId = 3,
 				state = "waiting"
@@ -74,13 +72,13 @@ suspend fun measure(block: suspend () -> Unit) {
 	println("...done. Took ${te - ts} ms")
 }
 
-class GameEntity(
+class TestGameEntity(
 	@Key val key: String?,
 	val turn: Int,
-	val players: List<PlayerEntity>
+	val players: List<TestPlayerEntity>
 )
 
-class PlayerEntity(
+class TestPlayerEntity(
 	val userId: String,
 	val connectionId: Int?,
 	val state: String

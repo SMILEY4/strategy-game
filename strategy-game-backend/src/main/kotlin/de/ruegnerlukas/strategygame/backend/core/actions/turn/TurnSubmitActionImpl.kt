@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.OldPlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerCommand
@@ -50,7 +50,7 @@ class TurnSubmitActionImpl(
 	/**
 	 * Find and return the player or an [NotParticipantError] of the player does not exist
 	 */
-	private suspend fun findPlayer(userId: String, gameId: String): Either<NotParticipantError, PlayerEntity> {
+	private suspend fun findPlayer(userId: String, gameId: String): Either<NotParticipantError, OldPlayerEntity> {
 		return queryPlayer.execute(userId, gameId).mapLeft { NotParticipantError }
 	}
 
@@ -67,15 +67,15 @@ class TurnSubmitActionImpl(
 	/**
 	 * Set the state of the given player to "submitted"
 	 */
-	private suspend fun updatePlayerState(player: PlayerEntity) {
-		updatePlayerState.execute(player.id, PlayerEntity.STATE_SUBMITTED)
+	private suspend fun updatePlayerState(player: OldPlayerEntity) {
+		updatePlayerState.execute(player.id, OldPlayerEntity.STATE_SUBMITTED)
 	}
 
 
 	/**
 	 * save the given commands at the given game
 	 */
-	private suspend fun saveCommands(game: GameEntity, player: PlayerEntity, commands: List<PlayerCommand>) {
+	private suspend fun saveCommands(game: GameEntity, player: OldPlayerEntity, commands: List<PlayerCommand>) {
 		insertCommands.execute(createCommands(game, player, commands))
 	}
 
@@ -83,7 +83,7 @@ class TurnSubmitActionImpl(
 	/**
 	 * create the command-entities from the given [PlayerCommand]s
 	 */
-	private fun createCommands(game: GameEntity, player: PlayerEntity, commands: List<PlayerCommand>): List<CommandEntity> {
+	private fun createCommands(game: GameEntity, player: OldPlayerEntity, commands: List<PlayerCommand>): List<CommandEntity> {
 		return commands.map { command ->
 			when (command) {
 				is PlaceMarkerCommand -> createCommandPlaceMarker(game, player, command)
@@ -96,7 +96,7 @@ class TurnSubmitActionImpl(
 	/**
 	 * create a command-entity from the given [PlaceMarkerCommand]
 	 */
-	private fun createCommandPlaceMarker(game: GameEntity, player: PlayerEntity, cmd: PlaceMarkerCommand): CommandEntity {
+	private fun createCommandPlaceMarker(game: GameEntity, player: OldPlayerEntity, cmd: PlaceMarkerCommand): CommandEntity {
 		return CommandEntity(
 			id = UUID.gen(),
 			playerId = player.id,
@@ -110,7 +110,7 @@ class TurnSubmitActionImpl(
 	/**
 	 * create a command-entity from the given [CreateCityCommand]
 	 */
-	private fun createCommandCreateCity(game: GameEntity, player: PlayerEntity, cmd: CreateCityCommand): CommandEntity {
+	private fun createCommandCreateCity(game: GameEntity, player: OldPlayerEntity, cmd: CreateCityCommand): CommandEntity {
 		return CommandEntity(
 			id = UUID.gen(),
 			playerId = player.id,
@@ -125,16 +125,17 @@ class TurnSubmitActionImpl(
 	 * End turn if all players submitted their commands (none in state "playing")
 	 */
 	private suspend fun maybeEndTurn(game: GameEntity) {
-		val players = queryPlayersByGameAndState.execute(game.id, PlayerEntity.STATE_PLAYING)
-		if (players.isEmpty()) {
-			val result = actionEndTurn.perform(game.id)
-			if (result is Either.Left) {
-				when (result.value) {
-					TurnEndAction.GameNotFoundError -> throw Exception("Could not find game $gameId when ending turn")
-					TurnEndAction.CommandResolutionFailedError-> throw Exception("Could not resolve turn for game $gameId")
-				}
-			}
-		}
+		TODO()
+//		val players = queryPlayersByGameAndState.execute(game.id, OldPlayerEntity.STATE_PLAYING)
+//		if (players.isEmpty()) {
+//			val result = actionEndTurn.perform(game.id)
+//			if (result is Either.Left) {
+//				when (result.value) {
+//					TurnEndAction.GameNotFoundError -> throw Exception("Could not find game $gameId when ending turn")
+//					TurnEndAction.CommandResolutionFailedError-> throw Exception("Could not resolve turn for game $gameId")
+//				}
+//			}
+//		}
 	}
 
 }

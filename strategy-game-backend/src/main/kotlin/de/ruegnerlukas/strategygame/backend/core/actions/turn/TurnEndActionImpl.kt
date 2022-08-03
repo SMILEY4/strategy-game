@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.OldPlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction
@@ -51,7 +51,8 @@ class TurnEndActionImpl(
 	 * Increment the turn counter of the given game
 	 */
 	private suspend fun incrementTurn(game: GameEntity) {
-		updateGameTurn.execute(game.id, game.turn + 1)
+		TODO()
+//		updateGameTurn.execute(game.id, game.turn + 1)
 	}
 
 
@@ -59,7 +60,8 @@ class TurnEndActionImpl(
 	 * set the state of all players to "playing"
 	 */
 	private suspend fun updatePlayerStates(game: GameEntity) {
-		updatePlayerStatesByGameId.execute(game.id, PlayerEntity.STATE_PLAYING)
+		TODO()
+//		updatePlayerStatesByGameId.execute(game.id, OldPlayerEntity.STATE_PLAYING)
 	}
 
 
@@ -67,8 +69,9 @@ class TurnEndActionImpl(
 	 * Resolve/Apply the commands of the (ended) turn
 	 */
 	private suspend fun resolveCommands(game: GameEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
-		val commands = queryCommandsByGame.execute(game.id, game.turn)
-		return actionResolveCommands.perform(game.id, commands).mapLeft { CommandResolutionFailedError }
+		TODO()
+//		val commands = queryCommandsByGame.execute(game.id, game.turn)
+//		return actionResolveCommands.perform(game.id, commands).mapLeft { CommandResolutionFailedError }
 	}
 
 
@@ -76,8 +79,9 @@ class TurnEndActionImpl(
 	 * Send the new game-state to the connected players
 	 */
 	private suspend fun sendGameStateMessages(game: GameEntity, errors: List<CommandResolutionError>) {
-		actionBroadcastWorldState.perform(game.id, errors)
-			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
+		TODO()
+//		actionBroadcastWorldState.perform(game.id, errors)
+//			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 
 }

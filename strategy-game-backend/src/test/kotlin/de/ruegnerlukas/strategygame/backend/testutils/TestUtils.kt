@@ -5,7 +5,6 @@ import de.ruegnerlukas.kdbl.builder.SQL
 import de.ruegnerlukas.kdbl.builder.allColumns
 import de.ruegnerlukas.kdbl.builder.and
 import de.ruegnerlukas.kdbl.builder.isEqual
-import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.CityTbl
 import de.ruegnerlukas.strategygame.backend.external.persistence.MarkerTbl
@@ -18,12 +17,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.OldPlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 
 object TestUtils {
 
-	suspend fun getPlayer(database: Database, userId: String, gameId: String): PlayerEntity {
+	suspend fun getPlayer(database: Database, userId: String, gameId: String): OldPlayerEntity {
 		return QueryPlayerImpl(database).execute(userId, gameId).getOrHandle { throw Exception(it.toString()) }
 	}
 
@@ -35,7 +34,7 @@ object TestUtils {
 		return QueryCommandsByGameImpl(database).execute(gameId, turn)
 	}
 
-	suspend fun getPlayers(database: Database, gameId: String): List<PlayerEntity> {
+	suspend fun getPlayers(database: Database, gameId: String): List<OldPlayerEntity> {
 		return database
 			.startQuery {
 				SQL
@@ -45,7 +44,7 @@ object TestUtils {
 			}
 			.execute()
 			.getMultipleOrNone { row ->
-				PlayerEntity(
+				OldPlayerEntity(
 					id = row.getString(PlayerTbl.id),
 					userId = row.getString(PlayerTbl.userId),
 					gameId = row.getString(PlayerTbl.gameId),

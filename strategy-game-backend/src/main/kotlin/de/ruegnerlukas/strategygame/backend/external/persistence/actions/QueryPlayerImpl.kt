@@ -10,13 +10,13 @@ import de.ruegnerlukas.kdbl.builder.isEqual
 import de.ruegnerlukas.kdbl.builder.placeholder
 import de.ruegnerlukas.kdbl.db.Database
 import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.OldPlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryPlayer
 
 class QueryPlayerImpl(private val database: Database) : QueryPlayer {
 
-	override suspend fun execute(userId: String, gameId: String): Either<EntityNotFoundError, PlayerEntity> {
+	override suspend fun execute(userId: String, gameId: String): Either<EntityNotFoundError, OldPlayerEntity> {
 		try {
 			return database
 				.startQuery("player.query.by-user-and-game") {
@@ -35,7 +35,7 @@ class QueryPlayerImpl(private val database: Database) : QueryPlayer {
 				}
 				.execute()
 				.getOne { row ->
-					PlayerEntity(
+					OldPlayerEntity(
 						id = row.getString(PlayerTbl.id),
 						userId = row.getString(PlayerTbl.userId),
 						gameId = row.getString(PlayerTbl.gameId),
