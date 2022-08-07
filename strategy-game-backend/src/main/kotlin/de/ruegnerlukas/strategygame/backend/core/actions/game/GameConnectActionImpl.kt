@@ -11,13 +11,13 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectActio
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.InvalidPlayerState
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastInitialGameStateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameConnectActionImpl(
-	private val queryGame: QueryGame,
-	private val updateGame: UpdateGame,
+	private val gameQuery: GameQuery,
+	private val gameUpdate: GameUpdate,
 	private val broadcastInitialGameState: BroadcastInitialGameStateAction,
 ) : GameConnectAction, Logging {
 
@@ -35,7 +35,7 @@ class GameConnectActionImpl(
 	 * Find and return the game or an [GameNotFoundError] if the game does not exist
 	 */
 	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
-		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
+		return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
 
@@ -46,7 +46,7 @@ class GameConnectActionImpl(
 		val player = game.players.find { it.userId == userId }
 		if (player != null && player.connectionId == null) {
 			player.connectionId = connectionId
-			updateGame.execute(game)
+			gameUpdate.execute(game)
 			return Unit.right()
 		} else {
 			return InvalidPlayerState.left()

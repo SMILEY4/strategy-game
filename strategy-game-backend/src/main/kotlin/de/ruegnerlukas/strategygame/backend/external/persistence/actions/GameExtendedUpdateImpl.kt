@@ -11,13 +11,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGameExtended
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.shared.parallel
 import de.ruegnerlukas.strategygame.backend.shared.parallelIO
-import kotlinx.coroutines.Dispatchers
 
-class UpdateGameExtendedImpl(private val database: ArangoDatabase) : UpdateGameExtended {
+class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtendedUpdate {
 
 	override suspend fun execute(game: GameExtendedEntity): Either<EntityNotFoundError, Unit> {
 		return either {

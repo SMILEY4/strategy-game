@@ -12,11 +12,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.shared.tracking
 
-class QueryGameExtendedImpl(private val database: ArangoDatabase) : QueryGameExtended {
+class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtendedQuery {
 
 	override suspend fun execute(gameId: String): Either<EntityNotFoundError, GameExtendedEntity> {
 		return either {

@@ -2,13 +2,13 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGamesByUser
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GamesByUserQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameDisconnectActionImpl(
-	private val queryGamesByUser: QueryGamesByUser,
-	private val updateGame: UpdateGame
+	private val gamesByUserQuery: GamesByUserQuery,
+	private val gameUpdate: GameUpdate
 ) : GameDisconnectAction, Logging {
 
 	override suspend fun perform(userId: String) {
@@ -22,7 +22,7 @@ class GameDisconnectActionImpl(
 	 * find all games of the current user
 	 */
 	private suspend fun findGames(userId: String): List<GameEntity> {
-		return queryGamesByUser.execute(userId)
+		return gamesByUserQuery.execute(userId)
 	}
 
 
@@ -34,7 +34,7 @@ class GameDisconnectActionImpl(
 			.filter { game -> game.players.find { it.userId == userId }?.connectionId != null }
 			.forEach { game ->
 				game.players.find { it.userId == userId }?.connectionId = null
-				updateGame.execute(game)
+				gameUpdate.execute(game)
 			}
 	}
 

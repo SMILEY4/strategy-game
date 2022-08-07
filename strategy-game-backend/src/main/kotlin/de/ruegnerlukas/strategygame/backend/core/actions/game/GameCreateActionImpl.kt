@@ -7,12 +7,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TilePositionEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.trackingListOf
 
 class GameCreateActionImpl(
-	private val insertGame: InsertGame,
+	private val gameInsert: GameInsert,
 ) : GameCreateAction, Logging {
 
 	override suspend fun perform(worldSettings: WorldSettings): String {
@@ -58,7 +58,7 @@ class GameCreateActionImpl(
 	 * Write the given game entity to the database
 	 */
 	private suspend fun save(game: GameEntity, tiles: List<TileEntity>): String {
-		return insertGame.execute(game, tiles)
+		return gameInsert.execute(game, tiles)
 	}
 
 }

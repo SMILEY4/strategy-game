@@ -2,9 +2,9 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.getOrHandle
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCountryByGameAndUserImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
@@ -21,20 +21,20 @@ object TestUtils {
 	}
 
 	suspend fun getCountry(database: ArangoDatabase, gameId: String, userId: String): CountryEntity {
-		return QueryCountryByGameAndUserImpl(database).execute(gameId, userId)
+		return CountryByGameAndUserQueryImpl(database).execute(gameId, userId)
 			.getOrHandle { throw Exception("country with gameId=$gameId and userId=$userId not found") }
 	}
 
 	suspend fun getGame(database: ArangoDatabase, gameId: String): GameEntity {
-		return QueryGameImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
+		return GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
 	}
 
 	suspend fun getCommands(database: ArangoDatabase, gameId: String, turn: Int): List<CommandEntity<*>> {
-		return QueryCommandsByGameImpl(database).execute(gameId, turn)
+		return CommandsByGameQueryImpl(database).execute(gameId, turn)
 	}
 
 	suspend fun getPlayers(database: ArangoDatabase, gameId: String): List<PlayerEntity> {
-		return QueryGameImpl(database).execute(gameId)
+		return GameQueryImpl(database).execute(gameId)
 			.getOrHandle { throw Exception("Game $gameId not found") }
 			.players
 	}

@@ -6,10 +6,10 @@ import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryCountryByGameAndUser
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
-class QueryCountryByGameAndUserImpl(private val database: ArangoDatabase) : QueryCountryByGameAndUser {
+class CountryByGameAndUserQueryImpl(private val database: ArangoDatabase) : CountryByGameAndUserQuery {
 
 	private val query = """
 		FOR country IN ${Collections.COUNTRIES}

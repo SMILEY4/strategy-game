@@ -10,11 +10,11 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConne
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameRequestConnectionActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameRequestConnectionActionImpl(
-	private val queryGame: QueryGame,
+	private val gameQuery: GameQuery,
 ) : GameRequestConnectionAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit> {
@@ -30,7 +30,7 @@ class GameRequestConnectionActionImpl(
 	 * Find and return the game or an [GameNotFoundError] if the game does not exist
 	 */
 	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
-		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
+		return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
 

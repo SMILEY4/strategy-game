@@ -13,35 +13,35 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResul
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertCommandsImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertCountryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCountryByGameAndUserImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameExtendedImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGamesByUserImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameExtendedImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
 object TestActions {
 
 	fun gameCreateAction(database: ArangoDatabase) = GameCreateActionImpl(
-		InsertGameImpl(database)
+		GameInsertImpl(database)
 	)
 
 	fun gameJoinAction(database: ArangoDatabase) = GameJoinActionImpl(
-		QueryGameImpl(database),
-		UpdateGameImpl(database),
-		InsertCountryImpl(database)
+		GameQueryImpl(database),
+		GameUpdateImpl(database),
+		CountryInsertImpl(database)
 	)
 
 	fun gameConnectAction(database: ArangoDatabase) = GameConnectActionImpl(
-		QueryGameImpl(database),
-		UpdateGameImpl(database),
+		GameQueryImpl(database),
+		GameUpdateImpl(database),
 		BroadcastInitialGameStateActionImpl(
-			QueryGameExtendedImpl(database),
+			GameExtendedQueryImpl(database),
 			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),
 	)
@@ -49,36 +49,36 @@ object TestActions {
 	fun turnSubmitAction(database: ArangoDatabase) = TurnSubmitActionImpl(
 		TurnEndActionImpl(
 			ResolveCommandsActionImpl(
-				QueryGameExtendedImpl(database),
-				UpdateGameExtendedImpl(database),
+				GameExtendedQueryImpl(database),
+				GameExtendedUpdateImpl(database),
 				ResolvePlaceMarkerCommandImpl(),
 				ResolveCreateCityCommandImpl()
 			),
 			BroadcastTurnResultActionImpl(
-				QueryGameExtendedImpl(database),
+				GameExtendedQueryImpl(database),
 				GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 			),
-			QueryGameImpl(database),
-			UpdateGameImpl(database),
-			QueryCommandsByGameImpl(database),
+			GameQueryImpl(database),
+			GameUpdateImpl(database),
+			CommandsByGameQueryImpl(database),
 		),
-		QueryGameImpl(database),
-		QueryCountryByGameAndUserImpl(database),
-		UpdateGameImpl(database),
-		InsertCommandsImpl(database),
+		GameQueryImpl(database),
+		CountryByGameAndUserQueryImpl(database),
+		GameUpdateImpl(database),
+		CommandsInsertImpl(database),
 	)
 
 	fun gamesListAction(database: ArangoDatabase) = GamesListActionImpl(
-		QueryGamesByUserImpl(database)
+		GamesByUserQueryImpl(database)
 	)
 
 	fun gameRequestConnectionAction(database: ArangoDatabase) = GameRequestConnectionActionImpl(
-		QueryGameImpl(database),
+		GameQueryImpl(database),
 	)
 
 	fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
-		QueryGameExtendedImpl(database),
-		UpdateGameExtendedImpl(database),
+		GameExtendedQueryImpl(database),
+		GameExtendedUpdateImpl(database),
 		ResolvePlaceMarkerCommandImpl(),
 		ResolveCreateCityCommandImpl()
 	)

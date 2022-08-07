@@ -13,13 +13,13 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveComma
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGameExtended
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class ResolveCommandsActionImpl(
-	private val queryGameExtended: QueryGameExtended,
-	private val updateGameExtended: UpdateGameExtended,
+	private val gameExtendedQuery: GameExtendedQuery,
+	private val gameExtendedUpdate: GameExtendedUpdate,
 	private val resolvePlaceMarkerCommand: ResolvePlaceMarkerCommand,
 	private val resolveCreateCityCommand: ResolveCreateCityCommand,
 ) : ResolveCommandsAction, Logging {
@@ -42,7 +42,7 @@ class ResolveCommandsActionImpl(
 	 * Find and return the [GameExtendedEntity] or [GameNotFoundError] if the game does not exist
 	 */
 	private suspend fun findGameState(gameId: String): Either<GameNotFoundError, GameExtendedEntity> {
-		return queryGameExtended.execute(gameId).mapLeft { GameNotFoundError }
+		return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
 
@@ -87,7 +87,7 @@ class ResolveCommandsActionImpl(
 	 * Update the game state in the database
 	 */
 	private suspend fun saveGameState(game: GameExtendedEntity) {
-		updateGameExtended.execute(game)
+		gameExtendedUpdate.execute(game)
 	}
 
 }

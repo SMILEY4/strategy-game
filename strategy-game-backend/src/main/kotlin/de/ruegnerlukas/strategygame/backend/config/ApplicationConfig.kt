@@ -22,16 +22,16 @@ import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertCommandsImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertCountryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.InsertGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCountryByGameAndUserImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameExtendedImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryGamesByUserImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameExtendedImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UpdateGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -70,16 +70,16 @@ fun Application.module() {
 	val database = runBlocking { DatabaseProvider.create(Config.get().db) }
 
 	// persistence actions
-	val insertCommands = InsertCommandsImpl(database)
-	val insertGame = InsertGameImpl(database)
-	val queryCommandsByGame = QueryCommandsByGameImpl(database)
-	val queryGame = QueryGameImpl(database)
-	val queryGamesByUser = QueryGamesByUserImpl(database)
-	val queryGameExtended = QueryGameExtendedImpl(database)
-	val updateGame = UpdateGameImpl(database)
-	val insertCountry = InsertCountryImpl(database)
-	val updateGameExtended = UpdateGameExtendedImpl(database)
-	val queryCountry = QueryCountryByGameAndUserImpl(database)
+	val insertCommands = CommandsInsertImpl(database)
+	val insertGame = GameInsertImpl(database)
+	val queryCommandsByGame = CommandsByGameQueryImpl(database)
+	val queryGame = GameQueryImpl(database)
+	val queryGamesByUser = GamesByUserQueryImpl(database)
+	val queryGameExtended = GameExtendedQueryImpl(database)
+	val updateGame = GameUpdateImpl(database)
+	val insertCountry = CountryInsertImpl(database)
+	val updateGameExtended = GameExtendedUpdateImpl(database)
+	val queryCountry = CountryByGameAndUserQueryImpl(database)
 
 	// core actions
 	val resolvePlaceMarkerCommandAction = ResolvePlaceMarkerCommandImpl()

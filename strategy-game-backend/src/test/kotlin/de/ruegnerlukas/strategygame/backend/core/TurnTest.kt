@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
@@ -60,7 +60,7 @@ class TurnTest : StringSpec({
 		val resultSubmit2 = submitTurn.perform(userId2, gameId, listOf(PlaceMarkerCommand(q = 0, r = 0)))
 		resultSubmit2 shouldBeOk true
 		TestUtils.getGame(database, gameId).turn shouldBe 1
-		QueryCommandsByGameImpl(database).execute(gameId, 0).let { commands ->
+		CommandsByGameQueryImpl(database).execute(gameId, 0).let { commands ->
 			commands shouldHaveSize 3
 			commands.map { it.countryId } shouldContainExactlyInAnyOrder listOf(countryId1, countryId1, countryId2)
 			commands.map { it.data.type } shouldContainExactlyInAnyOrder listOf(

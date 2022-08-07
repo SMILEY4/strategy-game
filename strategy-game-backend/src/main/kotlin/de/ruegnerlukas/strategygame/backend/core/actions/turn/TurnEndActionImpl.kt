@@ -12,17 +12,17 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.TurnEndActionError
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryCommandsByGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class TurnEndActionImpl(
 	private val actionResolveCommands: ResolveCommandsAction,
 	private val actionBroadcastWorldState: BroadcastTurnResultAction,
-	private val queryGame: QueryGame,
-	private val updateGame: UpdateGame,
-	private val queryCommandsByGame: QueryCommandsByGame,
+	private val gameQuery: GameQuery,
+	private val gameUpdate: GameUpdate,
+	private val commandsByGameQuery: CommandsByGameQuery,
 ) : TurnEndAction, Logging {
 
 	override suspend fun perform(gameId: String): Either<TurnEndActionError, Unit> {
@@ -40,7 +40,7 @@ class TurnEndActionImpl(
 	 * Find and return the game or a [GameNotFoundError] if a game with that id does not exist
 	 */
 	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
-		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
+		return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
 
@@ -52,7 +52,7 @@ class TurnEndActionImpl(
 		game.players.forEach { player ->
 			player.state = PlayerEntity.STATE_PLAYING
 		}
-		updateGame.execute(game)
+		gameUpdate.execute(game)
 	}
 
 
@@ -60,7 +60,7 @@ class TurnEndActionImpl(
 	 * Resolve/Apply the commands of the (ended) turn
 	 */
 	private suspend fun resolveCommands(game: GameEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
-		val commands = queryCommandsByGame.execute(game.id!!, game.turn)
+		val commands = commandsByGameQuery.execute(game.id!!, game.turn)
 		return actionResolveCommands.perform(game.id, commands).mapLeft { CommandResolutionFailedError }
 	}
 

@@ -12,15 +12,15 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameJoinActionErrors
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.UserAlreadyPlayerError
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertCountry
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryInsert
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameJoinActionImpl(
-	private val queryGame: QueryGame,
-	private val updateGame: UpdateGame,
-	private val insertCountry: InsertCountry
+	private val gameQuery: GameQuery,
+	private val gameUpdate: GameUpdate,
+	private val countryInsert: CountryInsert
 ) : GameJoinAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
@@ -38,7 +38,7 @@ class GameJoinActionImpl(
 	 * Find and return the game with the given id or an [GameNotFoundError] if the game does not exist
 	 */
 	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
-		return queryGame.execute(gameId).mapLeft { GameNotFoundError }
+		return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
 
@@ -66,7 +66,7 @@ class GameJoinActionImpl(
 				state = PlayerEntity.STATE_PLAYING,
 			)
 		)
-		updateGame.execute(game)
+		gameUpdate.execute(game)
 	}
 
 
@@ -74,7 +74,7 @@ class GameJoinActionImpl(
 	 * Add the country for the given user to the given game
 	 */
 	private suspend fun insertCountry(game: GameEntity, userId: String) {
-		insertCountry.execute(
+		countryInsert.execute(
 			CountryEntity(
 				gameId = game.id!!,
 				userId = userId,

@@ -15,18 +15,18 @@ import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.TurnSubmitActionError
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertCommands
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryCountryByGameAndUser
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGame
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UpdateGame
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class TurnSubmitActionImpl(
 	private val actionEndTurn: TurnEndAction,
-	private val queryGame: QueryGame,
-	private val queryCountryByGameAndUser: QueryCountryByGameAndUser,
-	private val updateGame: UpdateGame,
-	private val insertCommands: InsertCommands,
+	private val gameQuery: GameQuery,
+	private val countryByGameAndUserQuery: CountryByGameAndUserQuery,
+	private val gameUpdate: GameUpdate,
+	private val commandsInsert: CommandsInsert,
 ) : TurnSubmitAction, Logging {
 
 	override suspend fun perform(userId: String, gameId: String, commands: List<PlayerCommand>): Either<TurnSubmitActionError, Unit> {
@@ -45,7 +45,7 @@ class TurnSubmitActionImpl(
 	 * Fetch the game with the given id. Since we already found a player, we can assume the game exists
 	 */
 	private suspend fun getGame(gameId: String): GameEntity {
-		return queryGame.execute(gameId)
+		return gameQuery.execute(gameId)
 			.getOrElse { throw Exception("Could not get game $gameId") }
 	}
 
@@ -54,7 +54,7 @@ class TurnSubmitActionImpl(
 	 * Fetch the country for the given user and game
 	 */
 	private suspend fun getCountry(game: GameEntity, userId: String): CountryEntity {
-		return queryCountryByGameAndUser.execute(game.id!!, userId)
+		return countryByGameAndUserQuery.execute(game.id!!, userId)
 			.getOrElse { throw Exception("Country for user $userId in game ${game.id} not found.") }
 	}
 
@@ -66,7 +66,7 @@ class TurnSubmitActionImpl(
 		val player = game.players.find { it.userId == userId }
 		if (player != null) {
 			player.state = PlayerEntity.STATE_SUBMITTED
-			updateGame.execute(game)
+			gameUpdate.execute(game)
 		}
 	}
 
@@ -75,7 +75,7 @@ class TurnSubmitActionImpl(
 	 * save the given commands at the given game
 	 */
 	private suspend fun saveCommands(game: GameEntity, country: CountryEntity, commands: List<PlayerCommand>) {
-		insertCommands.execute(createCommands(game, country, commands))
+		commandsInsert.execute(createCommands(game, country, commands))
 	}
 
 
