@@ -21,7 +21,6 @@ data class TilePositionEntity(
 
 data class TileDataEntity(
 	var terrainType: String,
-	var countryId: String?
 )
 
 
@@ -47,7 +46,9 @@ class CityTileContentEntity : TileContentEntity(TYPE) {
 
 
 @JsonTypeName(MarkerTileContentEntity.TYPE)
-class MarkerTileContentEntity : TileContentEntity(TYPE) {
+class MarkerTileContentEntity(
+	val countryId: String
+) : TileContentEntity(TYPE) {
 	companion object {
 		internal const val TYPE = "marker"
 	}

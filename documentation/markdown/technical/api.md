@@ -263,7 +263,7 @@ All messages follow the following format
 ```json
 {
     "type": "String - the identifying type of this websocket-message",
-    "payload": "String - the payload of the message as a json-string"
+    "payload": "object - the payload of the message"
 }
 ```
 
@@ -301,26 +301,51 @@ All messages follow the following format
 
   ```json
   {
-  	"game": {
-          "tiles": [
+      "game": {
+          "game": {
+              "_key": "String - id of the game",
+              "turn": "Int - the current turn",
+              "players": [
+                  "userId": "String - the id of the user",
+                  "connectionId": "Int | null - the id of the ws-connection",
+                  "state": "String - the current player state"
+              ],
+          },
+          "countries": [
               {
-                  "id": "String - the unique id of the tile",
-                  "q": "Int - the q-coordinate of the tile",
-                  "r": "Int - the r-coordinate of the tile",
-                  "type": "String - the type of this tile ('WATER','LAND')"
+                  "_key": "String - id of the country",
+                  "gameId": "String - the id of the game",
+                  "userId": "String - the id of the owner",
+                  "resources": {
+                      "money": "Float - the amount of available money"
+                  }
               }
           ],
-          "markers": [
-              {
-                  "id": "String - the unique id of the marker",
-                  "tileId": "String - the id of the tile this marker is placed on",
-                  "playerId": "String - the id of the player that placed the marker"
+          "tiles": [
+          	{
+                  "_key": "String - id of the tile",
+              	"gameId": "String - the id of the game",
+                  "position": {
+                      "q": "Int - the q-coordinate",
+                      "r": "Int - the r-coordinate",
+                  },
+                  "data": {
+                      "terrainType": "String - the type of the terrain",
+                  },
+                  "content": [
+                      { "type": "city" },
+                      {
+                          "type": "marker",
+                          "countryId": "string - id of the country"
+                      }
+                  ]
               }
           ],
           "cities": [
-              {
-                  "id": "String - the unique id of the city",
-                  "tileId": "String - the id of the tile this city is placed on"
+          	{
+                  "_key": "String - id of the city",
+                  "gameId": "String - the id of the game",
+                  "tileId": "String - the id of the tile"
               }
           ]
       }
@@ -335,28 +360,53 @@ All messages follow the following format
 
   ```json
   {
-  	"game": {
-          "tiles": [
+      "game": {
+          "game": {
+              "_key": "String - id of the game",
+              "turn": "Int - the current turn",
+              "players": [
+                  "userId": "String - the id of the user",
+                  "connectionId": "Int | null - the id of the ws-connection",
+                  "state": "String - the current player state"
+              ]
+          },
+          "countries": [
               {
-                  "id": "String - the unique id of the tile",
-                  "q": "Int - the q-coordinate of the tile",
-                  "r": "Int - the r-coordinate of the tile",
-                  "type": "String - the type of this tile ('WATER','LAND')"
+                  "gameId": "String - the id of the game",
+                  "userId": "String - the id of the owner",
+                  "resources": {
+                      "money": "Float - the amount of available money"
+                  }
               }
           ],
-          "markers": [
+          "tiles": [
               {
-                  "id": "String - the unique id of the marker",
-                  "tileId": "String - the id of the tile this marker is placed on",
-                  "playerId": "String - the id of the player that placed the marker"
+                  "gameId": "String - the id of the game",
+                  "position": {
+                      "q": "Int - the q-coordinate",
+                      "r": "Int - the r-coordinate",
+                  },
+                  "data": {
+                      "terrainType": "String - the type of the terrain",
+                  },
+                  "content": [
+                      { "type": "city" },
+                      { "type": "marker" }
+                  ]
               }
           ],
           "cities": [
               {
-                  "id": "String - the unique id of the city",
-                  "tileId": "String - the id of the tile this city is placed on"
+                  "gameId": "String - the id of the game",
+                  "tileId": "String - the id of the tile"
               }
           ]
-      }
+      },
+      "errors": [
+          "errorMessage": "String",
+          "command": {
+              ...
+          }
+      ]
   }
   ```

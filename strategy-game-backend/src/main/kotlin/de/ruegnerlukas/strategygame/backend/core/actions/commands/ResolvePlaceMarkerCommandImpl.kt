@@ -29,7 +29,7 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand {
 			}
 
 			if (validationErrors.isEmpty()) {
-				targetTile.content.add(MarkerTileContentEntity())
+				targetTile.content.add(MarkerTileContentEntity(command.countryId))
 				emptyList()
 			} else {
 				validationErrors.map { CommandResolutionError(command, it) }

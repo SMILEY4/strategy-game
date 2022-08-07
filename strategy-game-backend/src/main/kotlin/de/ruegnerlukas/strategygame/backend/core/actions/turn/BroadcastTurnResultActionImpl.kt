@@ -20,7 +20,8 @@ class BroadcastTurnResultActionImpl(
 		log().info("Sending world-state of game $gameId to connected player(s)")
 		return either {
 			val game = findGame(gameId).bind()
-			sendGameStateMessages(getConnectionIds(game), game)
+			val connectionIds = getConnectionIds(game)
+			sendGameStateMessages(connectionIds, game)
 		}
 	}
 
@@ -33,6 +34,9 @@ class BroadcastTurnResultActionImpl(
 	}
 
 
+	/**
+	 * get connection ids of connected players
+	 */
 	private fun getConnectionIds(game: GameExtendedEntity): List<Int> {
 		return game.game.players
 			.filter { it.connectionId !== null }
