@@ -5,7 +5,8 @@ import arrow.core.Either
 interface GameConnectAction {
 
 	sealed class GameConnectActionError
-	object NotParticipantError: GameConnectActionError()
+	object GameNotFoundError : GameConnectActionError()
+	object InvalidPlayerState : GameConnectActionError()
 
 	suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<GameConnectActionError, Unit>
 

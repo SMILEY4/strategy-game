@@ -1,25 +1,49 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
-data class CommandEntity(
-	val id: String,
-	val playerId: String,
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonTypeName
+import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
+
+
+class CommandEntity<T : CommandDataEntity>(
+	val countryId: String,
 	val turn: Int,
-	val type: String,
-	val data: String
-) {
+	val data: T
+) : DbEntity()
 
+
+@JsonTypeInfo(
+	use = JsonTypeInfo.Id.NAME,
+	include = JsonTypeInfo.As.EXISTING_PROPERTY,
+	property = "type"
+)
+@JsonSubTypes(
+	JsonSubTypes.Type(value = CreateCityCommandDataEntity::class),
+	JsonSubTypes.Type(value = PlaceMarkerCommandDataEntity::class),
+)
+sealed class CommandDataEntity(
+	val type: String
+)
+
+
+@JsonTypeName(CreateCityCommandDataEntity.TYPE)
+class CreateCityCommandDataEntity(
+	val q: Int,
+	val r: Int
+) : CommandDataEntity(TYPE) {
 	companion object {
-
-		data class PlaceMarkerCommandData(
-			val q: Int,
-			val r: Int
-		)
-
-		data class CreateCityCommandData(
-			val q: Int,
-			val r: Int
-		)
-
+		internal const val TYPE = "create-city"
 	}
+}
 
+
+@JsonTypeName(PlaceMarkerCommandDataEntity.TYPE)
+class PlaceMarkerCommandDataEntity(
+	val q: Int,
+	val r: Int
+) : CommandDataEntity(TYPE) {
+	companion object {
+		internal const val TYPE = "place-marker"
+	}
 }

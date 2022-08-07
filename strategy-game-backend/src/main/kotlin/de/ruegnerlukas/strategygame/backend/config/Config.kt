@@ -83,13 +83,11 @@ data class ConfigData(
 	val db: DbConfig
 )
 
-
 data class AwsConfig(
 	val region: String,
 	val user: AwsUserConfig,
 	val cognito: AwsCognitoConfig
 )
-
 
 data class AwsUserConfig(
 	val name: String,
@@ -97,18 +95,13 @@ data class AwsUserConfig(
 	val secretAccess: String
 )
 
-
 data class AwsCognitoConfig(
 	val clientId: String,
 	val poolId: String
 )
 
 data class DbConfig(
-	val active: String, // currently only "sqlite" or "sqlite-memory
-    val sqliteMemory: DbConnectionConfig,
-	val sqlite: DbConnectionConfig
-)
-
-data class DbConnectionConfig(
-	val url: String
+	val host: String,
+	val port: Int,
+	val name: String
 )

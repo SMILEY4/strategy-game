@@ -2,16 +2,11 @@ package de.ruegnerlukas.strategygame.backend.core
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity.Companion.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
-import de.ruegnerlukas.strategygame.backend.shared.Base64
-import de.ruegnerlukas.strategygame.backend.shared.Json
-import de.ruegnerlukas.strategygame.backend.shared.UUID
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
@@ -31,10 +26,10 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val playerId = TestUtils.getPlayer(database, "test-user", gameId).id
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
-		val result = resolveCommands.perform(gameId, listOf(cmdPlaceMarker(playerId, 4, 2)))
+		val result = resolveCommands.perform(gameId, listOf(cmdPlaceMarker(countryId, 4, 2)))
 		result shouldBeOk true
 		(result as Either.Right).value shouldHaveSize 0
 		TestUtils.getMarkers(database, gameId) shouldHaveSize 1
@@ -50,10 +45,10 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val playerId = TestUtils.getPlayer(database, "test-user", gameId).id
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
-		val commands = listOf(cmdPlaceMarker(playerId, 4, 2), cmdPlaceMarker(playerId, 4, 2))
+		val commands = listOf(cmdPlaceMarker(countryId, 4, 2), cmdPlaceMarker(countryId, 4, 2))
 		val result = resolveCommands.perform(gameId, commands)
 		result shouldBeOk true
 		(result as Either.Right).value.let { errors ->
@@ -78,10 +73,10 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val playerId = TestUtils.getPlayer(database, "test-user", gameId).id
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
-		val result = resolveCommands.perform(gameId, listOf(cmdCreateCity(playerId, 4, 2)))
+		val result = resolveCommands.perform(gameId, listOf(cmdCreateCity(countryId, 4, 2)))
 		result shouldBeOk true
 		(result as Either.Right).value shouldHaveSize 0
 		TestUtils.getCities(database, gameId) shouldHaveSize 1
@@ -97,10 +92,10 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.WATER))
 		joinGame.perform("test-user", gameId)
-		val playerId = TestUtils.getPlayer(database, "test-user", gameId).id
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
-		val command = cmdCreateCity(playerId, 4, 2)
+		val command = cmdCreateCity(countryId, 4, 2)
 		val result = resolveCommands.perform(gameId, listOf(command))
 		result shouldBeOk true
 		(result as Either.Right).value.let { errors ->
@@ -125,10 +120,10 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val playerId = TestUtils.getPlayer(database, "test-user", gameId).id
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
-		val commands = listOf(cmdCreateCity(playerId, 4, 2), cmdCreateCity(playerId, 5, 2))
+		val commands = listOf(cmdCreateCity(countryId, 4, 2), cmdCreateCity(countryId, 5, 2))
 		val result = resolveCommands.perform(gameId, commands)
 		result shouldBeOk true
 		(result as Either.Right).value.let { errors ->
@@ -146,33 +141,21 @@ class CommandResolutionTest : StringSpec({
 
 }) {
 	companion object {
-		internal fun cmdPlaceMarker(playerId: String, q: Int, r: Int) = CommandEntity(
-			id = UUID.gen(),
-			playerId = playerId,
+		internal fun cmdPlaceMarker(countryId: String, q: Int, r: Int) = CommandEntity(
+			countryId = countryId,
 			turn = 0,
-			type = PlaceMarkerCommand.TYPE,
-			data = Base64.toBase64(
-				Json.asString(
-					PlaceMarkerCommandData(
-						q = q,
-						r = r
-					)
-				)
+			data = PlaceMarkerCommandDataEntity(
+				q = q,
+				r = r
 			)
 		)
 
-		internal fun cmdCreateCity(playerId: String, q: Int, r: Int) = CommandEntity(
-			id = UUID.gen(),
-			playerId = playerId,
+		internal fun cmdCreateCity(countryId: String, q: Int, r: Int) = CommandEntity(
+			countryId = countryId,
 			turn = 0,
-			type = CreateCityCommand.TYPE,
-			data = Base64.toBase64(
-				Json.asString(
-					CreateCityCommandData(
-						q = q,
-						r = r
-					)
-				)
+			data = CreateCityCommandDataEntity(
+				q = q,
+				r = r
 			)
 		)
 	}

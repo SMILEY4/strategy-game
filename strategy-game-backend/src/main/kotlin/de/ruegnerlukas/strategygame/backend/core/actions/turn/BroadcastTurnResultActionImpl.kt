@@ -8,11 +8,11 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnRes
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction.WorldStateBroadcasterActionError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryGameExtended
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class BroadcastTurnResultActionImpl(
-	private val queryGameExtended: QueryGameExtended,
+	private val gameExtendedQuery: GameExtendedQuery,
 	private val messageProducer: GameMessageProducer,
 ) : BroadcastTurnResultAction, Logging {
 
@@ -20,7 +20,8 @@ class BroadcastTurnResultActionImpl(
 		log().info("Sending world-state of game $gameId to connected player(s)")
 		return either {
 			val game = findGame(gameId).bind()
-			sendGameStateMessages(getConnectionIds(game), game)
+			val connectionIds = getConnectionIds(game)
+			sendGameStateMessages(connectionIds, game)
 		}
 	}
 
@@ -29,12 +30,15 @@ class BroadcastTurnResultActionImpl(
 	 * Find and return the game or a [GameNotFoundError] if a game with that id does not exist
 	 */
 	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameExtendedEntity> {
-		return queryGameExtended.execute(gameId).mapLeft { GameNotFoundError }
+		return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
 
+	/**
+	 * get connection ids of connected players
+	 */
 	private fun getConnectionIds(game: GameExtendedEntity): List<Int> {
-		return game.players
+		return game.game.players
 			.filter { it.connectionId !== null }
 			.map { it.connectionId!! }
 	}

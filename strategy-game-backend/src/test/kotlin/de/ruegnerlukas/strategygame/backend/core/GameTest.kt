@@ -14,7 +14,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldHaveMinLength
 
 class GameTest : StringSpec({
 
@@ -28,7 +27,7 @@ class GameTest : StringSpec({
 		// create new game -> expect valid game exists
 		val gameId = createGame.perform(WorldSettings.default())
 		TestUtils.getGame(database, gameId).let {
-			it.id shouldBe gameId
+			it.key shouldBe gameId
 			it.turn shouldBe 0
 		}
 
@@ -37,9 +36,7 @@ class GameTest : StringSpec({
 		TestUtils.getPlayers(database, gameId).let { players ->
 			players shouldHaveSize 1
 			players[0].let { player ->
-				player.id shouldHaveMinLength 1
 				player.userId shouldBe userId
-				player.gameId shouldBe gameId
 				player.connectionId shouldBe null
 				player.state shouldBe PlayerEntity.STATE_PLAYING
 			}
@@ -65,16 +62,12 @@ class GameTest : StringSpec({
 		TestUtils.getPlayers(database, gameId).let {
 			it shouldHaveSize 2
 			it.find { p -> p.userId == userId1 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId1
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
 				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}
 			it.find { p -> p.userId == userId2 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId2
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
 				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}
@@ -94,7 +87,7 @@ class GameTest : StringSpec({
 		val gameId = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId1, gameId)
 		joinGame.perform(userId2, gameId)
-		val prevPlayerIds = TestUtils.getPlayers(database, gameId).map { it.id }
+		val prevPlayerIds = TestUtils.getPlayers(database, gameId).map { it.userId }
 		prevPlayerIds shouldHaveSize 2
 
 		// user2 joins same game again -> expect correct error and still two valid players
@@ -103,18 +96,14 @@ class GameTest : StringSpec({
 		(result as Either.Left).value shouldBe GameJoinAction.UserAlreadyPlayerError
 		TestUtils.getPlayers(database, gameId).let {
 			it shouldHaveSize 2
-			it.map { p -> p.id } shouldContainExactlyInAnyOrder prevPlayerIds
+			it.map { p -> p.userId } shouldContainExactlyInAnyOrder prevPlayerIds
 			it.find { p -> p.userId == userId1 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId1
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
 				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}
 			it.find { p -> p.userId == userId2 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId2
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
 				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}

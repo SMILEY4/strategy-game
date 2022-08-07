@@ -71,9 +71,9 @@ Simple and Secure User Sign-Up, Sign-In, and Access Control
 - https://gist.github.com/saggie/38e5979cb813224666af4b3d90e6120f
 - https://stackoverflow.com/questions/48356287/is-there-any-java-example-of-verification-of-jwt-for-aws-cognito-api
 
-**SQLite (+Jdbc)**
+**ArangoDb**
 
-Small, self-contained sql-database engine ([Link to documentation](https://www.sqlite.org/doclist.html)). Accessed in code via JDBC ([link to guide](https://www.javatpoint.com/java-jdbc)) and all wrapped by own [library](https://github.com/SMILEY4/kdbl).
+A native multi-model database with flexible data models for  documents, graphs, and key-values. [Link to Documentation](https://www.arangodb.com/docs/stable/)
 
 **Arrow**
 

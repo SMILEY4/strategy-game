@@ -1,30 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.kdbl.db.Database
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.config.DbConfig
-import de.ruegnerlukas.strategygame.backend.config.DbConnectionConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.shared.Json
+import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import kotlinx.coroutines.future.await
 
 
 object TestUtilsFactory {
 
-	suspend fun createTestDatabase(memory: Boolean = true): Database {
-		if (memory) {
-			return DatabaseProvider.create(DbConfig(
-				active = "sqlite-memory",
-				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
-				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
-			))
-		} else {
-			return DatabaseProvider.create(DbConfig(
-				active = "sqlite",
-				sqlite = DbConnectionConfig("jdbc:sqlite:test.db"),
-				sqliteMemory = DbConnectionConfig("jdbc:sqlite::memory:")
-			))
-		}
+	suspend fun createTestDatabase(): ArangoDatabase {
+		ArangoDatabase.delete("localhost", 8529, null, null, "test-database")
+		return ArangoDatabase.create("localhost", 8529, null, null, "test-database")
 	}
 
 	class MockMessageProducer : MessageProducer {
