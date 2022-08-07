@@ -44,7 +44,7 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 				targetTile.content.add(CityTileContentEntity())
 				state.cities.add(
 					CityEntity(
-						tileId = targetTile.id!!,
+						tileId = targetTile.key!!,
 						gameId = targetTile.gameId
 					)
 				)
@@ -58,7 +58,7 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 
 
 	private fun findCountry(countryId: String, state: GameExtendedEntity): Either<ResolveCommandsActionError, CountryEntity> {
-		val country = state.countries.find { it.id == countryId }
+		val country = state.countries.find { it.key == countryId }
 		if (country == null) {
 			return ResolveCommandsAction.CountryNotFoundError.left()
 		} else {

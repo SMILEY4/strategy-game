@@ -54,7 +54,7 @@ object TestUtils {
 
 	suspend fun getCitiesAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<CityEntity> {
 		val tile = getTiles(database, gameId).first { it.position.q == q && it.position.r == r }
-		return getCities(database, gameId).filter { it.tileId == tile.id }
+		return getCities(database, gameId).filter { it.tileId == tile.key }
 	}
 
 	suspend fun getCities(database: ArangoDatabase, gameId: String): List<CityEntity> {

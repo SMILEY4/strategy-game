@@ -76,7 +76,7 @@ class GameJoinActionImpl(
 	private suspend fun insertCountry(game: GameEntity, userId: String) {
 		countryInsert.execute(
 			CountryEntity(
-				gameId = game.id!!,
+				gameId = game.key!!,
 				userId = userId,
 				resources = CountryResourcesEntity(
 					money = 200f

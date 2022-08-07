@@ -1,20 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.shared.arango
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.arangodb.ArangoDBException
 import com.arangodb.DbName
 import com.arangodb.async.ArangoCollectionAsync
-import com.arangodb.async.ArangoCursorAsync
 import com.arangodb.async.ArangoDBAsync
 import com.arangodb.async.ArangoDatabaseAsync
-import com.arangodb.entity.CollectionPropertiesEntity
-import com.arangodb.entity.DocumentCreateEntity
-import com.arangodb.entity.DocumentDeleteEntity
-import com.arangodb.entity.DocumentUpdateEntity
-import com.arangodb.entity.LogLevelEntity
-import com.arangodb.entity.MultiDocumentEntity
 import com.arangodb.mapping.ArangoJack
 import com.arangodb.model.DocumentCreateOptions
-import com.arangodb.model.DocumentDeleteOptions
 import com.arangodb.model.OverwriteMode
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.future.await
@@ -63,21 +58,25 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 				}.build()
 		}
 
+		private val INSERT_OPTIONS = DocumentCreateOptions().also {
+			it.overwriteMode(OverwriteMode.conflict)
+		}
+
+		private val INSERT_OR_REPLACE_OPTIONS = DocumentCreateOptions().also {
+			it.overwriteMode(OverwriteMode.replace)
+		}
 	}
 
 
 	private val collections = mutableMapOf<String, ArangoCollectionAsync>()
 
 
-	/**
-	 * Return the collection with the given name. If the collection does not yet exist, create it.
-	 */
 	private suspend fun getCollection(name: String): ArangoCollectionAsync {
 		var collection = collections[name]
 		if (collection == null) {
 			collection = database.collection(name)
 			if (!collection.exists().await()) {
-				collection.create()
+				collection.create().await()
 			}
 			collections[name] = collection
 			return collection
@@ -87,251 +86,191 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 	}
 
 
-	/**
-	 * Assert that the collections with the given names exists. Creates a collection if it does not exist yet
-	 */
 	suspend fun assertCollections(vararg collectionNames: String) {
 		collectionNames.forEach { getCollection(it) }
 	}
 
 
 	/**
-	 * Creates a new document from the given document, unless there is already a document with the _key given. If no
-	 * _key is given, a new unique _key is generated automatically.
-	 *
-	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
-	 * @return information about the document
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#create-document">API
-	 * Documentation</a>
+	 * Insert the given document into the given collection.
+	 * @return the [DocumentHandle] or an [UniqueConstraintViolationError], if a document with the same key already exists
 	 */
-	suspend fun <T> insertDocument(collection: String, value: T): DocumentCreateEntity<T> {
-		return getCollection(collection).insertDocument(value).await()
+	suspend fun <T> insertDocument(collection: String, value: T): Either<UniqueConstraintViolationError, DocumentHandle> {
+		try {
+			return getCollection(collection)
+				.insertDocument(value, INSERT_OPTIONS)
+				.await()
+				.let { DocumentHandle(id = it.id, key = it.key, rev = it.rev) }
+				.right()
+		} catch (e: ArangoDBException) {
+			return when (e.errorNum) {
+				1210 -> UniqueConstraintViolationError.left()
+				else -> throw e
+			}
+		}
 	}
 
 
 	/**
-	 * Creates new documents from the given documents, unless there is already a document with the _key given. If no
-	 * _key is given, a new unique _key is generated automatically.
-	 *
-	 * @param values A List of documents (POJO, VPackSlice or String for Json)
-	 * @return information about the documents
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#create-document">API
-	 * Documentation</a>
+	 * Insert the given documents into the given collection.
+	 * @return a [DocumentHandle]s for each successfully inserted document.
 	 */
-	suspend fun <T> insertDocuments(collection: String, values: List<T>): MultiDocumentEntity<DocumentCreateEntity<T>> {
-		return getCollection(collection).insertDocuments(values).await()
+	suspend fun <T> insertDocuments(collection: String, values: List<T>): List<DocumentHandle> {
+		if (values.isNotEmpty()) {
+			return getCollection(collection)
+				.insertDocuments(values, INSERT_OPTIONS)
+				.await()
+				.let { result -> result.documents.map { DocumentHandle(id = it.id, key = it.key, rev = it.rev) } }
+		} else {
+			return emptyList()
+		}
 	}
 
 
 	/**
-	 * Creates a new document from the given document, or replaces the existing document with the given _key. If no
-	 * _key is given, a new unique _key is generated automatically.
-	 *
-	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
-	 * @return information about the document
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#create-document">API
-	 * Documentation</a>
+	 * Insert the given document into the given collection. If a document with the same key already exists, it will be overwritten
+	 * @return the [DocumentHandle]
 	 */
-	suspend fun <T> insertOrReplaceDocument(collection: String, value: T): DocumentCreateEntity<T> {
+	suspend fun <T> insertOrReplaceDocument(collection: String, value: T): DocumentHandle {
 		return getCollection(collection)
-			.insertDocument(value, DocumentCreateOptions().overwriteMode(OverwriteMode.replace))
+			.insertDocument(value, INSERT_OR_REPLACE_OPTIONS)
 			.await()
+			.let { DocumentHandle(id = it.id, key = it.key, rev = it.rev) }
 	}
 
 
 	/**
-	 * Creates new documents from the given documents, or replaces existing documents with the given _key. If no
-	 * _key is given, a new unique _key is generated automatically.
-	 *
-	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
-	 * @return information about the document
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#create-document">API
-	 * Documentation</a>
+	 * Insert the given document into the given collection. If a document with the same key already exists, it will be overwritten
+	 * @return the [DocumentHandle]s for each successfully inserted or replaced document.
 	 */
-	suspend fun <T> insertOrReplaceDocuments(collection: String, values: List<T>): MultiDocumentEntity<DocumentCreateEntity<T>> {
-		return getCollection(collection)
-			.insertDocuments(values, DocumentCreateOptions().overwriteMode(OverwriteMode.replace))
-			.await()
+	suspend fun <T> insertOrReplaceDocuments(collection: String, values: List<T>): List<DocumentHandle> {
+		if (values.isNotEmpty()) {
+			return getCollection(collection)
+				.insertDocuments(values, INSERT_OR_REPLACE_OPTIONS)
+				.await()
+				.let { result -> result.documents.map { DocumentHandle(id = it.id, key = it.key, rev = it.rev) } }
+		} else {
+			return emptyList()
+		}
 	}
 
 
 	/**
-	 * Reads a single document
-	 *
-	 * @param key  The key of the document
-	 * @param type The type of the document (POJO class, VPackSlice or String for Json)
-	 * @return the document identified by the key or null
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#read-document">API
-	 * Documentation</a>
+	 * Get the document with the given key from the given collection as the given type.
+	 * @return the document or [DocumentNotFoundError] if the document does not exist
 	 */
-	suspend fun <T> getDocument(collection: String, key: String, type: Class<T>): T? {
+	suspend fun <T> getDocument(collection: String, key: String, type: Class<T>): Either<DocumentNotFoundError, T> {
 		return getCollection(collection).getDocument(key, type).await()
+			?.right()
+			?: DocumentNotFoundError.left()
 	}
 
 
 	/**
-	 * Reads multiple documents
-	 *
-	 * @param keys The keys of the documents
-	 * @param type The type of the documents (POJO class, VPackSlice or String for Json)
-	 * @return the documents and possible errors
+	 * Get the documents with the given keys from the given collection as the given type.
+	 * @return the successfully found documents
 	 */
-	suspend fun <T> getDocuments(collection: String, keys: List<String>, type: Class<T>): MultiDocumentEntity<T> {
-		return getCollection(collection).getDocuments(keys, type).await()
+	suspend fun <T> getDocuments(collection: String, keys: Collection<String>, type: Class<T>): List<T> {
+		return getCollection(collection).getDocuments(keys, type).await().documents.toList()
 	}
 
 
 	/**
-	 * Replaces the document with key with the one in the body, provided there is such a document and no precondition is
-	 * violated
-	 *
-	 * @param key   The key of the document
-	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
-	 * @return information about the document or null if no document with the given key exists
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#replace-document">API
-	 * Documentation</a>
+	 * Get all documents from the given collection.
+	 * @return all documents
 	 */
-	suspend fun <T> replaceDocument(collection: String, key: String, value: T): DocumentUpdateEntity<T>? {
+	suspend fun <T> getAllDocuments(collection: String, type: Class<T>): List<T> {
+		assertCollections(collection)
+		return query("FOR e IN $collection RETURN e", type)
+	}
+
+
+	/**
+	 * Replace the document with the given key with the new given document
+	 * @return the [DocumentHandle] or [DocumentNotFoundError], if no document with the given key was found
+	 */
+	suspend fun <T> replaceDocument(collection: String, key: String, value: T): Either<DocumentNotFoundError, DocumentHandle> {
 		try {
-			return getCollection(collection).replaceDocument(key, value).await()
+			return getCollection(collection).replaceDocument(key, value).await().let {
+				DocumentHandle(id = it.id, key = it.key, rev = it.rev).right()
+			}
 		} catch (e: ArangoDBException) {
-			if (e.errorNum == 1202) {
-				return null
-			} else {
-				throw e
+			return when (e.errorNum) {
+				1202 -> DocumentNotFoundError.left()
+				else -> throw e
 			}
 		}
 	}
 
 
 	/**
-	 * Replaces multiple documents in the specified collection with the ones in the values, the replaced documents are
-	 * specified by the _key attributes in the documents in values.
-	 *
-	 * @param values A List of documents (POJO, VPackSlice or String for Json)
-	 * @return information about the documents
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#replace-documents">API
-	 * Documentation</a>
+	 * Replace documents with the new given documents. All documents must have a defined key.
+	 * @return the [DocumentHandle] of the successfully replaced documents
 	 */
-	suspend fun <T> replaceDocuments(collection: String, values: List<T>): MultiDocumentEntity<DocumentUpdateEntity<T>> {
-		return getCollection(collection).replaceDocuments(values).await()
+	suspend fun <T> replaceDocuments(collection: String, values: List<T>): List<DocumentHandle> {
+		return getCollection(collection).replaceDocuments(values).await().documents
+			.map { DocumentHandle(key = it.key, id = it.id, rev = it.rev) }
 	}
 
 
 	/**
-	 * Partially updates the document identified by document-key. The value must contain a document with the attributes
-	 * to patch (the patch document). All attributes from the patch document will be added to the existing document if
-	 * they do not yet exist, and overwritten in the existing document if they do exist there.
-	 *
-	 * @param key   The key of the document
-	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
-	 * @return information about the document or null if no document with the given key exists
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#update-document">API
-	 * Documentation</a>
+	 * Update the document with the given key with the new given  value
+	 * @return the [DocumentHandle] or [DocumentNotFoundError] if the document with the given key was not found
 	 */
-	suspend fun <T> updateDocument(collection: String, key: String, value: T): DocumentUpdateEntity<T>? {
+	suspend fun <T> updateDocument(collection: String, key: String, value: T): Either<DocumentNotFoundError, DocumentHandle> {
 		try {
-			return getCollection(collection).updateDocument(key, value).await()
+			return getCollection(collection).updateDocument(key, value).await().let {
+				DocumentHandle(id = it.id, key = it.key, rev = it.rev).right()
+			}
 		} catch (e: ArangoDBException) {
-			if (e.errorNum == 1202) {
-				return null
-			} else {
-				throw e
+			return when (e.errorNum) {
+				1202 -> DocumentNotFoundError.left()
+				else -> throw e
 			}
 		}
 	}
 
 
 	/**
-	 * Partially updates documents, the documents to update are specified by the _key attributes in the objects on
-	 * values. Vales must contain a list of document updates with the attributes to patch (the patch documents). All
-	 * attributes from the patch documents will be added to the existing documents if they do not yet exist, and
-	 * overwritten in the existing documents if they do exist there.
-	 *
-	 * @param values A list of documents (POJO, VPackSlice or String for Json)
-	 * @return information about the documents
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#update-documents">API
-	 * Documentation</a>
+	 * Update the documents with the new given values
+	 * @return the [DocumentHandle] of the successfully updated documents
 	 */
-	suspend fun <T> updateDocuments(collection: String, values: List<T>): MultiDocumentEntity<DocumentUpdateEntity<T>> {
-		return getCollection(collection).updateDocuments(values).await()
+	suspend fun <T> updateDocuments(collection: String, values: List<T>): List<DocumentHandle> {
+		return getCollection(collection).updateDocuments(values).await().documents
+			.map { DocumentHandle(key = it.key, id = it.id, rev = it.rev) }
 	}
 
 
 	/**
-	 * Removes a document
-	 *
-	 * @param key The key of the document
-	 * @return information about the document
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#removes-a-document">API
-	 * Documentation</a>
+	 * Delete the document with the given key
+	 * @return the [DocumentHandle] or [DocumentNotFoundError] if the document with the given key was not found
 	 */
-	suspend fun deleteDocument(collection: String, key: String): DocumentDeleteEntity<Void>? {
+	suspend fun deleteDocument(collection: String, key: String): Either<DocumentNotFoundError, DocumentHandle> {
 		try {
-			return getCollection(collection).deleteDocument(key).await()
+			return getCollection(collection).deleteDocument(key).await().let {
+				DocumentHandle(id = it.id, key = it.key, rev = it.rev).right()
+			}
 		} catch (e: ArangoDBException) {
-			if (e.errorNum == 1202) {
-				return null
-			} else {
-				throw e
+			return when (e.errorNum) {
+				1202 -> DocumentNotFoundError.left()
+				else -> throw e
 			}
 		}
 	}
 
 
 	/**
-	 * Removes a document
-	 *
-	 * @param key     The key of the document
-	 * @param type    The type of the document (POJO class, VPackSlice or String for Json). Only necessary if
-	 *                options.returnOld is set to true, otherwise can be null.
-	 * @return information about the document
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#removes-a-document">API
-	 * Documentation</a>
+	 * Delete the documents with the given keys
+	 * @return the [DocumentHandle] of the successfully deleted documents
 	 */
-	suspend fun <T> deleteDocument(collection: String, key: String, type: Class<T>): DocumentDeleteEntity<T> {
-		return getCollection(collection).deleteDocument(key, type, DocumentDeleteOptions()).await()
+	suspend fun deleteDocuments(collection: String, keys: Collection<String>): List<DocumentHandle> {
+		return getCollection(collection).deleteDocuments(keys).await().documents
+			.map { DocumentHandle(key = it.key, id = it.id, rev = it.rev) }
 	}
 
 
 	/**
-	 * Removes multiple document
-	 *
-	 * @param values The keys of the documents or the documents themselves
-	 * @return information about the documents
-	 * @see <a href=
-	 * "https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#removes-multiple-documents">API
-	 * Documentation</a>
-	 */
-	suspend fun <T> deleteDocuments(collection: String, values: List<T>): MultiDocumentEntity<DocumentDeleteEntity<Void>> {
-		return getCollection(collection).deleteDocuments(values).await()
-	}
-
-
-	/**
-	 * Removes multiple document
-	 *
-	 * @param keys    The keys of the documents
-	 * @param type    The type of the documents (POJO class, VPackSlice or String for Json). Only necessary if
-	 *                options.returnOld is set to true, otherwise can be null.
-	 * @return information about the documents
-	 * @see <a href=
-	 * "https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#removes-multiple-documents">API
-	 * Documentation</a>
-	 */
-	suspend fun <T> deleteDocuments(collection: String, keys: List<String>, type: Class<T>): MultiDocumentEntity<DocumentDeleteEntity<T>> {
-		return getCollection(collection).deleteDocuments(keys, type, DocumentDeleteOptions()).await()
-	}
-
-
-	/**
-	 * Checks if the document exists by reading a single document head
-	 *
-	 * @param key The key of the document
-	 * @return true if the document was found, otherwise false
-	 * @see <a href=
-	 * "https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#read-document-header">API
-	 * Documentation</a>
+	 * @return whether the document with the given key collection exists in the given
 	 */
 	suspend fun existsDocument(collection: String, key: String): Boolean {
 		return getCollection(collection).documentExists(key).await()
@@ -339,46 +278,68 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
 
 	/**
-	 * Counts the documents in a collection
-	 *
-	 * @return information about the collection, including the number of documents
-	 * @see <a href=
-	 * "https://www.arangodb.com/docs/stable/http/collection-getting.html#return-number-of-documents-in-a-collection">API
-	 * Documentation</a>
+	 * @return the amount of documents in the given collection
 	 */
-	suspend fun count(collection: String): CollectionPropertiesEntity {
-		return getCollection(collection).count().await()
+	suspend fun count(collection: String): Long {
+		return getCollection(collection).count().await().count
 	}
 
 
 	/**
-	 * Performs a database query using the given {@code query}, then returns a new {@code ArangoCursor} instance for the
-	 * result list.
-	 *
-	 * @param query contains the query string to be executed
-	 * @param type  The type of the result (POJO class, VPackSlice, String for Json, or Collection/List/Map)
-	 * @return cursor of the results
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/aql-query-cursor-accessing-cursors.html#create-cursor">API
-	 * Documentation</a>
+	 * Execute the given query.
+	 * @return all results as a list
 	 */
-	suspend fun <T> query(query: String, type: Class<T>): ArangoCursorAsync<T> {
-		return database.query(query, type).await()
+	suspend fun <T> query(query: String, type: Class<T>): List<T> {
+		return database.query(query, type).await().toList()
 	}
 
 
 	/**
-	 * Performs a database query using the given {@code query} and {@code bindVars}, then returns a new
-	 * {@code ArangoCursor} instance for the result list.
-	 *
-	 * @param query    contains the query string to be executed
-	 * @param bindVars key/value pairs representing the bind parameters
-	 * @param type     The type of the result (POJO class, VPackSlice, String for Json, or Collection/List/Map)
-	 * @return cursor of the results
-	 * @see <a href="https://www.arangodb.com/docs/stable/http/aql-query-cursor-accessing-cursors.html#create-cursor">API
-	 * Documentation</a>
+	 * Execute the given query with the given bind-vars.
+	 * @return all results as a list
 	 */
-	suspend fun <T> query(query: String, bindVars: Map<String, Any>, type: Class<T>): ArangoCursorAsync<T> {
-		return database.query(query, bindVars, type).await()
+	suspend fun <T> query(query: String, bindVars: Map<String, Any>, type: Class<T>): List<T> {
+		return database.query(query, bindVars, type).await().toList()
+	}
+
+
+	/**
+	 * Execute the given query.
+	 * @return the result, if exactly one was found, [DocumentNotFoundError] otherwise
+	 */
+	suspend fun <T> querySingle(query: String, type: Class<T>): Either<DocumentNotFoundError, T> {
+		val results = query(query, type)
+		return if (results.size == 1) results[0].right() else DocumentNotFoundError.left()
+	}
+
+
+	/**
+	 * Execute the given query with the given bind-vars.
+	 * @return the result, if exactly one was found, [DocumentNotFoundError] otherwise
+	 */
+	suspend fun <T> querySingle(query: String, bindVars: Map<String, Any>, type: Class<T>): Either<DocumentNotFoundError, T> {
+		val results = query(query, bindVars, type)
+		return if (results.size == 1) results[0].right() else DocumentNotFoundError.left()
+	}
+
+
+	/**
+	 * Execute the given query.
+	 * @return the first result, or [DocumentNotFoundError] if none where found
+	 */
+	suspend fun <T> queryFirst(query: String, type: Class<T>): Either<DocumentNotFoundError, T> {
+		val results = query(query, type)
+		return if (results.isNotEmpty()) results[0].right() else DocumentNotFoundError.left()
+	}
+
+
+	/**
+	 * Execute the given query with the given bind-vars.
+	 * @return the first result, or [DocumentNotFoundError] if none where found
+	 */
+	suspend fun <T> queryFirst(query: String, bindVars: Map<String, Any>, type: Class<T>): Either<DocumentNotFoundError, T> {
+		val results = query(query, bindVars, type)
+		return if (results.isNotEmpty()) results[0].right() else DocumentNotFoundError.left()
 	}
 
 }

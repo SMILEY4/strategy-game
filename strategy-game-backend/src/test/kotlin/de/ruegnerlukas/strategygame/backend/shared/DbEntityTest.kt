@@ -12,20 +12,20 @@ class DbEntityTest : StringSpec({
 		val entity = TestEntity("myName", 42)
 		entity.name shouldBe "myName"
 		entity.counter shouldBe 42
-		entity.id shouldBe null
+		entity.key shouldBe null
 	}
 
 	"insert and fetch from database" {
 		val database = TestUtilsFactory.createTestDatabase()
 
-		val key = database.insertDocument("testEntities", TestEntity("myName", 42)).key
+		val key = database.insertDocument("testEntities", TestEntity("myName", 42)).getOrThrow().key
 
-		database.getDocument("testEntities", key, TestEntity::class.java).let { result ->
+		database.getDocument("testEntities", key, TestEntity::class.java).getOrThrow().let { result ->
 			result.shouldNotBeNull()
 			result.name shouldBe "myName"
 			result.counter shouldBe 42
-			result.id.shouldNotBeNull()
-			result.id shouldBe key
+			result.key.shouldNotBeNull()
+			result.key shouldBe key
 		}
 	}
 
@@ -44,16 +44,17 @@ class DbEntityTest : StringSpec({
 		Json.fromString<TestEntity>(jsonString).let {
 			it.name shouldBe "myName"
 			it.counter shouldBe 42
-			it.id shouldBe "myId"
+			it.key shouldBe "myId"
 		}
 
 	}
 
-})
-
-
-internal class TestEntity(
-	val name: String,
-	val counter: Int,
-	id: String? = null
-) : DbEntity(id)
+}) {
+	companion object {
+		internal class TestEntity(
+			val name: String,
+			val counter: Int,
+			id: String? = null
+		) : DbEntity(id)
+	}
+}

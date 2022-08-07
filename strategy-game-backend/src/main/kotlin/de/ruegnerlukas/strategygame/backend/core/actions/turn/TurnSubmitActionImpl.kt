@@ -54,8 +54,8 @@ class TurnSubmitActionImpl(
 	 * Fetch the country for the given user and game
 	 */
 	private suspend fun getCountry(game: GameEntity, userId: String): CountryEntity {
-		return countryByGameAndUserQuery.execute(game.id!!, userId)
-			.getOrElse { throw Exception("Country for user $userId in game ${game.id} not found.") }
+		return countryByGameAndUserQuery.execute(game.key!!, userId)
+			.getOrElse { throw Exception("Country for user $userId in game ${game.key} not found.") }
 	}
 
 
@@ -98,7 +98,7 @@ class TurnSubmitActionImpl(
 	private fun createCommandPlaceMarker(game: GameEntity, country: CountryEntity, cmd: PlaceMarkerCommand): CommandEntity<*> {
 		return CommandEntity(
 			turn = game.turn,
-			countryId = country.id!!,
+			countryId = country.key!!,
 			data = PlaceMarkerCommandDataEntity(
 				q = cmd.q,
 				r = cmd.r
@@ -113,7 +113,7 @@ class TurnSubmitActionImpl(
 	private fun createCommandCreateCity(game: GameEntity, country: CountryEntity, cmd: CreateCityCommand): CommandEntity<*> {
 		return CommandEntity(
 			turn = game.turn,
-			countryId = country.id!!,
+			countryId = country.key!!,
 			data = CreateCityCommandDataEntity(
 				q = cmd.q,
 				r = cmd.r
@@ -128,11 +128,11 @@ class TurnSubmitActionImpl(
 	private suspend fun maybeEndTurn(game: GameEntity) {
 		val countPlaying = game.players.count { it.state == PlayerEntity.STATE_PLAYING }
 		if (countPlaying == 0) {
-			val result = actionEndTurn.perform(game.id!!)
+			val result = actionEndTurn.perform(game.key!!)
 			if (result is Either.Left) {
 				when (result.value) {
-					TurnEndAction.GameNotFoundError -> throw Exception("Could not find game ${game.id} when ending turn")
-					TurnEndAction.CommandResolutionFailedError -> throw Exception("Could not resolve turn for game ${game.id}")
+					TurnEndAction.GameNotFoundError -> throw Exception("Could not find game ${game.key} when ending turn")
+					TurnEndAction.CommandResolutionFailedError -> throw Exception("Could not resolve turn for game ${game.key}")
 				}
 			}
 		}

@@ -60,8 +60,8 @@ class TurnEndActionImpl(
 	 * Resolve/Apply the commands of the (ended) turn
 	 */
 	private suspend fun resolveCommands(game: GameEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
-		val commands = commandsByGameQuery.execute(game.id!!, game.turn)
-		return actionResolveCommands.perform(game.id, commands).mapLeft { CommandResolutionFailedError }
+		val commands = commandsByGameQuery.execute(game.key!!, game.turn)
+		return actionResolveCommands.perform(game.key, commands).mapLeft { CommandResolutionFailedError }
 	}
 
 
@@ -69,7 +69,7 @@ class TurnEndActionImpl(
 	 * Send the new game-state to the connected players
 	 */
 	private suspend fun sendGameStateMessages(game: GameEntity, errors: List<CommandResolutionError>) {
-		actionBroadcastWorldState.perform(game.id!!, errors)
+		actionBroadcastWorldState.perform(game.key!!, errors)
 			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 

@@ -14,7 +14,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldHaveMinLength
 
 class GameTest : StringSpec({
 
@@ -28,7 +27,7 @@ class GameTest : StringSpec({
 		// create new game -> expect valid game exists
 		val gameId = createGame.perform(WorldSettings.default())
 		TestUtils.getGame(database, gameId).let {
-			it.id shouldBe gameId
+			it.key shouldBe gameId
 			it.turn shouldBe 0
 		}
 

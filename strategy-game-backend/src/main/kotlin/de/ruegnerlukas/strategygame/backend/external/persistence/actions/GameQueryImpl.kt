@@ -12,12 +12,9 @@ import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 class GameQueryImpl(private val database: ArangoDatabase) : GameQuery {
 
 	override suspend fun execute(gameId: String): Either<EntityNotFoundError, GameEntity> {
-		val game = database.getDocument(Collections.GAMES, gameId, GameEntity::class.java)
-		if (game == null) {
-			return EntityNotFoundError.left()
-		} else {
-			return game.right()
-		}
+		return database
+			.getDocument(Collections.GAMES, gameId, GameEntity::class.java)
+			.mapLeft { EntityNotFoundError }
 	}
 
 }

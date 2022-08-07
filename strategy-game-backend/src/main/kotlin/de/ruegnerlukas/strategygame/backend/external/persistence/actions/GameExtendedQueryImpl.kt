@@ -37,12 +37,7 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 	}
 
 	private suspend fun fetchGame(gameId: String): Either<EntityNotFoundError, GameEntity> {
-		val game = database.getDocument(Collections.GAMES, gameId, GameEntity::class.java)
-		if (game == null) {
-			return EntityNotFoundError.left()
-		} else {
-			return game.right()
-		}
+		return database.getDocument(Collections.GAMES, gameId, GameEntity::class.java).mapLeft { EntityNotFoundError }
 	}
 
 	private suspend fun fetchCountries(gameId: String): List<CountryEntity> {
@@ -55,7 +50,7 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
 			CountryEntity::class.java
-		)?.toList() ?: emptyList()
+		)
 	}
 
 
@@ -69,7 +64,7 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
 			TileEntity::class.java
-		)?.toList() ?: emptyList()
+		)
 	}
 
 	private suspend fun fetchCities(gameId: String): List<CityEntity> {
@@ -82,7 +77,7 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
 			CityEntity::class.java
-		)?.toList() ?: emptyList()
+		)
 	}
 
 }

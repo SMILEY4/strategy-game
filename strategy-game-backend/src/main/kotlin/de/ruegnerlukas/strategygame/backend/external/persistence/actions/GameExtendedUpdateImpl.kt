@@ -30,12 +30,9 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
 	}
 
 	private suspend fun updateGame(game: GameEntity): Either<EntityNotFoundError, Unit> {
-		val result = database.updateDocument(Collections.GAMES, game.id!!, game)
-		if (result == null) {
-			return EntityNotFoundError.left()
-		} else {
-			return Unit.right()
-		}
+		return database.updateDocument(Collections.GAMES, game.key!!, game)
+			.mapLeft { EntityNotFoundError }
+			.void()
 	}
 
 	private suspend fun updateCountries(countries: List<CountryEntity>) {
@@ -51,7 +48,7 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
 	}
 
 	private suspend fun deleteCities(cities: Set<CityEntity>) {
-		database.deleteDocuments(Collections.CITIES, cities.map { it.id })
+		database.deleteDocuments(Collections.CITIES, cities.map { it.key!! })
 	}
 
 }

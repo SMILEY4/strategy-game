@@ -7,7 +7,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCom
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
-import de.ruegnerlukas.strategygame.backend.shared.UUID
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
@@ -27,7 +26,7 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").id!!
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
 		val result = resolveCommands.perform(gameId, listOf(cmdPlaceMarker(countryId, 4, 2)))
@@ -46,7 +45,7 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").id!!
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
 		val commands = listOf(cmdPlaceMarker(countryId, 4, 2), cmdPlaceMarker(countryId, 4, 2))
@@ -74,7 +73,7 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").id!!
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
 		val result = resolveCommands.perform(gameId, listOf(cmdCreateCity(countryId, 4, 2)))
@@ -93,7 +92,7 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.WATER))
 		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").id!!
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
 		val command = cmdCreateCity(countryId, 4, 2)
@@ -121,7 +120,7 @@ class CommandResolutionTest : StringSpec({
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
 		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").id!!
+		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
 		val commands = listOf(cmdCreateCity(countryId, 4, 2), cmdCreateCity(countryId, 5, 2))

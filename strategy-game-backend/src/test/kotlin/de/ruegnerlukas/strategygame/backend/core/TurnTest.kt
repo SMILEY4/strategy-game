@@ -36,8 +36,8 @@ class TurnTest : StringSpec({
 		joinGame.perform(userId2, gameId) shouldBeOk true
 
 		// get player ids of both users
-		val countryId1 = TestUtils.getCountry(database, gameId, userId1).id!!
-		val countryId2 = TestUtils.getCountry(database, gameId, userId2).id!!
+		val countryId1 = TestUtils.getCountry(database, gameId, userId1).key!!
+		val countryId2 = TestUtils.getCountry(database, gameId, userId2).key!!
 
 		// both users connect to game
 		connectToGame.perform(userId1, gameId, 1) shouldBeOk true

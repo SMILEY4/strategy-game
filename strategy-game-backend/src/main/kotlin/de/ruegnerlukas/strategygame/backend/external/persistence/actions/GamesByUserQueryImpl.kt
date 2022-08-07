@@ -7,15 +7,17 @@ import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
 class GamesByUserQueryImpl(private val database: ArangoDatabase) : GamesByUserQuery {
 
-	private val query = """
-		FOR game IN ${Collections.GAMES}
-			FILTER game.players[*].userId ANY == @userId
-			RETURN game
-	""".trimIndent()
-
 	override suspend fun execute(userId: String): List<GameEntity> {
 		database.assertCollections(Collections.GAMES)
-		return database.query(query, mapOf("userId" to userId), GameEntity::class.java)?.toList() ?: emptyList()
+		return database.query(
+			"""
+				FOR game IN ${Collections.GAMES}
+					FILTER game.players[*].userId ANY == @userId
+					RETURN game
+			""".trimIndent(),
+			mapOf("userId" to userId),
+			GameEntity::class.java
+		)
 	}
 
 }
