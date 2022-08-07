@@ -5,11 +5,9 @@ val versionKotlin: String by project
 val versionLogback: String by project
 val versionKotlinLogging: String by project
 val versionAwsSdk: String by project
-val versionKdbl: String by project
 val versionKotest: String by project
 val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
-val versionSqlite: String by project
 val versionArrow: String by project
 val versionArangoDb: String by project
 val versionJacksonDataformatVelocypack: String by project
@@ -52,9 +50,6 @@ dependencies {
 
 	implementation("ch.qos.logback:logback-classic:$versionLogback")
 	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
-
-	implementation("de.ruegnerlukas:kdbl:$versionKdbl")
-	implementation("org.xerial:sqlite-jdbc:$versionSqlite")
 
 	implementation("com.arangodb:arangodb-java-driver:$versionArangoDb")
 	implementation("com.arangodb:jackson-dataformat-velocypack:$versionJacksonDataformatVelocypack")

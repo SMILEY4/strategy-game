@@ -10,13 +10,16 @@ import com.arangodb.entity.CollectionPropertiesEntity
 import com.arangodb.entity.DocumentCreateEntity
 import com.arangodb.entity.DocumentDeleteEntity
 import com.arangodb.entity.DocumentUpdateEntity
+import com.arangodb.entity.LogLevelEntity
 import com.arangodb.entity.MultiDocumentEntity
 import com.arangodb.mapping.ArangoJack
+import com.arangodb.model.DocumentCreateOptions
 import com.arangodb.model.DocumentDeleteOptions
+import com.arangodb.model.OverwriteMode
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.future.await
 
-class ArangoDatabase(private val database: ArangoDatabaseAsync) {
+class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
 	companion object {
 
@@ -25,7 +28,28 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 		 * If no database with the given name exists, a new one will be created
 		 */
 		suspend fun create(host: String, port: Int, username: String?, password: String?, name: String): ArangoDatabase {
-			val arango = ArangoDBAsync.Builder()
+			val arango = getArango(host, port, username, password)
+			val database = arango.db(DbName.of(name))
+			if (!database.exists().await()) {
+				database.create().await()
+			}
+			return ArangoDatabase(database)
+		}
+
+
+		/**
+		 * Delete the database at the given host and port with the given name
+		 */
+		suspend fun delete(host: String, port: Int, username: String?, password: String?, name: String) {
+			val arango = getArango(host, port, username, password)
+			val database = arango.db(DbName.of(name))
+			if (database.exists().await()) {
+				database.drop().await()
+			}
+		}
+
+		private fun getArango(host: String, port: Int, username: String?, password: String?): ArangoDBAsync {
+			return ArangoDBAsync.Builder()
 				.serializer(ArangoJack().apply {
 					configure { it.registerModule(KotlinModule.Builder().build()) }
 				})
@@ -37,11 +61,6 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 						it
 					}
 				}.build()
-			val database = arango.db(DbName.of(name))
-			if (!database.exists().await()) {
-				database.create()
-			}
-			return ArangoDatabase(database)
 		}
 
 	}
@@ -65,6 +84,14 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 		} else {
 			return collection
 		}
+	}
+
+
+	/**
+	 * Assert that the collections with the given names exists. Creates a collection if it does not exist yet
+	 */
+	suspend fun assertCollections(vararg collectionNames: String) {
+		collectionNames.forEach { getCollection(it) }
 	}
 
 
@@ -93,6 +120,38 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 	 */
 	suspend fun <T> insertDocuments(collection: String, values: List<T>): MultiDocumentEntity<DocumentCreateEntity<T>> {
 		return getCollection(collection).insertDocuments(values).await()
+	}
+
+
+	/**
+	 * Creates a new document from the given document, or replaces the existing document with the given _key. If no
+	 * _key is given, a new unique _key is generated automatically.
+	 *
+	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
+	 * @return information about the document
+	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#create-document">API
+	 * Documentation</a>
+	 */
+	suspend fun <T> insertOrReplaceDocument(collection: String, value: T): DocumentCreateEntity<T> {
+		return getCollection(collection)
+			.insertDocument(value, DocumentCreateOptions().overwriteMode(OverwriteMode.replace))
+			.await()
+	}
+
+
+	/**
+	 * Creates new documents from the given documents, or replaces existing documents with the given _key. If no
+	 * _key is given, a new unique _key is generated automatically.
+	 *
+	 * @param value A representation of a single document (POJO, VPackSlice or String for Json)
+	 * @return information about the document
+	 * @see <a href="https://www.arangodb.com/docs/stable/http/document-working-with-documents.html#create-document">API
+	 * Documentation</a>
+	 */
+	suspend fun <T> insertOrReplaceDocuments(collection: String, values: List<T>): MultiDocumentEntity<DocumentCreateEntity<T>> {
+		return getCollection(collection)
+			.insertDocuments(values, DocumentCreateOptions().overwriteMode(OverwriteMode.replace))
+			.await()
 	}
 
 
@@ -302,7 +361,7 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 	 * @see <a href="https://www.arangodb.com/docs/stable/http/aql-query-cursor-accessing-cursors.html#create-cursor">API
 	 * Documentation</a>
 	 */
-	suspend fun <T> query(query: String, type: Class<T>): ArangoCursorAsync<T>? {
+	suspend fun <T> query(query: String, type: Class<T>): ArangoCursorAsync<T> {
 		return database.query(query, type).await()
 	}
 
@@ -318,7 +377,7 @@ class ArangoDatabase(private val database: ArangoDatabaseAsync) {
 	 * @see <a href="https://www.arangodb.com/docs/stable/http/aql-query-cursor-accessing-cursors.html#create-cursor">API
 	 * Documentation</a>
 	 */
-	suspend fun <T> query(query: String, bindVars: Map<String, Any>, type: Class<T>): ArangoCursorAsync<T>? {
+	suspend fun <T> query(query: String, bindVars: Map<String, Any>, type: Class<T>): ArangoCursorAsync<T> {
 		return database.query(query, bindVars, type).await()
 	}
 

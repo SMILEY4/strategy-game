@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.InsertGame
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.shared.trackingListOf
 
 class GameCreateActionImpl(
 	private val insertGame: InsertGame,
@@ -47,7 +48,7 @@ class GameCreateActionImpl(
 					terrainType = it.data.type.name,
 					countryId = null
 				),
-				content = mutableListOf()
+				content = trackingListOf()
 			)
 		}
 	}

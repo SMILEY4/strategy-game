@@ -1,45 +1,22 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
-import de.ruegnerlukas.kdbl.builder.SQL
-import de.ruegnerlukas.kdbl.builder.allColumns
-import de.ruegnerlukas.kdbl.builder.and
-import de.ruegnerlukas.kdbl.builder.isEqual
-import de.ruegnerlukas.kdbl.builder.placeholder
-import de.ruegnerlukas.kdbl.db.Database
-import de.ruegnerlukas.strategygame.backend.external.persistence.CommandTbl
-import de.ruegnerlukas.strategygame.backend.external.persistence.GameTbl
-import de.ruegnerlukas.strategygame.backend.external.persistence.PlayerTbl
+import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.QueryCommandsByGame
+import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
-class QueryCommandsByGameImpl(private val database: Database) : QueryCommandsByGame {
+class QueryCommandsByGameImpl(private val database: ArangoDatabase) : QueryCommandsByGame {
 
-	override suspend fun execute(gameId: String, turn: Int): List<CommandEntity> {
-		return database
-			.startQuery("commands.query.by-game-and-turn") {
-				SQL
-					.select(CommandTbl.allColumns())
-					.from(CommandTbl, PlayerTbl)
-					.where(
-						CommandTbl.playerId.isEqual(PlayerTbl.id)
-								and PlayerTbl.gameId.isEqual(placeholder("gameId"))
-								and CommandTbl.turn.isEqual(placeholder("turn"))
-					)
-			}
-			.parameters {
-				it["gameId"] = gameId
-				it["turn"] = turn
-			}
-			.execute()
-			.getMultipleOrNone { row ->
-				CommandEntity(
-					id = row.getString(CommandTbl.id),
-					playerId = row.getString(CommandTbl.playerId),
-					turn = row.getInt(CommandTbl.turn),
-					type = row.getString(CommandTbl.type),
-					data = row.getString(CommandTbl.data),
-				)
-			}
+	private val query = """
+		FOR command IN ${Collections.COMMANDS}
+			FOR country IN ${Collections.COUNTRIES}
+				FILTER command.countryId == country._key AND country.gameId == @gameId AND command.turn == @turn
+				RETURN command
+	""".trimIndent()
+
+	override suspend fun execute(gameId: String, turn: Int): List<CommandEntity<*>> {
+		database.assertCollections(Collections.COMMANDS, Collections.COUNTRIES)
+		return database.query(query, mapOf("gameId" to gameId, "turn" to turn), CommandEntity::class.java)?.toList() ?: emptyList()
 	}
 
 }

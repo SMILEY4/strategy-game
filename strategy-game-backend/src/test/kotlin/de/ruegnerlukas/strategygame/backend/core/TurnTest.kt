@@ -1,6 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core
 
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.QueryCommandsByGameImpl
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
@@ -34,8 +36,8 @@ class TurnTest : StringSpec({
 		joinGame.perform(userId2, gameId) shouldBeOk true
 
 		// get player ids of both users
-		val playerId1 = TestUtils.getPlayer(database, userId1, gameId).id
-		val playerId2 = TestUtils.getPlayer(database, userId2, gameId).id
+		val countryId1 = TestUtils.getCountry(database, gameId, userId1).id!!
+		val countryId2 = TestUtils.getCountry(database, gameId, userId2).id!!
 
 		// both users connect to game
 		connectToGame.perform(userId1, gameId, 1) shouldBeOk true
@@ -47,8 +49,11 @@ class TurnTest : StringSpec({
 		TestUtils.getGame(database, gameId).turn shouldBe 0
 		TestUtils.getCommands(database, gameId, 0).let { commands ->
 			commands shouldHaveSize 2
-			commands.map { it.playerId } shouldContainExactlyInAnyOrder listOf(playerId1, playerId1)
-			commands.map { it.type } shouldContainExactlyInAnyOrder listOf(PlaceMarkerCommand.TYPE, CreateCityCommand.TYPE)
+			commands.map { it.countryId } shouldContainExactlyInAnyOrder listOf(countryId1, countryId1)
+			commands.map { it.data.type } shouldContainExactlyInAnyOrder listOf(
+				PlaceMarkerCommandDataEntity.TYPE,
+				CreateCityCommandDataEntity.TYPE
+			)
 		}
 
 		// other/last player submits commands -> expect game on next turn and three saved commands for last turn
@@ -57,24 +62,18 @@ class TurnTest : StringSpec({
 		TestUtils.getGame(database, gameId).turn shouldBe 1
 		QueryCommandsByGameImpl(database).execute(gameId, 0).let { commands ->
 			commands shouldHaveSize 3
-			commands.map { it.playerId } shouldContainExactlyInAnyOrder listOf(playerId1, playerId1, playerId2)
-			commands.map { it.type } shouldContainExactlyInAnyOrder listOf(
-				PlaceMarkerCommand.TYPE,
-				PlaceMarkerCommand.TYPE,
-				CreateCityCommand.TYPE
+			commands.map { it.countryId } shouldContainExactlyInAnyOrder listOf(countryId1, countryId1, countryId2)
+			commands.map { it.data.type } shouldContainExactlyInAnyOrder listOf(
+				PlaceMarkerCommandDataEntity.TYPE,
+				PlaceMarkerCommandDataEntity.TYPE,
+				CreateCityCommandDataEntity.TYPE
 			)
 		}
 
 		// assert that commands have correctly resolved and saved
 		TestUtils.getMarkers(database, gameId) shouldHaveSize 2
-		TestUtils.getMarkersAt(database, gameId, 4, 2).let { markers ->
-			markers shouldHaveSize 1
-			markers[0].playerId shouldBe playerId1
-		}
-		TestUtils.getMarkersAt(database, gameId, 0, 0).let { markers ->
-			markers shouldHaveSize 1
-			markers[0].playerId shouldBe playerId2
-		}
+		TestUtils.getMarkersAt(database, gameId, 4, 2) shouldHaveSize 1
+		TestUtils.getMarkersAt(database, gameId, 0, 0) shouldHaveSize 1
 		TestUtils.getCities(database, gameId) shouldHaveSize 1
 	}
 

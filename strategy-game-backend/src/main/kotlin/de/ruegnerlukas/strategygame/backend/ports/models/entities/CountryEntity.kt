@@ -1,13 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
-import com.arangodb.entity.Key
+import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
 
 data class CountryEntity(
-	@Key val id: String? = null,
 	val gameId: String,
 	val userId: String,
 	val resources: CountryResourcesEntity
-)
+) : DbEntity()
 
 data class CountryResourcesEntity(
 	var money: Float

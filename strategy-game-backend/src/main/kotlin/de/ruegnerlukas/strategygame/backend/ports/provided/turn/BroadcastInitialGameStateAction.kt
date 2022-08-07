@@ -7,5 +7,5 @@ interface BroadcastInitialGameStateAction {
 	sealed class WorldStateBroadcasterActionError
 	object GameNotFoundError : WorldStateBroadcasterActionError()
 
-	suspend fun perform(gameId: String, connectionIds: List<Int>? = null): Either<WorldStateBroadcasterActionError, Unit>
+	suspend fun perform(gameId: String, connectionIds: List<Int>): Either<WorldStateBroadcasterActionError, Unit>
 }

@@ -1,12 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
-import com.arangodb.entity.Key
+import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
 
 data class GameEntity(
-	@Key val id: String? = null,
 	var turn: Int,
 	val players: MutableList<PlayerEntity>
-)
+) : DbEntity()
 
 data class PlayerEntity(
 	val userId: String,

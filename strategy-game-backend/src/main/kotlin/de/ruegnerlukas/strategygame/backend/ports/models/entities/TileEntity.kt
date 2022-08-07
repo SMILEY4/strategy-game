@@ -1,19 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
-import com.arangodb.entity.Key
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
 
 data class TileEntity(
-	@Key val id: String? = null,
 	var gameId: String,
 	val position: TilePositionEntity,
 	val data: TileDataEntity,
 	val content: MutableList<TileContentEntity>
-)
+) : DbEntity()
 
 
 data class TilePositionEntity(
@@ -34,8 +31,7 @@ data class TileDataEntity(
 	property = "type"
 )
 @JsonSubTypes(
-	JsonSubTypes.Type(value = PlaceMarkerCommand::class),
-	JsonSubTypes.Type(value = CreateCityCommand::class),
+	JsonSubTypes.Type(value = CityTileContentEntity::class),
 )
 sealed class TileContentEntity(
 	val type: String
@@ -43,8 +39,16 @@ sealed class TileContentEntity(
 
 
 @JsonTypeName(CityTileContentEntity.TYPE)
-class CityTileContentEntity() : TileContentEntity(TYPE) {
+class CityTileContentEntity : TileContentEntity(TYPE) {
 	companion object {
 		internal const val TYPE = "city"
+	}
+}
+
+
+@JsonTypeName(MarkerTileContentEntity.TYPE)
+class MarkerTileContentEntity : TileContentEntity(TYPE) {
+	companion object {
+		internal const val TYPE = "marker"
 	}
 }

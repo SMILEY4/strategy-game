@@ -34,7 +34,7 @@ class BroadcastTurnResultActionImpl(
 
 
 	private fun getConnectionIds(game: GameExtendedEntity): List<Int> {
-		return game.players
+		return game.game.players
 			.filter { it.connectionId !== null }
 			.map { it.connectionId!! }
 	}

@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
+import de.ruegnerlukas.strategygame.backend.shared.TrackingList
+
 
 data class GameExtendedEntity(
-	val turn: Int,
-	val players: List<OldPlayerEntity>,
+	val game: GameEntity,
 	val countries: List<CountryEntity>,
 	val tiles: List<TileEntity>,
-	val cities: List<CityEntity>,
-	val markers: List<MarkerEntity>,
+	val cities: TrackingList<CityEntity>,
 )

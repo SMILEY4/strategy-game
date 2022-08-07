@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.OldPlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
@@ -37,11 +37,9 @@ class GameTest : StringSpec({
 		TestUtils.getPlayers(database, gameId).let { players ->
 			players shouldHaveSize 1
 			players[0].let { player ->
-				player.id shouldHaveMinLength 1
 				player.userId shouldBe userId
-				player.gameId shouldBe gameId
 				player.connectionId shouldBe null
-				player.state shouldBe OldPlayerEntity.STATE_PLAYING
+				player.state shouldBe PlayerEntity.STATE_PLAYING
 			}
 		}
 
@@ -65,18 +63,14 @@ class GameTest : StringSpec({
 		TestUtils.getPlayers(database, gameId).let {
 			it shouldHaveSize 2
 			it.find { p -> p.userId == userId1 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId1
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe OldPlayerEntity.STATE_PLAYING
+				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}
 			it.find { p -> p.userId == userId2 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId2
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe OldPlayerEntity.STATE_PLAYING
+				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}
 		}
 
@@ -94,7 +88,7 @@ class GameTest : StringSpec({
 		val gameId = createGame.perform(WorldSettings.default())
 		joinGame.perform(userId1, gameId)
 		joinGame.perform(userId2, gameId)
-		val prevPlayerIds = TestUtils.getPlayers(database, gameId).map { it.id }
+		val prevPlayerIds = TestUtils.getPlayers(database, gameId).map { it.userId }
 		prevPlayerIds shouldHaveSize 2
 
 		// user2 joins same game again -> expect correct error and still two valid players
@@ -103,20 +97,16 @@ class GameTest : StringSpec({
 		(result as Either.Left).value shouldBe GameJoinAction.UserAlreadyPlayerError
 		TestUtils.getPlayers(database, gameId).let {
 			it shouldHaveSize 2
-			it.map { p -> p.id } shouldContainExactlyInAnyOrder prevPlayerIds
+			it.map { p -> p.userId } shouldContainExactlyInAnyOrder prevPlayerIds
 			it.find { p -> p.userId == userId1 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId1
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe OldPlayerEntity.STATE_PLAYING
+				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}
 			it.find { p -> p.userId == userId2 }!!.let { p ->
-				p.id shouldHaveMinLength 1
 				p.userId shouldBe userId2
-				p.gameId shouldBe gameId
 				p.connectionId shouldBe null
-				p.state shouldBe OldPlayerEntity.STATE_PLAYING
+				p.state shouldBe PlayerEntity.STATE_PLAYING
 			}
 		}
 

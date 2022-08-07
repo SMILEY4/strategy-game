@@ -7,10 +7,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionE
 interface ResolveCommandsAction {
 
 	sealed class ResolveCommandsActionError
-	object CommandUnknownError : ResolveCommandsActionError()
 	object GameNotFoundError : ResolveCommandsActionError()
 	object CountryNotFoundError : ResolveCommandsActionError()
 	object TileNotFoundError : ResolveCommandsActionError()
 
-	suspend fun perform(gameId: String, commands: List<CommandEntity>): Either<ResolveCommandsActionError, List<CommandResolutionError>>
+	suspend fun perform(gameId: String, commands: List<CommandEntity<*>>): Either<ResolveCommandsActionError, List<CommandResolutionError>>
 }
