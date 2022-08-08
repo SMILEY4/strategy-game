@@ -1,10 +1,10 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {GameCanvasHandle} from "../gameCanvasHandle";
-import {CityRenderer} from "./cities/cityRenderer";
-import {MarkerRenderer} from "./markers/markerRenderer";
+import {TileContentRenderer} from "./tilecontent/tileContentRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {Camera} from "./utils/camera";
+import {glErrorToString} from "./utils/webglErrors";
 
 export class Renderer {
 
@@ -14,23 +14,20 @@ export class Renderer {
     private readonly gameStateAccess: GameStateAccess;
 
     private readonly tilemapRenderer: TilemapRenderer;
-    private readonly markerRenderer: MarkerRenderer;
-    private readonly cityRenderer: CityRenderer;
+    private readonly tileContentRenderer: TileContentRenderer
 
     constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
         this.canvasHandle = canvasHandle;
         this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle);
-        this.markerRenderer = new MarkerRenderer(canvasHandle);
-        this.cityRenderer = new CityRenderer(canvasHandle);
+        this.tileContentRenderer = new TileContentRenderer(canvasHandle)
     }
 
 
     public initialize(): void {
         this.tilemapRenderer.initialize();
-        this.markerRenderer.initialize();
-        this.cityRenderer.initialize();
+        this.tileContentRenderer.initialize()
     }
 
 
@@ -41,6 +38,8 @@ export class Renderer {
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.enable(gl.BLEND)
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         const camera = this.createCamera();
         const map = this.gameStateAccess.getTiles();
@@ -54,17 +53,12 @@ export class Renderer {
             tileSelected
         );
 
-        this.markerRenderer.render(
-            camera,
-            this.gameStateAccess.getMarkers(),
-            this.localGameStateAccess.getCommands()
-        );
-
-        this.cityRenderer.render(
+        this.tileContentRenderer.render(
             camera,
             this.gameStateAccess.getCities(),
+            this.gameStateAccess.getMarkers(),
             this.localGameStateAccess.getCommands()
-        );
+        )
 
     }
 
@@ -72,7 +66,7 @@ export class Renderer {
     private checkErrors(gl: WebGL2RenderingContext) {
         const error = gl.getError();
         if (error !== gl.NO_ERROR && error !== gl.CONTEXT_LOST_WEBGL) {
-            alert("fail");
+            alert("gl error: " + glErrorToString(error));
         }
     }
 
@@ -89,8 +83,7 @@ export class Renderer {
 
     public dispose(): void {
         this.tilemapRenderer.dispose();
-        this.markerRenderer.dispose();
-        this.cityRenderer.dispose()
+        this.tileContentRenderer.dispose();
     }
 
 }

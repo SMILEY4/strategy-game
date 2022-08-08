@@ -19,12 +19,17 @@ export function PageGame(): ReactElement {
         }
     });
 
-    return (
-        <div className="game">
-            {(currentState === GameState.LOADING) && (
+    function renderLoadingScreen(): ReactElement {
+        return (
+            <div className="game">
                 <div>Loading...</div>
-            )}
-            {((currentState === GameState.PLAYING) || currentState === GameState.SUBMITTED) && (
+            </div>
+        );
+    }
+
+    function renderGameScreen(): ReactElement {
+        return (
+            <div className="game">
                 <div className="game-container">
                     <Canvas/>
                     <div className="game-ui">
@@ -32,8 +37,13 @@ export function PageGame(): ReactElement {
                     </div>
                     <DialogStack/>
                 </div>
+            </div>
+        );
+    }
 
-            )}
-        </div>
-    );
+    if(currentState === GameState.LOADING) {
+        return renderLoadingScreen()
+    } else {
+        return renderGameScreen()
+    }
 }

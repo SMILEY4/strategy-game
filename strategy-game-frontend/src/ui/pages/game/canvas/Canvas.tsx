@@ -10,6 +10,7 @@ export function Canvas() {
     const hasContext = useRef<boolean>(true);
     const mouseDownInCanvas = useRef<boolean>(false);
 
+
     useEffect(() => {
         if (canvasRef.current) {
             resizeCanvas(canvasRef.current);

@@ -22,7 +22,7 @@ export function glErrorToString(code: GLenum): string {
 			return "CONTEXT_LOST_WEBGL"
 		}
 		default: {
-			return "UNKNOWN_ERROR"
+			return "UNKNOWN_ERROR(" + code + ")"
 		}
 	}
 }
