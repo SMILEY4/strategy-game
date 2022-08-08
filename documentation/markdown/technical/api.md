@@ -372,6 +372,7 @@ All messages follow the following format
           },
           "countries": [
               {
+                  "_key": "String - the id of the country",
                   "gameId": "String - the id of the game",
                   "userId": "String - the id of the owner",
                   "resources": {
@@ -381,6 +382,7 @@ All messages follow the following format
           ],
           "tiles": [
               {
+                  "_key": "String - the id of the tile",
                   "gameId": "String - the id of the game",
                   "position": {
                       "q": "Int - the q-coordinate",
@@ -397,6 +399,7 @@ All messages follow the following format
           ],
           "cities": [
               {
+                  "_key": "String - the id of the city",
                   "gameId": "String - the id of the game",
                   "tileId": "String - the id of the tile"
               }

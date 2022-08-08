@@ -16,16 +16,4 @@ export class UserStateAccess {
         return token ? token : "";
     }
 
-    getUserId(): string {
-        return UserStateAccess.extractUserId(this.getToken());
-    }
-
-    private static extractUserId(token: string): string {
-        if (token) {
-            return (jwt_decode(token) as any).sub;
-        } else {
-            return "";
-        }
-    }
-
 }

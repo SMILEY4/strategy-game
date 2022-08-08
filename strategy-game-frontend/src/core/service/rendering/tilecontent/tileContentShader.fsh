@@ -7,5 +7,5 @@ in vec4 v_color;
 out vec4 outColor;
 
 void main() {
-    outColor = texture(u_texture, v_textureCoords) * vec4(1.0, 1.0, 1.0, v_color.a);
+    outColor = texture(u_texture, v_textureCoords) * v_color;
 }

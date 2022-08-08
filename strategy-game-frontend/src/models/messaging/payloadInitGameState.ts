@@ -7,7 +7,13 @@ export interface PayloadInitGameState {
             turn: number,
             players: any,
         },
-        countries: any,
+        countries: ({
+            _key: string,
+            userId: string,
+            resources: {
+                money: number
+            }
+        })[],
         tiles: ({
             _key: string,
             gameId: string,

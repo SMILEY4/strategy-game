@@ -6,6 +6,14 @@
 }
 
 
+.game-menu-bar > .country-color {
+	margin:        4px;
+	width:         32px;
+	height:        32px;
+	border-radius: 16px;
+}
+
+
 .game-menu-bar > .category-area {
 	display:         flex;
 	align-items:     center;
@@ -30,6 +38,7 @@
 .game-menu-bar > .category-area > *:hover {
 	background-color: #6e6e6e;
 }
+
 
 .game-menu-bar > .category-area > *:active {
 	background-color: #646464;
@@ -77,6 +86,7 @@
 .game-menu-bar > .action-section > *:hover {
 	background-color: #6e6e6e;
 }
+
 
 .game-menu-bar > .action-section > *:active {
 	background-color: #646464;

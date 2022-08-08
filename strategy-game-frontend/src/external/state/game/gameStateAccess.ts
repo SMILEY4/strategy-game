@@ -1,4 +1,5 @@
 import {City} from "../../../models/state/city";
+import {Country} from "../../../models/state/country";
 import {Marker} from "../../../models/state/marker";
 import {Tile} from "../../../models/state/tile";
 import {GameStore} from "./gameStore";
@@ -6,13 +7,16 @@ import {GameStore} from "./gameStore";
 export class GameStateAccess {
 
     setCurrentTurn(turn: number): void {
-        GameStore.useState.getState().setCurrentTurn(turn)
+        GameStore.useState.getState().setCurrentTurn(turn);
     }
 
-    getCurrentTurn(): number {
-        return GameStore.useState.getState().currentTurn
+    getCountries(): Country[] {
+        return GameStore.useState.getState().countries;
     }
 
+    setCountries(countries: Country[]): void {
+        GameStore.useState.getState().setCountries(countries);
+    }
 
     getTileAt(q: number, r: number): Tile | null {
         const tile = GameStore.useState.getState().map.find(t => t.position.q === q && t.position.r === r);
@@ -27,7 +31,6 @@ export class GameStateAccess {
         GameStore.useState.getState().setTiles(tiles);
     }
 
-
     getMarkers(): Marker[] {
         return GameStore.useState.getState().markers;
     }
@@ -35,7 +38,6 @@ export class GameStateAccess {
     setMarkers(markers: Marker[]): void {
         GameStore.useState.getState().setMarkers(markers);
     }
-
 
     getCities(): City[] {
         return GameStore.useState.getState().cities;

@@ -1,5 +1,6 @@
 import {City} from "../../../../models/state/city";
 import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../../models/state/command";
+import {Country, CountryColor} from "../../../../models/state/country";
 import {Marker} from "../../../../models/state/marker";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
@@ -66,23 +67,23 @@ export class TileContentRenderer {
     }
 
 
-    public render(camera: Camera, cities: City[], markers: Marker[], commands: Command[]) {
+    public render(camera: Camera, countries: Country[], cities: City[], markers: Marker[], commands: Command[]) {
 
         this.batchRenderer.begin(camera);
 
         cities
-            .forEach(e => this.addCity(e.tile.position.q, e.tile.position.r, false) );
+            .forEach(e => this.addCity(e.tile.position.q, e.tile.position.r, this.getColor(countries, "?", false)));
         commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
-            .forEach(e => this.addCity(e.q, e.r, true) );
+            .forEach(e => this.addCity(e.q, e.r, this.getColor(countries, "?", true)));
 
         markers
-            .forEach(e => this.addMarker(e.tile.position.q, e.tile.position.r, false))
+            .forEach(e => this.addMarker(e.tile.position.q, e.tile.position.r, this.getColor(countries, e.countryId, false)));
         commands
             .filter(e => e.commandType === "place-marker")
             .map(e => e as CommandPlaceMarker)
-            .forEach(e => this.addMarker(e.q, e.r, true));
+            .forEach(e => this.addMarker(e.q, e.r, this.getColor(countries, "?", true)));
 
         this.texture.bind();
         this.batchRenderer.end(this.shader, {
@@ -93,11 +94,10 @@ export class TileContentRenderer {
     }
 
 
-    private addCity(q: number, r: number, isCommand: boolean) {
+    private addCity(q: number, r: number, color: number[]) {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        const color = [1, 1, 1, isCommand ? 0.5 : 1]
         this.batchRenderer.add([
             [x - width, y + height, 0.5, 0, ...color],
             [x + width, y + height, 1, 0, ...color],
@@ -108,11 +108,10 @@ export class TileContentRenderer {
         ]);
     }
 
-    private addMarker(q: number, r: number, isCommand: boolean) {
+    private addMarker(q: number, r: number, color: number[]) {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        const color = [1, 1, 1, isCommand ? 0.5 : 1]
         this.batchRenderer.add([
             [x - width, y + height, 0, 0, ...color],
             [x + width, y + height, 0.5, 0, ...color],
@@ -123,6 +122,18 @@ export class TileContentRenderer {
         ]);
     }
 
+    private getColor(countries: Country[], countryId: string, isCommand: boolean): [number, number, number, number] {
+        const country = countries.find(c => c.countryId === countryId);
+        if (country) {
+            if (country.color === CountryColor.RED) return [1, 0, 0, isCommand ? 0.5 : 1];
+            if (country.color === CountryColor.GREEN) return [0, 1, 0, isCommand ? 0.5 : 1];
+            if (country.color === CountryColor.BLUE) return [0, 0, 1, isCommand ? 0.5 : 1];
+            if (country.color === CountryColor.CYAN) return [0, 1, 1, isCommand ? 0.5 : 1];
+            if (country.color === CountryColor.MAGENTA) return [1, 0, 1, isCommand ? 0.5 : 1];
+            if (country.color === CountryColor.YELLOW) return [1, 1, 0, isCommand ? 0.5 : 1];
+        }
+        return [1, 1, 1, isCommand ? 0.5 : 1];
+    }
 
 
     public dispose() {

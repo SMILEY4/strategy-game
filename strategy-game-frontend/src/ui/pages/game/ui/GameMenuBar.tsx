@@ -1,12 +1,20 @@
 import {ReactElement} from "react";
 import "./gameMenuBar.css";
+import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
+import {UserStateHooks} from "../../../../external/state/user/userStateHooks";
 import {CategoryDebug} from "./MenuDebug";
 import {CategoryOther} from "./MenuOther";
 import {NextTurnAction} from "./NextTurnAction";
 
 export function GameMenuBar(): ReactElement {
+
+    const userId = UserStateHooks.useUserId()
+    const country = GameStateHooks.useCountry(userId)
+    const countryColor = country ? country.color : "black"
+
     return (
         <div className="game-menu-bar">
+            <div className="country-color" style={{backgroundColor: countryColor}}/>
             <div className="category-area">
                 <CategoryOther/>
                 <CategoryDebug/>

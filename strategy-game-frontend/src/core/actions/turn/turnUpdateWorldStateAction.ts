@@ -1,8 +1,9 @@
-import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
+import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {MsgMarkerTileContent} from "../../../models/messaging/messagingTileContent";
 import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
 import {City} from "../../../models/state/city";
+import {ALL_COUNTRY_COLORS, Country, CountryColor} from "../../../models/state/country";
 import {GameState} from "../../../models/state/gameState";
 import {Marker} from "../../../models/state/marker";
 import {TerrainType} from "../../../models/state/terrainType";
@@ -13,16 +14,16 @@ import {Tile} from "../../../models/state/tile";
  */
 export class TurnUpdateWorldStateAction {
 
-    private readonly gameStateAccess: LocalGameStateAccess;
-    private readonly worldStateAccess: GameStateAccess;
+    private readonly localGameStateAccess: LocalGameStateAccess;
+    private readonly gameStateAccess: GameStateAccess;
 
-    constructor(gameStateAccess: LocalGameStateAccess, worldStateAccess: GameStateAccess) {
+    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
+        this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
-        this.worldStateAccess = worldStateAccess;
     }
 
     perform(state: PayloadInitTurnState): void {
-        console.log("update world state")
+        console.log("update world state");
 
         const markers: Marker[] = [];
         const cities: City[] = [];
@@ -50,12 +51,27 @@ export class TurnUpdateWorldStateAction {
             return tile;
         });
 
-        this.gameStateAccess.clearCommands();
-        this.worldStateAccess.setTiles(tiles);
-        this.worldStateAccess.setMarkers(markers);
-        this.worldStateAccess.setCities(cities);
-        this.worldStateAccess.setCurrentTurn(state.game.game.turn);
-        this.gameStateAccess.setCurrentState(GameState.PLAYING);
+        const countryColors = state.game.countries
+            .map(c => c._key)
+            .sort()
+            .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
+
+        const countries: Country[] = state.game.countries.map(country => ({
+            countryId: country._key,
+            userId: country.userId,
+            resources: {
+                money: country.resources.money
+            },
+            color: (countryColors.find(e => e[0] === country._key)!!)[1] as CountryColor
+        }));
+
+        this.gameStateAccess.setCountries(countries);
+        this.gameStateAccess.setTiles(tiles);
+        this.gameStateAccess.setMarkers(markers);
+        this.gameStateAccess.setCities(cities);
+        this.gameStateAccess.setCurrentTurn(state.game.game.turn);
+        this.localGameStateAccess.clearCommands();
+        this.localGameStateAccess.setCurrentState(GameState.PLAYING);
     }
 
 }

@@ -55,6 +55,7 @@ export class Renderer {
 
         this.tileContentRenderer.render(
             camera,
+            this.gameStateAccess.getCountries(),
             this.gameStateAccess.getCities(),
             this.gameStateAccess.getMarkers(),
             this.localGameStateAccess.getCommands()
