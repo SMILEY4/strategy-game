@@ -70,79 +70,19 @@ export class TileContentRenderer {
 
         this.batchRenderer.begin(camera);
 
-        markers.forEach(e => {
-
-            const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, e.tile.position.q, e.tile.position.r);
-            const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
-            const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-            const color = [1, 1, 1, 1]
-
-            this.batchRenderer.add([
-                [x - width, y + height, 0, 0, ...color],
-                [x + width, y + height, 0.5, 0, ...color],
-                [x + width, y - height, 0.5, 1, ...color],
-                [x - width, y + height, 0, 0, ...color],
-                [x + width, y - height, 0.5, 1, ...color],
-                [x - width, y - height, 0, 1, ...color],
-            ]);
-        });
-
-        commands
-            .filter(e => e.commandType === "place-marker")
-            .map(e => e as CommandPlaceMarker)
-            .forEach(e => {
-
-                const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, e.q, e.r);
-                const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
-                const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-                const color = [1, 1, 1, 0.5]
-
-                this.batchRenderer.add([
-                    [x - width, y + height, 0, 0, ...color],
-                    [x + width, y + height, 0.5, 0, ...color],
-                    [x + width, y - height, 0.5, 1, ...color],
-                    [x - width, y + height, 0, 0, ...color],
-                    [x + width, y - height, 0.5, 1, ...color],
-                    [x - width, y - height, 0, 1, ...color],
-                ]);
-            });
-
-        cities.forEach(e => {
-
-            const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, e.tile.position.q, e.tile.position.r);
-            const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
-            const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-            const color = [1, 1, 1, 1]
-
-            this.batchRenderer.add([
-                [x - width, y + height, 0.5, 0, ...color],
-                [x + width, y + height, 1, 0, ...color],
-                [x + width, y - height, 1, 1, ...color],
-                [x - width, y + height, 0.5, 0, ...color],
-                [x + width, y - height, 1, 1, ...color],
-                [x - width, y - height, 0.5, 1, ...color],
-            ]);
-        });
-
+        cities
+            .forEach(e => this.addCity(e.tile.position.q, e.tile.position.r, false) );
         commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
-            .forEach(e => {
+            .forEach(e => this.addCity(e.q, e.r, true) );
 
-                const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, e.q, e.r);
-                const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
-                const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-                const color = [1, 1, 1, 0.5]
-
-                this.batchRenderer.add([
-                    [x - width, y + height, 0.5, 0, ...color],
-                    [x + width, y + height, 1, 0, ...color],
-                    [x + width, y - height, 1, 1, ...color],
-                    [x - width, y + height, 0.5, 0, ...color],
-                    [x + width, y - height, 1, 1, ...color],
-                    [x - width, y - height, 0.5, 1, ...color],
-                ]);
-            });
+        markers
+            .forEach(e => this.addMarker(e.tile.position.q, e.tile.position.r, false))
+        commands
+            .filter(e => e.commandType === "place-marker")
+            .map(e => e as CommandPlaceMarker)
+            .forEach(e => this.addMarker(e.q, e.r, true));
 
         this.texture.bind();
         this.batchRenderer.end(this.shader, {
@@ -151,6 +91,38 @@ export class TileContentRenderer {
         });
 
     }
+
+
+    private addCity(q: number, r: number, isCommand: boolean) {
+        const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
+        const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
+        const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
+        const color = [1, 1, 1, isCommand ? 0.5 : 1]
+        this.batchRenderer.add([
+            [x - width, y + height, 0.5, 0, ...color],
+            [x + width, y + height, 1, 0, ...color],
+            [x + width, y - height, 1, 1, ...color],
+            [x - width, y + height, 0.5, 0, ...color],
+            [x + width, y - height, 1, 1, ...color],
+            [x - width, y - height, 0.5, 1, ...color],
+        ]);
+    }
+
+    private addMarker(q: number, r: number, isCommand: boolean) {
+        const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
+        const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
+        const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
+        const color = [1, 1, 1, isCommand ? 0.5 : 1]
+        this.batchRenderer.add([
+            [x - width, y + height, 0, 0, ...color],
+            [x + width, y + height, 0.5, 0, ...color],
+            [x + width, y - height, 0.5, 1, ...color],
+            [x - width, y + height, 0, 0, ...color],
+            [x + width, y - height, 0.5, 1, ...color],
+            [x - width, y - height, 0, 1, ...color],
+        ]);
+    }
+
 
 
     public dispose() {
