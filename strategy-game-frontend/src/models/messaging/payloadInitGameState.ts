@@ -1,11 +1,15 @@
-export interface TurnResultMessagePayload {
+import {MsgTileContent} from "./messagingTileContent";
+
+export interface PayloadInitGameState {
     game: {
         game: {
+            _key: string,
             turn: number,
             players: any,
-        }
+        },
         countries: any,
         tiles: ({
+            _key: string,
             gameId: string,
             position: {
                 q: number,
@@ -14,18 +18,12 @@ export interface TurnResultMessagePayload {
             data: {
                 terrainType: string
             },
-            content: ({
-                type: string
-            })[]
+            content: MsgTileContent[]
         })[],
         cities: ({
+            _key: string,
             gameId: string,
             tileId: string
         })[]
-
-    },
-    errors: ({
-        errorMessage: string,
-        command: any
-    })[]
+    };
 }

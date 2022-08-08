@@ -1,5 +1,8 @@
-import {GameApi} from "../../../external/api/gameApi";
+import {GameApi} from "../../../external/api/http/gameApi";
 
+/**
+ * Create a new game
+ */
 export class GameLobbyCreateAction {
 
     private readonly gameApi: GameApi;
@@ -9,7 +12,7 @@ export class GameLobbyCreateAction {
     }
 
     perform(): Promise<string> {
-        console.debug("Creating game-lobby")
+        console.log("create new game")
         return this.gameApi.create();
     }
 

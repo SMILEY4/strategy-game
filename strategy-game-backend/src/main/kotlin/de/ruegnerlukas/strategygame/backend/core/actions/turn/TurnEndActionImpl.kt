@@ -19,7 +19,7 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class TurnEndActionImpl(
 	private val actionResolveCommands: ResolveCommandsAction,
-	private val actionBroadcastWorldState: BroadcastTurnResultAction,
+	private val actionBroadcastTurnResult: BroadcastTurnResultAction,
 	private val gameQuery: GameQuery,
 	private val gameUpdate: GameUpdate,
 	private val commandsByGameQuery: CommandsByGameQuery,
@@ -69,7 +69,7 @@ class TurnEndActionImpl(
 	 * Send the new game-state to the connected players
 	 */
 	private suspend fun sendGameStateMessages(game: GameEntity, errors: List<CommandResolutionError>) {
-		actionBroadcastWorldState.perform(game.key!!, errors)
+		actionBroadcastTurnResult.perform(game.key!!, errors)
 			.getOrElse { throw Exception("Could not find game when sending game-state-messages") }
 	}
 

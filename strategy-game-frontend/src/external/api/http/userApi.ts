@@ -1,15 +1,15 @@
-import {AuthData} from "../../models/authData";
-import {AuthProvider} from "../state/user/authProvider";
+import {AuthData} from "../../../models/authData";
+import {UserStateAccess} from "../../state/user/userStateAccess";
 import {HttpClient} from "./httpClient";
 
 export class UserApi {
 
     private readonly httpClient: HttpClient;
-    private readonly authProvider: AuthProvider;
+    private readonly userStateAccess: UserStateAccess;
 
-    constructor(httpClient: HttpClient, authProvider: AuthProvider) {
+    constructor(httpClient: HttpClient, userStateAccess: UserStateAccess) {
         this.httpClient = httpClient;
-        this.authProvider = authProvider;
+        this.userStateAccess = userStateAccess;
     }
 
 
@@ -53,7 +53,7 @@ export class UserApi {
                     password: password,
                 },
                 requireAuth: true,
-                token: this.authProvider.getToken()
+                token: this.userStateAccess.getToken()
             })
             .then(() => undefined);
     }

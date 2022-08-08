@@ -1,23 +1,22 @@
-import {CommandCreateCity} from "../../models/commandCreateCity";
-import {CommandPlaceMarker} from "../../models/commandPlaceMarker";
-import {AuthProvider} from "../state/user/authProvider";
+import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../models/state/command";
+import {UserStateAccess} from "../../state/user/userStateAccess";
 import {MessageHandler} from "./messageHandler";
 import {WebsocketClient} from "./websocketClient";
 
 export class GameMessagingApi {
 
     private readonly websocketClient: WebsocketClient;
-    private readonly authProvider: AuthProvider;
+    private readonly userStateAccess: UserStateAccess;
     private readonly messageHandler: MessageHandler;
 
-    constructor(websocketClient: WebsocketClient, authProvider: AuthProvider, messageHandler: MessageHandler) {
+    constructor(websocketClient: WebsocketClient, userStateAccess: UserStateAccess, messageHandler: MessageHandler) {
         this.websocketClient = websocketClient;
-        this.authProvider = authProvider;
+        this.userStateAccess = userStateAccess;
         this.messageHandler = messageHandler;
     }
 
     open(gameId: string): Promise<void> {
-        return this.websocketClient.open(`/api/game/${gameId}?token=${this.authProvider.getToken()}`, message => {
+        return this.websocketClient.open(`/api/game/${gameId}?token=${this.userStateAccess.getToken()}`, message => {
             this.messageHandler.onMessage(message.type, message.payload);
         });
     }
@@ -26,21 +25,23 @@ export class GameMessagingApi {
         this.websocketClient.close();
     }
 
-    sendSubmitTurn(commands: (CommandPlaceMarker | CommandCreateCity)[]): void {
+    sendSubmitTurn(commands: Command[]): void {
         this.websocketClient.send("submit-turn", {
                 commands: commands.map(cmd => {
                     if (cmd.commandType === "place-marker") {
+                        const cmdPlaceMarker = cmd as CommandPlaceMarker
                         return {
                             type: "place-marker",
-                            q: cmd.q,
-                            r: cmd.r,
+                            q: cmdPlaceMarker.q,
+                            r: cmdPlaceMarker.r,
                         };
                     }
                     if (cmd.commandType === "create-city") {
+                        const cmdCreateCity = cmd as CommandCreateCity
                         return {
                             type: "create-city",
-                            q: cmd.q,
-                            r: cmd.r,
+                            q: cmdCreateCity.q,
+                            r: cmdCreateCity.r,
                         };
                     }
                     return undefined;

@@ -1,6 +1,6 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
-import {WorldStateAccess} from "../../../external/state/world/worldStateAccess";
-import {Tile} from "../../../models/tile";
+import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
+import {Tile} from "../../../models/state/tile";
 import {GameCanvasHandle} from "../gameCanvasHandle";
 import {Camera} from "../rendering/utils/camera";
 import {mat3} from "../rendering/utils/mat3";
@@ -8,14 +8,14 @@ import {TilemapUtils} from "./tilemapUtils";
 
 export class TilePicker {
 
-    private readonly worldStateAccess: WorldStateAccess;
     private readonly gameStateAccess: GameStateAccess;
+    private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly canvasHandle: GameCanvasHandle;
 
 
-    constructor(gameStateAccess: GameStateAccess, worldStateAccess: WorldStateAccess, canvasHandle: GameCanvasHandle) {
+    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess, canvasHandle: GameCanvasHandle) {
+        this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
-        this.worldStateAccess = worldStateAccess;
         this.canvasHandle = canvasHandle;
     }
 
@@ -24,7 +24,7 @@ export class TilePicker {
         const mouseClipPos = this.toClipSpace(x, y);
         const viewProjMatrix = this.cameraMatrix();
         const hexPos = TilePicker.toHexPos(viewProjMatrix, mouseClipPos);
-        const tile = this.worldStateAccess.getTile(hexPos[0], hexPos[1]);
+        const tile = this.gameStateAccess.getTileAt(hexPos[0], hexPos[1]);
         return tile ? tile : null;
     }
 
@@ -40,7 +40,7 @@ export class TilePicker {
 
 
     private cameraMatrix(): Float32Array {
-        const cameraState = this.gameStateAccess.getCamera();
+        const cameraState = this.localGameStateAccess.getCamera();
         const camera = new Camera();
         camera.setPosition(cameraState.x, cameraState.y);
         camera.setZoom(cameraState.zoom);

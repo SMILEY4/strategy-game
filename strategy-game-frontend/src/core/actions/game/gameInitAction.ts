@@ -1,6 +1,9 @@
 import {GameCanvasHandle} from "../../service/gameCanvasHandle";
 import {Renderer} from "../../service/rendering/renderer";
 
+/**
+ * Initialized the game when entering the page
+ */
 export class GameInitAction {
 
     private readonly canvasHandle: GameCanvasHandle;
@@ -12,7 +15,7 @@ export class GameInitAction {
     }
 
     perform(canvas: HTMLCanvasElement): void {
-        console.debug("Initializing game")
+        console.log("initializing game")
         this.canvasHandle.set(canvas);
         this.renderer.initialize();
     }

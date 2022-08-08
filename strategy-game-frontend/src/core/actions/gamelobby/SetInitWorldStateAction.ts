@@ -1,7 +1,7 @@
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {MsgMarkerTileContent} from "../../../models/messaging/messagingTileContent";
-import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
+import {PayloadInitGameState} from "../../../models/messaging/payloadInitGameState";
 import {City} from "../../../models/state/city";
 import {GameState} from "../../../models/state/gameState";
 import {Marker} from "../../../models/state/marker";
@@ -9,9 +9,9 @@ import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
 
 /**
- * Update the world/game state after a resolved turn
+ * Set the initial world/game state
  */
-export class TurnUpdateWorldStateAction {
+export class SetInitWorldStateAction {
 
     private readonly gameStateAccess: LocalGameStateAccess;
     private readonly worldStateAccess: GameStateAccess;
@@ -21,8 +21,8 @@ export class TurnUpdateWorldStateAction {
         this.worldStateAccess = worldStateAccess;
     }
 
-    perform(state: PayloadInitTurnState): void {
-        console.log("update world state")
+    perform(state: PayloadInitGameState): void {
+        console.log("set initial game state")
 
         const markers: Marker[] = [];
         const cities: City[] = [];
@@ -50,7 +50,6 @@ export class TurnUpdateWorldStateAction {
             return tile;
         });
 
-        this.gameStateAccess.clearCommands();
         this.worldStateAccess.setTiles(tiles);
         this.worldStateAccess.setMarkers(markers);
         this.worldStateAccess.setCities(cities);

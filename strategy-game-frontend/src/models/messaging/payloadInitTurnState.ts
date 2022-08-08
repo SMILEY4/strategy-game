@@ -1,13 +1,13 @@
-export interface InitialWorldStateMessagePayload {
+import {MsgTileContent} from "./messagingTileContent";
+
+export interface PayloadInitTurnState {
     game: {
         game: {
-            _key: string,
             turn: number,
             players: any,
-        },
+        }
         countries: any,
         tiles: ({
-            _key: string,
             gameId: string,
             position: {
                 q: number,
@@ -16,23 +16,16 @@ export interface InitialWorldStateMessagePayload {
             data: {
                 terrainType: string
             },
-            content: TileContent[]
+            content: MsgTileContent[]
         })[],
         cities: ({
-            _key: string,
             gameId: string,
             tileId: string
         })[]
-    };
-}
 
-export interface TileContent {
-    type: "city" | "marker";
-}
-
-export interface CityTileContent extends TileContent {
-}
-
-export interface MarkerTileContent extends TileContent {
-    countryId: string;
+    },
+    errors: ({
+        errorMessage: string,
+        command: any
+    })[]
 }

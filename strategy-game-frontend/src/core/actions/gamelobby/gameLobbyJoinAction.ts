@@ -1,5 +1,8 @@
-import {GameApi} from "../../../external/api/gameApi";
+import {GameApi} from "../../../external/api/http/gameApi";
 
+/**
+ * Join a game as a player (dont connect yet)
+ */
 export class GameLobbyJoinAction {
 
     private readonly gameApi: GameApi;
@@ -9,7 +12,7 @@ export class GameLobbyJoinAction {
     }
 
     perform(gameId: string): Promise<void> {
-        console.debug("Joining game-lobby")
+        console.debug("Joining game", gameId)
         return this.gameApi.join(gameId);
     }
 

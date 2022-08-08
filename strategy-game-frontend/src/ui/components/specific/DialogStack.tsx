@@ -1,10 +1,10 @@
 import {ReactElement} from "react";
-import {Hooks} from "../../../core/hooks";
+import {UiStateHooks} from "../../../external/state/ui/uiStateHooks";
 import {Dialog} from "./Dialog";
 import "./dialogStack.css";
 
 export function DialogStack(): ReactElement {
-    const dialogs = Hooks.useDialogs();
+    const dialogs = UiStateHooks.useDialogs();
     return (
         <div className="dialog-stack">
             {dialogs.map(data => (

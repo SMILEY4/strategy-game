@@ -1,6 +1,7 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
-import {WorldStateAccess} from "../../../external/state/world/worldStateAccess";
+import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {GameCanvasHandle} from "../gameCanvasHandle";
+import {CityRenderer} from "./cities/cityRenderer";
 import {MarkerRenderer} from "./markers/markerRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {Camera} from "./utils/camera";
@@ -9,24 +10,27 @@ export class Renderer {
 
     private readonly canvasHandle: GameCanvasHandle;
 
+    private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly gameStateAccess: GameStateAccess;
-    private readonly worldStateAccess: WorldStateAccess;
 
     private readonly tilemapRenderer: TilemapRenderer;
     private readonly markerRenderer: MarkerRenderer;
+    private readonly cityRenderer: CityRenderer;
 
-    constructor(canvasHandle: GameCanvasHandle, gameStateAccess: GameStateAccess, worldStateAccess: WorldStateAccess) {
+    constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
         this.canvasHandle = canvasHandle;
+        this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
-        this.worldStateAccess = worldStateAccess;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle);
         this.markerRenderer = new MarkerRenderer(canvasHandle);
+        this.cityRenderer = new CityRenderer(canvasHandle);
     }
 
 
     public initialize(): void {
         this.tilemapRenderer.initialize();
         this.markerRenderer.initialize();
+        this.cityRenderer.initialize();
     }
 
 
@@ -39,23 +43,29 @@ export class Renderer {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const camera = this.createCamera();
-        const map = this.worldStateAccess.getTiles();
-        const tileMouseOver = this.gameStateAccess.getTileMouseOver();
-        const tileSelected = this.gameStateAccess.getTileSelected();
+        const map = this.gameStateAccess.getTiles();
+        const tileMouseOver = this.localGameStateAccess.getMouseOverTile();
+        const tileSelected = this.localGameStateAccess.getSelectedTile();
 
         this.tilemapRenderer.render(
             camera,
             map,
-            tileMouseOver ? tileMouseOver : [9999, 9999],
-            tileSelected ? tileSelected : [9999, 9999]
+            tileMouseOver,
+            tileSelected
         );
 
         this.markerRenderer.render(
             camera,
-            this.worldStateAccess.getMarkers(),
-            this.worldStateAccess.getCities(),
-            this.gameStateAccess.getCommands()
+            this.gameStateAccess.getMarkers(),
+            this.localGameStateAccess.getCommands()
         );
+
+        this.cityRenderer.render(
+            camera,
+            this.gameStateAccess.getCities(),
+            this.localGameStateAccess.getCommands()
+        );
+
     }
 
 
@@ -68,7 +78,7 @@ export class Renderer {
 
 
     private createCamera(): Camera {
-        const camState = this.gameStateAccess.getCamera();
+        const camState = this.localGameStateAccess.getCamera();
         const camera = new Camera();
         camera.setPosition(camState.x, camState.y);
         camera.setZoom(camState.zoom);
@@ -80,6 +90,7 @@ export class Renderer {
     public dispose(): void {
         this.tilemapRenderer.dispose();
         this.markerRenderer.dispose();
+        this.cityRenderer.dispose()
     }
 
 }

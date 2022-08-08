@@ -1,11 +1,11 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import {AiOutlineClose} from "react-icons/ai";
 import {BsPinAngle, BsTextareaResize} from "react-icons/bs";
-import {Hooks} from "../../../core/hooks";
+import {UiStateHooks} from "../../../external/state/ui/uiStateHooks";
 import {DialogData} from "../../../external/state/ui/uiStore";
-import "./dialog.css";
 import {useDraggable} from "../primitives/useDraggable";
 import {useStateRef} from "../primitives/useStateRef";
+import "./dialog.css";
 
 
 export function Dialog(props: { data: DialogData }): ReactElement {
@@ -15,8 +15,8 @@ export function Dialog(props: { data: DialogData }): ReactElement {
     const [width, widthRef, setWidth] = useStateRef(props.data.width);
     const [height, heightRef, setHeight] = useStateRef(props.data.height);
 
-    const closeDialog = Hooks.useCloseDialog(props.data.windowId);
-    const pinDialog = Hooks.usePinDialog(props.data.windowId);
+    const closeDialog = UiStateHooks.useCloseDialog(props.data.windowId);
+    const pinDialog = UiStateHooks.usePinDialog(props.data.windowId);
 
     const [dialogDragRef, onDragMouseDown] = useDraggable(canDragDialog, onDragDialog);
     const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResizeDialog, onResizeDialog);

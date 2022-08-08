@@ -1,15 +1,21 @@
-import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
+import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 
+/**
+ * Handles a mouse-scroll
+ */
 export class GameInputMouseScrollAction {
 
-    private readonly gameStateAccess: GameStateAccess;
+    private readonly gameStateAccess: LocalGameStateAccess;
 
-    constructor(gameStateAccess: GameStateAccess) {
+    constructor(gameStateAccess: LocalGameStateAccess) {
         this.gameStateAccess = gameStateAccess;
     }
 
     perform(d: number): void {
-        this.gameStateAccess.zoomCamera(d > 0 ? 0.1 : -0.1);
+        const dz = d > 0 ? 0.1 : -0.1
+        const camera = this.gameStateAccess.getCamera()
+        const zoom = Math.max(0.01, camera.zoom - dz)
+        this.gameStateAccess.setCameraZoom(zoom);
     }
 
 }

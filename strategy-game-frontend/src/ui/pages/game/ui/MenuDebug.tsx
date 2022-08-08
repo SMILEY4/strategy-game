@@ -1,10 +1,10 @@
 import {ReactElement} from "react";
 import {CgDebug} from "react-icons/cg";
-import {Hooks} from "../../../../core/hooks";
+import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {AppConfig} from "../../../../main";
 
 export function CategoryDebug(): ReactElement {
-    const open = Hooks.useOpenPrimaryMenuDialog(<MenuDebug/>);
+    const open = UiStateHooks.useOpenPrimaryMenuDialog(<MenuDebug/>);
     return (
         <div onClick={open}>
             <CgDebug/>
@@ -15,7 +15,7 @@ export function CategoryDebug(): ReactElement {
 
 export function MenuDebug(): ReactElement {
 
-    const repositionDialogs = Hooks.useRepositionDialogs();
+    const repositionDialogs = UiStateHooks.useRepositionDialogs();
 
     function debugLooseContext() {
         AppConfig.debugLooseWebglContext();

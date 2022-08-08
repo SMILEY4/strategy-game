@@ -1,83 +1,44 @@
 import create, {SetState} from "zustand";
-import {CameraState} from "../../../models/cameraState";
-import {CommandCreateCity} from "../../../models/commandCreateCity";
-import {CommandPlaceMarker} from "../../../models/commandPlaceMarker";
+import {City} from "../../../models/state/city";
+import {Marker} from "../../../models/state/marker";
+import {Tile} from "../../../models/state/tile";
 
 export namespace GameStore {
 
     interface StateValues {
-        gameId: null | string
-        currentState: "idle" | "loading" | "active",
-        turnState: "active" | "submitted",
-        playerCommands: (CommandPlaceMarker | CommandCreateCity)[],
-        camera: CameraState,
-        tileMouseOver: null | [number, number],
-        tileSelected: null | [number, number]
+        currentTurn: number
+        map: Tile[],
+        markers: Marker[],
+        cities: City[]
     }
 
     const initialStateValues: StateValues = {
-        gameId: null,
-        currentState: "idle",
-        playerCommands: [],
-        turnState: "active",
-        camera: {
-            x: 0,
-            y: 0,
-            zoom: 1
-        },
-        tileMouseOver: null,
-        tileSelected: null
+        currentTurn: 0,
+        map: [],
+        markers: [],
+        cities: []
     };
 
     interface StateActions {
-        setLoading: (gameId: string) => void;
-        setCurrentState: (state: "idle" | "loading" | "active") => void;
-        setTurnState: (state: "active" | "submitted") => void;
-        addCommand: (command: CommandPlaceMarker | CommandCreateCity) => void;
-        clearCommands: () => void;
-        moveCamera: (dx: number, dy: number) => void;
-        setTileMouseOver: (pos: [number, number] | null) => void;
-        setTileSelected: (pos: [number, number] | null) => void;
-        zoomCamera: (d: number) => void;
+        setCurrentTurn: (turn: number) => void
+        setTiles: (tiles: Tile[]) => void
+        setMarkers: (markers: Marker[]) => void
+        setCities: (cities: City[]) => void
     }
 
     function stateActions(set: SetState<State>): StateActions {
         return {
-            setLoading: (gameId: string) => set(() => ({
-                gameId: gameId,
-                currentState: "loading"
+            setCurrentTurn: (turn: number) => set(() => ({
+                currentTurn: turn,
             })),
-            setCurrentState: (state: "idle" | "loading" | "active") => set(() => ({
-                currentState: state
+            setTiles: (tiles: Tile[]) => set(() => ({
+                map: tiles,
             })),
-            setTurnState: (state: "active" | "submitted") => set(() => ({
-                turnState: state,
+            setMarkers: (markers: Marker[]) => set(() => ({
+                markers: markers,
             })),
-            addCommand: (command: CommandPlaceMarker | CommandCreateCity) => set(prev => ({
-                playerCommands: [...prev.playerCommands, command],
-            })),
-            clearCommands: () => set(() => ({
-                playerCommands: []
-            })),
-            moveCamera: (dx: number, dy: number) => set(prev => ({
-                camera: {
-                    x: prev.camera.x + (dx) / prev.camera.zoom,
-                    y: prev.camera.y - (dy) / prev.camera.zoom,
-                    zoom: prev.camera.zoom
-                }
-            })),
-            setTileMouseOver: (pos: [number, number] | null) => set(() => ({
-                tileMouseOver: pos
-            })),
-            setTileSelected: (pos: [number, number] | null) => set(() => ({
-                tileSelected: pos
-            })),
-            zoomCamera: (d: number) => set(prev => ({
-                camera: {
-                    x: prev.camera.x,
-                    y: prev.camera.y,
-                    zoom: Math.max(0.01, prev.camera.zoom - d)
-                }
+            setCities: (cities: City[]) => set(() => ({
+                cities: cities,
             })),
         };
     }
