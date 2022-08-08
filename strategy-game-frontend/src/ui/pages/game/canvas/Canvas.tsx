@@ -9,7 +9,7 @@ export function Canvas() {
     const animationId = useRef<number>();
     const hasContext = useRef<boolean>(true);
     const mouseDownInCanvas = useRef<boolean>(false);
-
+    const timestampMouseDown = useRef<number>(0);
 
     useEffect(() => {
         if (canvasRef.current) {
@@ -81,10 +81,13 @@ export function Canvas() {
 
     function mouseDown(e: MouseEvent) {
         mouseDownInCanvas.current = true;
+        timestampMouseDown.current = Date.now();
     }
 
     function mouseUp(e: MouseEvent) {
         mouseDownInCanvas.current = false;
+        click(Date.now() - timestampMouseDown.current, e);
+        timestampMouseDown.current = 0;
     }
 
     function mouseLeave(e: MouseEvent) {
@@ -95,8 +98,10 @@ export function Canvas() {
         AppConfig.gameInputMouseScroll.perform(e.deltaY);
     }
 
-    function click(e: MouseEvent) {
-        AppConfig.gameInputClick.perform(e.clientX, e.clientY);
+    function click(duration: number, e: MouseEvent) {
+        if (duration < 150) {
+            AppConfig.gameInputClick.perform(e.clientX, e.clientY);
+        }
     }
 
     function onInitialize(canvas: HTMLCanvasElement) {
@@ -118,7 +123,6 @@ export function Canvas() {
             onMouseDown={mouseDown}
             onMouseUp={mouseUp}
             onWheel={scroll}
-            onClick={click}
             onMouseLeave={mouseLeave}
         >
             <canvas ref={canvasRef}/>
