@@ -37,7 +37,7 @@ export class GameApi {
     list(): Promise<string[]> {
         return this.httpClient
             .get({
-                url: "/api/game/list/",
+                url: "/api/game/list",
                 requireAuth: true,
                 token: this.userStateAccess.getToken()
             })
