@@ -1,5 +1,8 @@
 import {UserStateAccess} from "../../../external/state/user/userStateAccess";
 
+/**
+ * Log out
+ */
 export class UserLogOutAction {
 
     private readonly userStateAccess: UserStateAccess;

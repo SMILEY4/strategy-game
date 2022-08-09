@@ -1,7 +1,10 @@
-import {UserApi} from "../../../external/api/userApi";
+import {UserApi} from "../../../external/api/http/userApi";
 import {UserStateAccess} from "../../../external/state/user/userStateAccess";
 import {AuthData} from "../../../models/authData";
 
+/**
+ * Login
+ */
 export class UserLoginAction {
 
     private readonly userApi: UserApi;

@@ -1,16 +1,17 @@
 import {ReactElement} from "react";
-import {Hooks} from "../../../../core/hooks";
+import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {AppConfig} from "../../../../main";
+import {Command} from "../../../../models/state/command";
 
 
 export function MenuSelectedTile(): ReactElement {
-    const selectedTile = Hooks.useSelectedTile();
+    const selectedTile = LocalGameStateHooks.useSelectedTile();
     return (
         <div>
             <h3>Selected Tile</h3>
             <ul>
-                {selectedTile && <li>{"q: " + selectedTile[0]}</li>}
-                {selectedTile && <li>{"r: " + selectedTile[1]}</li>}
+                {selectedTile && <li>{"q: " + selectedTile.q}</li>}
+                {selectedTile && <li>{"r: " + selectedTile.r}</li>}
                 {!selectedTile && <li>no tile selected</li>}
             </ul>
             <button onClick={placeMarker} disabled={false}>Place Marker</button>
@@ -22,9 +23,9 @@ export function MenuSelectedTile(): ReactElement {
         if (selectedTile) {
             AppConfig.turnAddCommand.perform({
                 commandType: "place-marker",
-                q: selectedTile[0],
-                r: selectedTile[1]
-            });
+                q: selectedTile.q,
+                r: selectedTile.r
+            } as Command);
         }
     }
 
@@ -32,9 +33,9 @@ export function MenuSelectedTile(): ReactElement {
         if (selectedTile) {
             AppConfig.turnAddCommand.perform({
                 commandType: "create-city",
-                q: selectedTile[0],
-                r: selectedTile[1]
-            });
+                q: selectedTile.q,
+                r: selectedTile.r
+            } as Command);
         }
     }
 

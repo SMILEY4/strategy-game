@@ -1,76 +1,50 @@
-import {CameraState} from "../../../models/cameraState";
-import {CommandCreateCity} from "../../../models/commandCreateCity";
-import {CommandPlaceMarker} from "../../../models/commandPlaceMarker";
+import {City} from "../../../models/state/city";
+import {Country} from "../../../models/state/country";
+import {Marker} from "../../../models/state/marker";
+import {Tile} from "../../../models/state/tile";
 import {GameStore} from "./gameStore";
 
 export class GameStateAccess {
 
-    setLoading(gameId: string): void {
-        GameStore.useState.getState().setLoading(gameId);
+    setCurrentTurn(turn: number): void {
+        GameStore.useState.getState().setCurrentTurn(turn);
     }
 
-    getCurrentState(): "idle" | "loading" | "active" {
-        return GameStore.useState.getState().currentState;
+    getCountries(): Country[] {
+        return GameStore.useState.getState().countries;
     }
 
-    setCurrentState(state: "idle" | "loading" | "active"): void {
-        return GameStore.useState.getState().setCurrentState(state);
+    setCountries(countries: Country[]): void {
+        GameStore.useState.getState().setCountries(countries);
     }
 
-    getCommands(): (CommandPlaceMarker | CommandCreateCity)[] {
-        return GameStore.useState.getState().playerCommands;
+    getTileAt(q: number, r: number): Tile | null {
+        const tile = GameStore.useState.getState().map.find(t => t.position.q === q && t.position.r === r);
+        return tile ? tile : null;
     }
 
-    addCommand(command: CommandPlaceMarker | CommandCreateCity): void {
-        GameStore.useState.getState().addCommand(command);
+    getTiles(): Tile[] {
+        return GameStore.useState.getState().map;
     }
 
-    clearCommands(): void {
-        GameStore.useState.getState().clearCommands();
+    setTiles(tiles: Tile[]): void {
+        GameStore.useState.getState().setTiles(tiles);
     }
 
-    setTurnState(state: "active" | "submitted"): void {
-        GameStore.useState.getState().setTurnState(state);
+    getMarkers(): Marker[] {
+        return GameStore.useState.getState().markers;
     }
 
-    getTurnState(): "active" | "submitted" {
-        return GameStore.useState.getState().turnState;
+    setMarkers(markers: Marker[]): void {
+        GameStore.useState.getState().setMarkers(markers);
     }
 
-    moveCamera(dx: number, dy: number): void {
-        GameStore.useState.getState().moveCamera(dx, dy);
+    getCities(): City[] {
+        return GameStore.useState.getState().cities;
     }
 
-    zoomCamera(d: number): void {
-        GameStore.useState.getState().zoomCamera(d);
-    }
-
-    getCamera(): CameraState {
-        return GameStore.useState.getState().camera;
-    }
-
-    setTileMouseOver(q: number, r: number): void {
-        GameStore.useState.getState().setTileMouseOver([q, r]);
-    }
-
-    clearTileMouseOver(): void {
-        GameStore.useState.getState().setTileMouseOver(null);
-    }
-
-    getTileMouseOver(): [number, number] | null {
-        return GameStore.useState.getState().tileMouseOver;
-    }
-
-    setTileSelected(q: number, r: number): void {
-        GameStore.useState.getState().setTileSelected([q, r]);
-    }
-
-    clearTileSelected(): void {
-        GameStore.useState.getState().setTileSelected(null);
-    }
-
-    getTileSelected(): [number, number] | null {
-        return GameStore.useState.getState().tileSelected;
+    setCities(cities: City[]): void {
+        GameStore.useState.getState().setCities(cities);
     }
 
 }

@@ -8,6 +8,8 @@ export function Canvas() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const animationId = useRef<number>();
     const hasContext = useRef<boolean>(true);
+    const mouseDownInCanvas = useRef<boolean>(false);
+    const timestampMouseDown = useRef<number>(0);
 
     useEffect(() => {
         if (canvasRef.current) {
@@ -26,13 +28,13 @@ export function Canvas() {
     }, []);
 
     function handleContextLoss(e: any) {
-        console.log("Detected webgl-context loss")
+        console.log("Detected webgl-context loss");
         e.preventDefault();
         hasContext.current = false;
     }
 
     function handleContextRestored() {
-        console.log("Detected webgl-context restore")
+        console.log("Detected webgl-context restore");
         hasContext.current = true;
         canvasRef.current && initialize(canvasRef.current);
     }
@@ -73,16 +75,33 @@ export function Canvas() {
             e.movementY,
             e.clientX,
             e.clientY,
-            e.buttons === 1
+            e.buttons === 1 && mouseDownInCanvas.current
         );
+    }
+
+    function mouseDown(e: MouseEvent) {
+        mouseDownInCanvas.current = true;
+        timestampMouseDown.current = Date.now();
+    }
+
+    function mouseUp(e: MouseEvent) {
+        mouseDownInCanvas.current = false;
+        click(Date.now() - timestampMouseDown.current, e);
+        timestampMouseDown.current = 0;
+    }
+
+    function mouseLeave(e: MouseEvent) {
+        mouseDownInCanvas.current = false;
     }
 
     function scroll(e: WheelEvent) {
         AppConfig.gameInputMouseScroll.perform(e.deltaY);
     }
 
-    function click(e: MouseEvent) {
-        AppConfig.gameInputClick.perform(e.clientX, e.clientY);
+    function click(duration: number, e: MouseEvent) {
+        if (duration < 150) {
+            AppConfig.gameInputClick.perform(e.clientX, e.clientY);
+        }
     }
 
     function onInitialize(canvas: HTMLCanvasElement) {
@@ -98,7 +117,14 @@ export function Canvas() {
     }
 
     return (
-        <div className="game-canvas" onMouseMove={mouseMove} onWheel={scroll} onClick={click}>
+        <div
+            className="game-canvas"
+            onMouseMove={mouseMove}
+            onMouseDown={mouseDown}
+            onMouseUp={mouseUp}
+            onWheel={scroll}
+            onMouseLeave={mouseLeave}
+        >
             <canvas ref={canvasRef}/>
         </div>
     );

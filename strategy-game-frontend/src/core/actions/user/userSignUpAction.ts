@@ -1,5 +1,8 @@
-import {UserApi} from "../../../external/api/userApi";
+import {UserApi} from "../../../external/api/http/userApi";
 
+/**
+ * Create a new account
+ */
 export class UserSignUpAction {
 
     private readonly userApi: UserApi;

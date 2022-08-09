@@ -27,7 +27,7 @@ npm run test
 
 # Architecture
 
-![Architecture Overview](https://g.gravizo.com/g?digraph G{subgraph cluster_0{label="CORE";actions;hooks;rendering;}subgraph cluster_1{label="EXTERNAL"clients;state;stateAccess;}subgraph cluster_3{label="UI"uiComponents;}rendering->stateAccess;actions->stateAccess;actions->clients;hooks->stateAccess[dir=both];hooks->actions;clients->actions;stateAccess->state;uiComponents->hooks[dir=both];uiComponents->actions;})
+![Architecture Overview](https://g.gravizo.com/g?digraph digraphG{uiComponents->stateHooks;uiComponents->actions;stateAccess->state;stateHooks->state;clients->actions;actions->clients;clients->stateAccess;rendering->stateAccess;actions->stateAccess;rendering[style=filled,color="lightblue"];actions[style=filled,color="lightblue"];clients[style=filled,color="palegreen1"];state[style=filled,color="palegreen1"];stateAccess[style=filled,color="palegreen1"];stateHooks[style=filled,color="palegreen1"];uiComponents[style=filled,color="lightcoral"];})
 
 
 ## File/Directory Structure

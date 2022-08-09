@@ -1,6 +1,9 @@
 import {GameCanvasHandle} from "../../service/gameCanvasHandle";
 import {Renderer} from "../../service/rendering/renderer";
 
+/**
+ * Clean up the game when leaving the page
+ */
 export class GameDisposeAction {
 
     private readonly canvasHandle: GameCanvasHandle;
@@ -12,7 +15,7 @@ export class GameDisposeAction {
     }
 
     perform(): void {
-        console.debug("Disposing game")
+        console.log("disposing game")
         this.canvasHandle.set(null);
         this.renderer.dispose();
     }

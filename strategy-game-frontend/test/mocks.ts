@@ -1,10 +1,10 @@
 import {TilePicker} from "../src/core/service/tilemap/tilePicker";
-import {GameApi} from "../src/external/api/gameApi";
-import {GameMessagingApi} from "../src/external/api/gameMessagingApi";
-import {UserApi} from "../src/external/api/userApi";
-import {GameStateAccess} from "../src/external/state/game/gameStateAccess";
+import {GameApi} from "../src/external/api/http/gameApi";
+import {GameMessagingApi} from "../src/external/api/messaging/gameMessagingApi";
+import {UserApi} from "../src/external/api/http/userApi";
+import {LocalGameStateAccess} from "../src/external/state/localgame/gameStateAccess";
 import {UserStateAccess} from "../src/external/state/user/userStateAccess";
-import {WorldStateAccess} from "../src/external/state/world/worldStateAccess";
+import {GameStateAccess} from "../src/external/state/game/worldStateAccess";
 
 export function mockUserApi(): UserApi {
     const userApi = {} as UserApi;
@@ -37,8 +37,8 @@ export function mockGameMessagingApi(): GameMessagingApi {
     return gameMsgApi;
 }
 
-export function mockGameStateAccess(): GameStateAccess {
-    const gameStateAccess = {} as GameStateAccess;
+export function mockGameStateAccess(): LocalGameStateAccess {
+    const gameStateAccess = {} as LocalGameStateAccess;
     gameStateAccess["setLoading"] = jest.fn().mockReturnValue(undefined);
     gameStateAccess["getCurrentState"] = jest.fn().mockReturnValue(undefined);
     gameStateAccess["setCurrentState"] = jest.fn().mockReturnValue(undefined);
@@ -56,9 +56,9 @@ export function mockGameStateAccess(): GameStateAccess {
     return gameStateAccess;
 }
 
-export function mockWorldStateAccess(): WorldStateAccess {
-    const worldStateAccess = {} as WorldStateAccess;
-    worldStateAccess["getTile"] = jest.fn().mockReturnValue(undefined);
+export function mockWorldStateAccess(): GameStateAccess {
+    const worldStateAccess = {} as GameStateAccess;
+    worldStateAccess["getTileAt"] = jest.fn().mockReturnValue(undefined);
     worldStateAccess["getTiles"] = jest.fn().mockReturnValue(undefined);
     worldStateAccess["setTiles"] = jest.fn().mockReturnValue(undefined);
     worldStateAccess["getMarkers"] = jest.fn().mockReturnValue(undefined);

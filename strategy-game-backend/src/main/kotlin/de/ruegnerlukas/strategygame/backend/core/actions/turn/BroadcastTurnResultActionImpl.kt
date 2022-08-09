@@ -21,7 +21,7 @@ class BroadcastTurnResultActionImpl(
 		return either {
 			val game = findGame(gameId).bind()
 			val connectionIds = getConnectionIds(game)
-			sendGameStateMessages(connectionIds, game)
+			sendGameStateMessages(connectionIds, game, errors)
 		}
 	}
 
@@ -47,9 +47,9 @@ class BroadcastTurnResultActionImpl(
 	/**
 	 * Send the new game-state to the connected players
 	 */
-	private suspend fun sendGameStateMessages(connectionIds: List<Int>, game: GameExtendedEntity) {
+	private suspend fun sendGameStateMessages(connectionIds: List<Int>, game: GameExtendedEntity, errors: List<CommandResolutionError>) {
 		connectionIds.forEach { connectionId ->
-			messageProducer.sendWorldState(connectionId, game)
+			messageProducer.sendTurnResult(connectionId, game, errors)
 		}
 	}
 

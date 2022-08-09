@@ -1,9 +1,9 @@
 import {ReactElement} from "react";
 import {GrStatusUnknown} from "react-icons/gr";
-import {Hooks} from "../../../../core/hooks";
+import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 
 export function CategoryOther(): ReactElement {
-    const open = Hooks.useOpenPrimaryMenuDialog(<MenuOther/>);
+    const open = UiStateHooks.useOpenPrimaryMenuDialog(<MenuOther/>);
     return (
         <div onClick={open}>
             <GrStatusUnknown/>

@@ -1,41 +1,77 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
-import {WorldStateAccess} from "../../../external/state/world/worldStateAccess";
+import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
+import {MsgMarkerTileContent} from "../../../models/messaging/messagingTileContent";
+import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
+import {City} from "../../../models/state/city";
+import {ALL_COUNTRY_COLORS, Country, CountryColor} from "../../../models/state/country";
+import {GameState} from "../../../models/state/gameState";
+import {Marker} from "../../../models/state/marker";
+import {TerrainType} from "../../../models/state/terrainType";
+import {Tile} from "../../../models/state/tile";
 
+/**
+ * Update the world/game state after a resolved turn
+ */
 export class TurnUpdateWorldStateAction {
 
+    private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly gameStateAccess: GameStateAccess;
-    private readonly worldStateAccess: WorldStateAccess;
 
-    constructor(gameStateAccess: GameStateAccess, worldStateAccess: WorldStateAccess) {
+    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
+        this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
-        this.worldStateAccess = worldStateAccess;
     }
 
-    perform(
-        tiles: ({
-            q: number,
-            r: number,
-            tileId: number
-        })[],
-        markers: ({
-            q: number,
-            r: number,
-            userId: string
-        })[],
-        cities: ({
-            q: number,
-            r: number,
-        })[]
-    ): void {
-        console.debug("Updating world state")
-        if(this.gameStateAccess.getCurrentState() !== "active") {
-            this.gameStateAccess.setCurrentState("active")
-        }
-        this.worldStateAccess.setMarkers(markers);
-        this.worldStateAccess.setTiles(tiles);
-        this.worldStateAccess.setCities(cities);
-        this.gameStateAccess.setTurnState("active");
-        this.gameStateAccess.clearCommands();
+    perform(state: PayloadInitTurnState): void {
+        console.log("update world state");
+
+        const markers: Marker[] = [];
+        const cities: City[] = [];
+        const tiles: Tile[] = state.game.tiles.map(t => {
+            const tile: Tile = {
+                position: {
+                    q: t.position.q,
+                    r: t.position.r
+                },
+                terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER
+            };
+            t.content.forEach(c => {
+                if (c.type === "city") {
+                    cities.push({
+                        tile: tile
+                    });
+                }
+                if (c.type === "marker") {
+                    markers.push({
+                        tile: tile,
+                        countryId: (c as MsgMarkerTileContent).countryId
+                    });
+                }
+            });
+            return tile;
+        });
+
+        const countryColors = state.game.countries
+            .map(c => c._key)
+            .sort()
+            .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
+
+        const countries: Country[] = state.game.countries.map(country => ({
+            countryId: country._key,
+            userId: country.userId,
+            resources: {
+                money: country.resources.money
+            },
+            color: (countryColors.find(e => e[0] === country._key)!!)[1] as CountryColor
+        }));
+
+        this.gameStateAccess.setCountries(countries);
+        this.gameStateAccess.setTiles(tiles);
+        this.gameStateAccess.setMarkers(markers);
+        this.gameStateAccess.setCities(cities);
+        this.gameStateAccess.setCurrentTurn(state.game.game.turn);
+        this.localGameStateAccess.clearCommands();
+        this.localGameStateAccess.setCurrentState(GameState.PLAYING);
     }
 
 }

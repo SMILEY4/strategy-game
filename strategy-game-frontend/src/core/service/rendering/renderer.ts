@@ -1,32 +1,33 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
-import {WorldStateAccess} from "../../../external/state/world/worldStateAccess";
+import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {GameCanvasHandle} from "../gameCanvasHandle";
-import {MarkerRenderer} from "./markers/markerRenderer";
+import {TileContentRenderer} from "./tilecontent/tileContentRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {Camera} from "./utils/camera";
+import {glErrorToString} from "./utils/webglErrors";
 
 export class Renderer {
 
     private readonly canvasHandle: GameCanvasHandle;
 
+    private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly gameStateAccess: GameStateAccess;
-    private readonly worldStateAccess: WorldStateAccess;
 
     private readonly tilemapRenderer: TilemapRenderer;
-    private readonly markerRenderer: MarkerRenderer;
+    private readonly tileContentRenderer: TileContentRenderer
 
-    constructor(canvasHandle: GameCanvasHandle, gameStateAccess: GameStateAccess, worldStateAccess: WorldStateAccess) {
+    constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
         this.canvasHandle = canvasHandle;
+        this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
-        this.worldStateAccess = worldStateAccess;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle);
-        this.markerRenderer = new MarkerRenderer(canvasHandle);
+        this.tileContentRenderer = new TileContentRenderer(canvasHandle)
     }
 
 
     public initialize(): void {
         this.tilemapRenderer.initialize();
-        this.markerRenderer.initialize();
+        this.tileContentRenderer.initialize()
     }
 
 
@@ -37,38 +38,42 @@ export class Renderer {
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.enable(gl.BLEND)
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         const camera = this.createCamera();
-        const map = this.worldStateAccess.getTiles();
-        const tileMouseOver = this.gameStateAccess.getTileMouseOver();
-        const tileSelected = this.gameStateAccess.getTileSelected();
+        const map = this.gameStateAccess.getTiles();
+        const tileMouseOver = this.localGameStateAccess.getMouseOverTile();
+        const tileSelected = this.localGameStateAccess.getSelectedTile();
 
         this.tilemapRenderer.render(
             camera,
             map,
-            tileMouseOver ? tileMouseOver : [9999, 9999],
-            tileSelected ? tileSelected : [9999, 9999]
+            tileMouseOver,
+            tileSelected
         );
 
-        this.markerRenderer.render(
+        this.tileContentRenderer.render(
             camera,
-            this.worldStateAccess.getMarkers(),
-            this.worldStateAccess.getCities(),
-            this.gameStateAccess.getCommands()
-        );
+            this.gameStateAccess.getCountries(),
+            this.gameStateAccess.getCities(),
+            this.gameStateAccess.getMarkers(),
+            this.localGameStateAccess.getCommands()
+        )
+
     }
 
 
     private checkErrors(gl: WebGL2RenderingContext) {
         const error = gl.getError();
         if (error !== gl.NO_ERROR && error !== gl.CONTEXT_LOST_WEBGL) {
-            alert("fail");
+            alert("gl error: " + glErrorToString(error));
         }
     }
 
 
     private createCamera(): Camera {
-        const camState = this.gameStateAccess.getCamera();
+        const camState = this.localGameStateAccess.getCamera();
         const camera = new Camera();
         camera.setPosition(camState.x, camState.y);
         camera.setZoom(camState.zoom);
@@ -79,7 +84,7 @@ export class Renderer {
 
     public dispose(): void {
         this.tilemapRenderer.dispose();
-        this.markerRenderer.dispose();
+        this.tileContentRenderer.dispose();
     }
 
 }

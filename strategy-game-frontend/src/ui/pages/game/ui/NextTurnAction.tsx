@@ -1,13 +1,14 @@
 import {ReactElement} from "react";
-import {Hooks} from "../../../../core/hooks";
+import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {AppConfig} from "../../../../main";
+import {GameState} from "../../../../models/state/gameState";
 
 export function NextTurnAction(): ReactElement {
-    const turnState = Hooks.useTurnState();
+    const gameState = LocalGameStateHooks.useCurrentGameState();
     return (
         <div
             onClick={submitTurn}
-            style={(turnState === "submitted") ? {color: "#575757"} : undefined}
+            style={(gameState === GameState.SUBMITTED) ? {color: "#575757"} : undefined}
         >
             {"Next Turn >"}
         </div>

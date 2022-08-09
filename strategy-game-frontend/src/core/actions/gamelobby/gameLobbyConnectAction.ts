@@ -1,20 +1,24 @@
-import {GameMessagingApi} from "../../../external/api/gameMessagingApi";
-import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
+import {GameMessagingApi} from "../../../external/api/messaging/gameMessagingApi";
+import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
+import {GameState} from "../../../models/state/gameState";
 
+/**
+ * Connect to a game
+ */
 export class GameLobbyConnectAction {
 
     private readonly gameMsgApi: GameMessagingApi;
-    private readonly gameStateAccess: GameStateAccess;
+    private readonly gameStateAccess: LocalGameStateAccess;
 
-    constructor(gameMsgApi: GameMessagingApi, gameStateAccess: GameStateAccess) {
+    constructor(gameMsgApi: GameMessagingApi, gameStateAccess: LocalGameStateAccess) {
         this.gameMsgApi = gameMsgApi;
         this.gameStateAccess = gameStateAccess;
     }
 
     perform(gameId: string): Promise<void> {
-        console.debug("Connecting to game-lobby")
+        console.log("connect to game ", gameId)
         return this.gameMsgApi.open(gameId).then(() => {
-            this.gameStateAccess.setLoading(gameId);
+            this.gameStateAccess.setCurrentState(GameState.LOADING);
         });
     }
 

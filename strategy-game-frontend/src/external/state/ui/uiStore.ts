@@ -1,7 +1,7 @@
 import create, {SetState} from "zustand";
 
-export interface DialogData {
-    windowId: string,
+export interface UiFrameData {
+    frameId: string, // unique id of the
     menuId: string,
     initX: number,
     initY: number,
@@ -14,42 +14,42 @@ export interface DialogData {
 export namespace UiStore {
 
     interface StateValues {
-        dialogs: DialogData[];
+        frames: UiFrameData[];
     }
 
     const initialStateValues: StateValues = {
-        dialogs: []
+        frames: []
     };
 
     interface StateActions {
-        addDialog: (data: DialogData) => void,
-        removeDialog: (windowId: string) => void,
-        setAllPositions: (x: number, y: number) => void,
-        bringToFront: (windowId: string) => void
-        setContent: (windowId: string, content: any) => void
-        updateDialog: (windowId: string, mod: (prev: DialogData) => DialogData) => void
+        addFrame: (data: UiFrameData) => void,
+        removeFrame: (frameId: string) => void,
+        setAllFramePositions: (x: number, y: number) => void,
+        bringFrameToFront: (frameId: string) => void
+        setFrameContent: (frameId: string, content: any) => void
+        updateFrame: (frameId: string, mod: (prev: UiFrameData) => UiFrameData) => void
     }
 
     function stateActions(set: SetState<State>): StateActions {
         return {
-            addDialog: (data: DialogData) => set((state: State) => ({
-                dialogs: [...state.dialogs, data],
+            addFrame: (data: UiFrameData) => set((state: State) => ({
+                frames: [...state.frames, data],
             })),
-            removeDialog: (windowId: string) => set((state: State) => ({
-                dialogs: state.dialogs.filter(e => e.windowId !== windowId),
+            removeFrame: (frameId: string) => set((state: State) => ({
+                frames: state.frames.filter(e => e.frameId !== frameId),
             })),
-            setAllPositions: (x: number, y: number) => set((state: State) => ({
-                dialogs: state.dialogs.map(e => ({...e, initX: x, initY: y}))
+            setAllFramePositions: (x: number, y: number) => set((state: State) => ({
+                frames: state.frames.map(e => ({...e, initX: x, initY: y}))
             })),
-            bringToFront: (windowId: string) => set((state: State) => ({
-                dialogs: [
-                    ...state.dialogs.filter(e => e.windowId !== windowId),
-                    ...state.dialogs.filter(e => e.windowId === windowId)
+            bringFrameToFront: (frameId: string) => set((state: State) => ({
+                frames: [
+                    ...state.frames.filter(e => e.frameId !== frameId),
+                    ...state.frames.filter(e => e.frameId === frameId)
                 ]
             })),
-            setContent: (windowId: string, content: any) => set((state: State) => ({
-                dialogs: state.dialogs.map(e => {
-                    if (e.windowId === windowId) {
+            setFrameContent: (frameId: string, content: any) => set((state: State) => ({
+                frames: state.frames.map(e => {
+                    if (e.frameId === frameId) {
                         return {
                             ...e,
                             content: content
@@ -59,9 +59,9 @@ export namespace UiStore {
                     }
                 })
             })),
-            updateDialog: (windowId: string, mod: (prev: DialogData) => DialogData) => set((state: State) => ({
-                dialogs: state.dialogs.map(e => {
-                    if (e.windowId === windowId) {
+            updateFrame: (frameId: string, mod: (prev: UiFrameData) => UiFrameData) => set((state: State) => ({
+                frames: state.frames.map(e => {
+                    if (e.frameId === frameId) {
                         return mod(e);
                     } else {
                         return e;
@@ -79,53 +79,5 @@ export namespace UiStore {
         ...initialStateValues,
         ...stateActions(set)
     }));
-
-    export function openDialog(menuId: string, x: number, y: number, width: number, height: number, content: any) {
-        const dialogs = UiStore.useState.getState().dialogs;
-        const addDialog = UiStore.useState.getState().addDialog;
-        const bringToFront = UiStore.useState.getState().bringToFront;
-        const setContent = UiStore.useState.getState().setContent;
-        const dialog = dialogs.find(e => e.menuId === menuId);
-        if (dialog) {
-            setContent(dialog.windowId, content);
-            bringToFront(dialog.windowId);
-        } else {
-            addDialog({
-                windowId: crypto.randomUUID(),
-                menuId: menuId,
-                initX: x,
-                initY: y,
-                width: width,
-                height: height,
-                enablePin: true,
-                content: content
-            });
-        }
-    }
-
-    export function useOpenDialog() {
-        const dialogs = UiStore.useState(state => state.dialogs);
-        const addDialog = UiStore.useState().addDialog;
-        const bringToFront = UiStore.useState().bringToFront;
-        const setContent = UiStore.useState().setContent;
-        return (menuId: string, x: number, y: number, width: number, height: number, content: any) => {
-            const dialog = dialogs.find(e => e.menuId === menuId);
-            if (dialog) {
-                setContent(dialog.windowId, content);
-                bringToFront(dialog.windowId);
-            } else {
-                addDialog({
-                    windowId: crypto.randomUUID(),
-                    menuId: menuId,
-                    initX: x,
-                    initY: y,
-                    width: width,
-                    height: height,
-                    enablePin: true,
-                    content: content
-                });
-            }
-        };
-    }
 
 }

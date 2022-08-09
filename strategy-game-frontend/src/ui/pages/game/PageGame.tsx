@@ -1,38 +1,49 @@
 import {ReactElement, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {Hooks} from "../../../core/hooks";
-import {DialogStack} from "../../components/specific/DialogStack";
-import "./pageGame.css";
+import {LocalGameStateHooks} from "../../../external/state/localgame/localGameStateHooks";
+import {GameState} from "../../../models/state/gameState";
+import {MenuFrameStack} from "../../components/specific/dialog/MenuFrameStack";
 import {Canvas} from "./canvas/Canvas";
+import "./pageGame.css";
 import {GameMenuBar} from "./ui/GameMenuBar";
 
 export function PageGame(): ReactElement {
 
-    const currentState = Hooks.useCurrentGameState();
+    const currentState = LocalGameStateHooks.useCurrentGameState();
     const navigate = useNavigate();
 
 
     useEffect(() => {
-        if (currentState === "idle") {
+        if (currentState === GameState.OUT_OF_GAME) {
             navigate("/home");
         }
     });
 
-    return (
-        <div className="game">
-            {(currentState === "loading") && (
+    function renderLoadingScreen(): ReactElement {
+        return (
+            <div className="game">
                 <div>Loading...</div>
-            )}
-            {(currentState === "active") && (
+            </div>
+        );
+    }
+
+    function renderGameScreen(): ReactElement {
+        return (
+            <div className="game">
                 <div className="game-container">
                     <Canvas/>
                     <div className="game-ui">
                         <GameMenuBar/>
                     </div>
-                    <DialogStack/>
+                    <MenuFrameStack/>
                 </div>
+            </div>
+        );
+    }
 
-            )}
-        </div>
-    );
+    if(currentState === GameState.LOADING) {
+        return renderLoadingScreen()
+    } else {
+        return renderGameScreen()
+    }
 }
