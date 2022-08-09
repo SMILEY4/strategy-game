@@ -1,15 +1,15 @@
-import React, {ReactElement, useEffect, useState} from "react";
+import React, {ReactElement} from "react";
 import {AiOutlineClose} from "react-icons/ai";
 import {BsPinAngle, BsTextareaResize} from "react-icons/bs";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
-import {DialogData} from "../../../../external/state/ui/uiStore";
-import {useDialog} from "../../primitives/dialogPrimitive";
+import {UiFrameData} from "../../../../external/state/ui/uiStore";
+import {useMenuFrame} from "../../primitives/menuFramePrimitive";
 import "./dialog.css";
 
-export function Dialog(props: { data: DialogData }): ReactElement {
+export function Dialog(props: { data: UiFrameData }): ReactElement {
 
-    const closeDialog = UiStateHooks.useCloseDialog(props.data.windowId);
-    const pinDialog = UiStateHooks.usePinDialog(props.data.windowId);
+    const closeDialog = UiStateHooks.useCloseFrame(props.data.frameId);
+    const pinDialog = UiStateHooks.usePinFrame(props.data.frameId);
 
     const {
         posX,
@@ -18,9 +18,9 @@ export function Dialog(props: { data: DialogData }): ReactElement {
         height,
         onDragMouseDown,
         onResizeMouseDown,
-        refDialogDragHandle,
-        refDialogResizeHandle,
-    } = useDialog(props.data)
+        refDragHandle,
+        refResizeHandle,
+    } = useMenuFrame(props.data, target => (target.className == "dialog" || target.className == "dialog-header" || target.className == "dialog-title"));
 
     return (
         <div
@@ -31,7 +31,7 @@ export function Dialog(props: { data: DialogData }): ReactElement {
                 width: width + "px",
                 height: height + "px"
             }}
-            ref={refDialogDragHandle}
+            ref={refDragHandle}
             onMouseDown={onDragMouseDown}
         >
 
@@ -49,7 +49,7 @@ export function Dialog(props: { data: DialogData }): ReactElement {
 
             <div
                 className={"dialog-resizer"}
-                ref={refDialogResizeHandle}
+                ref={refResizeHandle}
                 onMouseDown={onResizeMouseDown}
             >
                 <BsTextareaResize/>

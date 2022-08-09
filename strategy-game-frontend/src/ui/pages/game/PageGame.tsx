@@ -2,7 +2,7 @@ import {ReactElement, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {LocalGameStateHooks} from "../../../external/state/localgame/localGameStateHooks";
 import {GameState} from "../../../models/state/gameState";
-import {DialogStack} from "../../components/specific/dialog/DialogStack";
+import {MenuFrameStack} from "../../components/specific/dialog/MenuFrameStack";
 import {Canvas} from "./canvas/Canvas";
 import "./pageGame.css";
 import {GameMenuBar} from "./ui/GameMenuBar";
@@ -35,7 +35,7 @@ export function PageGame(): ReactElement {
                     <div className="game-ui">
                         <GameMenuBar/>
                     </div>
-                    <DialogStack/>
+                    <MenuFrameStack/>
                 </div>
             </div>
         );

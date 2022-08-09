@@ -1,8 +1,8 @@
-.dialog-stack {
+.menu-frame-stack {
 	overflow: hidden;
 	pointer-events: none;
 }
 
-.dialog-stack > * {
+.menu-frame-stack > * {
 	pointer-events: all;
 }

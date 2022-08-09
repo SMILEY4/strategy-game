@@ -15,7 +15,7 @@ export function CategoryDebug(): ReactElement {
 
 export function MenuDebug(): ReactElement {
 
-    const repositionDialogs = UiStateHooks.useRepositionDialogs();
+    const repositionDialogs = UiStateHooks.useRepositionFrames();
 
     function debugLooseContext() {
         AppConfig.debugLooseWebglContext();

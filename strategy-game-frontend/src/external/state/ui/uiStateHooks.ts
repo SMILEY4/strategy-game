@@ -2,40 +2,69 @@ import {UiStore} from "./uiStore";
 
 export namespace UiStateHooks {
 
+    /**
+     * open a new frame with the given content and menu-id.
+     * If a frame with the given menu-id is already open, replace its content with the given content
+     */
+    export function useOpenFrame() {
+        const frames = UiStore.useState(state => state.frames);
+        const addFrame = UiStore.useState().addFrame;
+        const bringToFront = UiStore.useState().bringFrameToFront;
+        const setContent = UiStore.useState().setFrameContent;
+        return (menuId: string, x: number, y: number, width: number, height: number, content: any) => {
+            const frame = frames.find(e => e.menuId === menuId);
+            if (frame) {
+                setContent(frame.frameId, content);
+                bringToFront(frame.frameId);
+            } else {
+                addFrame({
+                    frameId: crypto.randomUUID(),
+                    menuId: menuId,
+                    initX: x,
+                    initY: y,
+                    width: width,
+                    height: height,
+                    enablePin: true,
+                    content: content
+                });
+            }
+        };
+    }
+
     export function useOpenPrimaryMenuDialog(content: any) {
-        const open = UiStore.useOpenDialog();
+        const open = useOpenFrame();
         return () => {
             open("topbar.category.menu", 10, 50, 320, 650, content);
         };
     }
 
-    export function useRepositionDialogs() {
-        const setDialogPositions = UiStore.useState().setAllPositions;
+    export function useRepositionFrames() {
+        const setPositions = UiStore.useState().setAllFramePositions;
         return () => {
-            setDialogPositions(300, 300)
-        }
+            setPositions(300, 300);
+        };
     }
 
-    export function useCloseDialog(windowId: string) {
-        const removeDialog = UiStore.useState().removeDialog;
+    export function useCloseFrame(frameId: string) {
+        const remove = UiStore.useState().removeFrame;
         return () => {
-            removeDialog(windowId);
-        }
+            remove(frameId);
+        };
     }
 
-    export function usePinDialog(windowId: string) {
-        const updateDialog = UiStore.useState().updateDialog;
+    export function usePinFrame(frameId: string) {
+        const update = UiStore.useState().updateFrame;
         return () => {
-            updateDialog(windowId, dialog => ({
+            update(frameId, dialog => ({
                 ...dialog,
                 menuId: crypto.randomUUID(),
                 enablePin: false
-            }))
-        }
+            }));
+        };
     }
 
-    export function useDialogs() {
-        return UiStore.useState(state => state.dialogs);
+    export function useFrames() {
+        return UiStore.useState(state => state.frames);
     }
 
 }

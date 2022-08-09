@@ -1,17 +1,17 @@
 import {useEffect, useState} from "react";
-import {DialogData} from "../../../external/state/ui/uiStore";
+import {UiFrameData} from "../../../external/state/ui/uiStore";
 import {useDraggable} from "./useDraggable";
 import {useStateRef} from "./useStateRef";
 
-export function useDialog(data: DialogData) {
+export function useMenuFrame(data: UiFrameData, conditionAllowDrag: (eventTarget: any) => boolean) {
 
     const [posX, setPosX] = useState(data.initX);
     const [posY, setPosY] = useState(data.initY);
     const [width, widthRef, setWidth] = useStateRef(data.width);
     const [height, heightRef, setHeight] = useStateRef(data.height);
 
-    const [dialogDragRef, onDragMouseDown] = useDraggable(canDragDialog, onDragDialog);
-    const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResizeDialog, onResizeDialog);
+    const [dialogDragRef, onDragMouseDown] = useDraggable(canDrag, onDrag);
+    const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResize, onResize);
 
 
     useEffect(() => {
@@ -22,23 +22,20 @@ export function useDialog(data: DialogData) {
     }, [data.initY, data.initX, data.width, data.height]);
 
 
-    function canDragDialog(e: any): boolean {
-        return e.button === 0
-            && (e.target.className == "dialog" || e.target.className == "dialog-header" || e.target.className == "dialog-title");
+    function canDrag(e: any): boolean {
+        return e.button === 0 && conditionAllowDrag(e.target)
     }
 
-
-    function onDragDialog(x: number, y: number, dx: number, dy: number) {
+    function onDrag(x: number, y: number, dx: number, dy: number) {
         setPosX(x);
         setPosY(y);
     }
 
-    function canResizeDialog(e: any): boolean {
+    function canResize(e: any): boolean {
         return e.button === 0;
     }
 
-
-    function onResizeDialog(x: number, y: number, dx: number, dy: number) {
+    function onResize(x: number, y: number, dx: number, dy: number) {
         setWidth(widthRef.current + dx);
         setHeight(heightRef.current + dy);
     }
@@ -50,8 +47,8 @@ export function useDialog(data: DialogData) {
         height: height,
         onDragMouseDown: onDragMouseDown,
         onResizeMouseDown: onResizeMouseDown,
-        refDialogDragHandle: dialogDragRef,
-        refDialogResizeHandle: dialogResizeRef,
+        refDragHandle: dialogDragRef,
+        refResizeHandle: dialogResizeRef,
     };
 
 }

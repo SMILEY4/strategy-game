@@ -27,6 +27,7 @@ import {MessageHandler} from "./external/api/messaging/messageHandler";
 import {WebsocketClient} from "./external/api/messaging/websocketClient";
 import {GameStateAccess} from "./external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "./external/state/localgame/localGameStateAccess";
+import {UIStateAccess} from "./external/state/ui/uiStateAccess";
 import {UserStateAccess} from "./external/state/user/userStateAccess";
 import {App} from "./ui/App";
 import "./ui/index.css";
@@ -46,6 +47,7 @@ export namespace AppConfig {
     const localGameStateAccess: LocalGameStateAccess = new LocalGameStateAccess();
     const userStateAccess: UserStateAccess = new UserStateAccess();
     const gameStateAccess: GameStateAccess = new GameStateAccess();
+    const uiStateAccess: UIStateAccess = new UIStateAccess();
 
     const canvasHandle: GameCanvasHandle = new GameCanvasHandle();
     const renderer: Renderer = new Renderer(canvasHandle, localGameStateAccess, gameStateAccess);
@@ -76,7 +78,7 @@ export namespace AppConfig {
     export const gameInit: GameInitAction = new GameInitAction(canvasHandle, renderer);
     export const gameUpdate: GameUpdateAction = new GameUpdateAction(renderer);
     export const gameDispose: GameDisposeAction = new GameDisposeAction(canvasHandle, renderer);
-    export const gameInputClick: GameInputClickAction = new GameInputClickAction(tilePicker, localGameStateAccess);
+    export const gameInputClick: GameInputClickAction = new GameInputClickAction(tilePicker, localGameStateAccess, uiStateAccess);
     export const gameInputMouseMove: GameInputMouseMoveAction = new GameInputMouseMoveAction(tilePicker, localGameStateAccess);
     export const gameInputMouseScroll: GameInputMouseScrollAction = new GameInputMouseScrollAction(localGameStateAccess);
 
