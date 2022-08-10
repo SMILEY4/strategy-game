@@ -81,9 +81,6 @@ export class ShaderProgram {
 	private readonly attributeLocations: Map<string, GLint> = new Map();
 	private readonly uniformLocations: Map<string, WebGLUniformLocation> = new Map();
 
-	/**
-	 * Constructor. Will not automatically create the webgl-handles and is not immediately usable.
-	 */
 	constructor(gl: WebGL2RenderingContext, data: ShaderProgramData) {
 		this.gl = gl;
 		this.data = data;

@@ -7,7 +7,7 @@ export function JoinedGames(): ReactElement {
 
     useEffect(() => {
         AppConfig.apiGame.list()
-            .then(list => setGames(list));
+            .then((list: string[]) => setGames(list));
     });
 
     return (

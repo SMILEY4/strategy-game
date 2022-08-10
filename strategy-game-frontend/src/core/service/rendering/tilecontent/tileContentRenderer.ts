@@ -8,8 +8,8 @@ import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import Texture from "../utils/texture";
-import SRC_MARKER_SHADER_FRAGMENT from "./tileContentShader.fsh?raw";
-import SRC_MARKER_SHADER_VERTEX from "./tileContentShader.vsh?raw";
+import SRC_SHADER_FRAGMENT from "./tileContentShader.fsh?raw";
+import SRC_SHADER_VERTEX from "./tileContentShader.vsh?raw";
 
 export class TileContentRenderer {
 
@@ -26,8 +26,8 @@ export class TileContentRenderer {
     public initialize() {
         this.shader = new ShaderProgram(this.gameCanvas.getGL(), {
             debugName: "tileContent",
-            sourceVertex: SRC_MARKER_SHADER_VERTEX,
-            sourceFragment: SRC_MARKER_SHADER_FRAGMENT,
+            sourceVertex: SRC_SHADER_VERTEX,
+            sourceFragment: SRC_SHADER_FRAGMENT,
             attributes: [
                 {
                     name: "in_position",

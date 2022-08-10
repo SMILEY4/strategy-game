@@ -14,9 +14,9 @@ export function PageGame(): ReactElement {
 
 
     useEffect(() => {
-        if (currentState === GameState.OUT_OF_GAME) {
-            navigate("/home");
-        }
+        // if (currentState === GameState.OUT_OF_GAME) {
+        //     navigate("/home");
+        // }
     });
 
     function renderLoadingScreen(): ReactElement {
@@ -32,18 +32,18 @@ export function PageGame(): ReactElement {
             <div className="game">
                 <div className="game-container">
                     <Canvas/>
-                    <div className="game-ui">
-                        <GameMenuBar/>
-                    </div>
-                    <MenuFrameStack/>
+                    {/*<div className="game-ui">*/}
+                    {/*    <GameMenuBar/>*/}
+                    {/*</div>*/}
+                    {/*<MenuFrameStack/>*/}
                 </div>
             </div>
         );
     }
 
-    if(currentState === GameState.LOADING) {
-        return renderLoadingScreen()
-    } else {
+    // if(currentState === GameState.LOADING) {
+    //     return renderLoadingScreen()
+    // } else {
         return renderGameScreen()
-    }
+    // }
 }
