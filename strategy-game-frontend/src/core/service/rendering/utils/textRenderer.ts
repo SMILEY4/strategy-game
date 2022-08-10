@@ -55,6 +55,13 @@ export class TextRenderer {
         this.update();
     }
 
+    public addTextIfNotExists(entries: ({ id: string, entry: TextEntry })[]) {
+        entries
+            .filter(e => !this.entryMap.get(e.id))
+            .forEach(e => this.entryMap.set(e.id, e.entry));
+        this.update();
+    }
+
     public removeText(ids: string[]) {
         ids.forEach(id => this.entryMap.delete(id));
         this.update();

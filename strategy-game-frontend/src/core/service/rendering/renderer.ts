@@ -1,11 +1,10 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {GameCanvasHandle} from "../gameCanvasHandle";
-import {TestRenderer} from "./test/testRenderer";
+import {MapLabelRenderer} from "./maplabels/mapLabelRenderer";
 import {TileContentRenderer} from "./tilecontent/tileContentRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {Camera} from "./utils/camera";
-import {TextRenderer} from "./utils/textRenderer";
 import {glErrorToString} from "./utils/webglErrors";
 
 export class Renderer {
@@ -16,24 +15,24 @@ export class Renderer {
     private readonly gameStateAccess: GameStateAccess;
 
     private readonly tilemapRenderer: TilemapRenderer;
-    private readonly tileContentRenderer: TileContentRenderer
+    private readonly tileContentRenderer: TileContentRenderer;
 
-    private readonly testRenderer: TestRenderer
+    private readonly mapLabelRenderer: MapLabelRenderer;
 
     constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
         this.canvasHandle = canvasHandle;
         this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle);
-        this.tileContentRenderer = new TileContentRenderer(canvasHandle)
-        this.testRenderer = new TestRenderer(canvasHandle)
+        this.tileContentRenderer = new TileContentRenderer(canvasHandle);
+        this.mapLabelRenderer = new MapLabelRenderer(canvasHandle);
     }
 
 
     public initialize(): void {
         this.tilemapRenderer.initialize();
-        this.tileContentRenderer.initialize()
-        this.testRenderer.initialize()
+        this.tileContentRenderer.initialize();
+        this.mapLabelRenderer.initialize();
     }
 
 
@@ -44,31 +43,36 @@ export class Renderer {
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.enable(gl.BLEND)
+        gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         const camera = this.createCamera();
 
-        // const map = this.gameStateAccess.getTiles();
-        // const tileMouseOver = this.localGameStateAccess.getMouseOverTile();
-        // const tileSelected = this.localGameStateAccess.getSelectedTile();
-        //
-        // this.tilemapRenderer.render(
-        //     camera,
-        //     map,
-        //     tileMouseOver,
-        //     tileSelected
-        // );
-        //
-        // this.tileContentRenderer.render(
-        //     camera,
-        //     this.gameStateAccess.getCountries(),
-        //     this.gameStateAccess.getCities(),
-        //     this.gameStateAccess.getMarkers(),
-        //     this.localGameStateAccess.getCommands()
-        // )
+        const map = this.gameStateAccess.getTiles();
+        const tileMouseOver = this.localGameStateAccess.getMouseOverTile();
+        const tileSelected = this.localGameStateAccess.getSelectedTile();
 
-        this.testRenderer.render(camera)
+        this.tilemapRenderer.render(
+            camera,
+            map,
+            tileMouseOver,
+            tileSelected
+        );
+
+        this.tileContentRenderer.render(
+            camera,
+            this.gameStateAccess.getCountries(),
+            this.gameStateAccess.getCities(),
+            this.gameStateAccess.getMarkers(),
+            this.localGameStateAccess.getCommands()
+        );
+
+        this.mapLabelRenderer.render(
+            camera,
+            this.gameStateAccess.getCountries(),
+            this.gameStateAccess.getCities(),
+            this.localGameStateAccess.getCommands()
+        );
 
     }
 
@@ -94,7 +98,7 @@ export class Renderer {
     public dispose(): void {
         this.tilemapRenderer.dispose();
         this.tileContentRenderer.dispose();
-        this.testRenderer.dispose()
+        this.mapLabelRenderer.dispose();
     }
 
 }

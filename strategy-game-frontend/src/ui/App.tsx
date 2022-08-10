@@ -10,7 +10,7 @@ export function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route path="/" element={<Navigate to="game" replace/>}/>
+				<Route path="/" element={<Navigate to="home" replace/>}/>
 				<Route path="login" element={<PageLogin/>}/>
 				<Route path="signup" element={<PageSignUp/>}/>
 				<Route path="home" element={
@@ -19,9 +19,9 @@ export function App() {
 					</RequireAuth>
 				}/>
 				<Route path="game" element={
-					// <RequireAuth loginUrl="/login">
+					<RequireAuth loginUrl="/login">
 						<PageGame/>
-					// </RequireAuth>
+					</RequireAuth>
 				}/>
 				<Route path="*" element={<PageNotFound/>}/>
 			</Routes>
