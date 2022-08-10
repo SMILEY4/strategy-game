@@ -52,12 +52,36 @@ export class TestRenderer {
         this.batchRenderer = new BatchRenderer(this.gameCanvas.getGL());
 
         this.textRenderer = new TextRenderer(this.gameCanvas.getGL());
-        this.textRenderer.addText("Hello World", 300, 50, {
-            color: "red",
-            font: "20px monospace",
-            align: "center",
-            baseline: "middle",
-        });
+        this.textRenderer.addText([
+            {
+                id: "test1",
+                entry: {
+                    text: "Hello World",
+                    width: 300,
+                    height: 50,
+                    font: "20px monospace",
+                    color: "red",
+                    align: "center",
+                    baseline: "middle",
+                    shadowBlur: 0,
+                    shadowColor: "none",
+                }
+            },
+            {
+                id: "test2",
+                entry: {
+                    text: "hi :)",
+                    width: 300,
+                    height: 50,
+                    font: "30px monospace",
+                    color: "blue",
+                    align: "center",
+                    baseline: "middle",
+                    shadowBlur: 4,
+                    shadowColor: "white",
+                }
+            }
+        ]);
 
     }
 
@@ -70,16 +94,28 @@ export class TestRenderer {
         const height = 50;
 
         this.batchRenderer.begin(camera);
+
+        const region1 = this.textRenderer.getRegion("test1")!!
         this.batchRenderer.add([
-            [x - width / camera.getZoom(), y + height / camera.getZoom(), 0, 1],
-            [x + width / camera.getZoom(), y + height / camera.getZoom(), 1, 1],
-            [x + width / camera.getZoom(), y - height / camera.getZoom(), 1, 0],
-            [x - width / camera.getZoom(), y + height / camera.getZoom(), 0, 1],
-            [x + width / camera.getZoom(), y - height / camera.getZoom(), 1, 0],
-            [x - width / camera.getZoom(), y - height / camera.getZoom(), 0, 0],
+            [x - width / camera.getZoom(), y + (height / camera.getZoom()), region1.u0, region1.v1],
+            [x + width / camera.getZoom(), y + (height / camera.getZoom()), region1.u1, region1.v1],
+            [x + width / camera.getZoom(), y - (height / camera.getZoom()), region1.u1, region1.v0],
+            [x - width / camera.getZoom(), y + (height / camera.getZoom()), region1.u0, region1.v1],
+            [x + width / camera.getZoom(), y - (height / camera.getZoom()), region1.u1, region1.v0],
+            [x - width / camera.getZoom(), y - (height / camera.getZoom()), region1.u0, region1.v0],
         ]);
 
-        this.textRenderer.getTexture("Hello World")?.bind()
+        const region2 = this.textRenderer.getRegion("test2")!!
+        this.batchRenderer.add([
+            [x - width / camera.getZoom(), 100 + y + (height / camera.getZoom()), region2.u0, region2.v1],
+            [x + width / camera.getZoom(), 100 + y + (height / camera.getZoom()), region2.u1, region2.v1],
+            [x + width / camera.getZoom(), 100 + y - (height / camera.getZoom()), region2.u1, region2.v0],
+            [x - width / camera.getZoom(), 100 + y + (height / camera.getZoom()), region2.u0, region2.v1],
+            [x + width / camera.getZoom(), 100 + y - (height / camera.getZoom()), region2.u1, region2.v0],
+            [x - width / camera.getZoom(), 100 + y - (height / camera.getZoom()), region2.u0, region2.v0],
+        ]);
+
+        this.textRenderer.getTexture()?.bind();
 
         this.batchRenderer.end(this.shader, {
             attributes: ["in_position", "in_textureCoords"],
