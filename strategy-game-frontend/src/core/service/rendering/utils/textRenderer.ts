@@ -2,7 +2,7 @@ import Texture from "./texture";
 
 export interface TextEntry {
     text: string,
-    width: number,
+    width: number | null,
     height: number,
     color: string,
     font: string,
@@ -13,6 +13,8 @@ export interface TextEntry {
 }
 
 export interface TextEntryRegion {
+    width: number,
+    height: number,
     u0: number,
     v0: number,
     u1: number,
@@ -42,32 +44,31 @@ export class TextRenderer {
         }
     }
 
-    public getTexture(): Texture | null {
-        return this.texture;
+    public addText(id: string, entry: TextEntry) {
+        if(entry.width === null) {
+            entry.width = this.measureTextWidth(entry)
+        }
+        this.entryMap.set(id, entry);
     }
 
-    public getRegion(id: string): TextEntryRegion | undefined {
-        return this.regionMap.get(id);
-    }
-
-    public addText(entries: ({ id: string, entry: TextEntry })[]) {
-        entries.forEach(e => this.entryMap.set(e.id, e.entry));
-        this.update();
-    }
-
-    public addTextIfNotExists(entries: ({ id: string, entry: TextEntry })[]) {
-        entries
-            .filter(e => !this.entryMap.get(e.id))
-            .forEach(e => this.entryMap.set(e.id, e.entry));
-        this.update();
+    public addTextIfNotExists(id: string, entry: TextEntry): boolean {
+        if (!this.entryMap.get(id)) {
+            this.addText(id, entry);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public removeText(ids: string[]) {
         ids.forEach(id => this.entryMap.delete(id));
-        this.update();
     }
 
-    private update() {
+    public removeAll() {
+        this.entryMap.clear();
+    }
+
+    public update() {
         if (this.texture != null) {
             this.texture.dispose();
         }
@@ -76,8 +77,28 @@ export class TextRenderer {
         this.texture = Texture.createFromCanvas(this.gl, this.textContext.canvas);
     }
 
+    public getTexture(): Texture | null {
+        return this.texture;
+    }
+
+    public getRegion(id: string): TextEntryRegion | undefined {
+        return this.regionMap.get(id);
+    }
+
+    public dispose() {
+        if (this.texture !== null) {
+            this.texture.dispose();
+        }
+    }
+
+    private measureTextWidth(entry: TextEntry): number {
+        this.setCanvasProperties(entry);
+        const metrics = this.textContext.measureText(entry.text);
+        return metrics.width;
+    }
+
     private prepareCanvas(entries: TextEntry[]) {
-        const canvasWidth = entries.length === 0 ? 1 : Math.max(...entries.map(e => e.width));
+        const canvasWidth = entries.length === 0 ? 1 : Math.max(...entries.map(e => e.width!!));
         const canvasHeight = entries.length === 0 ? 1 : entries.map(e => e.height).reduce((a, b) => a + b, 0);
         this.textContext.canvas.width = canvasWidth;
         this.textContext.canvas.height = canvasHeight;
@@ -95,30 +116,30 @@ export class TextRenderer {
     }
 
     private paintEntry(entry: TextEntry, yOffset: number) {
+        this.setCanvasProperties(entry);
+        this.textContext.fillText(entry.text, entry.width!! / 2, yOffset + entry.height / 2, entry.width!!);
+    }
+
+    private setCanvasProperties(entry: TextEntry) {
         this.textContext.font = entry.font;
         this.textContext.textAlign = entry.align;
         this.textContext.textBaseline = entry.baseline;
         this.textContext.fillStyle = entry.color;
         this.textContext.shadowBlur = entry.shadowBlur;
         this.textContext.shadowColor = entry.shadowColor;
-        this.textContext.fillText(entry.text, entry.width / 2, yOffset + entry.height / 2, entry.width);
     }
 
     private buildRegion(entry: TextEntry, yOffset: number): TextEntryRegion {
         const totalWidth = this.textContext.canvas.width;
         const totalHeight = this.textContext.canvas.height;
         return {
+            width: entry.width!!,
+            height: entry.height,
             u0: (0) / totalWidth,
             v0: 1 - ((yOffset + entry.height) / totalHeight),
-            u1: (entry.width) / totalWidth,
+            u1: (entry.width!!) / totalWidth,
             v1: 1 - ((yOffset) / totalHeight),
         };
-    }
-
-    public dispose() {
-        if (this.texture !== null) {
-            this.texture.dispose();
-        }
     }
 
 }

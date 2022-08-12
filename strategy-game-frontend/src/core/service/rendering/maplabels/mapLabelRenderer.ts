@@ -1,7 +1,6 @@
 import {City} from "../../../../models/state/city";
-import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../../models/state/command";
+import {Command, CommandCreateCity} from "../../../../models/state/command";
 import {Country} from "../../../../models/state/country";
-import {Marker} from "../../../../models/state/marker";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {BatchRenderer} from "../utils/batchRenderer";
@@ -61,7 +60,7 @@ export class MapLabelRenderer {
 
     public render(camera: Camera, countries: Country[], cities: City[], commands: Command[]) {
 
-        const cityNames: string[] = []
+        const cityNames: string[] = [];
 
         cities
             .forEach(e => cityNames.push("City " + e.tile.position.q + "/" + e.tile.position.r));
@@ -70,22 +69,23 @@ export class MapLabelRenderer {
             .map(e => e as CommandCreateCity)
             .forEach(e => cityNames.push("Planned City " + e.q + "/" + e.r));
 
-        this.textRenderer.addTextIfNotExists(
-            cityNames.map(name => ({
-                id: name,
-                entry: {
-                    text: name,
-                    width: 100,
-                    height: 30,
-                    font: "20px monospace",
-                    color: "black",
-                    align: "center",
-                    baseline: "middle",
-                    shadowBlur: 4,
-                    shadowColor: "white",
-                }
+        const modifiedTextRenderer = cityNames
+            .map(name => ({
+                text: name,
+                width: null,
+                height: 30,
+                font: "20px monospace",
+                color: "black",
+                align: "center" as CanvasTextAlign,
+                baseline: "middle" as CanvasTextBaseline,
+                shadowBlur: 4,
+                shadowColor: "white"
             }))
-        )
+            .map(entry => this.textRenderer.addTextIfNotExists(entry.text, entry))
+            .some(added => added);
+        if (modifiedTextRenderer) {
+            this.textRenderer.update();
+        }
 
         this.batchRenderer.begin(camera);
 
@@ -105,10 +105,10 @@ export class MapLabelRenderer {
     }
 
     private addCity(camera: Camera, q: number, r: number, region: TextEntryRegion | undefined) {
-        if(region) {
+        if (region) {
             const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
-            const width = 100 / 2;
-            const height = 30 / 2;
+            const width = region.width / 2;
+            const height = region.height / 2;
             this.batchRenderer.add([
                 [x - (width / camera.getZoom()), y + (height / camera.getZoom()) - 10, region.u0, region.v1],
                 [x + (width / camera.getZoom()), y + (height / camera.getZoom()) - 10, region.u1, region.v1],
