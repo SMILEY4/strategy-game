@@ -16,6 +16,7 @@ export class GameMessagingApi {
     }
 
     open(gameId: string): Promise<void> {
+        console.log("OPEN WS", `/api/game/${gameId}?token=${this.userStateAccess.getToken()}`)
         return this.websocketClient.open(`/api/game/${gameId}?token=${this.userStateAccess.getToken()}`, message => {
             this.messageHandler.onMessage(message.type, message.payload);
         });

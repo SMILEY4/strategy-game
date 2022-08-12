@@ -41,6 +41,7 @@ fun Route.gameWebsocketRoutes(
 						userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!),
 						call.parameters[WebsocketUtils.PATH_PARAM_GAME_ID]!!
 					)
+					println("interceptWebsocketRequest: $result")
 					when (result) {
 						is Either.Right -> {
 							/*do nothing*/
