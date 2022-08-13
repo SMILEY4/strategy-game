@@ -18,31 +18,19 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExten
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class ResolveCommandsActionImpl(
-	private val gameExtendedQuery: GameExtendedQuery,
-	private val gameExtendedUpdate: GameExtendedUpdate,
 	private val resolvePlaceMarkerCommand: ResolvePlaceMarkerCommand,
 	private val resolveCreateCityCommand: ResolveCreateCityCommand,
 ) : ResolveCommandsAction, Logging {
 
 	override suspend fun perform(
-		gameId: String,
+		game: GameExtendedEntity,
 		commands: List<CommandEntity<*>>
 	): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-		log().info("Resolving ${commands.size} commands for game $gameId")
+		log().info("Resolving ${commands.size} commands for game ${game.game.key}")
 		return either {
-			val state = findGameState(gameId).bind()
-			val errors = resolveCommands(state, commands).bind()
-			saveGameState(state)
+			val errors = resolveCommands(game, commands).bind()
 			errors
 		}
-	}
-
-
-	/**
-	 * Find and return the [GameExtendedEntity] or [GameNotFoundError] if the game does not exist
-	 */
-	private suspend fun findGameState(gameId: String): Either<GameNotFoundError, GameExtendedEntity> {
-		return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
 	}
 
 
@@ -80,14 +68,6 @@ class ResolveCommandsActionImpl(
 				resolveCreateCityCommand.perform(command as CommandEntity<CreateCityCommandDataEntity>, game)
 			}
 		}
-	}
-
-
-	/**
-	 * Update the game state in the database
-	 */
-	private suspend fun saveGameState(game: GameExtendedEntity) {
-		gameExtendedUpdate.execute(game)
 	}
 
 }

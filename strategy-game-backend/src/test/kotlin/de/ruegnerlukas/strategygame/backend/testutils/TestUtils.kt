@@ -4,11 +4,14 @@ import arrow.core.getOrHandle
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContentEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
@@ -27,6 +30,14 @@ object TestUtils {
 
 	suspend fun getGame(database: ArangoDatabase, gameId: String): GameEntity {
 		return GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
+	}
+
+	suspend fun getGameExtended(database: ArangoDatabase, gameId: String): GameExtendedEntity {
+		return GameExtendedQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
+	}
+
+	suspend fun saveGameExtended(database: ArangoDatabase, game: GameExtendedEntity) {
+		GameExtendedUpdateImpl(database).execute(game)
 	}
 
 	suspend fun getCommands(database: ArangoDatabase, gameId: String, turn: Int): List<CommandEntity<*>> {
@@ -54,7 +65,7 @@ object TestUtils {
 
 	suspend fun getCitiesAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<CityEntity> {
 		val tile = getTiles(database, gameId).first { it.position.q == q && it.position.r == r }
-		return getCities(database, gameId).filter { it.tileId == tile.key }
+		return getCities(database, gameId).filter { it.tile.tileId == tile.key }
 	}
 
 	suspend fun getCities(database: ArangoDatabase, gameId: String): List<CityEntity> {
@@ -81,5 +92,12 @@ object TestUtils {
 		)?.toList() ?: emptyList()
 	}
 
+	suspend fun <R> withGameExtended(database: ArangoDatabase, gameId: String, block: suspend (game: GameExtendedEntity) -> R): R {
+		return getGameExtended(database, gameId).let {
+			val result = block(it)
+			saveGameExtended(database, it)
+			result
+		}
+	}
 
 }

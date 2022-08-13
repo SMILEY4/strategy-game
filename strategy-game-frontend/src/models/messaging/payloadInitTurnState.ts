@@ -28,6 +28,7 @@ export interface PayloadInitTurnState {
         cities: ({
             _key: string,
             gameId: string,
+            countryId: string,
             tile: {
                 tileId: string,
                 q: number,

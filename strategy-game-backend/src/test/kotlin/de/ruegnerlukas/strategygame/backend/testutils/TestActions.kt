@@ -12,6 +12,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImp
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResultActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
@@ -23,6 +24,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQue
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
 object TestActions {
@@ -49,8 +51,6 @@ object TestActions {
 	fun turnSubmitAction(database: ArangoDatabase) = TurnSubmitActionImpl(
 		TurnEndActionImpl(
 			ResolveCommandsActionImpl(
-				GameExtendedQueryImpl(database),
-				GameExtendedUpdateImpl(database),
 				ResolvePlaceMarkerCommandImpl(),
 				ResolveCreateCityCommandImpl()
 			),
@@ -58,8 +58,9 @@ object TestActions {
 				GameExtendedQueryImpl(database),
 				GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 			),
-			GameQueryImpl(database),
-			GameUpdateImpl(database),
+			TurnUpdateActionImpl(),
+			GameExtendedQueryImpl(database),
+			GameExtendedUpdateImpl(database),
 			CommandsByGameQueryImpl(database),
 		),
 		GameQueryImpl(database),
@@ -76,9 +77,7 @@ object TestActions {
 		GameQueryImpl(database),
 	)
 
-	fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
-		GameExtendedQueryImpl(database),
-		GameExtendedUpdateImpl(database),
+	fun resolveCommandsAction() = ResolveCommandsActionImpl(
 		ResolvePlaceMarkerCommandImpl(),
 		ResolveCreateCityCommandImpl()
 	)

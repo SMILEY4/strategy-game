@@ -45,6 +45,7 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 				state.cities.add(
 					CityEntity(
 						gameId = targetTile.gameId,
+						countryId = country.key!!,
 						tile = TileRef(targetTile.key!!, targetTile.position.q, targetTile.position.r),
 						name = command.data.name
 					)

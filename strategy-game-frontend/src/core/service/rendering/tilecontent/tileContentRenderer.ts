@@ -1,3 +1,5 @@
+import {UserStateAccess} from "../../../../external/state/user/userStateAccess";
+import {AppConfig} from "../../../../main";
 import {City} from "../../../../models/state/city";
 import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../../models/state/command";
 import {Country, CountryColor} from "../../../../models/state/country";
@@ -14,13 +16,14 @@ import SRC_SHADER_VERTEX from "./tileContentShader.vsh?raw";
 export class TileContentRenderer {
 
     private readonly gameCanvas: GameCanvasHandle;
+    private readonly userAccess: UserStateAccess;
     private batchRenderer: BatchRenderer = null as any;
     private shader: ShaderProgram = null as any;
     private texture: Texture = null as any;
 
-
-    constructor(gameCanvas: GameCanvasHandle) {
+    constructor(gameCanvas: GameCanvasHandle, userAccess: UserStateAccess) {
         this.gameCanvas = gameCanvas;
+        this.userAccess = userAccess;
     }
 
     public initialize() {
@@ -69,14 +72,17 @@ export class TileContentRenderer {
 
     public render(camera: Camera, countries: Country[], cities: City[], markers: Marker[], commands: Command[]) {
 
+        const userId = this.userAccess.getUserId();
+        const userCountryId = countries.find(c => c.userId === userId)?.countryId
+
         this.batchRenderer.begin(camera);
 
         cities
-            .forEach(e => this.addCity(e.tile.position.q, e.tile.position.r, this.getColor(countries, "?", false)));
+            .forEach(e => this.addCity(e.tile.position.q, e.tile.position.r, this.getColor(countries, e.country.countryId, false)));
         commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
-            .forEach(e => this.addCity(e.q, e.r, this.getColor(countries, "?", true)));
+            .forEach(e => this.addCity(e.q, e.r, this.getColor(countries, (userCountryId ? userCountryId : "?"), true)));
 
         markers
             .forEach(e => this.addMarker(e.tile.position.q, e.tile.position.r, this.getColor(countries, e.countryId, false)));

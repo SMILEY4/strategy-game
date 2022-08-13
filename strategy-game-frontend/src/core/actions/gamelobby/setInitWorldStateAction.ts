@@ -25,6 +25,20 @@ export class SetInitWorldStateAction {
     perform(state: PayloadInitGameState): void {
         console.log("set initial game state");
 
+        const countryColors = state.game.countries
+            .map(c => c._key)
+            .sort()
+            .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
+
+        const countries: Country[] = state.game.countries.map(country => ({
+            countryId: country._key,
+            userId: country.userId,
+            resources: {
+                money: country.resources.money
+            },
+            color: (countryColors.find(e => e[0] === country._key)!!)[1] as CountryColor
+        }));
+
         const markers: Marker[] = [];
         const tiles: Tile[] = state.game.tiles.map(t => {
             const tile: Tile = {
@@ -49,21 +63,8 @@ export class SetInitWorldStateAction {
         const cities: City[] = state.game.cities.map(city => ({
             cityId: city._key,
             name: city.name,
+            country: countries.find(c => c.countryId === city.countryId)!!,
             tile: tiles.find(t => t.position.q === city.tile.q && t.position.r === city.tile.r)!!
-        }));
-
-        const countryColors = state.game.countries
-            .map(c => c._key)
-            .sort()
-            .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
-
-        const countries: Country[] = state.game.countries.map(country => ({
-            countryId: country._key,
-            userId: country.userId,
-            resources: {
-                money: country.resources.money
-            },
-            color: (countryColors.find(e => e[0] === country._key)!!)[1] as CountryColor
         }));
 
         this.gameStateAccess.setCountries(countries);

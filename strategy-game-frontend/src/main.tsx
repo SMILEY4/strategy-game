@@ -50,7 +50,7 @@ export namespace AppConfig {
     const uiStateAccess: UIStateAccess = new UIStateAccess();
 
     const canvasHandle: GameCanvasHandle = new GameCanvasHandle();
-    const renderer: Renderer = new Renderer(canvasHandle, localGameStateAccess, gameStateAccess);
+    const renderer: Renderer = new Renderer(canvasHandle, localGameStateAccess, gameStateAccess, userStateAccess);
     const tilePicker: TilePicker = new TilePicker(localGameStateAccess, gameStateAccess, canvasHandle);
 
     export const worldSetInitState: SetInitWorldStateAction = new SetInitWorldStateAction(localGameStateAccess, gameStateAccess);

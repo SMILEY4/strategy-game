@@ -345,6 +345,7 @@ All messages follow the following format
           	{
                   "_key": "String - id of the city",
                   "gameId": "String - the id of the game",
+                  "countryId": "String - the id of the owner-country",
                   "tile": {
                   	"tileId": "String - the id of the tile",
                       "q": "Int - the q-coordinate of the tile",
@@ -405,6 +406,7 @@ All messages follow the following format
               {
                   "_key": "String - the id of the city",
                   "gameId": "String - the id of the game",
+                  "countryId": "String - the id of the owner-country",
                   "tile": {
                   	"tileId": "String - the id of the tile",
                       "q": "Int - the q-coordinate of the tile",

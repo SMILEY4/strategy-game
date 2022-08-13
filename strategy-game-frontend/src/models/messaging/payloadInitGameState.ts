@@ -29,6 +29,7 @@ export interface PayloadInitGameState {
         cities: ({
             _key: string,
             gameId: string,
+            countryId: string,
             tile: {
                 tileId: string,
                 q: number,

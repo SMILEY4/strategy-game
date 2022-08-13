@@ -1,5 +1,6 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
+import {UserStateAccess} from "../../../external/state/user/userStateAccess";
 import {GameCanvasHandle} from "../gameCanvasHandle";
 import {MapLabelRenderer} from "./maplabels/mapLabelRenderer";
 import {TileContentRenderer} from "./tilecontent/tileContentRenderer";
@@ -19,12 +20,12 @@ export class Renderer {
 
     private readonly mapLabelRenderer: MapLabelRenderer;
 
-    constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
+    constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess, userAccess: UserStateAccess) {
         this.canvasHandle = canvasHandle;
         this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle);
-        this.tileContentRenderer = new TileContentRenderer(canvasHandle);
+        this.tileContentRenderer = new TileContentRenderer(canvasHandle, userAccess);
         this.mapLabelRenderer = new MapLabelRenderer(canvasHandle);
     }
 
