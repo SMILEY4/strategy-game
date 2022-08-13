@@ -5,12 +5,12 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityTileContentEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
@@ -35,17 +35,18 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 			val targetTile = findTile(command.data.q, command.data.r, state).bind()
 
 			val validationErrors = mutableListOf<String>().apply {
+				addAll(validateCityName(command.data.name))
 				addAll(validateTileType(targetTile))
-				addAll(validateCitySpacing(state.tiles, targetTile))
+				addAll(validateCitySpacing(state.cities, targetTile))
 				addAll(validateResourceCost(country))
 			}
 
 			if (validationErrors.isEmpty()) {
-				targetTile.content.add(CityTileContentEntity())
 				state.cities.add(
 					CityEntity(
-						tileId = targetTile.key!!,
-						gameId = targetTile.gameId
+						gameId = targetTile.gameId,
+						tile = TileRef(targetTile.key!!, targetTile.position.q, targetTile.position.r),
+						name = command.data.name
 					)
 				)
 				country.resources.money -= CITY_COST
@@ -66,12 +67,25 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 		}
 	}
 
+
 	private fun findTile(q: Int, r: Int, state: GameExtendedEntity): Either<ResolveCommandsActionError, TileEntity> {
 		val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
 		if (targetTile == null) {
 			return ResolveCommandsAction.TileNotFoundError.left()
 		} else {
 			return targetTile.right()
+		}
+	}
+
+
+	/**
+	 * @returns a list of validation errors
+	 */
+	private fun validateCityName(name: String): List<String> {
+		if (name.isNotBlank()) {
+			return emptyList()
+		} else {
+			return listOf("invalid city name")
 		}
 	}
 
@@ -91,14 +105,12 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 	/**
 	 * @returns a list of validation errors
 	 */
-	private fun validateCitySpacing(tiles: List<TileEntity>, target: TileEntity): List<String> {
-		val closestCity = tiles
-			.flatMap { tile -> tile.content.filter { it.type == CityTileContentEntity.TYPE }.map { tile to it } }
-			.map { tileToCity ->
-				val tile = tileToCity.first
-				val city = tileToCity.second
-				val dq = target.position.q - tile.position.q
-				val dr = target.position.r - tile.position.r
+	private fun validateCitySpacing(cities: List<CityEntity>, target: TileEntity): List<String> {
+		val closestCity = cities
+			.map { city ->
+				val tile = city.tile
+				val dq = target.position.q - tile.q
+				val dr = target.position.r - tile.r
 				val dist = sqrt((dq * dq + dr * dr).toDouble())
 				city to dist
 			}

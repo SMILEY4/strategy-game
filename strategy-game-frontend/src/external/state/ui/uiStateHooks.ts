@@ -11,22 +11,25 @@ export namespace UiStateHooks {
         const addFrame = UiStore.useState().addFrame;
         const bringToFront = UiStore.useState().bringFrameToFront;
         const setContent = UiStore.useState().setFrameContent;
-        return (menuId: string, x: number, y: number, width: number, height: number, content: any) => {
+        return (menuId: string, x: number, y: number, width: number, height: number, content: (frameId: string) => any): string => {
             const frame = frames.find(e => e.menuId === menuId);
             if (frame) {
                 setContent(frame.frameId, content);
                 bringToFront(frame.frameId);
+                return frame.frameId
             } else {
+                const frameId = crypto.randomUUID();
                 addFrame({
-                    frameId: crypto.randomUUID(),
+                    frameId: frameId,
                     menuId: menuId,
                     initX: x,
                     initY: y,
                     width: width,
                     height: height,
                     enablePin: true,
-                    content: content
+                    content: content(frameId)
                 });
+                return frameId;
             }
         };
     }
@@ -34,7 +37,7 @@ export namespace UiStateHooks {
     export function useOpenPrimaryMenuDialog(content: any) {
         const open = useOpenFrame();
         return () => {
-            open("topbar.category.menu", 10, 50, 320, 650, content);
+            open("topbar.category.menu", 10, 50, 320, 650, () => content);
         };
     }
 

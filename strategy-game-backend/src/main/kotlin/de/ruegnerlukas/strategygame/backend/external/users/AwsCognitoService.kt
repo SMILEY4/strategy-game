@@ -129,6 +129,7 @@ class AwsCognitoService(
 		return try {
 			val verifier: JWTVerifier = JWT
 				.require(Algorithm.RSA256(AwsCognitoRSAKeyProvider()))
+				.acceptLeeway(30)
 				.build()
 			verifier.verify(token)
 			true

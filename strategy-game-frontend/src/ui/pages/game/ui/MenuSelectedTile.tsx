@@ -1,11 +1,15 @@
-import {ReactElement} from "react";
+import {ReactElement, useState} from "react";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
+import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {AppConfig} from "../../../../main";
-import {Command} from "../../../../models/state/command";
+import {Command, CommandCreateCity} from "../../../../models/state/command";
+import {TextField} from "../../../components/specific/TextField";
 
 
 export function MenuSelectedTile(): ReactElement {
     const selectedTile = LocalGameStateHooks.useSelectedTile();
+    const openFrame = UiStateHooks.useOpenFrame();
+
     return (
         <div>
             <h3>Selected Tile</h3>
@@ -31,12 +35,45 @@ export function MenuSelectedTile(): ReactElement {
 
     function createCity() {
         if (selectedTile) {
-            AppConfig.turnAddCommand.perform({
-                commandType: "create-city",
-                q: selectedTile.q,
-                r: selectedTile.r
-            } as Command);
+            openFrame("dialog.create-city", 300, 30, 320, 200, frameId => <CreateCityDialog frameId={frameId} q={selectedTile.q}
+                                                                                            r={selectedTile.r}/>);
+            // AppConfig.turnAddCommand.perform({
+            //     commandType: "create-city",
+            //     q: selectedTile.q,
+            //     r: selectedTile.r
+            // } as Command);
         }
+    }
+
+}
+
+
+function CreateCityDialog(props: { frameId: string, q: number, r: number }): ReactElement {
+
+    const close = UiStateHooks.useCloseFrame(props.frameId);
+    const [name, setName] = useState("");
+
+    return (
+        <div>
+            Order creation of new city?
+            <TextField value={name} onAccept={setName}/>
+            <button onClick={onCancel}>Cancel</button>
+            <button onClick={onAccept}>Accept</button>
+        </div>
+    );
+
+    function onCancel() {
+        close();
+    }
+
+    function onAccept() {
+        close();
+        AppConfig.turnAddCommand.perform({
+            commandType: "create-city",
+            q: props.q,
+            r: props.r,
+            name: name,
+        } as CommandCreateCity);
     }
 
 }

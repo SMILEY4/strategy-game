@@ -29,7 +29,12 @@ export interface PayloadInitGameState {
         cities: ({
             _key: string,
             gameId: string,
-            tileId: string
+            tile: {
+                tileId: string,
+                q: number,
+                r: number
+            },
+            name: string,
         })[]
     };
 }

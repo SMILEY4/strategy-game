@@ -1,7 +1,7 @@
-import {SetInitWorldStateAction} from "../../../core/actions/gamelobby/SetInitWorldStateAction";
+import {SetInitWorldStateAction} from "../../../core/actions/gamelobby/setInitWorldStateAction";
 import {TurnUpdateWorldStateAction} from "../../../core/actions/turn/turnUpdateWorldStateAction";
-import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
 import {PayloadInitGameState} from "../../../models/messaging/payloadInitGameState";
+import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
 
 
 export class MessageHandler {

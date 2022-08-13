@@ -62,14 +62,14 @@ export class MapLabelRenderer {
 
         const cityNames: string[] = [];
         cities
-            .forEach(e => cityNames.push("City " + e.tile.position.q + "/" + e.tile.position.r));
+            .forEach(c => cityNames.push(c.name));
         commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
-            .forEach(e => cityNames.push("Planned City " + e.q + "/" + e.r));
+            .forEach(e => cityNames.push(e.name + " (P)"));
 
         const wasNewTextAdded = cityNames
-            .map(name => ({
+            .map(name => this.textRenderer.addTextIfNotExists(name, {
                 text: name,
                 width: null,
                 height: 30,
@@ -80,7 +80,6 @@ export class MapLabelRenderer {
                 shadowBlur: 4,
                 shadowColor: "white"
             }))
-            .map(entry => this.textRenderer.addTextIfNotExists(entry.text, entry))
             .some(added => added);
         if (wasNewTextAdded) {
             this.textRenderer.update();
@@ -89,11 +88,11 @@ export class MapLabelRenderer {
         this.batchRenderer.begin(camera);
 
         cities
-            .forEach(e => this.addCityLabel(camera, e.tile.position.q, e.tile.position.r, this.textRenderer.getRegion("City " + e.tile.position.q + "/" + e.tile.position.r)));
+            .forEach(e => this.addCityLabel(camera, e.tile.position.q, e.tile.position.r, this.textRenderer.getRegion(e.name)));
         commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
-            .forEach(e => this.addCityLabel(camera, e.q, e.r, this.textRenderer.getRegion("Planned City " + e.q + "/" + e.r)));
+            .forEach(e => this.addCityLabel(camera, e.q, e.r, this.textRenderer.getRegion(e.name + " (P)")));
 
         this.textRenderer.getTexture()?.bind();
         this.batchRenderer.end(this.shader, {

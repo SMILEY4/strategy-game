@@ -26,9 +26,9 @@ export class TurnUpdateWorldStateAction {
         console.log("update world state");
 
         const markers: Marker[] = [];
-        const cities: City[] = [];
         const tiles: Tile[] = state.game.tiles.map(t => {
             const tile: Tile = {
+                tileId: t._key,
                 position: {
                     q: t.position.q,
                     r: t.position.r
@@ -36,11 +36,6 @@ export class TurnUpdateWorldStateAction {
                 terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER
             };
             t.content.forEach(c => {
-                if (c.type === "city") {
-                    cities.push({
-                        tile: tile
-                    });
-                }
                 if (c.type === "marker") {
                     markers.push({
                         tile: tile,
@@ -50,6 +45,12 @@ export class TurnUpdateWorldStateAction {
             });
             return tile;
         });
+
+        const cities: City[] = state.game.cities.map(city => ({
+            cityId: city._key,
+            name: city.name,
+            tile: tiles.find(t => t.position.q === city.tile.q && t.position.r === city.tile.r)!!
+        }));
 
         const countryColors = state.game.countries
             .map(c => c._key)

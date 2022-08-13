@@ -10,6 +10,7 @@ export interface CommandPlaceMarker extends Command {
 
 export interface CommandCreateCity extends Command {
     commandType: "create-city"
+    name: string,
     q: number,
     r: number,
 }

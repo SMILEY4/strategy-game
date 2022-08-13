@@ -9,7 +9,7 @@ import {GameUpdateAction} from "./core/actions/game/gameUpdateAction";
 import {GameLobbyConnectAction} from "./core/actions/gamelobby/gameLobbyConnectAction";
 import {GameLobbyCreateAction} from "./core/actions/gamelobby/gameLobbyCreateAction";
 import {GameLobbyJoinAction} from "./core/actions/gamelobby/gameLobbyJoinAction";
-import {SetInitWorldStateAction} from "./core/actions/gamelobby/SetInitWorldStateAction";
+import {SetInitWorldStateAction} from "./core/actions/gamelobby/setInitWorldStateAction";
 import {TurnAddCommandAction} from "./core/actions/turn/turnAddCommandAction";
 import {TurnSubmitAction} from "./core/actions/turn/turnSubmitAction";
 import {TurnUpdateWorldStateAction} from "./core/actions/turn/turnUpdateWorldStateAction";
@@ -33,7 +33,7 @@ import {App} from "./ui/App";
 import "./ui/index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-        <App/>
+    <App/>
 );
 // !! Strict-Mode tells react to re-render components twice (calls useEffect 2x) in dev-mode !!
 // ==> handle communication with logic outside react-lifecycle with care (or move strict-mode to "page"-level)
