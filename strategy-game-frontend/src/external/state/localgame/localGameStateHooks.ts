@@ -1,4 +1,4 @@
-import {Command} from "../../../models/state/command";
+import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../models/state/command";
 import {GameState} from "../../../models/state/gameState";
 import {TilePosition} from "../../../models/state/tilePosition";
 import {LocalGameStore} from "./localGameStore";
@@ -9,12 +9,27 @@ export namespace LocalGameStateHooks {
         return LocalGameStore.useState(state => state.currentState);
     }
 
-    export function useSelectedTile(): TilePosition | null {
+    export function useSelectedTilePosition(): TilePosition | null {
         return LocalGameStore.useState(state => state.tileSelected);
     }
 
     export function useCommands(): Command[] {
         return LocalGameStore.useState(state => state.commands);
+    }
+
+    export function useCommandsAt(q: number, r: number): Command[] {
+        return LocalGameStore.useState(state => state.commands.filter(cmd => {
+            if(cmd.commandType === "place-marker") {
+                const cmdMarker = cmd as CommandPlaceMarker
+                return cmdMarker.q === q && cmdMarker.r === r
+            }
+            if(cmd.commandType === "create-city") {
+                const cmdCity = cmd as CommandCreateCity
+                return cmdCity.q === q && cmdCity.r === r
+            }
+            return false;
+        }));
+
     }
 
 }

@@ -1,52 +1,124 @@
-import {ReactElement, useState} from "react";
+import React, {ReactElement, useState} from "react";
 import {GameHooks} from "../../../../core/actions/GameHooks";
+import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {AppConfig} from "../../../../main";
 import {Command, CommandCreateCity} from "../../../../models/state/command";
+import {TilePosition} from "../../../../models/state/tilePosition";
 import {TextField} from "../../../components/specific/TextField";
 
 
 export function MenuSelectedTile(): ReactElement {
-    const selectedTile = LocalGameStateHooks.useSelectedTile();
-    const openFrame = UiStateHooks.useOpenFrame();
-    const canCreateCity = GameHooks.useValidateCreateCity(selectedTile ? selectedTile.q : 9999999, selectedTile ? selectedTile.r : 999999);
-
+    const selectedTile = LocalGameStateHooks.useSelectedTilePosition();
     return (
         <div>
             <h3>Selected Tile</h3>
-            <ul>
-                {selectedTile && <li>{"q: " + selectedTile.q}</li>}
-                {selectedTile && <li>{"r: " + selectedTile.r}</li>}
-                {!selectedTile && <li>no tile selected</li>}
-            </ul>
-            <button onClick={placeMarker} disabled={false}>Place Marker</button>
-            <button onClick={createCity} disabled={!canCreateCity}>Create City</button>
+            <SelectedTileSection selectedTile={selectedTile}/>
+            <SectionMarkers selectedTile={selectedTile}/>
+            <SectionCity selectedTile={selectedTile}/>
+            <SectionCommands selectedTile={selectedTile}/>
         </div>
     );
+}
+
+
+function SelectedTileSection(props: { selectedTile: TilePosition | null }): ReactElement {
+    return (
+        <ul>
+            {props.selectedTile && <li>{"q: " + props.selectedTile.q}</li>}
+            {props.selectedTile && <li>{"r: " + props.selectedTile.r}</li>}
+            {!props.selectedTile && <li>no tile selected</li>}
+        </ul>
+    );
+}
+
+
+function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElement | null {
 
     function placeMarker() {
-        if (selectedTile) {
+        if (props.selectedTile) {
             AppConfig.turnAddCommand.perform({
                 commandType: "place-marker",
                 cost: {
                     money: 0
                 },
-                q: selectedTile.q,
-                r: selectedTile.r
+                q: props.selectedTile.q,
+                r: props.selectedTile.r
             } as Command);
         }
     }
 
+    if (props.selectedTile) {
+        return (
+            <>
+                <h3>Marker</h3>
+                <button onClick={placeMarker}>Place Marker</button>
+            </>
+        );
+    } else {
+        return null;
+    }
+}
+
+
+function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement | null {
+    const city = GameStateHooks.useCityAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canCreateCity = GameHooks.useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const openFrame = UiStateHooks.useOpenFrame();
+
+
     function createCity() {
-        if (selectedTile) {
+        if (props.selectedTile) {
             openFrame(
                 "dialog.create-city", 300, 30, 320, 200,
-                frameId => <CreateCityDialog frameId={frameId} q={selectedTile.q} r={selectedTile.r}/>
+                frameId => <CreateCityDialog frameId={frameId} q={props.selectedTile!!.q} r={props.selectedTile!!.r}/>
             );
         }
     }
 
+    if (props.selectedTile) {
+        return (
+            <>
+                <h3>City</h3>
+                {city && (
+                    <ul>
+                        <li>{"name: " + city.name}</li>
+                    </ul>
+                )}
+                {!city && (
+                    <button onClick={createCity} disabled={!canCreateCity}>Create City</button>
+                )}
+            </>
+        );
+    } else {
+        return null;
+    }
+}
+
+
+function SectionCommands(props: { selectedTile: TilePosition | null }): ReactElement | null {
+    const commands = LocalGameStateHooks.useCommandsAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    if (props.selectedTile) {
+        return (
+            <>
+                <h3>Commands</h3>
+                <ul>
+                    {commands.map(cmd => {
+                        if (cmd.commandType === "place-marker") {
+                            return <li>Place Marker</li>;
+                        }
+                        if (cmd.commandType === "create-city") {
+                            return <li>{"Create City '" + (cmd as CommandCreateCity).name + "'"}</li>;
+                        }
+                        return <li>?</li>;
+                    })}
+                </ul>
+            </>
+        );
+    } else {
+        return null;
+    }
 }
 
 
