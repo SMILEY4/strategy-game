@@ -7,16 +7,16 @@ import {GameState} from "../../../models/state/gameState";
  */
 export class TurnAddCommandAction {
 
-    private readonly gameStateAccess: LocalGameStateAccess;
+    private readonly localGameStateAccess: LocalGameStateAccess;
 
     constructor(gameStateAccess: LocalGameStateAccess) {
-        this.gameStateAccess = gameStateAccess;
+        this.localGameStateAccess = gameStateAccess;
     }
 
     perform(command: Command): void {
         console.log("add command", command)
-        if (this.gameStateAccess.getCurrentState() == GameState.PLAYING) {
-            this.gameStateAccess.addCommand(command);
+        if (this.localGameStateAccess.getCurrentState() == GameState.PLAYING) {
+            this.localGameStateAccess.addCommand(command);
         }
     }
 

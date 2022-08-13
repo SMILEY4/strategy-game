@@ -1,5 +1,8 @@
 export interface Command {
     commandType: "place-marker" | "create-city";
+    cost: {
+        money: number
+    }
 }
 
 export interface CommandPlaceMarker extends Command {

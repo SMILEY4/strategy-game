@@ -9,7 +9,7 @@ export namespace GameStore {
     interface StateValues {
         currentTurn: number
         countries: Country[],
-        map: Tile[],
+        tiles: Tile[],
         markers: Marker[],
         cities: City[]
     }
@@ -17,7 +17,7 @@ export namespace GameStore {
     const initialStateValues: StateValues = {
         currentTurn: 0,
         countries: [],
-        map: [],
+        tiles: [],
         markers: [],
         cities: []
     };
@@ -39,7 +39,7 @@ export namespace GameStore {
                 countries: countries,
             })),
             setTiles: (tiles: Tile[]) => set(() => ({
-                map: tiles,
+                tiles: tiles,
             })),
             setMarkers: (markers: Marker[]) => set(() => ({
                 markers: markers,

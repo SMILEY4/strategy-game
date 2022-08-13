@@ -7,20 +7,20 @@ import {GameState} from "../../../models/state/gameState";
  */
 export class TurnSubmitAction {
 
-    private readonly gameStateAccess: LocalGameStateAccess;
+    private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly gameMsgApi: GameMessagingApi;
 
     constructor(gameStateAccess: LocalGameStateAccess, gameMsgApi: GameMessagingApi) {
-        this.gameStateAccess = gameStateAccess;
+        this.localGameStateAccess = gameStateAccess;
         this.gameMsgApi = gameMsgApi;
     }
 
     perform(): void {
         console.log("submit turn")
-        if (this.gameStateAccess.getCurrentState() == GameState.PLAYING) {
-            const commands = this.gameStateAccess.getCommands();
+        if (this.localGameStateAccess.getCurrentState() == GameState.PLAYING) {
+            const commands = this.localGameStateAccess.getCommands();
             this.gameMsgApi.sendSubmitTurn(commands);
-            this.gameStateAccess.setCurrentState(GameState.SUBMITTED);
+            this.localGameStateAccess.setCurrentState(GameState.SUBMITTED);
         }
     }
 

@@ -1,4 +1,5 @@
 import {ReactElement, useState} from "react";
+import {GameHooks} from "../../../../core/actions/GameHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {AppConfig} from "../../../../main";
@@ -9,6 +10,7 @@ import {TextField} from "../../../components/specific/TextField";
 export function MenuSelectedTile(): ReactElement {
     const selectedTile = LocalGameStateHooks.useSelectedTile();
     const openFrame = UiStateHooks.useOpenFrame();
+    const canCreateCity = GameHooks.useValidateCreateCity(selectedTile ? selectedTile.q : 9999999, selectedTile ? selectedTile.r : 999999);
 
     return (
         <div>
@@ -19,7 +21,7 @@ export function MenuSelectedTile(): ReactElement {
                 {!selectedTile && <li>no tile selected</li>}
             </ul>
             <button onClick={placeMarker} disabled={false}>Place Marker</button>
-            <button onClick={createCity} disabled={false}>Create City</button>
+            <button onClick={createCity} disabled={!canCreateCity}>Create City</button>
         </div>
     );
 
@@ -27,6 +29,9 @@ export function MenuSelectedTile(): ReactElement {
         if (selectedTile) {
             AppConfig.turnAddCommand.perform({
                 commandType: "place-marker",
+                cost: {
+                    money: 0
+                },
                 q: selectedTile.q,
                 r: selectedTile.r
             } as Command);
@@ -35,13 +40,10 @@ export function MenuSelectedTile(): ReactElement {
 
     function createCity() {
         if (selectedTile) {
-            openFrame("dialog.create-city", 300, 30, 320, 200, frameId => <CreateCityDialog frameId={frameId} q={selectedTile.q}
-                                                                                            r={selectedTile.r}/>);
-            // AppConfig.turnAddCommand.perform({
-            //     commandType: "create-city",
-            //     q: selectedTile.q,
-            //     r: selectedTile.r
-            // } as Command);
+            openFrame(
+                "dialog.create-city", 300, 30, 320, 200,
+                frameId => <CreateCityDialog frameId={frameId} q={selectedTile.q} r={selectedTile.r}/>
+            );
         }
     }
 
@@ -70,6 +72,9 @@ function CreateCityDialog(props: { frameId: string, q: number, r: number }): Rea
         close();
         AppConfig.turnAddCommand.perform({
             commandType: "create-city",
+            cost: {
+                money: 50
+            },
             q: props.q,
             r: props.r,
             name: name,
