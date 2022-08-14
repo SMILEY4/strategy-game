@@ -44,7 +44,7 @@ class TurnTest : StringSpec({
 		connectToGame.perform(userId2, gameId, 2) shouldBeOk true
 
 		// one user submits commands -> expect game still on turn 0 and two saved commands
-		val resultSubmit1 = submitTurn.perform(userId1, gameId, listOf(PlaceMarkerCommand(q = 4, r = 2), CreateCityCommand(q = 4, r = 3)))
+		val resultSubmit1 = submitTurn.perform(userId1, gameId, listOf(PlaceMarkerCommand(q = 4, r = 2), CreateCityCommand(q = 4, r = 3, name = "Test")))
 		resultSubmit1 shouldBeOk true
 		TestUtils.getGame(database, gameId).turn shouldBe 0
 		TestUtils.getCommands(database, gameId, 0).let { commands ->

@@ -21,7 +21,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
+		val resolveCommands = TestActions.resolveCommandsAction()
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -29,7 +29,9 @@ class CommandResolutionTest : StringSpec({
 		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
-		val result = resolveCommands.perform(gameId, listOf(cmdPlaceMarker(countryId, 4, 2)))
+		val result = TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, listOf(cmdPlaceMarker(countryId, 4, 2)))
+		}
 		result shouldBeOk true
 		(result as Either.Right).value shouldHaveSize 0
 		TestUtils.getMarkers(database, gameId) shouldHaveSize 1
@@ -40,7 +42,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
+		val resolveCommands = TestActions.resolveCommandsAction()
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -49,7 +51,9 @@ class CommandResolutionTest : StringSpec({
 
 		// resolve commands
 		val commands = listOf(cmdPlaceMarker(countryId, 4, 2), cmdPlaceMarker(countryId, 4, 2))
-		val result = resolveCommands.perform(gameId, commands)
+		val result = TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, commands)
+		}
 		result shouldBeOk true
 		(result as Either.Right).value.let { errors ->
 			errors shouldHaveSize 1
@@ -68,7 +72,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
+		val resolveCommands = TestActions.resolveCommandsAction()
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -76,7 +80,9 @@ class CommandResolutionTest : StringSpec({
 		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
 		// resolve commands
-		val result = resolveCommands.perform(gameId, listOf(cmdCreateCity(countryId, 4, 2)))
+		val result = TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, listOf(cmdCreateCity(countryId, 4, 2)))
+		}
 		result shouldBeOk true
 		(result as Either.Right).value shouldHaveSize 0
 		TestUtils.getCities(database, gameId) shouldHaveSize 1
@@ -87,7 +93,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
+		val resolveCommands = TestActions.resolveCommandsAction()
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.WATER))
@@ -96,7 +102,9 @@ class CommandResolutionTest : StringSpec({
 
 		// resolve commands
 		val command = cmdCreateCity(countryId, 4, 2)
-		val result = resolveCommands.perform(gameId, listOf(command))
+		val result = TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, listOf(command))
+		}
 		result shouldBeOk true
 		(result as Either.Right).value.let { errors ->
 			errors shouldHaveSize 1
@@ -115,7 +123,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
+		val resolveCommands = TestActions.resolveCommandsAction()
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -124,7 +132,9 @@ class CommandResolutionTest : StringSpec({
 
 		// resolve commands
 		val commands = listOf(cmdCreateCity(countryId, 4, 2), cmdCreateCity(countryId, 5, 2))
-		val result = resolveCommands.perform(gameId, commands)
+		val result = TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, commands)
+		}
 		result shouldBeOk true
 		(result as Either.Right).value.let { errors ->
 			errors shouldHaveSize 1
@@ -155,8 +165,9 @@ class CommandResolutionTest : StringSpec({
 			turn = 0,
 			data = CreateCityCommandDataEntity(
 				q = q,
-				r = r
-			)
+				r = r,
+				name = "Test City",
+			),
 		)
 	}
 }

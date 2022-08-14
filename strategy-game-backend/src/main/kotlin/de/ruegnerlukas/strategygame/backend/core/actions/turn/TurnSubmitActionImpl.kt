@@ -116,7 +116,8 @@ class TurnSubmitActionImpl(
 			countryId = country.key!!,
 			data = CreateCityCommandDataEntity(
 				q = cmd.q,
-				r = cmd.r
+				r = cmd.r,
+				name = cmd.name.trim()
 			)
 		)
 	}

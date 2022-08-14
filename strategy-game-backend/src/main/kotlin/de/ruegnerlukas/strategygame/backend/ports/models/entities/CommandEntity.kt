@@ -30,7 +30,8 @@ sealed class CommandDataEntity(
 @JsonTypeName(CreateCityCommandDataEntity.TYPE)
 class CreateCityCommandDataEntity(
 	val q: Int,
-	val r: Int
+	val r: Int,
+	val name: String,
 ) : CommandDataEntity(TYPE) {
 	companion object {
 		internal const val TYPE = "create-city"

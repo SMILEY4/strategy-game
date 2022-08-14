@@ -45,7 +45,7 @@ class GameCreateActionImpl(
 				gameId = "",
 				position = TilePositionEntity(it.q, it.r),
 				data = TileDataEntity(
-					terrainType = it.data.type.name,
+					terrainType = it.type.name,
 				),
 				content = trackingListOf()
 			)

@@ -4,5 +4,7 @@ import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
 
 class CityEntity(
 	val gameId: String,
-	val tileId: String,
+	val countryId: String,
+	val tile: TileRef,
+	val name: String,
 ) : DbEntity()

@@ -14,6 +14,7 @@ export interface PayloadInitTurnState {
             }
         })[],
         tiles: ({
+            _key: string,
             gameId: string,
             position: {
                 q: number,
@@ -25,8 +26,15 @@ export interface PayloadInitTurnState {
             content: MsgTileContent[]
         })[],
         cities: ({
+            _key: string,
             gameId: string,
-            tileId: string
+            countryId: string,
+            tile: {
+                tileId: string,
+                q: number,
+                r: number
+            },
+            name: string,
         })[]
 
     },

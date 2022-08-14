@@ -1,3 +1,4 @@
+import jwt_decode from "jwt-decode";
 import create, {SetState} from "zustand";
 
 export namespace UserStore {
@@ -38,5 +39,13 @@ export namespace UserStore {
         ...initialStateValues,
         ...stateActions(set)
     }));
+
+    export function userIdFromToken(token: string): string {
+        if (token) {
+            return (jwt_decode(token) as any).sub;
+        } else {
+            return "";
+        }
+    }
 
 }

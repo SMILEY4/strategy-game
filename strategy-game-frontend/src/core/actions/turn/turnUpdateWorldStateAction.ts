@@ -25,32 +25,6 @@ export class TurnUpdateWorldStateAction {
     perform(state: PayloadInitTurnState): void {
         console.log("update world state");
 
-        const markers: Marker[] = [];
-        const cities: City[] = [];
-        const tiles: Tile[] = state.game.tiles.map(t => {
-            const tile: Tile = {
-                position: {
-                    q: t.position.q,
-                    r: t.position.r
-                },
-                terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER
-            };
-            t.content.forEach(c => {
-                if (c.type === "city") {
-                    cities.push({
-                        tile: tile
-                    });
-                }
-                if (c.type === "marker") {
-                    markers.push({
-                        tile: tile,
-                        countryId: (c as MsgMarkerTileContent).countryId
-                    });
-                }
-            });
-            return tile;
-        });
-
         const countryColors = state.game.countries
             .map(c => c._key)
             .sort()
@@ -63,6 +37,34 @@ export class TurnUpdateWorldStateAction {
                 money: country.resources.money
             },
             color: (countryColors.find(e => e[0] === country._key)!!)[1] as CountryColor
+        }));
+
+        const markers: Marker[] = [];
+        const tiles: Tile[] = state.game.tiles.map(t => {
+            const tile: Tile = {
+                tileId: t._key,
+                position: {
+                    q: t.position.q,
+                    r: t.position.r
+                },
+                terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER
+            };
+            t.content.forEach(c => {
+                if (c.type === "marker") {
+                    markers.push({
+                        tile: tile,
+                        countryId: (c as MsgMarkerTileContent).countryId
+                    });
+                }
+            });
+            return tile;
+        });
+
+        const cities: City[] = state.game.cities.map(city => ({
+            cityId: city._key,
+            name: city.name,
+            country: countries.find(c => c.countryId === city.countryId)!!,
+            tile: tiles.find(t => t.position.q === city.tile.q && t.position.r === city.tile.r)!!
         }));
 
         this.gameStateAccess.setCountries(countries);

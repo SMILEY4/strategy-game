@@ -7,12 +7,12 @@ export function JoinedGames(): ReactElement {
 
     useEffect(() => {
         AppConfig.apiGame.list()
-            .then(list => setGames(list));
-    });
+            .then((list: string[]) => setGames(list));
+    }, []);
 
     return (
         <div>
-            <b>Joined Worlds:</b>
+            <b>Joined Games:</b>
             {games.map(g => (<div>{g}</div>))}
         </div>
     );

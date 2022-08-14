@@ -1,4 +1,3 @@
-import jwt_decode from "jwt-decode";
 import {UserStore} from "./userStore";
 
 export class UserStateAccess {
@@ -14,6 +13,11 @@ export class UserStateAccess {
     getToken(): string {
         const token = UserStore.useState.getState().idToken;
         return token ? token : "";
+    }
+
+    getUserId(): string {
+        const token = this.getToken();
+        return UserStore.userIdFromToken(token);
     }
 
 }

@@ -22,9 +22,18 @@ export class GameInputClickAction {
         const tile = this.tilePicker.tileAt(x, y);
         if (tile) {
             this.gameStateAccess.setSelectedTile(tile.position.q, tile.position.r);
-            this.uiStateAccess.openFrame("topbar.category.menu", 10, 50, 320, 650, (
-                <MenuSelectedTile/>
-            ));
+            this.uiStateAccess.openFrame(
+                "topbar.category.menu",
+                {
+                    vertical: {
+                        x: 10,
+                        width: 320,
+                        top: 50,
+                        bottom: 10
+                    }
+                },
+                () => <MenuSelectedTile/>
+            );
         } else {
             this.gameStateAccess.clearSelectedTile();
         }

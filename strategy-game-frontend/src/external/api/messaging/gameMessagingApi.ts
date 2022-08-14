@@ -16,6 +16,7 @@ export class GameMessagingApi {
     }
 
     open(gameId: string): Promise<void> {
+        console.log("OPEN WS", `/api/game/${gameId}?token=${this.userStateAccess.getToken()}`);
         return this.websocketClient.open(`/api/game/${gameId}?token=${this.userStateAccess.getToken()}`, message => {
             this.messageHandler.onMessage(message.type, message.payload);
         });
@@ -29,7 +30,7 @@ export class GameMessagingApi {
         this.websocketClient.send("submit-turn", {
                 commands: commands.map(cmd => {
                     if (cmd.commandType === "place-marker") {
-                        const cmdPlaceMarker = cmd as CommandPlaceMarker
+                        const cmdPlaceMarker = cmd as CommandPlaceMarker;
                         return {
                             type: "place-marker",
                             q: cmdPlaceMarker.q,
@@ -37,9 +38,10 @@ export class GameMessagingApi {
                         };
                     }
                     if (cmd.commandType === "create-city") {
-                        const cmdCreateCity = cmd as CommandCreateCity
+                        const cmdCreateCity = cmd as CommandCreateCity;
                         return {
                             type: "create-city",
+                            name: cmdCreateCity.name,
                             q: cmdCreateCity.q,
                             r: cmdCreateCity.r,
                         };

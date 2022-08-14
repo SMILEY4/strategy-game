@@ -30,19 +30,11 @@ data class TileDataEntity(
 	property = "type"
 )
 @JsonSubTypes(
-	JsonSubTypes.Type(value = CityTileContentEntity::class),
+	JsonSubTypes.Type(value = MarkerTileContentEntity::class),
 )
 sealed class TileContentEntity(
 	val type: String
 )
-
-
-@JsonTypeName(CityTileContentEntity.TYPE)
-class CityTileContentEntity : TileContentEntity(TYPE) {
-	companion object {
-		internal const val TYPE = "city"
-	}
-}
 
 
 @JsonTypeName(MarkerTileContentEntity.TYPE)

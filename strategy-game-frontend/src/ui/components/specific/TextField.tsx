@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {useTextInput} from "../../primitives/textInputPrimitive";
+import {useTextInput} from "../primitives/textInputPrimitive";
 
 export function TextField(props: {value: string, onAccept: (value: string) => void}): ReactElement {
 
@@ -15,7 +15,7 @@ export function TextField(props: {value: string, onAccept: (value: string) => vo
 		<input
 			type="text"
 			value={currentValue}
-			placeholder="placeholder"
+			placeholder=""
 			disabled={isDisabled}
 			onChange={handleChange}
 			onBlur={handleBlur}

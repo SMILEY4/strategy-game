@@ -288,6 +288,7 @@ All messages follow the following format
               "type": "create-city",
               "q": "Int - the q-coordinate of the new city",
               "r": "Int - the r-coordinate of the new city",
+              "name": "String - the name of the new city"
           }
       ]
   }
@@ -333,7 +334,6 @@ All messages follow the following format
                       "terrainType": "String - the type of the terrain",
                   },
                   "content": [
-                      { "type": "city" },
                       {
                           "type": "marker",
                           "countryId": "string - id of the country"
@@ -345,7 +345,13 @@ All messages follow the following format
           	{
                   "_key": "String - id of the city",
                   "gameId": "String - the id of the game",
-                  "tileId": "String - the id of the tile"
+                  "countryId": "String - the id of the owner-country",
+                  "tile": {
+                  	"tileId": "String - the id of the tile",
+                      "q": "Int - the q-coordinate of the tile",
+                      "r": "Int - the r-coordinate of the tile",
+                  },
+                  "name": "String - the name of the city"
               }
           ]
       }
@@ -392,7 +398,6 @@ All messages follow the following format
                       "terrainType": "String - the type of the terrain",
                   },
                   "content": [
-                      { "type": "city" },
                       { "type": "marker" }
                   ]
               }
@@ -401,7 +406,13 @@ All messages follow the following format
               {
                   "_key": "String - the id of the city",
                   "gameId": "String - the id of the game",
-                  "tileId": "String - the id of the tile"
+                  "countryId": "String - the id of the owner-country",
+                  "tile": {
+                  	"tileId": "String - the id of the tile",
+                      "q": "Int - the q-coordinate of the tile",
+                      "r": "Int - the r-coordinate of the tile",
+                  },
+                  "name": "String - the name of the city"
               }
           ]
       },

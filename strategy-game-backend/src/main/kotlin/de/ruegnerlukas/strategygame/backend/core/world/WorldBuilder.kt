@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.core.world
 import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilePosition
 import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilemapPositionsBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.world.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
 import de.ruegnerlukas.strategygame.backend.shared.FastNoiseLite
@@ -30,10 +29,7 @@ class WorldBuilder {
 		return Tile(
 			q = position.q,
 			r = position.r,
-			data = TileData(
-				type = settings.singleTileType ?: tileTypeAt(position)
-			),
-			entities = listOf()
+			type = settings.singleTileType ?: tileTypeAt(position)
 		)
 	}
 

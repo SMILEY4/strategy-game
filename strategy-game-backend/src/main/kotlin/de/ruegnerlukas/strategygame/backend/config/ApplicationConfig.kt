@@ -16,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImp
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResultActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
@@ -118,16 +119,16 @@ fun Application.module() {
 		queryGame,
 	)
 	val resolveCommandsAction = ResolveCommandsActionImpl(
-		queryGameExtended,
-		updateGameExtended,
 		resolvePlaceMarkerCommandAction,
 		resolveCreateCityCommandAction
 	)
+	val turnUpdateActionImpl = TurnUpdateActionImpl()
 	val turnEndAction = TurnEndActionImpl(
 		resolveCommandsAction,
 		broadcastTurnResultAction,
-		queryGame,
-		updateGame,
+		turnUpdateActionImpl,
+		queryGameExtended,
+		updateGameExtended,
 		queryCommandsByGame
 	)
 	val turnSubmitAction = TurnSubmitActionImpl(
