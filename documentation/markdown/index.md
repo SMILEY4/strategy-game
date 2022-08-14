@@ -9,7 +9,7 @@
   - [Frontend](./technical/frontend.md)
   - [Resources and useful Links](./technical/usefulresources.md)
 - Gameplay
+  - [Ideas/Brainstorming](./game/ideas.md)
   - [Cities](./game/cities.md)
-
 - [Changelog](./changelog/changelog.md)
 
