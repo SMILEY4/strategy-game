@@ -1,5 +1,5 @@
 export interface MsgTileContent {
-    type: "city" | "marker";
+    type: "marker";
 }
 
 export interface MsgMarkerTileContent extends MsgTileContent {

@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.core
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions

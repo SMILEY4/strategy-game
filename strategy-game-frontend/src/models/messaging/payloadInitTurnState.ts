@@ -2,19 +2,16 @@ import {MsgTileContent} from "./messagingTileContent";
 
 export interface PayloadInitTurnState {
     game: {
-        game: {
-            turn: number,
-            players: any,
-        }
+        turn: number,
         countries: ({
-            _key: string,
+            countryId: string,
             userId: string,
             resources: {
                 money: number
             }
         })[],
         tiles: ({
-            _key: string,
+            tileId: string,
             gameId: string,
             position: {
                 q: number,
@@ -26,8 +23,7 @@ export interface PayloadInitTurnState {
             content: MsgTileContent[]
         })[],
         cities: ({
-            _key: string,
-            gameId: string,
+            cityId: string,
             countryId: string,
             tile: {
                 tileId: string,
@@ -40,6 +36,5 @@ export interface PayloadInitTurnState {
     },
     errors: ({
         errorMessage: string,
-        command: any
     })[]
 }

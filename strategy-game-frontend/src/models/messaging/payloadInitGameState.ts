@@ -2,21 +2,16 @@ import {MsgTileContent} from "./messagingTileContent";
 
 export interface PayloadInitGameState {
     game: {
-        game: {
-            _key: string,
-            turn: number,
-            players: any,
-        },
+        turn: number,
         countries: ({
-            _key: string,
+            countryId: string,
             userId: string,
             resources: {
                 money: number
             }
         })[],
         tiles: ({
-            _key: string,
-            gameId: string,
+            tileId: string,
             position: {
                 q: number,
                 r: number
@@ -27,8 +22,7 @@ export interface PayloadInitGameState {
             content: MsgTileContent[]
         })[],
         cities: ({
-            _key: string,
-            gameId: string,
+            cityId: string,
             countryId: string,
             tile: {
                 tileId: string,

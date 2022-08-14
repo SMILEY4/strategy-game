@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models.game
+package de.ruegnerlukas.strategygame.backend.ports.models
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

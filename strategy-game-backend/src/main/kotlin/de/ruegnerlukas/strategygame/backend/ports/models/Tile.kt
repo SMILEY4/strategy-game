@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models.world
+package de.ruegnerlukas.strategygame.backend.ports.models
 
 
 enum class TileType {

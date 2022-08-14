@@ -3,23 +3,21 @@ package de.ruegnerlukas.strategygame.backend.ports.models.entities
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
 
 data class TileEntity(
 	var gameId: String,
-	val position: TilePositionEntity,
-	val data: TileDataEntity,
-	val content: MutableList<TileContentEntity>
+	val position: TilePosition,
+	val data: TileData,
+	val content: MutableList<TileContent>
 ) : DbEntity()
 
 
-data class TilePositionEntity(
-	var q: Int,
-	var r: Int
-)
 
 
-data class TileDataEntity(
+
+data class TileData(
 	var terrainType: String,
 )
 
@@ -30,17 +28,17 @@ data class TileDataEntity(
 	property = "type"
 )
 @JsonSubTypes(
-	JsonSubTypes.Type(value = MarkerTileContentEntity::class),
+	JsonSubTypes.Type(value = MarkerTileContent::class),
 )
-sealed class TileContentEntity(
+sealed class TileContent(
 	val type: String
 )
 
 
-@JsonTypeName(MarkerTileContentEntity.TYPE)
-class MarkerTileContentEntity(
+@JsonTypeName(MarkerTileContent.TYPE)
+class MarkerTileContent(
 	val countryId: String
-) : TileContentEntity(TYPE) {
+) : TileContent(TYPE) {
 	companion object {
 		internal const val TYPE = "marker"
 	}

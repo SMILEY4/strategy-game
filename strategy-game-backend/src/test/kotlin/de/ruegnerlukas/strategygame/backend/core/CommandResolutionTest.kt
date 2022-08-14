@@ -4,9 +4,9 @@ import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
-import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory

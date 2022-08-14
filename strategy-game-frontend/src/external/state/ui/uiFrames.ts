@@ -45,7 +45,7 @@ export namespace UiFrames {
     ): string {
         const frame = frames.find(e => e.menuId === menuId);
         if (frame) {
-            setContent(frame.frameId, content);
+            setContent(frame.frameId, content(frame.frameId));
             bringToFront(frame.frameId);
             return frame.frameId;
         } else {

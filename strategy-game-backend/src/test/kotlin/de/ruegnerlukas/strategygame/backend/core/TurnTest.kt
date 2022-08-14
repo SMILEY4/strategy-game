@@ -3,10 +3,10 @@ package de.ruegnerlukas.strategygame.backend.core
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
-import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory

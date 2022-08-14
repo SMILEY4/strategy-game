@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models.entities
+package de.ruegnerlukas.strategygame.backend.ports.models
 
 data class TileRef(
 	val tileId: String,

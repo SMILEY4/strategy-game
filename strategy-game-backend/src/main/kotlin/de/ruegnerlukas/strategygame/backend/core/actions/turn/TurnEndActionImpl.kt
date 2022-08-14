@@ -5,7 +5,7 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.BroadcastTurnResultAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction

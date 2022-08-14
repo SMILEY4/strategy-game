@@ -66,7 +66,7 @@ fun Route.gameWebsocketRoutes(
 									is Frame.Text -> WebsocketUtils.buildMessage<Message<*>>(userService, connectionId, call, frame).let {
 										messageHandler.onMessage(it)
 									}
-									else -> logger.warn("Unknown frame-type: ${frame.frameType}")
+									else -> logger.warn("Unknown websocket frame-type: ${frame.frameType}")
 								}
 							}
 						} finally {

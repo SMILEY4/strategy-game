@@ -5,9 +5,9 @@ import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
 data class CountryEntity(
 	val gameId: String,
 	val userId: String,
-	val resources: CountryResourcesEntity
+	val resources: CountryResources
 ) : DbEntity()
 
-data class CountryResourcesEntity(
+data class CountryResources(
 	var money: Float
 )
