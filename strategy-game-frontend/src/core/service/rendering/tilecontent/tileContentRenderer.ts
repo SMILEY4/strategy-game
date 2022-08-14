@@ -105,12 +105,12 @@ export class TileContentRenderer {
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
         this.batchRenderer.add([
-            [x - width, y + height, 0.5, 0, ...color],
-            [x + width, y + height, 1, 0, ...color],
-            [x + width, y - height, 1, 1, ...color],
-            [x - width, y + height, 0.5, 0, ...color],
-            [x + width, y - height, 1, 1, ...color],
-            [x - width, y - height, 0.5, 1, ...color],
+            [x - width, y + height, 0.5, 1, ...color],
+            [x + width, y + height, 1, 1, ...color],
+            [x + width, y - height, 1, 0, ...color],
+            [x - width, y + height, 0.5, 1, ...color],
+            [x + width, y - height, 1, 0, ...color],
+            [x - width, y - height, 0.5, 0, ...color],
         ]);
     }
 
@@ -119,12 +119,12 @@ export class TileContentRenderer {
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
         this.batchRenderer.add([
-            [x - width, y + height, 0, 0, ...color],
-            [x + width, y + height, 0.5, 0, ...color],
-            [x + width, y - height, 0.5, 1, ...color],
-            [x - width, y + height, 0, 0, ...color],
-            [x + width, y - height, 0.5, 1, ...color],
-            [x - width, y - height, 0, 1, ...color],
+            [x - width, y + height, 0, 1, ...color],
+            [x + width, y + height, 0.5, 1, ...color],
+            [x + width, y - height, 0.5, 0, ...color],
+            [x - width, y + height, 0, 1, ...color],
+            [x + width, y - height, 0.5, 0, ...color],
+            [x - width, y - height, 0, 0, ...color],
         ]);
     }
 
