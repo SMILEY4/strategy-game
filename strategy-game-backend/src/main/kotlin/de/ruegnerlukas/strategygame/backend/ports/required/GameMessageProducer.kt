@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.required
 
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 
 interface GameMessageProducer {
 

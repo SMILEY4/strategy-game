@@ -12,7 +12,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContentEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
@@ -50,17 +50,17 @@ object TestUtils {
 			.players
 	}
 
-	suspend fun getMarkersAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<Pair<TileEntity, MarkerTileContentEntity>> {
+	suspend fun getMarkersAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<Pair<TileEntity, MarkerTileContent>> {
 		return getMarkers(database, gameId)
 			.filter { it.first.position.q == q && it.first.position.r == r }
 	}
 
-	suspend fun getMarkers(database: ArangoDatabase, gameId: String): List<Pair<TileEntity, MarkerTileContentEntity>> {
+	suspend fun getMarkers(database: ArangoDatabase, gameId: String): List<Pair<TileEntity, MarkerTileContent>> {
 		return getTiles(database, gameId)
 			.filter { it.content.isNotEmpty() }
 			.flatMap { tile -> tile.content.map { tile to it } }
-			.filter { it.second is MarkerTileContentEntity }
-			.map { it.first to (it.second as MarkerTileContentEntity) }
+			.filter { it.second is MarkerTileContent }
+			.map { it.first to (it.second as MarkerTileContent) }
 	}
 
 	suspend fun getCitiesAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<CityEntity> {

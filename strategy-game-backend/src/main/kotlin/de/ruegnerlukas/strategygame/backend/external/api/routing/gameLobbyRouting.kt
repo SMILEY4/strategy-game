@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
@@ -13,7 +13,6 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import java.util.Random
 
 
 /**
@@ -44,7 +43,7 @@ fun Route.gameLobbyRoutes(
 				val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
 				when (result) {
 					is Either.Right -> {
-						call.respond(HttpStatusCode.OK, result.value)
+						call.respond(HttpStatusCode.OK, Unit)
 					}
 					is Either.Left -> when (result.value) {
 						GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)

@@ -7,14 +7,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class ResolveCommandsActionImpl(

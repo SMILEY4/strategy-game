@@ -26,23 +26,23 @@ export class TurnUpdateWorldStateAction {
         console.log("update world state");
 
         const countryColors = state.game.countries
-            .map(c => c._key)
+            .map(c => c.countryId)
             .sort()
             .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
 
         const countries: Country[] = state.game.countries.map(country => ({
-            countryId: country._key,
+            countryId: country.countryId,
             userId: country.userId,
             resources: {
                 money: country.resources.money
             },
-            color: (countryColors.find(e => e[0] === country._key)!!)[1] as CountryColor
+            color: (countryColors.find(e => e[0] === country.countryId)!!)[1] as CountryColor
         }));
 
         const markers: Marker[] = [];
         const tiles: Tile[] = state.game.tiles.map(t => {
             const tile: Tile = {
-                tileId: t._key,
+                tileId: t.tileId,
                 position: {
                     q: t.position.q,
                     r: t.position.r
@@ -61,7 +61,7 @@ export class TurnUpdateWorldStateAction {
         });
 
         const cities: City[] = state.game.cities.map(city => ({
-            cityId: city._key,
+            cityId: city.cityId,
             name: city.name,
             country: countries.find(c => c.countryId === city.countryId)!!,
             tile: tiles.find(t => t.position.q === city.tile.q && t.position.r === city.tile.r)!!
@@ -71,7 +71,7 @@ export class TurnUpdateWorldStateAction {
         this.gameStateAccess.setTiles(tiles);
         this.gameStateAccess.setMarkers(markers);
         this.gameStateAccess.setCities(cities);
-        this.gameStateAccess.setCurrentTurn(state.game.game.turn);
+        this.gameStateAccess.setCurrentTurn(state.game.turn);
         this.localGameStateAccess.clearCommands();
         this.localGameStateAccess.setCurrentState(GameState.PLAYING);
     }

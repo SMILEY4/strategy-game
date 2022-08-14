@@ -303,19 +303,10 @@ All messages follow the following format
   ```json
   {
       "game": {
-          "game": {
-              "_key": "String - id of the game",
-              "turn": "Int - the current turn",
-              "players": [
-                  "userId": "String - the id of the user",
-                  "connectionId": "Int | null - the id of the ws-connection",
-                  "state": "String - the current player state"
-              ],
-          },
+          "turn": "Int - the current turn",
           "countries": [
               {
-                  "_key": "String - id of the country",
-                  "gameId": "String - the id of the game",
+                  "countryId": "String - the id of the country",
                   "userId": "String - the id of the owner",
                   "resources": {
                       "money": "Float - the amount of available money"
@@ -323,9 +314,8 @@ All messages follow the following format
               }
           ],
           "tiles": [
-          	{
-                  "_key": "String - id of the tile",
-              	"gameId": "String - the id of the game",
+              {
+                  "tileId": "String - the id of the tile",
                   "position": {
                       "q": "Int - the q-coordinate",
                       "r": "Int - the r-coordinate",
@@ -336,15 +326,14 @@ All messages follow the following format
                   "content": [
                       {
                           "type": "marker",
-                          "countryId": "string - id of the country"
+                          "countryId": "String - the id of the owner country"
                       }
                   ]
               }
           ],
           "cities": [
-          	{
-                  "_key": "String - id of the city",
-                  "gameId": "String - the id of the game",
+              {
+                  "cityId": "String - the id of the city",
                   "countryId": "String - the id of the owner-country",
                   "tile": {
                   	"tileId": "String - the id of the tile",
@@ -367,19 +356,10 @@ All messages follow the following format
   ```json
   {
       "game": {
-          "game": {
-              "_key": "String - id of the game",
-              "turn": "Int - the current turn",
-              "players": [
-                  "userId": "String - the id of the user",
-                  "connectionId": "Int | null - the id of the ws-connection",
-                  "state": "String - the current player state"
-              ]
-          },
+          "turn": "Int - the current turn",
           "countries": [
               {
-                  "_key": "String - the id of the country",
-                  "gameId": "String - the id of the game",
+                  "countryId": "String - the id of the country",
                   "userId": "String - the id of the owner",
                   "resources": {
                       "money": "Float - the amount of available money"
@@ -388,8 +368,7 @@ All messages follow the following format
           ],
           "tiles": [
               {
-                  "_key": "String - the id of the tile",
-                  "gameId": "String - the id of the game",
+                  "tileId": "String - the id of the tile",
                   "position": {
                       "q": "Int - the q-coordinate",
                       "r": "Int - the r-coordinate",
@@ -398,14 +377,16 @@ All messages follow the following format
                       "terrainType": "String - the type of the terrain",
                   },
                   "content": [
-                      { "type": "marker" }
+                      {
+                          "type": "marker",
+                          "countryId": "String - the id of the owner country"
+                      }
                   ]
               }
           ],
           "cities": [
               {
-                  "_key": "String - the id of the city",
-                  "gameId": "String - the id of the game",
+                  "cityId": "String - the id of the city",
                   "countryId": "String - the id of the owner-country",
                   "tile": {
                   	"tileId": "String - the id of the tile",
@@ -417,10 +398,9 @@ All messages follow the following format
           ]
       },
       "errors": [
-          "errorMessage": "String",
-          "command": {
-              ...
-          }
+         {
+              "errorMessage": "String"
+         }
       ]
   }
   ```

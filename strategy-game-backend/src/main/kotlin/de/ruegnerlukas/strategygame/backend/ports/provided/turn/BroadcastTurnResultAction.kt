@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.turn
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 
 interface BroadcastTurnResultAction {
 

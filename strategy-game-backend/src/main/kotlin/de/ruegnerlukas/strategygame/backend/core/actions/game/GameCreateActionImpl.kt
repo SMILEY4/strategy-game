@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
+import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TilePositionEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.world.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -43,8 +43,8 @@ class GameCreateActionImpl(
 		return WorldBuilder().buildTiles(worldSettings).map {
 			TileEntity(
 				gameId = "",
-				position = TilePositionEntity(it.q, it.r),
-				data = TileDataEntity(
+				position = TilePosition(it.q, it.r),
+				data = TileData(
 					terrainType = it.type.name,
 				),
 				content = trackingListOf()

@@ -9,9 +9,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityComm
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.TurnSubmitActionError

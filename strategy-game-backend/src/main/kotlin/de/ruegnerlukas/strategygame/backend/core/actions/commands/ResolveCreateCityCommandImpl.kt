@@ -10,9 +10,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileRef
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.world.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand

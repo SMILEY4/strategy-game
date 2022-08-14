@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models.game
+package de.ruegnerlukas.strategygame.backend.ports.models
 
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 

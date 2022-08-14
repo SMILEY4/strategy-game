@@ -6,10 +6,10 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContentEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.game.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
@@ -29,7 +29,7 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand {
 			}
 
 			if (validationErrors.isEmpty()) {
-				targetTile.content.add(MarkerTileContentEntity(command.countryId))
+				targetTile.content.add(MarkerTileContent(command.countryId))
 				emptyList()
 			} else {
 				validationErrors.map { CommandResolutionError(command, it) }
@@ -47,7 +47,7 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand {
 	}
 
 	private fun validateFreeTile(tile: TileEntity): List<String> {
-		val alreadyHasMarker = tile.content.any { it.type == MarkerTileContentEntity.TYPE }
+		val alreadyHasMarker = tile.content.any { it.type == MarkerTileContent.TYPE }
 		if (alreadyHasMarker) {
 			return listOf("already another marker at position")
 		} else {

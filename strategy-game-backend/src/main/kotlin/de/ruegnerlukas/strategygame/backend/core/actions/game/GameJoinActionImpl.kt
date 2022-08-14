@@ -5,7 +5,7 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryResourcesEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryResources
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
@@ -78,7 +78,7 @@ class GameJoinActionImpl(
 			CountryEntity(
 				gameId = game.key!!,
 				userId = userId,
-				resources = CountryResourcesEntity(
+				resources = CountryResources(
 					money = 200f
 				)
 			)
