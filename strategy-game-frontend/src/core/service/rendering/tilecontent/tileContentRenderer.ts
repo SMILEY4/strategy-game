@@ -89,7 +89,7 @@ export class TileContentRenderer {
         commands
             .filter(e => e.commandType === "place-marker")
             .map(e => e as CommandPlaceMarker)
-            .forEach(e => this.addMarker(e.q, e.r, this.getColor(countries, "?", true)));
+            .forEach(e => this.addMarker(e.q, e.r, this.getColor(countries, (userCountryId ? userCountryId : "?"), true)));
 
         this.texture.bind();
         this.batchRenderer.end(this.shader, {
