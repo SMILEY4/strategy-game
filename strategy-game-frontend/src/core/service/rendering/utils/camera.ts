@@ -58,7 +58,6 @@ export class Camera {
 		if (!matrix) {
 			throw new Error("Camera view-projection-matrix does not exist.");
 		} else {
-			console.log(matrix)
 			return matrix;
 		}
 	}

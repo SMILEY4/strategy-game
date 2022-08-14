@@ -13,6 +13,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
+import de.ruegnerlukas.strategygame.backend.ports.models.distance
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
@@ -108,13 +109,7 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 	 */
 	private fun validateCitySpacing(cities: List<CityEntity>, target: TileEntity): List<String> {
 		val closestCity = cities
-			.map { city ->
-				val tile = city.tile
-				val dq = target.position.q - tile.q
-				val dr = target.position.r - tile.r
-				val dist = sqrt((dq * dq + dr * dr).toDouble())
-				city to dist
-			}
+			.map { city -> city to city.tile.distance(target.position) }
 			.minByOrNull { it.second }
 		if (closestCity != null && closestCity.second < MIN_DIST_BETWEEN_CITIES) {
 			return listOf("too close to another city")

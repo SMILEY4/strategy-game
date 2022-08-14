@@ -47,6 +47,10 @@ export class TurnUpdateWorldStateAction {
                     q: t.position.q,
                     r: t.position.r
                 },
+                influence: t.influences.map(i => ({
+                    country: countries.find(c => c.countryId === i.countryId)!!,
+                    value: i.value
+                })),
                 terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER
             };
             t.content.forEach(c => {

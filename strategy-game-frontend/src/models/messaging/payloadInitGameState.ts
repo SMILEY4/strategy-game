@@ -19,6 +19,10 @@ export interface PayloadInitGameState {
             data: {
                 terrainType: string
             },
+            influences: ({
+                countryId: string,
+                value: number
+            })[],
             content: MsgTileContent[]
         })[],
         cities: ({

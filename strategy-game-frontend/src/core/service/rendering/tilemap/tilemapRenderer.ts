@@ -1,3 +1,4 @@
+import {Country, CountryColor} from "../../../../models/state/country";
 import {TerrainType} from "../../../../models/state/terrainType";
 import {Tile} from "../../../../models/state/tile";
 import {TilePosition} from "../../../../models/state/tilePosition";
@@ -33,14 +34,21 @@ export class TilemapRenderer {
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
                     offset: 0,
-                    stride: 5
+                    stride: 8
                 },
                 {
                     name: "in_tiledata",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 3,
                     offset: 2,
-                    stride: 5
+                    stride: 8
+                },
+                {
+                    name: "in_tilecolor",
+                    type: ShaderAttributeType.FLOAT,
+                    amountComponents: 3,
+                    offset: 5,
+                    stride: 8
                 }
             ],
             uniforms: [
@@ -68,7 +76,7 @@ export class TilemapRenderer {
             this.batchRenderer.add(vertices, indices);
         });
         this.batchRenderer.end(this.shader, {
-            attributes: ["in_position", "in_tiledata"],
+            attributes: ["in_position", "in_tiledata", "in_tilecolor"],
             uniforms: {
                 "u_tileMouseOver": tileMouseOver ? [tileMouseOver.q, tileMouseOver.r] : [999999, 999999],
                 "u_tileSelected": tileSelected ? [tileSelected.q, tileSelected.r] : [999999, 999999],
@@ -88,16 +96,41 @@ export class TilemapRenderer {
     private static buildVertexData(tile: Tile): number[][] {
         const vertices: number[][] = [];
         const centerPos = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.position.q, tile.position.r);
-        vertices.push([centerPos[0], centerPos[1], tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType)]);
+        vertices.push([centerPos[0], centerPos[1], tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType), ...TilemapRenderer.tileColor(tile)]);
         for (let i = 0; i < 6; i++) {
             const vertex: number[] = [
                 ...TilemapRenderer.hexCornerPoint(i, TilemapUtils.DEFAULT_HEX_LAYOUT.size, centerPos[0], centerPos[1]),
-                tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType)
+                tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType),
+                ...TilemapRenderer.tileColor(tile)
             ];
             vertices.push(vertex);
             vertices.push(vertex);
         }
         return vertices;
+    }
+
+    private static tileColor(tile: Tile): [number, number, number,] {
+        let maxInfluence: any = null;
+        tile.influence.forEach(influence => {
+            if (!maxInfluence || maxInfluence.value < influence.value) {
+                maxInfluence = influence;
+            }
+        });
+        if (maxInfluence && maxInfluence.value > 7) {
+            const country = maxInfluence.country
+            if (country) {
+                if (country.color === CountryColor.RED) return [1, 0, 0];
+                if (country.color === CountryColor.GREEN) return [0, 1, 0];
+                if (country.color === CountryColor.BLUE) return [0, 0, 1];
+                if (country.color === CountryColor.CYAN) return [0, 1, 1];
+                if (country.color === CountryColor.MAGENTA) return [1, 0, 1];
+                if (country.color === CountryColor.YELLOW) return [1, 1, 0];
+            }
+            return [1, 1, 1];
+        } else {
+            return [1, 1, 1];
+        }
+
     }
 
     private static readonly HEX_INDEX_DATA = [
@@ -129,7 +162,7 @@ export class TilemapRenderer {
         if (type == TerrainType.LAND) {
             return 1;
         }
-		return -1
+        return -1;
     }
 
 

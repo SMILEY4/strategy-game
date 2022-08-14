@@ -5,6 +5,7 @@ uniform vec2 u_tileMouseOver;
 uniform vec2 u_tileSelected;
 
 flat in vec3 v_tiledata;
+flat in vec3 v_tilecolor;
 
 out vec4 outColor;
 
@@ -36,8 +37,16 @@ bool isSelected() {
     return abs(u_tileSelected.x - qr.x) < 0.01 && abs(u_tileSelected.y - qr.y) < 0.01;
 }
 
+vec3 blend(vec3 background, vec4 foreground) {
+    return vec3(
+        background.r * (1.0 - foreground.a) + foreground.r * foreground.a,
+        background.g * (1.0 - foreground.a) + foreground.g * foreground.a,
+        background.b * (1.0 - foreground.a) + foreground.b * foreground.a
+    );
+}
+
 void main() {
-    vec3 tileColor = calcTileColor();
+    vec3 tileColor = blend(calcTileColor(), vec4(v_tilecolor.rgb, 0.4));
     if (isSelected()) {
         tileColor = tileColor * 0.5;
     } else if (isMouseOver()) {
