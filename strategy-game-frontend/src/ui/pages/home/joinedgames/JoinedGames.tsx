@@ -13,7 +13,7 @@ export function JoinedGames(): ReactElement {
     return (
         <div>
             <b>Joined Games:</b>
-            {games.map(g => (<div>{g}</div>))}
+            {games.map(g => (<div key={g}>{g}</div>))}
         </div>
     );
 

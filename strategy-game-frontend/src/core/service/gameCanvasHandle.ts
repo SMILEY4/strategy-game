@@ -29,6 +29,7 @@ export class GameCanvasHandle {
 			if (!gl) {
 				throw Error("webgl2 not supported");
 			}
+			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 			this.gl = gl;
 		} else {
 			this.gl = null;
