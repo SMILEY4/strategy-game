@@ -71,7 +71,13 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
     function createCity() {
         if (props.selectedTile) {
             openFrame(
-                "dialog.create-city", 300, 30, 320, 200,
+                "dialog.create-city",
+                {
+                    centered: {
+                        width: 320,
+                        height: 200
+                    }
+                },
                 frameId => <CreateCityDialog frameId={frameId} q={props.selectedTile!!.q} r={props.selectedTile!!.r}/>
             );
         }

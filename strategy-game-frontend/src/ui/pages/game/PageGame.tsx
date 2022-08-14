@@ -41,9 +41,9 @@ export function PageGame(): ReactElement {
         );
     }
 
-    // if(currentState === GameState.LOADING) {
-    //     return renderLoadingScreen()
-    // } else {
+    if(currentState === GameState.LOADING) {
+        return renderLoadingScreen()
+    } else {
         return renderGameScreen()
-    // }
+    }
 }

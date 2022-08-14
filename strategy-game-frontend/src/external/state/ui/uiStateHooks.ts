@@ -1,6 +1,9 @@
+import {UiFrames} from "./uiFrames";
 import {UiStore} from "./uiStore";
 
 export namespace UiStateHooks {
+
+    import FrameLayout = UiFrames.FrameLayout;
 
     /**
      * open a new frame with the given content and menu-id.
@@ -11,33 +14,33 @@ export namespace UiStateHooks {
         const addFrame = UiStore.useState().addFrame;
         const bringToFront = UiStore.useState().bringFrameToFront;
         const setContent = UiStore.useState().setFrameContent;
-        return (menuId: string, x: number, y: number, width: number, height: number, content: (frameId: string) => any): string => {
-            const frame = frames.find(e => e.menuId === menuId);
-            if (frame) {
-                setContent(frame.frameId, content);
-                bringToFront(frame.frameId);
-                return frame.frameId
-            } else {
-                const frameId = crypto.randomUUID();
-                addFrame({
-                    frameId: frameId,
-                    menuId: menuId,
-                    initX: x,
-                    initY: y,
-                    width: width,
-                    height: height,
-                    enablePin: true,
-                    content: content(frameId)
-                });
-                return frameId;
-            }
+        return (menuId: string, layout: FrameLayout, content: (frameId: string) => any): string => {
+            return UiFrames.openFrame(
+                menuId,
+                layout,
+                content,
+                frames,
+                addFrame,
+                bringToFront,
+                setContent
+            );
         };
     }
 
     export function useOpenPrimaryMenuDialog(content: any) {
         const open = useOpenFrame();
         return () => {
-            open("topbar.category.menu", 10, 50, 320, 650, () => content);
+            open(
+                "topbar.category.menu",
+                {
+                    vertical: {
+                        x: 10,
+                        width: 320,
+                        top: 50,
+                        bottom: 10
+                    }
+                },
+                () => content);
         };
     }
 
@@ -58,8 +61,8 @@ export namespace UiStateHooks {
     export function usePinFrame(frameId: string) {
         const update = UiStore.useState().updateFrame;
         return () => {
-            update(frameId, dialog => ({
-                ...dialog,
+            update(frameId, frame => ({
+                ...frame,
                 menuId: crypto.randomUUID(),
                 enablePin: false
             }));
