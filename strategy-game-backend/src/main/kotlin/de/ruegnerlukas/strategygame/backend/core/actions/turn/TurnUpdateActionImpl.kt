@@ -40,8 +40,8 @@ class TurnUpdateActionImpl : TurnUpdateAction {
 		}
 	}
 
-	private fun calcInfluence(distance: Double): Double {
-		return max((-(distance / MAX_CITY_INFLUENCE_DISTANCE) + 1) * MAX_CITY_INFLUENCE, 0.0)
+	private fun calcInfluence(distance: Int): Double {
+		return max((-(distance.toDouble() / MAX_CITY_INFLUENCE_DISTANCE) + 1) * MAX_CITY_INFLUENCE, 0.0)
 	}
 
 	private fun updateTileOwner(game: GameExtendedEntity) {
