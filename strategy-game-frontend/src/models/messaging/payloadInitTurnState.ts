@@ -23,6 +23,7 @@ export interface PayloadInitTurnState {
                 countryId: string,
                 value: number
             })[],
+            ownerCountryId: string | null,
             content: MsgTileContent[]
         })[],
         cities: ({

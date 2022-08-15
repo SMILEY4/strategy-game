@@ -12,6 +12,7 @@ data class TileDTO(
 	val position: TilePosition,
 	val data: TileDTOData,
 	val influences: List<TileDTOCountryInfluence>,
+	val ownerCountryId: String?,
 	val content: List<TileDTOContent>
 ) {
 	constructor(tile: TileEntity) : this(
@@ -19,6 +20,7 @@ data class TileDTO(
 		tile.position,
 		TileDTOData(tile.data.terrainType),
 		tile.influences.map { TileDTOCountryInfluence(it.countryId, it.value) },
+		tile.ownerCountryId,
 		tile.content.map {
 			when (it) {
 				is MarkerTileContent -> MarkerTileDTOContent(it.countryId)

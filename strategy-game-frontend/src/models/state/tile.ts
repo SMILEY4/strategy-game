@@ -9,5 +9,6 @@ export interface Tile {
     influence: ({
         country: Country,
         value: number,
-    })[]
+    })[],
+    ownerCountry: Country | undefined
 }

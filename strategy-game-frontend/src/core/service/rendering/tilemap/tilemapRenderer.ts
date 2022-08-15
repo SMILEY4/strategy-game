@@ -1,4 +1,4 @@
-import {Country, CountryColor} from "../../../../models/state/country";
+import {CountryColor} from "../../../../models/state/country";
 import {TerrainType} from "../../../../models/state/terrainType";
 import {Tile} from "../../../../models/state/tile";
 import {TilePosition} from "../../../../models/state/tilePosition";
@@ -96,12 +96,12 @@ export class TilemapRenderer {
     private static buildVertexData(tile: Tile): number[][] {
         const vertices: number[][] = [];
         const centerPos = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.position.q, tile.position.r);
-        vertices.push([centerPos[0], centerPos[1], tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType), ...TilemapRenderer.tileColor(tile)]);
+        vertices.push([centerPos[0], centerPos[1], tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType), ...TilemapRenderer.tileOwnerColor(tile)]);
         for (let i = 0; i < 6; i++) {
             const vertex: number[] = [
                 ...TilemapRenderer.hexCornerPoint(i, TilemapUtils.DEFAULT_HEX_LAYOUT.size, centerPos[0], centerPos[1]),
                 tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType),
-                ...TilemapRenderer.tileColor(tile)
+                ...TilemapRenderer.tileOwnerColor(tile)
             ];
             vertices.push(vertex);
             vertices.push(vertex);
@@ -109,28 +109,18 @@ export class TilemapRenderer {
         return vertices;
     }
 
-    private static tileColor(tile: Tile): [number, number, number,] {
-        let maxInfluence: any = null;
-        tile.influence.forEach(influence => {
-            if (!maxInfluence || maxInfluence.value < influence.value) {
-                maxInfluence = influence;
-            }
-        });
-        if (maxInfluence && maxInfluence.value > 7) {
-            const country = maxInfluence.country
-            if (country) {
-                if (country.color === CountryColor.RED) return [1, 0, 0];
-                if (country.color === CountryColor.GREEN) return [0, 1, 0];
-                if (country.color === CountryColor.BLUE) return [0, 0, 1];
-                if (country.color === CountryColor.CYAN) return [0, 1, 1];
-                if (country.color === CountryColor.MAGENTA) return [1, 0, 1];
-                if (country.color === CountryColor.YELLOW) return [1, 1, 0];
-            }
+    private static tileOwnerColor(tile: Tile): [number, number, number,] {
+        if (tile.ownerCountry) {
+            if (tile.ownerCountry.color === CountryColor.RED) return [1, 0, 0];
+            if (tile.ownerCountry.color === CountryColor.GREEN) return [0, 1, 0];
+            if (tile.ownerCountry.color === CountryColor.BLUE) return [0, 0, 1];
+            if (tile.ownerCountry.color === CountryColor.CYAN) return [0, 1, 1];
+            if (tile.ownerCountry.color === CountryColor.MAGENTA) return [1, 0, 1];
+            if (tile.ownerCountry.color === CountryColor.YELLOW) return [1, 1, 0];
             return [1, 1, 1];
         } else {
             return [1, 1, 1];
         }
-
     }
 
     private static readonly HEX_INDEX_DATA = [

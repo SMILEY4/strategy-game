@@ -51,7 +51,8 @@ export class SetInitWorldStateAction {
                     country: countries.find(c => c.countryId === i.countryId)!!,
                     value: i.value
                 })),
-                terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER
+                terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
+                ownerCountry: t.ownerCountryId ? countries.find(c => c.countryId === t.ownerCountryId) : undefined
             };
             t.content.forEach(c => {
                 if (c.type === "marker") {

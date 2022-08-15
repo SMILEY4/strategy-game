@@ -48,7 +48,8 @@ class GameCreateActionImpl(
 					terrainType = it.type.name,
 				),
 				content = trackingListOf(),
-				influences = mutableListOf()
+				influences = mutableListOf(),
+				ownerCountryId = null
 			)
 		}
 	}

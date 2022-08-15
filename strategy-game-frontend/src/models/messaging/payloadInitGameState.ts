@@ -23,6 +23,7 @@ export interface PayloadInitGameState {
                 countryId: string,
                 value: number
             })[],
+            ownerCountryId: string | null,
             content: MsgTileContent[]
         })[],
         cities: ({

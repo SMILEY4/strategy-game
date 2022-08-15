@@ -329,6 +329,7 @@ All messages follow the following format
                           "value": "Double - the total amount of influence of the  country on the tile"
                       }
                   ],
+                  "ownerCountryId": "String or null - the id of the country owning this tile",
                   "content": [
                       {
                           "type": "marker",
@@ -388,6 +389,7 @@ All messages follow the following format
                           "value": "Double - the total amount of influence of the  country on the tile"
                       }
                   ],
+                  "ownerCountryId": "String or null - the id of the country owning this tile",
                   "content": [
                       {
                           "type": "marker",

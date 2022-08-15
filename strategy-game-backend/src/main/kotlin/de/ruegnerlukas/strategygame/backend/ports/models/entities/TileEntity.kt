@@ -11,6 +11,7 @@ data class TileEntity(
 	val position: TilePosition,
 	val data: TileData,
 	val influences: MutableList<TileCountryInfluence>,
+	var ownerCountryId: String?,
 	val content: MutableList<TileContent>
 ) : DbEntity()
 
