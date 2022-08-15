@@ -12,16 +12,28 @@ data class TileDTO(
 	val position: TilePosition,
 	val data: TileDTOData,
 	val influences: List<TileDTOCountryInfluence>,
-	val ownerCountryId: String?,
+	val owner: TileDTOOwner?,
 	val content: List<TileDTOContent>
 ) {
 	constructor(tile: TileEntity) : this(
-		tile.key!!,
-		tile.position,
-		TileDTOData(tile.data.terrainType),
-		tile.influences.map { TileDTOCountryInfluence(it.countryId, it.value) },
-		tile.ownerCountryId,
-		tile.content.map {
+		tileId = tile.key!!,
+		position = tile.position,
+		data = TileDTOData(tile.data.terrainType),
+		influences = tile.influences.map { influence ->
+			TileDTOCountryInfluence(
+				influence.countryId,
+				influence.totalValue,
+				influence.sources.map { source ->
+					TileDTOCityInfluence(
+						source.cityId,
+						source.provinceId,
+						source.value
+					)
+				}
+			)
+		},
+		owner = tile.owner?.let { TileDTOOwner(it.countryId, it.provinceId, it.cityId) },
+		content = tile.content.map {
 			when (it) {
 				is MarkerTileContent -> MarkerTileDTOContent(it.countryId)
 			}
@@ -31,13 +43,25 @@ data class TileDTO(
 
 
 data class TileDTOData(
-	var terrainType: String,
+	val terrainType: String,
 )
 
+data class TileDTOOwner(
+	val countryId: String,
+	val provinceId: String,
+	val cityId: String
+)
 
 data class TileDTOCountryInfluence(
 	val countryId: String,
-	var value: Double,
+	val value: Double,
+	val sources: List<TileDTOCityInfluence>
+)
+
+data class TileDTOCityInfluence(
+	val cityId: String,
+	val provinceId: String,
+	val value: Double
 )
 
 

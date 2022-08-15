@@ -6,4 +6,5 @@ object Collections {
 	const val TILES = "tiles"
 	const val CITIES = "cities"
 	const val COMMANDS = "commands"
+	const val PROVINCES = "provinces"
 }

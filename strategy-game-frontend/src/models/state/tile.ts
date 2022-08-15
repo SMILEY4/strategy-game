@@ -1,4 +1,5 @@
 import {Country} from "./country";
+import {Province} from "./Province";
 import {TerrainType} from "./terrainType";
 import {TilePosition} from "./tilePosition";
 
@@ -9,6 +10,15 @@ export interface Tile {
     influences: ({
         country: Country,
         value: number,
+        sources: ({
+            province: Province,
+            cityId: string,
+            value: number
+        })[]
     })[],
-    ownerCountry: Country | undefined
+    owner: {
+        country: Country,
+        province: Province,
+        cityId: string
+    } | null
 }

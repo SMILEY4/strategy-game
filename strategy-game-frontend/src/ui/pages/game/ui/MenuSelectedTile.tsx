@@ -1,5 +1,4 @@
 import React, {ReactElement, useState} from "react";
-import {Simulate} from "react-dom/test-utils";
 import {GameHooks} from "../../../../core/actions/GameHooks";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
@@ -15,8 +14,9 @@ export function MenuSelectedTile(): ReactElement {
     return (
         <div>
             <h3>Selected Tile</h3>
-            <SelectedTileSection selectedTile={selectedTile}/>
+            <SectionTile selectedTile={selectedTile}/>
             <SectionInfluences selectedTile={selectedTile}/>
+            <SectionOwner selectedTile={selectedTile}/>
             <SectionCity selectedTile={selectedTile}/>
             <SectionMarkers selectedTile={selectedTile}/>
             <SectionCommands selectedTile={selectedTile}/>
@@ -25,7 +25,7 @@ export function MenuSelectedTile(): ReactElement {
 }
 
 
-function SelectedTileSection(props: { selectedTile: TilePosition | null }): ReactElement {
+function SectionTile(props: { selectedTile: TilePosition | null }): ReactElement {
     return (
         <ul>
             {props.selectedTile && <li>{"q: " + props.selectedTile.q}</li>}
@@ -43,7 +43,37 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
             <>
                 <h3>Influences</h3>
                 <ul>
-                    {tile.influences.map(influence => <li>{influence.country.countryId + " = " + influence.value}</li>)}
+                    {
+                        tile.influences.map(influence => (
+                            <>
+                                <li>{influence.country.countryId + " = " + influence.value}</li>
+                                <ul>
+                                    {influence.sources.map(source => (
+                                        <li>{source.cityId + "/" + source.province.provinceId + " = " + source.value}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        ))
+                    }
+                </ul>
+            </>
+        );
+    } else {
+        return null;
+    }
+}
+
+
+function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElement | null {
+    const tile = GameStateHooks.useTileAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    if (tile && tile.owner) {
+        return (
+            <>
+                <h3>Owner</h3>
+                <ul>
+                    <li>{"Country = " + tile.owner?.country.countryId}</li>
+                    <li>{"Province = " + tile.owner?.province.provinceId}</li>
+                    <li>{"City = " + tile.owner?.cityId}</li>
                 </ul>
             </>
         );
@@ -82,6 +112,7 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
                     <ul>
                         <li>{"name: " + city.name}</li>
                         <li>{"country: " + city.country.countryId}</li>
+                        <li>{"province: " + city.province.provinceId}</li>
                     </ul>
                 )}
                 {!city && (
@@ -149,16 +180,28 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 
 
 function CreateCityDialog(props: { frameId: string, q: number, r: number }): ReactElement {
-
+    const country = GameStateHooks.usePlayerCountry();
+    const tile = GameStateHooks.useTileAt(props.q, props.r)!!;
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
+
+    const availableProvinces = tile.influences
+        .filter(i => i.country.countryId === country?.countryId)
+        .flatMap(i => i.sources)
+        .map(i => i.province)
+        .filter((element, index, self) => self.indexOf(element) === index);
+
+    console.log("AV. PROV", availableProvinces)
 
     return (
         <div>
             Order creation of new city?
             <TextField value={name} onAccept={setName}/>
             <button onClick={onCancel}>Cancel</button>
-            <button onClick={onAccept}>Accept</button>
+            <button onClick={() => onAccept(null)}>Create with new Province</button>
+            {
+                availableProvinces.map(p => <button onClick={() => onAccept(p.provinceId)}>{"Create in " + p.provinceId}</button>)
+            }
         </div>
     );
 
@@ -166,7 +209,8 @@ function CreateCityDialog(props: { frameId: string, q: number, r: number }): Rea
         close();
     }
 
-    function onAccept() {
+    function onAccept(provinceId: string | null) {
+        console.log("create with prov: ", provinceId)
         close();
         AppConfig.turnAddCommand.perform({
             commandType: "create-city",
@@ -176,6 +220,7 @@ function CreateCityDialog(props: { frameId: string, q: number, r: number }): Rea
             q: props.q,
             r: props.r,
             name: name,
+            provinceId: provinceId
         } as CommandCreateCity);
     }
 

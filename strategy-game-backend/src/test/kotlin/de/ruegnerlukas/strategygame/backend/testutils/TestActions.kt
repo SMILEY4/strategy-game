@@ -24,6 +24,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameIns
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
@@ -52,7 +53,9 @@ object TestActions {
 		TurnEndActionImpl(
 			ResolveCommandsActionImpl(
 				ResolvePlaceMarkerCommandImpl(),
-				ResolveCreateCityCommandImpl()
+				ResolveCreateCityCommandImpl(
+					ReservationInsertImpl(database)
+				)
 			),
 			BroadcastTurnResultActionImpl(
 				GameExtendedQueryImpl(database),
@@ -77,15 +80,19 @@ object TestActions {
 		GameQueryImpl(database),
 	)
 
-	fun resolveCommandsAction() = ResolveCommandsActionImpl(
+	fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
 		ResolvePlaceMarkerCommandImpl(),
-		ResolveCreateCityCommandImpl()
+		ResolveCreateCityCommandImpl(
+			ReservationInsertImpl(database)
+		)
 	)
 
 	fun turnEndAction(database: ArangoDatabase) = TurnEndActionImpl(
 		ResolveCommandsActionImpl(
 			ResolvePlaceMarkerCommandImpl(),
-			ResolveCreateCityCommandImpl()
+			ResolveCreateCityCommandImpl(
+				ReservationInsertImpl(database)
+			)
 		),
 		BroadcastTurnResultActionImpl(
 			GameExtendedQueryImpl(database),

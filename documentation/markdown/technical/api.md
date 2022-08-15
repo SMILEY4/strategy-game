@@ -288,7 +288,8 @@ All messages follow the following format
               "type": "create-city",
               "q": "Int - the q-coordinate of the new city",
               "r": "Int - the r-coordinate of the new city",
-              "name": "String - the name of the new city"
+              "name": "String - the name of the new city",
+              "provinceId": "String or null - the province this city will belong to (null to create new province)"
           }
       ]
   }
@@ -326,10 +327,21 @@ All messages follow the following format
                   "influences": [
                       {
                           "countryId": "String - the id of the country",
-                          "value": "Double - the total amount of influence of the  country on the tile"
+                          "value": "Double - the total amount of influence of the  country on the tile",
+                          "sources": [
+                              {
+                                  "cityId": "String - the id of the city",
+                                  "provinceId": "String - the id of the province",
+                                  "value": "Double - the amount of influence of the  city on the tile",
+                              }
+                          ]
                       }
                   ],
-                  "ownerCountryId": "String or null - the id of the country owning this tile",
+                  "owner": {
+                      "countryId": "String or null - the id of the country owning this tile",
+                      "provinceId": "String - the id of province this tile belongs to",
+                      "cityId": "String - the id of city this tile belongs to",
+                  },
                   "content": [
                       {
                           "type": "marker",
@@ -342,12 +354,19 @@ All messages follow the following format
               {
                   "cityId": "String - the id of the city",
                   "countryId": "String - the id of the owner-country",
+                  "provinceId": "String - the id of the province this city belongs to",
                   "tile": {
                   	"tileId": "String - the id of the tile",
                       "q": "Int - the q-coordinate of the tile",
                       "r": "Int - the r-coordinate of the tile",
                   },
                   "name": "String - the name of the city"
+              }
+          ],
+          "provinces": [
+              {
+                  "provinceId": "String - the id of the province",
+                  "countryId": "String - the id of the owner country"
               }
           ]
       }
@@ -386,10 +405,21 @@ All messages follow the following format
                   "influences": [
                       {
                           "countryId": "String - the id of the country",
-                          "value": "Double - the total amount of influence of the  country on the tile"
+                          "value": "Double - the total amount of influence of the  country on the tile",
+                          "sources": [
+                              {
+                                  "cityId": "String - the id of the city",
+                                  "provinceId": "String - the id of the province",
+                                  "value": "Double - the amount of influence of the  city on the tile",
+                              }
+                          ]
                       }
                   ],
-                  "ownerCountryId": "String or null - the id of the country owning this tile",
+                  "owner": {
+                      "countryId": "String or null - the id of the country owning this tile",
+                      "provinceId": "String - the id of province this tile belongs to",
+                      "cityId": "String - the id of city this tile belongs to",
+                  },
                   "content": [
                       {
                           "type": "marker",
@@ -402,12 +432,19 @@ All messages follow the following format
               {
                   "cityId": "String - the id of the city",
                   "countryId": "String - the id of the owner-country",
+                  "provinceId": "String - the id of the province this city belongs to",
                   "tile": {
                   	"tileId": "String - the id of the tile",
                       "q": "Int - the q-coordinate of the tile",
                       "r": "Int - the r-coordinate of the tile",
                   },
                   "name": "String - the name of the city"
+              }
+          ],
+          "provinces": [
+              {
+                  "provinceId": "String - the id of the province",
+                  "countryId": "String - the id of the owner country"
               }
           ]
       },

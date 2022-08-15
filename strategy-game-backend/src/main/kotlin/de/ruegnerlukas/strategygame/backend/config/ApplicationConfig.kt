@@ -33,7 +33,9 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQue
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -81,11 +83,12 @@ fun Application.module() {
 	val insertCountry = CountryInsertImpl(database)
 	val updateGameExtended = GameExtendedUpdateImpl(database)
 	val queryCountry = CountryByGameAndUserQueryImpl(database)
+	val insertReservation = ReservationInsertImpl(database)
 
 	// core actions
 	val resolvePlaceMarkerCommandAction = ResolvePlaceMarkerCommandImpl()
 
-	val resolveCreateCityCommandAction = ResolveCreateCityCommandImpl()
+	val resolveCreateCityCommandAction = ResolveCreateCityCommandImpl(insertReservation)
 
 	val broadcastTurnResultAction = BroadcastTurnResultActionImpl(
 		queryGameExtended,

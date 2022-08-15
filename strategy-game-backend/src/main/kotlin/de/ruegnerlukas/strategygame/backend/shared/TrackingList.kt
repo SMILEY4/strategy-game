@@ -16,7 +16,7 @@ class TrackingList<T>(elements: Collection<T>) : MutableList<T> {
 
 	fun getOriginalElements(): List<T> = originalElements
 
-	fun getRemovedElement(): Set<T> = removedElements
+	fun getRemovedElements(): Set<T> = removedElements
 
 	fun getAddedElements(): Set<T> = addedElements
 

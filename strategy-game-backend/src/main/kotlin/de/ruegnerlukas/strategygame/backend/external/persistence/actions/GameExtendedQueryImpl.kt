@@ -10,6 +10,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
@@ -23,14 +24,16 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 			val game = fetchGame(gameId).bind()
 			parZip(
 				{ fetchCountries(gameId) },
+				{ fetchProvinces(gameId) },
 				{ fetchTiles(gameId) },
 				{ fetchCities(gameId) }
-			) { countries, tiles, cities ->
+			) { countries, provinces, tiles, cities ->
 				GameExtendedEntity(
 					game = game,
 					countries = countries,
 					tiles = tiles,
-					cities = cities.tracking()
+					cities = cities.tracking(),
+					provinces = provinces.tracking()
 				)
 			}
 		}
@@ -53,6 +56,18 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 		)
 	}
 
+	private suspend fun fetchProvinces(gameId: String): List<ProvinceEntity> {
+		database.assertCollections(Collections.PROVINCES)
+		return database.query(
+			"""
+				FOR province IN ${Collections.PROVINCES}
+					FILTER province.gameId == @gameId
+					RETURN province
+			""".trimIndent(),
+			mapOf("gameId" to gameId),
+			ProvinceEntity::class.java
+		)
+	}
 
 	private suspend fun fetchTiles(gameId: String): List<TileEntity> {
 		database.assertCollections(Collections.TILES)
@@ -72,6 +87,7 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 		return database.query(
 			"""
 				FOR city IN ${Collections.CITIES}
+					FILTER city._documentType != "reservation"
 					FILTER city.gameId == @gameId
 					RETURN city
 			""".trimIndent(),

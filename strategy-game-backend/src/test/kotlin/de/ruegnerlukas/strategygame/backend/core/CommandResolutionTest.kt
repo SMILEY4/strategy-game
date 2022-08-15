@@ -21,7 +21,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction()
+		val resolveCommands = TestActions.resolveCommandsAction(database)
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -42,7 +42,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction()
+		val resolveCommands = TestActions.resolveCommandsAction(database)
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -72,7 +72,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction()
+		val resolveCommands = TestActions.resolveCommandsAction(database)
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -93,7 +93,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction()
+		val resolveCommands = TestActions.resolveCommandsAction(database)
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.WATER))
@@ -123,7 +123,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction()
+		val resolveCommands = TestActions.resolveCommandsAction(database)
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -157,7 +157,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction()
+		val resolveCommands = TestActions.resolveCommandsAction(database)
 
 		// create a new game
 		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
@@ -192,7 +192,7 @@ class CommandResolutionTest : StringSpec({
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction()
+		val resolveCommands = TestActions.resolveCommandsAction(database)
 		val endTurn = TestActions.turnEndAction(database)
 
 		// create a new game
@@ -249,6 +249,7 @@ class CommandResolutionTest : StringSpec({
 				q = q,
 				r = r,
 				name = "Test City",
+				provinceId = null
 			),
 		)
 	}

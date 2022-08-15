@@ -8,9 +8,9 @@ class CountryDTO(
 	val resources: CountryDTOResources
 ) {
 	constructor(country: CountryEntity) : this(
-		country.key!!,
-		country.userId,
-		CountryDTOResources(country.resources.money)
+		countryId = country.key!!,
+		userId = country.userId,
+		resources = CountryDTOResources(country.resources.money)
 	)
 }
 

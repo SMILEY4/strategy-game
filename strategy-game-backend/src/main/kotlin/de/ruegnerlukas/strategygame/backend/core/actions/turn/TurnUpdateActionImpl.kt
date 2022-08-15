@@ -2,7 +2,9 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import de.ruegnerlukas.strategygame.backend.ports.models.distance
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileCityInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileCountryInfluence
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileOwner
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.shared.max
 import kotlin.math.max
@@ -33,9 +35,26 @@ class TurnUpdateActionImpl : TurnUpdateAction {
 			tile.influences.clear()
 			game.cities.forEach { city ->
 				val cityInfluence = calcInfluence(tile.position.distance(city.tile))
-				tile.influences.find { it.countryId == city.countryId }
-					?.let { it.value += cityInfluence }
-					?: tile.influences.add(TileCountryInfluence(city.countryId, cityInfluence))
+				if (cityInfluence > 0) {
+					tile.influences.find { it.countryId == city.countryId }
+						?.let {
+							it.totalValue += cityInfluence
+							it.sources.add(
+								TileCityInfluence(
+									city.key!!,
+									city.provinceId,
+									cityInfluence
+								)
+							)
+						}
+						?: tile.influences.add(
+							TileCountryInfluence(
+								city.countryId,
+								cityInfluence,
+								mutableListOf(TileCityInfluence(city.key!!, city.provinceId, cityInfluence))
+							)
+						)
+				}
 			}
 		}
 	}
@@ -45,10 +64,16 @@ class TurnUpdateActionImpl : TurnUpdateAction {
 	}
 
 	private fun updateTileOwner(game: GameExtendedEntity) {
-		game.tiles.filter { it.ownerCountryId == null }.forEach { tile ->
-			val maxInfluence = tile.influences.max { it.value }
-			if(maxInfluence != null && maxInfluence.value >= OWNER_INFLUENCE_THRESHOLD) {
-				tile.ownerCountryId = maxInfluence.countryId
+		game.tiles.filter { it.owner == null }.forEach { tile ->
+			val maxCountryInfluence = tile.influences.max { it.totalValue }
+			if (maxCountryInfluence != null && maxCountryInfluence.totalValue >= OWNER_INFLUENCE_THRESHOLD) {
+				maxCountryInfluence.sources.max { it.value }?.let { maxCityInfluence ->
+					tile.owner = TileOwner(
+						countryId = maxCountryInfluence.countryId,
+						provinceId = maxCityInfluence.provinceId,
+						cityId = maxCityInfluence.cityId
+					)
+				}
 			}
 		}
 	}

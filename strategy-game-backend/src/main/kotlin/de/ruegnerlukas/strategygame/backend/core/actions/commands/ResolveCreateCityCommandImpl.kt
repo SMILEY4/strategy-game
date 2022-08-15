@@ -12,13 +12,17 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.shared.max
 
-class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
+class ResolveCreateCityCommandImpl(
+	private val reservationInsert: ReservationInsert
+) : ResolveCreateCityCommand {
 
 	companion object {
 		const val CITY_COST = 50.0f
@@ -41,18 +45,13 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 				addAll(validateResourceCost(country))
 				addAll(validateTileOwner(country, targetTile))
 				addAll(validateTileInfluence(country, targetTile))
+				addAll(validateProvince(targetTile, country, command.data.provinceId))
 			}
 
 			if (validationErrors.isEmpty()) {
-				state.cities.add(
-					CityEntity(
-						gameId = targetTile.gameId,
-						countryId = country.key!!,
-						tile = TileRef(targetTile.key!!, targetTile.position.q, targetTile.position.r),
-						name = command.data.name
-					)
-				)
-				country.resources.money -= CITY_COST
+				val province = findOrCreateProvince(state, country, command.data.provinceId)
+				createCity(state, province, targetTile, command.data.name)
+				updateCountry(country)
 				emptyList()
 			} else {
 				validationErrors.map { CommandResolutionError(command, it) }
@@ -81,6 +80,36 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 	}
 
 
+	private suspend fun findOrCreateProvince(game: GameExtendedEntity, country: CountryEntity, provinceId: String?): ProvinceEntity {
+		if (provinceId == null) {
+			return ProvinceEntity(
+				gameId = game.game.getKeyOrThrow(),
+				countryId = country.getKeyOrThrow(),
+				key = reservationInsert.reserveProvince()
+			).also { game.provinces.add(it) }
+		} else {
+			return game.provinces.find { it.key == provinceId }!!
+		}
+	}
+
+
+	private suspend fun createCity(game: GameExtendedEntity, province: ProvinceEntity, tile: TileEntity, name: String) {
+		CityEntity(
+			gameId = tile.gameId,
+			countryId = province.countryId,
+			provinceId = province.getKeyOrThrow(),
+			tile = TileRef(tile.key!!, tile.position.q, tile.position.r),
+			name = name,
+			key = reservationInsert.reserveCity()
+		).also { game.cities.add(it) }
+	}
+
+
+	private fun updateCountry(country: CountryEntity) {
+		country.resources.money -= CITY_COST
+	}
+
+
 	private fun validateCityName(name: String): List<String> {
 		if (name.isNotBlank()) {
 			return emptyList()
@@ -100,7 +129,7 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 
 
 	private fun validateTileOwner(country: CountryEntity, target: TileEntity): List<String> {
-		if (target.ownerCountryId != null && target.ownerCountryId != country.key) {
+		if (target.owner != null && target.owner!!.countryId != country.key) {
 			return listOf("tile is part of another country")
 		} else {
 			return emptyList()
@@ -110,20 +139,37 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 
 	private fun validateTileInfluence(country: CountryEntity, target: TileEntity): List<String> {
 		// country owns tile
-		if (target.ownerCountryId == country.key) {
+		if (target.owner != null && target.owner!!.countryId == country.key) {
 			return emptyList()
 		}
 		// nobody else has more than 'MAX_TILE_INFLUENCE' influence
-		val maxForeignInfluence = target.influences.filter { it.countryId != country.key }.map { it.value }.max { it } ?: 0.0
+		val maxForeignInfluence = target.influences.filter { it.countryId != country.key }.map { it.totalValue }.max { it } ?: 0.0
 		if (maxForeignInfluence < MAX_TILE_INFLUENCE) {
 			return emptyList()
 		}
 		// country has the most influence on tile
-		val countryInfluence = target.influences.find { it.countryId == country.key }?.value ?: 0.0
+		val countryInfluence = target.influences.find { it.countryId == country.key }?.totalValue ?: 0.0
 		if (countryInfluence > maxForeignInfluence) {
 			return emptyList()
 		}
 		return listOf("not enough influence over tile")
+	}
+
+
+	private fun validateProvince(target: TileEntity, country: CountryEntity, provinceId: String?): List<String> {
+		if (provinceId == null) {
+			return emptyList()
+		}
+		val hasProvinceInfluence = target.influences
+			.find { it.countryId == country.getKeyOrThrow() }
+			?.sources
+			?.any { it.provinceId == provinceId }
+			?: false
+		if (hasProvinceInfluence) {
+			return emptyList()
+		} else {
+			return listOf("target province has no influence over tile")
+		}
 	}
 
 
