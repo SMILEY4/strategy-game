@@ -164,5 +164,5 @@ The backend uses JSON-Web Tokens (RS256) managed by "AWS Cognito" as authenticat
 
 ## Endpoints
 
-[Endpoint Documentation](./api.md)
+[Endpoint/API Documentation](./api.md)
 

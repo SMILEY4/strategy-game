@@ -28,6 +28,10 @@ object TestUtils {
 			.getOrHandle { throw Exception("country with gameId=$gameId and userId=$userId not found") }
 	}
 
+	suspend fun updateCountry(database: ArangoDatabase, country: CountryEntity) {
+		database.replaceDocument(Collections.COUNTRIES, country.key!!, country)
+	}
+
 	suspend fun getGame(database: ArangoDatabase, gameId: String): GameEntity {
 		return GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
 	}

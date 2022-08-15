@@ -1,3 +1,7 @@
+---
+title: Changelog
+---
+
 # Version 0.1.0
 
 - User Authentication/Management
@@ -22,7 +26,7 @@
 - Basic turn-handling
 
   - submit turn
-  - ends turn when all players submitted their orders
+  - ends turn when all players submitted their turn
 
 - create and automate AWS Infrastructure
 

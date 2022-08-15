@@ -4,25 +4,25 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
-import kotlin.math.sqrt
+import de.ruegnerlukas.strategygame.backend.shared.max
 
 class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 
 	companion object {
-		const val MIN_DIST_BETWEEN_CITIES = 4.0f
 		const val CITY_COST = 50.0f
+		const val MAX_TILE_INFLUENCE = 3.0f
 	}
 
 	override suspend fun perform(
@@ -37,8 +37,10 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 			val validationErrors = mutableListOf<String>().apply {
 				addAll(validateCityName(command.data.name))
 				addAll(validateTileType(targetTile))
-				addAll(validateCitySpacing(state.cities, targetTile))
+				addAll(validateTileCity(targetTile, state.cities))
 				addAll(validateResourceCost(country))
+				addAll(validateTileOwner(country, targetTile))
+				addAll(validateTileInfluence(country, targetTile))
 			}
 
 			if (validationErrors.isEmpty()) {
@@ -79,9 +81,6 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 	}
 
 
-	/**
-	 * @returns a list of validation errors
-	 */
 	private fun validateCityName(name: String): List<String> {
 		if (name.isNotBlank()) {
 			return emptyList()
@@ -91,9 +90,6 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 	}
 
 
-	/**
-	 * @returns a list of validation errors
-	 */
 	private fun validateTileType(tile: TileEntity): List<String> {
 		if (tile.data.terrainType == TileType.LAND.name) {
 			return emptyList()
@@ -103,30 +99,44 @@ class ResolveCreateCityCommandImpl : ResolveCreateCityCommand {
 	}
 
 
-	/**
-	 * @returns a list of validation errors
-	 */
-	private fun validateCitySpacing(cities: List<CityEntity>, target: TileEntity): List<String> {
-		val closestCity = cities
-			.map { city ->
-				val tile = city.tile
-				val dq = target.position.q - tile.q
-				val dr = target.position.r - tile.r
-				val dist = sqrt((dq * dq + dr * dr).toDouble())
-				city to dist
-			}
-			.minByOrNull { it.second }
-		if (closestCity != null && closestCity.second < MIN_DIST_BETWEEN_CITIES) {
-			return listOf("too close to another city")
+	private fun validateTileOwner(country: CountryEntity, target: TileEntity): List<String> {
+		if (target.ownerCountryId != null && target.ownerCountryId != country.key) {
+			return listOf("tile is part of another country")
 		} else {
 			return emptyList()
 		}
 	}
 
 
-	/**
-	 * @returns a list of validation errors
-	 */
+	private fun validateTileInfluence(country: CountryEntity, target: TileEntity): List<String> {
+		// country owns tile
+		if (target.ownerCountryId == country.key) {
+			return emptyList()
+		}
+		// nobody else has more than 'MAX_TILE_INFLUENCE' influence
+		val maxForeignInfluence = target.influences.filter { it.countryId != country.key }.map { it.value }.max { it } ?: 0.0
+		if (maxForeignInfluence < MAX_TILE_INFLUENCE) {
+			return emptyList()
+		}
+		// country has the most influence on tile
+		val countryInfluence = target.influences.find { it.countryId == country.key }?.value ?: 0.0
+		if (countryInfluence > maxForeignInfluence) {
+			return emptyList()
+		}
+		return listOf("not enough influence over tile")
+	}
+
+
+	private fun validateTileCity(target: TileEntity, cities: List<CityEntity>): List<String> {
+		val city = cities.find { it.tile.tileId == target.key }
+		if (city != null) {
+			return listOf("tile already occupied")
+		} else {
+			return emptyList()
+		}
+	}
+
+
 	private fun validateResourceCost(country: CountryEntity): List<String> {
 		if (country.resources.money < CITY_COST) {
 			return listOf("not enough money")

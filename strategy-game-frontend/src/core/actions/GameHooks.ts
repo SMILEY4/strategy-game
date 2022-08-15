@@ -3,11 +3,13 @@ import {GameStore} from "../../external/state/game/gameStore";
 import {LocalGameStateHooks} from "../../external/state/localgame/localGameStateHooks";
 import {LocalGameStore} from "../../external/state/localgame/localGameStore";
 import {City} from "../../models/state/city";
-import {Command, CommandCreateCity} from "../../models/state/command";
 import {TerrainType} from "../../models/state/terrainType";
 import {Tile} from "../../models/state/tile";
+import {orDefault} from "../../shared/utils";
 
 export namespace GameHooks {
+
+    import usePlayerCountry = GameStateHooks.usePlayerCountry;
 
     export function useCountryMoney(): number {
         const commands = LocalGameStateHooks.useCommands();
@@ -18,9 +20,10 @@ export namespace GameHooks {
 
     export function useValidateCreateCity(q: number, r: number): boolean {
 
-        const MIN_DIST_BETWEEN_CITIES = 4.0;
         const CITY_COST = 50.0;
+        const MAX_TILE_INFLUENCE = 3.0;
 
+        const country = usePlayerCountry()!!;
         const currentAmountMoney = useCountryMoney();
         const commands = LocalGameStore.useState(state => state.commands);
         const cities = GameStore.useState(state => state.cities);
@@ -30,28 +33,34 @@ export namespace GameHooks {
             return tile.terrainType === TerrainType.LAND;
         }
 
-        function validateCitySpacing(target: Tile, cities: City[], commands: Command[]) {
-            const cityLocations: ([number, number])[] = [];
-            cities.forEach(city => {
-                cityLocations.push([city.tile.position.q, city.tile.position.r]);
-            });
-            commands
-                .filter(cmd => cmd.commandType === "create-city")
-                .map(cmd => cmd as CommandCreateCity)
-                .forEach(cmd => {
-                    cityLocations.push([cmd.q, cmd.r]);
-                });
-            return !cityLocations.some(city => {
-                const dq = target.position.q - city[0];
-                const dr = target.position.r - city[1];
-                const dist = Math.sqrt(dq * dq + dr * dr);
-                return dist < MIN_DIST_BETWEEN_CITIES;
-            });
+        function validateTileOwner(countryId: string, tile: Tile): boolean {
+            return !(tile.ownerCountry && tile.ownerCountry.countryId != countryId);
+        }
+
+        function validateTileInfluence(countryId: string, tile: Tile): boolean {
+            // country owns tile
+            if (tile.ownerCountry?.countryId == countryId) {
+                return true;
+            }
+            // nobody else has more than 'MAX_TILE_INFLUENCE' influence
+            const maxForeignInfluence = Math.max(...tile.influences.filter(i => i.country.countryId !== countryId).map(i => i.value));
+            if (maxForeignInfluence < MAX_TILE_INFLUENCE) {
+                return true;
+            }
+            // country has the most influence on tile
+            const countryInfluence = orDefault(tile.influences.find(i => i.country.countryId === countryId)?.value, 0.0);
+            if (countryInfluence > maxForeignInfluence) {
+                return true;
+            }
+            return false;
+        }
+
+        function validateTileCity(tile: Tile, cities: City[]): boolean {
+            return !cities.find(c => c.tile.tileId === tile.tileId);
         }
 
         function validateResourceCost(availableMoney: number) {
             return availableMoney >= CITY_COST;
-
         }
 
         if (!tile) {
@@ -60,7 +69,13 @@ export namespace GameHooks {
         if (!validateTileType(tile)) {
             return false;
         }
-        if (!validateCitySpacing(tile, cities, commands)) {
+        if (!validateTileOwner(country.countryId, tile)) {
+            return false;
+        }
+        if (!validateTileCity(tile, cities)) {
+            return false;
+        }
+        if (!validateTileInfluence(country.countryId, tile)) {
             return false;
         }
         if (!validateResourceCost(currentAmountMoney)) {

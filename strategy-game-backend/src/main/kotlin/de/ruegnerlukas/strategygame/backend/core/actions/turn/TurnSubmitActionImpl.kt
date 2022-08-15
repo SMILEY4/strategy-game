@@ -127,7 +127,7 @@ class TurnSubmitActionImpl(
 	 * End turn if all players submitted their commands (none in state "playing")
 	 */
 	private suspend fun maybeEndTurn(game: GameEntity) {
-		val countPlaying = game.players.count { it.state == PlayerEntity.STATE_PLAYING }
+		val countPlaying = game.players.count { it.state == PlayerEntity.STATE_PLAYING && it.connectionId != null }
 		if (countPlaying == 0) {
 			val result = actionEndTurn.perform(game.key!!)
 			if (result is Either.Left) {

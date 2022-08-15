@@ -12,7 +12,6 @@ export interface PayloadInitTurnState {
         })[],
         tiles: ({
             tileId: string,
-            gameId: string,
             position: {
                 q: number,
                 r: number
@@ -20,6 +19,11 @@ export interface PayloadInitTurnState {
             data: {
                 terrainType: string
             },
+            influences: ({
+                countryId: string,
+                value: number
+            })[],
+            ownerCountryId: string | null,
             content: MsgTileContent[]
         })[],
         cities: ({

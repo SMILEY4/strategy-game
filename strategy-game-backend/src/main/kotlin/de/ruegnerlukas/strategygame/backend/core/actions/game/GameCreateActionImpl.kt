@@ -47,7 +47,9 @@ class GameCreateActionImpl(
 				data = TileData(
 					terrainType = it.type.name,
 				),
-				content = trackingListOf()
+				content = trackingListOf(),
+				influences = mutableListOf(),
+				ownerCountryId = null
 			)
 		}
 	}

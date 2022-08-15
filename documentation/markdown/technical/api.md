@@ -323,6 +323,13 @@ All messages follow the following format
                   "data": {
                       "terrainType": "String - the type of the terrain",
                   },
+                  "influences": [
+                      {
+                          "countryId": "String - the id of the country",
+                          "value": "Double - the total amount of influence of the  country on the tile"
+                      }
+                  ],
+                  "ownerCountryId": "String or null - the id of the country owning this tile",
                   "content": [
                       {
                           "type": "marker",
@@ -376,6 +383,13 @@ All messages follow the following format
                   "data": {
                       "terrainType": "String - the type of the terrain",
                   },
+                  "influences": [
+                      {
+                          "countryId": "String - the id of the country",
+                          "value": "Double - the total amount of influence of the  country on the tile"
+                      }
+                  ],
+                  "ownerCountryId": "String or null - the id of the country owning this tile",
                   "content": [
                       {
                           "type": "marker",

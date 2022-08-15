@@ -1,4 +1,5 @@
 import React, {ReactElement, useState} from "react";
+import {Simulate} from "react-dom/test-utils";
 import {GameHooks} from "../../../../core/actions/GameHooks";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
@@ -15,8 +16,9 @@ export function MenuSelectedTile(): ReactElement {
         <div>
             <h3>Selected Tile</h3>
             <SelectedTileSection selectedTile={selectedTile}/>
-            <SectionMarkers selectedTile={selectedTile}/>
+            <SectionInfluences selectedTile={selectedTile}/>
             <SectionCity selectedTile={selectedTile}/>
+            <SectionMarkers selectedTile={selectedTile}/>
             <SectionCommands selectedTile={selectedTile}/>
         </div>
     );
@@ -34,26 +36,15 @@ function SelectedTileSection(props: { selectedTile: TilePosition | null }): Reac
 }
 
 
-function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElement | null {
-
-    function placeMarker() {
-        if (props.selectedTile) {
-            AppConfig.turnAddCommand.perform({
-                commandType: "place-marker",
-                cost: {
-                    money: 0
-                },
-                q: props.selectedTile.q,
-                r: props.selectedTile.r
-            } as Command);
-        }
-    }
-
-    if (props.selectedTile) {
+function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactElement | null {
+    const tile = GameStateHooks.useTileAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    if (props.selectedTile && tile) {
         return (
             <>
-                <h3>Marker</h3>
-                <button onClick={placeMarker}>Place Marker</button>
+                <h3>Influences</h3>
+                <ul>
+                    {tile.influences.map(influence => <li>{influence.country.countryId + " = " + influence.value}</li>)}
+                </ul>
             </>
         );
     } else {
@@ -90,11 +81,40 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
                 {city && (
                     <ul>
                         <li>{"name: " + city.name}</li>
+                        <li>{"country: " + city.country.countryId}</li>
                     </ul>
                 )}
                 {!city && (
                     <button onClick={createCity} disabled={!canCreateCity}>Create City</button>
                 )}
+            </>
+        );
+    } else {
+        return null;
+    }
+}
+
+
+function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElement | null {
+
+    function placeMarker() {
+        if (props.selectedTile) {
+            AppConfig.turnAddCommand.perform({
+                commandType: "place-marker",
+                cost: {
+                    money: 0
+                },
+                q: props.selectedTile.q,
+                r: props.selectedTile.r
+            } as Command);
+        }
+    }
+
+    if (props.selectedTile) {
+        return (
+            <>
+                <h3>Marker</h3>
+                <button onClick={placeMarker}>Place Marker</button>
             </>
         );
     } else {

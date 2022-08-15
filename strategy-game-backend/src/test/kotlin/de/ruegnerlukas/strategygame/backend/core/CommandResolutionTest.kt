@@ -119,7 +119,41 @@ class CommandResolutionTest : StringSpec({
 		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 0
 	}
 
-	"create two cities too close together, reject" {
+	"create city without enough resources, reject" {
+		val database = TestUtilsFactory.createTestDatabase()
+		val createGame = TestActions.gameCreateAction(database)
+		val joinGame = TestActions.gameJoinAction(database)
+		val resolveCommands = TestActions.resolveCommandsAction()
+
+		// create a new game
+		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
+		joinGame.perform("test-user", gameId)
+		val country = TestUtils.getCountry(database, gameId, "test-user")
+
+		// set country resources
+		country.resources.money = 10f
+		TestUtils.updateCountry(database, country)
+
+		// resolve commands
+		val command = cmdCreateCity(country.key!!, 4, 2)
+		val result = TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, listOf(command))
+		}
+		result shouldBeOk true
+		(result as Either.Right).value.let { errors ->
+			errors shouldHaveSize 1
+			errors shouldContainExactlyInAnyOrder listOf(
+				CommandResolutionError(
+					command = command,
+					errorMessage = "not enough money"
+				)
+			)
+		}
+		TestUtils.getCities(database, gameId) shouldHaveSize 0
+		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 0
+	}
+
+	"create city on already occupied tile, reject" {
 		val database = TestUtilsFactory.createTestDatabase()
 		val createGame = TestActions.gameCreateAction(database)
 		val joinGame = TestActions.gameJoinAction(database)
@@ -130,18 +164,66 @@ class CommandResolutionTest : StringSpec({
 		joinGame.perform("test-user", gameId)
 		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
 
+		// place first city
+		TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, listOf(cmdCreateCity(countryId, 4, 2)))
+		}
+
 		// resolve commands
-		val commands = listOf(cmdCreateCity(countryId, 4, 2), cmdCreateCity(countryId, 5, 2))
+		val command = cmdCreateCity(countryId, 4, 2)
 		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, commands)
+			resolveCommands.perform(it, listOf(command))
 		}
 		result shouldBeOk true
 		(result as Either.Right).value.let { errors ->
 			errors shouldHaveSize 1
 			errors shouldContainExactlyInAnyOrder listOf(
 				CommandResolutionError(
-					command = commands[1],
-					errorMessage = "too close to another city"
+					command = command,
+					errorMessage = "tile already occupied"
+				)
+			)
+		}
+		TestUtils.getCities(database, gameId) shouldHaveSize 1
+		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 1
+	}
+
+	"create city on foreign tile, reject" {
+		val database = TestUtilsFactory.createTestDatabase()
+		val createGame = TestActions.gameCreateAction(database)
+		val joinGame = TestActions.gameJoinAction(database)
+		val resolveCommands = TestActions.resolveCommandsAction()
+		val endTurn = TestActions.turnEndAction(database)
+
+		// create a new game
+		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
+		joinGame.perform("test-user-1", gameId)
+		joinGame.perform("test-user-2", gameId)
+		val countryId1 = TestUtils.getCountry(database, gameId, "test-user-1").key!!
+		val countryId2 = TestUtils.getCountry(database, gameId, "test-user-2").key!!
+
+		// place foreign city
+		TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, listOf(cmdCreateCity(countryId1, 4, 2)))
+		}
+		endTurn.perform(gameId)
+
+		// resolve commands
+		val command = cmdCreateCity(countryId2, 4, 3)
+		val result = TestUtils.withGameExtended(database, gameId) {
+			resolveCommands.perform(it, listOf(command))
+		}
+		result shouldBeOk true
+		(result as Either.Right).value.let { errors ->
+			errors shouldHaveSize 2
+			errors shouldContainExactlyInAnyOrder listOf(
+				CommandResolutionError(
+					command = command,
+					errorMessage = "tile is part of another country"
+				),
+				CommandResolutionError(
+					command = command,
+					errorMessage = "not enough influence over tile"
 				)
 			)
 		}
