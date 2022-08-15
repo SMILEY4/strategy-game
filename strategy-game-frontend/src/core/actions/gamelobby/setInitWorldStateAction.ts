@@ -47,7 +47,7 @@ export class SetInitWorldStateAction {
                     q: t.position.q,
                     r: t.position.r
                 },
-                influence: t.influences.map(i => ({
+                influences: t.influences.map(i => ({
                     country: countries.find(c => c.countryId === i.countryId)!!,
                     value: i.value
                 })),

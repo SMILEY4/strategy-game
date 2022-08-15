@@ -14,17 +14,17 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
 object TestActions {
@@ -80,6 +80,21 @@ object TestActions {
 	fun resolveCommandsAction() = ResolveCommandsActionImpl(
 		ResolvePlaceMarkerCommandImpl(),
 		ResolveCreateCityCommandImpl()
+	)
+
+	fun turnEndAction(database: ArangoDatabase) = TurnEndActionImpl(
+		ResolveCommandsActionImpl(
+			ResolvePlaceMarkerCommandImpl(),
+			ResolveCreateCityCommandImpl()
+		),
+		BroadcastTurnResultActionImpl(
+			GameExtendedQueryImpl(database),
+			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
+		),
+		TurnUpdateActionImpl(),
+		GameExtendedQueryImpl(database),
+		GameExtendedUpdateImpl(database),
+		CommandsByGameQueryImpl(database),
 	)
 
 }

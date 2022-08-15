@@ -6,7 +6,7 @@ export interface Tile {
     tileId: string,
     position: TilePosition;
     terrainType: TerrainType;
-    influence: ({
+    influences: ({
         country: Country,
         value: number,
     })[],

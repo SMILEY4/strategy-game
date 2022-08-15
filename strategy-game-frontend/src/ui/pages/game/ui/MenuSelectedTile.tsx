@@ -43,7 +43,7 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
             <>
                 <h3>Influences</h3>
                 <ul>
-                    {tile.influence.map(influence => <li>{influence.country.countryId + " = " + influence.value}</li>)}
+                    {tile.influences.map(influence => <li>{influence.country.countryId + " = " + influence.value}</li>)}
                 </ul>
             </>
         );
