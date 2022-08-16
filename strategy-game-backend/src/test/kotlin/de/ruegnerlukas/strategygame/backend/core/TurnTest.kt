@@ -1,12 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.core
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
@@ -19,62 +24,109 @@ import io.kotest.matchers.shouldBe
 class TurnTest : StringSpec({
 
 	"submit commands, expect saved commands, ending turn and resolved commands" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val connectToGame = TestActions.gameConnectAction(database)
-		val submitTurn = TestActions.turnSubmitAction(database)
-
-		val userId1 = "test-user-1"
-		val userId2 = "test-user-2"
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
-
-		// users players join game
-		joinGame.perform(userId1, gameId) shouldBeOk true
-		joinGame.perform(userId2, gameId) shouldBeOk true
-
-		// get player ids of both users
-		val countryId1 = TestUtils.getCountry(database, gameId, userId1).key!!
-		val countryId2 = TestUtils.getCountry(database, gameId, userId2).key!!
-
-		// both users connect to game
-		connectToGame.perform(userId1, gameId, 1) shouldBeOk true
-		connectToGame.perform(userId2, gameId, 2) shouldBeOk true
-
-		// one user submits commands -> expect game still on turn 0 and two saved commands
-		val resultSubmit1 = submitTurn.perform(userId1, gameId, listOf(PlaceMarkerCommand(q = 4, r = 2), CreateCityCommand(q = 4, r = 3, name = "Test", null)))
-		resultSubmit1 shouldBeOk true
-		TestUtils.getGame(database, gameId).turn shouldBe 0
-		TestUtils.getCommands(database, gameId, 0).let { commands ->
-			commands shouldHaveSize 2
-			commands.map { it.countryId } shouldContainExactlyInAnyOrder listOf(countryId1, countryId1)
-			commands.map { it.data.type } shouldContainExactlyInAnyOrder listOf(
-				PlaceMarkerCommandDataEntity.TYPE,
-				CreateCityCommandDataEntity.TYPE
+		test {
+			val gameId = createGameOnlyLand()
+			val countryId1 = joinAndConnect("user-1", gameId)
+			val countryId2 = joinAndConnect("user-2", gameId)
+			submitTurn_expectOk(
+				"user-1", gameId, listOf(
+					PlaceMarkerCommand(q = 4, r = 2),
+					CreateCityCommand(q = 4, r = 3, name = "Test", null)
+				)
 			)
-		}
-
-		// other/last player submits commands -> expect game on next turn and three saved commands for last turn
-		val resultSubmit2 = submitTurn.perform(userId2, gameId, listOf(PlaceMarkerCommand(q = 0, r = 0)))
-		resultSubmit2 shouldBeOk true
-		TestUtils.getGame(database, gameId).turn shouldBe 1
-		CommandsByGameQueryImpl(database).execute(gameId, 0).let { commands ->
-			commands shouldHaveSize 3
-			commands.map { it.countryId } shouldContainExactlyInAnyOrder listOf(countryId1, countryId1, countryId2)
-			commands.map { it.data.type } shouldContainExactlyInAnyOrder listOf(
-				PlaceMarkerCommandDataEntity.TYPE,
-				PlaceMarkerCommandDataEntity.TYPE,
-				CreateCityCommandDataEntity.TYPE
+			expectTurn(gameId, 0)
+			expectCommands(
+				gameId, 0, listOf(
+					PlaceMarkerCommandDataEntity.TYPE to countryId1,
+					CreateCityCommandDataEntity.TYPE to countryId1
+				)
 			)
+			submitTurn_expectOk(
+				"user-2", gameId, listOf(
+					PlaceMarkerCommand(q = 0, r = 0)
+				)
+			)
+			expectTurn(gameId, 1)
+			expectCommands(
+				gameId, 0, listOf(
+					PlaceMarkerCommandDataEntity.TYPE to countryId1,
+					CreateCityCommandDataEntity.TYPE to countryId1,
+					PlaceMarkerCommandDataEntity.TYPE to countryId2,
+				)
+			)
+			expectCities(gameId, listOf(4 to 3))
+			expectMarkers(gameId, listOf(4 to 2, 0 to 0))
 		}
-
-		// assert that commands have correctly resolved and saved
-		TestUtils.getMarkers(database, gameId) shouldHaveSize 2
-		TestUtils.getMarkersAt(database, gameId, 4, 2) shouldHaveSize 1
-		TestUtils.getMarkersAt(database, gameId, 0, 0) shouldHaveSize 1
-		TestUtils.getCities(database, gameId) shouldHaveSize 1
 	}
 
-})
+}) {
+
+	companion object {
+
+		internal suspend fun test(block: suspend Context.() -> Unit) {
+			val database = TestUtilsFactory.createTestDatabase()
+			Context(
+				database = database,
+				createAction = TestActions.gameCreateAction(database),
+				joinAction = TestActions.gameJoinAction(database),
+				connectAction = TestActions.gameConnectAction(database),
+				submitAction = TestActions.turnSubmitAction(database)
+			).apply { block() }
+		}
+
+		internal class Context(
+			private val database: ArangoDatabase,
+			private val createAction: GameCreateAction,
+			private val joinAction: GameJoinAction,
+			private val connectAction: GameConnectAction,
+			private val submitAction: TurnSubmitAction
+		) {
+
+			private var connectionIdCounter: Int = 1
+
+			suspend fun createGameOnlyLand(): String {
+				return createAction.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
+			}
+
+			suspend fun joinAndConnect(userId: String, gameId: String): String {
+				joinAction.perform(userId, gameId)
+				connectAction.perform(userId, gameId, connectionIdCounter++)
+				return TestUtils.getCountry(database, gameId, userId).key!!
+			}
+
+			suspend fun submitTurn_expectOk(userId: String, gameId: String, commands: List<PlayerCommand>) {
+				val result = submitAction.perform(userId, gameId, commands)
+				result shouldBeOk true
+			}
+
+			suspend fun expectTurn(gameId: String, turn: Int) {
+				TestUtils.getGame(database, gameId).turn shouldBe turn
+			}
+
+			suspend fun expectCommands(gameId: String, turn: Int, commandTypeAndCountry: List<Pair<String, String>>) {
+				TestUtils.getCommands(database, gameId, turn).let { commands ->
+					commands shouldHaveSize commandTypeAndCountry.size
+					commands.map { it.countryId } shouldContainExactlyInAnyOrder commandTypeAndCountry.map { it.second }
+					commands.map { it.data.type } shouldContainExactlyInAnyOrder commandTypeAndCountry.map { it.first }
+				}
+			}
+
+			suspend fun expectCities(gameId: String, cityPositions: List<Pair<Int, Int>>) {
+				TestUtils.getCities(database, gameId) shouldHaveSize cityPositions.size
+				cityPositions.forEach { pos ->
+					TestUtils.getCitiesAt(database, gameId, pos.first, pos.second).size shouldBe 1
+				}
+			}
+
+			suspend fun expectMarkers(gameId: String, markerPositions: List<Pair<Int, Int>>) {
+				TestUtils.getMarkers(database, gameId) shouldHaveSize markerPositions.size
+				markerPositions.forEach { pos ->
+					TestUtils.getMarkersAt(database, gameId, pos.first, pos.second).size shouldBe 1
+				}
+			}
+
+		}
+
+	}
+
+}

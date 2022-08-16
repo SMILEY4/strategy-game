@@ -23,6 +23,11 @@ object TestUtils {
 		return getPlayers(database, gameId).first { it.userId == userId }
 	}
 
+	suspend fun getCountry(database: ArangoDatabase, countryId: String): CountryEntity {
+		return database.getDocument(Collections.COUNTRIES, countryId, CountryEntity::class.java)
+			.getOrHandle { throw Exception("country with id=$countryId not found") }
+	}
+
 	suspend fun getCountry(database: ArangoDatabase, gameId: String, userId: String): CountryEntity {
 		return CountryByGameAndUserQueryImpl(database).execute(gameId, userId)
 			.getOrHandle { throw Exception("country with gameId=$gameId and userId=$userId not found") }

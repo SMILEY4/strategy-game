@@ -1,12 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.core
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
@@ -14,225 +19,140 @@ import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
 
 class CommandResolutionTest : StringSpec({
 
 	"place marker" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
-		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
-
-		// resolve commands
-		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(cmdPlaceMarker(countryId, 4, 2)))
+		test {
+			val gameId = createGameOnlyLand()
+			val countryId = joinGame("user", gameId)
+			resolveCommands_expectOkNoErrors(
+				gameId, listOf(
+					cmdPlaceMarker(countryId, 4, 2)
+				)
+			)
+			expectMarkers(gameId, listOf(4 to 2))
 		}
-		result shouldBeOk true
-		(result as Either.Right).value shouldHaveSize 0
-		TestUtils.getMarkers(database, gameId) shouldHaveSize 1
-		TestUtils.getMarkersAt(database, gameId, 4, 2) shouldHaveSize 1
 	}
 
 	"place multiple markers on same tile, reject all but the first one" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
-		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
-
-		// resolve commands
-		val commands = listOf(cmdPlaceMarker(countryId, 4, 2), cmdPlaceMarker(countryId, 4, 2))
-		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, commands)
-		}
-		result shouldBeOk true
-		(result as Either.Right).value.let { errors ->
-			errors shouldHaveSize 1
-			errors shouldContainExactlyInAnyOrder listOf(
-				CommandResolutionError(
-					command = commands[1],
-					errorMessage = "already another marker at position"
+		test {
+			val gameId = createGameOnlyLand()
+			val countryId = joinGame("user", gameId)
+			resolveCommands_expectOkWithErrors(
+				gameId,
+				listOf(
+					cmdPlaceMarker(countryId, 4, 2),
+					cmdPlaceMarker(countryId, 4, 2)
+				),
+				listOf(
+					"already another marker at position"
 				)
 			)
+			expectMarkers(gameId, listOf(4 to 2))
 		}
-		TestUtils.getMarkers(database, gameId) shouldHaveSize 1
-		TestUtils.getMarkersAt(database, gameId, 4, 2) shouldHaveSize 1
 	}
 
 	"create city" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
-		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
-
-		// resolve commands
-		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(cmdCreateCity(countryId, 4, 2)))
+		test {
+			val gameId = createGameOnlyLand()
+			val countryId = joinGame("user", gameId)
+			resolveCommands_expectOkNoErrors(
+				gameId, listOf(
+					cmdCreateCity(countryId, 4, 2)
+				)
+			)
+			expectCities(gameId, listOf(4 to 2))
 		}
-		result shouldBeOk true
-		(result as Either.Right).value shouldHaveSize 0
-		TestUtils.getCities(database, gameId) shouldHaveSize 1
-		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 1
 	}
 
 	"create city on water, reject" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.WATER))
-		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
-
-		// resolve commands
-		val command = cmdCreateCity(countryId, 4, 2)
-		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(command))
-		}
-		result shouldBeOk true
-		(result as Either.Right).value.let { errors ->
-			errors shouldHaveSize 1
-			errors shouldContainExactlyInAnyOrder listOf(
-				CommandResolutionError(
-					command = command,
-					errorMessage = "invalid tile type"
+		test {
+			val gameId = createGameOnlyWater()
+			val countryId = joinGame("user", gameId)
+			resolveCommands_expectOkWithErrors(
+				gameId,
+				listOf(
+					cmdCreateCity(countryId, 4, 2)
+				),
+				listOf(
+					"invalid tile type"
 				)
 			)
+			expectCities(gameId, emptyList())
 		}
-		TestUtils.getCities(database, gameId) shouldHaveSize 0
-		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 0
 	}
 
 	"create city without enough resources, reject" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
-		joinGame.perform("test-user", gameId)
-		val country = TestUtils.getCountry(database, gameId, "test-user")
-
-		// set country resources
-		country.resources.money = 10f
-		TestUtils.updateCountry(database, country)
-
-		// resolve commands
-		val command = cmdCreateCity(country.key!!, 4, 2)
-		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(command))
-		}
-		result shouldBeOk true
-		(result as Either.Right).value.let { errors ->
-			errors shouldHaveSize 1
-			errors shouldContainExactlyInAnyOrder listOf(
-				CommandResolutionError(
-					command = command,
-					errorMessage = "not enough money"
+		test {
+			val gameId = createGameOnlyLand()
+			val countryId = joinGame("user", gameId)
+			setCountryMoney(countryId, 10f)
+			resolveCommands_expectOkWithErrors(
+				gameId,
+				listOf(
+					cmdCreateCity(countryId, 4, 2)
+				),
+				listOf(
+					"not enough money"
 				)
 			)
+			expectCities(gameId, emptyList())
 		}
-		TestUtils.getCities(database, gameId) shouldHaveSize 0
-		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 0
 	}
 
 	"create city on already occupied tile, reject" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
-		joinGame.perform("test-user", gameId)
-		val countryId = TestUtils.getCountry(database, gameId, "test-user").key!!
-
-		// place first city
-		TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(cmdCreateCity(countryId, 4, 2)))
-		}
-
-		// resolve commands
-		val command = cmdCreateCity(countryId, 4, 2)
-		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(command))
-		}
-		result shouldBeOk true
-		(result as Either.Right).value.let { errors ->
-			errors shouldHaveSize 1
-			errors shouldContainExactlyInAnyOrder listOf(
-				CommandResolutionError(
-					command = command,
-					errorMessage = "tile already occupied"
+		test {
+			val gameId = createGameOnlyLand()
+			val countryId = joinGame("user", gameId)
+			resolveCommands_expectOkNoErrors(
+				gameId, listOf(
+					cmdCreateCity(countryId, 4, 2)
 				)
 			)
+			resolveCommands_expectOkWithErrors(
+				gameId,
+				listOf(
+					cmdCreateCity(countryId, 4, 2)
+				),
+				listOf(
+					"tile already occupied"
+				)
+			)
+			expectCities(gameId, listOf(4 to 2))
 		}
-		TestUtils.getCities(database, gameId) shouldHaveSize 1
-		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 1
 	}
 
 	"create city on foreign tile, reject" {
-		val database = TestUtilsFactory.createTestDatabase()
-		val createGame = TestActions.gameCreateAction(database)
-		val joinGame = TestActions.gameJoinAction(database)
-		val resolveCommands = TestActions.resolveCommandsAction(database)
-		val endTurn = TestActions.turnEndAction(database)
-
-		// create a new game
-		val gameId = createGame.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
-		joinGame.perform("test-user-1", gameId)
-		joinGame.perform("test-user-2", gameId)
-		val countryId1 = TestUtils.getCountry(database, gameId, "test-user-1").key!!
-		val countryId2 = TestUtils.getCountry(database, gameId, "test-user-2").key!!
-
-		// place foreign city
-		TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(cmdCreateCity(countryId1, 4, 2)))
-		}
-		endTurn.perform(gameId)
-
-		// resolve commands
-		val command = cmdCreateCity(countryId2, 4, 3)
-		val result = TestUtils.withGameExtended(database, gameId) {
-			resolveCommands.perform(it, listOf(command))
-		}
-		result shouldBeOk true
-		(result as Either.Right).value.let { errors ->
-			errors shouldHaveSize 2
-			errors shouldContainExactlyInAnyOrder listOf(
-				CommandResolutionError(
-					command = command,
-					errorMessage = "tile is part of another country"
-				),
-				CommandResolutionError(
-					command = command,
-					errorMessage = "not enough influence over tile"
+		test {
+			val gameId = createGameOnlyLand()
+			val countryId1 = joinGame("user-1", gameId)
+			val countryId2 = joinGame("user-2", gameId)
+			resolveCommands_expectOkNoErrors(
+				gameId, listOf(
+					cmdCreateCity(countryId1, 4, 2)
 				)
 			)
+			endTurn(gameId)
+			resolveCommands_expectOkWithErrors(
+				gameId,
+				listOf(
+					cmdCreateCity(countryId2, 4, 3)
+				),
+				listOf(
+					"tile is part of another country",
+					"not enough influence over tile"
+				)
+			)
+			expectCities(gameId, listOf(4 to 2))
 		}
-		TestUtils.getCities(database, gameId) shouldHaveSize 1
-		TestUtils.getCitiesAt(database, gameId, 4, 2) shouldHaveSize 1
 	}
 
 }) {
+
 	companion object {
+
 		internal fun cmdPlaceMarker(countryId: String, q: Int, r: Int) = CommandEntity(
 			countryId = countryId,
 			turn = 0,
@@ -252,5 +172,86 @@ class CommandResolutionTest : StringSpec({
 				provinceId = null
 			),
 		)
+
+		internal suspend fun test(block: suspend Context.() -> Unit) {
+			val database = TestUtilsFactory.createTestDatabase()
+			Context(
+				database = database,
+				createAction = TestActions.gameCreateAction(database),
+				joinAction = TestActions.gameJoinAction(database),
+				resolveAction = TestActions.resolveCommandsAction(database),
+				endTurnAction = TestActions.turnEndAction(database)
+			).apply { block() }
+		}
+
+		internal class Context(
+			private val database: ArangoDatabase,
+			private val createAction: GameCreateAction,
+			private val joinAction: GameJoinAction,
+			private val resolveAction: ResolveCommandsAction,
+			private val endTurnAction: TurnEndAction
+		) {
+
+			private var connectionIdCounter: Int = 1
+
+			suspend fun createGameOnlyLand(): String {
+				return createAction.perform(WorldSettings(seed = 42, singleTileType = TileType.LAND))
+			}
+
+			suspend fun createGameOnlyWater(): String {
+				return createAction.perform(WorldSettings(seed = 42, singleTileType = TileType.WATER))
+			}
+
+			suspend fun joinGame(userId: String, gameId: String): String {
+				joinAction.perform(userId, gameId)
+				return TestUtils.getCountry(database, gameId, userId).key!!
+			}
+
+			suspend fun resolveCommands_expectOkNoErrors(gameId: String, commands: List<CommandEntity<*>>) {
+				val result = TestUtils.withGameExtended(database, gameId) {
+					resolveAction.perform(it, commands)
+				}
+				result shouldBeOk true
+				(result as Either.Right).value shouldHaveSize 0
+			}
+
+			suspend fun resolveCommands_expectOkWithErrors(gameId: String, commands: List<CommandEntity<*>>, expectedErrors: List<String>) {
+				val result = TestUtils.withGameExtended(database, gameId) {
+					resolveAction.perform(it, commands)
+				}
+				result shouldBeOk true
+				(result as Either.Right).value.let { errors ->
+					errors shouldHaveSize expectedErrors.size
+					errors.map { it.errorMessage } shouldContainExactlyInAnyOrder expectedErrors
+				}
+			}
+
+			suspend fun setCountryMoney(countryId: String, amount: Float) {
+				val country = TestUtils.getCountry(database, countryId)
+				country.resources.money = amount
+				TestUtils.updateCountry(database, country)
+			}
+
+			suspend fun endTurn(gameId: String) {
+				endTurnAction.perform(gameId)
+			}
+
+			suspend fun expectCities(gameId: String, cityPositions: List<Pair<Int, Int>>) {
+				TestUtils.getCities(database, gameId) shouldHaveSize cityPositions.size
+				cityPositions.forEach { pos ->
+					TestUtils.getCitiesAt(database, gameId, pos.first, pos.second).size shouldBe 1
+				}
+			}
+
+			suspend fun expectMarkers(gameId: String, markerPositions: List<Pair<Int, Int>>) {
+				TestUtils.getMarkers(database, gameId) shouldHaveSize markerPositions.size
+				markerPositions.forEach { pos ->
+					TestUtils.getMarkersAt(database, gameId, pos.first, pos.second).size shouldBe 1
+				}
+			}
+
+		}
+
 	}
+
 }
