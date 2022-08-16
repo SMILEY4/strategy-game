@@ -4,7 +4,7 @@ import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {AppConfig} from "../../../../main";
-import {Command, CommandCreateCity} from "../../../../models/state/command";
+import {CommandCreateCity} from "../../../../models/state/command";
 import {TilePosition} from "../../../../models/state/tilePosition";
 import {TextField} from "../../../components/specific/TextField";
 
@@ -88,7 +88,6 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
     const canCreateCity = GameHooks.useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
     const openFrame = UiStateHooks.useOpenFrame();
 
-
     function createCity() {
         if (props.selectedTile) {
             openFrame(
@@ -99,7 +98,7 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
                         height: 200
                     }
                 },
-                frameId => <CreateCityDialog frameId={frameId} q={props.selectedTile!!.q} r={props.selectedTile!!.r}/>
+                frameId => <CreateCityDialog frameId={frameId} tile={props.selectedTile!!}/>
             );
         }
     }
@@ -130,14 +129,7 @@ function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElem
 
     function placeMarker() {
         if (props.selectedTile) {
-            AppConfig.turnAddCommand.perform({
-                commandType: "place-marker",
-                cost: {
-                    money: 0
-                },
-                q: props.selectedTile.q,
-                r: props.selectedTile.r
-            } as Command);
+            AppConfig.turnAddCommand.addPlaceMarker(props.selectedTile);
         }
     }
 
@@ -179,9 +171,9 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 }
 
 
-function CreateCityDialog(props: { frameId: string, q: number, r: number }): ReactElement {
+function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
     const country = GameStateHooks.usePlayerCountry();
-    const tile = GameStateHooks.useTileAt(props.q, props.r)!!;
+    const tile = GameStateHooks.useTileAt(props.tile.q, props.tile.r)!!;
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
 
@@ -190,8 +182,6 @@ function CreateCityDialog(props: { frameId: string, q: number, r: number }): Rea
         .flatMap(i => i.sources)
         .map(i => i.province)
         .filter((element, index, self) => self.indexOf(element) === index);
-
-    console.log("AV. PROV", availableProvinces)
 
     return (
         <div>
@@ -210,18 +200,8 @@ function CreateCityDialog(props: { frameId: string, q: number, r: number }): Rea
     }
 
     function onAccept(provinceId: string | null) {
-        console.log("create with prov: ", provinceId)
         close();
-        AppConfig.turnAddCommand.perform({
-            commandType: "create-city",
-            cost: {
-                money: 50
-            },
-            q: props.q,
-            r: props.r,
-            name: name,
-            provinceId: provinceId
-        } as CommandCreateCity);
+        AppConfig.turnAddCommand.addCreateCity(props.tile, name, provinceId)
     }
 
 }

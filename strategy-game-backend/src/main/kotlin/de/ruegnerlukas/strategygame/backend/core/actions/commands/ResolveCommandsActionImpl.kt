@@ -3,11 +3,11 @@ package de.ruegnerlukas.strategygame.backend.core.actions.commands
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
@@ -25,15 +25,11 @@ class ResolveCommandsActionImpl(
 	): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
 		log().info("Resolving ${commands.size} commands for game ${game.game.key}")
 		return either {
-			val errors = resolveCommands(game, commands).bind()
-			errors
+			resolveCommands(game, commands).bind()
 		}
 	}
 
 
-	/**
-	 * Apply all given commands to the given world
-	 */
 	private suspend fun resolveCommands(
 		game: GameExtendedEntity,
 		commands: List<CommandEntity<*>>
@@ -49,9 +45,6 @@ class ResolveCommandsActionImpl(
 	}
 
 
-	/**
-	 * Apply the given command to the given world
-	 */
 	private suspend fun resolveCommand(
 		game: GameExtendedEntity,
 		command: CommandEntity<*>

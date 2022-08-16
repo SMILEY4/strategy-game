@@ -11,7 +11,7 @@ interface ResolveCreateCityCommand {
 
 	suspend fun perform(
 		command: CommandEntity<CreateCityCommandDataEntity>,
-		state: GameExtendedEntity
+		game: GameExtendedEntity
 	): Either<ResolveCommandsActionError, List<CommandResolutionError>>
 
 }

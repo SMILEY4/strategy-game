@@ -12,5 +12,6 @@ interface ResolveCommandsAction {
 	object CountryNotFoundError : ResolveCommandsActionError()
 	object TileNotFoundError : ResolveCommandsActionError()
 
+
 	suspend fun perform(game: GameExtendedEntity, commands: List<CommandEntity<*>>): Either<ResolveCommandsActionError, List<CommandResolutionError>>
 }

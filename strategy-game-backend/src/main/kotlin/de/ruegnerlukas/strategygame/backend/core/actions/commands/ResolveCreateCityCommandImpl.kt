@@ -18,11 +18,12 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveComma
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.max
 
 class ResolveCreateCityCommandImpl(
 	private val reservationInsert: ReservationInsert
-) : ResolveCreateCityCommand {
+) : ResolveCreateCityCommand, Logging {
 
 	companion object {
 		const val CITY_COST = 50.0f
@@ -31,27 +32,17 @@ class ResolveCreateCityCommandImpl(
 
 	override suspend fun perform(
 		command: CommandEntity<CreateCityCommandDataEntity>,
-		state: GameExtendedEntity
+		game: GameExtendedEntity
 	): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
+		log().info("Resolving 'create-city'-command for game ${game.game.key} and country ${command.countryId}")
 		return either {
-
-			val country = findCountry(command.countryId, state).bind()
-			val targetTile = findTile(command.data.q, command.data.r, state).bind()
-
-			val validationErrors = mutableListOf<String>().apply {
-				addAll(validateCityName(command.data.name))
-				addAll(validateTileType(targetTile))
-				addAll(validateTileCity(targetTile, state.cities))
-				addAll(validateResourceCost(country))
-				addAll(validateTileOwner(country, targetTile))
-				addAll(validateTileInfluence(country, targetTile))
-				addAll(validateProvince(targetTile, country, command.data.provinceId))
-			}
-
+			val country = findCountry(command.countryId, game).bind()
+			val targetTile = findTile(command.data.q, command.data.r, game).bind()
+			val validationErrors = validateCommand(command, game, country, targetTile)
 			if (validationErrors.isEmpty()) {
-				val province = findOrCreateProvince(state, country, command.data.provinceId)
-				createCity(state, province, targetTile, command.data.name)
-				updateCountry(country)
+				val province = findOrCreateProvince(game, country, command.data.provinceId)
+				createCity(game, province, targetTile, command.data.name)
+				updateCountryResources(country)
 				emptyList()
 			} else {
 				validationErrors.map { CommandResolutionError(command, it) }
@@ -80,33 +71,21 @@ class ResolveCreateCityCommandImpl(
 	}
 
 
-	private suspend fun findOrCreateProvince(game: GameExtendedEntity, country: CountryEntity, provinceId: String?): ProvinceEntity {
-		if (provinceId == null) {
-			return ProvinceEntity(
-				gameId = game.game.getKeyOrThrow(),
-				countryId = country.getKeyOrThrow(),
-				key = reservationInsert.reserveProvince()
-			).also { game.provinces.add(it) }
-		} else {
-			return game.provinces.find { it.key == provinceId }!!
+	private fun validateCommand(
+		command: CommandEntity<CreateCityCommandDataEntity>,
+		game: GameExtendedEntity,
+		country: CountryEntity,
+		targetTile: TileEntity,
+	): List<String> {
+		return mutableListOf<String>().apply {
+			addAll(validateCityName(command.data.name))
+			addAll(validateTileType(targetTile))
+			addAll(validateTileCity(targetTile, game.cities))
+			addAll(validateResourceCost(country))
+			addAll(validateTileOwner(country, targetTile))
+			addAll(validateTileInfluence(country, targetTile))
+			addAll(validateProvince(targetTile, country, command.data.provinceId))
 		}
-	}
-
-
-	private suspend fun createCity(game: GameExtendedEntity, province: ProvinceEntity, tile: TileEntity, name: String) {
-		CityEntity(
-			gameId = tile.gameId,
-			countryId = province.countryId,
-			provinceId = province.getKeyOrThrow(),
-			tile = TileRef(tile.key!!, tile.position.q, tile.position.r),
-			name = name,
-			key = reservationInsert.reserveCity()
-		).also { game.cities.add(it) }
-	}
-
-
-	private fun updateCountry(country: CountryEntity) {
-		country.resources.money -= CITY_COST
 	}
 
 
@@ -190,5 +169,36 @@ class ResolveCreateCityCommandImpl(
 			return emptyList()
 		}
 	}
+
+
+	private suspend fun findOrCreateProvince(game: GameExtendedEntity, country: CountryEntity, provinceId: String?): ProvinceEntity {
+		if (provinceId == null) {
+			return ProvinceEntity(
+				gameId = game.game.getKeyOrThrow(),
+				countryId = country.getKeyOrThrow(),
+				key = reservationInsert.reserveProvince()
+			).also { game.provinces.add(it) }
+		} else {
+			return game.provinces.find { it.key == provinceId }!!
+		}
+	}
+
+
+	private suspend fun createCity(game: GameExtendedEntity, province: ProvinceEntity, tile: TileEntity, name: String) {
+		CityEntity(
+			gameId = tile.gameId,
+			countryId = province.countryId,
+			provinceId = province.getKeyOrThrow(),
+			tile = TileRef(tile.key!!, tile.position.q, tile.position.r),
+			name = name,
+			key = reservationInsert.reserveCity()
+		).also { game.cities.add(it) }
+	}
+
+
+	private fun updateCountryResources(country: CountryEntity) {
+		country.resources.money -= CITY_COST
+	}
+
 
 }

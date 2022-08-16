@@ -1,7 +1,6 @@
 import {GameStateHooks} from "../../external/state/game/gameStateHooks";
 import {GameStore} from "../../external/state/game/gameStore";
 import {LocalGameStateHooks} from "../../external/state/localgame/localGameStateHooks";
-import {LocalGameStore} from "../../external/state/localgame/localGameStore";
 import {City} from "../../models/state/city";
 import {TerrainType} from "../../models/state/terrainType";
 import {Tile} from "../../models/state/tile";
@@ -25,7 +24,6 @@ export namespace GameHooks {
 
         const country = usePlayerCountry()!!;
         const currentAmountMoney = useCountryMoney();
-        const commands = LocalGameStore.useState(state => state.commands);
         const cities = GameStore.useState(state => state.cities);
         const tile = GameStateHooks.useTileAt(q, r);
 
@@ -34,12 +32,12 @@ export namespace GameHooks {
         }
 
         function validateTileOwner(countryId: string, tile: Tile): boolean {
-            return !(tile.ownerCountry && tile.ownerCountry.countryId != countryId);
+            return !(tile.owner && tile.owner.country.countryId != countryId);
         }
 
         function validateTileInfluence(countryId: string, tile: Tile): boolean {
             // country owns tile
-            if (tile.ownerCountry?.countryId == countryId) {
+            if (tile.owner?.country.countryId == countryId) {
                 return true;
             }
             // nobody else has more than 'MAX_TILE_INFLUENCE' influence
@@ -49,10 +47,7 @@ export namespace GameHooks {
             }
             // country has the most influence on tile
             const countryInfluence = orDefault(tile.influences.find(i => i.country.countryId === countryId)?.value, 0.0);
-            if (countryInfluence > maxForeignInfluence) {
-                return true;
-            }
-            return false;
+            return countryInfluence > maxForeignInfluence;
         }
 
         function validateTileCity(tile: Tile, cities: City[]): boolean {
@@ -63,25 +58,17 @@ export namespace GameHooks {
             return availableMoney >= CITY_COST;
         }
 
-        if (!tile) {
+        if (tile) {
+            return [
+                validateTileType(tile),
+                validateTileOwner(country.countryId, tile),
+                validateTileCity(tile, cities),
+                validateTileInfluence(country.countryId, tile),
+                validateResourceCost(currentAmountMoney)
+            ].every(e => e);
+        } else {
             return false;
         }
-        if (!validateTileType(tile)) {
-            return false;
-        }
-        if (!validateTileOwner(country.countryId, tile)) {
-            return false;
-        }
-        if (!validateTileCity(tile, cities)) {
-            return false;
-        }
-        if (!validateTileInfluence(country.countryId, tile)) {
-            return false;
-        }
-        if (!validateResourceCost(currentAmountMoney)) {
-            return false;
-        }
-        return true;
     }
 
 
