@@ -32,21 +32,21 @@ export namespace GameHooks {
         }
 
         function validateTileOwner(countryId: string, tile: Tile): boolean {
-            return !(tile.owner && tile.owner.country.countryId != countryId);
+            return !(tile.owner && tile.owner.countryId != countryId);
         }
 
         function validateTileInfluence(countryId: string, tile: Tile): boolean {
             // country owns tile
-            if (tile.owner?.country.countryId == countryId) {
+            if (tile.owner?.countryId == countryId) {
                 return true;
             }
             // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-            const maxForeignInfluence = Math.max(...tile.influences.filter(i => i.country.countryId !== countryId).map(i => i.value));
+            const maxForeignInfluence = Math.max(...tile.influences.filter(i => i.countryId !== countryId).map(i => i.value));
             if (maxForeignInfluence < MAX_TILE_INFLUENCE) {
                 return true;
             }
             // country has the most influence on tile
-            const countryInfluence = orDefault(tile.influences.find(i => i.country.countryId === countryId)?.value, 0.0);
+            const countryInfluence = orDefault(tile.influences.find(i => i.countryId === countryId)?.value, 0.0);
             return countryInfluence > maxForeignInfluence;
         }
 

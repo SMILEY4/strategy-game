@@ -1,5 +1,4 @@
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
-import {AppConfig} from "../../../main";
 import {Command, CommandCreateCity} from "../../../models/state/command";
 import {GameState} from "../../../models/state/gameState";
 import {TilePosition} from "../../../models/state/tilePosition";

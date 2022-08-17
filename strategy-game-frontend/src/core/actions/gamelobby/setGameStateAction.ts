@@ -23,77 +23,107 @@ export class SetGameStateAction {
         this.gameStateAccess = gameStateAccess;
     }
 
-    perform(state: MsgGameState): void {
+    perform(game: MsgGameState): void {
         console.log("set game state");
+        const countryColors = this.generateCountryColors(game);
+        // todo/idea: provide state-action that sets all "fields" with single operation -> reduces state modifications
+        this.gameStateAccess.setCountries(this.getCountries(game, countryColors));
+        this.gameStateAccess.setProvinces(this.getProvinces(game));
+        this.gameStateAccess.setTiles(this.getTiles(game, countryColors));
+        this.gameStateAccess.setMarkers(this.getMarkers(game));
+        this.gameStateAccess.setCities(this.getCities(game));
+        this.gameStateAccess.setCurrentTurn(game.turn);
+        this.localGameStateAccess.setCurrentState(GameState.PLAYING);
+    }
 
-        const countryColors = state.countries
-            .map(c => c.countryId)
+
+    private generateCountryColors(game: MsgGameState): ([string, CountryColor])[] {
+        return game.countries
+            .map(country => country.countryId)
             .sort()
             .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
+    }
 
-        const countries: Country[] = state.countries.map(country => ({
+
+    private getCountries(game: MsgGameState, colors: ([string, CountryColor])[]): Country[] {
+        return game.countries.map(country => ({
             countryId: country.countryId,
             userId: country.userId,
             resources: {
                 money: country.resources.money
             },
-            color: (countryColors.find(e => e[0] === country.countryId)!!)[1] as CountryColor
+            color: (colors.find(color => color[0] === country.countryId)!!)[1] as CountryColor
         }));
+    }
 
-        const provinces: Province[] = state.provinces.map(province => ({
+
+    private getProvinces(game: MsgGameState): Province[] {
+        return game.provinces.map(province => ({
             provinceId: province.provinceId,
             countryId: province.countryId,
         }));
+    }
 
+
+    private getTiles(game: MsgGameState, colors: ([string, CountryColor])[]): Tile[] {
+        return game.tiles.map(tile => ({
+            tileId: tile.tileId,
+            position: {
+                q: tile.position.q,
+                r: tile.position.r
+            },
+            influences: tile.influences.map(influence => ({
+                countryId: influence.countryId,
+                value: influence.value,
+                sources: influence.sources.map(influenceSource => ({
+                    provinceId: influenceSource.provinceId,
+                    cityId: influenceSource.cityId,
+                    value: influenceSource.value
+                }))
+            })),
+            terrainType: tile.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
+            owner: tile.owner ? {
+                countryId: tile.owner?.countryId,
+                countryColor: (colors.find(color => color[0] === tile.owner?.countryId)!!)[1] as CountryColor,
+                provinceId: tile.owner?.provinceId,
+                cityId: tile.owner.cityId,
+            } : null
+        }));
+    }
+
+
+    private getMarkers(game: MsgGameState): Marker[] {
         const markers: Marker[] = [];
-        const tiles: Tile[] = state.tiles.map(t => {
-            const tile: Tile = {
-                tileId: t.tileId,
-                position: {
-                    q: t.position.q,
-                    r: t.position.r
-                },
-                influences: t.influences.map(i => ({
-                    country: countries.find(c => c.countryId === i.countryId)!!,
-                    value: i.value,
-                    sources: i.sources.map(is => ({
-                        province: provinces.find(p => p.provinceId === is.provinceId)!!,
-                        cityId: is.cityId,
-                        value: is.value
-                    }))
-                })),
-                terrainType: t.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
-                owner: t.owner ? {
-                    country: countries.find(c => c.countryId === t.owner?.countryId)!!,
-                    province: provinces.find(p => p.provinceId === t.owner?.provinceId)!!,
-                    cityId: t.owner.cityId,
-                } : null
-            };
-            t.content.forEach(c => {
-                if (c.type === "marker") {
+        game.tiles.forEach(tile => {
+            tile.content.forEach(content => {
+                if (content.type === "marker") {
                     markers.push({
-                        tile: tile,
-                        countryId: (c as MsgMarkerTileContent).countryId
+                        tile: {
+                            tileId: tile.tileId,
+                            q: tile.position.q,
+                            r: tile.position.r
+                        },
+                        countryId: (content as MsgMarkerTileContent).countryId
                     });
                 }
             });
-            return tile;
         });
+        return markers;
+    }
 
-        const cities: City[] = state.cities.map(city => ({
+
+    private getCities(game: MsgGameState): City[] {
+        return game.cities.map(city => ({
             cityId: city.cityId,
             name: city.name,
-            country: countries.find(c => c.countryId === city.countryId)!!,
-            province: provinces.find(p => p.provinceId === city.provinceId)!!,
-            tile: tiles.find(t => t.position.q === city.tile.q && t.position.r === city.tile.r)!!
+            countryId: city.countryId,
+            provinceId: city.provinceId,
+            tile: {
+                tileId: city.tile.tileId,
+                q: city.tile.q,
+                r: city.tile.r
+            }
         }));
-
-        this.gameStateAccess.setCountries(countries);
-        this.gameStateAccess.setTiles(tiles);
-        this.gameStateAccess.setMarkers(markers);
-        this.gameStateAccess.setCities(cities);
-        this.gameStateAccess.setCurrentTurn(state.turn);
-        this.localGameStateAccess.setCurrentState(GameState.PLAYING);
     }
 
 }

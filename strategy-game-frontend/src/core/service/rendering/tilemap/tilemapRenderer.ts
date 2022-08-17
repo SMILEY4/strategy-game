@@ -111,12 +111,12 @@ export class TilemapRenderer {
 
     private static tileOwnerColor(tile: Tile): [number, number, number,] {
         if (tile.owner) {
-            if (tile.owner.country.color === CountryColor.RED) return [1, 0, 0];
-            if (tile.owner.country.color === CountryColor.GREEN) return [0, 1, 0];
-            if (tile.owner.country.color === CountryColor.BLUE) return [0, 0, 1];
-            if (tile.owner.country.color === CountryColor.CYAN) return [0, 1, 1];
-            if (tile.owner.country.color === CountryColor.MAGENTA) return [1, 0, 1];
-            if (tile.owner.country.color === CountryColor.YELLOW) return [1, 1, 0];
+            if (tile.owner.countryColor === CountryColor.RED) return [1, 0, 0];
+            if (tile.owner.countryColor === CountryColor.GREEN) return [0, 1, 0];
+            if (tile.owner.countryColor === CountryColor.BLUE) return [0, 0, 1];
+            if (tile.owner.countryColor === CountryColor.CYAN) return [0, 1, 1];
+            if (tile.owner.countryColor === CountryColor.MAGENTA) return [1, 0, 1];
+            if (tile.owner.countryColor === CountryColor.YELLOW) return [1, 1, 0];
             return [1, 1, 1];
         } else {
             return [1, 1, 1];

@@ -1,5 +1,4 @@
 import {UserStateAccess} from "../../../../external/state/user/userStateAccess";
-import {AppConfig} from "../../../../main";
 import {City} from "../../../../models/state/city";
 import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../../models/state/command";
 import {Country, CountryColor} from "../../../../models/state/country";
@@ -78,14 +77,14 @@ export class TileContentRenderer {
         this.batchRenderer.begin(camera);
 
         cities
-            .forEach(e => this.addCity(e.tile.position.q, e.tile.position.r, this.getColor(countries, e.country.countryId, false)));
+            .forEach(e => this.addCity(e.tile.q, e.tile.r, this.getColor(countries, e.countryId, false)));
         commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
             .forEach(e => this.addCity(e.q, e.r, this.getColor(countries, (userCountryId ? userCountryId : "?"), true)));
 
         markers
-            .forEach(e => this.addMarker(e.tile.position.q, e.tile.position.r, this.getColor(countries, e.countryId, false)));
+            .forEach(e => this.addMarker(e.tile.q, e.tile.r, this.getColor(countries, e.countryId, false)));
         commands
             .filter(e => e.commandType === "place-marker")
             .map(e => e as CommandPlaceMarker)

@@ -1,5 +1,4 @@
-import {Country} from "./country";
-import {Province} from "./Province";
+import {CountryColor} from "./country";
 import {TerrainType} from "./terrainType";
 import {TilePosition} from "./tilePosition";
 
@@ -8,17 +7,18 @@ export interface Tile {
     position: TilePosition;
     terrainType: TerrainType;
     influences: ({
-        country: Country,
+        countryId: string,
         value: number,
         sources: ({
-            province: Province,
+            provinceId: string,
             cityId: string,
             value: number
         })[]
     })[],
     owner: {
-        country: Country,
-        province: Province,
+        countryId: string,
+        countryColor: CountryColor,
+        provinceId: string,
         cityId: string
     } | null
 }

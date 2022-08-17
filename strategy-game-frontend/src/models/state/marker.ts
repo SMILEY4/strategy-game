@@ -1,6 +1,6 @@
-import {Tile} from "./tile";
+import {TileRef} from "./tileRef";
 
 export interface Marker {
-    tile: Tile
-    countryId: string
+    tile: TileRef;
+    countryId: string;
 }

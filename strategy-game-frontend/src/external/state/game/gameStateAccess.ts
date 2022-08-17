@@ -1,6 +1,7 @@
 import {City} from "../../../models/state/city";
 import {Country} from "../../../models/state/country";
 import {Marker} from "../../../models/state/marker";
+import {Province} from "../../../models/state/Province";
 import {Tile} from "../../../models/state/tile";
 import {UserStore} from "../user/userStore";
 import {GameStore} from "./gameStore";
@@ -26,6 +27,10 @@ export class GameStateAccess {
 
     setCountries(countries: Country[]): void {
         GameStore.useState.getState().setCountries(countries);
+    }
+
+    setProvinces(provinces: Province[]): void {
+        GameStore.useState.getState().setProvinces(provinces);
     }
 
     getTileAt(q: number, r: number): Tile | null {

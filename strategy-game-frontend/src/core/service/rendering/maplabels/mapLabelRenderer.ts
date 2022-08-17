@@ -88,7 +88,7 @@ export class MapLabelRenderer {
         this.batchRenderer.begin(camera);
 
         cities
-            .forEach(e => this.addCityLabel(camera, e.tile.position.q, e.tile.position.r, this.textRenderer.getRegion(e.name)));
+            .forEach(e => this.addCityLabel(camera, e.tile.q, e.tile.r, this.textRenderer.getRegion(e.name)));
         commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
