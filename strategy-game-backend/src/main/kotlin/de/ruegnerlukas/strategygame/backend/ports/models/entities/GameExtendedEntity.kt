@@ -8,4 +8,5 @@ data class GameExtendedEntity(
 	val countries: List<CountryEntity>,
 	val tiles: List<TileEntity>,
 	val cities: TrackingList<CityEntity>,
+	val provinces: TrackingList<ProvinceEntity>
 )

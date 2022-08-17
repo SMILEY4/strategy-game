@@ -16,3 +16,12 @@ title: Cities
   - the country has the greatest influence on that tile
   - no country has more than x influence on that tile
   - the country is the owner of the tile
+
+**Creating a city**
+
+- name
+  - a valid (non empty) name must be given
+- province
+  - either create a new province with this city
+  - or add this city to an existing province
+    - province must have influence in the tile to be a valid choice 

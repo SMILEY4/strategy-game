@@ -1,5 +1,6 @@
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {UIStateAccess} from "../../../external/state/ui/uiStateAccess";
+import {Tile} from "../../../models/state/tile";
 import {MenuSelectedTile} from "../../../ui/pages/game/ui/MenuSelectedTile";
 import {TilePicker} from "../../service/tilemap/tilePicker";
 
@@ -18,25 +19,31 @@ export class GameInputClickAction {
         this.uiStateAccess = uiStateAccess;
     }
 
+
     perform(x: number, y: number): void {
         const tile = this.tilePicker.tileAt(x, y);
         if (tile) {
-            this.gameStateAccess.setSelectedTile(tile.position.q, tile.position.r);
-            this.uiStateAccess.openFrame(
-                "topbar.category.menu",
-                {
-                    vertical: {
-                        x: 10,
-                        width: 320,
-                        top: 50,
-                        bottom: 10
-                    }
-                },
-                () => <MenuSelectedTile/>
-            );
+            this.clickOnTile(tile);
         } else {
             this.gameStateAccess.clearSelectedTile();
         }
+    }
+
+
+    private clickOnTile(tile: Tile) {
+        this.gameStateAccess.setSelectedTile(tile.position.q, tile.position.r);
+        this.uiStateAccess.openFrame(
+            "topbar.category.menu",
+            {
+                vertical: {
+                    x: 10,
+                    width: 320,
+                    top: 50,
+                    bottom: 10
+                }
+            },
+            () => <MenuSelectedTile/>
+        );
     }
 
 }

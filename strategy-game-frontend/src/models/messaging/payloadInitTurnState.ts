@@ -21,22 +21,35 @@ export interface PayloadInitTurnState {
             },
             influences: ({
                 countryId: string,
-                value: number
+                value: number,
+                sources: ({
+                    provinceId: string,
+                    cityId: string,
+                    value: number
+                })[]
             })[],
-            ownerCountryId: string | null,
+            owner: ({
+                countryId: string,
+                provinceId: string,
+                cityId: string
+            }) | null,
             content: MsgTileContent[]
         })[],
         cities: ({
             cityId: string,
             countryId: string,
+            provinceId: string,
             tile: {
                 tileId: string,
                 q: number,
                 r: number
             },
             name: string,
+        })[],
+        provinces: ({
+            provinceId: string,
+            countryId: string,
         })[]
-
     },
     errors: ({
         errorMessage: string,

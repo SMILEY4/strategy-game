@@ -25,7 +25,7 @@ class TrackingListTest : StringSpec({
 			it shouldContainExactly listOf("b", "c", "d")
 			it.getOriginalElements() shouldContainExactly listOf("b", "c", "d")
 			it.getAddedElements().shouldBeEmpty()
-			it.getRemovedElement().shouldBeEmpty()
+			it.getRemovedElements().shouldBeEmpty()
 		}
 
 	}

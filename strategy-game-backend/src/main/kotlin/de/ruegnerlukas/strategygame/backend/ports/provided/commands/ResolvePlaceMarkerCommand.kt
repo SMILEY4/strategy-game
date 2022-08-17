@@ -11,7 +11,7 @@ interface ResolvePlaceMarkerCommand {
 
 	suspend fun perform(
 		command: CommandEntity<PlaceMarkerCommandDataEntity>,
-		state: GameExtendedEntity
+		game: GameExtendedEntity
 	): Either<ResolveCommandsActionError, List<CommandResolutionError>>
 
 }

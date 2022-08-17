@@ -14,10 +14,12 @@ export class GameInputMouseMoveAction {
         this.gameStateAccess = gameStateAccess;
     }
 
+
     perform(dx: number, dy: number, x: number, y: number, leftBtnDown: boolean): void {
         this.updateCamera(leftBtnDown, dx, dy);
         this.updateMouseOverTile(x, y);
     }
+
 
     private updateCamera(leftBtnDown: boolean, dx: number, dy: number) {
         if (leftBtnDown) {
@@ -27,6 +29,7 @@ export class GameInputMouseMoveAction {
             this.gameStateAccess.setCameraPosition(x, y);
         }
     }
+
 
     private updateMouseOverTile(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);

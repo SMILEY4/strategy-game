@@ -11,5 +11,15 @@ data class WorldSettings(
 			seed = Random().nextInt(),
 			singleTileType = null
 		)
+
+		fun landOnly() = WorldSettings(
+			seed = Random().nextInt(),
+			singleTileType = TileType.LAND
+		)
+
+		fun waterOnly() = WorldSettings(
+			seed = Random().nextInt(),
+			singleTileType = TileType.WATER
+		)
 	}
 }

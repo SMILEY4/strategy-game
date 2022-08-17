@@ -49,7 +49,7 @@ class GameCreateActionImpl(
 				),
 				content = trackingListOf(),
 				influences = mutableListOf(),
-				ownerCountryId = null
+				owner = null
 			)
 		}
 	}
