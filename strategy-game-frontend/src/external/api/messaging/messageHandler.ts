@@ -1,17 +1,14 @@
-import {SetInitWorldStateAction} from "../../../core/actions/gamelobby/setInitWorldStateAction";
-import {TurnUpdateWorldStateAction} from "../../../core/actions/turn/turnUpdateWorldStateAction";
+import {SetGameStateAction} from "../../../core/actions/gamelobby/setGameStateAction";
 import {PayloadInitGameState} from "../../../models/messaging/payloadInitGameState";
 import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
 
 
 export class MessageHandler {
 
-    private readonly setInitWorldStateAction: SetInitWorldStateAction;
-    private readonly turnUpdateWorldState: TurnUpdateWorldStateAction;
+    private readonly gameSetState: SetGameStateAction;
 
-    constructor(setInitWorldStateAction: SetInitWorldStateAction, turnUpdateWorldState: TurnUpdateWorldStateAction) {
-        this.setInitWorldStateAction = setInitWorldStateAction;
-        this.turnUpdateWorldState = turnUpdateWorldState;
+    constructor(gameSetState: SetGameStateAction) {
+        this.gameSetState = gameSetState;
     }
 
 
@@ -26,11 +23,11 @@ export class MessageHandler {
     }
 
     onWorldState(payload: PayloadInitGameState) {
-        this.setInitWorldStateAction.perform(payload);
+        this.gameSetState.perform(payload.game);
     }
 
     onTurnResult(payload: PayloadInitTurnState) {
-        this.turnUpdateWorldState.perform(payload);
+        this.gameSetState.perform(payload.game);
     }
 
 }

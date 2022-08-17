@@ -1,7 +1,7 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {MsgMarkerTileContent} from "../../../models/messaging/messagingTileContent";
-import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
+import {MsgGameState} from "../../../models/messaging/msgGameState";
 import {City} from "../../../models/state/city";
 import {ALL_COUNTRY_COLORS, Country, CountryColor} from "../../../models/state/country";
 import {GameState} from "../../../models/state/gameState";
@@ -11,9 +11,9 @@ import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
 
 /**
- * Update the world/game state after a resolved turn
+ * Set the world/game state
  */
-export class TurnUpdateWorldStateAction {
+export class SetGameStateAction {
 
     private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly gameStateAccess: GameStateAccess;
@@ -23,15 +23,15 @@ export class TurnUpdateWorldStateAction {
         this.gameStateAccess = gameStateAccess;
     }
 
-    perform(state: PayloadInitTurnState): void {
-        console.log("update world state");
+    perform(state: MsgGameState): void {
+        console.log("set game state");
 
-        const countryColors = state.game.countries
+        const countryColors = state.countries
             .map(c => c.countryId)
             .sort()
             .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
 
-        const countries: Country[] = state.game.countries.map(country => ({
+        const countries: Country[] = state.countries.map(country => ({
             countryId: country.countryId,
             userId: country.userId,
             resources: {
@@ -40,13 +40,13 @@ export class TurnUpdateWorldStateAction {
             color: (countryColors.find(e => e[0] === country.countryId)!!)[1] as CountryColor
         }));
 
-        const provinces: Province[] = state.game.provinces.map(province => ({
+        const provinces: Province[] = state.provinces.map(province => ({
             provinceId: province.provinceId,
             countryId: province.countryId,
         }));
 
         const markers: Marker[] = [];
-        const tiles: Tile[] = state.game.tiles.map(t => {
+        const tiles: Tile[] = state.tiles.map(t => {
             const tile: Tile = {
                 tileId: t.tileId,
                 position: {
@@ -80,7 +80,7 @@ export class TurnUpdateWorldStateAction {
             return tile;
         });
 
-        const cities: City[] = state.game.cities.map(city => ({
+        const cities: City[] = state.cities.map(city => ({
             cityId: city.cityId,
             name: city.name,
             country: countries.find(c => c.countryId === city.countryId)!!,
@@ -92,8 +92,7 @@ export class TurnUpdateWorldStateAction {
         this.gameStateAccess.setTiles(tiles);
         this.gameStateAccess.setMarkers(markers);
         this.gameStateAccess.setCities(cities);
-        this.gameStateAccess.setCurrentTurn(state.game.turn);
-        this.localGameStateAccess.clearCommands();
+        this.gameStateAccess.setCurrentTurn(state.turn);
         this.localGameStateAccess.setCurrentState(GameState.PLAYING);
     }
 
