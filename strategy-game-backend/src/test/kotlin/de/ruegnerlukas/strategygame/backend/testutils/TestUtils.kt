@@ -14,6 +14,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
@@ -86,7 +87,7 @@ object TestUtils {
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
 			CityEntity::class.java
-		)?.toList() ?: emptyList()
+		)
 	}
 
 	suspend fun getTiles(database: ArangoDatabase, gameId: String): List<TileEntity> {
@@ -98,7 +99,19 @@ object TestUtils {
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
 			TileEntity::class.java
-		)?.toList() ?: emptyList()
+		)
+	}
+
+	suspend fun getProvinces(database: ArangoDatabase, gameId: String): List<ProvinceEntity> {
+		return database.query(
+			"""
+				FOR province IN ${Collections.PROVINCES}
+					FILTER province.gameId == @gameId
+					RETURN province
+			""".trimIndent(),
+			mapOf("gameId" to gameId),
+			ProvinceEntity::class.java
+		)
 	}
 
 	suspend fun <R> withGameExtended(database: ArangoDatabase, gameId: String, block: suspend (game: GameExtendedEntity) -> R): R {
