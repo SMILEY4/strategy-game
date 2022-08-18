@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
@@ -22,13 +23,9 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.max
 
 class ResolveCreateCityCommandImpl(
-	private val reservationInsert: ReservationInsert
+	private val reservationInsert: ReservationInsert,
+	private val gameConfig: GameConfig,
 ) : ResolveCreateCityCommand, Logging {
-
-	companion object {
-		const val CITY_COST = 50.0f
-		const val MAX_TILE_INFLUENCE = 3.0f
-	}
 
 	override suspend fun perform(
 		command: CommandEntity<CreateCityCommandDataEntity>,
@@ -123,7 +120,7 @@ class ResolveCreateCityCommandImpl(
 		}
 		// nobody else has more than 'MAX_TILE_INFLUENCE' influence
 		val maxForeignInfluence = target.influences.filter { it.countryId != country.key }.map { it.totalValue }.max { it } ?: 0.0
-		if (maxForeignInfluence < MAX_TILE_INFLUENCE) {
+		if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
 			return emptyList()
 		}
 		// country has the most influence on tile
@@ -163,7 +160,7 @@ class ResolveCreateCityCommandImpl(
 
 
 	private fun validateResourceCost(country: CountryEntity): List<String> {
-		if (country.resources.money < CITY_COST) {
+		if (country.resources.money < gameConfig.cityCost) {
 			return listOf("not enough money")
 		} else {
 			return emptyList()
@@ -197,7 +194,7 @@ class ResolveCreateCityCommandImpl(
 
 
 	private fun updateCountryResources(country: CountryEntity) {
-		country.resources.money -= CITY_COST
+		country.resources.money -= gameConfig.cityCost
 	}
 
 

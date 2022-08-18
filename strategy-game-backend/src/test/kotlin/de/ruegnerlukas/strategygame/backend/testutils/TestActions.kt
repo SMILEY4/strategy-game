@@ -13,6 +13,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResul
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
@@ -25,7 +26,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQue
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
 object TestActions {
@@ -54,14 +54,15 @@ object TestActions {
 			ResolveCommandsActionImpl(
 				ResolvePlaceMarkerCommandImpl(),
 				ResolveCreateCityCommandImpl(
-					ReservationInsertImpl(database)
+					ReservationInsertImpl(database),
+					GameConfig.default()
 				)
 			),
 			BroadcastTurnResultActionImpl(
 				GameExtendedQueryImpl(database),
 				GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 			),
-			TurnUpdateActionImpl(),
+			TurnUpdateActionImpl(GameConfig.default()),
 			GameExtendedQueryImpl(database),
 			GameExtendedUpdateImpl(database),
 			CommandsByGameQueryImpl(database),
@@ -83,7 +84,8 @@ object TestActions {
 	fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
 		ResolvePlaceMarkerCommandImpl(),
 		ResolveCreateCityCommandImpl(
-			ReservationInsertImpl(database)
+			ReservationInsertImpl(database),
+			GameConfig.default()
 		)
 	)
 
@@ -91,14 +93,15 @@ object TestActions {
 		ResolveCommandsActionImpl(
 			ResolvePlaceMarkerCommandImpl(),
 			ResolveCreateCityCommandImpl(
-				ReservationInsertImpl(database)
+				ReservationInsertImpl(database),
+				GameConfig.default()
 			)
 		),
 		BroadcastTurnResultActionImpl(
 			GameExtendedQueryImpl(database),
 			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),
-		TurnUpdateActionImpl(),
+		TurnUpdateActionImpl(GameConfig.default()),
 		GameExtendedQueryImpl(database),
 		GameExtendedUpdateImpl(database),
 		CommandsByGameQueryImpl(database),

@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.distance
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
@@ -11,15 +12,9 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.shared.max
 import kotlin.math.max
 
-class TurnUpdateActionImpl : TurnUpdateAction {
-
-	companion object {
-		private const val CITY_INCOME = 10.0f
-		private const val MAX_CITY_INFLUENCE = 10.0
-		private const val MAX_CITY_INFLUENCE_DISTANCE = 5.0
-		private const val OWNER_INFLUENCE_THRESHOLD = 7.0
-	}
-
+class TurnUpdateActionImpl(
+	private val gameConfig: GameConfig
+) : TurnUpdateAction {
 
 	override fun perform(game: GameExtendedEntity) {
 		updateCountryResources(game)
@@ -30,7 +25,7 @@ class TurnUpdateActionImpl : TurnUpdateAction {
 
 	private fun updateCountryResources(game: GameExtendedEntity) {
 		game.cities.forEach { city ->
-			game.countries.find { it.key == city.countryId }?.let { it.resources.money += CITY_INCOME }
+			game.countries.find { it.key == city.countryId }?.let { it.resources.money += gameConfig.cityIncomePerTurn }
 		}
 	}
 
@@ -81,14 +76,14 @@ class TurnUpdateActionImpl : TurnUpdateAction {
 
 
 	private fun calcInfluence(distance: Int): Double {
-		return max((-(distance.toDouble() / MAX_CITY_INFLUENCE_DISTANCE) + 1) * MAX_CITY_INFLUENCE, 0.0)
+		return max((-(distance.toDouble() / gameConfig.cityInfluenceSpread) + 1) * gameConfig.cityInfluenceAmount, 0.0)
 	}
 
 
 	private fun updateTileOwner(game: GameExtendedEntity) {
 		game.tiles.filter { it.owner == null }.forEach { tile ->
 			val maxCountryInfluence = tile.influences.max { it.totalValue }
-			if (maxCountryInfluence != null && maxCountryInfluence.totalValue >= OWNER_INFLUENCE_THRESHOLD) {
+			if (maxCountryInfluence != null && maxCountryInfluence.totalValue >= gameConfig.tileOwnerInfluenceThreshold) {
 				maxCountryInfluence.sources.max { it.value }?.let { maxCityInfluence ->
 					tile.owner = TileOwner(
 						countryId = maxCountryInfluence.countryId,
