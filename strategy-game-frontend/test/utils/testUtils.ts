@@ -1,7 +1,7 @@
 import {UserLoginAction} from "../../src/core/actions/user/userLoginAction";
 import {UserLogOutAction} from "../../src/core/actions/user/userLogOutAction";
 import {UserSignUpAction} from "../../src/core/actions/user/userSignUpAction";
-import {mockUserApi, mockUserStateAccess} from "./mocks";
+import {mockGameApi, mockGameConfigStateAccess, mockUserApi, mockUserStateAccess} from "./mocks";
 
 export async function testCtx(block: (ctx: TestContext) => any) {
     const ctx = new TestContext();
@@ -10,11 +10,13 @@ export async function testCtx(block: (ctx: TestContext) => any) {
 
 export class TestContext {
 
-    static readonly ID_TOKEN = "test-id-token"
-    static readonly REFRESH_TOKEN = "test-refresh-token"
+    static readonly ID_TOKEN = "test-id-token";
+    static readonly REFRESH_TOKEN = "test-refresh-token";
 
     private readonly userApi = mockUserApi();
+    private readonly gameApi = mockGameApi();
     private readonly userStateAccess = mockUserStateAccess();
+    private readonly gameConfigStateAccess = mockGameConfigStateAccess();
 
     constructor() {
         this.userApi["login"] = jest.fn().mockReturnValue(Promise.resolve({
@@ -24,12 +26,12 @@ export class TestContext {
     }
 
     async signUp(email: string, password: string, username: string) {
-        const result = new UserSignUpAction(this.userApi).perform(email, password, username)
+        const result = new UserSignUpAction(this.userApi).perform(email, password, username);
         await expect(result).resolves.toBeUndefined();
     }
 
     async login(email: string, password: string) {
-        const result = new UserLoginAction(this.userApi, this.userStateAccess).perform(email, password);
+        const result = new UserLoginAction(this.userApi, this.gameApi, this.userStateAccess, this.gameConfigStateAccess).perform(email, password);
         await expect(result).resolves.toBeUndefined();
     }
 

@@ -25,6 +25,7 @@ import {GameMessagingApi} from "./external/api/messaging/gameMessagingApi";
 import {MessageHandler} from "./external/api/messaging/messageHandler";
 import {WebsocketClient} from "./external/api/messaging/websocketClient";
 import {GameStateAccess} from "./external/state/game/gameStateAccess";
+import {GameConfigStateAccess} from "./external/state/gameconfig/gameConfigStateAccess";
 import {LocalGameStateAccess} from "./external/state/localgame/localGameStateAccess";
 import {UIStateAccess} from "./external/state/ui/uiStateAccess";
 import {UserStateAccess} from "./external/state/user/userStateAccess";
@@ -46,6 +47,7 @@ export namespace AppConfig {
     const localGameStateAccess: LocalGameStateAccess = new LocalGameStateAccess();
     const userStateAccess: UserStateAccess = new UserStateAccess();
     const gameStateAccess: GameStateAccess = new GameStateAccess();
+    const gameConfigStateAccess: GameConfigStateAccess = new GameConfigStateAccess();
     const uiStateAccess: UIStateAccess = new UIStateAccess();
 
     const canvasHandle: GameCanvasHandle = new GameCanvasHandle();
@@ -63,7 +65,7 @@ export namespace AppConfig {
     export const msgApiGame: GameMessagingApi = new GameMessagingApi(wsClient, userStateAccess, msgHandler);
 
     export const userSignUp: UserSignUpAction = new UserSignUpAction(apiUser);
-    export const userLogin: UserLoginAction = new UserLoginAction(apiUser, userStateAccess);
+    export const userLogin: UserLoginAction = new UserLoginAction(apiUser, apiGame, userStateAccess, gameConfigStateAccess);
     export const userLogOut: UserLogOutAction = new UserLogOutAction(userStateAccess);
 
     export const gameLobbyCreate: GameLobbyCreateAction = new GameLobbyCreateAction(apiGame);
@@ -71,7 +73,7 @@ export namespace AppConfig {
     export const gameLobbyConnect: GameLobbyConnectAction = new GameLobbyConnectAction(msgApiGame, localGameStateAccess);
 
     export const turnSubmit: TurnSubmitAction = new TurnSubmitAction(localGameStateAccess, msgApiGame);
-    export const turnAddCommand: TurnAddCommandAction = new TurnAddCommandAction(localGameStateAccess);
+    export const turnAddCommand: TurnAddCommandAction = new TurnAddCommandAction(localGameStateAccess, gameConfigStateAccess);
 
     export const gameInit: GameInitAction = new GameInitAction(canvasHandle, renderer);
     export const gameUpdate: GameUpdateAction = new GameUpdateAction(renderer);

@@ -1,5 +1,6 @@
 import {GameStateHooks} from "../../external/state/game/gameStateHooks";
 import {GameStore} from "../../external/state/game/gameStore";
+import {GameConfigStateHooks} from "../../external/state/gameconfig/gameConfigStateHooks";
 import {LocalGameStateHooks} from "../../external/state/localgame/localGameStateHooks";
 import {City} from "../../models/state/city";
 import {TerrainType} from "../../models/state/terrainType";
@@ -9,6 +10,7 @@ import {orDefault} from "../../shared/utils";
 export namespace GameHooks {
 
     import usePlayerCountry = GameStateHooks.usePlayerCountry;
+    import useGameConfig = GameConfigStateHooks.useGameConfig;
 
     export function useCountryMoney(): number {
         const commands = LocalGameStateHooks.useCommands();
@@ -19,9 +21,7 @@ export namespace GameHooks {
 
     export function useValidateCreateCity(q: number, r: number): boolean {
 
-        const CITY_COST = 50.0;
-        const MAX_TILE_INFLUENCE = 3.0;
-
+        const gameConfig = useGameConfig();
         const country = usePlayerCountry()!!;
         const currentAmountMoney = useCountryMoney();
         const cities = GameStore.useState(state => state.cities);
@@ -42,7 +42,7 @@ export namespace GameHooks {
             }
             // nobody else has more than 'MAX_TILE_INFLUENCE' influence
             const maxForeignInfluence = Math.max(...tile.influences.filter(i => i.countryId !== countryId).map(i => i.value));
-            if (maxForeignInfluence < MAX_TILE_INFLUENCE) {
+            if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
                 return true;
             }
             // country has the most influence on tile
@@ -55,7 +55,7 @@ export namespace GameHooks {
         }
 
         function validateResourceCost(availableMoney: number) {
-            return availableMoney >= CITY_COST;
+            return availableMoney >= gameConfig.cityCost;
         }
 
         if (tile) {

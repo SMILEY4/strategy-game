@@ -1,3 +1,4 @@
+import {GameConfig} from "../../../models/state/gameConfig";
 import {UserStateAccess} from "../../state/user/userStateAccess";
 import {HttpClient} from "./httpClient";
 
@@ -38,6 +39,16 @@ export class GameApi {
         return this.httpClient
             .get({
                 url: "/api/game/list",
+                requireAuth: true,
+                token: this.userStateAccess.getToken()
+            })
+            .then(response => response.json());
+    }
+
+    config(): Promise<GameConfig> {
+        return this.httpClient
+            .get({
+                url: "/api/game/config",
                 requireAuth: true,
                 token: this.userStateAccess.getToken()
             })
