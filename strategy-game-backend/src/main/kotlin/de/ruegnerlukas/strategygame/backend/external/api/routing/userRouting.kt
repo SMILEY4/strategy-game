@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.external.swagger.post
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
@@ -27,7 +28,14 @@ import io.ktor.server.routing.route
  */
 fun Route.userRoutes(userIdentityService: UserIdentityService) {
 	route("user") {
-		post("signup") {
+		post("signup", {
+			description = "Create a new user"
+			response(HttpStatusCode.OK, "Successfully created user")
+			response(HttpStatusCode.Conflict, "Could not deliver code to provided email")
+			response(HttpStatusCode.Conflict, "Email or password invalid")
+			response(HttpStatusCode.Conflict, "The user with the given email already exists")
+			requestBody(CreateUserData::class.java)
+		}) {
 			call.receive<CreateUserData>().let { requestData ->
 				val result = userIdentityService.createUser(requestData.email, requestData.password, requestData.username)
 				when (result) {
@@ -40,7 +48,14 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
 				}
 			}
 		}
-		post("login") {
+		post("login", {
+			description = "Log-in as an existing user"
+			response(HttpStatusCode.OK, "Authentication successful", AuthData::class.java)
+			response(HttpStatusCode.Unauthorized, "Authentication failed")
+			response(HttpStatusCode.Conflict, "The user has not confirmed the code")
+			response(HttpStatusCode.Conflict, "The user does not exist")
+			requestBody(LoginData::class.java)
+		}) {
 			call.receive<LoginData>().let { requestData ->
 				val result = userIdentityService.authenticate(requestData.email, requestData.password)
 				when (result) {

@@ -1,5 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.external.swagger
 
+import com.github.victools.jsonschema.generator.OptionPreset
+import com.github.victools.jsonschema.generator.SchemaGenerator
+import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder
+import com.github.victools.jsonschema.generator.SchemaVersion
+import com.github.victools.jsonschema.module.jackson.JacksonModule
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
@@ -40,6 +45,15 @@ class SwaggerRouting(
 					else -> serveStaticResource(filename, call)
 				}
 			}
+			get("$swaggerUrl/schemas/{schemaname}") {
+				val schemaName = call.parameters["schemaname"]!!
+				val className = schemaName.replace("__", ".")
+				println("generating json-schema for class: $className")
+				val clazz = Class.forName(className)
+				call.respondText(ContentType.Application.Json, HttpStatusCode.OK) {
+					generateJsonSchema(clazz)
+				}
+			}
 		}
 	}
 
@@ -78,6 +92,15 @@ class SwaggerRouting(
 		} else {
 			call.respond(ResourceContent(resource))
 		}
+	}
+
+	private fun <T> generateJsonSchema(type: Class<T>): String {
+		val module = JacksonModule()
+		val configBuilder = SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2019_09, OptionPreset.PLAIN_JSON).with(module)
+		val config = configBuilder.build()
+		val generator = SchemaGenerator(config)
+		val jsonSchema = generator.generateSchema(type)
+		return jsonSchema.toString()
 	}
 
 }
