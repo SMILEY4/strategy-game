@@ -43,6 +43,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.application.plugin
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
@@ -52,7 +53,10 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
+import io.ktor.server.routing.HttpMethodRouteSelector
+import io.ktor.server.routing.Route
 import io.ktor.server.routing.Routing
+import io.ktor.server.webjars.Webjars
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
@@ -199,6 +203,7 @@ fun Application.module() {
 			call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
 		}
 	}
+	install(Webjars)
 	apiRoutes(
 		connectionHandler,
 		messageHandler,
@@ -211,4 +216,16 @@ fun Application.module() {
 		gameConnectAction,
 		gameConfig
 	)
+//	allRoutes(plugin(Routing)).forEach { route ->
+//		val method = (route.selector as HttpMethodRouteSelector).method
+//		name = route.parent.selector + route.parent.parent.selector + ...
+//		println(route)
+//	}
+
+}
+
+
+fun allRoutes(root: Route): List<Route> {
+	return (listOf(root) + root.children.flatMap { allRoutes(it) })
+		.filter { it.selector is HttpMethodRouteSelector }
 }

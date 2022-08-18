@@ -43,6 +43,9 @@ dependencies {
 	implementation("io.ktor:ktor-server-auth:$versionKtor")
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
 	implementation("io.ktor:ktor-server-status-pages:$versionKtor")
+	implementation("io.ktor:ktor-server-webjars:$versionKtor")
+	implementation("org.webjars:swagger-ui:4.13.2")
+	implementation("io.swagger.parser.v3:swagger-parser:2.1.1")
 
 	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")
