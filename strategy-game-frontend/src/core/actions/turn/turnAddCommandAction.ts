@@ -1,3 +1,4 @@
+import {GameConfigStateAccess} from "../../../external/state/gameconfig/gameConfigStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {Command, CommandCreateCity} from "../../../models/state/command";
 import {GameState} from "../../../models/state/gameState";
@@ -9,9 +10,11 @@ import {TilePosition} from "../../../models/state/tilePosition";
 export class TurnAddCommandAction {
 
     private readonly localGameStateAccess: LocalGameStateAccess;
+    private readonly gameConfig: GameConfigStateAccess;
 
-    constructor(gameStateAccess: LocalGameStateAccess) {
+    constructor(gameStateAccess: LocalGameStateAccess, gameConfig: GameConfigStateAccess) {
         this.localGameStateAccess = gameStateAccess;
+        this.gameConfig = gameConfig;
     }
 
     perform(command: Command): void {
@@ -36,7 +39,7 @@ export class TurnAddCommandAction {
         this.perform({
             commandType: "create-city",
             cost: {
-                money: 50
+                money: this.gameConfig.getGameConfig().cityCost
             },
             q: tilePos.q,
             r: tilePos.r,

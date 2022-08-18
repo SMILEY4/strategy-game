@@ -177,6 +177,31 @@ DELETE /api/user/delete
 
 ## Game
 
+### Get Game Configuration (protected)
+
+Fetch the configuration and values for games
+
+```
+GET /api/game/config
+```
+
+- Responses
+
+  - 200 OK
+
+    ```json
+    {
+        "cityCost": "Float - the amount of money a city costs to build",
+        "cityTileMaxForeignInfluence": "Float - the max amount of influence another country can have on a tile to still be able to build the city",
+        "cityIncomePerTurn": "Float - the amount of money produced by a city each turn",
+        "cityInfluenceAmount": "Float - the max amount of influence a city generates",
+        "cityInfluenceSpread": "Float - the distance the city spreads its influence",
+        "tileOwnerInfluenceThreshold": "Float - the total amount of influence a country must have on a tile to own it"
+    }
+    ```
+
+  - 401 Unauthorized
+
 ### Create new Game (protected)
 
 Create a new game. Other players can join this game via the returned game-id
