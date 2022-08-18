@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
@@ -33,12 +34,13 @@ fun Application.apiRoutes(
 	gamesListAction: GamesListAction,
 	gameDisconnectAction: GameDisconnectAction,
 	gameRequestConnectionAction: GameRequestConnectionAction,
-	gameConnectAction: GameConnectAction
+	gameConnectAction: GameConnectAction,
+	gameConfig: GameConfig
 ) {
 	routing {
 		route("api") {
 			userRoutes(userIdentityService)
-			gameLobbyRoutes(gameCreateAction, gameJoinAction, gamesListAction)
+			gameRoutes(gameCreateAction, gameJoinAction, gamesListAction, gameConfig)
 			gameWebsocketRoutes(
 				connectionHandler,
 				userIdentityService,

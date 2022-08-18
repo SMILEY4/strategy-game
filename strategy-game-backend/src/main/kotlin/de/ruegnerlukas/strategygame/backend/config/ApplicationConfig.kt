@@ -208,6 +208,7 @@ fun Application.module() {
 		gamesListAction,
 		gameDisconnectAction,
 		gameRequestConnectionAction,
-		gameConnectAction
+		gameConnectAction,
+		gameConfig
 	)
 }

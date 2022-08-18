@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
@@ -8,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
+import io.ktor.server.http.content.resolveResource
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -18,10 +20,11 @@ import io.ktor.server.routing.route
 /**
  * Configuration for game routes
  */
-fun Route.gameLobbyRoutes(
+fun Route.gameRoutes(
 	createLobby: GameCreateAction,
 	joinLobby: GameJoinAction,
 	listLobbies: GamesListAction,
+	gameConfig: GameConfig
 ) {
 	authenticate {
 		route("game") {
@@ -54,6 +57,9 @@ fun Route.gameLobbyRoutes(
 			get("list") {
 				val gameIds = listLobbies.perform(getUserIdOrThrow(call))
 				call.respond(HttpStatusCode.OK, gameIds)
+			}
+			get("config") {
+				call.respond(HttpStatusCode.OK, gameConfig)
 			}
 		}
 	}
