@@ -24,26 +24,25 @@ import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.swagger.SwaggerUI
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
-import io.ktor.server.application.plugin
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.callloging.CallLogging
@@ -53,10 +52,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
-import io.ktor.server.routing.HttpMethodRouteSelector
-import io.ktor.server.routing.Route
 import io.ktor.server.routing.Routing
-import io.ktor.server.webjars.Webjars
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
@@ -203,7 +199,21 @@ fun Application.module() {
 			call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
 		}
 	}
-	install(Webjars)
+	install(SwaggerUI) {
+		forwardRoot = true
+		swaggerUrl = "/hello/swagger"
+		info = info {
+			title = "Strategy Game API"
+			description = "API of the strategy game"
+			version = "latest"
+		}
+		servers = listOf(
+			server {
+				url = "http://localhost:8080"
+				description = "default development server"
+			}
+		)
+	}
 	apiRoutes(
 		connectionHandler,
 		messageHandler,
@@ -216,16 +226,5 @@ fun Application.module() {
 		gameConnectAction,
 		gameConfig
 	)
-//	allRoutes(plugin(Routing)).forEach { route ->
-//		val method = (route.selector as HttpMethodRouteSelector).method
-//		name = route.parent.selector + route.parent.parent.selector + ...
-//		println(route)
-//	}
-
 }
 
-
-fun allRoutes(root: Route): List<Route> {
-	return (listOf(root) + root.children.flatMap { allRoutes(it) })
-		.filter { it.selector is HttpMethodRouteSelector }
-}
