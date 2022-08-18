@@ -9,10 +9,9 @@ import {GameUpdateAction} from "./core/actions/game/gameUpdateAction";
 import {GameLobbyConnectAction} from "./core/actions/gamelobby/gameLobbyConnectAction";
 import {GameLobbyCreateAction} from "./core/actions/gamelobby/gameLobbyCreateAction";
 import {GameLobbyJoinAction} from "./core/actions/gamelobby/gameLobbyJoinAction";
-import {SetInitWorldStateAction} from "./core/actions/gamelobby/setInitWorldStateAction";
+import {SetGameStateAction} from "./core/actions/gamelobby/setGameStateAction";
 import {TurnAddCommandAction} from "./core/actions/turn/turnAddCommandAction";
 import {TurnSubmitAction} from "./core/actions/turn/turnSubmitAction";
-import {TurnUpdateWorldStateAction} from "./core/actions/turn/turnUpdateWorldStateAction";
 import {UserLoginAction} from "./core/actions/user/userLoginAction";
 import {UserLogOutAction} from "./core/actions/user/userLogOutAction";
 import {UserSignUpAction} from "./core/actions/user/userSignUpAction";
@@ -53,12 +52,11 @@ export namespace AppConfig {
     const renderer: Renderer = new Renderer(canvasHandle, localGameStateAccess, gameStateAccess, userStateAccess);
     const tilePicker: TilePicker = new TilePicker(localGameStateAccess, gameStateAccess, canvasHandle);
 
-    export const worldSetInitState: SetInitWorldStateAction = new SetInitWorldStateAction(localGameStateAccess, gameStateAccess);
-    export const turnUpdateWorldState: TurnUpdateWorldStateAction = new TurnUpdateWorldStateAction(localGameStateAccess, gameStateAccess);
+    export const gameSetState: SetGameStateAction = new SetGameStateAction(localGameStateAccess, gameStateAccess);
 
     const httpClient = new HttpClient(API_BASE_URL);
     const wsClient = new WebsocketClient(API_WS_BASE_URL);
-    const msgHandler = new MessageHandler(worldSetInitState, turnUpdateWorldState);
+    const msgHandler = new MessageHandler(gameSetState);
 
     export const apiGame: GameApi = new GameApi(httpClient, userStateAccess);
     export const apiUser: UserApi = new UserApi(httpClient, userStateAccess);

@@ -7,7 +7,6 @@ export interface Country {
     color: CountryColor
 }
 
-
 export enum CountryColor {
     RED= "red",
     GREEN = "green",

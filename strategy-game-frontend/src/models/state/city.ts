@@ -1,11 +1,9 @@
-import {Country} from "./country";
-import {Province} from "./Province";
-import {Tile} from "./tile";
+import {TileRef} from "./tileRef";
 
 export interface City {
     cityId: string,
     name: string,
-    country: Country,
-    province: Province,
-    tile: Tile;
+    countryId: string,
+    provinceId: string,
+    tile: TileRef;
 }

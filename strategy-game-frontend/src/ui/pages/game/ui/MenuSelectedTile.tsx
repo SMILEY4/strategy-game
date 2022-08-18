@@ -46,10 +46,10 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
                     {
                         tile.influences.map(influence => (
                             <>
-                                <li>{influence.country.countryId + " = " + influence.value}</li>
+                                <li>{influence.countryId + " = " + influence.value}</li>
                                 <ul>
                                     {influence.sources.map(source => (
-                                        <li>{source.cityId + "/" + source.province.provinceId + " = " + source.value}</li>
+                                        <li>{source.cityId + "/" + source.provinceId + " = " + source.value}</li>
                                     ))}
                                 </ul>
                             </>
@@ -71,8 +71,8 @@ function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElemen
             <>
                 <h3>Owner</h3>
                 <ul>
-                    <li>{"Country = " + tile.owner?.country.countryId}</li>
-                    <li>{"Province = " + tile.owner?.province.provinceId}</li>
+                    <li>{"Country = " + tile.owner?.countryId}</li>
+                    <li>{"Province = " + tile.owner?.provinceId}</li>
                     <li>{"City = " + tile.owner?.cityId}</li>
                 </ul>
             </>
@@ -110,8 +110,8 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
                 {city && (
                     <ul>
                         <li>{"name: " + city.name}</li>
-                        <li>{"country: " + city.country.countryId}</li>
-                        <li>{"province: " + city.province.provinceId}</li>
+                        <li>{"country: " + city.countryId}</li>
+                        <li>{"province: " + city.provinceId}</li>
                     </ul>
                 )}
                 {!city && (
@@ -173,14 +173,15 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 
 function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
     const country = GameStateHooks.usePlayerCountry();
+    const provinces = GameStateHooks.useProvinces(country?.countryId!!)
     const tile = GameStateHooks.useTileAt(props.tile.q, props.tile.r)!!;
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
 
     const availableProvinces = tile.influences
-        .filter(i => i.country.countryId === country?.countryId)
+        .filter(i => i.countryId === country?.countryId)
         .flatMap(i => i.sources)
-        .map(i => i.province)
+        .map(i => provinces.find(p => p.provinceId === i.provinceId)!!)
         .filter((element, index, self) => self.indexOf(element) === index);
 
     return (

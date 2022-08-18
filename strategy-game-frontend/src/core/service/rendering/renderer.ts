@@ -49,32 +49,17 @@ export class Renderer {
 
         const camera = this.createCamera();
 
-        const map = this.gameStateAccess.getTiles();
+        const tiles = this.gameStateAccess.getTiles();
         const tileMouseOver = this.localGameStateAccess.getMouseOverTile();
         const tileSelected = this.localGameStateAccess.getSelectedTile();
+        const countries = this.gameStateAccess.getCountries();
+        const cities = this.gameStateAccess.getCities();
+        const markers = this.gameStateAccess.getMarkers();
+        const commands = this.localGameStateAccess.getCommands();
 
-        this.tilemapRenderer.render(
-            camera,
-            map,
-            tileMouseOver,
-            tileSelected
-        );
-
-        this.tileContentRenderer.render(
-            camera,
-            this.gameStateAccess.getCountries(),
-            this.gameStateAccess.getCities(),
-            this.gameStateAccess.getMarkers(),
-            this.localGameStateAccess.getCommands()
-        );
-
-        this.mapLabelRenderer.render(
-            camera,
-            this.gameStateAccess.getCountries(),
-            this.gameStateAccess.getCities(),
-            this.localGameStateAccess.getCommands()
-        );
-
+        this.tilemapRenderer.render(camera, tiles, tileMouseOver, tileSelected);
+        this.tileContentRenderer.render(camera, countries, cities, markers, commands,);
+        this.mapLabelRenderer.render(camera, countries, cities, commands);
     }
 
 

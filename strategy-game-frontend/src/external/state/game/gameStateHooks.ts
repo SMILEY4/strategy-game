@@ -1,5 +1,6 @@
 import {City} from "../../../models/state/city";
 import {Country} from "../../../models/state/country";
+import {Province} from "../../../models/state/Province";
 import {Tile} from "../../../models/state/tile";
 import {UserStateHooks} from "../user/userStateHooks";
 import {GameStore} from "./gameStore";
@@ -19,7 +20,11 @@ export namespace GameStateHooks {
     }
 
     export function useCityAt(q: number, r: number): City | undefined {
-        return GameStore.useState(state => state.cities.find(c => c.tile.position.q === q && c.tile.position.r === r))
+        return GameStore.useState(state => state.cities.find(c => c.tile.q === q && c.tile.r === r))
+    }
+
+    export function useProvinces(countryId: string): Province[] {
+        return GameStore.useState(state => state.provinces.filter(p => p.countryId === countryId))
     }
 
 }
