@@ -10,15 +10,13 @@ import io.ktor.server.webjars.Webjars
 val SwaggerUI = createApplicationPlugin(name = "SwaggerUI", createConfiguration = ::SwaggerPluginConfiguration) {
 	val forwardRoot = pluginConfig.forwardRoot
 	val swaggerUrl = pluginConfig.swaggerUrl
-	val apiInfo = pluginConfig.info
-	val apiServers = pluginConfig.servers
 
 	if (application.pluginOrNull(Webjars) == null) {
 		application.install(Webjars)
 	}
 
 	on(MonitoringEvent(ApplicationStarted)) { application ->
-		ApiSpec.build(application, swaggerUrl, apiInfo, apiServers)
+		ApiSpec.build(application, pluginConfig)
 	}
 
 	SwaggerRouting("4.13.2", swaggerUrl, forwardRoot) { ApiSpec.jsonSpec }.setup(application)
