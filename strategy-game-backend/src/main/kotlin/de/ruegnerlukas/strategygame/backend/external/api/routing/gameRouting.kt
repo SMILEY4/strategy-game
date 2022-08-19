@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
+import de.lruegner.ktorswaggerui.ParameterDocumentation
+import de.lruegner.ktorswaggerui.documentation.get
+import de.lruegner.ktorswaggerui.documentation.post
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.external.swagger.ParameterDocumentation.Companion.ParameterDataType
-import de.ruegnerlukas.strategygame.backend.external.swagger.get
-import de.ruegnerlukas.strategygame.backend.external.swagger.post
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
@@ -51,7 +51,7 @@ fun Route.gameRoutes(
                 response(HttpStatusCode.NotFound, "The game with the given id was not found")
                 pathParam("gameId") {
                     description = "the id of the game to join"
-                    dataType = ParameterDataType.STRING
+                    dataType = ParameterDocumentation.Companion.ParameterDataType.STRING
                 }
             }) {
                 val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)

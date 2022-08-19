@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.external.swagger.delete
-import de.ruegnerlukas.strategygame.backend.external.swagger.post
+import de.lruegner.ktorswaggerui.documentation.delete
+import de.lruegner.ktorswaggerui.documentation.post
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
@@ -69,7 +69,7 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
         }
         post("refresh", {
             description = "Get a new token without sending the users credentials again"
-			requestBodyPlainText()
+            requestBodyPlainText()
             response(HttpStatusCode.OK, "Authentication successful", AuthData::class.java)
             response(HttpStatusCode.Unauthorized, "Authentication failed (refresh token invalid)")
             response(HttpStatusCode.NotFound, "User does not exist")
@@ -90,10 +90,10 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
         authenticate {
             delete("delete", {
                 description = "Delete the given user. Email and password must be send again, even though the user is already \"logged in\""
-            	requestBody(LoginData::class.java)
+                requestBody(LoginData::class.java)
                 response(HttpStatusCode.OK, "User was deleted")
                 response(HttpStatusCode.Unauthorized, "Authentication failed (token, email or password invalid)")
-			}) {
+            }) {
                 call.receive<LoginData>().let { requestData ->
                     val result = userIdentityService.deleteUser(requestData.email, requestData.password)
                     when (result) {

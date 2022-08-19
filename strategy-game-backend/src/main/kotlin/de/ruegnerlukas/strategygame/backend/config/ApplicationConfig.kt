@@ -3,6 +3,7 @@ package de.ruegnerlukas.strategygame.backend.config
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
+import de.lruegner.ktorswaggerui.SwaggerUI
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
@@ -35,7 +36,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQue
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.swagger.SwaggerUI
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
