@@ -1,15 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
+import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -21,6 +21,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+
 
 /**
  * Main configuration for all routes

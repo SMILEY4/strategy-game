@@ -73,6 +73,18 @@ title: Resources and useful Links
 - Hexagonal Grids - Implementation
   - [https://www.redblobgames.com/grids/hexagons/implementation.html](https://www.redblobgames.com/grids/hexagons/implementation.html)
 
+# Procedural Generation
+
+- Procedural Generation Blog
+  - https://heredragonsabound.blogspot.com/
+  - Hex Wind Simulation: https://heredragonsabound.blogspot.com/2018/11/continent-maps-part-4-wind-model.html
+- Blog (Realistic World gen)
+  - https://undiscoveredworlds.blogspot.com/
+  - Rain Simulation: https://undiscoveredworlds.blogspot.com/2019/02/hey-ho-wind-and-rain.html
+  - Climate: https://undiscoveredworlds.blogspot.com/2019/02/getting-climactic.html
+
+
+
 # Architecture
 
 - Railway-Oriented Programming
