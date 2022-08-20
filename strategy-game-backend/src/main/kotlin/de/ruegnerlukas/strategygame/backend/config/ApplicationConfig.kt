@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.config
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import de.lruegner.ktorswaggerui.SwaggerUI
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
@@ -37,6 +36,8 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpd
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import io.github.smiley4.ktorswaggerui.OpenApiSecuritySchemeConfig
+import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -67,164 +68,172 @@ import java.time.Duration
  */
 fun Application.module() {
 
-	// "external" services
-	val connectionHandler = ConnectionHandler()
-	val userIdentityService = UserIdentityService.create(Config.get())
-	val messageProducer = GameMessageProducerImpl(WebSocketMessageProducer(connectionHandler))
-	val database = runBlocking { DatabaseProvider.create(Config.get().db) }
+    // "external" services
+    val connectionHandler = ConnectionHandler()
+    val userIdentityService = UserIdentityService.create(Config.get())
+    val messageProducer = GameMessageProducerImpl(WebSocketMessageProducer(connectionHandler))
+    val database = runBlocking { DatabaseProvider.create(Config.get().db) }
 
-	// persistence actions
-	val insertCommands = CommandsInsertImpl(database)
-	val insertGame = GameInsertImpl(database)
-	val queryCommandsByGame = CommandsByGameQueryImpl(database)
-	val queryGame = GameQueryImpl(database)
-	val queryGamesByUser = GamesByUserQueryImpl(database)
-	val queryGameExtended = GameExtendedQueryImpl(database)
-	val updateGame = GameUpdateImpl(database)
-	val insertCountry = CountryInsertImpl(database)
-	val updateGameExtended = GameExtendedUpdateImpl(database)
-	val queryCountry = CountryByGameAndUserQueryImpl(database)
-	val insertReservation = ReservationInsertImpl(database)
+    // persistence actions
+    val insertCommands = CommandsInsertImpl(database)
+    val insertGame = GameInsertImpl(database)
+    val queryCommandsByGame = CommandsByGameQueryImpl(database)
+    val queryGame = GameQueryImpl(database)
+    val queryGamesByUser = GamesByUserQueryImpl(database)
+    val queryGameExtended = GameExtendedQueryImpl(database)
+    val updateGame = GameUpdateImpl(database)
+    val insertCountry = CountryInsertImpl(database)
+    val updateGameExtended = GameExtendedUpdateImpl(database)
+    val queryCountry = CountryByGameAndUserQueryImpl(database)
+    val insertReservation = ReservationInsertImpl(database)
 
-	// game config
-	val gameConfig = GameConfig.default()
+    // game config
+    val gameConfig = GameConfig.default()
 
-	// core actions
-	val resolvePlaceMarkerCommandAction = ResolvePlaceMarkerCommandImpl()
-	val resolveCreateCityCommandAction = ResolveCreateCityCommandImpl(
-		insertReservation,
-		gameConfig
-	)
-	val broadcastTurnResultAction = BroadcastTurnResultActionImpl(
-		queryGameExtended,
-		messageProducer
-	)
-	val broadcastInitialGameStateAction = BroadcastInitialGameStateActionImpl(
-		queryGameExtended,
-		messageProducer
-	)
-	val gamesListAction = GamesListActionImpl(
-		queryGamesByUser
-	)
-	val gameConnectAction = GameConnectActionImpl(
-		queryGame,
-		updateGame,
-		broadcastInitialGameStateAction
-	)
-	val gameCreateAction = GameCreateActionImpl(
-		insertGame
-	)
-	val gameDisconnectAction = GameDisconnectActionImpl(
-		queryGamesByUser,
-		updateGame
-	)
-	val gameJoinAction = GameJoinActionImpl(
-		queryGame,
-		updateGame,
-		insertCountry
-	)
-	val gameRequestConnectionAction = GameRequestConnectionActionImpl(
-		queryGame,
-	)
-	val resolveCommandsAction = ResolveCommandsActionImpl(
-		resolvePlaceMarkerCommandAction,
-		resolveCreateCityCommandAction
-	)
-	val turnUpdateActionImpl = TurnUpdateActionImpl(
-		gameConfig
-	)
-	val turnEndAction = TurnEndActionImpl(
-		resolveCommandsAction,
-		broadcastTurnResultAction,
-		turnUpdateActionImpl,
-		queryGameExtended,
-		updateGameExtended,
-		queryCommandsByGame
-	)
-	val turnSubmitAction = TurnSubmitActionImpl(
-		turnEndAction,
-		queryGame,
-		queryCountry,
-		updateGame,
-		insertCommands
-	)
+    // core actions
+    val resolvePlaceMarkerCommandAction = ResolvePlaceMarkerCommandImpl()
+    val resolveCreateCityCommandAction = ResolveCreateCityCommandImpl(
+        insertReservation,
+        gameConfig
+    )
+    val broadcastTurnResultAction = BroadcastTurnResultActionImpl(
+        queryGameExtended,
+        messageProducer
+    )
+    val broadcastInitialGameStateAction = BroadcastInitialGameStateActionImpl(
+        queryGameExtended,
+        messageProducer
+    )
+    val gamesListAction = GamesListActionImpl(
+        queryGamesByUser
+    )
+    val gameConnectAction = GameConnectActionImpl(
+        queryGame,
+        updateGame,
+        broadcastInitialGameStateAction
+    )
+    val gameCreateAction = GameCreateActionImpl(
+        insertGame
+    )
+    val gameDisconnectAction = GameDisconnectActionImpl(
+        queryGamesByUser,
+        updateGame
+    )
+    val gameJoinAction = GameJoinActionImpl(
+        queryGame,
+        updateGame,
+        insertCountry
+    )
+    val gameRequestConnectionAction = GameRequestConnectionActionImpl(
+        queryGame,
+    )
+    val resolveCommandsAction = ResolveCommandsActionImpl(
+        resolvePlaceMarkerCommandAction,
+        resolveCreateCityCommandAction
+    )
+    val turnUpdateActionImpl = TurnUpdateActionImpl(
+        gameConfig
+    )
+    val turnEndAction = TurnEndActionImpl(
+        resolveCommandsAction,
+        broadcastTurnResultAction,
+        turnUpdateActionImpl,
+        queryGameExtended,
+        updateGameExtended,
+        queryCommandsByGame
+    )
+    val turnSubmitAction = TurnSubmitActionImpl(
+        turnEndAction,
+        queryGame,
+        queryCountry,
+        updateGame,
+        insertCommands
+    )
 
-	// more "external" services
-	val messageHandler = MessageHandler(turnSubmitAction)
+    // more "external" services
+    val messageHandler = MessageHandler(turnSubmitAction)
 
 
-	install(Routing)
-	install(WebSockets) {
-		pingPeriod = Duration.ofSeconds(15)
-		timeout = Duration.ofSeconds(15)
-		maxFrameSize = Long.MAX_VALUE
-		masking = false
-	}
-	install(CallLogging) {
-		level = Level.INFO
-		format { call ->
-			val status = call.response.status()
-			val httpMethod = call.request.httpMethod.value
-			val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
-			"${status.toString()}: $httpMethod - $route"
-		}
-	}
-	install(ContentNegotiation) {
-		jackson {
-			configure(SerializationFeature.INDENT_OUTPUT, true)
-			setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
-				indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-				indentObjectsWith(DefaultIndenter("  ", "\n"))
-			})
-		}
-	}
-	install(CORS) {
-		allowMethod(HttpMethod.Options)
-		allowMethod(HttpMethod.Put)
-		allowMethod(HttpMethod.Delete)
-		allowMethod(HttpMethod.Patch)
-		allowHeader(HttpHeaders.Authorization)
-		allowHeader(HttpHeaders.AccessControlAllowOrigin)
-		allowHost("*", listOf("http", "https"))
-		allowNonSimpleContentTypes = true
-		allowCredentials = true
-		allowSameOrigin = true
-	}
-	install(Authentication) {
-		jwt { userIdentityService.configureAuthentication(this) }
-	}
-	install(StatusPages) {
-		exception<Throwable> { call, cause ->
-			KotlinLogging.logger { }.error("Controller received error", cause)
-			call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
-		}
-	}
-	install(SwaggerUI) {
-		forwardRoot = true
-		swaggerUrl = "/hello/swagger"
-		info = info {
-			title = "Strategy Game API"
-			description = "API of the strategy game"
-			version = "latest"
-		}
-		servers = listOf(
-			server {
-				url = "http://localhost:8080"
-				description = "default development server"
-			}
-		)
-	}
-	apiRoutes(
-		connectionHandler,
-		messageHandler,
-		userIdentityService,
-		gameCreateAction,
-		gameJoinAction,
-		gamesListAction,
-		gameDisconnectAction,
-		gameRequestConnectionAction,
-		gameConnectAction,
-		gameConfig
-	)
+    install(Routing)
+    install(WebSockets) {
+        pingPeriod = Duration.ofSeconds(15)
+        timeout = Duration.ofSeconds(15)
+        maxFrameSize = Long.MAX_VALUE
+        masking = false
+    }
+    install(CallLogging) {
+        level = Level.INFO
+        format { call ->
+            val status = call.response.status()
+            val httpMethod = call.request.httpMethod.value
+            val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
+            "${status.toString()}: $httpMethod - $route"
+        }
+    }
+    install(ContentNegotiation) {
+        jackson {
+            configure(SerializationFeature.INDENT_OUTPUT, true)
+            setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
+                indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                indentObjectsWith(DefaultIndenter("  ", "\n"))
+            })
+        }
+    }
+    install(CORS) {
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowMethod(HttpMethod.Patch)
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowHost("*", listOf("http", "https"))
+        allowNonSimpleContentTypes = true
+        allowCredentials = true
+        allowSameOrigin = true
+    }
+    install(Authentication) {
+        jwt { userIdentityService.configureAuthentication(this) }
+    }
+    install(StatusPages) {
+        exception<Throwable> { call, cause ->
+            KotlinLogging.logger { }.error("Controller received error", cause)
+            call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
+        }
+    }
+    install(SwaggerUI) {
+        automaticUnauthorizedResponses = true
+        defaultSecurityScheme = "Auth"
+        swagger {
+            forwardRoot = true
+            swaggerUrl = "/hello/swagger"
+        }
+        info {
+            title = "Strategy Game API"
+            description = "API of the strategy game"
+            version = "latest"
+        }
+        server {
+            url = "http://localhost:8080"
+            description = "default development server"
+        }
+        securityScheme {
+            name = "Auth"
+            type = OpenApiSecuritySchemeConfig.Type.HTTP
+            scheme = OpenApiSecuritySchemeConfig.Scheme.BEARER
+            bearerFormat = "jwt"
+        }
+    }
+    apiRoutes(
+        connectionHandler,
+        messageHandler,
+        userIdentityService,
+        gameCreateAction,
+        gameJoinAction,
+        gamesListAction,
+        gameDisconnectAction,
+        gameRequestConnectionAction,
+        gameConnectAction,
+        gameConfig
+    )
 }
 
