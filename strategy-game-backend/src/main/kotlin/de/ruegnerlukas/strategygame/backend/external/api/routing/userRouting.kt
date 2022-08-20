@@ -11,6 +11,7 @@ import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.N
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserAlreadyExistsError
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotConfirmedError
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotFoundError
+import de.ruegnerlukas.strategygame.backend.shared.traceId
 import io.github.smiley4.ktorswaggerui.documentation.delete
 import io.github.smiley4.ktorswaggerui.documentation.post
 import io.ktor.http.HttpStatusCode
@@ -20,6 +21,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
+import mu.withLoggingContext
 
 
 /**
@@ -39,14 +41,16 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                 HttpStatusCode.Conflict to { description = "The user with the given email already exists" }
             }
         }) {
-            call.receive<CreateUserData>().let { requestData ->
-                val result = userIdentityService.createUser(requestData.email, requestData.password, requestData.username)
-                when (result) {
-                    is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
-                    is Either.Left -> when (result.value) {
-                        CodeDeliveryError -> call.respond(HttpStatusCode.Conflict, result.value)
-                        InvalidEmailOrPasswordError -> call.respond(HttpStatusCode.Conflict, result.value)
-                        UserAlreadyExistsError -> call.respond(HttpStatusCode.Conflict, result.value)
+            withLoggingContext(traceId()) {
+                call.receive<CreateUserData>().let { requestData ->
+                    val result = userIdentityService.createUser(requestData.email, requestData.password, requestData.username)
+                    when (result) {
+                        is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
+                        is Either.Left -> when (result.value) {
+                            CodeDeliveryError -> call.respond(HttpStatusCode.Conflict, result.value)
+                            InvalidEmailOrPasswordError -> call.respond(HttpStatusCode.Conflict, result.value)
+                            UserAlreadyExistsError -> call.respond(HttpStatusCode.Conflict, result.value)
+                        }
                     }
                 }
             }
@@ -66,14 +70,16 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                 HttpStatusCode.Conflict to { description = "The user does not exist" }
             }
         }) {
-            call.receive<LoginData>().let { requestData ->
-                val result = userIdentityService.authenticate(requestData.email, requestData.password)
-                when (result) {
-                    is Either.Right -> call.respond(HttpStatusCode.OK, AuthData(result.value))
-                    is Either.Left -> when (result.value) {
-                        NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
-                        UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, result.value)
-                        UserNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+            withLoggingContext(traceId()) {
+                call.receive<LoginData>().let { requestData ->
+                    val result = userIdentityService.authenticate(requestData.email, requestData.password)
+                    when (result) {
+                        is Either.Right -> call.respond(HttpStatusCode.OK, AuthData(result.value))
+                        is Either.Left -> when (result.value) {
+                            NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
+                            UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, result.value)
+                            UserNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+                        }
                     }
                 }
             }
@@ -93,14 +99,16 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                 HttpStatusCode.Conflict to { description = "The user is not confirmed" }
             }
         }) {
-            call.receive<String>().let { requestData ->
-                val result = userIdentityService.refreshAuthentication(requestData)
-                when (result) {
-                    is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
-                    is Either.Left -> when (result.value) {
-                        NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
-                        UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, result.value)
-                        UserNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+            withLoggingContext(traceId()) {
+                call.receive<String>().let { requestData ->
+                    val result = userIdentityService.refreshAuthentication(requestData)
+                    when (result) {
+                        is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
+                        is Either.Left -> when (result.value) {
+                            NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
+                            UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, result.value)
+                            UserNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+                        }
                     }
                 }
             }
@@ -116,12 +124,14 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                     HttpStatusCode.Unauthorized to { description = "Authentication failed (token, email or password invalid)" }
                 }
             }) {
-                call.receive<LoginData>().let { requestData ->
-                    val result = userIdentityService.deleteUser(requestData.email, requestData.password)
-                    when (result) {
-                        is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
-                        is Either.Left -> when (result.value) {
-                            NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
+                withLoggingContext(traceId()) {
+                    call.receive<LoginData>().let { requestData ->
+                        val result = userIdentityService.deleteUser(requestData.email, requestData.password)
+                        when (result) {
+                            is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
+                            is Either.Left -> when (result.value) {
+                                NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
+                            }
                         }
                     }
                 }

@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
+import de.ruegnerlukas.strategygame.backend.shared.traceId
 import io.github.smiley4.ktorswaggerui.documentation.get
 import io.github.smiley4.ktorswaggerui.documentation.post
 import io.ktor.http.HttpStatusCode
@@ -14,6 +15,7 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
+import mu.withLoggingContext
 
 
 /**
@@ -33,16 +35,18 @@ fun Route.gameRoutes(
                     HttpStatusCode.OK to { description = "Successfully created a new game" }
                 }
             }) {
-                val userId = getUserIdOrThrow(call)
-                val gameId = createLobby.perform(WorldSettings.default())
-                val joinResult = joinLobby.perform(userId, gameId)
-                when (joinResult) {
-                    is Either.Right -> {
-                        call.respond(HttpStatusCode.OK, gameId)
-                    }
-                    is Either.Left -> when (joinResult.value) {
-                        GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, joinResult.value)
-                        GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, joinResult.value)
+                withLoggingContext(traceId()) {
+                    val userId = getUserIdOrThrow(call)
+                    val gameId = createLobby.perform(WorldSettings.default())
+                    val joinResult = joinLobby.perform(userId, gameId)
+                    when (joinResult) {
+                        is Either.Right -> {
+                            call.respond(HttpStatusCode.OK, gameId)
+                        }
+                        is Either.Left -> when (joinResult.value) {
+                            GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, joinResult.value)
+                            GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, joinResult.value)
+                        }
                     }
                 }
             }
@@ -58,14 +62,16 @@ fun Route.gameRoutes(
                     HttpStatusCode.NotFound to { description = "The game with the given id was not found" }
                 }
             }) {
-                val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
-                when (result) {
-                    is Either.Right -> {
-                        call.respond(HttpStatusCode.OK, Unit)
-                    }
-                    is Either.Left -> when (result.value) {
-                        GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
-                        GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, result.value)
+                withLoggingContext(traceId()) {
+                    val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
+                    when (result) {
+                        is Either.Right -> {
+                            call.respond(HttpStatusCode.OK, Unit)
+                        }
+                        is Either.Left -> when (result.value) {
+                            GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+                            GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, result.value)
+                        }
                     }
                 }
             }
@@ -75,8 +81,10 @@ fun Route.gameRoutes(
                     HttpStatusCode.OK to { description = "Request successful" }
                 }
             }) {
-                val gameIds = listLobbies.perform(getUserIdOrThrow(call))
-                call.respond(HttpStatusCode.OK, gameIds)
+                withLoggingContext(traceId()) {
+                    val gameIds = listLobbies.perform(getUserIdOrThrow(call))
+                    call.respond(HttpStatusCode.OK, gameIds)
+                }
             }
             get("config", {
                 description = "Fetch the configuration and values for games"
@@ -87,7 +95,9 @@ fun Route.gameRoutes(
                     }
                 }
             }) {
-                call.respond(HttpStatusCode.OK, gameConfig)
+                withLoggingContext(traceId()) {
+                    call.respond(HttpStatusCode.OK, gameConfig)
+                }
             }
         }
     }
