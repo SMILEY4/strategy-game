@@ -4,6 +4,8 @@ title: API
 
 # Http-Endpoints
 
+A Swagger with all endpoints is available at `/swagger-ui`
+
 ## User
 
 ### Sign-Up

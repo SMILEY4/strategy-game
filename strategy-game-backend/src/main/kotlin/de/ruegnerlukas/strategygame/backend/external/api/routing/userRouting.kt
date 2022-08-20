@@ -29,11 +29,15 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
     route("user") {
         post("signup", {
             description = "Create a new user"
-            typedRequestBody(CreateUserData::class.java) {}
-            response(HttpStatusCode.OK) { description = "Successfully created user" }
-            response(HttpStatusCode.Conflict) { description = "Could not deliver code to provided email" }
-            response(HttpStatusCode.Conflict) { description = "Email or password invalid" }
-            response(HttpStatusCode.Conflict) { description = "The user with the given email already exists" }
+            request {
+                body(CreateUserData::class)
+            }
+            response {
+                HttpStatusCode.OK to { description = "Successfully created user" }
+                HttpStatusCode.Conflict to { description = "Could not deliver code to provided email" }
+                HttpStatusCode.Conflict to { description = "Email or password invalid" }
+                HttpStatusCode.Conflict to { description = "The user with the given email already exists" }
+            }
         }) {
             call.receive<CreateUserData>().let { requestData ->
                 val result = userIdentityService.createUser(requestData.email, requestData.password, requestData.username)
@@ -49,14 +53,18 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
         }
         post("login", {
             description = "Log-in as an existing user"
-            typedRequestBody(LoginData::class.java) {}
-            response(HttpStatusCode.OK) {
-                description = "Authentication successful"
-                typedBody(AuthData::class.java) {}
+            request {
+                body(LoginData::class)
             }
-            response(HttpStatusCode.Unauthorized) { description = "Authentication failed" }
-            response(HttpStatusCode.Conflict) { description = "The user has not confirmed the code" }
-            response(HttpStatusCode.Conflict) { description = "The user does not exist" }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Authentication successful"
+                    body(AuthData::class)
+                }
+                HttpStatusCode.Unauthorized to { description = "Authentication failed" }
+                HttpStatusCode.Conflict to { description = "The user has not confirmed the code" }
+                HttpStatusCode.Conflict to { description = "The user does not exist" }
+            }
         }) {
             call.receive<LoginData>().let { requestData ->
                 val result = userIdentityService.authenticate(requestData.email, requestData.password)
@@ -72,14 +80,18 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
         }
         post("refresh", {
             description = "Get a new token without sending the users credentials again"
-            textRequestBody { }
-            response(HttpStatusCode.OK) {
-                description = "Authentication successful"
-                typedBody(AuthData::class.java) {}
+            request {
+                body(String::class)
             }
-            response(HttpStatusCode.Unauthorized) { description = "Authentication failed (refresh token invalid)" }
-            response(HttpStatusCode.NotFound) { description = "User does not exist" }
-            response(HttpStatusCode.Conflict) { description = "The user is not confirmed" }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Authentication successful"
+                    body(AuthData::class)
+                }
+                HttpStatusCode.Unauthorized to { description = "Authentication failed (refresh token invalid)" }
+                HttpStatusCode.NotFound to { description = "User does not exist" }
+                HttpStatusCode.Conflict to { description = "The user is not confirmed" }
+            }
         }) {
             call.receive<String>().let { requestData ->
                 val result = userIdentityService.refreshAuthentication(requestData)
@@ -96,9 +108,13 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
         authenticate {
             delete("delete", {
                 description = "Delete the given user. Email and password must be send again, even though the user is already \"logged in\""
-                typedRequestBody(LoginData::class.java) {}
-                response(HttpStatusCode.OK) { description = "User was deleted" }
-                response(HttpStatusCode.Unauthorized) { description = "Authentication failed (token, email or password invalid)" }
+                request {
+                    body(LoginData::class)
+                }
+                response {
+                    HttpStatusCode.OK to { description = "User was deleted" }
+                    HttpStatusCode.Unauthorized to { description = "Authentication failed (token, email or password invalid)" }
+                }
             }) {
                 call.receive<LoginData>().let { requestData ->
                     val result = userIdentityService.deleteUser(requestData.email, requestData.password)

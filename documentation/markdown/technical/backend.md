@@ -62,6 +62,10 @@ Build automation tool. Manages dependencies and build-tasks. [Link to documentat
 
 Framework for building web applications. [Link to documentation](https://ktor.io/docs/welcome.html)
 
+**Ktor Swagger UI**
+
+Own library build to document routes, automatically generate an OpenAPI Specification and serve a Swagger UI. [Link to Documentation](https://github.com/SMILEY4/ktor-swagger-ui)
+
 **AWS-Cognito**
 
 Simple and Secure User Sign-Up, Sign-In, and Access Control

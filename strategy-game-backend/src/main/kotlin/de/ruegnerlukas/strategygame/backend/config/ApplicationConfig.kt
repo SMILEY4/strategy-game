@@ -36,7 +36,8 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpd
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import io.github.smiley4.ktorswaggerui.OpenApiSecuritySchemeConfig
+import io.github.smiley4.ktorswaggerui.AuthScheme
+import io.github.smiley4.ktorswaggerui.AuthType
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -202,10 +203,11 @@ fun Application.module() {
     }
     install(SwaggerUI) {
         automaticUnauthorizedResponses = true
-        defaultSecurityScheme = "Auth"
+        defaultSecuritySchemeName = "Auth"
+        automaticTagGenerator = { url -> url.getOrNull(1) }
         swagger {
             forwardRoot = true
-            swaggerUrl = "/hello/swagger"
+            swaggerUrl = "/swagger-ui"
         }
         info {
             title = "Strategy Game API"
@@ -216,10 +218,9 @@ fun Application.module() {
             url = "http://localhost:8080"
             description = "default development server"
         }
-        securityScheme {
-            name = "Auth"
-            type = OpenApiSecuritySchemeConfig.Type.HTTP
-            scheme = OpenApiSecuritySchemeConfig.Scheme.BEARER
+        securityScheme("Auth") {
+            type = AuthType.HTTP
+            scheme = AuthScheme.BEARER
             bearerFormat = "jwt"
         }
     }

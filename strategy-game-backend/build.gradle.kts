@@ -47,7 +47,7 @@ dependencies {
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
 	implementation("io.ktor:ktor-server-status-pages:$versionKtor")
 
-	implementation("io.github.smiley4:ktor-swagger-ui:0.1.0")
+	implementation("io.github.smiley4:ktor-swagger-ui:0.2.0")
 
 	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")

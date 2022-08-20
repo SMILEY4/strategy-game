@@ -6,16 +6,14 @@ import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
-import io.github.smiley4.ktorswaggerui.apispec.ParameterDocumentation
-import io.github.smiley4.ktorswaggerui.documentation.RouteParameter
+import io.github.smiley4.ktorswaggerui.documentation.get
+import io.github.smiley4.ktorswaggerui.documentation.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
-import io.github.smiley4.ktorswaggerui.documentation.post
-import io.github.smiley4.ktorswaggerui.documentation.get
 
 
 /**
@@ -31,7 +29,9 @@ fun Route.gameRoutes(
         route("game") {
             post("create", {
                 description = "Create a new game. Other players can join this game via the returned game-id"
-                response(HttpStatusCode.OK) { description = "Successfully created a new game" }
+                response {
+                    HttpStatusCode.OK to { description = "Successfully created a new game" }
+                }
             }) {
                 val userId = getUserIdOrThrow(call)
                 val gameId = createLobby.perform(WorldSettings.default())
@@ -48,12 +48,14 @@ fun Route.gameRoutes(
             }
             post("join/{gameId}", {
                 description = "Join a game as a participant."
-                response(HttpStatusCode.OK) { description = "Successfully joined the game"}
-                response(HttpStatusCode.NotFound) { description =  "The game with the given id was not found"}
-                pathParameter {
-                    name = "gameId"
-                    description = "the id of the game to join"
-                    schema(RouteParameter.Type.STRING)
+                request {
+                    pathParameter("gameId", String::class) {
+                        description = "the id of the game to join"
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to { description = "Successfully joined the game" }
+                    HttpStatusCode.NotFound to { description = "The game with the given id was not found" }
                 }
             }) {
                 val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
@@ -69,16 +71,20 @@ fun Route.gameRoutes(
             }
             get("list", {
                 description = "List all games with the user as a participant.."
-                response(HttpStatusCode.OK) { description = "Request successful"}
+                response {
+                    HttpStatusCode.OK to { description = "Request successful" }
+                }
             }) {
                 val gameIds = listLobbies.perform(getUserIdOrThrow(call))
                 call.respond(HttpStatusCode.OK, gameIds)
             }
             get("config", {
                 description = "Fetch the configuration and values for games"
-                response(HttpStatusCode.OK) {
-                    description = "Request successful"
-                    typedBody(GameConfig::class.java) {}
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Request successful"
+                        body(GameConfig::class) {}
+                    }
                 }
             }) {
                 call.respond(HttpStatusCode.OK, gameConfig)
