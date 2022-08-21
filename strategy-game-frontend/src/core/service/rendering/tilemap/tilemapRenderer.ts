@@ -1,14 +1,12 @@
-import {CountryColor} from "../../../../models/state/country";
-import {TerrainType} from "../../../../models/state/terrainType";
 import {Tile} from "../../../../models/state/tile";
 import {TilePosition} from "../../../../models/state/tilePosition";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
-import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import SRC_SHADER_FRAGMENT from "./mapShader.fsh?raw";
 import SRC_SHADER_VERTEX from "./mapShader.vsh?raw";
+import {TileVertexBuilder} from "./TileVertexBuilder";
 
 
 export class TilemapRenderer {
@@ -30,25 +28,46 @@ export class TilemapRenderer {
             sourceFragment: SRC_SHADER_FRAGMENT,
             attributes: [
                 {
-                    name: "in_position",
+                    name: "in_worldPosition",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
                     offset: 0,
-                    stride: 8
+                    stride: 14
                 },
                 {
-                    name: "in_tiledata",
+                    name: "in_tilePosition",
                     type: ShaderAttributeType.FLOAT,
-                    amountComponents: 3,
+                    amountComponents: 2,
                     offset: 2,
-                    stride: 8
+                    stride: 14
                 },
                 {
-                    name: "in_tilecolor",
+                    name: "in_terrainData",
+                    type: ShaderAttributeType.FLOAT,
+                    amountComponents: 1,
+                    offset: 4,
+                    stride: 14
+                },
+                {
+                    name: "in_overlayColor",
+                    type: ShaderAttributeType.FLOAT,
+                    amountComponents: 4,
+                    offset: 5,
+                    stride: 14
+                },
+                {
+                    name: "in_cornerData",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 3,
-                    offset: 5,
-                    stride: 8
+                    offset: 9,
+                    stride: 14
+                },
+                {
+                    name: "in_borderData",
+                    type: ShaderAttributeType.FLOAT,
+                    amountComponents: 2,
+                    offset: 12,
+                    stride: 14
                 }
             ],
             uniforms: [
@@ -69,14 +88,22 @@ export class TilemapRenderer {
     }
 
     public render(camera: Camera, map: Tile[], tileMouseOver: TilePosition | null, tileSelected: TilePosition | null) {
+
         this.batchRenderer.begin(camera);
         map.forEach(tile => {
-            const vertices = TilemapRenderer.buildVertexData(tile);
-            const indices = TilemapRenderer.buildIndexData();
+            const vertices = TileVertexBuilder.vertexData(tile);
+            const indices = TileVertexBuilder.indexData();
             this.batchRenderer.add(vertices, indices);
         });
         this.batchRenderer.end(this.shader, {
-            attributes: ["in_position", "in_tiledata", "in_tilecolor"],
+            attributes: [
+                "in_worldPosition",
+                "in_tilePosition",
+                "in_terrainData",
+                "in_overlayColor",
+                "in_cornerData",
+                "in_borderData",
+            ],
             uniforms: {
                 "u_tileMouseOver": tileMouseOver ? [tileMouseOver.q, tileMouseOver.r] : [999999, 999999],
                 "u_tileSelected": tileSelected ? [tileSelected.q, tileSelected.r] : [999999, 999999],
@@ -88,72 +115,5 @@ export class TilemapRenderer {
         this.batchRenderer.dispose();
         this.shader.dispose();
     }
-
-
-    /**
-     * FORMAT: [x, y, q, r, tileId]
-     */
-    private static buildVertexData(tile: Tile): number[][] {
-        const vertices: number[][] = [];
-        const centerPos = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.position.q, tile.position.r);
-        vertices.push([centerPos[0], centerPos[1], tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType), ...TilemapRenderer.tileOwnerColor(tile)]);
-        for (let i = 0; i < 6; i++) {
-            const vertex: number[] = [
-                ...TilemapRenderer.hexCornerPoint(i, TilemapUtils.DEFAULT_HEX_LAYOUT.size, centerPos[0], centerPos[1]),
-                tile.position.q, tile.position.r, TilemapRenderer.terrainTypeToId(tile.terrainType),
-                ...TilemapRenderer.tileOwnerColor(tile)
-            ];
-            vertices.push(vertex);
-            vertices.push(vertex);
-        }
-        return vertices;
-    }
-
-    private static tileOwnerColor(tile: Tile): [number, number, number,] {
-        if (tile.owner) {
-            if (tile.owner.countryColor === CountryColor.RED) return [1, 0, 0];
-            if (tile.owner.countryColor === CountryColor.GREEN) return [0, 1, 0];
-            if (tile.owner.countryColor === CountryColor.BLUE) return [0, 0, 1];
-            if (tile.owner.countryColor === CountryColor.CYAN) return [0, 1, 1];
-            if (tile.owner.countryColor === CountryColor.MAGENTA) return [1, 0, 1];
-            if (tile.owner.countryColor === CountryColor.YELLOW) return [1, 1, 0];
-            return [1, 1, 1];
-        } else {
-            return [1, 1, 1];
-        }
-    }
-
-    private static readonly HEX_INDEX_DATA = [
-        0, 2, 3,
-        0, 4, 5,
-        0, 6, 7,
-        0, 8, 9,
-        0, 10, 11,
-        0, 12, 1
-    ];
-
-    private static buildIndexData(): number[] {
-        return TilemapRenderer.HEX_INDEX_DATA;
-    }
-
-    private static hexCornerPoint(i: number, size: [number, number], offX: number, offY: number) {
-        const angleDeg = 60 * i - 30;
-        const angleRad = Math.PI / 180 * angleDeg;
-        return [
-            size[0] * Math.cos(angleRad) + offX,
-            size[1] * Math.sin(angleRad) + offY
-        ];
-    }
-
-    private static terrainTypeToId(type: TerrainType): number {
-        if (type == TerrainType.WATER) {
-            return 0;
-        }
-        if (type == TerrainType.LAND) {
-            return 1;
-        }
-        return -1;
-    }
-
 
 }

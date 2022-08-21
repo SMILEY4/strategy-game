@@ -32,11 +32,11 @@ export class BordersCalculateAction {
 
     private readonly NEIGHBOUR_OFFSETS = [
         [+1, +0], // right
-        [+1, -1], // bottom right
-        [+0, -1], // bottom left
-        [-1, +0], // left
-        [-1, +1], // top left
         [+0, +1], // top right
+        [-1, +1], // top left
+        [-1, +0], // left
+        [+0, -1], // bottom left
+        [+1, -1], // bottom right
     ];
 
     private getNeighbours<T>(tiles: Tile[][], tile: Tile, value: (tile: Tile) => (T | null | undefined), defaultValue: T): T[] {
