@@ -58,7 +58,7 @@ export class Renderer {
         const commands = this.localGameStateAccess.getCommands();
 
         const revId = this.gameStateAccess.getStateRevision() + "_" + this.localGameStateAccess.getStateRevision();
-        this.tilemapRenderer.render(revId, camera, tiles, tileMouseOver, tileSelected);
+        this.tilemapRenderer.render(revId, camera, tiles, countries, tileMouseOver, tileSelected);
         this.tileContentRenderer.render(camera, countries, cities, markers, commands,);
         this.mapLabelRenderer.render(camera, countries, cities, commands);
     }

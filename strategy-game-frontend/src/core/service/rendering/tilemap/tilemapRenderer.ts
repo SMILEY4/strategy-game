@@ -1,3 +1,4 @@
+import {Country} from "../../../../models/state/country";
 import {Tile} from "../../../../models/state/tile";
 import {TilePosition} from "../../../../models/state/tilePosition";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
@@ -6,7 +7,7 @@ import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
 import SRC_SHADER_FRAGMENT from "./mapShader.fsh?raw";
 import SRC_SHADER_VERTEX from "./mapShader.vsh?raw";
-import {TileVertexBuilder} from "./TileVertexBuilder";
+import {TileVertexBuilder} from "./tileVertexBuilder";
 
 
 interface TilemapCache {
@@ -100,14 +101,14 @@ export class TilemapRenderer {
         });
     }
 
-    public render(revisionId: string, camera: Camera, map: Tile[], tileMouseOver: TilePosition | null, tileSelected: TilePosition | null) {
+    public render(revisionId: string, camera: Camera, map: Tile[], countries: Country[], tileMouseOver: TilePosition | null, tileSelected: TilePosition | null) {
 
         if (this.cache.revisionId != revisionId) {
             this.cache.revisionId = revisionId;
             this.cache.tileData = [];
             map.forEach(tile => {
                 this.cache.tileData.push({
-                    vertices: TileVertexBuilder.vertexData(tile),
+                    vertices: TileVertexBuilder.vertexData(tile, countries),
                     indices: TileVertexBuilder.indexData()
                 });
             });

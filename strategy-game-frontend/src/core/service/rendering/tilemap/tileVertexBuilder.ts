@@ -1,17 +1,18 @@
-import {CountryColor} from "../../../../models/state/country";
+import {GAME_CONFIG} from "../../../../external/state/gameconfig/gameConfigStateAccess";
+import {Country, CountryColor} from "../../../../models/state/country";
 import {TerrainType} from "../../../../models/state/terrainType";
 import {Tile} from "../../../../models/state/tile";
-import {orDefault} from "../../../../shared/utils";
+import {getMax, orDefault} from "../../../../shared/utils";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 
 export namespace TileVertexBuilder {
 
 
-    export function vertexData(tile: Tile): number[][] {
+    export function vertexData(tile: Tile, countries: Country[]): number[][] {
         const vertexPositions = buildVertexPositions(tile);
         const tilePositions = buildTilePositions(tile);
         const terrainData = buildTerrainData(tile);
-        const colors = buildOverlayColors(tile);
+        const colors = buildOverlayColors(tile, countries);
         const cornerData = buildCornerData();
         const borderData = buildBorderData(tile);
 
@@ -100,8 +101,8 @@ export namespace TileVertexBuilder {
     /**
      * @return the primary overlay-color (rgba) for each vertex
      */
-    function buildOverlayColors(tile: Tile): ([number, number, number, number])[] {
-        const color: [number, number, number, number] = tileOwnerColor(tile);
+    function buildOverlayColors(tile: Tile, countries: Country[]): ([number, number, number, number])[] {
+        const color: [number, number, number, number] = tileOwnerColor(tile, countries);
         return Array(13).fill(color);
     }
 
@@ -196,18 +197,29 @@ export namespace TileVertexBuilder {
         return -1;
     }
 
-    function tileOwnerColor(tile: Tile): [number, number, number, number] {
+    function tileOwnerColor(tile: Tile, countries: Country[]): [number, number, number, number] {
         if (tile.owner) {
-            if (tile.owner.countryColor === CountryColor.RED) return [1, 0, 0, 1];
-            if (tile.owner.countryColor === CountryColor.GREEN) return [0, 1, 0, 1];
-            if (tile.owner.countryColor === CountryColor.BLUE) return [0, 0, 1, 1];
-            if (tile.owner.countryColor === CountryColor.CYAN) return [0, 1, 1, 1];
-            if (tile.owner.countryColor === CountryColor.MAGENTA) return [1, 0, 1, 1];
-            if (tile.owner.countryColor === CountryColor.YELLOW) return [1, 1, 0, 1];
-            return [1, 1, 1, 1];
+            return countryColor(tile.owner.countryColor, 1);
         } else {
+            const influenceThreshold = GAME_CONFIG.getGameConfig().cityTileMaxForeignInfluence;
+            const maxInfluenceCountry = getMax(tile.influences, influence => influence.value);
+            const nextMaxInfluenceCountry = getMax(tile.influences, influence => influence.countryId === maxInfluenceCountry?.countryId ? -1 : influence.value);
+            const nextMaxInfluenceValue = nextMaxInfluenceCountry ? nextMaxInfluenceCountry.value : -1;
+            if (maxInfluenceCountry && maxInfluenceCountry.value > influenceThreshold && maxInfluenceCountry.value > nextMaxInfluenceValue) {
+                return countryColor(countries.find(c => c.countryId === maxInfluenceCountry.countryId)?.color, 0.3);
+            }
             return [0, 0, 0, 0];
         }
+    }
+
+    function countryColor(color: CountryColor | undefined, strength: number): [number, number, number, number] {
+        if (color === CountryColor.RED) return [1, 0, 0, strength];
+        if (color === CountryColor.GREEN) return [0, 1, 0, strength];
+        if (color === CountryColor.BLUE) return [0, 0, 1, strength];
+        if (color === CountryColor.CYAN) return [0, 1, 1, strength];
+        if (color === CountryColor.MAGENTA) return [1, 0, 1, strength];
+        if (color === CountryColor.YELLOW) return [1, 1, 0, strength];
+        return [1, 1, 1, strength];
     }
 
 }
