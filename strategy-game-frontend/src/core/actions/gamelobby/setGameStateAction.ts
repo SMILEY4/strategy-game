@@ -9,6 +9,7 @@ import {Marker} from "../../../models/state/marker";
 import {Province} from "../../../models/state/Province";
 import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
+import {BordersCalculateAction} from "../border/bordersCalculateAction";
 
 /**
  * Set the world/game state
@@ -17,22 +18,27 @@ export class SetGameStateAction {
 
     private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly gameStateAccess: GameStateAccess;
+    private readonly calculateBordersAction: BordersCalculateAction;
 
-    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
+    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess, calculateBordersAction: BordersCalculateAction) {
         this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
+        this.calculateBordersAction = calculateBordersAction;
     }
 
     perform(game: MsgGameState): void {
         console.log("set game state");
         const countryColors = this.generateCountryColors(game);
-        // todo/idea: provide state-action that sets all "fields" with single operation -> reduces state modifications
-        this.gameStateAccess.setCountries(this.getCountries(game, countryColors));
+        const countries = this.getCountries(game, countryColors);
+        const tiles = this.getTiles(game, countryColors);
+        this.calculateBordersAction.perform(tiles);
+        this.gameStateAccess.setCountries(countries);
         this.gameStateAccess.setProvinces(this.getProvinces(game));
-        this.gameStateAccess.setTiles(this.getTiles(game, countryColors));
+        this.gameStateAccess.setTiles(tiles);
         this.gameStateAccess.setMarkers(this.getMarkers(game));
         this.gameStateAccess.setCities(this.getCities(game));
         this.gameStateAccess.setCurrentTurn(game.turn);
+        this.localGameStateAccess.clearCommands();
         this.localGameStateAccess.setCurrentState(GameState.PLAYING);
     }
 
@@ -87,7 +93,8 @@ export class SetGameStateAction {
                 countryColor: (colors.find(color => color[0] === tile.owner?.countryId)!!)[1] as CountryColor,
                 provinceId: tile.owner?.provinceId,
                 cityId: tile.owner.cityId,
-            } : null
+            } : null,
+            borderData: []
         }));
     }
 

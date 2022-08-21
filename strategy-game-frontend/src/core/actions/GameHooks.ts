@@ -47,7 +47,7 @@ export namespace GameHooks {
             }
             // country has the most influence on tile
             const countryInfluence = orDefault(tile.influences.find(i => i.countryId === countryId)?.value, 0.0);
-            return countryInfluence > maxForeignInfluence;
+            return countryInfluence >= maxForeignInfluence;
         }
 
         function validateTileCity(tile: Tile, cities: City[]): boolean {

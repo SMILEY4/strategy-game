@@ -1,3 +1,4 @@
+import {generateId} from "../../../shared/utils";
 import {UiFrameData} from "./uiStore";
 
 export namespace UiFrames {
@@ -49,7 +50,7 @@ export namespace UiFrames {
             bringToFront(frame.frameId);
             return frame.frameId;
         } else {
-            const frameId = crypto.randomUUID();
+            const frameId = generateId();
             const positioning = calculateLayout(layout);
             addFrame({
                 frameId: frameId,

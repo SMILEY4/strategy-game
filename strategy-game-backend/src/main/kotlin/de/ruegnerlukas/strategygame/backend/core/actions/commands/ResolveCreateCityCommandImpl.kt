@@ -125,7 +125,7 @@ class ResolveCreateCityCommandImpl(
 		}
 		// country has the most influence on tile
 		val countryInfluence = target.influences.find { it.countryId == country.key }?.totalValue ?: 0.0
-		if (countryInfluence > maxForeignInfluence) {
+		if (countryInfluence >= maxForeignInfluence) {
 			return emptyList()
 		}
 		return listOf("not enough influence over tile")

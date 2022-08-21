@@ -3,10 +3,12 @@ import {CameraState} from "../../../models/state/cameraState";
 import {Command} from "../../../models/state/command";
 import {GameState} from "../../../models/state/gameState";
 import {TilePosition} from "../../../models/state/tilePosition";
+import {generateId} from "../../../shared/utils";
 
 export namespace LocalGameStore {
 
     interface StateValues {
+        revisionId: string,
         currentState: GameState,
         commands: Command[],
         camera: CameraState,
@@ -15,6 +17,7 @@ export namespace LocalGameStore {
     }
 
     const initialStateValues: StateValues = {
+        revisionId: generateId(),
         currentState: GameState.OUT_OF_GAME,
         commands: [],
         camera: {
@@ -39,20 +42,23 @@ export namespace LocalGameStore {
     function stateActions(set: SetState<State>): StateActions {
         return {
             setCurrentState: (state: GameState) => set(() => ({
-                currentState: state
+                currentState: state,
+                revisionId: generateId()
             })),
             addCommand: (command: Command) => set(prev => ({
                 commands: [...prev.commands, command],
+                revisionId: generateId()
             })),
             clearCommands: () => set(() => ({
-                commands: []
+                commands: [],
+                revisionId: generateId()
             })),
             setCameraPosition: (x: number, y: number) => set(prev => ({
                 camera: {
                     ...prev.camera,
                     x: x,
                     y: y,
-                }
+                },
             })),
             setCameraZoom: (zoom: number) => set(prev => ({
                 camera: {
@@ -61,10 +67,10 @@ export namespace LocalGameStore {
                 }
             })),
             setTileMouseOver: (pos: TilePosition | null) => set(() => ({
-                tileMouseOver: pos
+                tileMouseOver: pos,
             })),
             setTileSelected: (pos: TilePosition | null) => set(() => ({
-                tileSelected: pos
+                tileSelected: pos,
             })),
         };
     }

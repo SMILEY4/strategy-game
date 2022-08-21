@@ -20,5 +20,9 @@ export interface Tile {
         countryColor: CountryColor,
         provinceId: string,
         cityId: string
-    } | null
+    } | null,
+    borderData: ({
+        type: "country" | "province"
+        directions: boolean[] // right, bottom-right, bottom-left, ..., top right
+    })[]
 }

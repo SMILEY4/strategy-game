@@ -1,3 +1,4 @@
+import {generateId} from "../../../shared/utils";
 import {UiFrames} from "./uiFrames";
 import {UiStore} from "./uiStore";
 
@@ -63,7 +64,7 @@ export namespace UiStateHooks {
         return () => {
             update(frameId, frame => ({
                 ...frame,
-                menuId: crypto.randomUUID(),
+                menuId: generateId(),
                 enablePin: false
             }));
         };

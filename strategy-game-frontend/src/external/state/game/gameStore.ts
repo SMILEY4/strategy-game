@@ -4,10 +4,12 @@ import {Country} from "../../../models/state/country";
 import {Marker} from "../../../models/state/marker";
 import {Province} from "../../../models/state/Province";
 import {Tile} from "../../../models/state/tile";
+import {generateId} from "../../../shared/utils";
 
 export namespace GameStore {
 
     interface StateValues {
+        revisionId: string,
         currentTurn: number
         countries: Country[],
         provinces: Province[],
@@ -17,6 +19,7 @@ export namespace GameStore {
     }
 
     const initialStateValues: StateValues = {
+        revisionId: generateId(),
         currentTurn: 0,
         countries: [],
         provinces: [],
@@ -38,21 +41,27 @@ export namespace GameStore {
         return {
             setCurrentTurn: (turn: number) => set(() => ({
                 currentTurn: turn,
+                revisionId: generateId()
             })),
             setCountries: (countries: Country[]) => set(() => ({
                 countries: countries,
+                revisionId: generateId()
             })),
             setProvinces: (provinces: Province[]) => set(() => ({
                 provinces: provinces,
+                revisionId: generateId()
             })),
             setTiles: (tiles: Tile[]) => set(() => ({
                 tiles: tiles,
+                revisionId: generateId()
             })),
             setMarkers: (markers: Marker[]) => set(() => ({
                 markers: markers,
+                revisionId: generateId()
             })),
             setCities: (cities: City[]) => set(() => ({
                 cities: cities,
+                revisionId: generateId()
             })),
         };
     }
