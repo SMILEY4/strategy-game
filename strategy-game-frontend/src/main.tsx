@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import {BordersCalculateAction} from "./core/actions/border/bordersCalculateAction";
 import {GameDisposeAction} from "./core/actions/game/gameDisposeAction";
 import {GameInitAction} from "./core/actions/game/gameInitAction";
 import {GameInputClickAction} from "./core/actions/game/gameInputClickAction";
@@ -54,11 +55,13 @@ export namespace AppConfig {
     const renderer: Renderer = new Renderer(canvasHandle, localGameStateAccess, gameStateAccess, userStateAccess);
     const tilePicker: TilePicker = new TilePicker(localGameStateAccess, gameStateAccess, canvasHandle);
 
-    export const gameSetState: SetGameStateAction = new SetGameStateAction(localGameStateAccess, gameStateAccess);
+    export const borderCalculateAction: BordersCalculateAction = new BordersCalculateAction();
+    export const gameSetState: SetGameStateAction = new SetGameStateAction(localGameStateAccess, gameStateAccess, borderCalculateAction);
 
     const httpClient = new HttpClient(API_BASE_URL);
     const wsClient = new WebsocketClient(API_WS_BASE_URL);
     const msgHandler = new MessageHandler(gameSetState);
+
 
     export const apiGame: GameApi = new GameApi(httpClient, userStateAccess);
     export const apiUser: UserApi = new UserApi(httpClient, userStateAccess);
@@ -81,7 +84,6 @@ export namespace AppConfig {
     export const gameInputClick: GameInputClickAction = new GameInputClickAction(tilePicker, localGameStateAccess, uiStateAccess);
     export const gameInputMouseMove: GameInputMouseMoveAction = new GameInputMouseMoveAction(tilePicker, localGameStateAccess);
     export const gameInputMouseScroll: GameInputMouseScrollAction = new GameInputMouseScrollAction(localGameStateAccess);
-
 
     let extContext: any = null;
 

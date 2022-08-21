@@ -2,7 +2,7 @@
 title: Changelog
 ---
 
-# Version 0.1.0
+# Version 0.1.0 - 17.05.2022
 
 - User Authentication/Management
   - Sign-Up
