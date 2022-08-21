@@ -32,42 +32,42 @@ export class TilemapRenderer {
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
                     offset: 0,
-                    stride: 14
+                    stride: 15
                 },
                 {
                     name: "in_tilePosition",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
                     offset: 2,
-                    stride: 14
+                    stride: 15
                 },
                 {
                     name: "in_terrainData",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 1,
                     offset: 4,
-                    stride: 14
+                    stride: 15
                 },
                 {
                     name: "in_overlayColor",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 4,
                     offset: 5,
-                    stride: 14
+                    stride: 15
                 },
                 {
                     name: "in_cornerData",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 3,
                     offset: 9,
-                    stride: 14
+                    stride: 15
                 },
                 {
                     name: "in_borderData",
                     type: ShaderAttributeType.FLOAT,
-                    amountComponents: 2,
+                    amountComponents: 3,
                     offset: 12,
-                    stride: 14
+                    stride: 15
                 }
             ],
             uniforms: [
