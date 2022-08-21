@@ -9,11 +9,24 @@ import SRC_SHADER_VERTEX from "./mapShader.vsh?raw";
 import {TileVertexBuilder} from "./TileVertexBuilder";
 
 
+interface TilemapCache {
+    revisionId: string,
+    tileData: ({
+        vertices: number[][],
+        indices: number[]
+    })[]
+}
+
 export class TilemapRenderer {
 
     private readonly gameCanvas: GameCanvasHandle;
     private batchRenderer: BatchRenderer = null as any;
     private shader: ShaderProgram = null as any;
+
+    private cache: TilemapCache = {
+        revisionId: "",
+        tileData: []
+    };
 
 
     constructor(gameCanvas: GameCanvasHandle) {
@@ -87,14 +100,23 @@ export class TilemapRenderer {
         });
     }
 
-    public render(camera: Camera, map: Tile[], tileMouseOver: TilePosition | null, tileSelected: TilePosition | null) {
+    public render(revisionId: string, camera: Camera, map: Tile[], tileMouseOver: TilePosition | null, tileSelected: TilePosition | null) {
+
+        if (this.cache.revisionId != revisionId) {
+            this.cache.revisionId = revisionId;
+            this.cache.tileData = [];
+            map.forEach(tile => {
+                this.cache.tileData.push({
+                    vertices: TileVertexBuilder.vertexData(tile),
+                    indices: TileVertexBuilder.indexData()
+                });
+            });
+        }
 
         this.batchRenderer.begin(camera);
-        map.forEach(tile => {
-            const vertices = TileVertexBuilder.vertexData(tile);
-            const indices = TileVertexBuilder.indexData();
-            this.batchRenderer.add(vertices, indices);
-        });
+        this.cache.tileData.forEach(tile => {
+            this.batchRenderer.add(tile.vertices, tile.indices)
+        })
         this.batchRenderer.end(this.shader, {
             attributes: [
                 "in_worldPosition",

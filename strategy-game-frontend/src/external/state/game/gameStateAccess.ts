@@ -8,6 +8,10 @@ import {GameStore} from "./gameStore";
 
 export class GameStateAccess {
 
+    getStateRevision(): string {
+        return GameStore.useState.getState().revisionId
+    }
+
     setCurrentTurn(turn: number): void {
         GameStore.useState.getState().setCurrentTurn(turn);
     }

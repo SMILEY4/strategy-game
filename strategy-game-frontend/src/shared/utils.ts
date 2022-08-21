@@ -5,3 +5,7 @@ export function orDefault<T>(value: T | null | undefined, defaultValue: T): T {
         return value;
     }
 }
+
+export function generateId(): string {
+    return crypto.randomUUID()
+}
