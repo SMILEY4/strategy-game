@@ -30,22 +30,35 @@ fun Route.gameRoutes(
     authenticate {
         route("game") {
             post("create", {
-                description = "Create a new game. Other players can join this game via the returned game-id"
+                description = "Create and join a new game. Other players can join this game via the returned game-id"
                 response {
-                    HttpStatusCode.OK to { description = "Successfully created a new game" }
+                    HttpStatusCode.OK to {
+                        description = "Successfully created a new game"
+                        body(String::class) {
+                            description = "the id of the created game"
+                        }
+                    }
+                    HttpStatusCode.Conflict to {
+                        description = "Error during creation of new game."
+                        body(ApiResponse::class) {
+                            example("GameNotFoundError", ApiResponse.failure(GameJoinAction.GameNotFoundError)) {
+                                description = "Game could not be found when trying to join it."
+                            }
+                            example("UserAlreadyPlayerError", ApiResponse.failure(GameJoinAction.UserAlreadyPlayerError)) {
+                                description = "The user has already joined the game."
+                            }
+                        }
+                    }
                 }
             }) {
                 withLoggingContext(traceId()) {
                     val userId = getUserIdOrThrow(call)
                     val gameId = createLobby.perform(WorldSettings.default())
-                    val joinResult = joinLobby.perform(userId, gameId)
-                    when (joinResult) {
-                        is Either.Right -> {
-                            call.respond(HttpStatusCode.OK, gameId)
-                        }
+                    when (val joinResult = joinLobby.perform(userId, gameId)) {
+                        is Either.Right -> ApiResponse.respondSuccess(call, gameId)
                         is Either.Left -> when (joinResult.value) {
-                            GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, joinResult.value)
-                            GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, joinResult.value)
+                            GameJoinAction.GameNotFoundError -> ApiResponse.respondFailure(call, joinResult.value)
+                            GameJoinAction.UserAlreadyPlayerError -> ApiResponse.respondFailure(call, joinResult.value)
                         }
                     }
                 }
@@ -58,45 +71,61 @@ fun Route.gameRoutes(
                     }
                 }
                 response {
-                    HttpStatusCode.OK to { description = "Successfully joined the game" }
-                    HttpStatusCode.NotFound to { description = "The game with the given id was not found" }
+                    HttpStatusCode.OK to {
+                        description = "Successfully joined the game"
+                    }
+                    HttpStatusCode.Conflict to {
+                        description = "Error when joining the game."
+                        body(ApiResponse::class) {
+                            example("GameNotFoundError", ApiResponse.failure(GameJoinAction.GameNotFoundError)) {
+                                description = "game with given id could not be found."
+                            }
+                            example("UserAlreadyPlayerError", ApiResponse.failure(GameJoinAction.UserAlreadyPlayerError)) {
+                                description = "The user has already joined the game."
+                            }
+                        }
+                    }
                 }
             }) {
                 withLoggingContext(traceId()) {
-                    val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)
-                    when (result) {
-                        is Either.Right -> {
-                            call.respond(HttpStatusCode.OK, Unit)
-                        }
+                    when (val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)) {
+                        is Either.Right -> ApiResponse.respondSuccess(call)
                         is Either.Left -> when (result.value) {
-                            GameJoinAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
-                            GameJoinAction.UserAlreadyPlayerError -> call.respond(HttpStatusCode.OK, result.value)
+                            GameJoinAction.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
+                            GameJoinAction.UserAlreadyPlayerError -> ApiResponse.respondFailure(call, result.value)
                         }
                     }
                 }
             }
             get("list", {
-                description = "List all games with the user as a participant.."
-                response {
-                    HttpStatusCode.OK to { description = "Request successful" }
-                }
-            }) {
-                withLoggingContext(traceId()) {
-                    val gameIds = listLobbies.perform(getUserIdOrThrow(call))
-                    call.respond(HttpStatusCode.OK, gameIds)
-                }
-            }
-            get("config", {
-                description = "Fetch the configuration and values for games"
+                description = "List all games with the user as a participant."
                 response {
                     HttpStatusCode.OK to {
-                        description = "Request successful"
-                        body(GameConfig::class) {}
+                        description = "Successfully listed all games of the user"
+                        body(Array<String>::class) {
+                            description = "the list of ids of games the user has joined."
+                        }
                     }
                 }
             }) {
                 withLoggingContext(traceId()) {
-                    call.respond(HttpStatusCode.OK, gameConfig)
+                    val gameIds = listLobbies.perform(getUserIdOrThrow(call))
+                    ApiResponse.respondSuccess(call, gameIds)
+                }
+            }
+            get("config", {
+                description = "Fetch the configuration and values for games."
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Request for config was successful."
+                        body(GameConfig::class) {
+                            description = "the configuration and values for all games."
+                        }
+                    }
+                }
+            }) {
+                withLoggingContext(traceId()) {
+                    ApiResponse.respondSuccess(call, gameConfig)
                 }
             }
         }

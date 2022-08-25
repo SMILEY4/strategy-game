@@ -7,10 +7,16 @@ import arrow.core.Either
  */
 interface GameJoinAction {
 
-	sealed class GameJoinActionErrors
-	object UserAlreadyPlayerError: GameJoinActionErrors()
-	object GameNotFoundError: GameJoinActionErrors()
+    sealed class GameJoinActionErrors
 
-	suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit>
+    object UserAlreadyPlayerError : GameJoinActionErrors() {
+        override fun toString(): String = this.javaClass.simpleName
+    }
+
+    object GameNotFoundError : GameJoinActionErrors() {
+        override fun toString(): String = this.javaClass.simpleName
+    }
+
+    suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit>
 
 }

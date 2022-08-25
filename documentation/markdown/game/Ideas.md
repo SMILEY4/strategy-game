@@ -577,3 +577,48 @@ When you are in a war with another faction every military unit just claims  the 
 There are many more  mechanical aspects to this. The game is more complex than it might look  at first sight and the upcoming successor is supposed to top that even.  Have a look, if you have questions, ask me.
 
 /edit: Oh and for the fun of fortification/strategic choke points etc. there  are of course also natural borders. Mountains can only be crossed by  units that have the training "mountaineers" which as far as I know is  pretty late game for most factions. There are also rivers which of  course may give your population more fertile lands thus more food but  cannot be crossed by any unit instead one of your workers build a bridge on a tile first. I think there is also some training for military to  cross rivers without a bridge but for the most part of the game a river  without a bridge is a natural border.
+
+
+
+
+
+# Magic Progression
+
+- find tomes/books/scrolls/artifacts in random location around the map
+- each artifact is basis for a new magic "techtree"
+- player can decide to unlock magic
+  - no scout-units -> if in "sphere of influence" -> triggers event or can be selected and researched later
+- adopting a specific magic reduces progress in other areas / other magic techtrees -> players without access to magic can keep up via normal tech
+
+
+
+# Starting a War
+
+**Attacker**
+
+1. get a casus beli
+2. start preparation phase of war campaign with selected caus beli
+   - takes x turns
+   - used to raise armies, setup logicstics, find allies, make treaties
+   - other countries can find out details about campaign with spies
+
+3. end of preparation phase: decision
+   - start war -> official declaration of war
+   - cancel war -> nothing happens, preparation for nothing, only already spent resources lost
+
+Effects:
+
+- more realistic
+- planning of war more important than actual war
+- more possibilities for interaction
+
+**Defender**
+
+Same exact process as attacker - casus beli = "defend against"
+
+What if defender does not find out about pending war ? (suprised by declaration of war)
+
+- player already failed at first step => war does not start with declaration !
+
+- has to start preparation later
+- has to rely on castles/fortifications/standing armies until preparation is done
