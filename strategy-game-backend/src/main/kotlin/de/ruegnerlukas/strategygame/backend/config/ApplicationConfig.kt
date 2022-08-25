@@ -20,6 +20,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionIm
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
@@ -202,7 +203,14 @@ fun Application.module() {
         }
     }
     install(SwaggerUI) {
-        automaticUnauthorizedResponses = true
+        defaultUnauthorizedResponse {
+            description = "Authentication failed"
+            body(ApiResponse::class) {
+                example("Unauthorized", ApiResponse.authenticationFailed()) {
+                    description = "The provided token is invalid."
+                }
+            }
+        }
         defaultSecuritySchemeName = "Auth"
         automaticTagGenerator = { url -> url.getOrNull(1) }
         swagger {

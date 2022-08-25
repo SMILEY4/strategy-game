@@ -11,6 +11,7 @@ val versionKotlinTest: String by project
 val versionArrow: String by project
 val versionArangoDb: String by project
 val versionJacksonDataformatVelocypack: String by project
+val versionKtorSwaggerUi: String by project
 
 group = "de.ruegnerlukas"
 version = "0.2.0"
@@ -46,8 +47,7 @@ dependencies {
 	implementation("io.ktor:ktor-server-auth:$versionKtor")
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
 	implementation("io.ktor:ktor-server-status-pages:$versionKtor")
-
-	implementation("io.github.smiley4:ktor-swagger-ui:0.2.0")
+	implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
 	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
 	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")

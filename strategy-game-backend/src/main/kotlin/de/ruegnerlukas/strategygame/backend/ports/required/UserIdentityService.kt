@@ -11,76 +11,94 @@ import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {
 
-	sealed interface CreateUserError
-	sealed interface DeleteUserError
-	sealed interface AuthUserError
-	sealed interface RefreshAuthError
-	object UserAlreadyExistsError : CreateUserError
-	object InvalidEmailOrPasswordError : CreateUserError
-	object CodeDeliveryError : CreateUserError
-	object NotAuthorizedError : AuthUserError, RefreshAuthError, DeleteUserError
-	object UserNotConfirmedError : AuthUserError, RefreshAuthError
-	object UserNotFoundError : AuthUserError, RefreshAuthError
+    sealed interface CreateUserError
+    sealed interface DeleteUserError
+    sealed interface AuthUserError
+    sealed interface RefreshAuthError
 
-	companion object {
+    object UserAlreadyExistsError : CreateUserError {
+        override fun toString(): String = this.javaClass.simpleName
+    }
 
-		fun create(config: ConfigData): UserIdentityService {
-			return when (config.identityProvider) {
-				"cognito" -> AwsCognitoService.create(
-					poolId = Config.get().aws.cognito.poolId,
-					clientId = Config.get().aws.cognito.clientId,
-					accessKey = Config.get().aws.user.accessKey,
-					secretKey = Config.get().aws.user.secretAccess,
-					region = Config.get().aws.region
-				)
-				"dummy" -> DummyUserIdentityService()
-				else -> throw IllegalStateException("Identity provider must either be 'cognito' 'dummy': ${config.identityProvider}")
-			}
-		}
+    object InvalidEmailOrPasswordError : CreateUserError {
+        override fun toString(): String = this.javaClass.simpleName
+    }
 
-	}
+    object CodeDeliveryError : CreateUserError {
+        override fun toString(): String = this.javaClass.simpleName
+    }
 
+    object NotAuthorizedError : AuthUserError, RefreshAuthError, DeleteUserError {
+        override fun toString(): String = this.javaClass.simpleName
+    }
 
-	/**
-	 * Configure the ktor auth-plugin
-	 */
-	fun configureAuthentication(config: JWTAuthenticationProvider.Config)
+    object UserNotConfirmedError : AuthUserError, RefreshAuthError {
+        override fun toString(): String = this.javaClass.simpleName
+    }
 
+    object UserNotFoundError : AuthUserError, RefreshAuthError {
+        override fun toString(): String = this.javaClass.simpleName
+    }
 
-	/**
-	 * Extract the id of the user from the given token
-	 */
-	fun extractUserId(jwtToken: String): String
+    companion object {
 
+        fun create(config: ConfigData): UserIdentityService {
+            return when (config.identityProvider) {
+                "cognito" -> AwsCognitoService.create(
+                    poolId = Config.get().aws.cognito.poolId,
+                    clientId = Config.get().aws.cognito.clientId,
+                    accessKey = Config.get().aws.user.accessKey,
+                    secretKey = Config.get().aws.user.secretAccess,
+                    region = Config.get().aws.region
+                )
+                "dummy" -> DummyUserIdentityService()
+                else -> throw IllegalStateException("Identity provider must either be 'cognito' 'dummy': ${config.identityProvider}")
+            }
+        }
 
-	/**
-	 * Verify the validity of the given jwt (-> authenticates the user)
-	 */
-	fun verifyJwtToken(token: String): Boolean
-
-
-	/**
-	 * Create a new user identified by the given email and password
-	 */
-	fun createUser(email: String, password: String, username: String): Either<CreateUserError, Unit>
+    }
 
 
-	/**
-	 * Authenticate the given user.
-	 */
-	fun authenticate(email: String, password: String): Either<AuthUserError, ExtendedAuthData>
+    /**
+     * Configure the ktor auth-plugin
+     */
+    fun configureAuthentication(config: JWTAuthenticationProvider.Config)
 
 
-	/**
-	 * Refresh the authentication for a given user
-	 */
-	fun refreshAuthentication(refreshToken: String): Either<RefreshAuthError, AuthData>
+    /**
+     * Extract the id of the user from the given token
+     */
+    fun extractUserId(jwtToken: String): String
 
 
-	/**
-	 * Delete the user with the given email and password
-	 * @return whether the user has been deleted successfully
-	 */
-	suspend fun deleteUser(email: String, password: String): Either<DeleteUserError, Unit>
+    /**
+     * Verify the validity of the given jwt (-> authenticates the user)
+     */
+    fun verifyJwtToken(token: String): Boolean
+
+
+    /**
+     * Create a new user identified by the given email and password
+     */
+    fun createUser(email: String, password: String, username: String): Either<CreateUserError, Unit>
+
+
+    /**
+     * Authenticate the given user.
+     */
+    fun authenticate(email: String, password: String): Either<AuthUserError, ExtendedAuthData>
+
+
+    /**
+     * Refresh the authentication for a given user
+     */
+    fun refreshAuthentication(refreshToken: String): Either<RefreshAuthError, AuthData>
+
+
+    /**
+     * Delete the user with the given email and password
+     * @return whether the user has been deleted successfully
+     */
+    suspend fun deleteUser(email: String, password: String): Either<DeleteUserError, Unit>
 
 }

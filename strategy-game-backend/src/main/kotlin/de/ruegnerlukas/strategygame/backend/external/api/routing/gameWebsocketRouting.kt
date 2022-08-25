@@ -13,9 +13,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConne
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.traceId
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import io.ktor.server.websocket.webSocket
@@ -49,9 +47,9 @@ fun Route.gameWebsocketRoutes(
                                 /*do nothing*/
                             }
                             is Either.Left -> when (result.value) {
-                                GameRequestConnectionAction.GameNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
-                                GameRequestConnectionAction.NotParticipantError -> call.respond(HttpStatusCode.Conflict, result.value)
-                                GameRequestConnectionAction.AlreadyConnectedError -> call.respond(HttpStatusCode.Conflict, result.value)
+                                GameRequestConnectionAction.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
+                                GameRequestConnectionAction.NotParticipantError -> ApiResponse.respondFailure(call, result.value)
+                                GameRequestConnectionAction.AlreadyConnectedError -> ApiResponse.respondFailure(call, result.value)
                             }
                         }
                     }

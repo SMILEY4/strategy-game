@@ -5,12 +5,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.CodeDeliveryError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.InvalidEmailOrPasswordError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.NotAuthorizedError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserAlreadyExistsError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotConfirmedError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotFoundError
 import de.ruegnerlukas.strategygame.backend.shared.traceId
 import io.github.smiley4.ktorswaggerui.documentation.delete
 import io.github.smiley4.ktorswaggerui.documentation.post
@@ -18,7 +12,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import mu.withLoggingContext
@@ -35,28 +28,36 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                 body(CreateUserData::class)
             }
             response {
-                HttpStatusCode.OK to { description = "Successfully created user" }
-                HttpStatusCode.Conflict to { description = "Could not deliver code to provided email" }
-                HttpStatusCode.Conflict to { description = "Email or password invalid" }
-                HttpStatusCode.Conflict to { description = "The user with the given email already exists" }
+                HttpStatusCode.OK to {
+                    description = "Successfully accepted the signup-request."
+                }
+                HttpStatusCode.Conflict to {
+                    description = "Error during signup."
+                    body(ApiResponse::class) {
+                        example("CodeDeliveryError", ApiResponse.failure(UserIdentityService.CodeDeliveryError)) {
+                            description = "Verification code could not be delivered to provided email."
+                        }
+                        example("InvalidEmailOrPasswordError", ApiResponse.failure(UserIdentityService.InvalidEmailOrPasswordError)) {
+                            description = "Provided email or password is invalid."
+                        }
+                        example("UserAlreadyExistsError", ApiResponse.failure(UserIdentityService.UserAlreadyExistsError)) {
+                            description = "User with the given email already exists."
+                        }
+                    }
+                }
             }
         }) {
             withLoggingContext(traceId()) {
                 call.receive<CreateUserData>().let { requestData ->
-                    val result = userIdentityService.createUser(requestData.email, requestData.password, requestData.username)
-                    when (result) {
-                        is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
-                        is Either.Left -> when (result.value) {
-                            CodeDeliveryError -> call.respond(HttpStatusCode.Conflict, result.value)
-                            InvalidEmailOrPasswordError -> call.respond(HttpStatusCode.Conflict, result.value)
-                            UserAlreadyExistsError -> call.respond(HttpStatusCode.Conflict, result.value)
-                        }
+                    when (val result = userIdentityService.createUser(requestData.email, requestData.password, requestData.username)) {
+                        is Either.Right -> ApiResponse.respondSuccess(call)
+                        is Either.Left -> ApiResponse.respondFailure(call, result.value)
                     }
                 }
             }
         }
         post("login", {
-            description = "Log-in as an existing user"
+            description = "Log-in as an existing user, i.e. request a new authentication token."
             request {
                 body(LoginData::class)
             }
@@ -65,20 +66,35 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                     description = "Authentication successful"
                     body(AuthData::class)
                 }
-                HttpStatusCode.Unauthorized to { description = "Authentication failed" }
-                HttpStatusCode.Conflict to { description = "The user has not confirmed the code" }
-                HttpStatusCode.Conflict to { description = "The user does not exist" }
+                HttpStatusCode.Unauthorized to {
+                    description = "Authentication failed"
+                    body(ApiResponse::class) {
+                        example("Unauthorized", ApiResponse.authenticationFailed()) {
+                            description = "The provided email or password is invalid."
+                        }
+                    }
+                }
+                HttpStatusCode.Conflict to {
+                    description = "Error during authentication."
+                    body(ApiResponse::class) {
+                        example("UserNotConfirmedError", ApiResponse.failure(UserIdentityService.UserNotConfirmedError)) {
+                            description = " The user has not confirmed the code"
+                        }
+                        example("UserNotFoundError", ApiResponse.failure(UserIdentityService.UserNotFoundError)) {
+                            description = "The user does not exist."
+                        }
+                    }
+                }
             }
         }) {
             withLoggingContext(traceId()) {
                 call.receive<LoginData>().let { requestData ->
-                    val result = userIdentityService.authenticate(requestData.email, requestData.password)
-                    when (result) {
-                        is Either.Right -> call.respond(HttpStatusCode.OK, AuthData(result.value))
+                    when (val result = userIdentityService.authenticate(requestData.email, requestData.password)) {
+                        is Either.Right -> ApiResponse.respondSuccess(call, AuthData(result.value))
                         is Either.Left -> when (result.value) {
-                            NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
-                            UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, result.value)
-                            UserNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+                            UserIdentityService.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
+                            UserIdentityService.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
+                            UserIdentityService.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
                         }
                     }
                 }
@@ -94,20 +110,35 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                     description = "Authentication successful"
                     body(AuthData::class)
                 }
-                HttpStatusCode.Unauthorized to { description = "Authentication failed (refresh token invalid)" }
-                HttpStatusCode.NotFound to { description = "User does not exist" }
-                HttpStatusCode.Conflict to { description = "The user is not confirmed" }
+                HttpStatusCode.Unauthorized to {
+                    description = "Authentication failed"
+                    body(ApiResponse::class) {
+                        example("Unauthorized", ApiResponse.authenticationFailed()) {
+                            description = "The provided refresh token is invalid."
+                        }
+                    }
+                }
+                HttpStatusCode.Conflict to {
+                    description = "Error during authentication."
+                    body(ApiResponse::class) {
+                        example("UserNotConfirmedError", ApiResponse.failure(UserIdentityService.UserNotConfirmedError)) {
+                            description = " The user has not confirmed the code"
+                        }
+                        example("UserNotFoundError", ApiResponse.failure(UserIdentityService.UserNotFoundError)) {
+                            description = "The user does not exist."
+                        }
+                    }
+                }
             }
         }) {
             withLoggingContext(traceId()) {
                 call.receive<String>().let { requestData ->
-                    val result = userIdentityService.refreshAuthentication(requestData)
-                    when (result) {
-                        is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
+                    when (val result = userIdentityService.refreshAuthentication(requestData)) {
+                        is Either.Right -> ApiResponse.respondSuccess(call, result.value)
                         is Either.Left -> when (result.value) {
-                            NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
-                            UserNotConfirmedError -> call.respond(HttpStatusCode.Conflict, result.value)
-                            UserNotFoundError -> call.respond(HttpStatusCode.NotFound, result.value)
+                            UserIdentityService.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
+                            UserIdentityService.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
+                            UserIdentityService.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
                         }
                     }
                 }
@@ -120,17 +151,25 @@ fun Route.userRoutes(userIdentityService: UserIdentityService) {
                     body(LoginData::class)
                 }
                 response {
-                    HttpStatusCode.OK to { description = "User was deleted" }
-                    HttpStatusCode.Unauthorized to { description = "Authentication failed (token, email or password invalid)" }
+                    HttpStatusCode.OK to {
+                        description = "User was successfully deleted"
+                    }
+                    HttpStatusCode.Unauthorized to {
+                        description = "Authentication failed"
+                        body(ApiResponse::class) {
+                            example("Unauthorized", ApiResponse.authenticationFailed()) {
+                                description = "The provided email and password is invalid."
+                            }
+                        }
+                    }
                 }
             }) {
                 withLoggingContext(traceId()) {
                     call.receive<LoginData>().let { requestData ->
-                        val result = userIdentityService.deleteUser(requestData.email, requestData.password)
-                        when (result) {
-                            is Either.Right -> call.respond(HttpStatusCode.OK, result.value)
+                        when (val result = userIdentityService.deleteUser(requestData.email, requestData.password)) {
+                            is Either.Right -> ApiResponse.respondSuccess(call)
                             is Either.Left -> when (result.value) {
-                                NotAuthorizedError -> call.respond(HttpStatusCode.Unauthorized, result.value)
+                                UserIdentityService.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
                             }
                         }
                     }
