@@ -1,6 +1,5 @@
-import {Country} from "../../../../models/state/country";
-import {Tile} from "../../../../models/state/tile";
-import {TilePosition} from "../../../../models/state/tilePosition";
+import {GameStore} from "../../../../external/state/game/gameStore";
+import {LocalGameStore} from "../../../../external/state/localgame/localGameStore";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
@@ -101,14 +100,14 @@ export class TilemapRenderer {
         });
     }
 
-    public render(revisionId: string, camera: Camera, map: Tile[], countries: Country[], tileMouseOver: TilePosition | null, tileSelected: TilePosition | null) {
+    public render(revisionId: string, camera: Camera, gameState: GameStore.StateValues, localGameState: LocalGameStore.StateValues) {
 
         if (this.cache.revisionId != revisionId) {
             this.cache.revisionId = revisionId;
             this.cache.tileData = [];
-            map.forEach(tile => {
+            gameState.tiles.forEach(tile => {
                 this.cache.tileData.push({
-                    vertices: TileVertexBuilder.vertexData(tile, countries),
+                    vertices: TileVertexBuilder.vertexData(tile, gameState.countries),
                     indices: TileVertexBuilder.indexData()
                 });
             });
@@ -128,8 +127,8 @@ export class TilemapRenderer {
                 "in_borderData",
             ],
             uniforms: {
-                "u_tileMouseOver": tileMouseOver ? [tileMouseOver.q, tileMouseOver.r] : [999999, 999999],
-                "u_tileSelected": tileSelected ? [tileSelected.q, tileSelected.r] : [999999, 999999],
+                "u_tileMouseOver": localGameState.tileMouseOver ? [localGameState.tileMouseOver.q, localGameState.tileMouseOver.r] : [999999, 999999],
+                "u_tileSelected": localGameState.tileSelected ? [localGameState.tileSelected.q, localGameState.tileSelected.r] : [999999, 999999],
             }
         });
     }

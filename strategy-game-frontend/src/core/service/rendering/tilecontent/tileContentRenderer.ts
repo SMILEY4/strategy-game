@@ -1,8 +1,8 @@
+import {GameStore} from "../../../../external/state/game/gameStore";
+import {LocalGameStore} from "../../../../external/state/localgame/localGameStore";
 import {UserStateAccess} from "../../../../external/state/user/userStateAccess";
-import {City} from "../../../../models/state/city";
-import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../../models/state/command";
+import {CommandCreateCity, CommandPlaceMarker} from "../../../../models/state/command";
 import {Country, CountryColor} from "../../../../models/state/country";
-import {Marker} from "../../../../models/state/marker";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {BatchRenderer} from "../utils/batchRenderer";
@@ -69,26 +69,26 @@ export class TileContentRenderer {
     }
 
 
-    public render(camera: Camera, countries: Country[], cities: City[], markers: Marker[], commands: Command[]) {
+    public render(camera: Camera, gameState: GameStore.StateValues, localGameState: LocalGameStore.StateValues) {
 
         const userId = this.userAccess.getUserId();
-        const userCountryId = countries.find(c => c.userId === userId)?.countryId
+        const userCountryId = gameState.countries.find(c => c.userId === userId)?.countryId;
 
         this.batchRenderer.begin(camera);
 
-        cities
-            .forEach(e => this.addCity(e.tile.q, e.tile.r, this.getColor(countries, e.countryId, false)));
-        commands
+        gameState.cities
+            .forEach(e => this.addCity(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false)));
+        localGameState.commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
-            .forEach(e => this.addCity(e.q, e.r, this.getColor(countries, (userCountryId ? userCountryId : "?"), true)));
+            .forEach(e => this.addCity(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true)));
 
-        markers
-            .forEach(e => this.addMarker(e.tile.q, e.tile.r, this.getColor(countries, e.countryId, false)));
-        commands
+        gameState.markers
+            .forEach(e => this.addMarker(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false)));
+        localGameState.commands
             .filter(e => e.commandType === "place-marker")
             .map(e => e as CommandPlaceMarker)
-            .forEach(e => this.addMarker(e.q, e.r, this.getColor(countries, (userCountryId ? userCountryId : "?"), true)));
+            .forEach(e => this.addMarker(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true)));
 
         this.texture.bind();
         this.batchRenderer.end(this.shader, {

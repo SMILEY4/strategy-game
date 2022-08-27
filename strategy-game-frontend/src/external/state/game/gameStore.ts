@@ -8,7 +8,7 @@ import {generateId} from "../../../shared/utils";
 
 export namespace GameStore {
 
-    interface StateValues {
+    export interface StateValues {
         revisionId: string,
         currentTurn: number
         countries: Country[],

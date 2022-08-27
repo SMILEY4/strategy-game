@@ -7,7 +7,7 @@ import {generateId} from "../../../shared/utils";
 
 export namespace LocalGameStore {
 
-    interface StateValues {
+    export interface StateValues {
         revisionId: string,
         currentState: GameState,
         commands: Command[],

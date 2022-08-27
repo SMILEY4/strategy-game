@@ -48,19 +48,13 @@ export class Renderer {
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         const camera = this.createCamera();
+        const gameState = this.gameStateAccess.getState();
+        const localGameState = this.localGameStateAccess.getState();
+        const combinedRevId = this.gameStateAccess.getStateRevision() + "_" + this.localGameStateAccess.getStateRevision();
 
-        const tiles = this.gameStateAccess.getTiles();
-        const tileMouseOver = this.localGameStateAccess.getMouseOverTile();
-        const tileSelected = this.localGameStateAccess.getSelectedTile();
-        const countries = this.gameStateAccess.getCountries();
-        const cities = this.gameStateAccess.getCities();
-        const markers = this.gameStateAccess.getMarkers();
-        const commands = this.localGameStateAccess.getCommands();
-
-        const revId = this.gameStateAccess.getStateRevision() + "_" + this.localGameStateAccess.getStateRevision();
-        this.tilemapRenderer.render(revId, camera, tiles, countries, tileMouseOver, tileSelected);
-        this.tileContentRenderer.render(camera, countries, cities, markers, commands,);
-        this.mapLabelRenderer.render(camera, countries, cities, commands);
+        this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
+        this.tileContentRenderer.render(camera, gameState, localGameState);
+        this.mapLabelRenderer.render(camera, gameState, localGameState);
     }
 
 

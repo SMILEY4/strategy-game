@@ -1,6 +1,6 @@
-import {City} from "../../../../models/state/city";
-import {Command, CommandCreateCity} from "../../../../models/state/command";
-import {Country} from "../../../../models/state/country";
+import {GameStore} from "../../../../external/state/game/gameStore";
+import {LocalGameStore} from "../../../../external/state/localgame/localGameStore";
+import {CommandCreateCity} from "../../../../models/state/command";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {BatchRenderer} from "../utils/batchRenderer";
@@ -58,12 +58,12 @@ export class MapLabelRenderer {
     }
 
 
-    public render(camera: Camera, countries: Country[], cities: City[], commands: Command[]) {
+    public render(camera: Camera, gameState: GameStore.StateValues, localGameState: LocalGameStore.StateValues) {
 
         const cityNames: string[] = [];
-        cities
+        gameState.cities
             .forEach(c => cityNames.push(c.name));
-        commands
+        localGameState.commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
             .forEach(e => cityNames.push(e.name + " (P)"));
@@ -87,9 +87,9 @@ export class MapLabelRenderer {
 
         this.batchRenderer.begin(camera);
 
-        cities
+        gameState.cities
             .forEach(e => this.addCityLabel(camera, e.tile.q, e.tile.r, this.textRenderer.getRegion(e.name)));
-        commands
+        localGameState.commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
             .forEach(e => this.addCityLabel(camera, e.q, e.r, this.textRenderer.getRegion(e.name + " (P)")));
