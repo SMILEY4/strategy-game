@@ -124,7 +124,7 @@ export class ShaderProgram {
 				if (this.uniformLocations.has(uniform.name)) {
 					const value = uniformValuesMap.has(uniform.name) ? uniformValuesMap.get(uniform.name)! : uniform.defaultValue;
 					if (value !== null && value !== undefined) {
-						this.setUniformValue(uniform, value);
+						this.setUniformValue(uniform, typeof value === "number" ? [value] : value);
 					}
 				}
 			});

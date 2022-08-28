@@ -20,10 +20,12 @@ class Texture {
         }
     }
 
-	/**
+
+    /**
 	 * Binds this texture
 	 */
-    public bind() {
+    public bind(textureUnit: number) {
+        this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit)
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.handle);
     }
 
@@ -31,11 +33,10 @@ class Texture {
     public static createFromPath(gl: WebGL2RenderingContext, path: string, debugName?: string): Texture {
         // create new texture handle and texture
         const handle = gl.createTexture();
-        const texture = new Texture(gl, handle, debugName);
-        // start using this texture
+        // start using the texture
         gl.bindTexture(gl.TEXTURE_2D, handle);
         // fill the texture with a temporary solid color, until the real image is loaded
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 255, 255]));
         // start loading the real image
         const image = new Image();
         image.src = path;
@@ -44,7 +45,7 @@ class Texture {
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
             gl.generateMipmap(gl.TEXTURE_2D);
         });
-        return texture;
+        return new Texture(gl, handle, debugName);
     }
 
     public static createFromData(gl: WebGL2RenderingContext, data: Uint8Array, width: number, height: number, debugName?: string): Texture {
