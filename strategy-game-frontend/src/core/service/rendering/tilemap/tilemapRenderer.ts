@@ -44,43 +44,31 @@ export class TilemapRenderer {
                     name: "in_worldPosition",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
-                    offset: 0,
-                    stride: 15
                 },
                 {
                     name: "in_tilePosition",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
-                    offset: 2,
-                    stride: 15
                 },
                 {
                     name: "in_terrainData",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 1,
-                    offset: 4,
-                    stride: 15
                 },
                 {
                     name: "in_overlayColor",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 4,
-                    offset: 5,
-                    stride: 15
                 },
                 {
                     name: "in_cornerData",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 3,
-                    offset: 9,
-                    stride: 15
                 },
                 {
                     name: "in_borderData",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 3,
-                    offset: 12,
-                    stride: 15
                 }
             ],
             uniforms: [
@@ -118,14 +106,6 @@ export class TilemapRenderer {
             this.batchRenderer.add(tile.vertices, tile.indices)
         })
         this.batchRenderer.end(this.shader, {
-            attributes: [
-                "in_worldPosition",
-                "in_tilePosition",
-                "in_terrainData",
-                "in_overlayColor",
-                "in_cornerData",
-                "in_borderData",
-            ],
             uniforms: {
                 "u_tileMouseOver": localGameState.tileMouseOver ? [localGameState.tileMouseOver.q, localGameState.tileMouseOver.r] : [999999, 999999],
                 "u_tileSelected": localGameState.tileSelected ? [localGameState.tileSelected.q, localGameState.tileSelected.r] : [999999, 999999],

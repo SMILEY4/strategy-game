@@ -1,6 +1,6 @@
 import {Camera} from "./camera";
 import {GLBuffer, GLBufferType, GLBufferUsage} from "./glBuffer";
-import {ShaderProgram} from "./shaderProgram";
+import {ShaderProgram, ShaderUniformValues} from "./shaderProgram";
 
 export interface BatchContext {
     camera: Camera,
@@ -51,7 +51,7 @@ export class BatchRenderer {
     }
 
 
-    public end(shader: ShaderProgram, shaderData: { attributes: string[], uniforms: object }) {
+    public end(shader: ShaderProgram, shaderData: { uniforms: ShaderUniformValues }) {
         if (!this.context) {
             throw new Error("No context found. Call 'begin' before rendering");
         }
@@ -119,8 +119,8 @@ export class BatchRenderer {
 
     private static getIndices(indices: number[] | undefined | null, amountVertices: number): number[] {
         return indices
-			? indices
-			: [...Array(amountVertices).keys()];
+            ? indices
+            : [...Array(amountVertices).keys()];
     }
 
 
@@ -148,21 +148,21 @@ export class BatchRenderer {
     }
 
 
-    protected static flushContext(gl: WebGL2RenderingContext, context: BatchContext, shader: ShaderProgram, shaderData: { attributes: string[], uniforms: object }) {
+    protected static flushContext(gl: WebGL2RenderingContext, context: BatchContext, shader: ShaderProgram, shaderData: { uniforms: ShaderUniformValues }) {
         context.batches.forEach(batch => BatchRenderer.flushBatch(gl, batch, context.camera, shader, shaderData));
     }
 
 
-    protected static flushBatch(gl: WebGL2RenderingContext, batch: Batch, camera: Camera, shader: ShaderProgram, shaderData: { attributes: string[], uniforms: object }) {
+    protected static flushBatch(gl: WebGL2RenderingContext, batch: Batch, camera: Camera, shader: ShaderProgram, shaderData: { uniforms: ShaderUniformValues }) {
         BatchRenderer.initializeVertexBuffer(gl, batch);
         BatchRenderer.initializeIndexBuffer(gl, batch);
         if (batch.buffers.indices && batch.buffers.vertices) {
             shader.use({
                 attributeBuffers: Object.fromEntries(
-                    shaderData.attributes.map(attrib => [attrib, batch.buffers.vertices])
+                    shader.getAttributes().map(attrib => [attrib, batch.buffers.vertices!!])
                 ),
                 uniformValues: {
-                    "u_viewProjection": camera.getViewProjectionMatrixOrThrow(),
+                    [BatchRenderer.UNIFORM_VIEW_PROJECTION_MATRIX]: camera.getViewProjectionMatrixOrThrow(),
                     ...shaderData.uniforms
                 }
             });

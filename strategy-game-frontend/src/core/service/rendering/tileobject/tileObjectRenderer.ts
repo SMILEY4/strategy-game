@@ -42,22 +42,16 @@ export class TileObjectRenderer {
                     name: "in_position", // x, y
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
-                    stride: 9,
-                    offset: 0,
                 },
                 {
                     name: "in_textureCoords", // textureId, u, v
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 3,
-                    stride: 9,
-                    offset: 2,
                 },
                 {
                     name: "in_color", // r, g, b, a
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 4,
-                    stride: 9,
-                    offset: 5,
                 }
             ],
             uniforms: [
@@ -115,7 +109,6 @@ export class TileObjectRenderer {
         this.textRenderer.getTexture()?.bind(1)
 
         this.batchRenderer.end(this.shader, {
-            attributes: ["in_position", "in_textureCoords", "in_color"],
             uniforms: {
                 "u_texture_sprites": 0,
                 "u_texture_labels": 1
