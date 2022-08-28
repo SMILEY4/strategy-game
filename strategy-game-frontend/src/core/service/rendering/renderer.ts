@@ -6,7 +6,6 @@ import {GameCanvasHandle} from "../gameCanvasHandle";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {TileObjectRenderer} from "./tileobject/tileObjectRenderer";
 import {Camera} from "./utils/camera";
-import {glErrorToString} from "./utils/webglErrors";
 
 export class Renderer {
 
@@ -35,7 +34,6 @@ export class Renderer {
 
     public render(): void {
         const gl = this.canvasHandle.getGL();
-        this.checkErrors(gl);
 
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 1);
@@ -50,14 +48,6 @@ export class Renderer {
 
         this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
         this.tileObjectRenderer.render(camera, gameState, localGameState);
-    }
-
-
-    private checkErrors(gl: WebGL2RenderingContext) {
-        const error = gl.getError();
-        if (error !== gl.NO_ERROR && error !== gl.CONTEXT_LOST_WEBGL) {
-            alert("gl error: " + glErrorToString(error));
-        }
     }
 
 

@@ -70,7 +70,7 @@ export class TileObjectRenderer {
             ]
         });
         this.textureSprites = Texture.createFromPath(this.gameCanvas.getGL(), "/resources.png");
-        this.batchRenderer = new BatchRenderer(this.gameCanvas.getGL());
+        this.batchRenderer = new BatchRenderer(this.gameCanvas.getGL(), 64000, false);
         this.textRenderer = new TextRenderer(this.gameCanvas.getGL());
     }
 
@@ -82,7 +82,7 @@ export class TileObjectRenderer {
 
         this.prepareLabelTexture(gameState.cities, localGameState.commands);
 
-        this.batchRenderer.begin(camera);
+        this.batchRenderer.begin();
 
         gameState.cities.forEach(e => {
             this.addCitySprite(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false));
@@ -108,13 +108,12 @@ export class TileObjectRenderer {
         this.textureSprites.bind(0)
         this.textRenderer.getTexture()?.bind(1)
 
-        this.batchRenderer.end(this.shader, {
+        this.batchRenderer.end(camera, this.shader, {
             uniforms: {
                 "u_texture_sprites": 0,
                 "u_texture_labels": 1
             }
         });
-
     }
 
 
@@ -199,7 +198,6 @@ export class TileObjectRenderer {
 
 
     public dispose() {
-        this.batchRenderer.dispose();
         this.shader.dispose();
         this.textureSprites.dispose();
     }

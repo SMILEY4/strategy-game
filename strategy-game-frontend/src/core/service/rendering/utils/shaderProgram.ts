@@ -1,5 +1,5 @@
 import {GLBuffer} from "./glBuffer";
-import {glErrorToString} from "./webglErrors";
+import {GLErrors} from "./webglErrors";
 
 
 export enum ShaderAttributeType {
@@ -290,7 +290,7 @@ export class ShaderProgram {
             return shader;
         } else {
             gl.deleteShader(shader);
-            throw new Error("Error during " + type + " shader creation: " + glErrorToString(gl.getError()) + " - " + gl.getShaderInfoLog(shader));
+            throw new Error("Error during " + type + " shader creation: " + GLErrors.glErrorToString(gl.getError()) + " - " + gl.getShaderInfoLog(shader));
         }
     }
 
@@ -311,7 +311,7 @@ export class ShaderProgram {
             return program;
         } else {
             gl.deleteProgram(program);
-            throw new Error("Error during shader program creation: " + glErrorToString(gl.getError()) + " - " + gl.getProgramInfoLog(program));
+            throw new Error("Error during shader program creation: " + GLErrors.glErrorToString(gl.getError()) + " - " + gl.getProgramInfoLog(program));
         }
     }
 
