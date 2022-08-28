@@ -32,12 +32,14 @@ export class SetGameStateAction {
         const countries = this.getCountries(game, countryColors);
         const tiles = this.getTiles(game, countryColors);
         this.calculateBordersAction.perform(tiles);
-        this.gameStateAccess.setCountries(countries);
-        this.gameStateAccess.setProvinces(this.getProvinces(game));
-        this.gameStateAccess.setTiles(tiles);
-        this.gameStateAccess.setMarkers(this.getMarkers(game));
-        this.gameStateAccess.setCities(this.getCities(game));
-        this.gameStateAccess.setCurrentTurn(game.turn);
+        this.gameStateAccess.setState(
+            game.turn,
+            tiles,
+            countries,
+            this.getProvinces(game),
+            this.getCities(game),
+            this.getMarkers(game)
+        );
         this.localGameStateAccess.clearCommands();
         this.localGameStateAccess.setCurrentState(GameState.PLAYING);
     }

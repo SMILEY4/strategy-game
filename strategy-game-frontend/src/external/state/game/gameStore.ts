@@ -29,38 +29,32 @@ export namespace GameStore {
     };
 
     interface StateActions {
-        setCurrentTurn: (turn: number) => void
-        setCountries: (countries: Country[]) => void
-        setProvinces: (provinces: Province[]) => void,
-        setTiles: (tiles: Tile[]) => void
-        setMarkers: (markers: Marker[]) => void
-        setCities: (cities: City[]) => void
+        setState: (
+            currentTurn: number,
+            tiles: Tile[],
+            countries: Country[],
+            provinces: Province[],
+            cities: City[],
+            markers: Marker[]
+        ) => void
     }
 
     function stateActions(set: SetState<State>): StateActions {
         return {
-            setCurrentTurn: (turn: number) => set(() => ({
-                currentTurn: turn,
-                revisionId: generateId()
-            })),
-            setCountries: (countries: Country[]) => set(() => ({
-                countries: countries,
-                revisionId: generateId()
-            })),
-            setProvinces: (provinces: Province[]) => set(() => ({
-                provinces: provinces,
-                revisionId: generateId()
-            })),
-            setTiles: (tiles: Tile[]) => set(() => ({
+            setState: (
+                currentTurn: number,
+                tiles: Tile[],
+                countries: Country[],
+                provinces: Province[],
+                cities: City[],
+                markers: Marker[]
+            ) => set(() => ({
+                currentTurn: currentTurn,
                 tiles: tiles,
-                revisionId: generateId()
-            })),
-            setMarkers: (markers: Marker[]) => set(() => ({
-                markers: markers,
-                revisionId: generateId()
-            })),
-            setCities: (cities: City[]) => set(() => ({
+                countries: countries,
+                provinces: provinces,
                 cities: cities,
+                markers: markers,
                 revisionId: generateId()
             })),
         };
