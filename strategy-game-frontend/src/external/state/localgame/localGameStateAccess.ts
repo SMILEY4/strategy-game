@@ -7,7 +7,11 @@ import {LocalGameStore} from "./localGameStore";
 export class LocalGameStateAccess {
 
     getStateRevision(): string {
-        return LocalGameStore.useState.getState().revisionId
+        return LocalGameStore.useState.getState().revisionId;
+    }
+
+    getState(): LocalGameStore.StateValues {
+        return LocalGameStore.useState.getState();
     }
 
     setCurrentState(state: GameState): void {

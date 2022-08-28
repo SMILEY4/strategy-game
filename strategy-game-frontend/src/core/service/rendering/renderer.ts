@@ -1,12 +1,11 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {UserStateAccess} from "../../../external/state/user/userStateAccess";
+import {CameraState} from "../../../models/state/cameraState";
 import {GameCanvasHandle} from "../gameCanvasHandle";
-import {MapLabelRenderer} from "./maplabels/mapLabelRenderer";
-import {TileContentRenderer} from "./tilecontent/tileContentRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
+import {TileObjectRenderer} from "./tileobject/tileObjectRenderer";
 import {Camera} from "./utils/camera";
-import {glErrorToString} from "./utils/webglErrors";
 
 export class Renderer {
 
@@ -16,30 +15,25 @@ export class Renderer {
     private readonly gameStateAccess: GameStateAccess;
 
     private readonly tilemapRenderer: TilemapRenderer;
-    private readonly tileContentRenderer: TileContentRenderer;
-
-    private readonly mapLabelRenderer: MapLabelRenderer;
+    private readonly tileObjectRenderer: TileObjectRenderer;
 
     constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess, userAccess: UserStateAccess) {
         this.canvasHandle = canvasHandle;
         this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle);
-        this.tileContentRenderer = new TileContentRenderer(canvasHandle, userAccess);
-        this.mapLabelRenderer = new MapLabelRenderer(canvasHandle);
+        this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, userAccess);
     }
 
 
     public initialize(): void {
         this.tilemapRenderer.initialize();
-        this.tileContentRenderer.initialize();
-        this.mapLabelRenderer.initialize();
+        this.tileObjectRenderer.initialize();
     }
 
 
     public render(): void {
         const gl = this.canvasHandle.getGL();
-        this.checkErrors(gl);
 
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 1);
@@ -47,33 +41,17 @@ export class Renderer {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        const camera = this.createCamera();
+        const gameState = this.gameStateAccess.getState();
+        const localGameState = this.localGameStateAccess.getState();
+        const combinedRevId = this.gameStateAccess.getStateRevision() + "_" + this.localGameStateAccess.getStateRevision();
+        const camera = this.createCamera(localGameState.camera);
 
-        const tiles = this.gameStateAccess.getTiles();
-        const tileMouseOver = this.localGameStateAccess.getMouseOverTile();
-        const tileSelected = this.localGameStateAccess.getSelectedTile();
-        const countries = this.gameStateAccess.getCountries();
-        const cities = this.gameStateAccess.getCities();
-        const markers = this.gameStateAccess.getMarkers();
-        const commands = this.localGameStateAccess.getCommands();
-
-        const revId = this.gameStateAccess.getStateRevision() + "_" + this.localGameStateAccess.getStateRevision();
-        this.tilemapRenderer.render(revId, camera, tiles, countries, tileMouseOver, tileSelected);
-        this.tileContentRenderer.render(camera, countries, cities, markers, commands,);
-        this.mapLabelRenderer.render(camera, countries, cities, commands);
+        this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
+        this.tileObjectRenderer.render(camera, gameState, localGameState);
     }
 
 
-    private checkErrors(gl: WebGL2RenderingContext) {
-        const error = gl.getError();
-        if (error !== gl.NO_ERROR && error !== gl.CONTEXT_LOST_WEBGL) {
-            alert("gl error: " + glErrorToString(error));
-        }
-    }
-
-
-    private createCamera(): Camera {
-        const camState = this.localGameStateAccess.getCamera();
+    private createCamera(camState: CameraState): Camera {
         const camera = new Camera();
         camera.setPosition(camState.x, camState.y);
         camera.setZoom(camState.zoom);
@@ -84,8 +62,7 @@ export class Renderer {
 
     public dispose(): void {
         this.tilemapRenderer.dispose();
-        this.tileContentRenderer.dispose();
-        this.mapLabelRenderer.dispose();
+        this.tileObjectRenderer.dispose();
     }
 
 }

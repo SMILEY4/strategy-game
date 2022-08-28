@@ -2,9 +2,9 @@
 
 uniform mat3 u_viewProjection;
 in vec2 in_position;
-in vec2 in_textureCoords;
+in vec3 in_textureCoords;
 in vec4 in_color;
-out vec2 v_textureCoords;
+out vec3 v_textureCoords;
 out vec4 v_color;
 
 void main() {
