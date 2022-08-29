@@ -24,4 +24,12 @@ title: Cities
 - province
   - either create a new province with this city
   - or add this city to an existing province
-    - province must have influence in the tile to be a valid choice 
+    - province must have influence in the tile to be a valid choice
+
+**Effects**
+
+- City generates fixed amount of money each turn
+- Optional: City creates new Province with city as capital
+- City adds influence to surrounding tiles
+- Border spreads based on influence
+

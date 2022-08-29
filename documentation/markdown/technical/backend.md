@@ -52,19 +52,19 @@ The created jar can be found in `./build/libs/strategy-game-backend-x.y-all.jar`
 
 **Kotlin**
 
-Programming language build on the JVM. [Link to documentation](https://kotlinlang.org/docs/home.html)
+Programming language build on the JVM. [Link](https://kotlinlang.org/docs/home.html)
 
 **Gradle**
 
-Build automation tool. Manages dependencies and build-tasks. [Link to documentation](https://docs.gradle.org/current/userguide/userguide.html)
+Build automation tool. Manages dependencies and build-tasks. [Link](https://docs.gradle.org/current/userguide/userguide.html)
 
 **Ktor**
 
-Framework for building web applications. [Link to documentation](https://ktor.io/docs/welcome.html)
+Framework for building web applications. [Link](https://ktor.io/docs/welcome.html)
 
 **Ktor Swagger UI**
 
-Own library build to document routes, automatically generate an OpenAPI Specification and serve a Swagger UI. [Link to Documentation](https://github.com/SMILEY4/ktor-swagger-ui)
+Own library build to document routes, automatically generate an OpenAPI Specification and serve a Swagger UI. [Link](https://github.com/SMILEY4/ktor-swagger-ui)
 
 **AWS-Cognito**
 
@@ -77,11 +77,11 @@ Simple and Secure User Sign-Up, Sign-In, and Access Control
 
 **ArangoDb**
 
-A native multi-model database with flexible data models for  documents, graphs, and key-values. [Link to Documentation](https://www.arangodb.com/docs/stable/)
+A native multi-model database with flexible data models for  documents, graphs, and key-values. [Link](https://www.arangodb.com/docs/stable/)
 
 **Arrow**
 
-Arrow is a library for Typed Functional Programming in Kotlin. [Link to Documentation](https://arrow-kt.io/docs/core/)
+Arrow is a library for Typed Functional Programming in Kotlin. [Link](https://arrow-kt.io/docs/core/)
 
 
 

@@ -57,30 +57,30 @@ npm run test
 
 **Vite**
 
-Frontend bundler + pre-configured dev server. [Link to Documentation](https://vitejs.dev/guide/)
+Frontend bundler + pre-configured dev server. [Link](https://vitejs.dev/guide/)
 
 **ReactJS**
 
-SSR Frontend UI-Library. [Link to Documentation](https://reactjs.org/docs/getting-started.html)
+SSR Frontend UI-Library. [Link](https://reactjs.org/docs/getting-started.html)
 
 **React Router v6**
 
-Client side routing. [Link to Documentation](https://reactrouter.com/docs/en/v6/api)
+Client side routing. [Link](https://reactrouter.com/docs/en/v6/api)
 
 **Zustand**
 
-React global state-management. [Link to Documentation](https://github.com/pmndrs/zustand)
+React global state-management. [Link](https://github.com/pmndrs/zustand)
 
 **WebGL**
 
-High-performance rendering API based on OpenGL. [Link to Documentation](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
+High-performance rendering API based on OpenGL. [Link](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API)
 
 **Jest (+ts-jest)**
 
-JavaScript testing framework. [Link to Documentation](https://jestjs.io/docs/getting-started).
+JavaScript testing framework. [Link](https://jestjs.io/docs/getting-started).
 
-Used together with "ts-jest" for TypeScript support. [Link to Documentation](https://kulshekhar.github.io/ts-jest/docs/getting-started/installation)
+Used together with "ts-jest" for TypeScript support. [Link](https://kulshekhar.github.io/ts-jest/docs/getting-started/installation)
 
 **Storybook (+storybook-builder-vite)**
 
-Tool for building and showcasing ui-components in isolation. [Link to Documentation](https://storybook.js.org/docs/react/get-started/introduction). Uses [builder-vite](https://github.com/storybookjs/builder-vite) to run with "Vite".
+Tool for building and showcasing ui-components in isolation. [Link](https://storybook.js.org/docs/react/get-started/introduction). Uses [builder-vite](https://github.com/storybookjs/builder-vite) to run with "Vite".

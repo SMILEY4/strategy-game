@@ -11,5 +11,7 @@
 - Gameplay
   - [Ideas/Brainstorming](./game/ideas.md)
   - [Cities](./game/cities.md)
+  - [Provinces](./game/provinces.md)
+  - [Borders](./game/borders.md)
 - [Changelog](./changelog/changelog.md)
 
