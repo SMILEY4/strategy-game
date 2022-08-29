@@ -14,7 +14,7 @@ val versionJacksonDataformatVelocypack: String by project
 val versionKtorSwaggerUi: String by project
 
 group = "de.ruegnerlukas"
-version = "0.2.0"
+version = "0.3.0"
 
 application {
 	mainClass.set("de.ruegnerlukas.strategygame.backend.ApplicationKt")
