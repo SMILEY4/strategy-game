@@ -24,6 +24,19 @@ https://forums.civfanatics.com/threads/ideas-for-the-perfect-4x-historical-game.
 
 
 
+# Turn-Based (WeGo) ❤
+
+- each player inputs their moves; after every player is done, the commands play out, then next turn
+- Phases
+  1. Command/Planning Phase
+     - each player creates commands -> what should be done this turn
+  2. Resolution Phase
+     - resolve commands of all players + apply effects to game
+  3. Update Phase
+     - update the game, execute triggers (e.g. apply income, update turn-timers, ...)
+
+
+
 # Raising Armies and Population
 
 - population divided into classes (e.g. nobility, workers)
@@ -441,14 +454,12 @@ Add. Ideas https://fallfromheaven.fandom.com/wiki/Spells
 - your territory = all the land around your cities, settlements, etc
   - settlements claim tiles in fixed distance around itself = your territory
   - if claimed tile != free => get claim on that land => "casus beli"
-
 - cities, settlements, etc have a sphere of influence (greater than claimed area)
   - you can only settle within tiles where you have the greatest influence or nobody else influences that tile enough
   - influence spreads based on some factors
     - more: rivers (even better downstream), flat land, ...
     - less: hills, mountains, ocean, ...
   - if you have the greatest influence on a tile that is owned by another country, you get a (unpressed) claim on that tile
-  
 - more ideas on border/territory:
   - https://forums.civfanatics.com/threads/ideas-for-the-perfect-4x-historical-game.654805/post-15933691
 
@@ -503,11 +514,11 @@ https://tvtropes.org/pmwiki/pmwiki.php/Main/FictionalCultureAndNationTropes
   - have the most valuable trade city (hold for x years)
   - ...
 
-##### Pro:
+**Pro:**
 
 - one singular goal 
 
-##### Con
+**Con:**
 
 - maybe harder to balance
 - hard to come up with interesting ideas
@@ -524,6 +535,62 @@ https://tvtropes.org/pmwiki/pmwiki.php/Main/FictionalCultureAndNationTropes
 - ideas:
   - have a city with x trade power for y turns
   - hold region/tile x for y turns (multiple players can have this quest for additional conflict)
+
+
+
+# Creating Cities, Settlements
+
+- CK3 Holdings
+
+  - https://www.youtube.com/watch?v=Df9P7B9GfFk
+
+  - https://ck3.paradoxwikis.com/Barony#Holdings
+
+- Settlements can be built
+
+  - inside own territory
+    - development of tile reduces cost of city + starts with more population ?
+  - in unclaimed tile
+    - more expensive, less starting population ?
+    - more expensive the further away the settlement is built (to avoid holes in nation)
+  - in both situations
+    - claim unclaimed neighboring tiles for new city
+    - auto transfers neighboring tiles to new city
+
+- settlement grows over time -> claims more tiles, but does not add already claimed tiles to its area
+
+  - can transfer tiles between own cities
+
+- cities also cost some resource -> balance so that players cant build 1mio cities when enough money
+
+  - city requires constant administrative power -> if nation goes over limit -> instabilities due to administrative chaos / too many cities
+
+
+
+# Resource Production
+
+**Raw Resource Gathering (metal, stone, wood, food, ...)**
+
+- cities/settlements automatically harvest resources in tiles owned by city, depending on buildings
+- city starts with very limited amount (only one?) of building-slots -> very specialized -> "raw resource gathering city"
+- as city grows -> unlock more slots -> more diverse buildings -> "city for production/administration/trade/..." 
+- city can set focus -> e.g. "focus on fishing" -> "Fishing Village" -> bonus to fish/food production, malus on all other production unrelated to fish
+- *Example: "Player needs more wood"*
+  1. build new settlement near forest
+  2. build "woodcutter"-building in settlement
+     - 1 woodcutter produces +1 wood for each forest reachable forest-tile
+     - 1 woodcutter can harvest max. 3 forest tiles (if more forest available and player needs more wood -> build more "woodcutters" in city)
+     - 1 forest tile can only be worked by one building
+  3. Profit -> settlements harvests nearby forest
+
+**Production**
+
+- cities produce resources based on available resources and production buildings in city 
+
+**Gameplay and target Player Strategy**
+
+- no specific "tile improvements" like e.g. in civilization games, only cities
+- country structured in provinces with large province capitol (= civilization city) and small settlements for specialized resource gathering (=civilization tile improvements)
 
 
 
@@ -622,3 +689,28 @@ What if defender does not find out about pending war ? (suprised by declaration 
 
 - has to start preparation later
 - has to rely on castles/fortifications/standing armies until preparation is done
+
+
+
+# Terrain Generation
+
+- https://www.procjam.com/tutorials/en/ooze/
+  - continents, biomes
+  - more on non-realistic side
+  - created by placing "blobs" that modify "terrain" each time
+  - <img src="https://www.procjam.com/tutorials/en/ooze/images/image5.png" style="zoom: 33%;float:left" />
+- http://www.jgallant.com/procedurally-generating-wrapping-world-maps-in-unity-csharp-part-1/
+  - continents, biomes
+  - generate heightmaps, heatmaps, moisture, ...
+  - more realistic looking
+  - <img src="http://www.jgallant.com/wp-content/uploads/2016/01/biomesrender2.png" style="zoom:67%;float:left" />
+  - my (rough) Shadertoy "implementation": https://www.shadertoy.com/view/NtjXDt
+
+- Procedural Generation Blog
+  - https://heredragonsabound.blogspot.com/
+  - Hex Wind Simulation: https://heredragonsabound.blogspot.com/2018/11/continent-maps-part-4-wind-model.html
+- Blog (Realistic World gen)
+  - https://undiscoveredworlds.blogspot.com/
+  - Rain Simulation: https://undiscoveredworlds.blogspot.com/2019/02/hey-ho-wind-and-rain.html
+  - Climate: https://undiscoveredworlds.blogspot.com/2019/02/getting-climactic.html
+
