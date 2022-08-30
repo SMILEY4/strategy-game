@@ -3,13 +3,12 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.BroadcastInitialGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResultActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
@@ -43,7 +42,7 @@ object TestActions {
 	fun gameConnectAction(database: ArangoDatabase) = GameConnectActionImpl(
 		GameQueryImpl(database),
 		GameUpdateImpl(database),
-		BroadcastInitialGameStateActionImpl(
+		SendGameStateActionImpl(
 			GameExtendedQueryImpl(database),
 			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),
@@ -58,7 +57,7 @@ object TestActions {
 					GameConfig.default()
 				)
 			),
-			BroadcastTurnResultActionImpl(
+			SendGameStateActionImpl(
 				GameExtendedQueryImpl(database),
 				GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 			),
@@ -97,7 +96,7 @@ object TestActions {
 				GameConfig.default()
 			)
 		),
-		BroadcastTurnResultActionImpl(
+		SendGameStateActionImpl(
 			GameExtendedQueryImpl(database),
 			GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
 		),

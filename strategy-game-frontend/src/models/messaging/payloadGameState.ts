@@ -1,5 +1,5 @@
 import {MsgGameState} from "./msgGameState";
 
-export interface PayloadInitGameState {
+export interface PayloadGameState {
     game: MsgGameState;
 }

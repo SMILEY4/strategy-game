@@ -6,14 +6,13 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.BroadcastInitialGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResultActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
@@ -98,11 +97,7 @@ fun Application.module() {
         insertReservation,
         gameConfig
     )
-    val broadcastTurnResultAction = BroadcastTurnResultActionImpl(
-        queryGameExtended,
-        messageProducer
-    )
-    val broadcastInitialGameStateAction = BroadcastInitialGameStateActionImpl(
+    val sendGameStateAction = SendGameStateActionImpl(
         queryGameExtended,
         messageProducer
     )
@@ -112,7 +107,7 @@ fun Application.module() {
     val gameConnectAction = GameConnectActionImpl(
         queryGame,
         updateGame,
-        broadcastInitialGameStateAction
+        sendGameStateAction
     )
     val gameCreateAction = GameCreateActionImpl(
         insertGame
@@ -138,7 +133,7 @@ fun Application.module() {
     )
     val turnEndAction = TurnEndActionImpl(
         resolveCommandsAction,
-        broadcastTurnResultAction,
+        sendGameStateAction,
         turnUpdateActionImpl,
         queryGameExtended,
         updateGameExtended,

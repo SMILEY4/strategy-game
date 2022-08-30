@@ -1,6 +1,5 @@
 import {SetGameStateAction} from "../../../core/actions/gamelobby/setGameStateAction";
-import {PayloadInitGameState} from "../../../models/messaging/payloadInitGameState";
-import {PayloadInitTurnState} from "../../../models/messaging/payloadInitTurnState";
+import {PayloadGameState} from "../../../models/messaging/payloadGameState";
 
 
 export class MessageHandler {
@@ -14,19 +13,12 @@ export class MessageHandler {
 
     onMessage(type: string, payload: any): void {
         console.log("Received message", type, payload);
-        if (type === "world-state") {
+        if (type === "game-state") {
             this.onWorldState(payload);
         }
-        if (type === "turn-result") {
-            this.onTurnResult(payload);
-        }
     }
 
-    onWorldState(payload: PayloadInitGameState) {
-        this.gameSetState.perform(payload.game);
-    }
-
-    onTurnResult(payload: PayloadInitTurnState) {
+    onWorldState(payload: PayloadGameState) {
         this.gameSetState.perform(payload.game);
     }
 
