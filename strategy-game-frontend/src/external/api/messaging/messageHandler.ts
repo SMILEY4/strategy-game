@@ -19,7 +19,7 @@ export class MessageHandler {
     }
 
     onWorldState(payload: PayloadGameState) {
-        this.gameSetState.perform(payload.game);
+        this.gameSetState.perform(payload.game); //TODO: new payload model
     }
 
 }

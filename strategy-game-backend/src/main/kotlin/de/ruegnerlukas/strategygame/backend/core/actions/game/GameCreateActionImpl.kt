@@ -49,7 +49,8 @@ class GameCreateActionImpl(
 				),
 				content = trackingListOf(),
 				influences = mutableListOf(),
-				owner = null
+				owner = null,
+				discoveredByCountries = mutableListOf()
 			)
 		}
 	}

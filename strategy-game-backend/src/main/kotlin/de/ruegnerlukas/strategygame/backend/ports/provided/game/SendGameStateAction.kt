@@ -9,8 +9,8 @@ interface SendGameStateAction {
     object GameNotFoundError : SendGameStateActionError()
     object UserNotConnectedError : SendGameStateActionError()
 
-    suspend fun perform(game: GameExtendedEntity, userId: String): Either<SendGameStateActionError, Unit>
-
     suspend fun perform(gameId: String, userId: String): Either<SendGameStateActionError, Unit>
+
+    suspend fun perform(game: GameExtendedEntity, userId: String): Either<SendGameStateActionError, Unit>
 
 }

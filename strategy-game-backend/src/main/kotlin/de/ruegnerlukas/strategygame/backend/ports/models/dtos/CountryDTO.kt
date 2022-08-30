@@ -1,19 +1,28 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.dtos
 
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-
 class CountryDTO(
+    val baseData: CountryDTOBaseData,
+	val advancedData: CountryDTOAdvancedData?
+)
+
+
+/**
+ * Data available to everyone who has discovered the country
+ */
+data class CountryDTOBaseData(
 	val countryId: String,
 	val userId: String,
+)
+
+
+/**
+ * only available to player playing the country
+ */
+data class CountryDTOAdvancedData(
 	val resources: CountryDTOResources
-) {
-	constructor(country: CountryEntity) : this(
-		countryId = country.key!!,
-		userId = country.userId,
-		resources = CountryDTOResources(country.resources.money)
-	)
-}
+)
+
 
 data class CountryDTOResources(
-	val money: Float
+    val money: Float
 )

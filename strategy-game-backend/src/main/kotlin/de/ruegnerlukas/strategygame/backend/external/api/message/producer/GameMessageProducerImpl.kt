@@ -9,10 +9,10 @@ import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 
 class GameMessageProducerImpl(private val producer: MessageProducer) : GameMessageProducer {
 
-    override suspend fun sendGamedState(connectionId: Int, game: GameExtendedEntity) {
+    override suspend fun sendGamedState(connectionId: Int, game: GameExtendedDTO) {
         producer.sendToSingle(
             connectionId,
-            GameStateMessage(GameStatePayload(GameExtendedDTO(game)))
+            GameStateMessage(GameStatePayload(game))
         )
     }
 

@@ -4,85 +4,86 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 
 data class TileDTO(
-	val tileId: String,
-	val position: TilePosition,
-	val data: TileDTOData,
-	val influences: List<TileDTOCountryInfluence>,
-	val owner: TileDTOOwner?,
-	val content: List<TileDTOContent>
-) {
-	constructor(tile: TileEntity) : this(
-		tileId = tile.key!!,
-		position = tile.position,
-		data = TileDTOData(tile.data.terrainType),
-		influences = tile.influences.map { influence ->
-			TileDTOCountryInfluence(
-				influence.countryId,
-				influence.totalValue,
-				influence.sources.map { source ->
-					TileDTOCityInfluence(
-						source.cityId,
-						source.provinceId,
-						source.value
-					)
-				}
-			)
-		},
-		owner = tile.owner?.let { TileDTOOwner(it.countryId, it.provinceId, it.cityId) },
-		content = tile.content.map {
-			when (it) {
-				is MarkerTileContent -> MarkerTileDTOContent(it.countryId)
-			}
-		}
-	)
+    val baseData: TileDTOBaseData,
+    val generalData: TileDTOGeneralData?,
+    val advancedData: TileDTOAdvancedData?,
+)
+
+
+enum class TileDTOVisibility {
+    UNKNOWN,
+    DISCOVERED,
+    VISIBLE
 }
 
 
-data class TileDTOData(
-	val terrainType: String,
+/**
+ * The data that is always available
+ */
+data class TileDTOBaseData(
+    val tileId: String,
+    val position: TilePosition,
+    val visibility: TileDTOVisibility,
 )
 
+
+/**
+ * The data that is available for discovered and visible tiles
+ */
+data class TileDTOGeneralData(
+    val terrainType: String,
+    val owner: TileDTOOwner?,
+)
+
+
+/**
+ * The data that is available for visible tiles
+ */
+data class TileDTOAdvancedData(
+    val influences: List<TileDTOCountryInfluence>,
+    val content: List<TileDTOContent>
+)
+
+
 data class TileDTOOwner(
-	val countryId: String,
-	val provinceId: String,
-	val cityId: String
+    val countryId: String,
+    val provinceId: String,
+    val cityId: String
 )
 
 data class TileDTOCountryInfluence(
-	val countryId: String,
-	val value: Double,
-	val sources: List<TileDTOCityInfluence>
+    val countryId: String,
+    val value: Double,
+    val sources: List<TileDTOCityInfluence>
 )
 
 data class TileDTOCityInfluence(
-	val cityId: String,
-	val provinceId: String,
-	val value: Double
+    val cityId: String,
+    val provinceId: String,
+    val value: Double
 )
 
 
 @JsonTypeInfo(
-	use = JsonTypeInfo.Id.NAME,
-	include = JsonTypeInfo.As.EXISTING_PROPERTY,
-	property = "type"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type"
 )
 @JsonSubTypes(
-	JsonSubTypes.Type(value = MarkerTileDTOContent::class),
+    JsonSubTypes.Type(value = MarkerTileDTOContent::class),
 )
 sealed class TileDTOContent(
-	val type: String
+    val type: String
 )
 
 
 @JsonTypeName(MarkerTileDTOContent.TYPE)
 class MarkerTileDTOContent(
-	val countryId: String
+    val countryId: String
 ) : TileDTOContent(TYPE) {
-	companion object {
-		internal const val TYPE = "marker"
-	}
+    companion object {
+        internal const val TYPE = "marker"
+    }
 }

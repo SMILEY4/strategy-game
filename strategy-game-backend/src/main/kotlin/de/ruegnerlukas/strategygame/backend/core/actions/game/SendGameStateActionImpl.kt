@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction.GameNotFoundError
@@ -18,20 +19,23 @@ class SendGameStateActionImpl(
     private val messageProducer: GameMessageProducer,
 ) : SendGameStateAction, Logging {
 
-    override suspend fun perform(game: GameExtendedEntity, userId: String): Either<SendGameStateActionError, Unit> {
-        log().info("Sending game-state of game ${game.game.getKeyOrThrow()} to connected player(s)")
-        return either {
-            val connectionId = getConnectionId(game, userId).bind()
-            sendGameStateMessage(connectionId, game)
-        }
-    }
-
     override suspend fun perform(gameId: String, userId: String): Either<SendGameStateActionError, Unit> {
         log().info("Sending game-state of game $gameId to connected player(s)")
         return either {
             val game = findGame(gameId).bind()
             val connectionId = getConnectionId(game, userId).bind()
-            sendGameStateMessage(connectionId, game)
+            val gameDto = convertToDTO(userId, game)
+            sendGameStateMessage(connectionId, gameDto)
+        }
+    }
+
+
+    override suspend fun perform(game: GameExtendedEntity, userId: String): Either<SendGameStateActionError, Unit> {
+        log().info("Sending game-state of game ${game.game.getKeyOrThrow()} to connected player(s)")
+        return either {
+            val connectionId = getConnectionId(game, userId).bind()
+            val gameDto = convertToDTO(userId, game)
+            sendGameStateMessage(connectionId, gameDto)
         }
     }
 
@@ -58,9 +62,17 @@ class SendGameStateActionImpl(
 
 
     /**
+     * Convert the given game to a dto specific for the given player
+     */
+    private fun convertToDTO(userId: String, game: GameExtendedEntity): GameExtendedDTO {
+        return GameExtendedDTOCreator().create(userId, game)
+    }
+
+
+    /**
      * Send the new game-state to the connected player
      */
-    private suspend fun sendGameStateMessage(connectionId: Int, game: GameExtendedEntity) {
+    private suspend fun sendGameStateMessage(connectionId: Int, game: GameExtendedDTO) {
         messageProducer.sendGamedState(connectionId, game)
     }
 
