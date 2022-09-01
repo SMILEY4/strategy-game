@@ -5,17 +5,20 @@ import {LocalGameStateHooks} from "../../external/state/localgame/localGameState
 import {City} from "../../models/state/city";
 import {TerrainType} from "../../models/state/terrainType";
 import {Tile} from "../../models/state/tile";
+import {TileVisibility} from "../../models/state/tileVisibility";
 import {orDefault} from "../../shared/utils";
 
 export namespace GameHooks {
 
-    import usePlayerCountry = GameStateHooks.usePlayerCountry;
     import useGameConfig = GameConfigStateHooks.useGameConfig;
+    import usePlayerCountry = GameStateHooks.usePlayerCountry;
 
     export function useCountryMoney(): number {
         const commands = LocalGameStateHooks.useCommands();
         const country = GameStateHooks.usePlayerCountry();
-        return (country ? country.resources.money : 0) - commands.map(cmd => cmd.cost.money).reduce((a, b) => a + b, 0);
+        const money = ((country && country.advancedData) ? country.advancedData.resources.money : 0);
+        const commandCost = commands.map(cmd => cmd.cost.money).reduce((a, b) => a + b, 0);
+        return money - commandCost;
     }
 
 
@@ -27,27 +30,35 @@ export namespace GameHooks {
         const cities = GameStore.useState(state => state.cities);
         const tile = GameStateHooks.useTileAt(q, r);
 
+        function validateVisibility(tile: Tile): boolean {
+            return tile.visibility === TileVisibility.VISIBLE || tile.visibility === TileVisibility.DISCOVERED;
+        }
+
         function validateTileType(tile: Tile): boolean {
-            return tile.terrainType === TerrainType.LAND;
+            return tile.generalData?.terrainType === TerrainType.LAND;
         }
 
         function validateTileOwner(countryId: string, tile: Tile): boolean {
-            return !(tile.owner && tile.owner.countryId != countryId);
+            return !(tile.generalData?.owner && tile.generalData?.owner.countryId != countryId);
         }
 
         function validateTileInfluence(countryId: string, tile: Tile): boolean {
             // country owns tile
-            if (tile.owner?.countryId == countryId) {
+            if (tile.generalData?.owner?.countryId == countryId) {
                 return true;
             }
-            // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-            const maxForeignInfluence = Math.max(...tile.influences.filter(i => i.countryId !== countryId).map(i => i.value));
-            if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
+            if (tile.advancedData) {
+                // nobody else has more than 'MAX_TILE_INFLUENCE' influence
+                const maxForeignInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId !== countryId).map(i => i.value));
+                if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
+                    return true;
+                }
+                // country has the most influence on tile
+                const countryInfluence = orDefault(tile.advancedData.influences.find(i => i.countryId === countryId)?.value, 0.0);
+                return countryInfluence >= maxForeignInfluence;
+            } else {
                 return true;
             }
-            // country has the most influence on tile
-            const countryInfluence = orDefault(tile.influences.find(i => i.countryId === countryId)?.value, 0.0);
-            return countryInfluence >= maxForeignInfluence;
         }
 
         function validateTileCity(tile: Tile, cities: City[]): boolean {
@@ -60,6 +71,7 @@ export namespace GameHooks {
 
         if (tile) {
             return [
+                validateVisibility(tile),
                 validateTileType(tile),
                 validateTileOwner(country.countryId, tile),
                 validateTileCity(tile, cities),

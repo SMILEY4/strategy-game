@@ -94,7 +94,7 @@ export namespace TileVertexBuilder {
      * @return the terrain-id (q,r) for each vertex
      */
     function buildTerrainData(tile: Tile): ([number])[] {
-        const terrainId: [number] = [terrainTypeToId(tile.terrainType)];
+        const terrainId: [number] = [tile.generalData ? terrainTypeToId(tile.generalData.terrainType) : -1];
         return Array(13).fill(terrainId);
     }
 
@@ -198,12 +198,15 @@ export namespace TileVertexBuilder {
     }
 
     function tileOwnerColor(tile: Tile, countries: Country[]): [number, number, number, number] {
-        if (tile.owner) {
-            return countryColor(tile.owner.countryColor, 1);
+        if(!tile.generalData) {
+            return [0, 0, 0, 0];
+        } else if (tile.generalData.owner) {
+            return countryColor(tile.generalData.owner.countryColor, 1);
         } else {
+            const influences = tile.advancedData ? tile.advancedData.influences : []
             const influenceThreshold = GAME_CONFIG.getGameConfig().cityTileMaxForeignInfluence;
-            const maxInfluenceCountry = getMax(tile.influences, influence => influence.value);
-            const nextMaxInfluenceCountry = getMax(tile.influences, influence => influence.countryId === maxInfluenceCountry?.countryId ? -1 : influence.value);
+            const maxInfluenceCountry = getMax(influences, influence => influence.value);
+            const nextMaxInfluenceCountry = getMax(influences, influence => influence.countryId === maxInfluenceCountry?.countryId ? -1 : influence.value);
             const nextMaxInfluenceValue = nextMaxInfluenceCountry ? nextMaxInfluenceCountry.value : -1;
             if (maxInfluenceCountry && maxInfluenceCountry.value > influenceThreshold && maxInfluenceCountry.value > nextMaxInfluenceValue) {
                 return countryColor(countries.find(c => c.countryId === maxInfluenceCountry.countryId)?.color, 0.3);

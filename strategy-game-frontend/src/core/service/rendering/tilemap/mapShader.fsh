@@ -14,6 +14,9 @@ out vec4 outColor;
 
 
 vec3 calcTerrainColor(float terrainId) {
+    if(terrainId < -0.5) { // -1 -> undiscovered
+        return vec3(0.2);
+    }
     if (terrainId < 0.5) { // 0 -> water
         return vec3(0.3, 0.3, 1.0);
     }

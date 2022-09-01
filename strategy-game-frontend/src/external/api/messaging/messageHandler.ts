@@ -14,12 +14,12 @@ export class MessageHandler {
     onMessage(type: string, payload: any): void {
         console.log("Received message", type, payload);
         if (type === "game-state") {
-            this.onWorldState(payload);
+            this.onWorldState(payload.game);
         }
     }
 
     onWorldState(payload: PayloadGameState) {
-        this.gameSetState.perform(payload.game); //TODO: new payload model
+        this.gameSetState.perform(payload);
     }
 
 }
