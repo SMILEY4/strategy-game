@@ -2,6 +2,10 @@ package de.ruegnerlukas.strategygame.backend.core.config
 
 data class GameConfig(
 	/**
+	 * the radius of the uncovered country starting area
+	 */
+	val startingAreaRadius: Int = 3,
+	/**
 	 * the amount of money a city costs to build
 	 */
 	val cityCost: Float = 50f,

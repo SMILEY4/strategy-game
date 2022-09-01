@@ -205,22 +205,3 @@ class GameExtendedDTOCreator {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
