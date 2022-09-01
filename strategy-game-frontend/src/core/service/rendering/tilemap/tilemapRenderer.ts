@@ -43,7 +43,7 @@ export class TilemapRenderer {
                 {
                     name: "in_terrainData",
                     type: ShaderAttributeType.FLOAT,
-                    amountComponents: 1,
+                    amountComponents: 2,
                 },
                 {
                     name: "in_overlayColor",

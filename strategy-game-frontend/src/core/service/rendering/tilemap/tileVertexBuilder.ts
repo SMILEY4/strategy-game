@@ -2,6 +2,7 @@ import {GAME_CONFIG} from "../../../../external/state/gameconfig/gameConfigState
 import {Country, CountryColor} from "../../../../models/state/country";
 import {TerrainType} from "../../../../models/state/terrainType";
 import {Tile} from "../../../../models/state/tile";
+import {TileVisibility} from "../../../../models/state/tileVisibility";
 import {getMax, orDefault} from "../../../../shared/utils";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 
@@ -91,11 +92,12 @@ export namespace TileVertexBuilder {
     }
 
     /**
-     * @return the terrain-id (q,r) for each vertex
+     * @return the terrain-id and visibility (id, visId) for each vertex
      */
     function buildTerrainData(tile: Tile): ([number])[] {
-        const terrainId: [number] = [tile.generalData ? terrainTypeToId(tile.generalData.terrainType) : -1];
-        return Array(13).fill(terrainId);
+        const terrainId: number = tile.generalData ? terrainTypeToId(tile.generalData.terrainType) : -1;
+        const visibility = tileVisibilityToId(tile.visibility);
+        return Array(13).fill([terrainId, visibility]);
     }
 
     /**
@@ -195,6 +197,19 @@ export namespace TileVertexBuilder {
             return 1;
         }
         return -1;
+    }
+
+    function tileVisibilityToId(visibility: TileVisibility): number {
+        if (visibility == TileVisibility.UNKNOWN) {
+            return 0;
+        }
+        if (visibility == TileVisibility.DISCOVERED) {
+            return 1;
+        }
+        if (visibility == TileVisibility.VISIBLE) {
+            return 2;
+        }
+        return 0;
     }
 
     function tileOwnerColor(tile: Tile, countries: Country[]): [number, number, number, number] {

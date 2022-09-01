@@ -5,7 +5,7 @@ uniform vec2 u_tileMouseOver;
 uniform vec2 u_tileSelected;
 
 flat in vec2 v_tilePosition;
-flat in float v_terrainData;
+flat in vec2 v_terrainData;
 flat in vec4 v_overlayColor;
 in vec3 v_cornerData;
 flat in vec3 v_borderData;
@@ -24,6 +24,20 @@ vec3 calcTerrainColor(float terrainId) {
         return vec3(0.3, 1.0, 0.3);
     }
     return vec3(0.0);
+}
+
+
+vec3 applyFogOfWar(vec3 color, float visibilityId) {
+    if(visibilityId < 0.5) { // 0 -> undiscovered
+        return vec3(0.2);
+    }
+    if(visibilityId < 1.5) { // 1 -> discovered
+        return mix(color, vec3(0.2), 0.5);
+    }
+    if(visibilityId < 2.5) { // 2 -> visible
+        return color;
+    }
+    return vec3(0.2);
 }
 
 
@@ -73,7 +87,7 @@ bool inSecondaryBorder(float distToCenter, float distToCornerA, float distToCorn
 void main() {
 
     // base terrain color
-    vec3 tileColor = calcTerrainColor(v_terrainData);
+    vec3 tileColor = applyFogOfWar(calcTerrainColor(v_terrainData.x), v_terrainData.y);
 
     // overlay color
     tileColor = blend(tileColor, v_overlayColor*vec4(1.0, 1.0, 1.0, 0.5));

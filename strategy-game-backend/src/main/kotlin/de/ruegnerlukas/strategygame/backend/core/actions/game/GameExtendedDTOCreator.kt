@@ -69,7 +69,9 @@ class GameExtendedDTOCreator {
 
     private fun getTileVisibility(countryId: String, tile: TileEntity): TileDTOVisibility {
         if (tile.discoveredByCountries.contains(countryId)) {
-            if (tile.influences.any { it.countryId == countryId } && tile.owner?.countryId != countryId) {
+            val hasInfluence  = tile.influences.any { it.countryId == countryId }
+            val foreignOwner = tile.owner != null && tile.owner!!.countryId != countryId
+            if (hasInfluence && !foreignOwner) {
                 return TileDTOVisibility.VISIBLE
             } else {
                 return TileDTOVisibility.DISCOVERED
@@ -153,15 +155,17 @@ class GameExtendedDTOCreator {
                     )
                 }
         )
-        influences.add( // foreign unknown countries
-            TileDTOCountryInfluence(
-                countryId = unknownCountryId,
-                value = tileEntity.influences
-                    .filter { influence -> !knownCountries.contains(influence.countryId) }
-                    .sumOf { influence -> influence.totalValue },
-                sources = emptyList()
-            )
-        )
+        TileDTOCountryInfluence(
+            countryId = unknownCountryId,
+            value = tileEntity.influences
+                .filter { influence -> !knownCountries.contains(influence.countryId) }
+                .sumOf { influence -> influence.totalValue },
+            sources = emptyList()
+        ).let {
+            if(it.value > 0) {
+                influences.add(it)
+            }
+        }
         return influences
     }
 

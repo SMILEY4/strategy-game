@@ -39,7 +39,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.Reserva
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.github.smiley4.ktorswaggerui.AuthScheme
 import io.github.smiley4.ktorswaggerui.AuthType
@@ -213,16 +212,6 @@ fun Application.module() {
         }
     }
     install(SwaggerUI) {
-        defaultUnauthorizedResponse {
-            description = "Authentication failed"
-            body(ApiResponse::class) {
-                example("Unauthorized", ApiResponse.authenticationFailed()) {
-                    description = "The provided token is invalid."
-                }
-            }
-        }
-        defaultSecuritySchemeName = "Auth"
-        automaticTagGenerator = { url -> url.getOrNull(1) }
         swagger {
             forwardRoot = true
             swaggerUrl = "/swagger-ui"
@@ -240,6 +229,16 @@ fun Application.module() {
             type = AuthType.HTTP
             scheme = AuthScheme.BEARER
             bearerFormat = "jwt"
+        }
+        automaticTagGenerator = { url -> url.getOrNull(1) }
+        defaultSecuritySchemeName = "Auth"
+        defaultUnauthorizedResponse {
+            description = "Authentication failed"
+            body(ApiResponse::class) {
+                example("Unauthorized", ApiResponse.authenticationFailed()) {
+                    description = "The provided token is invalid."
+                }
+            }
         }
     }
     apiRoutes(
