@@ -11,12 +11,12 @@ export class BordersCalculateAction {
         console.log("calculating border information");
         const map = this.buildOptimizedMap(tiles);
         tiles
-            .filter(tile => !!tile.owner)
+            .filter(tile => !!tile.generalData?.owner)
             .forEach(tile => {
-                const countryBorders: boolean[] = this.getNeighbours(map, tile, tile => tile.owner?.countryId, null)
-                    .map(neighbour => neighbour !== tile.owner?.countryId);
-                const provinceBorders: boolean[] = this.getNeighbours(map, tile, tile => tile.owner?.provinceId, null)
-                    .map(neighbour => neighbour !== tile.owner?.provinceId);
+                const countryBorders: boolean[] = this.getNeighbours(map, tile, tile => tile.generalData?.owner?.countryId, null)
+                    .map(neighbour => neighbour !== tile.generalData?.owner?.countryId);
+                const provinceBorders: boolean[] = this.getNeighbours(map, tile, tile => tile.generalData?.owner?.provinceId, null)
+                    .map(neighbour => neighbour !== tile.generalData?.owner?.provinceId);
                 tile.borderData = [
                     {
                         type: "country",

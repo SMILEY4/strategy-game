@@ -42,20 +42,25 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
         return (
             <>
                 <h3>Influences</h3>
-                <ul>
-                    {
-                        tile.influences.map(influence => (
-                            <>
-                                <li>{influence.countryId + " = " + influence.value}</li>
-                                <ul>
-                                    {influence.sources.map(source => (
-                                        <li>{source.cityId + "/" + source.provinceId + " = " + source.value}</li>
-                                    ))}
-                                </ul>
-                            </>
-                        ))
-                    }
-                </ul>
+                {tile.advancedData && (
+                    <ul>
+                        {
+                            tile.advancedData.influences.map(influence => (
+                                <>
+                                    <li>{influence.countryId + " = " + influence.value}</li>
+                                    <ul>
+                                        {influence.sources.map(source => (
+                                            <li>{source.cityId + "/" + source.provinceId + " = " + source.value}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            ))
+                        }
+                    </ul>
+                )}
+                {(tile.advancedData === null || tile.advancedData === undefined) && (
+                    <div>Not Visible</div>
+                )}
             </>
         );
     } else {
@@ -66,17 +71,30 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
 
 function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElement | null {
     const tile = GameStateHooks.useTileAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    if (tile && tile.owner) {
-        return (
-            <>
-                <h3>Owner</h3>
-                <ul>
-                    <li>{"Country = " + tile.owner?.countryId}</li>
-                    <li>{"Province = " + tile.owner?.provinceId}</li>
-                    <li>{"City = " + tile.owner?.cityId}</li>
-                </ul>
-            </>
-        );
+    if (tile) {
+        if (tile.generalData) {
+            if (tile.generalData.owner) {
+                return (
+                    <>
+                        <h3>Owner</h3>
+                        <ul>
+                            <li>{"Country = " + tile.generalData.owner?.countryId}</li>
+                            <li>{"Province = " + tile.generalData.owner?.provinceId}</li>
+                            <li>{"City = " + tile.generalData.owner?.cityId}</li>
+                        </ul>
+                    </>
+                );
+            } else {
+                return null;
+            }
+        } else {
+            return (
+                <>
+                    <h3>Owner</h3>
+                    <div>Not Visible</div>
+                </>
+            );
+        }
     } else {
         return null;
     }
@@ -173,16 +191,28 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 
 function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
     const country = GameStateHooks.usePlayerCountry();
-    const provinces = GameStateHooks.useProvinces(country?.countryId!!)
+    const provinces = GameStateHooks.useProvinces(country?.countryId!!);
     const tile = GameStateHooks.useTileAt(props.tile.q, props.tile.r)!!;
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
 
-    const availableProvinces = tile.influences
-        .filter(i => i.countryId === country?.countryId)
-        .flatMap(i => i.sources)
-        .map(i => provinces.find(p => p.provinceId === i.provinceId)!!)
-        .filter((element, index, self) => self.indexOf(element) === index);
+    const availableProvinces = tile.advancedData ? getProvincesFromInfluences(tile.advancedData.influences) : []
+
+    function getProvincesFromInfluences(influences: ({
+        countryId: string,
+        value: number,
+        sources: ({
+            provinceId: string,
+            cityId: string,
+            value: number,
+        })[]
+    })[]) {
+        return influences
+            .filter(i => i.countryId === country?.countryId)
+            .flatMap(i => i.sources)
+            .map(i => provinces.find(p => p.provinceId === i.provinceId)!!)
+            .filter((element, index, self) => self.indexOf(element) === index);
+    }
 
     return (
         <div>
@@ -202,7 +232,7 @@ function CreateCityDialog(props: { frameId: string, tile: TilePosition }): React
 
     function onAccept(provinceId: string | null) {
         close();
-        AppConfig.turnAddCommand.addCreateCity(props.tile, name, provinceId)
+        AppConfig.turnAddCommand.addCreateCity(props.tile, name, provinceId);
     }
 
 }

@@ -1,7 +1,7 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
 import {MsgMarkerTileContent} from "../../../models/messaging/messagingTileContent";
-import {MsgGameState} from "../../../models/messaging/msgGameState";
+import {PayloadGameState} from "../../../models/messaging/payloadGameState";
 import {City} from "../../../models/state/city";
 import {ALL_COUNTRY_COLORS, Country, CountryColor} from "../../../models/state/country";
 import {GameState} from "../../../models/state/gameState";
@@ -26,7 +26,7 @@ export class SetGameStateAction {
         this.calculateBordersAction = calculateBordersAction;
     }
 
-    perform(game: MsgGameState): void {
+    perform(game: PayloadGameState): void {
         console.log("set game state");
         const countryColors = this.generateCountryColors(game);
         const countries = this.getCountries(game, countryColors);
@@ -45,27 +45,29 @@ export class SetGameStateAction {
     }
 
 
-    private generateCountryColors(game: MsgGameState): ([string, CountryColor])[] {
+    private generateCountryColors(game: PayloadGameState): ([string, CountryColor])[] {
         return game.countries
-            .map(country => country.countryId)
+            .map(country => country.baseData.countryId)
             .sort()
             .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
     }
 
 
-    private getCountries(game: MsgGameState, colors: ([string, CountryColor])[]): Country[] {
+    private getCountries(game: PayloadGameState, colors: ([string, CountryColor])[]): Country[] {
         return game.countries.map(country => ({
-            countryId: country.countryId,
-            userId: country.userId,
-            resources: {
-                money: country.resources.money
-            },
-            color: (colors.find(color => color[0] === country.countryId)!!)[1] as CountryColor
+            countryId: country.baseData.countryId,
+            userId: country.baseData.userId,
+            color: (colors.find(color => color[0] === country.baseData.countryId)!!)[1] as CountryColor,
+            advancedData: country.advancedData ? {
+                resources: {
+                    money: country.advancedData.resources.money
+                }
+            } : null
         }));
     }
 
 
-    private getProvinces(game: MsgGameState): Province[] {
+    private getProvinces(game: PayloadGameState): Province[] {
         return game.provinces.map(province => ({
             provinceId: province.provinceId,
             countryId: province.countryId,
@@ -73,55 +75,62 @@ export class SetGameStateAction {
     }
 
 
-    private getTiles(game: MsgGameState, colors: ([string, CountryColor])[]): Tile[] {
+    private getTiles(game: PayloadGameState, colors: ([string, CountryColor])[]): Tile[] {
         return game.tiles.map(tile => ({
-            tileId: tile.tileId,
+            tileId: tile.baseData.tileId,
             position: {
-                q: tile.position.q,
-                r: tile.position.r
+                q: tile.baseData.position.q,
+                r: tile.baseData.position.r
             },
-            influences: tile.influences.map(influence => ({
-                countryId: influence.countryId,
-                value: influence.value,
-                sources: influence.sources.map(influenceSource => ({
-                    provinceId: influenceSource.provinceId,
-                    cityId: influenceSource.cityId,
-                    value: influenceSource.value
-                }))
-            })),
-            terrainType: tile.data.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
-            owner: tile.owner ? {
-                countryId: tile.owner?.countryId,
-                countryColor: (colors.find(color => color[0] === tile.owner?.countryId)!!)[1] as CountryColor,
-                provinceId: tile.owner?.provinceId,
-                cityId: tile.owner.cityId,
+            visibility: tile.baseData.visibility,
+            borderData: [],
+            generalData: tile.generalData ? {
+                terrainType: tile.generalData.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
+                owner: tile.generalData.owner ? {
+                    countryId: tile.generalData.owner?.countryId,
+                    countryColor: (colors.find(color => color[0] === tile.generalData?.owner?.countryId)!!)[1] as CountryColor,
+                    provinceId: tile.generalData.owner?.provinceId,
+                    cityId: tile.generalData.owner.cityId,
+                } : null,
             } : null,
-            borderData: []
+            advancedData: tile.advancedData ? {
+                influences: tile.advancedData.influences.map(influence => ({
+                    countryId: influence.countryId,
+                    value: influence.value,
+                    sources: influence.sources.map(influenceSource => ({
+                        provinceId: influenceSource.provinceId,
+                        cityId: influenceSource.cityId,
+                        value: influenceSource.value
+                    }))
+                })),
+            } : null,
         }));
     }
 
 
-    private getMarkers(game: MsgGameState): Marker[] {
+    private getMarkers(game: PayloadGameState): Marker[] {
         const markers: Marker[] = [];
         game.tiles.forEach(tile => {
-            tile.content.forEach(content => {
-                if (content.type === "marker") {
-                    markers.push({
-                        tile: {
-                            tileId: tile.tileId,
-                            q: tile.position.q,
-                            r: tile.position.r
-                        },
-                        countryId: (content as MsgMarkerTileContent).countryId
-                    });
-                }
-            });
+            if (tile.advancedData) {
+                tile.advancedData.content.forEach(content => {
+                    if (content.type === "marker") {
+                        markers.push({
+                            tile: {
+                                tileId: tile.baseData.tileId,
+                                q: tile.baseData.position.q,
+                                r: tile.baseData.position.r
+                            },
+                            countryId: (content as MsgMarkerTileContent).countryId
+                        });
+                    }
+                });
+            }
         });
         return markers;
     }
 
 
-    private getCities(game: MsgGameState): City[] {
+    private getCities(game: PayloadGameState): City[] {
         return game.cities.map(city => ({
             cityId: city.cityId,
             name: city.name,

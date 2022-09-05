@@ -4,13 +4,13 @@ uniform mat3 u_viewProjection;
 
 in vec2 in_worldPosition;
 in vec2 in_tilePosition;
-in float in_terrainData;
+in vec2 in_terrainData;
 in vec4 in_overlayColor;
 in vec3 in_cornerData;
 in vec3 in_borderData;
 
 flat out vec2 v_tilePosition;
-flat out float v_terrainData;
+flat out vec2 v_terrainData;
 flat out vec4 v_overlayColor;
 out vec3 v_cornerData;
 flat out vec3 v_borderData;

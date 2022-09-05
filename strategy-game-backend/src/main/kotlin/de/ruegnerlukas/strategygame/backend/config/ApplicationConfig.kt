@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.BroadcastInitialGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.BroadcastTurnResultActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.SendGameStateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
@@ -36,6 +36,9 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQue
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.github.smiley4.ktorswaggerui.AuthScheme
 import io.github.smiley4.ktorswaggerui.AuthType
@@ -88,6 +91,9 @@ fun Application.module() {
     val updateGameExtended = GameExtendedUpdateImpl(database)
     val queryCountry = CountryByGameAndUserQueryImpl(database)
     val insertReservation = ReservationInsertImpl(database)
+    val tilesQueryByGame = TilesQueryByGameImpl(database)
+    val tilesQueryByGameAndPos = TilesQueryByGameAndPositionImpl(database)
+    val tilesUpdate = TilesUpdateImpl(database)
 
     // game config
     val gameConfig = GameConfig.default()
@@ -98,11 +104,7 @@ fun Application.module() {
         insertReservation,
         gameConfig
     )
-    val broadcastTurnResultAction = BroadcastTurnResultActionImpl(
-        queryGameExtended,
-        messageProducer
-    )
-    val broadcastInitialGameStateAction = BroadcastInitialGameStateActionImpl(
+    val sendGameStateAction = SendGameStateActionImpl(
         queryGameExtended,
         messageProducer
     )
@@ -112,7 +114,7 @@ fun Application.module() {
     val gameConnectAction = GameConnectActionImpl(
         queryGame,
         updateGame,
-        broadcastInitialGameStateAction
+        sendGameStateAction
     )
     val gameCreateAction = GameCreateActionImpl(
         insertGame
@@ -121,10 +123,17 @@ fun Application.module() {
         queryGamesByUser,
         updateGame
     )
+    val uncoverMapAreaAction = UncoverMapAreaActionImpl(
+        tilesQueryByGameAndPos,
+        tilesUpdate
+    )
     val gameJoinAction = GameJoinActionImpl(
         queryGame,
         updateGame,
-        insertCountry
+        insertCountry,
+        tilesQueryByGame,
+        gameConfig,
+        uncoverMapAreaAction
     )
     val gameRequestConnectionAction = GameRequestConnectionActionImpl(
         queryGame,
@@ -138,7 +147,7 @@ fun Application.module() {
     )
     val turnEndAction = TurnEndActionImpl(
         resolveCommandsAction,
-        broadcastTurnResultAction,
+        sendGameStateAction,
         turnUpdateActionImpl,
         queryGameExtended,
         updateGameExtended,
@@ -203,16 +212,6 @@ fun Application.module() {
         }
     }
     install(SwaggerUI) {
-        defaultUnauthorizedResponse {
-            description = "Authentication failed"
-            body(ApiResponse::class) {
-                example("Unauthorized", ApiResponse.authenticationFailed()) {
-                    description = "The provided token is invalid."
-                }
-            }
-        }
-        defaultSecuritySchemeName = "Auth"
-        automaticTagGenerator = { url -> url.getOrNull(1) }
         swagger {
             forwardRoot = true
             swaggerUrl = "/swagger-ui"
@@ -230,6 +229,16 @@ fun Application.module() {
             type = AuthType.HTTP
             scheme = AuthScheme.BEARER
             bearerFormat = "jwt"
+        }
+        automaticTagGenerator = { url -> url.getOrNull(1) }
+        defaultSecuritySchemeName = "Auth"
+        defaultUnauthorizedResponse {
+            description = "Authentication failed"
+            body(ApiResponse::class) {
+                example("Unauthorized", ApiResponse.authenticationFailed()) {
+                    description = "The provided token is invalid."
+                }
+            }
         }
     }
     apiRoutes(

@@ -45,38 +45,37 @@ All messages follow the following format
   }
   ```
 
-## [OUT] World State
+## [OUT] Game State
 
-- Type: `world-state`
+- Type: `game-state`
 
 - Payload
 
   ```json
   {
-      "game": {
-          "turn": "Int - the current turn",
-          "countries": [
-              {
-                  "countryId": "String - the id of the country",
-                  "userId": "String - the id of the owner",
-                  "resources": {
-                      "money": "Float - the amount of available money"
-                  }
-              }
-          ],
-          "tiles": [
-              {
+      "turn": "Int - the current turn",
+      "tiles": [
+          {
+              "baseData": {
                   "tileId": "String - the id of the tile",
                   "position": {
-                      "q": "Int - the q-coordinate",
-                      "r": "Int - the r-coordinate",
+                      "q": "Int - the q-coordinate of the tile",
+                      "r": "Int - the r-coordinate of the tile",
                   },
-                  "data": {
-                      "terrainType": "String - the type of the terrain",
-                  },
-                  "influences": [
+                  "visibility": "String - UNKNOWN | DISCOVERED | VISIBLE"
+              },
+              "generalData?": {
+                  "terrainType": "String - the type of the terrain",
+                  "owner?": {
+                      "countryId": "String - the id of the country owning this tile",
+                      "provinceId": "String - the id of the province this tile belongs to",
+                      "cityId": "String - the id of the city this tile belongs to",
+                  }
+              },
+              "advancedData?": {
+              	"influences": [
                       {
-                          "countryId": "String - the id of the country",
+                          "countryId": "String - the id of the country or '?'",
                           "value": "Double - the total amount of influence of the  country on the tile",
                           "sources": [
                               {
@@ -87,11 +86,6 @@ All messages follow the following format
                           ]
                       }
                   ],
-                  "owner": {
-                      "countryId": "String or null - the id of the country owning this tile",
-                      "provinceId": "String - the id of province this tile belongs to",
-                      "cityId": "String - the id of city this tile belongs to",
-                  },
                   "content": [
                       {
                           "type": "marker",
@@ -99,109 +93,41 @@ All messages follow the following format
                       }
                   ]
               }
-          ],
-          "cities": [
-              {
-                  "cityId": "String - the id of the city",
-                  "countryId": "String - the id of the owner-country",
-                  "provinceId": "String - the id of the province this city belongs to",
-                  "tile": {
-                  	"tileId": "String - the id of the tile",
-                      "q": "Int - the q-coordinate of the tile",
-                      "r": "Int - the r-coordinate of the tile",
-                  },
-                  "name": "String - the name of the city"
-              }
-          ],
-          "provinces": [
-              {
-                  "provinceId": "String - the id of the province",
-                  "countryId": "String - the id of the owner country"
-              }
-          ]
-      }
-  }
-  ```
-
-## [OUT] Turn Result
-
-- Type: `turn-result`
-
-- Payload
-
-  ```json
-  {
-      "game": {
-          "turn": "Int - the current turn",
-          "countries": [
-              {
+          }
+      ],
+      "countries": [
+          {
+              "baseData": {
                   "countryId": "String - the id of the country",
                   "userId": "String - the id of the owner",
+              },
+              "advancedData?": {
                   "resources": {
                       "money": "Float - the amount of available money"
                   }
               }
-          ],
-          "tiles": [
-              {
-                  "tileId": "String - the id of the tile",
-                  "position": {
-                      "q": "Int - the q-coordinate",
-                      "r": "Int - the r-coordinate",
-                  },
-                  "data": {
-                      "terrainType": "String - the type of the terrain",
-                  },
-                  "influences": [
-                      {
-                          "countryId": "String - the id of the country",
-                          "value": "Double - the total amount of influence of the  country on the tile",
-                          "sources": [
-                              {
-                                  "cityId": "String - the id of the city",
-                                  "provinceId": "String - the id of the province",
-                                  "value": "Double - the amount of influence of the  city on the tile",
-                              }
-                          ]
-                      }
-                  ],
-                  "owner": {
-                      "countryId": "String or null - the id of the country owning this tile",
-                      "provinceId": "String - the id of province this tile belongs to",
-                      "cityId": "String - the id of city this tile belongs to",
-                  },
-                  "content": [
-                      {
-                          "type": "marker",
-                          "countryId": "String - the id of the owner country"
-                      }
-                  ]
-              }
-          ],
-          "cities": [
-              {
-                  "cityId": "String - the id of the city",
-                  "countryId": "String - the id of the owner-country",
-                  "provinceId": "String - the id of the province this city belongs to",
-                  "tile": {
-                  	"tileId": "String - the id of the tile",
-                      "q": "Int - the q-coordinate of the tile",
-                      "r": "Int - the r-coordinate of the tile",
-                  },
-                  "name": "String - the name of the city"
-              }
-          ],
-          "provinces": [
-              {
-                  "provinceId": "String - the id of the province",
-                  "countryId": "String - the id of the owner country"
-              }
-          ]
-      },
-      "errors": [
-         {
-              "errorMessage": "String"
-         }
+          }
+      ],
+      "provinces": [
+      	{
+          	"provinceId": "String - the id of the province",
+              "countryId": "String - the id of the owner country"
+  		}
+      ],
+      "cities": [
+      	{
+          	"cityId": "String - the id of the city",
+          	"countryId": "String - the id of the owner-country",
+          	"provinceId": "String - the id of the province this city belongs to",
+          	"tile": {
+              	"tileId": "String - the id of the tile",
+              	"q": "Int - the q-coordinate of the tile",
+              	"r": "Int - the r-coordinate of the tile",
+          	},
+          	"name": "String - the name of the city"
+          }
       ]
   }
   ```
+
+  

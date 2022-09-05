@@ -1,14 +1,18 @@
 export interface Country {
     countryId: string,
     userId: string,
+    color: CountryColor,
+    advancedData: CountryAdvancedData | null
+}
+
+export interface CountryAdvancedData {
     resources: {
         money: number
     },
-    color: CountryColor
 }
 
 export enum CountryColor {
-    RED= "red",
+    RED = "red",
     GREEN = "green",
     BLUE = "blue",
     CYAN = "cyan",

@@ -3,11 +3,14 @@
 **Main Gameplay Goal: "Resource Gathering"**
 
 1. fog of war system
-   - calculate visibility in backend, tile is visible if
-     - country has some influence in tile
-     - tile is not owned by another country
+   - calculate visibility in backend
+     - tile is "visible" if
+       - country has some influence in tile
+       - tile is not owned by another country
+     - tile is "uncovered" if
+       - country had seen tile in the past 
    - only send visible data to each player
-   - render visibility states appropriately
+   - render/display visibility states appropriately
 2. scouting system
    - player can send scout to selected tile
    - uncovers surrounding area for x turns
