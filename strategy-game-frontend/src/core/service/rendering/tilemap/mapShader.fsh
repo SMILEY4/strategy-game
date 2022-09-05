@@ -102,9 +102,11 @@ void main() {
 
     // highlight selected/mouseover
     if (isSelected(v_tilePosition)) {
-        tileColor = tileColor * 0.5;
+        float selectedFade = pow(1.0 - v_cornerData.x, 2.0);
+        tileColor = mix(tileColor, vec3(1.0, 1.0, 0.0), selectedFade);
     } else if (isMouseOver(v_tilePosition)) {
-        tileColor = tileColor * 0.75;
+        float mouseOverFade = pow(1.0 - v_cornerData.x, 4.0);
+        tileColor = mix(tileColor, vec3(0.7, 0.7, 0.0), mouseOverFade);
     }
 
     // return final color
