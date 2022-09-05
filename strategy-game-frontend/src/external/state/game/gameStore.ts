@@ -3,6 +3,7 @@ import {City} from "../../../models/state/city";
 import {Country} from "../../../models/state/country";
 import {Marker} from "../../../models/state/marker";
 import {Province} from "../../../models/state/Province";
+import {Scout} from "../../../models/state/scout";
 import {Tile} from "../../../models/state/tile";
 import {generateId} from "../../../shared/utils";
 
@@ -15,6 +16,7 @@ export namespace GameStore {
         provinces: Province[],
         tiles: Tile[],
         markers: Marker[],
+        scouts: Scout[],
         cities: City[]
     }
 
@@ -25,6 +27,7 @@ export namespace GameStore {
         provinces: [],
         tiles: [],
         markers: [],
+        scouts: [],
         cities: []
     };
 
@@ -35,7 +38,8 @@ export namespace GameStore {
             countries: Country[],
             provinces: Province[],
             cities: City[],
-            markers: Marker[]
+            markers: Marker[],
+            scouts: Scout[]
         ) => void
     }
 
@@ -47,7 +51,8 @@ export namespace GameStore {
                 countries: Country[],
                 provinces: Province[],
                 cities: City[],
-                markers: Marker[]
+                markers: Marker[],
+                scouts: Scout[]
             ) => set(() => ({
                 currentTurn: currentTurn,
                 tiles: tiles,
@@ -55,6 +60,7 @@ export namespace GameStore {
                 provinces: provinces,
                 cities: cities,
                 markers: markers,
+                scouts: scouts,
                 revisionId: generateId()
             })),
         };

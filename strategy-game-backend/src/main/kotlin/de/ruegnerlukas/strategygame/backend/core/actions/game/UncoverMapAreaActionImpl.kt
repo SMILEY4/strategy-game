@@ -1,12 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.distance
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 class UncoverMapAreaActionImpl(
     private val tilesByPosition: TilesQueryByGameAndPosition,
@@ -14,25 +14,9 @@ class UncoverMapAreaActionImpl(
 ) : UncoverMapAreaAction, Logging {
 
     override suspend fun perform(countryId: String, gameId: String, center: TilePosition, radius: Int) {
-        val positions = generatePositions(center, radius)
+        val positions = positionsCircle(center, radius)
         val tiles = findTiles(gameId, positions)
         uncoverTiles(tiles, countryId)
-    }
-
-
-    /**
-     * Generate all positions in the given circle
-     */
-    private fun generatePositions(center: TilePosition, radius: Int): List<TilePosition> {
-        val positions = mutableListOf<TilePosition>()
-        for (iq in (center.q - radius)..(center.q + radius)) {
-            for (ir in (center.r - radius)..(center.r + radius)) {
-                if (center.distance(iq, ir) <= radius) {
-                    positions.add(TilePosition(iq, ir))
-                }
-            }
-        }
-        return positions
     }
 
 

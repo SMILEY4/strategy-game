@@ -47,6 +47,7 @@ data class TileCityInfluence(
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = MarkerTileContent::class),
+    JsonSubTypes.Type(value = ScoutTileContent::class),
 )
 sealed class TileContent(
     val type: String
@@ -59,5 +60,16 @@ class MarkerTileContent(
 ) : TileContent(TYPE) {
     companion object {
         internal const val TYPE = "marker"
+    }
+}
+
+
+@JsonTypeName(ScoutTileContent.TYPE)
+class ScoutTileContent(
+    val countryId: String,
+    val turn: Int
+) : TileContent(TYPE) {
+    companion object {
+        internal const val TYPE = "scout"
     }
 }

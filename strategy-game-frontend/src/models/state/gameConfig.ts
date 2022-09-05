@@ -4,5 +4,8 @@ export interface GameConfig {
     cityIncomePerTurn: number,
     cityInfluenceAmount: number,
     cityInfluenceSpread: number,
-    tileOwnerInfluenceThreshold: number
+    tileOwnerInfluenceThreshold: number,
+    scoutVisibilityRange: number,
+    scoutLifetime: number,
+    scoutsMaxAmount: number
 }

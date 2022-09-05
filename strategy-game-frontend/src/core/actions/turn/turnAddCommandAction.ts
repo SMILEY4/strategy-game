@@ -35,6 +35,17 @@ export class TurnAddCommandAction {
         } as Command);
     }
 
+    addPlaceScout(tilePos: TilePosition) {
+        this.perform({
+            commandType: "place-scout",
+            cost: {
+                money: 0
+            },
+            q: tilePos.q,
+            r: tilePos.r
+        } as Command);
+    }
+
     addCreateCity(tilePos: TilePosition, name: string, provinceId: string | null) {
         this.perform({
             commandType: "create-city",

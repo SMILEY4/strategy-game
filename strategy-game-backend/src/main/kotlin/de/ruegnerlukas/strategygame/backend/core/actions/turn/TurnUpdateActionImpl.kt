@@ -4,12 +4,15 @@ import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.distance
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileCityInfluence
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileCountryInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileOwner
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.shared.max
+import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import kotlin.math.max
 
 class TurnUpdateActionImpl(
@@ -20,7 +23,9 @@ class TurnUpdateActionImpl(
         updateCountryResources(game)
         updateTileInfluences(game)
         updateTileOwner(game)
-        updateDiscoveredTiles(game)
+        updateDiscoveredTilesByInfluence(game)
+        updateDiscoveredTilesByScout(game)
+        updateTileContent(game)
     }
 
 
@@ -97,7 +102,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateDiscoveredTiles(game: GameExtendedEntity) {
+    private fun updateDiscoveredTilesByInfluence(game: GameExtendedEntity) {
         game.tiles.forEach { tile ->
             game.countries
                 .filter { !hasDiscovered(it.getKeyOrThrow(), tile) }
@@ -107,6 +112,49 @@ class TurnUpdateActionImpl(
                     }
                 }
         }
+    }
+
+
+    private fun updateDiscoveredTilesByScout(game: GameExtendedEntity) {
+        game.tiles
+            .asSequence()
+            .filter { tile -> tile.content.any { it.type == ScoutTileContent.TYPE } }
+            .forEach { tile ->
+                tile.content
+                    .filter { it.type == ScoutTileContent.TYPE }
+                    .map { it as ScoutTileContent }
+                    .forEach { scout ->
+                        positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
+                            .asSequence()
+                            .mapNotNull { pos -> game.tiles.find { it.position.q == pos.q && it.position.r == pos.r } }
+                            .filter { !hasDiscovered(scout.countryId, it) }
+                            .forEach { it.discoveredByCountries.add(scout.countryId) }
+                    }
+            }
+    }
+
+
+    private fun updateTileContent(game: GameExtendedEntity) {
+        game.tiles
+            .asSequence()
+            .filter { tile -> tile.content.isNotEmpty() }
+            .forEach { tile ->
+                val contentToRemove = mutableListOf<TileContent>()
+                tile.content.forEach { content ->
+                    when (content) {
+                        is ScoutTileContent -> {
+                            val lifetime = game.game.turn - content.turn
+                            if (lifetime > gameConfig.scoutLifetime) {
+                                contentToRemove.add(content)
+                            }
+                        }
+                        else -> {
+                            /*Nothing to do*/
+                        }
+                    }
+                }
+                tile.content.removeAll(contentToRemove)
+            }
     }
 
 

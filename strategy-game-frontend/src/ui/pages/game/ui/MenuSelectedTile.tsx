@@ -19,6 +19,7 @@ export function MenuSelectedTile(): ReactElement {
             <SectionOwner selectedTile={selectedTile}/>
             <SectionCity selectedTile={selectedTile}/>
             <SectionMarkers selectedTile={selectedTile}/>
+            <SectionScouts selectedTile={selectedTile}/>
             <SectionCommands selectedTile={selectedTile}/>
         </div>
     );
@@ -164,6 +165,28 @@ function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElem
 }
 
 
+function SectionScouts(props: { selectedTile: TilePosition | null }): ReactElement | null {
+
+    const canPlaceScout = GameHooks.useValidatePlaceScout(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+
+    function placeScout() {
+        if (props.selectedTile) {
+            AppConfig.turnAddCommand.addPlaceScout(props.selectedTile);
+        }
+    }
+
+    if (props.selectedTile) {
+        return (
+            <>
+                <h3>Scout</h3>
+                <button disabled={!canPlaceScout} onClick={placeScout}>Place Scout</button>
+            </>
+        );
+    } else {
+        return null;
+    }
+}
+
 function SectionCommands(props: { selectedTile: TilePosition | null }): ReactElement | null {
     const commands = LocalGameStateHooks.useCommandsAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
     if (props.selectedTile) {
@@ -174,6 +197,9 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
                     {commands.map(cmd => {
                         if (cmd.commandType === "place-marker") {
                             return <li>Place Marker</li>;
+                        }
+                        if (cmd.commandType === "place-scout") {
+                            return <li>Place Scout</li>;
                         }
                         if (cmd.commandType === "create-city") {
                             return <li>{"Create City '" + (cmd as CommandCreateCity).name + "'"}</li>;
@@ -196,7 +222,7 @@ function CreateCityDialog(props: { frameId: string, tile: TilePosition }): React
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
 
-    const availableProvinces = tile.advancedData ? getProvincesFromInfluences(tile.advancedData.influences) : []
+    const availableProvinces = tile.advancedData ? getProvincesFromInfluences(tile.advancedData.influences) : [];
 
     function getProvincesFromInfluences(influences: ({
         countryId: string,

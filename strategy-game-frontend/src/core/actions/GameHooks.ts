@@ -84,4 +84,9 @@ export namespace GameHooks {
     }
 
 
+    export function useValidatePlaceScout(q: number, r: number): boolean {
+        return true; // TODO
+    }
+
+
 }

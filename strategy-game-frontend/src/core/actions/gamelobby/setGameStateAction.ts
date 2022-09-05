@@ -1,12 +1,13 @@
 import {GameStateAccess} from "../../../external/state/game/gameStateAccess";
 import {LocalGameStateAccess} from "../../../external/state/localgame/localGameStateAccess";
-import {MsgMarkerTileContent} from "../../../models/messaging/messagingTileContent";
+import {MsgMarkerTileContent, MsgScoutTileContent} from "../../../models/messaging/messagingTileContent";
 import {PayloadGameState} from "../../../models/messaging/payloadGameState";
 import {City} from "../../../models/state/city";
 import {ALL_COUNTRY_COLORS, Country, CountryColor} from "../../../models/state/country";
 import {GameState} from "../../../models/state/gameState";
 import {Marker} from "../../../models/state/marker";
 import {Province} from "../../../models/state/Province";
+import {Scout} from "../../../models/state/scout";
 import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
 import {BordersCalculateAction} from "../border/bordersCalculateAction";
@@ -38,7 +39,8 @@ export class SetGameStateAction {
             countries,
             this.getProvinces(game),
             this.getCities(game),
-            this.getMarkers(game)
+            this.getMarkers(game),
+            this.getScouts(game)
         );
         this.localGameStateAccess.clearCommands();
         this.localGameStateAccess.setCurrentState(GameState.PLAYING);
@@ -127,6 +129,29 @@ export class SetGameStateAction {
             }
         });
         return markers;
+    }
+
+
+    private getScouts(game: PayloadGameState): Scout[] {
+        const scouts: Scout[] = [];
+        game.tiles.forEach(tile => {
+            if (tile.advancedData) {
+                tile.advancedData.content.forEach(content => {
+                    if (content.type === "scout") {
+                        scouts.push({
+                            tile: {
+                                tileId: tile.baseData.tileId,
+                                q: tile.baseData.position.q,
+                                r: tile.baseData.position.r
+                            },
+                            turn: (content as MsgScoutTileContent).turn,
+                            countryId: (content as MsgScoutTileContent).countryId
+                        });
+                    }
+                });
+            }
+        });
+        return scouts;
     }
 
 
