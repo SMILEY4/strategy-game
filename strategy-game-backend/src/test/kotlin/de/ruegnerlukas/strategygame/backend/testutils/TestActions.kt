@@ -3,6 +3,7 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
@@ -29,6 +30,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.Reserva
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
 
 object TestActions {
@@ -53,6 +55,7 @@ object TestActions {
         GameQueryImpl(database),
         GameUpdateImpl(database),
         SendGameStateActionImpl(
+            GameConfig.default(),
             GameExtendedQueryImpl(database),
             GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
         ),
@@ -65,9 +68,13 @@ object TestActions {
                 ResolveCreateCityCommandImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()
+                ),
+                ResolvePlaceScoutCommandImpl(
+                    GameConfig.default()
                 )
             ),
             SendGameStateActionImpl(
+                GameConfig.default(),
                 GameExtendedQueryImpl(database),
                 GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
             ),
@@ -95,6 +102,9 @@ object TestActions {
         ResolveCreateCityCommandImpl(
             ReservationInsertImpl(database),
             GameConfig.default()
+        ),
+        ResolvePlaceScoutCommandImpl(
+            GameConfig.default()
         )
     )
 
@@ -104,9 +114,13 @@ object TestActions {
             ResolveCreateCityCommandImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()
+            ),
+            ResolvePlaceScoutCommandImpl(
+                GameConfig.default()
             )
         ),
         SendGameStateActionImpl(
+            GameConfig.default(),
             GameExtendedQueryImpl(database),
             GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
         ),

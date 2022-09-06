@@ -160,7 +160,7 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 0.5, 1, 0, 1);
+        this.addObject(x, y, width, height, color, 0, 1/3, 2/3, 0, 1);
     }
 
 
@@ -178,7 +178,7 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 0, 0.5, 0, 1);
+        this.addObject(x, y, width, height, color, 0, 0, 1/3, 0, 1);
     }
 
 
@@ -186,7 +186,7 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 0, 0.5, 1, 0);
+        this.addObject(x, y, width, height, color, 0, 2/3, 1, 0, 1);
     }
     
 
