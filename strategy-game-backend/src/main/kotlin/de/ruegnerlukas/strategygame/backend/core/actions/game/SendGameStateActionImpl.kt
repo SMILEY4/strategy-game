@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction
@@ -15,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExten
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class SendGameStateActionImpl(
+    private val gameConfig: GameConfig,
     private val gameExtendedQuery: GameExtendedQuery,
     private val messageProducer: GameMessageProducer,
 ) : SendGameStateAction, Logging {
@@ -65,7 +67,7 @@ class SendGameStateActionImpl(
      * Convert the given game to a dto specific for the given player
      */
     private fun convertToDTO(userId: String, game: GameExtendedEntity): GameExtendedDTO {
-        return GameExtendedDTOCreator().create(userId, game)
+        return GameExtendedDTOCreator(gameConfig).create(userId, game)
     }
 
 

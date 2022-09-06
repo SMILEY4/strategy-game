@@ -13,9 +13,11 @@
   - [Cities](./game/cities.md)
   - [Provinces](./game/provinces.md)
   - [Borders](./game/borders.md)
+  - [Fog-of-War and Visibility](./game/fogOfWar.md)
+    - Scouting
+    - Discovered Countries
 - [Changelog](./changelog/changelog.md)
 - Milestones/Roadmap
   - [Milestone 0.2](./roadmap/milestone_0_2.md)
   - [Milestone 0.3](./roadmap/milestone_0_3.md)
-
 

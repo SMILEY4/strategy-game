@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
@@ -104,7 +105,9 @@ fun Application.module() {
         insertReservation,
         gameConfig
     )
+    val resolvePlaceScoutCommandAction = ResolvePlaceScoutCommandImpl(gameConfig)
     val sendGameStateAction = SendGameStateActionImpl(
+        gameConfig,
         queryGameExtended,
         messageProducer
     )
@@ -140,7 +143,8 @@ fun Application.module() {
     )
     val resolveCommandsAction = ResolveCommandsActionImpl(
         resolvePlaceMarkerCommandAction,
-        resolveCreateCityCommandAction
+        resolveCreateCityCommandAction,
+        resolvePlaceScoutCommandAction
     )
     val turnUpdateActionImpl = TurnUpdateActionImpl(
         gameConfig

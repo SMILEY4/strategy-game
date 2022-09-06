@@ -2,7 +2,10 @@ import {GameStateHooks} from "../../external/state/game/gameStateHooks";
 import {GameStore} from "../../external/state/game/gameStore";
 import {GameConfigStateHooks} from "../../external/state/gameconfig/gameConfigStateHooks";
 import {LocalGameStateHooks} from "../../external/state/localgame/localGameStateHooks";
+import {LocalGameStore} from "../../external/state/localgame/localGameStore";
 import {City} from "../../models/state/city";
+import {CommandPlaceScout} from "../../models/state/command";
+import {Scout} from "../../models/state/scout";
 import {TerrainType} from "../../models/state/terrainType";
 import {Tile} from "../../models/state/tile";
 import {TileVisibility} from "../../models/state/tileVisibility";
@@ -77,6 +80,48 @@ export namespace GameHooks {
                 validateTileCity(tile, cities),
                 validateTileInfluence(country.countryId, tile),
                 validateResourceCost(currentAmountMoney)
+            ].every(e => e);
+        } else {
+            return false;
+        }
+    }
+
+
+    export function useValidatePlaceScout(q: number, r: number): boolean {
+
+        const gameConfig = useGameConfig();
+        const country = usePlayerCountry()!!;
+        const scouts = GameStore.useState(state => state.scouts);
+        const scoutCommands = LocalGameStore.useState(state => state.commands.filter(c => c.commandType === "place-scout") as CommandPlaceScout[]);
+        const tile = GameStateHooks.useTileAt(q, r);
+
+        function validateTileVisibility(tile: Tile) {
+            return tile.visibility !== TileVisibility.UNKNOWN;
+        }
+
+        function validateFreeTile(tile: Tile, countryId: string, scouts: Scout[], commands: CommandPlaceScout[]) {
+            let count = scouts
+                .filter(s => s.tile.tileId === tile.tileId)
+                .filter(s => s.countryId === countryId)
+                .length;
+            count += commands
+                .filter(s => s.q === tile.position.q && s.r === tile.position.r)
+                .length
+            return count === 0;
+        }
+
+        function validateScoutCount(scouts: Scout[], commands: CommandPlaceScout[], countryId: string, maxScouts: number) {
+            const count = scouts
+                .filter(s => s.countryId === countryId)
+                .length + commands.length;
+            return count < maxScouts;
+        }
+
+        if (tile) {
+            return [
+                validateTileVisibility(tile),
+                validateFreeTile(tile, country.countryId, scouts, scoutCommands),
+                validateScoutCount(scouts, scoutCommands, country.countryId, gameConfig.scoutsMaxAmount),
             ].every(e => e);
         } else {
             return false;

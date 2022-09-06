@@ -2,7 +2,7 @@ import {GameStore} from "../../../../external/state/game/gameStore";
 import {LocalGameStore} from "../../../../external/state/localgame/localGameStore";
 import {UserStateAccess} from "../../../../external/state/user/userStateAccess";
 import {City} from "../../../../models/state/city";
-import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../../models/state/command";
+import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../../models/state/command";
 import {Country, CountryColor} from "../../../../models/state/country";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
@@ -84,19 +84,21 @@ export class TileObjectRenderer {
 
         this.batchRenderer.begin();
 
+        // CITIES
         gameState.cities.forEach(e => {
             this.addCitySprite(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false));
-            this.addCityLabel(camera.getZoom(), e.tile.q, e.tile.r, this.textRenderer.getRegion(e.name))
+            this.addCityLabel(camera.getZoom(), e.tile.q, e.tile.r, this.textRenderer.getRegion(e.name));
         });
 
         localGameState.commands
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
             .forEach(e => {
-                this.addCitySprite(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true))
-                this.addCityLabel(camera.getZoom(), e.q, e.r, this.textRenderer.getRegion(e.name + " (P)"))
+                this.addCitySprite(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true));
+                this.addCityLabel(camera.getZoom(), e.q, e.r, this.textRenderer.getRegion(e.name + " (P)"));
             });
 
+        // MARKERS
         gameState.markers
             .forEach(e => this.addMarkerSprite(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false)));
 
@@ -105,8 +107,17 @@ export class TileObjectRenderer {
             .map(e => e as CommandPlaceMarker)
             .forEach(e => this.addMarkerSprite(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true)));
 
-        this.textureSprites.bind(0)
-        this.textRenderer.getTexture()?.bind(1)
+        // SCOUTS
+        gameState.scouts
+            .forEach(e => this.addScoutSprite(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false)));
+
+        localGameState.commands
+            .filter(e => e.commandType === "place-scout")
+            .map(e => e as CommandPlaceScout)
+            .forEach(e => this.addScoutSprite(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true)));
+
+        this.textureSprites.bind(0);
+        this.textRenderer.getTexture()?.bind(1);
 
         this.batchRenderer.end(camera, this.shader, {
             uniforms: {
@@ -149,7 +160,7 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 0.5, 1, 0, 1);
+        this.addObject(x, y, width, height, color, 0, 1/3, 2/3, 0, 1);
     }
 
 
@@ -158,7 +169,7 @@ export class TileObjectRenderer {
             const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
             const width = region.width / 2;
             const height = region.height / 2;
-            this.addObject(x, y - 10, width / camZoom, height / camZoom, this.COLOR_WHITE, 1, region.u0, region.u1, region.v0, region.v1)
+            this.addObject(x, y - 10, width / camZoom, height / camZoom, this.COLOR_WHITE, 1, region.u0, region.u1, region.v0, region.v1);
         }
     }
 
@@ -167,9 +178,17 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 0, 0.5, 0, 1);
+        this.addObject(x, y, width, height, color, 0, 0, 1/3, 0, 1);
     }
 
+
+    private addScoutSprite(q: number, r: number, color: number[]) {
+        const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
+        const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
+        const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
+        this.addObject(x, y, width, height, color, 0, 2/3, 1, 0, 1);
+    }
+    
 
     private addObject(x: number, y: number, width: number, height: number, color: number[], textureIndex: number, u0: number, u1: number, v0: number, v1: number) {
         this.batchRenderer.add([

@@ -5,38 +5,50 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeInfo(
-	use = JsonTypeInfo.Id.NAME,
-	include = JsonTypeInfo.As.EXISTING_PROPERTY,
-	property = "type"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type"
 )
 @JsonSubTypes(
-	JsonSubTypes.Type(value = PlaceMarkerCommand::class),
-	JsonSubTypes.Type(value = CreateCityCommand::class),
+    JsonSubTypes.Type(value = PlaceMarkerCommand::class),
+    JsonSubTypes.Type(value = CreateCityCommand::class),
+    JsonSubTypes.Type(value = PlaceScoutCommand::class),
 )
 sealed class PlayerCommand(
-	val type: String,
+    val type: String,
 )
 
 
 @JsonTypeName(PlaceMarkerCommand.TYPE)
 class PlaceMarkerCommand(
-	val q: Int,
-	val r: Int,
+    val q: Int,
+    val r: Int,
 ) : PlayerCommand(TYPE) {
-	companion object {
-		internal const val TYPE = "place-marker"
-	}
+    companion object {
+        internal const val TYPE = "place-marker"
+    }
 }
 
 
 @JsonTypeName(CreateCityCommand.TYPE)
 class CreateCityCommand(
-	val q: Int,
-	val r: Int,
-	val name: String,
-	val provinceId: String?,
+    val q: Int,
+    val r: Int,
+    val name: String,
+    val provinceId: String?,
 ) : PlayerCommand(TYPE) {
-	companion object {
-		internal const val TYPE = "create-city"
-	}
+    companion object {
+        internal const val TYPE = "create-city"
+    }
+}
+
+
+@JsonTypeName(PlaceScoutCommand.TYPE)
+class PlaceScoutCommand(
+    val q: Int,
+    val r: Int,
+) : PlayerCommand(TYPE) {
+    companion object {
+        internal const val TYPE = "place-scout"
+    }
 }

@@ -1,4 +1,4 @@
-import {Command, CommandCreateCity, CommandPlaceMarker} from "../../../models/state/command";
+import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../models/state/command";
 import {UserStateAccess} from "../../state/user/userStateAccess";
 import {MessageHandler} from "./messageHandler";
 import {WebsocketClient} from "./websocketClient";
@@ -16,8 +16,9 @@ export class GameMessagingApi {
     }
 
     open(gameId: string): Promise<void> {
-        console.log("OPEN WS", `/api/game/${gameId}?token=${this.userStateAccess.getToken()}`);
-        return this.websocketClient.open(`/api/game/${gameId}?token=${this.userStateAccess.getToken()}`, message => {
+        const url = `/api/game/${gameId}?token=${this.userStateAccess.getToken()}`;
+        console.log("open websocket-connection:", url);
+        return this.websocketClient.open(url, message => {
             this.messageHandler.onMessage(message.type, message.payload);
         });
     }
@@ -35,6 +36,14 @@ export class GameMessagingApi {
                             type: "place-marker",
                             q: cmdPlaceMarker.q,
                             r: cmdPlaceMarker.r,
+                        };
+                    }
+                    if (cmd.commandType === "place-scout") {
+                        const cmdPlaceScout = cmd as CommandPlaceScout;
+                        return {
+                            type: "place-scout",
+                            q: cmdPlaceScout.q,
+                            r: cmdPlaceScout.r,
                         };
                     }
                     if (cmd.commandType === "create-city") {

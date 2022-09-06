@@ -12,6 +12,7 @@ flat in vec3 v_borderData;
 
 out vec4 outColor;
 
+#pragma glslify: noise = require('glsl-noise/simplex/3d')
 
 vec3 calcTerrainColor(float terrainId) {
     if(terrainId < -0.5) { // -1 -> undiscovered
