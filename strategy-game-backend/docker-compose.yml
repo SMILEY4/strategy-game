@@ -1,0 +1,21 @@
+version: "2"
+
+services:
+
+    app:
+        image: strategy-game-backend:latest
+        container_name: strategy-game-backend
+        build:
+            context: .
+        depends_on:
+            - database
+        ports:
+            - "8080:8080"
+
+    database:
+        image: arangodb:latest
+        container_name: strategy-game-database
+        environment:
+            ARANGO_NO_AUTH: 1
+        ports:
+            - "8529:8529"
