@@ -40,6 +40,8 @@
 
    - fish (food)
 
+   - wheat (in some land tiles)
+
    - adapt city creation validation -> "is valid tile (type)"
 
 5. implement other resource types for country
@@ -65,6 +67,8 @@
      - "Stone Mine", tile = mountain, resource = stone
 
      - "Fishers Hut", tile = fish, resource = food
+     
+     - "Farm", tile = wheat, resource = food
 
 7. buildings produce correct amount of resources each turn based on building stats + available tiles
 
