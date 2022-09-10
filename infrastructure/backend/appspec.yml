@@ -13,15 +13,12 @@ permissions:
 
 
 hooks:
-    BeforeInstall:
-        - location: server_clear.sh
-          timeout: 300
     AfterInstall:
-        - location: server_fix_privileges.sh
+        - location: load_image.sh
           timeout: 300
     ApplicationStart:
-        - location: server_start.sh
-          timeout: 20
+        - location: start_container.sh
+          timeout: 300
     ApplicationStop:
-        - location: server_stop.sh
+        - location: kill_container.sh
           timeout: 20

@@ -29,10 +29,14 @@ Parameters:
         Type: "String"
         Description: "Name of a key-pair for ec2-instances"
         Default: "ec2-kp"
+    GitHubRepositoryId:
+        Type: "String"
+        Description: "The id of the source GithubRepository, i.e. <owner>/<repo-name>"
+        Default: "SMILEY4/strategy-game"
     GitBranch:
         Type: "String"
         Description: "Name of the git-branch to build and deploy"
-        Default: "develop"
+        Default: "deployment-marker"
     GithubCodeStarConnectionArn:
         Type: "String"
         Description: "Arn of the already created codestar connection to github"
@@ -229,6 +233,7 @@ Resources:
                             - "sts:AssumeRole"
             ManagedPolicyArns:
                 - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
+                - "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
                 - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 
     ServerInstanceProfile:
@@ -280,10 +285,20 @@ Resources:
                     #!/bin/bash -xe
 
                     sudo apt update -y
-
-                    # install java
-                    sudo apt install openjdk-11-jre-headless -y
-
+                    
+                    #install aws-cli
+                    sudo apt-get install awscli -y
+                    
+                    #install docker
+                    sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+                    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+                    apt-cache policy docker-ce
+                    sudo apt install docker-ce -y
+    
+                    #install docker compose
+                    apt-get install docker-compose-plugin -y
+    
                     # install CodeDeploy-Agent
                     # see: https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html
                     sudo apt-get install ruby-full -y
@@ -319,14 +334,14 @@ Resources:
             Targets:
                 -   Id: !Ref ServerInstance
                     Port: 8080
-            HealthCheckPath: "/api/health"
-            HealthCheckIntervalSeconds: 300
             HealthCheckProtocol: "HTTP"
+            HealthCheckPath: "/api/health"
+            Matcher:
+                HttpCode: "200-299"
+            HealthCheckIntervalSeconds: 300
             HealthCheckTimeoutSeconds: 15
             HealthyThresholdCount: 5
             UnhealthyThresholdCount: 3
-            Matcher:
-                HttpCode: "200-299"
 
     AppLoadBalancer:
         Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
@@ -383,7 +398,6 @@ Resources:
                         DNSName: !GetAtt AppLoadBalancer.DNSName
                         HostedZoneId: !GetAtt AppLoadBalancer.CanonicalHostedZoneID
 
-
     #===================================================================================================================
     #    Build/Deploy-Pipeline
     #===================================================================================================================
@@ -427,34 +441,43 @@ Resources:
                     PolicyDocument:
                         Version: "2012-10-17"
                         Statement:
-                            -   Sid: "VisualEditor0"
-                                Effect: "Allow"
+                            -   Effect: "Allow"
                                 Action:
-                                    - "s3:GetBucketAcl"
-                                    - "logs:CreateLogGroup"
-                                    - "logs:PutLogEvents"
-                                    - "codebuild:CreateReportGroup"
-                                    - "codebuild:CreateReport"
-                                    - "s3:PutObject"
-                                    - "s3:GetObject"
-                                    - "logs:CreateLogStream"
-                                    - "codebuild:UpdateReport"
                                     - "codebuild:BatchPutCodeCoverages"
                                     - "codebuild:BatchPutTestCases"
-                                    - "s3:GetBucketLocation"
-                                    - "s3:GetObjectVersion"
-                                Resource: "*"
-                            -   Sid: "VisualEditor1"
-                                Effect: "Allow"
-                                Action:
-                                    - "s3:PutObject"
+                                    - "codebuild:CreateReport"
+                                    - "codebuild:CreateReportGroup"
+                                    - "codebuild:UpdateReport"
+                                    - "ecr:BatchCheckLayerAvailability"
+                                    - "ecr:BatchDeleteImage"
+                                    - "ecr:BatchGetImage"
+                                    - "ecr:CompleteLayerUpload"
+                                    - "ecr:DescribeImages"
+                                    - "ecr:DescribePullThroughCacheRules"
+                                    - "ecr:GetAuthorizationToken"
+                                    - "ecr:GetDownloadUrlForLayer"
+                                    - "ecr:InitiateLayerUpload"
+                                    - "ecr:ListImages"
+                                    - "ecr:ListImages"
+                                    - "ecr:PutImage"
+                                    - "ecr:UploadLayerPart"
+                                    - "imagebuilder:GetComponent"
+                                    - "imagebuilder:GetContainerRecipe"
+                                    - "logs:CreateLogGroup"
+                                    - "logs:CreateLogStream"
+                                    - "logs:PutLogEvents"
+                                    - "s3:*"
                                     - "s3:GetBucketAcl"
                                     - "s3:GetBucketLocation"
+                                    - "s3:GetObject"
+                                    - "s3:GetObjectVersion"
+                                    - "s3:PutObject"
                                 Resource: "*"
-                            -   Sid: "VisualEditor2"
-                                Effect: "Allow"
-                                Action: "s3:*"
-                                Resource: "*"
+                            -   Effect: Allow
+                                Action:
+                                    - 'codecommit:GitPull'
+                                Resource:
+                                    - !Sub arn:aws:codecommit:*:*:${GitHubRepositoryId}
 
     CodeBuildProjectBackend:
         Type: "AWS::CodeBuild::Project"
@@ -472,8 +495,9 @@ Resources:
                 BuildSpec: "infrastructure/backend/buildspec.yml"
             Environment:
                 ComputeType: "BUILD_GENERAL1_SMALL"
-                Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
                 Type: "LINUX_CONTAINER"
+                Image: "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+                PrivilegedMode: true
             LogsConfig:
                 S3Logs:
                     Location: !Join
@@ -602,47 +626,53 @@ Resources:
                                             - "ec2.amazonaws.com"
                                             - "ecs-tasks.amazonaws.com"
                             -   Action:
+                                    - "appconfig:GetDeployment"
+                                    - "appconfig:StartDeployment"
+                                    - "appconfig:StopDeployment"
+                                    - "autoscaling:*"
+                                    - "cloudformation:*"
+                                    - "cloudformation:CreateChangeSet"
+                                    - "cloudformation:CreateStack"
+                                    - "cloudformation:DeleteChangeSet"
+                                    - "cloudformation:DeleteStack"
+                                    - "cloudformation:DescribeChangeSet"
+                                    - "cloudformation:DescribeStacks"
+                                    - "cloudformation:ExecuteChangeSet"
+                                    - "cloudformation:SetStackPolicy"
+                                    - "cloudformation:UpdateStack"
+                                    - "cloudformation:ValidateTemplate"
+                                    - "cloudformation:ValidateTemplate"
+                                    - "cloudwatch:*"
+                                    - "codebuild:BatchGetBuildBatches"
+                                    - "codebuild:BatchGetBuilds"
+                                    - "codebuild:StartBuild"
+                                    - "codebuild:StartBuildBatch"
                                     - "codecommit:CancelUploadArchive"
                                     - "codecommit:GetBranch"
                                     - "codecommit:GetCommit"
                                     - "codecommit:GetRepository"
                                     - "codecommit:GetUploadArchiveStatus"
                                     - "codecommit:UploadArchive"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Action:
                                     - "codedeploy:CreateDeployment"
                                     - "codedeploy:GetApplication"
                                     - "codedeploy:GetApplicationRevision"
                                     - "codedeploy:GetDeployment"
                                     - "codedeploy:GetDeploymentConfig"
                                     - "codedeploy:RegisterApplicationRevision"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Action:
                                     - "codestar-connections:UseConnection"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Action:
-                                    - "elasticbeanstalk:*"
+                                    - "devicefarm:CreateUpload"
+                                    - "devicefarm:GetRun"
+                                    - "devicefarm:GetUpload"
+                                    - "devicefarm:ListDevicePools"
+                                    - "devicefarm:ListProjects"
+                                    - "devicefarm:ScheduleRun"
                                     - "ec2:*"
-                                    - "elasticloadbalancing:*"
-                                    - "autoscaling:*"
-                                    - "cloudwatch:*"
-                                    - "s3:*"
-                                    - "sns:*"
-                                    - "cloudformation:*"
-                                    - "rds:*"
-                                    - "sqs:*"
+                                    - "ecr:DescribeImages"
                                     - "ecs:*"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Action:
+                                    - "elasticbeanstalk:*"
+                                    - "elasticloadbalancing:*"
                                     - "lambda:InvokeFunction"
                                     - "lambda:ListFunctions"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Action:
                                     - "opsworks:CreateDeployment"
                                     - "opsworks:DescribeApps"
                                     - "opsworks:DescribeCommands"
@@ -651,65 +681,20 @@ Resources:
                                     - "opsworks:DescribeStacks"
                                     - "opsworks:UpdateApp"
                                     - "opsworks:UpdateStack"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Action:
-                                    - "cloudformation:CreateStack"
-                                    - "cloudformation:DeleteStack"
-                                    - "cloudformation:DescribeStacks"
-                                    - "cloudformation:UpdateStack"
-                                    - "cloudformation:CreateChangeSet"
-                                    - "cloudformation:DeleteChangeSet"
-                                    - "cloudformation:DescribeChangeSet"
-                                    - "cloudformation:ExecuteChangeSet"
-                                    - "cloudformation:SetStackPolicy"
-                                    - "cloudformation:ValidateTemplate"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Action:
-                                    - "codebuild:BatchGetBuilds"
-                                    - "codebuild:StartBuild"
-                                    - "codebuild:BatchGetBuildBatches"
-                                    - "codebuild:StartBuildBatch"
-                                Resource: "*"
-                                Effect: "Allow"
-                            -   Effect: "Allow"
-                                Action:
-                                    - "devicefarm:ListProjects"
-                                    - "devicefarm:ListDevicePools"
-                                    - "devicefarm:GetRun"
-                                    - "devicefarm:GetUpload"
-                                    - "devicefarm:CreateUpload"
-                                    - "devicefarm:ScheduleRun"
-                                Resource: "*"
-                            -   Effect: "Allow"
-                                Action:
-                                    - "servicecatalog:ListProvisioningArtifacts"
+                                    - "rds:*"
+                                    - "s3:*"
                                     - "servicecatalog:CreateProvisioningArtifact"
-                                    - "servicecatalog:DescribeProvisioningArtifact"
                                     - "servicecatalog:DeleteProvisioningArtifact"
+                                    - "servicecatalog:DescribeProvisioningArtifact"
+                                    - "servicecatalog:ListProvisioningArtifacts"
                                     - "servicecatalog:UpdateProduct"
-                                Resource: "*"
-                            -   Effect: "Allow"
-                                Action:
-                                    - "cloudformation:ValidateTemplate"
-                                Resource: "*"
-                            -   Effect: "Allow"
-                                Action:
-                                    - "ecr:DescribeImages"
-                                Resource: "*"
-                            -   Effect: "Allow"
-                                Action:
+                                    - "sns:*"
+                                    - "sqs:*"
                                     - "states:DescribeExecution"
                                     - "states:DescribeStateMachine"
                                     - "states:StartExecution"
                                 Resource: "*"
-                            -   Effect: "Allow"
-                                Action:
-                                    - "appconfig:StartDeployment"
-                                    - "appconfig:StopDeployment"
-                                    - "appconfig:GetDeployment"
-                                Resource: "*"
+                                Effect: "Allow"
 
     BackendArtifactBucket:
         Type: "AWS::S3::Bucket"
@@ -748,9 +733,9 @@ Resources:
                                 Version: "1"
                                 Provider: "CodeStarSourceConnection"
                             Configuration:
-                                ConnectionArn: "arn:aws:codestar-connections:eu-central-1:627717213620:connection/16c629c9-0240-49a9-a2bf-93ea8ef91b10"
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
                                 BranchName: !Ref GitBranch
-                                FullRepositoryId: "SMILEY4/strategy-game"
+                                FullRepositoryId: !Ref GitHubRepositoryId
                                 OutputArtifactFormat: "CODE_ZIP"
                                 DetectChanges: false
                             OutputArtifacts:
@@ -825,7 +810,7 @@ Resources:
                             Configuration:
                                 ConnectionArn: !Ref GithubCodeStarConnectionArn
                                 BranchName: !Ref GitBranch
-                                FullRepositoryId: "SMILEY4/strategy-game"
+                                FullRepositoryId: !Ref GitHubRepositoryId
                                 OutputArtifactFormat: "CODE_ZIP"
                                 DetectChanges: false
                             OutputArtifacts:

@@ -22,15 +22,11 @@ export class DebugRenderer {
 					name: "in_position",
 					type: ShaderAttributeType.FLOAT,
 					amountComponents: 2,
-					offset: 0,
-					stride: 5
 				},
 				{
 					name: "in_color",
 					type: ShaderAttributeType.FLOAT,
 					amountComponents: 3,
-					offset: 2,
-					stride: 5
 				}
 			],
 			uniforms: [
@@ -94,8 +90,8 @@ export class DebugRenderer {
 		// draw
 		this.shader.use({
 			attributeBuffers: {
-				"in_position": this.bufferData,
-				"in_color": this.bufferData
+				"in_position": this.bufferData!!,
+				"in_color": this.bufferData!!
 			},
 			uniformValues: {
 				"u_viewProjection": viewMatrix
