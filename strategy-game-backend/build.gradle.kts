@@ -92,3 +92,12 @@ tasks.shadowJar {
 		attributes(Pair("Main-Class", "io.ktor.server.netty.EngineMain"))
 	}
 }
+
+abstract class PrintVersionTask : DefaultTask() {
+	@TaskAction
+	fun greet() {
+		println(project.version)
+	}
+}
+
+tasks.register<PrintVersionTask>("printVersion")
