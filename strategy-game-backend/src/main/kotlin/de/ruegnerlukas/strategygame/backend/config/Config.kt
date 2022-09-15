@@ -103,5 +103,7 @@ data class AwsCognitoConfig(
 data class DbConfig(
 	val host: String,
 	val port: Int,
-	val name: String
+	val name: String,
+	val retryTimeout: Int,
+	val retryCount: Int
 )
