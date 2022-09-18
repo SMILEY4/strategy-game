@@ -1,3 +1,4 @@
+import {Color} from "../state/Color";
 import {TileVisibility} from "../state/tileVisibility";
 import {MsgTileContent} from "./messagingTileContent";
 
@@ -36,7 +37,8 @@ export interface PayloadGameState {
     countries: ({
         baseData: {
             countryId: string,
-            userId: string
+            userId: string,
+            color: Color
         },
         advancedData: {
             resources: {
@@ -46,7 +48,8 @@ export interface PayloadGameState {
     })[],
     provinces: ({
         provinceId: string,
-        countryId: string
+        countryId: string,
+        color: Color
     })[],
     cities: ({
         cityId: string,
@@ -57,6 +60,7 @@ export interface PayloadGameState {
             q: number,
             r: number
         },
-        name: string
+        name: string,
+        color: Color
     })[]
 }

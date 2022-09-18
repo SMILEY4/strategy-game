@@ -6,6 +6,7 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.ports.models.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryResources
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
@@ -86,6 +87,7 @@ class GameJoinActionImpl(
             CountryEntity(
                 gameId = game.key!!,
                 userId = userId,
+                color = COUNTRY_COLORS[(game.players.size-1) % COUNTRY_COLORS.size],
                 resources = CountryResources(
                     money = 200f
                 )

@@ -6,8 +6,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.traceId
-import io.github.smiley4.ktorswaggerui.documentation.delete
-import io.github.smiley4.ktorswaggerui.documentation.post
+import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate

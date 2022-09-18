@@ -3,7 +3,7 @@ import {LocalGameStore} from "../../../../external/state/localgame/localGameStor
 import {UserStateAccess} from "../../../../external/state/user/userStateAccess";
 import {City} from "../../../../models/state/city";
 import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../../models/state/command";
-import {Country, CountryColor} from "../../../../models/state/country";
+import {Country} from "../../../../models/state/country";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {BatchRenderer} from "../utils/batchRenderer";
@@ -160,7 +160,7 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 1/3, 2/3, 0, 1);
+        this.addObject(x, y, width, height, color, 0, 1 / 3, 2 / 3, 0, 1);
     }
 
 
@@ -178,7 +178,7 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 0, 1/3, 0, 1);
+        this.addObject(x, y, width, height, color, 0, 0, 1 / 3, 0, 1);
     }
 
 
@@ -186,9 +186,9 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
-        this.addObject(x, y, width, height, color, 0, 2/3, 1, 0, 1);
+        this.addObject(x, y, width, height, color, 0, 2 / 3, 1, 0, 1);
     }
-    
+
 
     private addObject(x: number, y: number, width: number, height: number, color: number[], textureIndex: number, u0: number, u1: number, v0: number, v1: number) {
         this.batchRenderer.add([
@@ -205,14 +205,10 @@ export class TileObjectRenderer {
     private getColor(countries: Country[], countryId: string, isCommand: boolean): [number, number, number, number] {
         const country = countries.find(c => c.countryId === countryId);
         if (country) {
-            if (country.color === CountryColor.RED) return [1, 0, 0, isCommand ? 0.5 : 1];
-            if (country.color === CountryColor.GREEN) return [0, 1, 0, isCommand ? 0.5 : 1];
-            if (country.color === CountryColor.BLUE) return [0, 0, 1, isCommand ? 0.5 : 1];
-            if (country.color === CountryColor.CYAN) return [0, 1, 1, isCommand ? 0.5 : 1];
-            if (country.color === CountryColor.MAGENTA) return [1, 0, 1, isCommand ? 0.5 : 1];
-            if (country.color === CountryColor.YELLOW) return [1, 1, 0, isCommand ? 0.5 : 1];
+            return [country.color.red / 255, country.color.green / 255, country.color.blue / 255, isCommand ? 0.5 : 1];
+        } else {
+            return [1, 1, 1, isCommand ? 0.5 : 1];
         }
-        return [1, 1, 1, isCommand ? 0.5 : 1];
     }
 
 

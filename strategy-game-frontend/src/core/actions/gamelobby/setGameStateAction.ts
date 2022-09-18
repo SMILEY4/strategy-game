@@ -3,7 +3,7 @@ import {LocalGameStateAccess} from "../../../external/state/localgame/localGameS
 import {MsgMarkerTileContent, MsgScoutTileContent} from "../../../models/messaging/messagingTileContent";
 import {PayloadGameState} from "../../../models/messaging/payloadGameState";
 import {City} from "../../../models/state/city";
-import {ALL_COUNTRY_COLORS, Country, CountryColor} from "../../../models/state/country";
+import {Country} from "../../../models/state/country";
 import {GameState} from "../../../models/state/gameState";
 import {Marker} from "../../../models/state/marker";
 import {Province} from "../../../models/state/Province";
@@ -29,9 +29,8 @@ export class SetGameStateAction {
 
     perform(game: PayloadGameState): void {
         console.log("set game state");
-        const countryColors = this.generateCountryColors(game);
-        const countries = this.getCountries(game, countryColors);
-        const tiles = this.getTiles(game, countryColors);
+        const countries = this.getCountries(game);
+        const tiles = this.getTiles(game);
         this.calculateBordersAction.perform(tiles);
         this.gameStateAccess.setState(
             game.turn,
@@ -47,19 +46,11 @@ export class SetGameStateAction {
     }
 
 
-    private generateCountryColors(game: PayloadGameState): ([string, CountryColor])[] {
-        return game.countries
-            .map(country => country.baseData.countryId)
-            .sort()
-            .map((id, index) => [id, ALL_COUNTRY_COLORS[index % ALL_COUNTRY_COLORS.length]]);
-    }
-
-
-    private getCountries(game: PayloadGameState, colors: ([string, CountryColor])[]): Country[] {
+    private getCountries(game: PayloadGameState): Country[] {
         return game.countries.map(country => ({
             countryId: country.baseData.countryId,
             userId: country.baseData.userId,
-            color: (colors.find(color => color[0] === country.baseData.countryId)!!)[1] as CountryColor,
+            color: country.baseData.color,
             advancedData: country.advancedData ? {
                 resources: {
                     money: country.advancedData.resources.money
@@ -77,7 +68,7 @@ export class SetGameStateAction {
     }
 
 
-    private getTiles(game: PayloadGameState, colors: ([string, CountryColor])[]): Tile[] {
+    private getTiles(game: PayloadGameState): Tile[] {
         return game.tiles.map(tile => ({
             tileId: tile.baseData.tileId,
             position: {
@@ -90,7 +81,7 @@ export class SetGameStateAction {
                 terrainType: tile.generalData.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
                 owner: tile.generalData.owner ? {
                     countryId: tile.generalData.owner?.countryId,
-                    countryColor: (colors.find(color => color[0] === tile.generalData?.owner?.countryId)!!)[1] as CountryColor,
+                    countryColor: game.countries.find(c => c.baseData.countryId === tile.generalData?.owner?.countryId)?.baseData.color,
                     provinceId: tile.generalData.owner?.provinceId,
                     cityId: tile.generalData.owner.cityId,
                 } : null,
