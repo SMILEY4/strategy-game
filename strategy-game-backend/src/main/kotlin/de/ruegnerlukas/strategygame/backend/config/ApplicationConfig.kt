@@ -41,9 +41,9 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQu
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import io.github.smiley4.ktorswaggerui.AuthScheme
-import io.github.smiley4.ktorswaggerui.AuthType
 import io.github.smiley4.ktorswaggerui.SwaggerUI
+import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
+import io.github.smiley4.ktorswaggerui.dsl.AuthType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
