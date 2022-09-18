@@ -13,9 +13,9 @@ export namespace TileVertexBuilder {
     export function vertexData(tile: Tile, countries: Country[]): number[][] {
         const vertexPositions = buildVertexPositions(tile);
         const tilePositions = buildTilePositions(tile);
+        const cornerData = buildCornerData();
         const terrainData = buildTerrainData(tile);
         const colors = buildOverlayColors(tile, countries);
-        const cornerData = buildCornerData();
         const borderData = buildBorderData(tile);
 
         const vertexData: number[][] = [];
@@ -23,9 +23,9 @@ export namespace TileVertexBuilder {
             const vertex: number[] = [];
             vertex.push(...vertexPositions[i]);
             vertex.push(...tilePositions[i]);
+            vertex.push(...cornerData[i]);
             vertex.push(...terrainData[i]);
             vertex.push(...colors[i]);
-            vertex.push(...cornerData[i]);
             vertex.push(...borderData[i]);
             vertexData.push(vertex);
         }

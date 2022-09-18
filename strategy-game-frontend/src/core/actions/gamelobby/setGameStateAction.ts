@@ -11,6 +11,7 @@ import {Scout} from "../../../models/state/scout";
 import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
 import {BordersCalculateAction} from "../border/bordersCalculateAction";
+import {TileBorderCalculator} from "../border/tileBorderCalculator";
 
 /**
  * Set the world/game state
@@ -31,7 +32,8 @@ export class SetGameStateAction {
         console.log("set game state");
         const countries = this.getCountries(game);
         const tiles = this.getTiles(game);
-        this.calculateBordersAction.perform(tiles);
+        this.enrichTilesLayerData(tiles);
+        // this.calculateBordersAction.perform(tiles);
         this.gameStateAccess.setState(
             game.turn,
             tiles,
@@ -76,7 +78,6 @@ export class SetGameStateAction {
                 r: tile.baseData.position.r
             },
             visibility: tile.baseData.visibility,
-            borderData: [],
             generalData: tile.generalData ? {
                 terrainType: tile.generalData.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
                 owner: tile.generalData.owner ? {
@@ -97,6 +98,7 @@ export class SetGameStateAction {
                     }))
                 })),
             } : null,
+            layers: []
         }));
     }
 
@@ -159,5 +161,56 @@ export class SetGameStateAction {
             }
         }));
     }
+
+
+    private enrichTilesLayerData(tiles: Tile[]) {
+        const borderCalculator = new TileBorderCalculator(tiles);
+        tiles.forEach(tile => this.enrichTileLayerData(tile, borderCalculator));
+    }
+
+    private enrichTileLayerData(tile: Tile, borderCalculator: TileBorderCalculator) {
+        tile.layers = [
+            {
+                layerName: "country",
+                value: this.getTileCountryLayerValue(tile),
+                borderDirections: this.getTileCountryLayerBorders(tile, borderCalculator)
+            },
+            {
+                layerName: "province",
+                value: this.getTileProvinceLayerValue(tile),
+                borderDirections: this.getTileProvinceLayerBorders(tile, borderCalculator)
+            },
+            {
+                layerName: "city",
+                value: this.getTileCityLayerValue(tile),
+                borderDirections: this.getTileCityLayerBorders(tile, borderCalculator)
+            },
+        ];
+    }
+
+    private getTileCountryLayerValue(tile: Tile): number {
+        return -1;//orDefault(tile.generalData?.owner?.countryId, -1);
+    }
+
+    private getTileCountryLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
+        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.countryId);
+    }
+
+    private getTileProvinceLayerValue(tile: Tile): number {
+        return -1;//orDefault(tile.generalData?.owner?.countryId, -1);
+    }
+
+    private getTileProvinceLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
+        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.provinceId);
+    }
+
+    private getTileCityLayerValue(tile: Tile): number {
+        return -1;//orDefault(tile.generalData?.owner?.countryId, -1);
+    }
+
+    private getTileCityLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
+        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.cityId);
+    }
+
 
 }

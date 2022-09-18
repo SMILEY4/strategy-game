@@ -1,7 +1,7 @@
 import {GameStore} from "../../../../external/state/game/gameStore";
 import {LocalGameStore} from "../../../../external/state/localgame/localGameStore";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
-import {BaseRenderer, BaseRenderTask} from "../utils/baseRenderer";
+import {BaseRenderer} from "../utils/baseRenderer";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
@@ -15,7 +15,7 @@ export class TilemapRenderer {
     private batchRenderer: BatchRenderer = null as any;
     private shader: ShaderProgram = null as any;
     private baseRenderer: BaseRenderer = null as any;
-    private lastRevisionId: String = ""
+    private lastRevisionId: String = "";
 
 
     constructor(gameCanvas: GameCanvasHandle) {
@@ -41,6 +41,11 @@ export class TilemapRenderer {
                     amountComponents: 2,
                 },
                 {
+                    name: "in_cornerData",
+                    type: ShaderAttributeType.FLOAT,
+                    amountComponents: 3,
+                },
+                {
                     name: "in_terrainData",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
@@ -49,11 +54,6 @@ export class TilemapRenderer {
                     name: "in_overlayColor",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 4,
-                },
-                {
-                    name: "in_cornerData",
-                    type: ShaderAttributeType.FLOAT,
-                    amountComponents: 3,
                 },
                 {
                     name: "in_borderData",
@@ -88,7 +88,7 @@ export class TilemapRenderer {
                 this.batchRenderer.add(
                     TileVertexBuilder.vertexData(tile, gameState.countries),
                     TileVertexBuilder.indexData()
-                )
+                );
             });
 
             this.batchRenderer.end(camera, this.shader, {

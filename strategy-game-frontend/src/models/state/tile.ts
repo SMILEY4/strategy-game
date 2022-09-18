@@ -7,12 +7,9 @@ export interface Tile {
     tileId: string,
     position: TilePosition,
     visibility: TileVisibility,
-    borderData: ({
-        type: "country" | "province",
-        directions: boolean[] // right, bottom-right, bottom-left, ..., top right
-    })[]
     generalData: TileGeneralData | null,
     advancedData: TileAdvancedData | null,
+    layers: TileLayer[];
 }
 
 export interface TileGeneralData {
@@ -35,4 +32,10 @@ export interface TileAdvancedData {
             value: number,
         })[]
     })[],
+}
+
+export interface TileLayer {
+    layerName: string,
+    value: number,
+    borderDirections: boolean[]
 }
