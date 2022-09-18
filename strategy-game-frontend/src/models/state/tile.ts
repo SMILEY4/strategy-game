@@ -1,4 +1,3 @@
-import {CountryColor} from "./country";
 import {TerrainType} from "./terrainType";
 import {TilePosition} from "./tilePosition";
 import {TileVisibility} from "./tileVisibility";
@@ -16,7 +15,6 @@ export interface TileGeneralData {
     terrainType: TerrainType,
     owner: ({
         countryId: string,
-        countryColor: CountryColor,
         provinceId: string,
         cityId: string
     }) | null,
@@ -35,7 +33,7 @@ export interface TileAdvancedData {
 }
 
 export interface TileLayer {
-    layerName: string,
-    value: number,
+    layerId: string,
+    value: number[],
     borderDirections: boolean[]
 }

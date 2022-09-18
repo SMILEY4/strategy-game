@@ -3,6 +3,7 @@ import {LocalGameStateAccess} from "../../../external/state/localgame/localGameS
 import {MsgMarkerTileContent, MsgScoutTileContent} from "../../../models/messaging/messagingTileContent";
 import {PayloadGameState} from "../../../models/messaging/payloadGameState";
 import {City} from "../../../models/state/city";
+import {Color} from "../../../models/state/Color";
 import {Country} from "../../../models/state/country";
 import {GameState} from "../../../models/state/gameState";
 import {Marker} from "../../../models/state/marker";
@@ -10,8 +11,10 @@ import {Province} from "../../../models/state/Province";
 import {Scout} from "../../../models/state/scout";
 import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
-import {BordersCalculateAction} from "../border/bordersCalculateAction";
-import {TileBorderCalculator} from "../border/tileBorderCalculator";
+import {TileLayerMeta} from "../../../models/state/tileLayerMeta";
+import {orDefault} from "../../../shared/utils";
+import {TileBorderCalculator} from "./tileBorderCalculator";
+import colorToRgbArray = Color.colorToRgbArray;
 
 /**
  * Set the world/game state
@@ -20,20 +23,17 @@ export class SetGameStateAction {
 
     private readonly localGameStateAccess: LocalGameStateAccess;
     private readonly gameStateAccess: GameStateAccess;
-    private readonly calculateBordersAction: BordersCalculateAction;
 
-    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess, calculateBordersAction: BordersCalculateAction) {
+    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
         this.localGameStateAccess = localGameStateAccess;
         this.gameStateAccess = gameStateAccess;
-        this.calculateBordersAction = calculateBordersAction;
     }
 
     perform(game: PayloadGameState): void {
         console.log("set game state");
         const countries = this.getCountries(game);
         const tiles = this.getTiles(game);
-        this.enrichTilesLayerData(tiles);
-        // this.calculateBordersAction.perform(tiles);
+        this.enrichTilesLayerData(tiles, game);
         this.gameStateAccess.setState(
             game.turn,
             tiles,
@@ -163,54 +163,56 @@ export class SetGameStateAction {
     }
 
 
-    private enrichTilesLayerData(tiles: Tile[]) {
+    private enrichTilesLayerData(tiles: Tile[], game: PayloadGameState) {
         const borderCalculator = new TileBorderCalculator(tiles);
-        tiles.forEach(tile => this.enrichTileLayerData(tile, borderCalculator));
+        tiles.forEach(tile => this.enrichTileLayerData(tile, game, borderCalculator));
     }
 
-    private enrichTileLayerData(tile: Tile, borderCalculator: TileBorderCalculator) {
+    private enrichTileLayerData(tile: Tile, game: PayloadGameState, borderCalculator: TileBorderCalculator) {
         tile.layers = [
             {
-                layerName: "country",
-                value: this.getTileCountryLayerValue(tile),
+                layerId: TileLayerMeta.ID_COUNTRY,
+                value: this.getTileCountryLayerValue(tile, game),
                 borderDirections: this.getTileCountryLayerBorders(tile, borderCalculator)
             },
             {
-                layerName: "province",
-                value: this.getTileProvinceLayerValue(tile),
+                layerId: TileLayerMeta.ID_PROVINCE,
+                value: this.getTileProvinceLayerValue(tile, game),
                 borderDirections: this.getTileProvinceLayerBorders(tile, borderCalculator)
             },
             {
-                layerName: "city",
-                value: this.getTileCityLayerValue(tile),
+                layerId: TileLayerMeta.ID_CITY,
+                value: this.getTileCityLayerValue(tile, game),
                 borderDirections: this.getTileCityLayerBorders(tile, borderCalculator)
             },
         ];
     }
 
-    private getTileCountryLayerValue(tile: Tile): number {
-        return -1;//orDefault(tile.generalData?.owner?.countryId, -1);
+    private getTileCountryLayerValue(tile: Tile, game: PayloadGameState): number[] {
+        const country = game.countries.find(country => country.baseData.countryId === tile.generalData?.owner?.countryId);
+        return colorToRgbArray(orDefault(country?.baseData.color, Color.INVALID));
     }
 
     private getTileCountryLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.countryId);
     }
 
-    private getTileProvinceLayerValue(tile: Tile): number {
-        return -1;//orDefault(tile.generalData?.owner?.countryId, -1);
+    private getTileProvinceLayerValue(tile: Tile, game: PayloadGameState): number[] {
+        const province = game.provinces.find(province => province.provinceId === tile.generalData?.owner?.provinceId);
+        return colorToRgbArray(orDefault(province?.color, Color.INVALID));
     }
 
     private getTileProvinceLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.provinceId);
     }
 
-    private getTileCityLayerValue(tile: Tile): number {
-        return -1;//orDefault(tile.generalData?.owner?.countryId, -1);
+    private getTileCityLayerValue(tile: Tile, game: PayloadGameState): number[] {
+        const city = game.cities.find(city => city.cityId === tile.generalData?.owner?.cityId);
+        return colorToRgbArray(orDefault(city?.color, Color.INVALID));
     }
 
     private getTileCityLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.cityId);
     }
-
 
 }

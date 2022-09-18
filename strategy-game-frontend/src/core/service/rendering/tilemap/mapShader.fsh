@@ -5,17 +5,22 @@ uniform vec2 u_tileMouseOver;
 uniform vec2 u_tileSelected;
 
 flat in vec2 v_tilePosition;
-flat in vec2 v_terrainData;
-flat in vec4 v_overlayColor;
 in vec3 v_cornerData;
-flat in vec3 v_borderData;
+flat in vec2 v_terrainData;
+
+flat in vec3 v_layer_values_country;
+flat in vec3 v_layer_values_province;
+flat in vec3 v_layer_values_city;
+
+flat in vec3 v_layer_borders_country;
+flat in vec3 v_layer_borders_province;
+flat in vec3 v_layer_borders_city;
 
 out vec4 outColor;
 
-#pragma glslify: noise = require('glsl-noise/simplex/3d')
 
 vec3 calcTerrainColor(float terrainId) {
-    if(terrainId < -0.5) { // -1 -> undiscovered
+    if (terrainId < -0.5) { // -1 -> undiscovered
         return vec3(0.2);
     }
     if (terrainId < 0.5) { // 0 -> water
@@ -29,13 +34,13 @@ vec3 calcTerrainColor(float terrainId) {
 
 
 vec3 applyFogOfWar(vec3 color, float visibilityId) {
-    if(visibilityId < 0.5) { // 0 -> undiscovered
+    if (visibilityId < 0.5) { // 0 -> undiscovered
         return vec3(0.2);
     }
-    if(visibilityId < 1.5) { // 1 -> discovered
+    if (visibilityId < 1.5) { // 1 -> discovered
         return mix(color, vec3(0.2), 0.5);
     }
-    if(visibilityId < 2.5) { // 2 -> visible
+    if (visibilityId < 2.5) { // 2 -> visible
         return color;
     }
     return vec3(0.2);
@@ -61,27 +66,15 @@ vec3 blend(vec3 background, vec4 foreground) {
 }
 
 
-bool isPrimaryBorderId(float borderId) {
-    return 0.9 < borderId && borderId <  1.1;
+bool isTrue(float value) {
+    return 0.5 < value && value <  1.5;
 }
 
 
-bool isSecondaryBorderId(float borderId) {
-    return 1.9 < borderId && borderId <  2.1;
-}
-
-
-bool inPrimaryBorder(float distToCenter, float distToCornerA, float distToCornerB, vec3 borderData) {
-    return (isPrimaryBorderId(borderData.x) && distToCenter > 0.7)
-    || (isPrimaryBorderId(borderData.y) && distToCornerA < 0.3 && distToCenter > 0.7)
-    || (isPrimaryBorderId(borderData.z) && distToCornerB < 0.3 && distToCenter > 0.7);
-}
-
-
-bool inSecondaryBorder(float distToCenter, float distToCornerA, float distToCornerB, vec3 borderData) {
-    return (isSecondaryBorderId(borderData.x) && distToCenter > 0.95)
-    || (isSecondaryBorderId(borderData.y) && distToCornerA < 0.05 && distToCenter > 0.95)
-    || (isSecondaryBorderId(borderData.z) && distToCornerB < 0.05 && distToCenter > 0.95);
+bool isBorder(float distToCenter, float distToCornerA, float distToCornerB, vec3 borderData, float size) {
+    return (isTrue(borderData.x) && distToCenter > (1.0-size))
+    || (isTrue(borderData.y) && distToCornerA < size && distToCenter > (1.0-size))
+    || (isTrue(borderData.z) && distToCornerB < size && distToCenter > (1.0-size));
 }
 
 
@@ -91,14 +84,25 @@ void main() {
     vec3 tileColor = applyFogOfWar(calcTerrainColor(v_terrainData.x), v_terrainData.y);
 
     // overlay color
-    tileColor = blend(tileColor, v_overlayColor*vec4(1.0, 1.0, 1.0, 0.5));
-
-    // border
-    if (inSecondaryBorder(1.0-v_cornerData.x, 1.0-v_cornerData.y, 1.0-v_cornerData.z, v_borderData)) {
-        tileColor = mix(vec3(0.0), v_overlayColor.rgb, 0.5);
+    if (v_layer_values_country.r > -0.1) {
+        tileColor = blend(tileColor, vec4(v_layer_values_country.r, v_layer_values_country.g, v_layer_values_country.b, 0.5));
     }
-    if (inPrimaryBorder(1.0-v_cornerData.x, 1.0-v_cornerData.y, 1.0-v_cornerData.z, v_borderData)) {
-        tileColor = v_overlayColor.rgb;
+
+    // borders
+    if (v_layer_values_city.r > -0.5) {
+        if (isBorder(1.0-v_cornerData.x, 1.0-v_cornerData.y, 1.0-v_cornerData.z, v_layer_borders_city, 0.05)) {
+            tileColor = mix(vec3(0.0), v_layer_values_country.rgb, 0.5);
+        }
+    }
+    if (v_layer_values_province.r > -0.5) {
+        if (isBorder(1.0-v_cornerData.x, 1.0-v_cornerData.y, 1.0-v_cornerData.z, v_layer_borders_province, 0.1)) {
+            tileColor = mix(vec3(0.0), v_layer_values_country.rgb, 0.5);
+        }
+    }
+    if (v_layer_values_country.r > -0.5) {
+        if (isBorder(1.0-v_cornerData.x, 1.0-v_cornerData.y, 1.0-v_cornerData.z, v_layer_borders_country, 0.3)) {
+            tileColor = v_layer_values_country.rgb;
+        }
     }
 
     // highlight selected/mouseover

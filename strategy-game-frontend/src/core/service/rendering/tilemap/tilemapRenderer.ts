@@ -1,5 +1,6 @@
 import {GameStore} from "../../../../external/state/game/gameStore";
 import {LocalGameStore} from "../../../../external/state/localgame/localGameStore";
+import {TileLayerMeta} from "../../../../models/state/tileLayerMeta";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {BaseRenderer} from "../utils/baseRenderer";
 import {BatchRenderer} from "../utils/batchRenderer";
@@ -50,16 +51,20 @@ export class TilemapRenderer {
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
                 },
-                {
-                    name: "in_overlayColor",
-                    type: ShaderAttributeType.FLOAT,
-                    amountComponents: 4,
-                },
-                {
-                    name: "in_borderData",
-                    type: ShaderAttributeType.FLOAT,
-                    amountComponents: 3,
-                }
+                ...TileLayerMeta.TILE_LAYERS.flatMap(layerMeta => {
+                    return [
+                        {
+                            name: "in_layer_values_" + layerMeta.layerId,
+                            type: ShaderAttributeType.FLOAT,
+                            amountComponents: layerMeta.amountValues,
+                        },
+                        {
+                            name: "in_layer_borders_" + layerMeta.layerId,
+                            type: ShaderAttributeType.FLOAT,
+                            amountComponents: 3,
+                        },
+                    ];
+                })
             ],
             uniforms: [
                 {
