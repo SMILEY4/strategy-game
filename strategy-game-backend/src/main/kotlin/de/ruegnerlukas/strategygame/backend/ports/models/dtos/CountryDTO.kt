@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.dtos
 
+import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
+
 class CountryDTO(
     val baseData: CountryDTOBaseData,
 	val advancedData: CountryDTOAdvancedData?
@@ -12,6 +14,7 @@ class CountryDTO(
 data class CountryDTOBaseData(
 	val countryId: String,
 	val userId: String,
+	val color: RGBColor
 )
 
 

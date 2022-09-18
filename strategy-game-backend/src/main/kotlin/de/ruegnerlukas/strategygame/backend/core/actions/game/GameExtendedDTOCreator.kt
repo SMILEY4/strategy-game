@@ -191,7 +191,8 @@ class GameExtendedDTOCreator(
     private fun buildCountry(playerCountryId: String, countryEntity: CountryEntity): CountryDTO {
         val baseData = CountryDTOBaseData(
             countryId = countryEntity.getKeyOrThrow(),
-            userId = countryEntity.userId
+            userId = countryEntity.userId,
+            color = countryEntity.color
         )
         var advancedData: CountryDTOAdvancedData? = null
         if (playerCountryId == countryEntity.key) {
@@ -214,7 +215,8 @@ class GameExtendedDTOCreator(
             countryId = cityEntity.countryId,
             provinceId = cityEntity.provinceId,
             tile = cityEntity.tile,
-            name = cityEntity.name
+            name = cityEntity.name,
+            color = cityEntity.color
         )
     }
 
@@ -222,7 +224,8 @@ class GameExtendedDTOCreator(
     private fun buildProvince(provinceEntity: ProvinceEntity): ProvinceDTO {
         return ProvinceDTO(
             provinceId = provinceEntity.getKeyOrThrow(),
-            countryId = provinceEntity.countryId
+            countryId = provinceEntity.countryId,
+            color = provinceEntity.color
         )
     }
 

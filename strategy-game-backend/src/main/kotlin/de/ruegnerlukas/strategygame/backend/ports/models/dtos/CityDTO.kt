@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.dtos
 
+import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 
 data class CityDTO(
@@ -8,4 +9,5 @@ data class CityDTO(
 	val provinceId: String,
 	val tile: TileRef,
 	val name: String,
+	val color: RGBColor
 )
