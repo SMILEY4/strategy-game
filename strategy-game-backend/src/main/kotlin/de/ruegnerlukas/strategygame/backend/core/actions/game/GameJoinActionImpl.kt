@@ -87,7 +87,7 @@ class GameJoinActionImpl(
             CountryEntity(
                 gameId = game.key!!,
                 userId = userId,
-                color = COUNTRY_COLORS[game.players.size % COUNTRY_COLORS.size],
+                color = COUNTRY_COLORS[(game.players.size-1) % COUNTRY_COLORS.size],
                 resources = CountryResources(
                     money = 200f
                 )

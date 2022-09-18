@@ -1,5 +1,6 @@
 import {GAME_CONFIG} from "../../../../external/state/gameconfig/gameConfigStateAccess";
-import {Country, CountryColor} from "../../../../models/state/country";
+import {Color} from "../../../../models/state/Color";
+import {Country} from "../../../../models/state/country";
 import {TerrainType} from "../../../../models/state/terrainType";
 import {Tile} from "../../../../models/state/tile";
 import {TileVisibility} from "../../../../models/state/tileVisibility";
@@ -213,12 +214,12 @@ export namespace TileVertexBuilder {
     }
 
     function tileOwnerColor(tile: Tile, countries: Country[]): [number, number, number, number] {
-        if(!tile.generalData) {
+        if (!tile.generalData) {
             return [0, 0, 0, 0];
         } else if (tile.generalData.owner) {
             return countryColor(tile.generalData.owner.countryColor, 1);
         } else {
-            const influences = tile.advancedData ? tile.advancedData.influences : []
+            const influences = tile.advancedData ? tile.advancedData.influences : [];
             const influenceThreshold = GAME_CONFIG.getGameConfig().cityTileMaxForeignInfluence;
             const maxInfluenceCountry = getMax(influences, influence => influence.value);
             const nextMaxInfluenceCountry = getMax(influences, influence => influence.countryId === maxInfluenceCountry?.countryId ? -1 : influence.value);
@@ -230,14 +231,12 @@ export namespace TileVertexBuilder {
         }
     }
 
-    function countryColor(color: CountryColor | undefined, strength: number): [number, number, number, number] {
-        if (color === CountryColor.RED) return [1, 0, 0, strength];
-        if (color === CountryColor.GREEN) return [0, 1, 0, strength];
-        if (color === CountryColor.BLUE) return [0, 0, 1, strength];
-        if (color === CountryColor.CYAN) return [0, 1, 1, strength];
-        if (color === CountryColor.MAGENTA) return [1, 0, 1, strength];
-        if (color === CountryColor.YELLOW) return [1, 1, 0, strength];
-        return [1, 1, 1, strength];
+    function countryColor(color: Color | undefined, strength: number): [number, number, number, number] {
+        if (color) {
+            return [color.red / 255, color.green / 255, color.blue / 255, strength];
+        } else {
+            return [1, 1, 1, strength];
+        }
     }
 
 }

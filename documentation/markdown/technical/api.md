@@ -100,6 +100,11 @@ All messages follow the following format
               "baseData": {
                   "countryId": "String - the id of the country",
                   "userId": "String - the id of the owner",
+                  "color": {
+                      "red": "Int [0,255]",
+                      "green": "Int [0,255]",
+                      "blue": "Int [0,255]",
+                  }
               },
               "advancedData?": {
                   "resources": {
@@ -111,7 +116,12 @@ All messages follow the following format
       "provinces": [
       	{
           	"provinceId": "String - the id of the province",
-              "countryId": "String - the id of the owner country"
+              "countryId": "String - the id of the owner country",
+              "color": {
+                  "red": "Int [0,255]",
+                  "green": "Int [0,255]",
+                  "blue": "Int [0,255]",
+              }
   		}
       ],
       "cities": [
@@ -124,10 +134,15 @@ All messages follow the following format
               	"q": "Int - the q-coordinate of the tile",
               	"r": "Int - the r-coordinate of the tile",
           	},
-          	"name": "String - the name of the city"
+          	"name": "String - the name of the city",
+              "color": {
+                  "red": "Int [0,255]",
+                  "green": "Int [0,255]",
+                  "blue": "Int [0,255]",
+              }
           }
       ]
   }
   ```
-
+  
   
