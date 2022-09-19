@@ -1,5 +1,6 @@
 import {GameStore} from "../../../../external/state/game/gameStore";
 import {LocalGameStore} from "../../../../external/state/localgame/localGameStore";
+import {MapMode} from "../../../../models/state/mapMode";
 import {TileLayerMeta} from "../../../../models/state/tileLayerMeta";
 import {GameCanvasHandle} from "../../gameCanvasHandle";
 import {BaseRenderer} from "../utils/baseRenderer";
@@ -22,6 +23,7 @@ export class TilemapRenderer {
     constructor(gameCanvas: GameCanvasHandle) {
         this.gameCanvas = gameCanvas;
     }
+
 
     public initialize() {
         this.baseRenderer = new BaseRenderer(this.gameCanvas.getGL());
@@ -78,10 +80,15 @@ export class TilemapRenderer {
                 {
                     name: "u_tileSelected",
                     type: ShaderUniformType.VEC2
+                },
+                {
+                    name: "u_mapMode",
+                    type: ShaderUniformType.INT
                 }
             ]
         });
     }
+
 
     public render(revisionId: string, camera: Camera, gameState: GameStore.StateValues, localGameState: LocalGameStore.StateValues) {
 
@@ -100,6 +107,7 @@ export class TilemapRenderer {
                 uniforms: {
                     "u_tileMouseOver": localGameState.tileMouseOver ? [localGameState.tileMouseOver.q, localGameState.tileMouseOver.r] : [999999, 999999],
                     "u_tileSelected": localGameState.tileSelected ? [localGameState.tileSelected.q, localGameState.tileSelected.r] : [999999, 999999],
+                    "u_mapMode": this.mapModeId(localGameState.mapMode)
                 }
             });
 
@@ -108,11 +116,23 @@ export class TilemapRenderer {
                 uniforms: {
                     "u_tileMouseOver": localGameState.tileMouseOver ? [localGameState.tileMouseOver.q, localGameState.tileMouseOver.r] : [999999, 999999],
                     "u_tileSelected": localGameState.tileSelected ? [localGameState.tileSelected.q, localGameState.tileSelected.r] : [999999, 999999],
+                    "u_mapMode": this.mapModeId(localGameState.mapMode)
                 }
             });
         }
 
     }
+
+
+    private mapModeId(mode: MapMode): number {
+        if (mode === MapMode.DEFAULT) return 0;
+        if (mode === MapMode.COUNTRIES) return 1;
+        if (mode === MapMode.PROVINCES) return 2;
+        if (mode === MapMode.CITIES) return 3;
+        if (mode === MapMode.TERRAIN) return 4;
+        return 0;
+    }
+
 
     public dispose() {
         this.shader.dispose();

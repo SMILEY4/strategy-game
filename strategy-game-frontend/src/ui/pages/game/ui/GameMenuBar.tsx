@@ -5,6 +5,7 @@ import {UserStateHooks} from "../../../../external/state/user/userStateHooks";
 import "./gameMenuBar.css";
 import {Color} from "../../../../models/state/Color";
 import {CategoryDebug} from "./MenuDebug";
+import {CategoryMap} from "./MenuMap";
 import {CategoryOther} from "./MenuOther";
 import {NextTurnAction} from "./NextTurnAction";
 
@@ -20,6 +21,7 @@ export function GameMenuBar(): ReactElement {
             <div className="category-area">
                 <CategoryOther/>
                 <CategoryDebug/>
+                <CategoryMap/>
             </div>
             <div className="info-section">
                 <MoneyResource/>
