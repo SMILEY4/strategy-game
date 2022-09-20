@@ -7,7 +7,6 @@ import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
 class CityEntity(
     val gameId: String,
     val countryId: String,
-    val provinceId: String,
     val tile: TileRef,
     val name: String,
     val color: RGBColor,

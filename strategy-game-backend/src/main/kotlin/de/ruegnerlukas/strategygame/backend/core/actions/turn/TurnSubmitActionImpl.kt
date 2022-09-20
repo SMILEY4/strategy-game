@@ -122,7 +122,6 @@ class TurnSubmitActionImpl(
                 q = cmd.q,
                 r = cmd.r,
                 name = cmd.name.trim(),
-                provinceId = cmd.provinceId
             )
         )
     }

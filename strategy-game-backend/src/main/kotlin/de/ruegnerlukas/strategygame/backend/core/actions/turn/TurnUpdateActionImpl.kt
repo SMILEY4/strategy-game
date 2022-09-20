@@ -66,7 +66,6 @@ class TurnUpdateActionImpl(
                 it.sources.add(
                     TileCityInfluence(
                         cityId = city.key!!,
-                        provinceId = city.provinceId,
                         value = influenceValue
                     )
                 )
@@ -75,7 +74,7 @@ class TurnUpdateActionImpl(
                 TileCountryInfluence(
                     countryId = city.countryId,
                     totalValue = influenceValue,
-                    sources = mutableListOf(TileCityInfluence(city.key!!, city.provinceId, influenceValue))
+                    sources = mutableListOf(TileCityInfluence(city.key!!, influenceValue))
                 )
             )
     }
@@ -93,7 +92,6 @@ class TurnUpdateActionImpl(
                 maxCountryInfluence.sources.max { it.value }?.let { maxCityInfluence ->
                     tile.owner = TileOwner(
                         countryId = maxCountryInfluence.countryId,
-                        provinceId = maxCityInfluence.provinceId,
                         cityId = maxCityInfluence.cityId
                     )
                 }

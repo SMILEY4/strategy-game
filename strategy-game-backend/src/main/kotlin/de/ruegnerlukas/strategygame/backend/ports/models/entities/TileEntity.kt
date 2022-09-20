@@ -23,7 +23,6 @@ data class TileData(
 
 data class TileOwner(
     val countryId: String,
-    val provinceId: String,
     val cityId: String
 )
 
@@ -35,7 +34,6 @@ data class TileCountryInfluence(
 
 data class TileCityInfluence(
     val cityId: String,
-    val provinceId: String,
     val value: Double
 )
 

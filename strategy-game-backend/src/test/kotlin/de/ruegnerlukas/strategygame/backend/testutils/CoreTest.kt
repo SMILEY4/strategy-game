@@ -6,7 +6,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
@@ -280,17 +279,6 @@ internal class CoreTest(
 
 
 	/**
-	 * expect the given game to have provinces with the given countryIds
-	 */
-	suspend fun expectProvinces(gameId: String, provinceCountries: List<String>) {
-		TestUtils.getProvinces(database, gameId).let { provinces ->
-			provinces shouldHaveSize provinces.size
-			provinces.map { it.countryId } shouldContainExactlyInAnyOrder provinceCountries
-		}
-	}
-
-
-	/**
 	 * expect the given country to have the given amount of money
 	 */
 	suspend fun expectCountryMoney(countryId: String, amountMoney: Float) {
@@ -314,14 +302,6 @@ internal class CoreTest(
 	 */
 	suspend fun expectTurn(gameId: String, turn: Int) {
 		TestUtils.getGame(database, gameId).turn shouldBe turn
-	}
-
-
-	/**
-	 * Get any province from the given game
-	 */
-	suspend fun getAnyProvince(gameId: String): ProvinceEntity {
-		return TestUtils.getProvinces(database, gameId).first()
 	}
 
 

@@ -49,7 +49,6 @@ data class TileDTOAdvancedData(
 
 data class TileDTOOwner(
     val countryId: String,
-    val provinceId: String,
     val cityId: String
 )
 
@@ -61,7 +60,6 @@ data class TileDTOCountryInfluence(
 
 data class TileDTOCityInfluence(
     val cityId: String,
-    val provinceId: String,
     val value: Double
 )
 

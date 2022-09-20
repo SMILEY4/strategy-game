@@ -2,15 +2,12 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import arrow.core.Either
 import arrow.core.continuations.either
-import arrow.core.left
-import arrow.core.right
 import arrow.fx.coroutines.parZip
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
@@ -24,16 +21,14 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 			val game = fetchGame(gameId).bind()
 			parZip(
 				{ fetchCountries(gameId) },
-				{ fetchProvinces(gameId) },
 				{ fetchTiles(gameId) },
 				{ fetchCities(gameId) }
-			) { countries, provinces, tiles, cities ->
+			) { countries, tiles, cities ->
 				GameExtendedEntity(
 					game = game,
 					countries = countries,
 					tiles = tiles,
 					cities = cities.tracking(),
-					provinces = provinces.tracking()
 				)
 			}
 		}
@@ -53,19 +48,6 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
 			CountryEntity::class.java
-		)
-	}
-
-	private suspend fun fetchProvinces(gameId: String): List<ProvinceEntity> {
-		database.assertCollections(Collections.PROVINCES)
-		return database.query(
-			"""
-				FOR province IN ${Collections.PROVINCES}
-					FILTER province.gameId == @gameId
-					RETURN province
-			""".trimIndent(),
-			mapOf("gameId" to gameId),
-			ProvinceEntity::class.java
 		)
 	}
 

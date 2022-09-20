@@ -33,7 +33,6 @@ class CreateCityCommandDataEntity(
     val q: Int,
     val r: Int,
     val name: String,
-    val provinceId: String?
 ) : CommandDataEntity(TYPE) {
     companion object {
         internal const val TYPE = "create-city"

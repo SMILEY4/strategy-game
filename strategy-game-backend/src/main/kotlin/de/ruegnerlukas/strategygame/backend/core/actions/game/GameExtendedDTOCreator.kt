@@ -8,7 +8,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTOBaseData
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTOResources
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ScoutTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOAdvancedData
@@ -22,7 +21,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
@@ -48,17 +46,10 @@ class GameExtendedDTOCreator(
             .filter { city -> tileDTOs.first { it.baseData.tileId == city.tile.tileId }.baseData.visibility != TileDTOVisibility.UNKNOWN }
             .map { buildCity(it) }
 
-        val provinceDTOs = game.cities
-            .map { it.provinceId }
-            .distinct()
-            .map { pid -> game.provinces.first { it.key == pid } }
-            .map { buildProvince(it) }
-
         return GameExtendedDTO(
             turn = game.game.turn,
             tiles = tileDTOs,
             countries = countryDTOs,
-            provinces = provinceDTOs,
             cities = cityDTOs,
         )
     }
@@ -127,7 +118,7 @@ class GameExtendedDTOCreator(
     private fun buildTileGeneralData(tileEntity: TileEntity): TileDTOGeneralData {
         return TileDTOGeneralData(
             terrainType = tileEntity.data.terrainType,
-            owner = tileEntity.owner?.let { TileDTOOwner(it.countryId, it.provinceId, it.cityId) }
+            owner = tileEntity.owner?.let { TileDTOOwner(it.countryId, it.cityId) }
         )
     }
 
@@ -155,7 +146,6 @@ class GameExtendedDTOCreator(
                         sources = influence.sources.map { source ->
                             TileDTOCityInfluence(
                                 source.cityId,
-                                source.provinceId,
                                 source.value
                             )
                         }
@@ -213,19 +203,9 @@ class GameExtendedDTOCreator(
         return CityDTO(
             cityId = cityEntity.key!!,
             countryId = cityEntity.countryId,
-            provinceId = cityEntity.provinceId,
             tile = cityEntity.tile,
             name = cityEntity.name,
             color = cityEntity.color
-        )
-    }
-
-
-    private fun buildProvince(provinceEntity: ProvinceEntity): ProvinceDTO {
-        return ProvinceDTO(
-            provinceId = provinceEntity.getKeyOrThrow(),
-            countryId = provinceEntity.countryId,
-            color = provinceEntity.color
         )
     }
 
