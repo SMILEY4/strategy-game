@@ -1,7 +1,6 @@
 import {City} from "../../../models/state/city";
 import {Country} from "../../../models/state/country";
 import {Marker} from "../../../models/state/marker";
-import {Province} from "../../../models/state/Province";
 import {Scout} from "../../../models/state/scout";
 import {Tile} from "../../../models/state/tile";
 import {UserStore} from "../user/userStore";
@@ -39,12 +38,11 @@ export class GameStateAccess {
         currentTurn: number,
         tiles: Tile[],
         countries: Country[],
-        provinces: Province[],
         cities: City[],
         markers: Marker[],
         scouts: Scout[]
     ) {
-        GameStore.useState.getState().setState(currentTurn, tiles, countries, provinces, cities, markers, scouts);
+        GameStore.useState.getState().setState(currentTurn, tiles, countries, cities, markers, scouts);
     }
 
 }

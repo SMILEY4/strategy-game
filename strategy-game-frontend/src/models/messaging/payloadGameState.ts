@@ -17,7 +17,6 @@ export interface PayloadGameState {
             terrainType: string,
             owner: ({
                 countryId: string,
-                provinceId: string,
                 cityId: string
             }) | null,
         } | null,
@@ -26,7 +25,6 @@ export interface PayloadGameState {
                 countryId: string,
                 value: number,
                 sources: ({
-                    provinceId: string,
                     cityId: string,
                     value: number
                 })[]
@@ -46,15 +44,9 @@ export interface PayloadGameState {
             }
         } | null
     })[],
-    provinces: ({
-        provinceId: string,
-        countryId: string,
-        color: Color
-    })[],
     cities: ({
         cityId: string,
         countryId: string,
-        provinceId: string,
         tile: {
             tileId: string,
             q: number,

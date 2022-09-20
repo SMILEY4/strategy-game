@@ -8,7 +8,7 @@ import {TilemapUtils} from "../../tilemap/tilemapUtils";
 export namespace TileVertexBuilder {
 
 
-    export function vertexData(tile: Tile, countries: Country[]): number[][] {
+    export function vertexData(tile: Tile): number[][] {
 
         const vertexPositions = buildVertexPositions(tile);
         const tilePositions = buildTilePositions(tile);

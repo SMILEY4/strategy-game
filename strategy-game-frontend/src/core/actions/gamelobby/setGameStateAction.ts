@@ -7,7 +7,6 @@ import {Color} from "../../../models/state/Color";
 import {Country} from "../../../models/state/country";
 import {GameState} from "../../../models/state/gameState";
 import {Marker} from "../../../models/state/marker";
-import {Province} from "../../../models/state/Province";
 import {Scout} from "../../../models/state/scout";
 import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
@@ -38,7 +37,6 @@ export class SetGameStateAction {
             game.turn,
             tiles,
             countries,
-            this.getProvinces(game),
             this.getCities(game),
             this.getMarkers(game),
             this.getScouts(game)
@@ -62,14 +60,6 @@ export class SetGameStateAction {
     }
 
 
-    private getProvinces(game: PayloadGameState): Province[] {
-        return game.provinces.map(province => ({
-            provinceId: province.provinceId,
-            countryId: province.countryId,
-        }));
-    }
-
-
     private getTiles(game: PayloadGameState): Tile[] {
         return game.tiles.map(tile => ({
             tileId: tile.baseData.tileId,
@@ -83,7 +73,6 @@ export class SetGameStateAction {
                 owner: tile.generalData.owner ? {
                     countryId: tile.generalData.owner?.countryId,
                     countryColor: game.countries.find(c => c.baseData.countryId === tile.generalData?.owner?.countryId)?.baseData.color,
-                    provinceId: tile.generalData.owner?.provinceId,
                     cityId: tile.generalData.owner.cityId,
                 } : null,
             } : null,
@@ -92,7 +81,6 @@ export class SetGameStateAction {
                     countryId: influence.countryId,
                     value: influence.value,
                     sources: influence.sources.map(influenceSource => ({
-                        provinceId: influenceSource.provinceId,
                         cityId: influenceSource.cityId,
                         value: influenceSource.value
                     }))
@@ -153,7 +141,6 @@ export class SetGameStateAction {
             cityId: city.cityId,
             name: city.name,
             countryId: city.countryId,
-            provinceId: city.provinceId,
             tile: {
                 tileId: city.tile.tileId,
                 q: city.tile.q,
@@ -176,11 +163,6 @@ export class SetGameStateAction {
                 borderDirections: this.getTileCountryLayerBorders(tile, borderCalculator)
             },
             {
-                layerId: TileLayerMeta.ID_PROVINCE,
-                value: this.getTileProvinceLayerValue(tile, game),
-                borderDirections: this.getTileProvinceLayerBorders(tile, borderCalculator)
-            },
-            {
                 layerId: TileLayerMeta.ID_CITY,
                 value: this.getTileCityLayerValue(tile, game),
                 borderDirections: this.getTileCityLayerBorders(tile, borderCalculator)
@@ -195,15 +177,6 @@ export class SetGameStateAction {
 
     private getTileCountryLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.countryId);
-    }
-
-    private getTileProvinceLayerValue(tile: Tile, game: PayloadGameState): number[] {
-        const province = game.provinces.find(province => province.provinceId === tile.generalData?.owner?.provinceId);
-        return colorToRgbArray(orDefault(province?.color, Color.INVALID));
-    }
-
-    private getTileProvinceLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
-        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.provinceId);
     }
 
     private getTileCityLayerValue(tile: Tile, game: PayloadGameState): number[] {

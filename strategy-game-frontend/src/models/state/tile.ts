@@ -15,7 +15,6 @@ export interface TileGeneralData {
     terrainType: TerrainType,
     owner: ({
         countryId: string,
-        provinceId: string,
         cityId: string
     }) | null,
 }
@@ -25,7 +24,6 @@ export interface TileAdvancedData {
         countryId: string,
         value: number,
         sources: ({
-            provinceId: string,
             cityId: string,
             value: number,
         })[]
