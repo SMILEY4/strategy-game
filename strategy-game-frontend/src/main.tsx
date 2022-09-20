@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {BordersCalculateAction} from "./core/actions/border/bordersCalculateAction";
 import {GameDisposeAction} from "./core/actions/game/gameDisposeAction";
 import {GameInitAction} from "./core/actions/game/gameInitAction";
 import {GameInputClickAction} from "./core/actions/game/gameInputClickAction";
@@ -55,8 +54,7 @@ export namespace AppConfig {
     const renderer: Renderer = new Renderer(canvasHandle, localGameStateAccess, gameStateAccess, userStateAccess);
     const tilePicker: TilePicker = new TilePicker(localGameStateAccess, gameStateAccess, canvasHandle);
 
-    export const borderCalculateAction: BordersCalculateAction = new BordersCalculateAction();
-    export const gameSetState: SetGameStateAction = new SetGameStateAction(localGameStateAccess, gameStateAccess, borderCalculateAction);
+    export const gameSetState: SetGameStateAction = new SetGameStateAction(localGameStateAccess, gameStateAccess);
 
     const httpClient = new HttpClient(API_BASE_URL);
     const wsClient = new WebsocketClient(API_WS_BASE_URL);

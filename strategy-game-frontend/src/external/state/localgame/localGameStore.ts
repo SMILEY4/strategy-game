@@ -2,6 +2,7 @@ import create, {SetState} from "zustand";
 import {CameraState} from "../../../models/state/cameraState";
 import {Command} from "../../../models/state/command";
 import {GameState} from "../../../models/state/gameState";
+import {MapMode} from "../../../models/state/mapMode";
 import {TilePosition} from "../../../models/state/tilePosition";
 import {generateId} from "../../../shared/utils";
 
@@ -13,7 +14,8 @@ export namespace LocalGameStore {
         commands: Command[],
         camera: CameraState,
         tileMouseOver: TilePosition | null,
-        tileSelected: TilePosition | null
+        tileSelected: TilePosition | null,
+        mapMode: MapMode
     }
 
     const initialStateValues: StateValues = {
@@ -26,7 +28,8 @@ export namespace LocalGameStore {
             zoom: 1
         },
         tileMouseOver: null,
-        tileSelected: null
+        tileSelected: null,
+        mapMode: MapMode.DEFAULT
     };
 
     interface StateActions {
@@ -37,6 +40,7 @@ export namespace LocalGameStore {
         setCameraZoom: (zoom: number) => void;
         setTileMouseOver: (pos: TilePosition | null) => void;
         setTileSelected: (pos: TilePosition | null) => void;
+        setMapMode: (mode: MapMode) => void;
     }
 
     function stateActions(set: SetState<State>): StateActions {
@@ -71,6 +75,9 @@ export namespace LocalGameStore {
             })),
             setTileSelected: (pos: TilePosition | null) => set(() => ({
                 tileSelected: pos,
+            })),
+            setMapMode: (mode: MapMode) => set(() => ({
+                mapMode: mode,
             })),
         };
     }

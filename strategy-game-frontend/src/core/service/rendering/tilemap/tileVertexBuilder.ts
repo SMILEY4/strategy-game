@@ -1,33 +1,42 @@
-import {GAME_CONFIG} from "../../../../external/state/gameconfig/gameConfigStateAccess";
-import {Color} from "../../../../models/state/Color";
 import {Country} from "../../../../models/state/country";
 import {TerrainType} from "../../../../models/state/terrainType";
 import {Tile} from "../../../../models/state/tile";
+import {TileLayerMeta} from "../../../../models/state/tileLayerMeta";
 import {TileVisibility} from "../../../../models/state/tileVisibility";
-import {getMax, orDefault} from "../../../../shared/utils";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 
 export namespace TileVertexBuilder {
 
 
     export function vertexData(tile: Tile, countries: Country[]): number[][] {
+
         const vertexPositions = buildVertexPositions(tile);
         const tilePositions = buildTilePositions(tile);
-        const terrainData = buildTerrainData(tile);
-        const colors = buildOverlayColors(tile, countries);
         const cornerData = buildCornerData();
-        const borderData = buildBorderData(tile);
+
+        const terrainData = buildTerrainData(tile);
+
+        const layersData = TileLayerMeta.TILE_LAYERS.map(layerMeta => ({
+            values: buildLayerDataValues(layerMeta, tile),
+            borders: buildLayerDataBorders(layerMeta, tile)
+        }));
 
         const vertexData: number[][] = [];
         for (let i = 0; i < 13; i++) {
             const vertex: number[] = [];
             vertex.push(...vertexPositions[i]);
             vertex.push(...tilePositions[i]);
-            vertex.push(...terrainData[i]);
-            vertex.push(...colors[i]);
             vertex.push(...cornerData[i]);
-            vertex.push(...borderData[i]);
+            vertex.push(...terrainData[i]);
+            layersData.forEach(layer => {
+                vertex.push(...layer.values[i]);
+                vertex.push(...layer.borders[i]);
+            });
             vertexData.push(vertex);
+        }
+
+        if(tile.position.q === 8 && tile.position.r === -4) {
+            console.log(JSON.stringify(vertexData))
         }
 
         return vertexData;
@@ -102,14 +111,6 @@ export namespace TileVertexBuilder {
     }
 
     /**
-     * @return the primary overlay-color (rgba) for each vertex
-     */
-    function buildOverlayColors(tile: Tile, countries: Country[]): ([number, number, number, number])[] {
-        const color: [number, number, number, number] = tileOwnerColor(tile, countries);
-        return Array(13).fill(color);
-    }
-
-    /**
      * @return information about the closes corner, i.e. 1 = point directly in corner, 0 = point far away from corner
      * (center, cornerA, cornerB)
      */
@@ -137,49 +138,6 @@ export namespace TileVertexBuilder {
             [0, 0, 1],
         ];
     }
-
-    /**
-     * @return information about what border to use for each vertex/triangle. ID: 0 = no border, 1 = primary border, 2 = secondary border.
-     * (id border, id corner-a, id corner-b)
-     */
-    function buildBorderData(tile: Tile): ([number, number, number])[] {
-        const countryBorderData = orDefault(tile.borderData.find(b => b.type === "country")?.directions, Array(6).fill(false));
-        const provinceBorderData = orDefault(tile.borderData.find(b => b.type === "province")?.directions, Array(6).fill(false));
-
-        function getBorderId(index: number) {
-            if (countryBorderData[index]) {
-                return 1;
-            }
-            if (provinceBorderData[index]) {
-                return 2;
-            }
-            return 0;
-        }
-
-        return [
-            // center
-            [0, 0, 0],
-            // triangle a - corner a,b
-            [getBorderId(0), getBorderId(5), getBorderId(1)],
-            [getBorderId(0), getBorderId(5), getBorderId(1)],
-            // triangle b - corner a,b
-            [getBorderId(1), getBorderId(0), getBorderId(2)],
-            [getBorderId(1), getBorderId(0), getBorderId(2)],
-            // triangle c - corner a,b
-            [getBorderId(2), getBorderId(1), getBorderId(3)],
-            [getBorderId(2), getBorderId(1), getBorderId(3)],
-            // triangle d - corner a,b
-            [getBorderId(3), getBorderId(2), getBorderId(4)],
-            [getBorderId(3), getBorderId(2), getBorderId(4)],
-            // triangle e - corner a,b
-            [getBorderId(4), getBorderId(3), getBorderId(5)],
-            [getBorderId(4), getBorderId(3), getBorderId(5)],
-            // triangle f - corner a,b
-            [getBorderId(5), getBorderId(4), getBorderId(0)],
-            [getBorderId(5), getBorderId(4), getBorderId(0)],
-        ];
-    }
-
 
     function hexCornerPoint(i: number, size: [number, number], offX: number, offY: number): [number, number] {
         const angleDeg = 60 * i - 30;
@@ -213,30 +171,49 @@ export namespace TileVertexBuilder {
         return 0;
     }
 
-    function tileOwnerColor(tile: Tile, countries: Country[]): [number, number, number, number] {
-        if (!tile.generalData) {
-            return [0, 0, 0, 0];
-        } else if (tile.generalData.owner) {
-            return countryColor(tile.generalData.owner.countryColor, 1);
-        } else {
-            const influences = tile.advancedData ? tile.advancedData.influences : [];
-            const influenceThreshold = GAME_CONFIG.getGameConfig().cityTileMaxForeignInfluence;
-            const maxInfluenceCountry = getMax(influences, influence => influence.value);
-            const nextMaxInfluenceCountry = getMax(influences, influence => influence.countryId === maxInfluenceCountry?.countryId ? -1 : influence.value);
-            const nextMaxInfluenceValue = nextMaxInfluenceCountry ? nextMaxInfluenceCountry.value : -1;
-            if (maxInfluenceCountry && maxInfluenceCountry.value > influenceThreshold && maxInfluenceCountry.value > nextMaxInfluenceValue) {
-                return countryColor(countries.find(c => c.countryId === maxInfluenceCountry.countryId)?.color, 0.3);
-            }
-            return [0, 0, 0, 0];
-        }
+
+    /**
+     * @return the values of the tile-layer (value_0, ..., value_n) with n_max <= 4
+     * */
+    function buildLayerDataValues(layerMeta: TileLayerMeta, tile: Tile): (number[])[] {
+        const layer = tile.layers.find(l => l.layerId === layerMeta.layerId)!!;
+        return Array(13).fill(layer.value);
     }
 
-    function countryColor(color: Color | undefined, strength: number): [number, number, number, number] {
-        if (color) {
-            return [color.red / 255, color.green / 255, color.blue / 255, strength];
-        } else {
-            return [1, 1, 1, strength];
+
+    /**
+     * @return the border-information about the tile-layer (border, borderPrev, borderNext)
+     * */
+    function buildLayerDataBorders(layerMeta: TileLayerMeta, tile: Tile): (number[])[] {
+        const layer = tile.layers.find(l => l.layerId === layerMeta.layerId)!!;
+        const borderData = layer.borderDirections;
+
+        function getBorderId(index: number) {
+            return borderData[index] ? 1 : 0;
         }
+
+        return [
+            // center
+            [0, 0, 0],
+            // triangle a - corner a,b
+            [getBorderId(0), getBorderId(5), getBorderId(1)],
+            [getBorderId(0), getBorderId(5), getBorderId(1)],
+            // triangle b - corner a,b
+            [getBorderId(1), getBorderId(0), getBorderId(2)],
+            [getBorderId(1), getBorderId(0), getBorderId(2)],
+            // triangle c - corner a,b
+            [getBorderId(2), getBorderId(1), getBorderId(3)],
+            [getBorderId(2), getBorderId(1), getBorderId(3)],
+            // triangle d - corner a,b
+            [getBorderId(3), getBorderId(2), getBorderId(4)],
+            [getBorderId(3), getBorderId(2), getBorderId(4)],
+            // triangle e - corner a,b
+            [getBorderId(4), getBorderId(3), getBorderId(5)],
+            [getBorderId(4), getBorderId(3), getBorderId(5)],
+            // triangle f - corner a,b
+            [getBorderId(5), getBorderId(4), getBorderId(0)],
+            [getBorderId(5), getBorderId(4), getBorderId(0)],
+        ];
     }
 
 }

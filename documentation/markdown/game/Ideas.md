@@ -594,6 +594,27 @@ https://tvtropes.org/pmwiki/pmwiki.php/Main/FictionalCultureAndNationTropes
 
 
 
+# Cities vs Towns (vs Provinces)
+
+- no provinces
+- cities
+  - country has cities
+  - cities define/own larger areas of country
+  - allow more advanced buildings (administration, research, adv. production)
+  - no max (population) size
+- towns
+  - a town belongs to a city
+  - specialized basic production buildings (farm, mine, quarry, ...)
+  - claims only limited amount of surrounding tiles
+  - max (population) size (after that it can be upgraded to city with own area)
+
+- switch town -> city
+
+  - should be deliberate decision
+  - unlocks buildings with different focuses and bonuses, but maybe not many additional building slots at first -> player decision: keep basic production or replace with new buildings ?
+
+  
+
 # Tile Level
 
 - similar to EU4 Development: https://eu4.paradoxwikis.com/Development
@@ -714,3 +735,30 @@ What if defender does not find out about pending war ? (suprised by declaration 
   - Rain Simulation: https://undiscoveredworlds.blogspot.com/2019/02/hey-ho-wind-and-rain.html
   - Climate: https://undiscoveredworlds.blogspot.com/2019/02/getting-climactic.html
 
+
+
+# Combat, War, Army Movement and Commands
+
+**Idea**
+
+- army control based on areas (e.g. cities)
+- army can be in an area (not in a specific tile)
+- all commands based on areas, examples:
+  - defend current area
+  - move into area
+  - attack area
+  - retreat into area
+  - avoid enemy armies in current area
+  - ...
+- how to handle multiple different types of terrain in an area (-> e.g. for combat bonuses) ?
+  - set preferred terrain for army, choose from available terrain in area
+  - when 2 armies meet -> commanders make a maneuverer roll -> result decides in whose preferred terrain the battle takes place
+
+**Goal/Results**
+
+- less micromanagement of armies
+- solves problem of two armies chasing each other and not meeting
+
+**Open Problems**
+
+- how to handle unclaimed terrain ?

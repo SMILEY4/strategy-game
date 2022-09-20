@@ -3,39 +3,51 @@ precision mediump float;
 
 uniform vec2 u_tileMouseOver;
 uniform vec2 u_tileSelected;
+uniform int u_mapMode;
 
 flat in vec2 v_tilePosition;
-flat in vec2 v_terrainData;
-flat in vec4 v_overlayColor;
 in vec3 v_cornerData;
-flat in vec3 v_borderData;
+flat in vec2 v_terrainData;
+
+flat in vec3 v_layer_values_country;
+flat in vec3 v_layer_values_province;
+flat in vec3 v_layer_values_city;
+
+flat in vec3 v_layer_borders_country;
+flat in vec3 v_layer_borders_province;
+flat in vec3 v_layer_borders_city;
 
 out vec4 outColor;
 
-#pragma glslify: noise = require('glsl-noise/simplex/3d')
 
 vec3 calcTerrainColor(float terrainId) {
-    if(terrainId < -0.5) { // -1 -> undiscovered
+    if (terrainId < -0.5) { // -1 -> undiscovered
         return vec3(0.2);
     }
     if (terrainId < 0.5) { // 0 -> water
-        return vec3(0.3, 0.3, 1.0);
+        return vec3(1.0/255.0, 96.0/255.0, 154.0/255.0);
     }
     if (terrainId > 0.5) { // 1 -> land
-        return vec3(0.3, 1.0, 0.3);
+        return vec3(87.0/255.0, 139.0/255.0, 69.0/255.0);
     }
     return vec3(0.0);
 }
 
 
+vec3 calcGrayscaleTerrainColor(float terrainId) {
+    vec3 terrainColor = calcTerrainColor(v_terrainData.x);
+    return (vec3(terrainColor.r+terrainColor.g+terrainColor.b) / 3.0) * 1.75;
+}
+
+
 vec3 applyFogOfWar(vec3 color, float visibilityId) {
-    if(visibilityId < 0.5) { // 0 -> undiscovered
+    if (visibilityId < 0.5) { // 0 -> undiscovered
         return vec3(0.2);
     }
-    if(visibilityId < 1.5) { // 1 -> discovered
+    if (visibilityId < 1.5) { // 1 -> discovered
         return mix(color, vec3(0.2), 0.5);
     }
-    if(visibilityId < 2.5) { // 2 -> visible
+    if (visibilityId < 2.5) { // 2 -> visible
         return color;
     }
     return vec3(0.2);
@@ -61,44 +73,183 @@ vec3 blend(vec3 background, vec4 foreground) {
 }
 
 
-bool isPrimaryBorderId(float borderId) {
-    return 0.9 < borderId && borderId <  1.1;
+bool isTrue(float value) {
+    return 0.5 < value && value <  1.5;
 }
 
 
-bool isSecondaryBorderId(float borderId) {
-    return 1.9 < borderId && borderId <  2.1;
+bool isBorder(float distToCenter, float distToCornerA, float distToCornerB, vec3 borderData, float size) {
+    return (isTrue(borderData.x) && distToCenter > (1.0-size))
+    || (isTrue(borderData.y) && distToCornerA < size && distToCenter > (1.0-size))
+    || (isTrue(borderData.z) && distToCornerB < size && distToCenter > (1.0-size));
 }
 
 
-bool inPrimaryBorder(float distToCenter, float distToCornerA, float distToCornerB, vec3 borderData) {
-    return (isPrimaryBorderId(borderData.x) && distToCenter > 0.7)
-    || (isPrimaryBorderId(borderData.y) && distToCornerA < 0.3 && distToCenter > 0.7)
-    || (isPrimaryBorderId(borderData.z) && distToCornerB < 0.3 && distToCenter > 0.7);
+bool isBorder(vec3 cornerData, vec3 borderData, float size) {
+    return isBorder(1.0-cornerData.x, 1.0-cornerData.y, 1.0-cornerData.z, borderData, size);
 }
 
 
-bool inSecondaryBorder(float distToCenter, float distToCornerA, float distToCornerB, vec3 borderData) {
-    return (isSecondaryBorderId(borderData.x) && distToCenter > 0.95)
-    || (isSecondaryBorderId(borderData.y) && distToCornerA < 0.05 && distToCenter > 0.95)
-    || (isSecondaryBorderId(borderData.z) && distToCornerB < 0.05 && distToCenter > 0.95);
+
+vec3 renderMapModeDefault() {
+
+    // base terrain color
+    vec3 color = applyFogOfWar(calcTerrainColor(v_terrainData.x), v_terrainData.y);
+
+    // overlay color
+    if (v_layer_values_country.r > -0.1) {
+        color = blend(color, vec4(v_layer_values_country.rgb, 0.5));
+    }
+
+    // borders
+    if (v_layer_values_city.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_city, 0.05)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+    if (v_layer_values_province.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_province, 0.1)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+    if (v_layer_values_country.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_country, 0.3)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+
+    return color;
+}
+
+
+vec3 renderMapModeCountries() {
+
+    // base terrain color
+    vec3 terrainColor = calcGrayscaleTerrainColor(v_terrainData.x);
+    vec3 color = applyFogOfWar(terrainColor, v_terrainData.y);
+
+    // overlay color
+    if (v_layer_values_country.r > -0.1) {
+        color = blend(color, vec4(v_layer_values_country.rgb, 0.5));
+    }
+
+    // borders
+    if (v_layer_values_city.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_city, 0.05)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+    if (v_layer_values_province.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_province, 0.1)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+    if (v_layer_values_country.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_country, 0.3)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+
+    return color;
+}
+
+
+vec3 renderMapModeProvinces() {
+
+    // base terrain color
+    vec3 terrainColor = calcGrayscaleTerrainColor(v_terrainData.x);
+    vec3 color = applyFogOfWar(terrainColor, v_terrainData.y);
+
+    // overlay color
+    if (v_layer_values_province.r > -0.1) {
+        color = blend(color, vec4(v_layer_values_province.rgb, 0.5));
+    }
+
+    // borders
+    if (v_layer_values_city.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_city, 0.05)) {
+            color = v_layer_values_province.rgb;
+        }
+    }
+    if (v_layer_values_province.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_province, 0.3)) {
+            color = v_layer_values_province.rgb;
+        }
+    }
+    if (v_layer_values_country.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_country, 0.1)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+
+    return color;
+}
+
+
+vec3 renderMapModeCities() {
+
+    // base terrain color
+    vec3 terrainColor = calcGrayscaleTerrainColor(v_terrainData.x);
+    vec3 color = applyFogOfWar(terrainColor, v_terrainData.y);
+
+    // overlay color
+    if (v_layer_values_city.r > -0.1) {
+        color = blend(color, vec4(v_layer_values_city.rgb, 0.5));
+    }
+
+    // borders
+    if (v_layer_values_city.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_city, 0.3)) {
+            color = v_layer_values_city.rgb;
+        }
+    }
+    if (v_layer_values_province.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_province, 0.1)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+    if (v_layer_values_country.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_country, 0.1)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+
+    return color;
+}
+
+
+vec3 renderMapModeTerrain() {
+
+    // base terrain color
+    vec3 terrainColor = calcTerrainColor(v_terrainData.x);
+    vec3 color = applyFogOfWar(terrainColor, v_terrainData.y);
+
+    // borders
+    if (v_layer_values_country.r > -0.5) {
+        if (isBorder(v_cornerData, v_layer_borders_country, 0.1)) {
+            color = v_layer_values_country.rgb;
+        }
+    }
+
+    return color;
 }
 
 
 void main() {
 
     // base terrain color
-    vec3 tileColor = applyFogOfWar(calcTerrainColor(v_terrainData.x), v_terrainData.y);
-
-    // overlay color
-    tileColor = blend(tileColor, v_overlayColor*vec4(1.0, 1.0, 1.0, 0.5));
-
-    // border
-    if (inSecondaryBorder(1.0-v_cornerData.x, 1.0-v_cornerData.y, 1.0-v_cornerData.z, v_borderData)) {
-        tileColor = mix(vec3(0.0), v_overlayColor.rgb, 0.5);
+    vec3 tileColor = renderMapModeDefault();
+    if (u_mapMode == 1) {
+        tileColor = renderMapModeCountries();
     }
-    if (inPrimaryBorder(1.0-v_cornerData.x, 1.0-v_cornerData.y, 1.0-v_cornerData.z, v_borderData)) {
-        tileColor = v_overlayColor.rgb;
+    if (u_mapMode == 2) {
+        tileColor = renderMapModeProvinces();
+    }
+    if (u_mapMode == 3) {
+        tileColor = renderMapModeCities();
+    }
+    if (u_mapMode == 4) {
+        tileColor = renderMapModeTerrain();
     }
 
     // highlight selected/mouseover
