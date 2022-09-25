@@ -205,7 +205,9 @@ class GameExtendedDTOCreator(
             countryId = cityEntity.countryId,
             tile = cityEntity.tile,
             name = cityEntity.name,
-            color = cityEntity.color
+            color = cityEntity.color,
+            city = cityEntity.city,
+            parentCity = cityEntity.parentCity
         )
     }
 

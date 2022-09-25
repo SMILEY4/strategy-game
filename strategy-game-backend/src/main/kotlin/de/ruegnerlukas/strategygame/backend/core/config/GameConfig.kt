@@ -6,6 +6,10 @@ data class GameConfig(
      */
     val startingAreaRadius: Int = 3,
     /**
+     * the amount of money a town costs to build
+     */
+    val townCost: Float = 25f,
+    /**
      * the amount of money a city costs to build
      */
     val cityCost: Float = 50f,

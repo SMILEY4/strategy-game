@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
-import arrow.core.handleError
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
@@ -11,6 +10,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateTownCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceScoutCommandDataEntity
@@ -89,7 +89,13 @@ class TurnSubmitActionImpl(
         return commands.map { command ->
             when (command) {
                 is PlaceMarkerCommand -> createCommandPlaceMarker(game, country, command)
-                is CreateCityCommand -> createCommandCreateCity(game, country, command)
+                is CreateCityCommand -> {
+                    if (command.parentCity == null) {
+                        createCommandCreateCity(game, country, command)
+                    } else {
+                        createCommandCreateTown(game, country, command)
+                    }
+                }
                 is PlaceScoutCommand -> createCommandPlaceScout(game, country, command)
             }
         }
@@ -102,10 +108,27 @@ class TurnSubmitActionImpl(
     private fun createCommandPlaceMarker(game: GameEntity, country: CountryEntity, cmd: PlaceMarkerCommand): CommandEntity<*> {
         return CommandEntity(
             turn = game.turn,
-            countryId = country.key!!,
+            countryId = country.getKeyOrThrow(),
             data = PlaceMarkerCommandDataEntity(
                 q = cmd.q,
                 r = cmd.r
+            )
+        )
+    }
+
+
+    /**
+     * create a command-entity from the given [CreateCityCommand]
+     */
+    private fun createCommandCreateTown(game: GameEntity, country: CountryEntity, cmd: CreateCityCommand): CommandEntity<*> {
+        return CommandEntity(
+            turn = game.turn,
+            countryId = country.key!!,
+            data = CreateTownCommandDataEntity(
+                q = cmd.q,
+                r = cmd.r,
+                name = cmd.name.trim(),
+                parentCity = cmd.parentCity!!
             )
         )
     }
@@ -133,7 +156,7 @@ class TurnSubmitActionImpl(
     private fun createCommandPlaceScout(game: GameEntity, country: CountryEntity, cmd: PlaceScoutCommand): CommandEntity<*> {
         return CommandEntity(
             turn = game.turn,
-            countryId = country.key!!,
+            countryId = country.getKeyOrThrow(),
             data = PlaceScoutCommandDataEntity(
                 q = cmd.q,
                 r = cmd.r
@@ -148,7 +171,7 @@ class TurnSubmitActionImpl(
     private suspend fun maybeEndTurn(game: GameEntity) {
         val countPlaying = game.players.count { it.state == PlayerEntity.STATE_PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
-            val result = actionEndTurn.perform(game.key!!)
+            val result = actionEndTurn.perform(game.getKeyOrThrow())
             if (result is Either.Left) {
                 when (result.value) {
                     TurnEndAction.GameNotFoundError -> throw Exception("Could not find game ${game.key} when ending turn")

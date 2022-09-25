@@ -53,6 +53,7 @@ export class GameMessagingApi {
                             name: cmdCreateCity.name,
                             q: cmdCreateCity.q,
                             r: cmdCreateCity.r,
+                            parentCity: cmdCreateCity.parentCity
                         };
                     }
                     return undefined;

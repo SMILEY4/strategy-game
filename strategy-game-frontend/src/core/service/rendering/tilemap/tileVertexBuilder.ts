@@ -35,10 +35,6 @@ export namespace TileVertexBuilder {
             vertexData.push(vertex);
         }
 
-        if(tile.position.q === 8 && tile.position.r === -4) {
-            console.log(JSON.stringify(vertexData))
-        }
-
         return vertexData;
     }
 

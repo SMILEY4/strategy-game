@@ -10,5 +10,7 @@ class CityEntity(
     val tile: TileRef,
     val name: String,
     val color: RGBColor,
+    val city: Boolean,
+    val parentCity: String?,
     key: String? = null,
 ) : DbEntity(key)

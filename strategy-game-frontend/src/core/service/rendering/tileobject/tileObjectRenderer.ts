@@ -86,7 +86,7 @@ export class TileObjectRenderer {
 
         // CITIES
         gameState.cities.forEach(e => {
-            this.addCitySprite(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false));
+            this.addCitySprite(e.tile.q, e.tile.r, e.isCity, this.getColor(gameState.countries, e.countryId, false));
             this.addCityLabel(camera.getZoom(), e.tile.q, e.tile.r, this.textRenderer.getRegion(e.name));
         });
 
@@ -94,7 +94,7 @@ export class TileObjectRenderer {
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
             .forEach(e => {
-                this.addCitySprite(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true));
+                this.addCitySprite(e.q, e.r, e.parentCity === null, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true));
                 this.addCityLabel(camera.getZoom(), e.q, e.r, this.textRenderer.getRegion(e.name + " (P)"));
             });
 
@@ -156,10 +156,10 @@ export class TileObjectRenderer {
     }
 
 
-    private addCitySprite(q: number, r: number, color: number[]) {
+    private addCitySprite(q: number, r: number, isCity: boolean, color: number[]) {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
-        const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0];
-        const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1];
+        const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] * (isCity ? 1 : 0.6);
+        const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * (isCity ? 1 : 0.6);;
         this.addObject(x, y, width, height, color, 0, 1 / 3, 2 / 3, 0, 1);
     }
 

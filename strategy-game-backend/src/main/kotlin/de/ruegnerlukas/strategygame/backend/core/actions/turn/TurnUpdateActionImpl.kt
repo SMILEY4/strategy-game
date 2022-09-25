@@ -30,9 +30,11 @@ class TurnUpdateActionImpl(
 
 
     private fun updateCountryResources(game: GameExtendedEntity) {
-        game.cities.forEach { city ->
-            game.countries.find { it.key == city.countryId }?.let { it.resources.money += gameConfig.cityIncomePerTurn }
-        }
+        game.cities
+            .filter { it.city }
+            .forEach { city ->
+                game.countries.find { it.key == city.countryId }?.let { it.resources.money += gameConfig.cityIncomePerTurn }
+            }
     }
 
 
@@ -45,9 +47,11 @@ class TurnUpdateActionImpl(
 
     private fun updateTileInfluences(game: GameExtendedEntity, tile: TileEntity) {
         tile.influences.clear()
-        game.cities.forEach { city ->
-            updateTileInfluences(tile, city)
-        }
+        game.cities
+            .filter { it.city }
+            .forEach { city ->
+                updateTileInfluences(tile, city)
+            }
     }
 
 
@@ -95,6 +99,19 @@ class TurnUpdateActionImpl(
                         cityId = maxCityInfluence.cityId
                     )
                 }
+            }
+        }
+        game.cities.forEach { city ->
+            positionsCircle(city.tile.q, city.tile.r, 1) { q, r ->
+                game.tiles
+                    .asSequence()
+                    .filter { it.owner == null }
+                    .find { it.position.q == q && it.position.r == r }?.let { tile ->
+                        tile.owner = TileOwner(
+                            countryId = city.countryId,
+                            cityId = city.parentCity!!
+                        )
+                    }
             }
         }
     }
@@ -158,7 +175,7 @@ class TurnUpdateActionImpl(
 
     private fun hasDiscovered(countryId: String, tile: TileEntity) = tile.discoveredByCountries.contains(countryId)
 
-    private fun hasInfluence(countryId: String, tile: TileEntity) = tile.influences.any { it.countryId == countryId }
 
+    private fun hasInfluence(countryId: String, tile: TileEntity) = tile.influences.any { it.countryId == countryId }
 
 }

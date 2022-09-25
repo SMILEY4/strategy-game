@@ -20,6 +20,7 @@ class CommandEntity<T : CommandDataEntity>(
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = CreateCityCommandDataEntity::class),
+    JsonSubTypes.Type(value = CreateTownCommandDataEntity::class),
     JsonSubTypes.Type(value = PlaceMarkerCommandDataEntity::class),
     JsonSubTypes.Type(value = PlaceScoutCommandDataEntity::class),
 )
@@ -36,6 +37,19 @@ class CreateCityCommandDataEntity(
 ) : CommandDataEntity(TYPE) {
     companion object {
         internal const val TYPE = "create-city"
+    }
+}
+
+
+@JsonTypeName(CreateTownCommandDataEntity.TYPE)
+class CreateTownCommandDataEntity(
+    val q: Int,
+    val r: Int,
+    val name: String,
+    val parentCity: String
+) : CommandDataEntity(TYPE) {
+    companion object {
+        internal const val TYPE = "create-town"
     }
 }
 

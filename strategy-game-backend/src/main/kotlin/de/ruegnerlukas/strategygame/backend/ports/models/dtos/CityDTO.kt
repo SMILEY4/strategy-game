@@ -8,5 +8,7 @@ data class CityDTO(
 	val countryId: String,
 	val tile: TileRef,
 	val name: String,
-	val color: RGBColor
+	val color: RGBColor,
+	val city: Boolean,
+	val parentCity: String?,
 )

@@ -53,6 +53,8 @@ export interface PayloadGameState {
             r: number
         },
         name: string,
-        color: Color
+        color: Color,
+        city: boolean,
+        parentCity: string | null
     })[]
 }

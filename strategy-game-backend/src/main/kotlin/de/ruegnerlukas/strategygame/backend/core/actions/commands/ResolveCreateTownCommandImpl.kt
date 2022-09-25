@@ -12,32 +12,32 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateTownCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateTownCommand
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.max
 
-class ResolveCreateCityCommandImpl(
+class ResolveCreateTownCommandImpl(
     private val reservationInsert: ReservationInsert,
     private val gameConfig: GameConfig,
-) : ResolveCreateCityCommand, Logging {
+) : ResolveCreateTownCommand, Logging {
 
     override suspend fun perform(
-        command: CommandEntity<CreateCityCommandDataEntity>,
+        command: CommandEntity<CreateTownCommandDataEntity>,
         game: GameExtendedEntity
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving 'create-city'-command for game ${game.game.key} and country ${command.countryId}")
+        log().info("Resolving 'create-town'-command for game ${game.game.key} and country ${command.countryId}")
         return either {
             val country = findCountry(command.countryId, game).bind()
             val targetTile = findTile(command.data.q, command.data.r, game).bind()
             val validationErrors = validateCommand(command, game, country, targetTile)
             if (validationErrors.isEmpty()) {
-                createCity(game, country.getKeyOrThrow(), targetTile, command.data.name)
+                createTown(game, country.getKeyOrThrow(), command.data.parentCity, targetTile, command.data.name)
                 updateCountryResources(country)
                 emptyList()
             } else {
@@ -68,12 +68,13 @@ class ResolveCreateCityCommandImpl(
 
 
     private fun validateCommand(
-        command: CommandEntity<CreateCityCommandDataEntity>,
+        command: CommandEntity<CreateTownCommandDataEntity>,
         game: GameExtendedEntity,
         country: CountryEntity,
         targetTile: TileEntity,
     ): List<String> {
         return mutableListOf<String>().apply {
+            addAll(validateParentCity(command.data.parentCity, game.cities))
             addAll(validateName(command.data.name))
             addAll(validateTileType(targetTile))
             addAll(validateTileCity(targetTile, game.cities))
@@ -81,6 +82,18 @@ class ResolveCreateCityCommandImpl(
             addAll(validateTileOwner(country, targetTile))
             addAll(validateTileInfluence(country, targetTile))
         }
+    }
+
+
+    private fun validateParentCity(cityId: String, cities: List<CityEntity>): List<String> {
+        val parent = cities.find { it.getKeyOrThrow() == cityId }
+        if (parent == null) {
+            return listOf("parent unknown")
+        }
+        if (!parent.city) {
+            return listOf("invalid parent")
+        }
+        return emptyList()
     }
 
 
@@ -141,7 +154,7 @@ class ResolveCreateCityCommandImpl(
 
 
     private fun validateResourceCost(country: CountryEntity): List<String> {
-        if (country.resources.money < gameConfig.cityCost) {
+        if (country.resources.money < gameConfig.townCost) {
             return listOf("not enough money")
         } else {
             return emptyList()
@@ -149,23 +162,22 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private suspend fun createCity(game: GameExtendedEntity, countryId: String, tile: TileEntity, name: String) {
+    private suspend fun createTown(game: GameExtendedEntity, countryId: String, parentCity: String, tile: TileEntity, name: String) {
         CityEntity(
             gameId = tile.gameId,
             countryId = countryId,
             tile = TileRef(tile.key!!, tile.position.q, tile.position.r),
             name = name,
             color = RGBColor.random(),
-            city = true,
-            parentCity = null,
+            city = false,
+            parentCity = parentCity,
             key = reservationInsert.reserveCity()
         ).also { game.cities.add(it) }
     }
 
 
     private fun updateCountryResources(country: CountryEntity) {
-        country.resources.money -= gameConfig.cityCost
+        country.resources.money -= gameConfig.townCost
     }
-
 
 }

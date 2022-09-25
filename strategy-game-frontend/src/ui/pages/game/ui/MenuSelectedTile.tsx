@@ -7,6 +7,7 @@ import {AppConfig} from "../../../../main";
 import {CommandCreateCity} from "../../../../models/state/command";
 import {TilePosition} from "../../../../models/state/tilePosition";
 import {TextField} from "../../../components/specific/TextField";
+import useTileAt = GameStateHooks.useTileAt;
 
 
 export function MenuSelectedTile(): ReactElement {
@@ -216,13 +217,17 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
+    const tile = useTileAt(props.tile.q, props.tile.r)
 
     return (
         <div>
             Order creation of new city?
             <TextField value={name} onAccept={setName}/>
             <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAccept()}>Create</button>
+            <button onClick={() => onAcceptCity()}>Create City</button>
+            {tile?.generalData?.owner !== undefined && tile?.generalData?.owner !== null && (
+                <button onClick={() => onAcceptTown(tile?.generalData?.owner?.cityId!!)}>Create Town</button>
+            )}
         </div>
     );
 
@@ -230,9 +235,13 @@ function CreateCityDialog(props: { frameId: string, tile: TilePosition }): React
         close();
     }
 
-    function onAccept() {
+    function onAcceptCity() {
         close();
-        AppConfig.turnAddCommand.addCreateCity(props.tile, name);
+        AppConfig.turnAddCommand.addCreateCity(props.tile, name, null);
     }
 
+    function onAcceptTown(cityId: string) {
+        close();
+        AppConfig.turnAddCommand.addCreateCity(props.tile, name, cityId);
+    }
 }

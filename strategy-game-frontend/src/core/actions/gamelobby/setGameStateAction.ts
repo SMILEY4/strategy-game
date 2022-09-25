@@ -145,7 +145,9 @@ export class SetGameStateAction {
                 tileId: city.tile.tileId,
                 q: city.tile.q,
                 r: city.tile.r
-            }
+            },
+            isCity: city.city,
+            parentCity: city.parentCity
         }));
     }
 

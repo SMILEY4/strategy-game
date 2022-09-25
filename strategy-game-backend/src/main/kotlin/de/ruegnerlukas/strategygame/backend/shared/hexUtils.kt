@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.shared
 
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.distance
 import kotlin.math.abs
 
 /**
@@ -77,12 +76,38 @@ fun hexDistance(q0: Int, r0: Int, q1: Int, r1: Int): Int {
  * @return all [TilePosition]s that lie inside the given circle
  */
 fun positionsCircle(center: TilePosition, radius: Int): List<TilePosition> {
+    return positionsCircle(center.q, center.r, radius)
+}
+
+
+/**
+ * @return all [TilePosition]s that lie inside the given circle
+ */
+fun positionsCircle(centerQ: Int, centerR: Int, radius: Int): List<TilePosition> {
     return mutableListOf<TilePosition>().apply {
-        for (iq in (center.q - radius)..(center.q + radius)) {
-            for (ir in (center.r - radius)..(center.r + radius)) {
-                if (center.distance(iq, ir) <= radius) {
-                    add(TilePosition(iq, ir))
-                }
+        positionsCircle(centerQ, centerR, radius) { q, r ->
+            add(TilePosition(q, r))
+        }
+    }
+}
+
+
+/**
+ * iterate over all [TilePosition]s that lie inside the given circle
+ */
+fun positionsCircle(center: TilePosition, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
+    return positionsCircle(center.q, center.r, radius, consumer)
+}
+
+
+/**
+ * iterate over all [TilePosition]s that lie inside the given circle
+ */
+fun positionsCircle(centerQ: Int, centerR: Int, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
+    for (iq in (centerQ - radius)..(centerQ + radius)) {
+        for (ir in (centerR - radius)..(centerR + radius)) {
+            if (hexDistance(centerQ, centerR, iq, ir) <= radius) {
+                consumer(iq, ir)
             }
         }
     }
