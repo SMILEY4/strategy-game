@@ -739,7 +739,7 @@ What if defender does not find out about pending war ? (suprised by declaration 
 
 # Combat, War, Army Movement and Commands
 
-**Idea**
+## Idea 1
 
 - army control based on areas (e.g. cities)
 - army can be in an area (not in a specific tile)
@@ -762,3 +762,28 @@ What if defender does not find out about pending war ? (suprised by declaration 
 **Open Problems**
 
 - how to handle unclaimed terrain ?
+
+## Idea 2
+
+- each army has a area of control ("aoc")
+  - size of aoc maybe depending on army composition, commander, tech, ...  
+- army positioned on tiles, movement based on tiles
+- army commands
+  - defend here
+  - attack into tile xy
+  - move to xy and avoid enemies
+  - ...
+- if army enters aoc of other army, they "meet" (-> battle)
+- position/tile of battle one of the positions of meeting armies
+  - depends on armies commands -> e.g. "A" defends and "B" moves into aoc of "A", then battle takes place in tile of "A"
+
+**Goals/Result**
+
+- less micromanagement than without aoc
+- reduces problem of two armies chasing each other and not meeting
+- can handle unclaimed terrain (-> Idea 1)
+
+**Open Problems**
+
+- Situation: two moving armies with aoc smaller than movement distance -> how to handle them crossing each other ?
+  - maybe resolve complete movement of all armies in order -> only end-positions are checked for "meetings" ?

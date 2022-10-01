@@ -9,9 +9,8 @@
   - [Frontend](./technical/frontend.md)
   - [Resources and useful Links](./technical/usefulresources.md)
 - Gameplay
-  - [Ideas/Brainstorming](./game/ideas.md)
-  - [Cities](./game/cities.md)
-  - [Provinces](./game/provinces.md)
+  - [Ideas/Brainstorming](./game/Ideas.md)
+  - [Cities and Towns](./game/cities.md)
   - [Borders](./game/borders.md)
   - [Fog-of-War and Visibility](./game/fogOfWar.md)
     - Scouting
