@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
 import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
-import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 
 data class CountryEntity(
 	val gameId: String,

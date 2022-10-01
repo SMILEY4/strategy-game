@@ -31,7 +31,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQu
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 object TestActions {
 

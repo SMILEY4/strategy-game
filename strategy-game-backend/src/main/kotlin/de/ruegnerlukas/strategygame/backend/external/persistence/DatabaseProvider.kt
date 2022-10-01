@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.external.persistence
 import com.arangodb.ArangoDBException
 import de.ruegnerlukas.strategygame.backend.config.DbConfig
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 import kotlinx.coroutines.delay
 import java.util.concurrent.CompletionException
 import kotlin.time.Duration.Companion.seconds

@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models.entities
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 
 
 class CommandEntity<T : CommandDataEntity>(

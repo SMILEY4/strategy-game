@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 import arrow.core.getOrElse
 import com.fasterxml.jackson.annotation.JsonAlias
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class ReservationInsertImpl(private val database: ArangoDatabase): ReservationInsert {
 

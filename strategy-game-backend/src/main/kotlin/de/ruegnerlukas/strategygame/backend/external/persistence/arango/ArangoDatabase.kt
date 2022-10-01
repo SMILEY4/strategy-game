@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.shared.arango
+package de.ruegnerlukas.strategygame.backend.external.persistence.arango
 
 import arrow.core.Either
 import arrow.core.left

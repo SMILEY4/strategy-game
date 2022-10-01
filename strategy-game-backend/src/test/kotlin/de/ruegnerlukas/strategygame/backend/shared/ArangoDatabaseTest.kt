@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.shared
 
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.shared.arango.DocumentHandle
-import de.ruegnerlukas.strategygame.backend.shared.arango.DocumentNotFoundError
-import de.ruegnerlukas.strategygame.backend.shared.arango.UniqueConstraintViolationError
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DocumentHandle
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DocumentNotFoundError
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.UniqueConstraintViolationError
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk

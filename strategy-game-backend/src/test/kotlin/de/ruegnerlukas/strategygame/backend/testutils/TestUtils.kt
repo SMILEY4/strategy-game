@@ -15,7 +15,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEn
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 object TestUtils {
 

@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models.entities
 
 import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 
 class CityEntity(
     val gameId: String,
