@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceMarkerValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
@@ -14,56 +15,56 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveComma
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
+import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
 class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
 
-	override suspend fun perform(
-		command: CommandEntity<PlaceMarkerCommandDataEntity>,
-		game: GameExtendedEntity
-	): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-		log().info("Resolving 'place-marker'-command for game ${game.game.key} and country ${command.countryId}")
-		return either {
-			val targetTile = findTile(command.data.q, command.data.r, game).bind()
-			val validationErrors = validateCommand(targetTile)
-			if (validationErrors.isEmpty()) {
-				addMarker(targetTile, command.countryId)
-				emptyList()
-			} else {
-				validationErrors.map { CommandResolutionError(command, it) }
-			}
-		}
-	}
+    override suspend fun perform(
+        command: CommandEntity<PlaceMarkerCommandDataEntity>,
+        game: GameExtendedEntity
+    ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
+        log().info("Resolving 'place-marker'-command for game ${game.game.key} and country ${command.countryId}")
+        return either {
+            val targetTile = findTile(command.data.q, command.data.r, game).bind()
+            validateCommand(targetTile).ifInvalid<Unit> { reasons ->
+                return@either reasons.map { CommandResolutionError(command, it) }
+            }
+            addMarker(targetTile, command.countryId)
+            emptyList()
+        }
+    }
 
 
-	private fun findTile(q: Int, r: Int, state: GameExtendedEntity): Either<ResolveCommandsActionError, TileEntity> {
-		val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
-		if (targetTile == null) {
-			return ResolveCommandsAction.TileNotFoundError.left()
-		} else {
-			return targetTile.right()
-		}
-	}
+    private fun findTile(q: Int, r: Int, state: GameExtendedEntity): Either<ResolveCommandsActionError, TileEntity> {
+        val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
+        if (targetTile == null) {
+            return ResolveCommandsAction.TileNotFoundError.left()
+        } else {
+            return targetTile.right()
+        }
+    }
 
 
-	private fun validateCommand(targetTile: TileEntity): List<String> {
-		return mutableListOf<String>().apply {
-			addAll(validateFreeTile(targetTile))
-		}
-	}
+    private fun addMarker(tile: TileEntity, countryId: String) {
+        tile.content.add(MarkerTileContent(countryId))
+    }
+
+}
 
 
-	private fun validateFreeTile(tile: TileEntity): List<String> {
-		val alreadyHasMarker = tile.content.any { it.type == MarkerTileContent.TYPE }
-		if (alreadyHasMarker) {
-			return listOf("already another marker at position")
-		} else {
-			return emptyList()
-		}
-	}
+private object PlaceMarkerValidations {
 
+    fun validateCommand(targetTile: TileEntity): ValidationContext {
+        return validations(false) {
+            validTileSpace(targetTile)
+        }
+    }
 
-	private fun addMarker(tile: TileEntity, countryId: String) {
-		tile.content.add(MarkerTileContent(countryId))
-	}
+    fun ValidationContext.validTileSpace(tile: TileEntity) {
+        validate("MARKER.TILE_SPACE") {
+            tile.content.none { it.type == MarkerTileContent.TYPE }
+        }
+    }
 
 }

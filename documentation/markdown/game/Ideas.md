@@ -787,3 +787,9 @@ What if defender does not find out about pending war ? (suprised by declaration 
 
 - Situation: two moving armies with aoc smaller than movement distance -> how to handle them crossing each other ?
   - maybe resolve complete movement of all armies in order -> only end-positions are checked for "meetings" ?
+
+
+
+# [Video] Raising a Medieval Army
+
+https://www.youtube.com/watch?v=ZQHfit8b6VA&t=180s

@@ -8,8 +8,8 @@ title: Cities
 
 **Requirements**
 
-- nation must have enough money
-- city must be build on a "land"-tile
+- country must have enough money
+- must be build on a "land"-tile
 - tile is not owned by another country
 - tile does not already have a city
 - at least one of the following conditions must be true:
@@ -27,5 +27,12 @@ title: Cities
 
 **Requirements**
 
-- all requirements of cities apply
-- tile must be owned by nation
+- must be build on a "land"-tile
+
+- tile must be owned by the country
+
+- tile does not already have a city/town
+
+- country must have enough money
+
+  
