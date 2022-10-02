@@ -117,12 +117,6 @@ private object CreateTownValidations {
         }
     }
 
-    fun ValidationContext.validTileOwner(country: CountryEntity, target: TileEntity) {
-        validate("TOWN.TARGET_TILE_OWNER") {
-            target.owner?.countryId == country.key
-        }
-    }
-
     fun ValidationContext.validTileSpace(target: TileEntity, cities: List<CityEntity>) {
         validate("TOWN.TILE_SPACE") {
             cities.find { it.tile.tileId == target.key } == null
@@ -132,6 +126,12 @@ private object CreateTownValidations {
     fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
         validate("TOWN.RESOURCES") {
             country.resources.money >= gameConfig.townCost
+        }
+    }
+
+    fun ValidationContext.validTileOwner(country: CountryEntity, target: TileEntity) {
+        validate("TOWN.TARGET_TILE_OWNER") {
+            target.owner?.countryId == country.key
         }
     }
 

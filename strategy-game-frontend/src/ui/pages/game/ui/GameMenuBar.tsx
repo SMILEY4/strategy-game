@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {GameHooks} from "../../../../core/actions/GameHooks";
+import {GameHooks} from "../../../../core/actions/hooks/GameHooks";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {UserStateHooks} from "../../../../external/state/user/userStateHooks";
 import "./gameMenuBar.css";

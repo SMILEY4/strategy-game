@@ -120,6 +120,18 @@ private object CreateCityValidations {
         }
     }
 
+    fun ValidationContext.validTileSpace(target: TileEntity, cities: List<CityEntity>) {
+        validate("CITY.TILE_SPACE") {
+            cities.find { it.tile.tileId == target.key } == null
+        }
+    }
+
+    fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
+        validate("CITY.RESOURCES") {
+            country.resources.money >= gameConfig.cityCost
+        }
+    }
+
     fun ValidationContext.validTileOwner(country: CountryEntity, target: TileEntity) {
         validate("CITY.TARGET_TILE_OWNER") {
             target.owner == null || target.owner!!.countryId == country.key
@@ -143,18 +155,6 @@ private object CreateCityValidations {
                 return@validate true
             }
             return@validate false
-        }
-    }
-
-    fun ValidationContext.validTileSpace(target: TileEntity, cities: List<CityEntity>) {
-        validate("CITY.TILE_SPACE") {
-            cities.find { it.tile.tileId == target.key } == null
-        }
-    }
-
-    fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
-        validate("CITY.RESOURCES") {
-            country.resources.money >= gameConfig.cityCost
         }
     }
 

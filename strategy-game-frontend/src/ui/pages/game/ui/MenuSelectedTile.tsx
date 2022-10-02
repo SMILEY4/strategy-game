@@ -1,5 +1,7 @@
 import React, {ReactElement, useState} from "react";
-import {GameHooks} from "../../../../core/actions/GameHooks";
+import {useValidateCreateCity} from "../../../../core/actions/hooks/useValidateCreateCity";
+import {useValidateCreateTown} from "../../../../core/actions/hooks/useValidateCreateTown";
+import {useValidatePlaceScout} from "../../../../core/actions/hooks/useValidatePlaceScout";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
@@ -104,7 +106,8 @@ function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElemen
 
 function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement | null {
     const city = GameStateHooks.useCityAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    const canCreateCity = GameHooks.useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canCreateCity = useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canCreateTown = useValidateCreateTown(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
     const openFrame = UiStateHooks.useOpenFrame();
 
     function createCity() {
@@ -122,6 +125,21 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
         }
     }
 
+    function createTown() {
+        if (props.selectedTile) {
+            openFrame(
+                "dialog.create-town",
+                {
+                    centered: {
+                        width: 320,
+                        height: 200
+                    }
+                },
+                frameId => <CreateTownDialog frameId={frameId} tile={props.selectedTile!!}/>
+            );
+        }
+    }
+
     if (props.selectedTile) {
         return (
             <>
@@ -132,9 +150,8 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
                         <li>{"country: " + city.countryId}</li>
                     </ul>
                 )}
-                {!city && (
-                    <button onClick={createCity} disabled={!canCreateCity}>Create City</button>
-                )}
+                <button disabled={!canCreateCity} onClick={createCity}>Create City</button>
+                <button disabled={!canCreateTown} onClick={createTown}>Create Town</button>
             </>
         );
     } else {
@@ -166,7 +183,7 @@ function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElem
 
 function SectionScouts(props: { selectedTile: TilePosition | null }): ReactElement | null {
 
-    const canPlaceScout = GameHooks.useValidatePlaceScout(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canPlaceScout = useValidatePlaceScout(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
 
     function placeScout() {
         if (props.selectedTile) {
@@ -217,17 +234,13 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
-    const tile = useTileAt(props.tile.q, props.tile.r)
 
     return (
         <div>
             Order creation of new city?
             <TextField value={name} onAccept={setName}/>
             <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAcceptCity()}>Create City</button>
-            {tile?.generalData?.owner !== undefined && tile?.generalData?.owner !== null && (
-                <button onClick={() => onAcceptTown(tile?.generalData?.owner?.cityId!!)}>Create Town</button>
-            )}
+            <button onClick={() => onAccept()}>Create City</button>
         </div>
     );
 
@@ -235,12 +248,32 @@ function CreateCityDialog(props: { frameId: string, tile: TilePosition }): React
         close();
     }
 
-    function onAcceptCity() {
+    function onAccept() {
         close();
         AppConfig.turnAddCommand.addCreateCity(props.tile, name, null);
     }
+}
 
-    function onAcceptTown(cityId: string) {
+
+function CreateTownDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
+    const close = UiStateHooks.useCloseFrame(props.frameId);
+    const [name, setName] = useState("");
+    const tile = useTileAt(props.tile.q, props.tile.r);
+
+    return (
+        <div>
+            Order creation of new city?
+            <TextField value={name} onAccept={setName}/>
+            <button onClick={onCancel}>Cancel</button>
+            <button onClick={() => onAccept(tile?.generalData?.owner?.cityId!!)}>Create Town</button>
+        </div>
+    );
+
+    function onCancel() {
+        close();
+    }
+
+    function onAccept(cityId: string) {
         close();
         AppConfig.turnAddCommand.addCreateCity(props.tile, name, cityId);
     }

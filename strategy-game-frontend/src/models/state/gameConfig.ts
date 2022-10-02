@@ -1,4 +1,5 @@
 export interface GameConfig {
+    townCost: number,
     cityCost: number,
     cityTileMaxForeignInfluence: number,
     cityIncomePerTurn: number,
