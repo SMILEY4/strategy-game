@@ -35,7 +35,7 @@ class CreateCityCommand(
     val q: Int,
     val r: Int,
     val name: String,
-    val provinceId: String?,
+    val parentCity: String?
 ) : PlayerCommand(TYPE) {
     companion object {
         internal const val TYPE = "create-city"

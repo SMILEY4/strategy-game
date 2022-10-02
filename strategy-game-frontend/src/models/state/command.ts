@@ -20,7 +20,7 @@ export interface CommandPlaceScout extends Command {
 export interface CommandCreateCity extends Command {
     commandType: "create-city"
     name: string,
-    provinceId: string | null,
     q: number,
     r: number,
+    parentCity: string | null
 }

@@ -16,9 +16,9 @@ export class TurnSubmitAction {
     }
 
     perform(): void {
-        console.log("submit turn")
         if (this.localGameStateAccess.getCurrentState() == GameState.PLAYING) {
             const commands = this.localGameStateAccess.getCommands();
+            console.log("submit turn", commands);
             this.gameMsgApi.sendSubmitTurn(commands);
             this.localGameStateAccess.setCurrentState(GameState.SUBMITTED);
         }

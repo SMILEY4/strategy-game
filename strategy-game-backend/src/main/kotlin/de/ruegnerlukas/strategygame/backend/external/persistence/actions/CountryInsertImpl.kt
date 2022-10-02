@@ -4,8 +4,8 @@ import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryInsert
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDbError
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDbError
 
 class CountryInsertImpl(private val database: ArangoDatabase) : CountryInsert {
 

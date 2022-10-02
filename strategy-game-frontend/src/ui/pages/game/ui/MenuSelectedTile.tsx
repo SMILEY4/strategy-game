@@ -1,5 +1,7 @@
 import React, {ReactElement, useState} from "react";
-import {GameHooks} from "../../../../core/actions/GameHooks";
+import {useValidateCreateCity} from "../../../../core/actions/hooks/useValidateCreateCity";
+import {useValidateCreateTown} from "../../../../core/actions/hooks/useValidateCreateTown";
+import {useValidatePlaceScout} from "../../../../core/actions/hooks/useValidatePlaceScout";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
@@ -7,6 +9,7 @@ import {AppConfig} from "../../../../main";
 import {CommandCreateCity} from "../../../../models/state/command";
 import {TilePosition} from "../../../../models/state/tilePosition";
 import {TextField} from "../../../components/specific/TextField";
+import useTileAt = GameStateHooks.useTileAt;
 
 
 export function MenuSelectedTile(): ReactElement {
@@ -51,7 +54,7 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
                                     <li>{influence.countryId + " = " + influence.value}</li>
                                     <ul>
                                         {influence.sources.map(source => (
-                                            <li>{source.cityId + "/" + source.provinceId + " = " + source.value}</li>
+                                            <li>{source.cityId + " = " + source.value}</li>
                                         ))}
                                     </ul>
                                 </>
@@ -80,7 +83,6 @@ function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElemen
                         <h3>Owner</h3>
                         <ul>
                             <li>{"Country = " + tile.generalData.owner?.countryId}</li>
-                            <li>{"Province = " + tile.generalData.owner?.provinceId}</li>
                             <li>{"City = " + tile.generalData.owner?.cityId}</li>
                         </ul>
                     </>
@@ -104,7 +106,8 @@ function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElemen
 
 function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement | null {
     const city = GameStateHooks.useCityAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    const canCreateCity = GameHooks.useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canCreateCity = useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canCreateTown = useValidateCreateTown(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
     const openFrame = UiStateHooks.useOpenFrame();
 
     function createCity() {
@@ -122,6 +125,21 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
         }
     }
 
+    function createTown() {
+        if (props.selectedTile) {
+            openFrame(
+                "dialog.create-town",
+                {
+                    centered: {
+                        width: 320,
+                        height: 200
+                    }
+                },
+                frameId => <CreateTownDialog frameId={frameId} tile={props.selectedTile!!}/>
+            );
+        }
+    }
+
     if (props.selectedTile) {
         return (
             <>
@@ -130,12 +148,10 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
                     <ul>
                         <li>{"name: " + city.name}</li>
                         <li>{"country: " + city.countryId}</li>
-                        <li>{"province: " + city.provinceId}</li>
                     </ul>
                 )}
-                {!city && (
-                    <button onClick={createCity} disabled={!canCreateCity}>Create City</button>
-                )}
+                <button disabled={!canCreateCity} onClick={createCity}>Create City</button>
+                <button disabled={!canCreateTown} onClick={createTown}>Create Town</button>
             </>
         );
     } else {
@@ -167,7 +183,7 @@ function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElem
 
 function SectionScouts(props: { selectedTile: TilePosition | null }): ReactElement | null {
 
-    const canPlaceScout = GameHooks.useValidatePlaceScout(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canPlaceScout = useValidatePlaceScout(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
 
     function placeScout() {
         if (props.selectedTile) {
@@ -216,39 +232,15 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 
 
 function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
-    const country = GameStateHooks.usePlayerCountry();
-    const provinces = GameStateHooks.useProvinces(country?.countryId!!);
-    const tile = GameStateHooks.useTileAt(props.tile.q, props.tile.r)!!;
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
-
-    const availableProvinces = tile.advancedData ? getProvincesFromInfluences(tile.advancedData.influences) : [];
-
-    function getProvincesFromInfluences(influences: ({
-        countryId: string,
-        value: number,
-        sources: ({
-            provinceId: string,
-            cityId: string,
-            value: number,
-        })[]
-    })[]) {
-        return influences
-            .filter(i => i.countryId === country?.countryId)
-            .flatMap(i => i.sources)
-            .map(i => provinces.find(p => p.provinceId === i.provinceId)!!)
-            .filter((element, index, self) => self.indexOf(element) === index);
-    }
 
     return (
         <div>
             Order creation of new city?
             <TextField value={name} onAccept={setName}/>
             <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAccept(null)}>Create with new Province</button>
-            {
-                availableProvinces.map(p => <button onClick={() => onAccept(p.provinceId)}>{"Create in " + p.provinceId}</button>)
-            }
+            <button onClick={() => onAccept()}>Create City</button>
         </div>
     );
 
@@ -256,9 +248,33 @@ function CreateCityDialog(props: { frameId: string, tile: TilePosition }): React
         close();
     }
 
-    function onAccept(provinceId: string | null) {
+    function onAccept() {
         close();
-        AppConfig.turnAddCommand.addCreateCity(props.tile, name, provinceId);
+        AppConfig.turnAddCommand.addCreateCity(props.tile, name, null);
+    }
+}
+
+
+function CreateTownDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
+    const close = UiStateHooks.useCloseFrame(props.frameId);
+    const [name, setName] = useState("");
+    const tile = useTileAt(props.tile.q, props.tile.r);
+
+    return (
+        <div>
+            Order creation of new city?
+            <TextField value={name} onAccept={setName}/>
+            <button onClick={onCancel}>Cancel</button>
+            <button onClick={() => onAccept(tile?.generalData?.owner?.cityId!!)}>Create Town</button>
+        </div>
+    );
+
+    function onCancel() {
+        close();
     }
 
+    function onAccept(cityId: string) {
+        close();
+        AppConfig.turnAddCommand.addCreateCity(props.tile, name, cityId);
+    }
 }

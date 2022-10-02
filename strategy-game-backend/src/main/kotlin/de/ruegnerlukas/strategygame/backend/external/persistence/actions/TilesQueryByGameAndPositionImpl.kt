@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : TilesQueryByGameAndPosition {
 

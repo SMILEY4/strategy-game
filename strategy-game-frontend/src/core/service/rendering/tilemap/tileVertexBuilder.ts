@@ -8,7 +8,7 @@ import {TilemapUtils} from "../../tilemap/tilemapUtils";
 export namespace TileVertexBuilder {
 
 
-    export function vertexData(tile: Tile, countries: Country[]): number[][] {
+    export function vertexData(tile: Tile): number[][] {
 
         const vertexPositions = buildVertexPositions(tile);
         const tilePositions = buildTilePositions(tile);
@@ -33,10 +33,6 @@ export namespace TileVertexBuilder {
                 vertex.push(...layer.borders[i]);
             });
             vertexData.push(vertex);
-        }
-
-        if(tile.position.q === 8 && tile.position.r === -4) {
-            console.log(JSON.stringify(vertexData))
         }
 
         return vertexData;

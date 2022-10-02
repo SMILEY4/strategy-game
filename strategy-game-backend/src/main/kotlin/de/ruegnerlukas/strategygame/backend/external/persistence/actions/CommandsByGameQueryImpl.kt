@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class CommandsByGameQueryImpl(private val database: ArangoDatabase) : CommandsByGameQuery {
 

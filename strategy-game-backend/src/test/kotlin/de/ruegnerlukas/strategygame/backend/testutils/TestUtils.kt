@@ -14,9 +14,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 object TestUtils {
 
@@ -99,18 +98,6 @@ object TestUtils {
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
 			TileEntity::class.java
-		)
-	}
-
-	suspend fun getProvinces(database: ArangoDatabase, gameId: String): List<ProvinceEntity> {
-		return database.query(
-			"""
-				FOR province IN ${Collections.PROVINCES}
-					FILTER province.gameId == @gameId
-					RETURN province
-			""".trimIndent(),
-			mapOf("gameId" to gameId),
-			ProvinceEntity::class.java
 		)
 	}
 

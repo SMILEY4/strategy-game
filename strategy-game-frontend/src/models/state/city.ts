@@ -4,6 +4,7 @@ export interface City {
     cityId: string,
     name: string,
     countryId: string,
-    provinceId: string,
-    tile: TileRef;
+    tile: TileRef,
+    isCity: boolean,
+    parentCity: string | null
 }

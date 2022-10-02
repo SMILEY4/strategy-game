@@ -98,7 +98,7 @@ export class TilemapRenderer {
             this.batchRenderer.begin();
             gameState.tiles.forEach(tile => {
                 this.batchRenderer.add(
-                    TileVertexBuilder.vertexData(tile, gameState.countries),
+                    TileVertexBuilder.vertexData(tile),
                     TileVertexBuilder.indexData()
                 );
             });
@@ -127,9 +127,8 @@ export class TilemapRenderer {
     private mapModeId(mode: MapMode): number {
         if (mode === MapMode.DEFAULT) return 0;
         if (mode === MapMode.COUNTRIES) return 1;
-        if (mode === MapMode.PROVINCES) return 2;
-        if (mode === MapMode.CITIES) return 3;
-        if (mode === MapMode.TERRAIN) return 4;
+        if (mode === MapMode.CITIES) return 2;
+        if (mode === MapMode.TERRAIN) return 3;
         return 0;
     }
 

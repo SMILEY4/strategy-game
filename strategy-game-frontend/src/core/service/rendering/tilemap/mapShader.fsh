@@ -10,11 +10,9 @@ in vec3 v_cornerData;
 flat in vec2 v_terrainData;
 
 flat in vec3 v_layer_values_country;
-flat in vec3 v_layer_values_province;
 flat in vec3 v_layer_values_city;
 
 flat in vec3 v_layer_borders_country;
-flat in vec3 v_layer_borders_province;
 flat in vec3 v_layer_borders_city;
 
 out vec4 outColor;
@@ -107,11 +105,6 @@ vec3 renderMapModeDefault() {
             color = v_layer_values_country.rgb;
         }
     }
-    if (v_layer_values_province.r > -0.5) {
-        if (isBorder(v_cornerData, v_layer_borders_province, 0.1)) {
-            color = v_layer_values_country.rgb;
-        }
-    }
     if (v_layer_values_country.r > -0.5) {
         if (isBorder(v_cornerData, v_layer_borders_country, 0.3)) {
             color = v_layer_values_country.rgb;
@@ -139,45 +132,8 @@ vec3 renderMapModeCountries() {
             color = v_layer_values_country.rgb;
         }
     }
-    if (v_layer_values_province.r > -0.5) {
-        if (isBorder(v_cornerData, v_layer_borders_province, 0.1)) {
-            color = v_layer_values_country.rgb;
-        }
-    }
     if (v_layer_values_country.r > -0.5) {
         if (isBorder(v_cornerData, v_layer_borders_country, 0.3)) {
-            color = v_layer_values_country.rgb;
-        }
-    }
-
-    return color;
-}
-
-
-vec3 renderMapModeProvinces() {
-
-    // base terrain color
-    vec3 terrainColor = calcGrayscaleTerrainColor(v_terrainData.x);
-    vec3 color = applyFogOfWar(terrainColor, v_terrainData.y);
-
-    // overlay color
-    if (v_layer_values_province.r > -0.1) {
-        color = blend(color, vec4(v_layer_values_province.rgb, 0.5));
-    }
-
-    // borders
-    if (v_layer_values_city.r > -0.5) {
-        if (isBorder(v_cornerData, v_layer_borders_city, 0.05)) {
-            color = v_layer_values_province.rgb;
-        }
-    }
-    if (v_layer_values_province.r > -0.5) {
-        if (isBorder(v_cornerData, v_layer_borders_province, 0.3)) {
-            color = v_layer_values_province.rgb;
-        }
-    }
-    if (v_layer_values_country.r > -0.5) {
-        if (isBorder(v_cornerData, v_layer_borders_country, 0.1)) {
             color = v_layer_values_country.rgb;
         }
     }
@@ -201,11 +157,6 @@ vec3 renderMapModeCities() {
     if (v_layer_values_city.r > -0.5) {
         if (isBorder(v_cornerData, v_layer_borders_city, 0.3)) {
             color = v_layer_values_city.rgb;
-        }
-    }
-    if (v_layer_values_province.r > -0.5) {
-        if (isBorder(v_cornerData, v_layer_borders_province, 0.1)) {
-            color = v_layer_values_country.rgb;
         }
     }
     if (v_layer_values_country.r > -0.5) {
@@ -243,12 +194,9 @@ void main() {
         tileColor = renderMapModeCountries();
     }
     if (u_mapMode == 2) {
-        tileColor = renderMapModeProvinces();
-    }
-    if (u_mapMode == 3) {
         tileColor = renderMapModeCities();
     }
-    if (u_mapMode == 4) {
+    if (u_mapMode == 3) {
         tileColor = renderMapModeTerrain();
     }
 

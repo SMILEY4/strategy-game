@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models.entities
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.shared.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 
 
 class CommandEntity<T : CommandDataEntity>(
@@ -20,6 +20,7 @@ class CommandEntity<T : CommandDataEntity>(
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = CreateCityCommandDataEntity::class),
+    JsonSubTypes.Type(value = CreateTownCommandDataEntity::class),
     JsonSubTypes.Type(value = PlaceMarkerCommandDataEntity::class),
     JsonSubTypes.Type(value = PlaceScoutCommandDataEntity::class),
 )
@@ -33,10 +34,22 @@ class CreateCityCommandDataEntity(
     val q: Int,
     val r: Int,
     val name: String,
-    val provinceId: String?
 ) : CommandDataEntity(TYPE) {
     companion object {
         internal const val TYPE = "create-city"
+    }
+}
+
+
+@JsonTypeName(CreateTownCommandDataEntity.TYPE)
+class CreateTownCommandDataEntity(
+    val q: Int,
+    val r: Int,
+    val name: String,
+    val parentCity: String
+) : CommandDataEntity(TYPE) {
+    companion object {
+        internal const val TYPE = "create-town"
     }
 }
 

@@ -8,13 +8,16 @@ All tiles inside the border of a country belong to the country
 
 ## Expanding the Border
 
-When a new city is created, tiles can be added to the country (and the province of the created city):
+When a new city is created, tiles can be added to the country:
 
 - the tile is not already owned by any country
 - the country of the new city has the greatest influence in the tile
 - the country of the new city has more than x amount of influence in the tile
 
+When a new town is created, tiles can be added to the country:
 
+- the tile is not already owned by any country
+- the tile is a direct neighbor of the town
 
 ## Area of Influence
 

@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.shared.arango
+package de.ruegnerlukas.strategygame.backend.external.persistence.arango
 
 import com.arangodb.entity.Key
 import com.fasterxml.jackson.annotation.JsonIgnore

@@ -23,7 +23,6 @@ export function MenuMap(): ReactElement {
             <h3>Map-Modes</h3>
             <button onClick={() => setMode(MapMode.DEFAULT)} disabled={mode === MapMode.DEFAULT}>Default</button>
             <button onClick={() => setMode(MapMode.COUNTRIES)} disabled={mode === MapMode.COUNTRIES}>Countries</button>
-            <button onClick={() => setMode(MapMode.PROVINCES)} disabled={mode === MapMode.PROVINCES}>Provinces</button>
             <button onClick={() => setMode(MapMode.CITIES)} disabled={mode === MapMode.CITIES}>Cities</button>
             <button onClick={() => setMode(MapMode.TERRAIN)} disabled={mode === MapMode.TERRAIN}>Terrain</button>
         </div>

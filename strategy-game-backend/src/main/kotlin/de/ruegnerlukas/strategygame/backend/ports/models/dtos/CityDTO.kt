@@ -6,8 +6,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 data class CityDTO(
 	val cityId: String,
 	val countryId: String,
-	val provinceId: String,
 	val tile: TileRef,
 	val name: String,
-	val color: RGBColor
+	val color: RGBColor,
+	val city: Boolean,
+	val parentCity: String?,
 )

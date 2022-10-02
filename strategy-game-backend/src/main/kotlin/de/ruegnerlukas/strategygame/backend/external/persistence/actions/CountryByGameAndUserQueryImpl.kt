@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.shared.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class CountryByGameAndUserQueryImpl(private val database: ArangoDatabase) : CountryByGameAndUserQuery {
 
