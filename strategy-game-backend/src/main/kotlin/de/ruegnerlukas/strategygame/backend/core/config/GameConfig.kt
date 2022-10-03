@@ -22,6 +22,14 @@ data class GameConfig(
      */
     val cityIncomePerTurn: Float = 10f,
     /**
+     * the max amount of influence a town generates
+     */
+    val townInfluenceAmount: Float = 10f,
+    /**
+     * the distance the town spreads its influence
+     */
+    val townInfluenceSpread: Float = 3f,
+    /**
      * the max amount of influence a city generates
      */
     val cityInfluenceAmount: Float = 10f,

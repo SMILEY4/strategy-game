@@ -23,11 +23,8 @@ export interface PayloadGameState {
         advancedData: {
             influences: ({
                 countryId: string,
-                value: number,
-                sources: ({
-                    cityId: string,
-                    value: number
-                })[]
+                cityId: string,
+                amount: number
             })[],
             content: MsgTileContent[]
         } | null

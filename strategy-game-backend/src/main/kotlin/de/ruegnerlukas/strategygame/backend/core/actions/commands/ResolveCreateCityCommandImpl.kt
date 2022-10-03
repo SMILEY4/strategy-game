@@ -145,13 +145,13 @@ private object CreateCityValidations {
                 return@validate true
             }
             // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-            val maxForeignInfluence = target.influences.filter { it.countryId != country.key }.map { it.totalValue }.max { it } ?: 0.0
+            val maxForeignInfluence = target.influences.filter { it.countryId != country.key }.map { it.amount }.max { it } ?: 0.0
             if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
                 return@validate true
             }
             // country has the most influence on tile
-            val countryInfluence = target.influences.find { it.countryId == country.key }?.totalValue ?: 0.0
-            if (countryInfluence >= maxForeignInfluence) {
+            val maxCountryInfluence = target.influences.filter { it.countryId == country.key }.map { it.amount }.max { it } ?: 0.0
+            if (maxCountryInfluence >= maxForeignInfluence) {
                 return@validate true
             }
             return@validate false

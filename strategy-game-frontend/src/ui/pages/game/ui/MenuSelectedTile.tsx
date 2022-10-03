@@ -51,12 +51,7 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
                         {
                             tile.advancedData.influences.map(influence => (
                                 <>
-                                    <li>{influence.countryId + " = " + influence.value}</li>
-                                    <ul>
-                                        {influence.sources.map(source => (
-                                            <li>{source.cityId + " = " + source.value}</li>
-                                        ))}
-                                    </ul>
+                                    <li>{influence.countryId + "." + influence.cityId + " = " + influence.amount}</li>
                                 </>
                             ))
                         }

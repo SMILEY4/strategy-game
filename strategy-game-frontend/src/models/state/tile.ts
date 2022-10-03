@@ -22,11 +22,8 @@ export interface TileGeneralData {
 export interface TileAdvancedData {
     influences: ({
         countryId: string,
-        value: number,
-        sources: ({
-            cityId: string,
-            value: number,
-        })[]
+        cityId: string,
+        amount: number,
     })[],
 }
 
