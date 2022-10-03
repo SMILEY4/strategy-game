@@ -22,6 +22,10 @@ https://forums.civfanatics.com/threads/problemedicals-civilization-vii-ideas-wis
 
 https://forums.civfanatics.com/threads/ideas-for-the-perfect-4x-historical-game.654805/
 
+https://axiomsofdominion.substack.com/archive?sort=new ⚠
+
+- turn based fantasy game -> seems to have similar ideas
+
 
 
 # Turn-Based (WeGo) ❤

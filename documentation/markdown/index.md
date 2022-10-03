@@ -9,12 +9,14 @@
   - [Frontend](./technical/frontend.md)
   - [Resources and useful Links](./technical/usefulresources.md)
 - Gameplay
-  - [Ideas/Brainstorming](./game/Ideas.md)
+  - [Ideas/Brainstorming](./game/ideas.md)
+  - [Turn Resolution](./game/turnResolution.md)
   - [Cities and Towns](./game/cities.md)
   - [Borders](./game/borders.md)
   - [Fog-of-War and Visibility](./game/fogOfWar.md)
     - Scouting
     - Discovered Countries
+  
 - [Changelog](./changelog/changelog.md)
 - Milestones/Roadmap
   - [Milestone 0.2](./roadmap/milestone_0_2.md)
