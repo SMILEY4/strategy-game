@@ -4,11 +4,13 @@ import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
 import de.ruegnerlukas.strategygame.backend.shared.traceId
-import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -21,9 +23,10 @@ import mu.withLoggingContext
  * Configuration for game routes
  */
 fun Route.gameRoutes(
-    createLobby: GameCreateAction,
-    joinLobby: GameJoinAction,
-    listLobbies: GamesListAction,
+    createGame: GameCreateAction,
+    joinGame: GameJoinAction,
+    listGames: GamesListAction,
+    deleteGame: GameDeleteAction,
     gameConfig: GameConfig
 ) {
     authenticate {
@@ -52,8 +55,8 @@ fun Route.gameRoutes(
             }) {
                 withLoggingContext(traceId()) {
                     val userId = getUserIdOrThrow(call)
-                    val gameId = createLobby.perform(WorldSettings.default())
-                    when (val joinResult = joinLobby.perform(userId, gameId)) {
+                    val gameId = createGame.perform(WorldSettings.default())
+                    when (val joinResult = joinGame.perform(userId, gameId)) {
                         is Either.Right -> ApiResponse.respondSuccess(call, gameId)
                         is Either.Left -> when (joinResult.value) {
                             GameJoinAction.GameNotFoundError -> ApiResponse.respondFailure(call, joinResult.value)
@@ -87,7 +90,7 @@ fun Route.gameRoutes(
                 }
             }) {
                 withLoggingContext(traceId()) {
-                    when (val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)) {
+                    when (val result = joinGame.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)) {
                         is Either.Right -> ApiResponse.respondSuccess(call)
                         is Either.Left -> when (result.value) {
                             GameJoinAction.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
@@ -108,8 +111,26 @@ fun Route.gameRoutes(
                 }
             }) {
                 withLoggingContext(traceId()) {
-                    val gameIds = listLobbies.perform(getUserIdOrThrow(call))
+                    val gameIds = listGames.perform(getUserIdOrThrow(call))
                     ApiResponse.respondSuccess(call, gameIds)
+                }
+            }
+            delete("delete/{gameId}", {
+                description = "Delete the given game and all associated data."
+                request {
+                    pathParameter<String>("gameId") {
+                        description = "The id of the game to delete"
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Game was successfully deleted."
+                    }
+                }
+            }) {
+                withLoggingContext(traceId()) {
+                    deleteGame.perform(call.parameters["gameId"]!!)
+                    ApiResponse.respondSuccess(call)
                 }
             }
             get("config", {
