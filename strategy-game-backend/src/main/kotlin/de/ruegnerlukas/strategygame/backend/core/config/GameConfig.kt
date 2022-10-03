@@ -28,7 +28,7 @@ data class GameConfig(
     /**
      * the distance the town spreads its influence
      */
-    val townInfluenceSpread: Float = 3f,
+    val townInfluenceSpread: Float = 2.5f,
     /**
      * the max amount of influence a city generates
      */
@@ -36,11 +36,11 @@ data class GameConfig(
     /**
      * the distance the city spreads its influence
      */
-    val cityInfluenceSpread: Float = 5f,
+    val cityInfluenceSpread: Float = 6.5f,
     /**
      * the total amount of influence a country must have on a tile to own it
      */
-    val tileOwnerInfluenceThreshold: Float = 7f,
+    val tileOwnerInfluenceThreshold: Float = 5f,
     /**
      * the visibility radius of a scout
      */
