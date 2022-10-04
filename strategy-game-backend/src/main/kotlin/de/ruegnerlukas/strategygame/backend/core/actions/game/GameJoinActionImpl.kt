@@ -89,7 +89,7 @@ class GameJoinActionImpl(
                 userId = userId,
                 color = COUNTRY_COLORS[(game.players.size-1) % COUNTRY_COLORS.size],
                 resources = CountryResources(
-                    money = 200f
+                    money = gameConfig.startingAmountMoney
                 )
             )
         ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.key}") }
