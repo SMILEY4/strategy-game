@@ -35,13 +35,13 @@ export function useValidateCreateCity(q: number, r: number): boolean {
                         return true;
                     }
                     // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-                    const maxForeignInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId !== country.countryId).map(i => i.value));
+                    const maxForeignInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId !== country.countryId).map(i => i.amount));
                     if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
                         return true;
                     }
                     // country has the most influence on tile
-                    const countryInfluence = orDefault(tile.advancedData.influences.find(i => i.countryId === country.countryId)?.value, 0.0);
-                    return countryInfluence >= maxForeignInfluence;
+                    const maxCountryInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId === country.countryId).map(i => i.amount))
+                    return maxCountryInfluence >= maxForeignInfluence;
                 } else {
                     return true;
                 }

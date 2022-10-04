@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHan
 import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
@@ -31,6 +32,7 @@ fun Application.apiRoutes(
 	messageHandler: MessageHandler,
 	userIdentityService: UserIdentityService,
 	gameCreateAction: GameCreateAction,
+	gameDeleteAction: GameDeleteAction,
 	gameJoinAction: GameJoinAction,
 	gamesListAction: GamesListAction,
 	gameDisconnectAction: GameDisconnectAction,
@@ -41,7 +43,7 @@ fun Application.apiRoutes(
 	routing {
 		route("api") {
 			userRoutes(userIdentityService)
-			gameRoutes(gameCreateAction, gameJoinAction, gamesListAction, gameConfig)
+			gameRoutes(gameCreateAction, gameJoinAction, gamesListAction, gameDeleteAction, gameConfig)
 			gameWebsocketRoutes(
 				connectionHandler,
 				userIdentityService,

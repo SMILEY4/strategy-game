@@ -5,10 +5,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.distance
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileCityInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileCountryInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileOwner
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.shared.max
@@ -47,16 +46,18 @@ class TurnUpdateActionImpl(
 
     private fun updateTileInfluences(game: GameExtendedEntity, tile: TileEntity) {
         tile.influences.clear()
-        game.cities
-            .filter { it.city }
-            .forEach { city ->
-                updateTileInfluences(tile, city)
-            }
+        game.cities.forEach { city ->
+            updateTileInfluences(tile, city)
+        }
     }
 
 
     private fun updateTileInfluences(tile: TileEntity, city: CityEntity) {
-        val cityInfluence = calcInfluence(tile.position.distance(city.tile))
+        val cityInfluence = if (city.city) {
+            calcInfluence(tile.position.distance(city.tile), gameConfig.cityInfluenceSpread, gameConfig.cityInfluenceAmount)
+        } else {
+            calcInfluence(tile.position.distance(city.tile), gameConfig.townInfluenceSpread, gameConfig.townInfluenceAmount)
+        }
         if (cityInfluence > 0) {
             addTileInfluence(tile, city, cityInfluence)
         }
@@ -64,54 +65,29 @@ class TurnUpdateActionImpl(
 
 
     private fun addTileInfluence(tile: TileEntity, city: CityEntity, influenceValue: Double) {
-        tile.influences.find { it.countryId == city.countryId }
-            ?.let {
-                it.totalValue += influenceValue
-                it.sources.add(
-                    TileCityInfluence(
-                        cityId = city.key!!,
-                        value = influenceValue
-                    )
-                )
-            }
-            ?: tile.influences.add(
-                TileCountryInfluence(
-                    countryId = city.countryId,
-                    totalValue = influenceValue,
-                    sources = mutableListOf(TileCityInfluence(city.key!!, influenceValue))
-                )
+        tile.influences.add(
+            TileInfluence(
+                countryId = city.countryId,
+                cityId = city.parentCity ?: city.getKeyOrThrow(),
+                amount = influenceValue
             )
+        )
     }
 
 
-    private fun calcInfluence(distance: Int): Double {
-        return max((-(distance.toDouble() / gameConfig.cityInfluenceSpread) + 1) * gameConfig.cityInfluenceAmount, 0.0)
+    private fun calcInfluence(distance: Int, spread: Float, amount: Float): Double {
+        return max((-(distance.toDouble() / spread) + 1) * amount, 0.0)
     }
 
 
     private fun updateTileOwner(game: GameExtendedEntity) {
         game.tiles.filter { it.owner == null }.forEach { tile ->
-            val maxCountryInfluence = tile.influences.max { it.totalValue }
-            if (maxCountryInfluence != null && maxCountryInfluence.totalValue >= gameConfig.tileOwnerInfluenceThreshold) {
-                maxCountryInfluence.sources.max { it.value }?.let { maxCityInfluence ->
-                    tile.owner = TileOwner(
-                        countryId = maxCountryInfluence.countryId,
-                        cityId = maxCityInfluence.cityId
-                    )
-                }
-            }
-        }
-        game.cities.forEach { city ->
-            positionsCircle(city.tile.q, city.tile.r, 1) { q, r ->
-                game.tiles
-                    .asSequence()
-                    .filter { it.owner == null }
-                    .find { it.position.q == q && it.position.r == r }?.let { tile ->
-                        tile.owner = TileOwner(
-                            countryId = city.countryId,
-                            cityId = city.parentCity!!
-                        )
-                    }
+            val maxInfluence = tile.influences.max { it.amount }
+            if (maxInfluence != null && maxInfluence.amount >= gameConfig.tileOwnerInfluenceThreshold) {
+                tile.owner = TileOwner(
+                    countryId = maxInfluence.countryId,
+                    cityId = maxInfluence.cityId
+                )
             }
         }
     }

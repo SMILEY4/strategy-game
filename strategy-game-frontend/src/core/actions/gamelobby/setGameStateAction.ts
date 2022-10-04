@@ -79,11 +79,8 @@ export class SetGameStateAction {
             advancedData: tile.advancedData ? {
                 influences: tile.advancedData.influences.map(influence => ({
                     countryId: influence.countryId,
-                    value: influence.value,
-                    sources: influence.sources.map(influenceSource => ({
-                        cityId: influenceSource.cityId,
-                        value: influenceSource.value
-                    }))
+                    cityId: influence.cityId,
+                    amount: influence.amount
                 })),
             } : null,
             layers: []

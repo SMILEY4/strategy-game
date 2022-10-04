@@ -42,7 +42,7 @@ data class TileDTOGeneralData(
  * The data that is available for visible tiles
  */
 data class TileDTOAdvancedData(
-    val influences: List<TileDTOCountryInfluence>,
+    val influences: List<TileDTOInfluence>,
     val content: List<TileDTOContent>
 )
 
@@ -52,15 +52,11 @@ data class TileDTOOwner(
     val cityId: String
 )
 
-data class TileDTOCountryInfluence(
-    val countryId: String,
-    val value: Double,
-    val sources: List<TileDTOCityInfluence>
-)
 
-data class TileDTOCityInfluence(
+data class TileDTOInfluence(
+    val countryId: String,
     val cityId: String,
-    val value: Double
+    val amount: Double
 )
 
 

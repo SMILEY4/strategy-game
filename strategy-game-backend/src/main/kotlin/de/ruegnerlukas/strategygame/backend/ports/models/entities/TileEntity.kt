@@ -10,7 +10,7 @@ data class TileEntity(
     var gameId: String,
     val position: TilePosition,
     val data: TileData,
-    val influences: MutableList<TileCountryInfluence>,
+    val influences: MutableList<TileInfluence>,
     var owner: TileOwner?,
     val discoveredByCountries: MutableList<String>,
     val content: MutableList<TileContent>
@@ -26,17 +26,11 @@ data class TileOwner(
     val cityId: String
 )
 
-data class TileCountryInfluence(
+data class TileInfluence(
     val countryId: String,
-    var totalValue: Double,
-    val sources: MutableList<TileCityInfluence>
-)
-
-data class TileCityInfluence(
     val cityId: String,
-    val value: Double
+    val amount: Double
 )
-
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

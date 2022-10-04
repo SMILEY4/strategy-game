@@ -12,9 +12,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ScoutTileDTOConten
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOAdvancedData
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOBaseData
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOCityInfluence
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOCountryInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOGeneralData
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOOwner
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOVisibility
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
@@ -30,6 +29,7 @@ class GameExtendedDTOCreator(
 ) {
 
     private val unknownCountryId = "?"
+    private val unknownCityId = "?"
 
     fun create(userId: String, game: GameExtendedEntity): GameExtendedDTO {
         val playerCountry = game.countries.first { it.userId == userId }
@@ -134,21 +134,16 @@ class GameExtendedDTOCreator(
         )
     }
 
-    private fun buildTileInfluences(countryId: String, tileEntity: TileEntity, knownCountries: Set<String>): List<TileDTOCountryInfluence> {
-        val influences = mutableListOf<TileDTOCountryInfluence>()
+    private fun buildTileInfluences(countryId: String, tileEntity: TileEntity, knownCountries: Set<String>): List<TileDTOInfluence> {
+        val influences = mutableListOf<TileDTOInfluence>()
         influences.addAll( // player country
             tileEntity.influences
                 .filter { influence -> influence.countryId == countryId }
                 .map { influence ->
-                    TileDTOCountryInfluence(
+                    TileDTOInfluence(
                         countryId = influence.countryId,
-                        value = influence.totalValue,
-                        sources = influence.sources.map { source ->
-                            TileDTOCityInfluence(
-                                source.cityId,
-                                source.value
-                            )
-                        }
+                        cityId = influence.cityId,
+                        amount = influence.amount
                     )
                 }
         )
@@ -156,21 +151,21 @@ class GameExtendedDTOCreator(
             tileEntity.influences
                 .filter { influence -> influence.countryId != countryId && knownCountries.contains(influence.countryId) }
                 .map { influence ->
-                    TileDTOCountryInfluence(
+                    TileDTOInfluence(
                         countryId = influence.countryId,
-                        value = influence.totalValue,
-                        sources = emptyList()
+                        cityId = influence.cityId,
+                        amount = influence.amount
                     )
                 }
         )
-        TileDTOCountryInfluence(
+        TileDTOInfluence(
             countryId = unknownCountryId,
-            value = tileEntity.influences
+            cityId = unknownCityId,
+            amount = tileEntity.influences
                 .filter { influence -> !knownCountries.contains(influence.countryId) }
-                .sumOf { influence -> influence.totalValue },
-            sources = emptyList()
+                .sumOf { influence -> influence.amount },
         ).let {
-            if (it.value > 0) {
+            if (it.amount > 0) {
                 influences.add(it)
             }
         }

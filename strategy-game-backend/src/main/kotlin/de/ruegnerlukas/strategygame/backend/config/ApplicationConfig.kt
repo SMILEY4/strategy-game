@@ -10,6 +10,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMa
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDeleteActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
@@ -31,6 +32,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.Command
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameDeleteImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
@@ -89,6 +91,7 @@ fun Application.module() {
     val queryGamesByUser = GamesByUserQueryImpl(database)
     val queryGameExtended = GameExtendedQueryImpl(database)
     val updateGame = GameUpdateImpl(database)
+    val deleteGame = GameDeleteImpl(database)
     val insertCountry = CountryInsertImpl(database)
     val updateGameExtended = GameExtendedUpdateImpl(database)
     val queryCountry = CountryByGameAndUserQueryImpl(database)
@@ -118,6 +121,9 @@ fun Application.module() {
     )
     val gamesListAction = GamesListActionImpl(
         queryGamesByUser
+    )
+    val gameDeleteAction = GameDeleteActionImpl(
+        deleteGame
     )
     val gameConnectAction = GameConnectActionImpl(
         queryGame,
@@ -256,6 +262,7 @@ fun Application.module() {
         messageHandler,
         userIdentityService,
         gameCreateAction,
+        gameDeleteAction,
         gameJoinAction,
         gamesListAction,
         gameDisconnectAction,
