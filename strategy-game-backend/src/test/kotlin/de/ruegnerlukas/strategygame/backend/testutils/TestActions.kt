@@ -9,7 +9,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionIm
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.SendGameStateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
@@ -30,7 +30,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.Reserva
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 object TestActions {

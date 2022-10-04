@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.game
+package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -7,10 +7,10 @@ import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction.SendGameStateActionError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction.UserNotConnectedError
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction.SendGameStateActionError
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction.UserNotConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging

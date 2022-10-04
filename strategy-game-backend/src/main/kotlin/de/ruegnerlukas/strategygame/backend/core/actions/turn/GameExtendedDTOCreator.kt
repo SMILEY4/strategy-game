@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.game
+package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO

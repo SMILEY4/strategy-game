@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.external.api.websocket
+package de.ruegnerlukas.strategygame.backend.external.api.message.websocket
 
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.websocket.DefaultWebSocketSession

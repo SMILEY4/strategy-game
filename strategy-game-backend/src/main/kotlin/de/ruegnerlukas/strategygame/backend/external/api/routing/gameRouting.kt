@@ -31,6 +31,7 @@ fun Route.gameRoutes(
 ) {
     authenticate {
         route("game") {
+
             post("create", {
                 description = "Create and join a new game. Other players can join this game via the returned game-id"
                 response {
@@ -65,6 +66,8 @@ fun Route.gameRoutes(
                     }
                 }
             }
+
+
             post("join/{gameId}", {
                 description = "Join a game as a participant."
                 request {
@@ -99,6 +102,8 @@ fun Route.gameRoutes(
                     }
                 }
             }
+
+
             get("list", {
                 description = "List all games with the user as a participant."
                 response {
@@ -115,6 +120,8 @@ fun Route.gameRoutes(
                     ApiResponse.respondSuccess(call, gameIds)
                 }
             }
+
+
             delete("delete/{gameId}", {
                 description = "Delete the given game and all associated data."
                 request {
@@ -133,6 +140,8 @@ fun Route.gameRoutes(
                     ApiResponse.respondSuccess(call)
                 }
             }
+
+
             get("config", {
                 description = "Fetch the configuration and values for games."
                 response {
@@ -148,6 +157,7 @@ fun Route.gameRoutes(
                     ApiResponse.respondSuccess(call, gameConfig)
                 }
             }
+
         }
     }
 }
