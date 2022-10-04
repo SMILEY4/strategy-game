@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateTownCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
@@ -9,8 +10,8 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionIm
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
@@ -42,7 +43,7 @@ object TestActions {
         GameQueryImpl(database),
         GameUpdateImpl(database),
         CountryInsertImpl(database),
-		TilesQueryByGameImpl(database),
+        TilesQueryByGameImpl(database),
         GameConfig(),
         UncoverMapAreaActionImpl(
             TilesQueryByGameAndPositionImpl(database),
@@ -65,6 +66,10 @@ object TestActions {
             ResolveCommandsActionImpl(
                 ResolvePlaceMarkerCommandImpl(),
                 ResolveCreateCityCommandImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                ),
+                ResolveCreateTownCommandImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()
                 ),
@@ -102,6 +107,10 @@ object TestActions {
             ReservationInsertImpl(database),
             GameConfig.default()
         ),
+        ResolveCreateTownCommandImpl(
+            ReservationInsertImpl(database),
+            GameConfig.default()
+        ),
         ResolvePlaceScoutCommandImpl(
             GameConfig.default()
         )
@@ -111,6 +120,10 @@ object TestActions {
         ResolveCommandsActionImpl(
             ResolvePlaceMarkerCommandImpl(),
             ResolveCreateCityCommandImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            ),
+            ResolveCreateTownCommandImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()
             ),

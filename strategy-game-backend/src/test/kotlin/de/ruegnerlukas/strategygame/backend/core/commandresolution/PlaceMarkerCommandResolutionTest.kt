@@ -31,7 +31,7 @@ class PlaceMarkerCommandResolutionTest : StringSpec({
 					cmdPlaceMarker(countryId, 4, 2)
 				),
 				listOf(
-					"already another marker at position"
+					"MARKER.TILE_SPACE"
 				)
 			)
 			expectMarkers(gameId, listOf(4 to 2))

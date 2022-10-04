@@ -50,7 +50,7 @@ class CreateCityCommandResolutionTest : StringSpec({
 					cmdCreateCity(countryId, 4, 2)
 				),
 				listOf(
-					"invalid tile type"
+					"CITY.TARGET_TILE_TYPE"
 				)
 			)
 			expectCities(gameId, emptyList())
@@ -68,7 +68,7 @@ class CreateCityCommandResolutionTest : StringSpec({
 					cmdCreateCity(countryId, 4, 2)
 				),
 				listOf(
-					"not enough money"
+					"CITY.RESOURCES"
 				)
 			)
 			expectCities(gameId, emptyList())
@@ -87,7 +87,7 @@ class CreateCityCommandResolutionTest : StringSpec({
 					cmdCreateCity(countryId, 5, 2)
 				),
 				listOf(
-					"not enough money"
+					"CITY.RESOURCES"
 				)
 			)
 			expectCities(gameId, listOf(4 to 2))
@@ -109,7 +109,7 @@ class CreateCityCommandResolutionTest : StringSpec({
 					cmdCreateCity(countryId, 4, 2)
 				),
 				listOf(
-					"tile already occupied"
+					"CITY.TILE_SPACE"
 				)
 			)
 			expectCities(gameId, listOf(4 to 2))
@@ -133,8 +133,8 @@ class CreateCityCommandResolutionTest : StringSpec({
 					cmdCreateCity(countryId2, 4, 3)
 				),
 				listOf(
-					"tile is part of another country",
-					"not enough influence over tile"
+					"CITY.TARGET_TILE_OWNER",
+					"CITY.COUNTRY_INFLUENCE",
 				)
 			)
 			expectCities(gameId, listOf(4 to 2))
@@ -155,10 +155,10 @@ class CreateCityCommandResolutionTest : StringSpec({
 			resolveCommands_expectOkWithErrors(
 				gameId,
 				listOf(
-					cmdCreateCity(countryId2, 0, 3)
+					cmdCreateCity(countryId2, 0, 4)
 				),
 				listOf(
-					"not enough influence over tile"
+					"CITY.COUNTRY_INFLUENCE"
 				)
 			)
 			expectCities(gameId, listOf(0 to 0))

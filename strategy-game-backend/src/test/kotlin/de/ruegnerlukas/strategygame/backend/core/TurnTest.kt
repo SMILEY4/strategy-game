@@ -32,7 +32,7 @@ class TurnTest : StringSpec({
 			submitTurn(
 				"user-1", gameId, listOf(
 					PlaceMarkerCommand(q = 4, r = 2),
-					CreateCityCommand(q = 4, r = 3, name = "Test")
+					CreateCityCommand(q = 4, r = 3, name = "Test", parentCity =  null)
 				)
 			)
 			expectTurn(gameId, 0)
