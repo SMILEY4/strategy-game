@@ -85,7 +85,7 @@ class GameJoinActionImpl(
     private suspend fun insertCountry(game: GameEntity, userId: String): String {
         return countryInsert.execute(
             CountryEntity(
-                gameId = game.key!!,
+                gameId = game.getKeyOrThrow(),
                 userId = userId,
                 color = COUNTRY_COLORS[(game.players.size-1) % COUNTRY_COLORS.size],
                 resources = CountryResources(

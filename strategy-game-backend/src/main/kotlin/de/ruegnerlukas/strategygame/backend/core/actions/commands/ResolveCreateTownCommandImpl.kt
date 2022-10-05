@@ -71,7 +71,7 @@ class ResolveCreateTownCommandImpl(
         CityEntity(
             gameId = tile.gameId,
             countryId = countryId,
-            tile = TileRef(tile.key!!, tile.position.q, tile.position.r),
+            tile = TileRef(tile.getKeyOrThrow(), tile.position.q, tile.position.r),
             name = name,
             color = RGBColor.random(),
             city = false,

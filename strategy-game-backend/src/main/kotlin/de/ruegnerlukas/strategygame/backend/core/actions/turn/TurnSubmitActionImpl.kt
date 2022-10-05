@@ -57,7 +57,7 @@ class TurnSubmitActionImpl(
      * Fetch the country for the given user and game
      */
     private suspend fun getCountry(game: GameEntity, userId: String): CountryEntity {
-        return countryByGameAndUserQuery.execute(game.key!!, userId)
+        return countryByGameAndUserQuery.execute(game.getKeyOrThrow(), userId)
             .getOrElse { throw Exception("Country for user $userId in game ${game.key} not found.") }
     }
 
@@ -123,7 +123,7 @@ class TurnSubmitActionImpl(
     private fun createCommandCreateTown(game: GameEntity, country: CountryEntity, cmd: CreateCityCommand): CommandEntity<*> {
         return CommandEntity(
             turn = game.turn,
-            countryId = country.key!!,
+            countryId = country.getKeyOrThrow(),
             data = CreateTownCommandDataEntity(
                 q = cmd.q,
                 r = cmd.r,
@@ -140,7 +140,7 @@ class TurnSubmitActionImpl(
     private fun createCommandCreateCity(game: GameEntity, country: CountryEntity, cmd: CreateCityCommand): CommandEntity<*> {
         return CommandEntity(
             turn = game.turn,
-            countryId = country.key!!,
+            countryId = country.getKeyOrThrow(),
             data = CreateCityCommandDataEntity(
                 q = cmd.q,
                 r = cmd.r,

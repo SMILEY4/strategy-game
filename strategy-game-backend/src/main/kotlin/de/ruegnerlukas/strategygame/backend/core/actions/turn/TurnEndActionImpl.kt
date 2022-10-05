@@ -71,7 +71,7 @@ class TurnEndActionImpl(
      * Resolve/Apply the commands of the (ended) turn
      */
     private suspend fun resolveCommands(game: GameExtendedEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
-        val commands = commandsByGameQuery.execute(game.game.key!!, game.game.turn)
+        val commands = commandsByGameQuery.execute(game.game.getKeyOrThrow(), game.game.turn)
         return actionResolveCommands.perform(game, commands).mapLeft { CommandResolutionFailedError }
     }
 
