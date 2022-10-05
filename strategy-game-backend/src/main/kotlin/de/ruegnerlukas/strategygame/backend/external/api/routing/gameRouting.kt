@@ -17,18 +17,20 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import mu.withLoggingContext
+import org.koin.ktor.ext.inject
 
 
 /**
  * Configuration for game routes
  */
-fun Route.gameRoutes(
-    createGame: GameCreateAction,
-    joinGame: GameJoinAction,
-    listGames: GamesListAction,
-    deleteGame: GameDeleteAction,
-    gameConfig: GameConfig
-) {
+fun Route.gameRoutes() {
+
+    val createGame by inject<GameCreateAction>()
+    val joinGame by inject<GameJoinAction>()
+    val listGames by inject<GamesListAction>()
+    val deleteGame by inject<GameDeleteAction>()
+    val gameConfig by inject<GameConfig>()
+
     authenticate {
         route("game") {
 

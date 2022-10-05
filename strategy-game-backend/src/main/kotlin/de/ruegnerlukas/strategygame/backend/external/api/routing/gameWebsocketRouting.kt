@@ -19,19 +19,21 @@ import io.ktor.server.routing.route
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
 import mu.withLoggingContext
+import org.koin.ktor.ext.inject
 
 
 /**
  * Configuration for game-websocket routes
  */
-fun Route.gameWebsocketRoutes(
-    connectionHandler: ConnectionHandler,
-    userService: UserIdentityService,
-    messageHandler: MessageHandler,
-    disconnectAction: GameDisconnectAction,
-    requestConnection: GameRequestConnectionAction,
-    connectAction: GameConnectAction
-) {
+fun Route.gameWebsocketRoutes() {
+
+    val connectionHandler by inject<ConnectionHandler>()
+    val userService by inject<UserIdentityService>()
+    val messageHandler by inject<MessageHandler>()
+    val disconnectAction by inject<GameDisconnectAction>()
+    val requestConnection by inject<GameRequestConnectionAction>()
+    val connectAction by inject<GameConnectAction>()
+
     val logger = Logging.create()
     route("game/{${WebsocketUtils.PATH_PARAM_GAME_ID}}") {
         websocketAuthenticate(userService) {
