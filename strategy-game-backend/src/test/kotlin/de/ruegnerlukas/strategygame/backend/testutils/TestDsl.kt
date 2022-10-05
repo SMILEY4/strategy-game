@@ -3,9 +3,20 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateTownCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceScoutCommandDataEntity
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.shared.coApply
 import io.kotest.common.runBlocking
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
@@ -13,8 +24,8 @@ import io.kotest.matchers.floats.shouldBeWithinPercentageOf
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
-inline fun gameTest(block: GameTestContext.() -> Unit) {
-    GameTestContext().apply(block)
+suspend fun gameTest(block: suspend GameTestContext.() -> Unit) {
+    GameTestContext().coApply(block)
 }
 
 
@@ -24,7 +35,7 @@ class GameTestContext {
 
     private val gameConfig = GameConfig.default()
 
-    fun getGameConfig() = gameConfig
+    fun gameCfg() = gameConfig
 
 
     private var gameId: String? = null
@@ -35,6 +46,8 @@ class GameTestContext {
 
 
     private val commandResolutionErrors = mutableMapOf<Int, MutableList<CommandResolutionError>>()
+
+    suspend fun getCityId(name: String) = TestUtils.getCities(database, gameId!!).find { it.name == name }!!.getKeyOrThrow()
 
     //=======================//
     //      CREATE GAME      //
@@ -68,22 +81,77 @@ class GameTestContext {
     //=======================//
 
     suspend fun joinGame(userId: String) {
-        TestActions.gameJoinAction(database).perform(userId, gameId!!).also {
-            it shouldBeOk true
-            countryIds[userId] = TestUtils.getCountry(database, gameId!!, userId).key!!
+        joinGame { this.userId = userId }
+    }
+
+    suspend fun joinGame(block: JoinGameConfig.() -> Unit) {
+        val config = JoinGameConfig().apply(block)
+        TestActions.gameJoinAction(database).perform(config.userId!!, config.gameId ?: gameId!!).also {
+            if (config.expectedError == null) {
+                it shouldBeOk true
+                countryIds[config.userId!!] = TestUtils.getCountry(database, gameId!!, config.userId!!).key!!
+            } else {
+                it shouldBeError config.expectedError
+            }
         }
+    }
+
+
+    class JoinGameConfig {
+        var gameId: String? = null
+        var userId: String? = null
+        var expectedError: GameJoinAction.GameJoinActionErrors? = null
+    }
+
+    //=======================//
+    //     CONNECT GAME      //
+    //=======================//
+
+    suspend fun connectGame(block: ConnectGameConfig.() -> Unit) {
+        val config = ConnectGameConfig().apply(block)
+        TestActions.gameRequestConnectionAction(database).perform(config.userId!!, config.gameId ?: gameId!!)
+            .also {
+                if (config.expectedRequestError == null) {
+                    it shouldBeOk true
+                } else {
+                    it shouldBeError config.expectedRequestError
+                }
+            }.also { result ->
+                if (result.isRight()) {
+                    TestActions.gameConnectAction(database).perform(config.userId!!, config.gameId ?: gameId!!, config.connectionId!!)
+                        .also {
+                            if (config.expectedConnectError == null) {
+                                it shouldBeOk true
+                            } else {
+                                it shouldBeError config.expectedConnectError
+                            }
+                        }
+                }
+            }
+    }
+
+    class ConnectGameConfig {
+        var gameId: String? = null
+        var userId: String? = null
+        var connectionId: Int? = null
+        var expectedRequestError: GameRequestConnectionAction.GameRequestConnectionActionError? = null
+        var expectedConnectError: GameConnectAction.GameConnectActionError? = null
     }
 
     //=======================//
     //   RESOLVE COMMANDS    //
     //=======================//
 
-    suspend fun resolveCommands(block: ResolveCommandsConfig.() -> Unit) {
-        val config = ResolveCommandsConfig().apply(block)
+    suspend fun resolveCommands(block: suspend ResolveCommandsConfig.() -> Unit) {
+        val config = ResolveCommandsConfig().coApply(block)
         TestUtils.withGameExtended(database, gameId!!) {
             it to TestActions.resolveCommandsAction(database).perform(it, config.getCommands())
         }.let { (game, result) ->
-            result shouldBeOk true
+            if (config.expectedActionError != null) {
+                result shouldBeError config.expectedActionError
+            } else {
+                result shouldBeOk true
+            }
             commandResolutionErrors
                 .computeIfAbsent(game.game.turn) { mutableListOf() }
                 .addAll(result.getOrElse { emptyList() })
@@ -91,6 +159,8 @@ class GameTestContext {
     }
 
     class ResolveCommandsConfig {
+
+        var expectedActionError: ResolveCommandsAction.TileNotFoundError? = null
 
         private val commands = mutableListOf<CommandEntity<*>>()
 
@@ -111,12 +181,87 @@ class GameTestContext {
             )
         }
 
+        class CommandCreateCityConfig {
+            var q: Int? = null
+            var r: Int? = null
+            var name: String? = null
+        }
+
+        suspend fun createTown(countryId: String, turn: Int = 0, block: suspend CommandCreateTownConfig.() -> Unit) {
+            val config = CommandCreateTownConfig().coApply(block)
+            commands.add(
+                CommandEntity(
+                    countryId = countryId,
+                    turn = turn,
+                    data = CreateTownCommandDataEntity(
+                        q = config.q!!,
+                        r = config.r!!,
+                        name = config.name!!,
+                        parentCity = config.parentCity!!
+                    )
+                )
+            )
+        }
+
+        class CommandCreateTownConfig {
+            var q: Int? = null
+            var r: Int? = null
+            var name: String? = null
+            var parentCity: String? = null
+        }
+
+        suspend fun placeMarker(countryId: String, turn: Int = 0, block: suspend CommandPlaceMarkerConfig.() -> Unit) {
+            val config = CommandPlaceMarkerConfig().coApply(block)
+            commands.add(
+                CommandEntity(
+                    countryId = countryId,
+                    turn = turn,
+                    data = PlaceMarkerCommandDataEntity(
+                        q = config.q!!,
+                        r = config.r!!,
+                    )
+                )
+            )
+        }
+
+        class CommandPlaceMarkerConfig {
+            var q: Int? = null
+            var r: Int? = null
+        }
+
+
     }
 
-    class CommandCreateCityConfig {
-        var q: Int? = null
-        var r: Int? = null
-        var name: String? = null
+    //=======================//
+    //     SUBMIT TURN       //
+    //=======================//
+
+    suspend fun submitTurn(userId: String, block: suspend ResolveCommandsConfig.() -> Unit) {
+        val config = ResolveCommandsConfig().coApply(block)
+        TestActions.turnSubmitAction(database).perform(userId, gameId!!, config.getCommands().map { cmd ->
+            when (cmd.data) {
+                is CreateCityCommandDataEntity -> CreateCityCommand(
+                    q = (cmd.data as CreateCityCommandDataEntity).q,
+                    r = (cmd.data as CreateCityCommandDataEntity).r,
+                    name = (cmd.data as CreateCityCommandDataEntity).name,
+                    parentCity = null,
+                )
+                is CreateTownCommandDataEntity -> CreateCityCommand(
+                    q = (cmd.data as CreateTownCommandDataEntity).q,
+                    r = (cmd.data as CreateTownCommandDataEntity).r,
+                    name = (cmd.data as CreateTownCommandDataEntity).name,
+                    parentCity = (cmd.data as CreateTownCommandDataEntity).parentCity,
+                )
+                is PlaceMarkerCommandDataEntity -> PlaceMarkerCommand(
+                    q = (cmd.data as PlaceMarkerCommandDataEntity).q,
+                    r = (cmd.data as PlaceMarkerCommandDataEntity).r,
+                )
+                is PlaceScoutCommandDataEntity -> PlaceScoutCommand(
+                    q = (cmd.data as PlaceScoutCommandDataEntity).q,
+                    r = (cmd.data as PlaceScoutCommandDataEntity).r,
+                )
+            }
+        })
     }
 
     //=======================//
@@ -146,12 +291,12 @@ class GameTestContext {
         expectCities {}
     }
 
-    suspend fun expectCity(block: CityAssertion.() -> Unit) {
+    suspend fun expectCity(block: suspend CityAssertion.() -> Unit) {
         expectCities { city(block) }
     }
 
-    suspend fun expectCities(block: ExpectCitiesAssertion.() -> Unit) {
-        val expectedCities = ExpectCitiesAssertion().apply(block).getCities()
+    suspend fun expectCities(block: suspend ExpectCitiesAssertion.() -> Unit) {
+        val expectedCities = ExpectCitiesAssertion().coApply(block).getCities()
         TestUtils.getCities(database, gameId!!).let { actualCities ->
             actualCities shouldHaveSize expectedCities.size
             expectedCities.forEach { expected ->
@@ -160,6 +305,7 @@ class GameTestContext {
                             && actual.tile.r == expected.r
                             && actual.name == expected.name
                             && actual.countryId == expected.countryId
+                            && actual.parentCity == expected.parentCity
                 }.shouldNotBeNull()
             }
         }
@@ -171,9 +317,10 @@ class GameTestContext {
 
         fun getCities() = cities
 
-        fun city(block: CityAssertion.() -> Unit) {
-            cities.add(CityAssertion().apply(block))
+        suspend fun city(block: suspend CityAssertion.() -> Unit) {
+            cities.add(CityAssertion().coApply(block))
         }
+
     }
 
     class CityAssertion {
@@ -181,6 +328,7 @@ class GameTestContext {
         var r: Int? = null
         var name: String? = null
         var countryId: String? = null
+        var parentCity: String? = null
     }
 
 
@@ -201,6 +349,82 @@ class GameTestContext {
             .map { it.errorMessage } shouldContainExactlyInAnyOrder errors.toList()
     }
 
+    suspend fun expectNoMarkers() {
+        expectMarkers { }
+    }
+
+    suspend fun expectMarkers(block: suspend ExpectMarkersAssertion.() -> Unit) {
+        val expectedMarkers = ExpectMarkersAssertion().coApply(block).getMarkers()
+        TestUtils.getMarkers(database, gameId!!).let { actualMarkers ->
+            actualMarkers shouldHaveSize expectedMarkers.size
+        }
+        expectedMarkers.forEach { expected ->
+            val actual = TestUtils.getMarkersAt(database, gameId!!, expected.q!!, expected.r!!)
+            actual shouldHaveSize 1
+            actual[0].second.countryId shouldBe expected.countryId
+        }
+    }
+
+    class ExpectMarkersAssertion {
+
+        private val markers = mutableListOf<MarkerAssertion>()
+
+        fun getMarkers() = markers
+
+        suspend fun marker(block: suspend MarkerAssertion.() -> Unit) {
+            markers.add(MarkerAssertion().coApply(block))
+        }
+
+    }
+
+    class MarkerAssertion {
+        var q: Int? = null
+        var r: Int? = null
+        var countryId: String? = null
+    }
+
+
+    suspend fun expectNoPlayers() {
+        expectPlayers { }
+    }
+
+    suspend fun expectPlayers(block: suspend ExpectPlayerAssertion.() -> Unit) {
+        val expectedPlayers = ExpectPlayerAssertion().coApply(block).getPlayers()
+        TestUtils.getPlayers(database, gameId!!).let { actualPlayers ->
+            actualPlayers shouldHaveSize expectedPlayers.size
+            expectedPlayers.forEach { expected ->
+                actualPlayers.find { actual ->
+                    actual.userId == expected.userId
+                            && actual.state == expected.state
+                            && actual.connectionId == expected.connectionId
+                }.shouldNotBeNull()
+
+            }
+        }
+    }
+
+    class ExpectPlayerAssertion {
+
+        private val players = mutableListOf<PlayerAssertion>()
+
+        fun getPlayers() = players
+
+        suspend fun player(block: suspend PlayerAssertion.() -> Unit) {
+            players.add(PlayerAssertion().coApply(block))
+        }
+
+    }
+
+    class PlayerAssertion {
+        var userId: String? = null
+        var connectionId: Int? = null
+        var state: String? = null
+    }
+
+
+    suspend fun expectTurn(turn: Int) {
+        TestUtils.getGame(database, gameId!!).turn shouldBe turn
+    }
 
 }
 

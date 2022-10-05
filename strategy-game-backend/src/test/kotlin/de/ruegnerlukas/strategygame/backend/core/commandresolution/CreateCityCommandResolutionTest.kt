@@ -27,7 +27,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = getGameConfig().startingAmountMoney - getGameConfig().cityCost
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
             }
         }
     }
@@ -69,7 +69,73 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = getGameConfig().startingAmountMoney - getGameConfig().cityCost * 2 + getGameConfig().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCost * 2 + gameCfg().cityIncomePerTurn
+            }
+        }
+    }
+
+    "create two cities next to each other in the same turn, create both" {
+        gameTest {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user-1")
+                user("user-2")
+            }
+            resolveCommands {
+                createCity(getCountryId("user-1")) {
+                    q = 0
+                    r = 0
+                    name = "City 1"
+                }
+                createCity(getCountryId("user-2")) {
+                    q = 1
+                    r = 0
+                    name = "City 2"
+                }
+            }
+            expectCities {
+                city {
+                    q = 0
+                    r = 0
+                    name = "City 1"
+                    countryId = getCountryId("user-1")
+                }
+                city {
+                    q = 1
+                    r = 0
+                    name = "City 2"
+                    countryId = getCountryId("user-2")
+                }
+            }
+            expectCountryMoney {
+                countryId = getCountryId("user-1")
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
+            }
+            expectCountryMoney {
+                countryId = getCountryId("user-2")
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
+            }
+        }
+    }
+
+    "create city with invalid name, reject" {
+        gameTest {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user")
+            }
+            resolveCommands {
+                createCity(getCountryId("user")) {
+                    q = 0
+                    r = 0
+                    name = "   "
+                }
+            }
+            expectCommandResolutionErrors(0, "CITY.NAME")
+            expectNoCities()
+            expectCountryMoney {
+                countryId = getCountryId("user")
+                amount = gameCfg().startingAmountMoney
             }
         }
     }
@@ -91,7 +157,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             expectNoCities()
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = getGameConfig().startingAmountMoney
+                amount = gameCfg().startingAmountMoney
             }
         }
     }
@@ -102,7 +168,7 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            setCountryMoney(getCountryId("user"), getGameConfig().cityCost - 1f)
+            setCountryMoney(getCountryId("user"), gameCfg().cityCost - 1f)
             resolveCommands {
                 createCity(getCountryId("user")) {
                     q = 0
@@ -114,18 +180,18 @@ class CreateCityCommandResolutionTest : StringSpec({
             expectNoCities()
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = getGameConfig().cityCost - 1f
+                amount = gameCfg().cityCost - 1f
             }
         }
     }
 
-    "create multiple cities without enough resources for all, reject second" {
+    "create two cities without enough resources for both, reject second" {
         gameTest {
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            setCountryMoney(getCountryId("user"), getGameConfig().cityCost + 1f)
+            setCountryMoney(getCountryId("user"), gameCfg().cityCost + 1f)
             resolveCommands {
                 createCity(getCountryId("user")) {
                     q = 10
@@ -185,7 +251,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = getGameConfig().startingAmountMoney - getGameConfig().cityCost
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
             }
         }
     }
@@ -223,11 +289,11 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user-1")
-                amount = getGameConfig().startingAmountMoney - getGameConfig().cityCost + getGameConfig().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn
             }
             expectCountryMoney {
                 countryId = getCountryId("user-2")
-                amount = getGameConfig().startingAmountMoney
+                amount = gameCfg().startingAmountMoney
             }
         }
     }
@@ -265,11 +331,11 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user-1")
-                amount = getGameConfig().startingAmountMoney - getGameConfig().cityCost + getGameConfig().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn
             }
             expectCountryMoney {
                 countryId = getCountryId("user-2")
-                amount = getGameConfig().startingAmountMoney
+                amount = gameCfg().startingAmountMoney
             }
         }
     }

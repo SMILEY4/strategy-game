@@ -25,7 +25,7 @@ class GameConnectActionImpl(
         log().info("Connect user $userId ($connectionId) to game $gameId")
         return either {
             val game = findGame(gameId).bind()
-            setConnection(game, userId, connectionId)
+            setConnection(game, userId, connectionId).bind()
             sendInitialGameStateMessage(gameId, userId)
         }
     }

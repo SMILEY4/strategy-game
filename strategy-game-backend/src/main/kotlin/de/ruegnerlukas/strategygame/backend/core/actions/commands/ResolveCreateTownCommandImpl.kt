@@ -37,7 +37,7 @@ class ResolveCreateTownCommandImpl(
         return either {
             val country = findCountry(command.countryId, game).bind()
             val targetTile = findTile(command.data.q, command.data.r, game).bind()
-            validateCommand(gameConfig, command.data.name, game, country, targetTile).ifInvalid<Unit> { reasons ->
+            validateCommand(gameConfig, command.data.name, game, country, targetTile, command.data.parentCity).ifInvalid<Unit> { reasons ->
                 return@either reasons.map { CommandResolutionError(command, it) }
             }
             createTown(game, country.getKeyOrThrow(), command.data.parentCity, targetTile, command.data.name)
@@ -95,13 +95,14 @@ private object CreateTownValidations {
         game: GameExtendedEntity,
         country: CountryEntity,
         targetTile: TileEntity,
+        parentCity: String
     ): ValidationContext {
         return validations(false) {
             validName(name)
             validTargetTileType(targetTile)
             validTileSpace(targetTile, game.cities)
             validResources(gameConfig, country)
-            validTileOwner(country, targetTile)
+            validTileOwner(country, targetTile, parentCity)
         }
     }
 
@@ -129,9 +130,9 @@ private object CreateTownValidations {
         }
     }
 
-    fun ValidationContext.validTileOwner(country: CountryEntity, target: TileEntity) {
+    fun ValidationContext.validTileOwner(country: CountryEntity, target: TileEntity, parentCity: String) {
         validate("TOWN.TARGET_TILE_OWNER") {
-            target.owner?.countryId == country.key
+            target.owner?.countryId == country.key && target.owner?.cityId == parentCity
         }
     }
 
