@@ -12,9 +12,9 @@ export class GameInputMouseScrollAction {
     }
 
     perform(d: number): void {
-        const dz = d > 0 ? 0.1 : -0.1
-        const camera = this.gameStateAccess.getCamera()
-        const zoom = Math.max(0.01, camera.zoom - dz)
+        const dz = d > 0 ? 0.1 : -0.1;
+        const camera = this.gameStateAccess.getCamera();
+        const zoom = Math.max(0.01, camera.zoom - dz);
         this.gameStateAccess.setCameraZoom(zoom);
     }
 

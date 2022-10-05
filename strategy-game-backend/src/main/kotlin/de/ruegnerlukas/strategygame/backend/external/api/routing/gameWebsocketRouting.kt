@@ -3,10 +3,10 @@ package de.ruegnerlukas.strategygame.backend.external.api.routing
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.interceptWebsocketRequest
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.websocketAuthenticate
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebsocketUtils
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebsocketUtils.interceptWebsocketRequest
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebsocketUtils.websocketAuthenticate
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction

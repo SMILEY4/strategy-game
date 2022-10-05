@@ -26,6 +26,7 @@ export class WebsocketClient {
         });
     }
 
+
     close() {
         if (this.isOpen() && this.websocket) {
             this.websocket.onclose = null;
@@ -33,6 +34,7 @@ export class WebsocketClient {
         }
         this.websocket = null;
     }
+
 
     send(type: string, payload: any) {
         if (this.isOpen() && this.websocket) {
@@ -43,6 +45,7 @@ export class WebsocketClient {
             this.websocket.send(JSON.stringify(message, null, "   "));
         }
     }
+
 
     isOpen(): boolean {
         return this.websocket != null && this.websocket.readyState === WebSocket.OPEN;

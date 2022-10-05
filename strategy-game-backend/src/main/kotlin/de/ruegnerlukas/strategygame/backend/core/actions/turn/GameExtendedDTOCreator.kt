@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.game
+package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
@@ -77,7 +77,7 @@ class GameExtendedDTOCreator(
             }
 
             val hasInfluence = tile.influences.any { it.countryId == countryId }
-            val foreignOwner = tile.owner != null && tile.owner!!.countryId != countryId
+            val foreignOwner = tile.owner != null && tile.owner?.countryId != countryId
             if (hasInfluence && !foreignOwner) {
                 return TileDTOVisibility.VISIBLE
             } else {
@@ -196,7 +196,7 @@ class GameExtendedDTOCreator(
 
     private fun buildCity(cityEntity: CityEntity): CityDTO {
         return CityDTO(
-            cityId = cityEntity.key!!,
+            cityId = cityEntity.getKeyOrThrow(),
             countryId = cityEntity.countryId,
             tile = cityEntity.tile,
             name = cityEntity.name,

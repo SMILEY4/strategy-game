@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError
@@ -71,7 +71,7 @@ class TurnEndActionImpl(
      * Resolve/Apply the commands of the (ended) turn
      */
     private suspend fun resolveCommands(game: GameExtendedEntity): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
-        val commands = commandsByGameQuery.execute(game.game.key!!, game.game.turn)
+        val commands = commandsByGameQuery.execute(game.game.getKeyOrThrow(), game.game.turn)
         return actionResolveCommands.perform(game, commands).mapLeft { CommandResolutionFailedError }
     }
 

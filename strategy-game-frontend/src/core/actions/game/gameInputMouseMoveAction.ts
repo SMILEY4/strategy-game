@@ -9,6 +9,7 @@ export class GameInputMouseMoveAction {
     private readonly tilePicker: TilePicker;
     private readonly gameStateAccess: LocalGameStateAccess;
 
+
     constructor(tilePicker: TilePicker, gameStateAccess: LocalGameStateAccess) {
         this.tilePicker = tilePicker;
         this.gameStateAccess = gameStateAccess;

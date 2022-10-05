@@ -2,6 +2,10 @@ package de.ruegnerlukas.strategygame.backend.core.config
 
 data class GameConfig(
     /**
+     * the amount of money a country starts with
+     */
+    val startingAmountMoney: Float = 200f,
+    /**
      * the radius of the uncovered country starting area
      */
     val startingAreaRadius: Int = 3,

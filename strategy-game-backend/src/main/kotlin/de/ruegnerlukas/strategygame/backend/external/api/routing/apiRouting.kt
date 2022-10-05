@@ -2,8 +2,8 @@ package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
@@ -28,17 +28,17 @@ import io.ktor.server.routing.routing
  * Main configuration for all routes
  */
 fun Application.apiRoutes(
-	connectionHandler: ConnectionHandler,
-	messageHandler: MessageHandler,
-	userIdentityService: UserIdentityService,
-	gameCreateAction: GameCreateAction,
-	gameDeleteAction: GameDeleteAction,
-	gameJoinAction: GameJoinAction,
-	gamesListAction: GamesListAction,
-	gameDisconnectAction: GameDisconnectAction,
-	gameRequestConnectionAction: GameRequestConnectionAction,
-	gameConnectAction: GameConnectAction,
-	gameConfig: GameConfig
+    connectionHandler: ConnectionHandler,
+    messageHandler: MessageHandler,
+    userIdentityService: UserIdentityService,
+    gameCreateAction: GameCreateAction,
+    gameDeleteAction: GameDeleteAction,
+    gameJoinAction: GameJoinAction,
+    gamesListAction: GamesListAction,
+    gameDisconnectAction: GameDisconnectAction,
+    gameRequestConnectionAction: GameRequestConnectionAction,
+    gameConnectAction: GameConnectAction,
+    gameConfig: GameConfig
 ) {
 	routing {
 		route("api") {

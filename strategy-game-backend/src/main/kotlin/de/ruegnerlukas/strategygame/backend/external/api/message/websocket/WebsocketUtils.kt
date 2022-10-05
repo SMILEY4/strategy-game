@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.external.api.websocket
+package de.ruegnerlukas.strategygame.backend.external.api.message.websocket
 
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.MessageMetadata

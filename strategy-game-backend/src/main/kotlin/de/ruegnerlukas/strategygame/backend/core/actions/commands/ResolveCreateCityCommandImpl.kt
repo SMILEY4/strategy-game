@@ -72,7 +72,7 @@ class ResolveCreateCityCommandImpl(
         CityEntity(
             gameId = tile.gameId,
             countryId = countryId,
-            tile = TileRef(tile.key!!, tile.position.q, tile.position.r),
+            tile = TileRef(tile.getKeyOrThrow(), tile.position.q, tile.position.r),
             name = name,
             color = RGBColor.random(),
             city = true,
@@ -134,14 +134,14 @@ private object CreateCityValidations {
 
     fun ValidationContext.validTileOwner(country: CountryEntity, target: TileEntity) {
         validate("CITY.TARGET_TILE_OWNER") {
-            target.owner == null || target.owner!!.countryId == country.key
+            target.owner == null || target.owner?.countryId == country.key
         }
     }
 
     fun ValidationContext.validTileInfluence(gameConfig: GameConfig, country: CountryEntity, target: TileEntity) {
         validate("CITY.COUNTRY_INFLUENCE") {
             // country owns tile
-            if (target.owner != null && target.owner!!.countryId == country.key) {
+            if (target.owner != null && target.owner?.countryId == country.key) {
                 return@validate true
             }
             // nobody else has more than 'MAX_TILE_INFLUENCE' influence

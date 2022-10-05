@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDa
 class GameUpdateImpl(private val database: ArangoDatabase) : GameUpdate {
 
 	override suspend fun execute(game: GameEntity): Either<EntityNotFoundError, Unit> {
-		return database.replaceDocument(Collections.GAMES, game.key!!, game)
+		return database.replaceDocument(Collections.GAMES, game.getKeyOrThrow(), game)
 			.mapLeft { EntityNotFoundError }
 			.void()
 	}

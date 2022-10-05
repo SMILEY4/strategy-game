@@ -15,7 +15,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActi
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.SendGameStateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
@@ -25,8 +25,8 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.handler.Message
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebSocketMessageProducer
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.ConnectionHandler
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl

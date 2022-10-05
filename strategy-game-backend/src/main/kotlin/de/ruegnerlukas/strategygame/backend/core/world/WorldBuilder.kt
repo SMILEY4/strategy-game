@@ -20,7 +20,7 @@ class WorldBuilder {
 	}
 
 	fun buildTiles(settings: WorldSettings): List<Tile> {
-		val tilePositions = TilemapPositionsBuilder().createHexagon(20)
+		val tilePositions = TilemapPositionsBuilder().createHexagon(settings.size)
 		noise.SetSeed(settings.seed)
 		return tilePositions.map { buildTileAt(it, settings) }
 	}
