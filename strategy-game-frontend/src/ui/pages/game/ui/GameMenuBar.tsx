@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {GameHooks} from "../../../../core/actions/hooks/GameHooks";
+import {useCountryMoney} from "../../../../core/actions/hooks/useCountryMoney";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {UserStateHooks} from "../../../../external/state/user/userStateHooks";
 import "./gameMenuBar.css";
@@ -34,7 +34,7 @@ export function GameMenuBar(): ReactElement {
 }
 
 export function MoneyResource(): ReactElement {
-    const money = GameHooks.useCountryMoney();
+    const money = useCountryMoney();
     return (
         <div>{"Money: " + money}</div>
     );

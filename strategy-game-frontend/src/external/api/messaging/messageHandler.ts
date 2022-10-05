@@ -18,6 +18,7 @@ export class MessageHandler {
         }
     }
 
+
     onWorldState(payload: PayloadGameState) {
         this.gameSetState.perform(payload);
     }

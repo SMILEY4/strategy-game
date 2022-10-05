@@ -2,15 +2,14 @@ import {GameStateHooks} from "../../../external/state/game/gameStateHooks";
 import {GameStore} from "../../../external/state/game/gameStore";
 import {GameConfigStateHooks} from "../../../external/state/gameconfig/gameConfigStateHooks";
 import {TerrainType} from "../../../models/state/terrainType";
-import {orDefault} from "../../../shared/utils";
 import {validations} from "../../../shared/validation";
-import {GameHooks} from "./GameHooks";
+import {useCountryMoney} from "./useCountryMoney";
 
 export function useValidateCreateCity(q: number, r: number): boolean {
 
     const gameConfig = GameConfigStateHooks.useGameConfig();
     const country = GameStateHooks.usePlayerCountry()!!;
-    const currentAmountMoney = GameHooks.useCountryMoney();
+    const currentAmountMoney = useCountryMoney();
     const cities = GameStore.useState(state => state.cities);
     const tile = GameStateHooks.useTileAt(q, r);
 
@@ -21,10 +20,10 @@ export function useValidateCreateCity(q: number, r: number): boolean {
             });
             ctx.validate("CITY.TILE_SPACE", () => {
                 return !cities.find(c => c.tile.tileId === tile.tileId);
-            })
+            });
             ctx.validate("CITY.RESOURCES", () => {
                 return currentAmountMoney >= gameConfig.cityCost;
-            })
+            });
             ctx.validate("CITY.TARGET_TILE_OWNER", () => {
                 return tile.generalData?.owner == null || tile.generalData.owner.countryId == country.countryId;
             });
@@ -40,7 +39,7 @@ export function useValidateCreateCity(q: number, r: number): boolean {
                         return true;
                     }
                     // country has the most influence on tile
-                    const maxCountryInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId === country.countryId).map(i => i.amount))
+                    const maxCountryInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId === country.countryId).map(i => i.amount));
                     return maxCountryInfluence >= maxForeignInfluence;
                 } else {
                     return true;

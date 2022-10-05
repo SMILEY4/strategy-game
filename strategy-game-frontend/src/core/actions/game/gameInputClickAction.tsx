@@ -13,6 +13,7 @@ export class GameInputClickAction {
     private readonly gameStateAccess: LocalGameStateAccess;
     private readonly uiStateAccess: UIStateAccess;
 
+
     constructor(tilePicker: TilePicker, gameStateAccess: LocalGameStateAccess, uiStateAccess: UIStateAccess) {
         this.tilePicker = tilePicker;
         this.gameStateAccess = gameStateAccess;
