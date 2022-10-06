@@ -1,6 +1,6 @@
-import {UserLoginAction} from "../../src/core/actions/user/userLoginAction";
-import {UserLogOutAction} from "../../src/core/actions/user/userLogOutAction";
-import {UserSignUpAction} from "../../src/core/actions/user/userSignUpAction";
+import {UserLoginAction} from "../../src/core/userLoginAction";
+import {UserLogOutAction} from "../../src/core/userLogOutAction";
+import {UserSignUpAction} from "../../src/core/userSignUpAction";
 import {mockGameApi, mockGameConfigStateAccess, mockUserApi, mockUserStateAccess} from "./mocks";
 
 export async function testCtx(block: (ctx: TestContext) => any) {
