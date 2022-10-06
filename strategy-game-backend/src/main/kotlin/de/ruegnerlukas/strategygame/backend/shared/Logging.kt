@@ -16,8 +16,12 @@ interface Logging {
 	}
 
 	companion object {
-		fun create(): Logger {
-			return KotlinLogging.logger {}
+		fun create(name: String? = null): Logger {
+			return if(name == null) {
+				KotlinLogging.logger {}
+			} else {
+				KotlinLogging.logger(name)
+			}
 		}
 	}
 

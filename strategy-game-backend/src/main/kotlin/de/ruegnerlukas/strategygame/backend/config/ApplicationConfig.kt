@@ -3,47 +3,10 @@ package de.ruegnerlukas.strategygame.backend.config
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateTownCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDeleteActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDisconnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
-import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
-import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebSocketMessageProducer
-import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameDeleteImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
 import io.github.smiley4.ktorswaggerui.dsl.AuthType
@@ -66,8 +29,11 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.koin.core.logger.Logger
+import org.koin.core.logger.MESSAGE
+import org.koin.ktor.ext.inject
+import org.koin.ktor.plugin.Koin
 import org.slf4j.event.Level
 import java.time.Duration
 
@@ -77,110 +43,20 @@ import java.time.Duration
  */
 fun Application.module() {
 
-    // "external" services
-    val connectionHandler = ConnectionHandler()
-    val userIdentityService = UserIdentityService.create(Config.get())
-    val messageProducer = GameMessageProducerImpl(WebSocketMessageProducer(connectionHandler))
-    val database = runBlocking { DatabaseProvider.create(Config.get().db) }
-
-    // persistence actions
-    val insertCommands = CommandsInsertImpl(database)
-    val insertGame = GameInsertImpl(database)
-    val queryCommandsByGame = CommandsByGameQueryImpl(database)
-    val queryGame = GameQueryImpl(database)
-    val queryGamesByUser = GamesByUserQueryImpl(database)
-    val queryGameExtended = GameExtendedQueryImpl(database)
-    val updateGame = GameUpdateImpl(database)
-    val deleteGame = GameDeleteImpl(database)
-    val insertCountry = CountryInsertImpl(database)
-    val updateGameExtended = GameExtendedUpdateImpl(database)
-    val queryCountry = CountryByGameAndUserQueryImpl(database)
-    val insertReservation = ReservationInsertImpl(database)
-    val tilesQueryByGame = TilesQueryByGameImpl(database)
-    val tilesQueryByGameAndPos = TilesQueryByGameAndPositionImpl(database)
-    val tilesUpdate = TilesUpdateImpl(database)
-
-    // game config
-    val gameConfig = GameConfig.default()
-
-    // core actions
-    val resolvePlaceMarkerCommandAction = ResolvePlaceMarkerCommandImpl()
-    val resolveCreateCityCommandAction = ResolveCreateCityCommandImpl(
-        insertReservation,
-        gameConfig
-    )
-    val resolveCreateTownCommandAction = ResolveCreateTownCommandImpl(
-        insertReservation,
-        gameConfig
-    )
-    val resolvePlaceScoutCommandAction = ResolvePlaceScoutCommandImpl(gameConfig)
-    val sendGameStateAction = SendGameStateActionImpl(
-        gameConfig,
-        queryGameExtended,
-        messageProducer
-    )
-    val gamesListAction = GamesListActionImpl(
-        queryGamesByUser
-    )
-    val gameDeleteAction = GameDeleteActionImpl(
-        deleteGame
-    )
-    val gameConnectAction = GameConnectActionImpl(
-        queryGame,
-        updateGame,
-        sendGameStateAction
-    )
-    val gameCreateAction = GameCreateActionImpl(
-        insertGame
-    )
-    val gameDisconnectAction = GameDisconnectActionImpl(
-        queryGamesByUser,
-        updateGame
-    )
-    val uncoverMapAreaAction = UncoverMapAreaActionImpl(
-        tilesQueryByGameAndPos,
-        tilesUpdate
-    )
-    val gameJoinAction = GameJoinActionImpl(
-        queryGame,
-        updateGame,
-        insertCountry,
-        tilesQueryByGame,
-        gameConfig,
-        uncoverMapAreaAction
-    )
-    val gameRequestConnectionAction = GameRequestConnectionActionImpl(
-        queryGame,
-    )
-    val resolveCommandsAction = ResolveCommandsActionImpl(
-        resolvePlaceMarkerCommandAction,
-        resolveCreateCityCommandAction,
-        resolveCreateTownCommandAction,
-        resolvePlaceScoutCommandAction
-    )
-    val turnUpdateActionImpl = TurnUpdateActionImpl(
-        gameConfig
-    )
-    val turnEndAction = TurnEndActionImpl(
-        resolveCommandsAction,
-        sendGameStateAction,
-        turnUpdateActionImpl,
-        queryGameExtended,
-        updateGameExtended,
-        queryCommandsByGame
-    )
-    val turnSubmitAction = TurnSubmitActionImpl(
-        turnEndAction,
-        queryGame,
-        queryCountry,
-        updateGame,
-        insertCommands
-    )
-
-    // more "external" services
-    val messageHandler = MessageHandler(turnSubmitAction)
-
-
+    install(Koin) {
+        modules(applicationDependencies)
+        logger(object : Logger() {
+            val logger = Logging.create("Koin")
+            override fun log(level: org.koin.core.logger.Level, msg: MESSAGE) {
+                when (level) {
+                    org.koin.core.logger.Level.DEBUG -> logger.debug(msg)
+                    org.koin.core.logger.Level.INFO -> logger.info(msg)
+                    org.koin.core.logger.Level.ERROR -> logger.error(msg)
+                    org.koin.core.logger.Level.NONE -> Unit
+                }
+            }
+        })
+    }
     install(Routing)
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)
@@ -218,6 +94,7 @@ fun Application.module() {
         allowCredentials = true
         allowSameOrigin = true
     }
+    val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
         jwt { userIdentityService.configureAuthentication(this) }
     }
@@ -257,18 +134,6 @@ fun Application.module() {
             }
         }
     }
-    apiRoutes(
-        connectionHandler,
-        messageHandler,
-        userIdentityService,
-        gameCreateAction,
-        gameDeleteAction,
-        gameJoinAction,
-        gamesListAction,
-        gameDisconnectAction,
-        gameRequestConnectionAction,
-        gameConnectAction,
-        gameConfig
-    )
+    apiRoutes()
 }
 

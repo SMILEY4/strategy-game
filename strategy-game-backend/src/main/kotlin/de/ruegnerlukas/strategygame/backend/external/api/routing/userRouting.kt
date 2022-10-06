@@ -15,12 +15,16 @@ import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import mu.withLoggingContext
+import org.koin.ktor.ext.inject
 
 
 /**
  * configuration for user-routes
  */
-fun Route.userRoutes(userIdentityService: UserIdentityService) {
+fun Route.userRoutes() {
+
+    val userIdentityService by inject<UserIdentityService>()
+
     route("user") {
         post("signup", {
             description = "Create a new user"
