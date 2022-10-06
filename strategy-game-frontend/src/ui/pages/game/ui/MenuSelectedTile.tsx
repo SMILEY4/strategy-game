@@ -1,7 +1,7 @@
 import React, {ReactElement, useState} from "react";
-import {useValidateCreateCity} from "../../../../core/actions/hooks/useValidateCreateCity";
-import {useValidateCreateTown} from "../../../../core/actions/hooks/useValidateCreateTown";
-import {useValidatePlaceScout} from "../../../../core/actions/hooks/useValidatePlaceScout";
+import {useValidateCreateCity} from "../../../../core/hooks/useValidateCreateCity";
+import {useValidateCreateTown} from "../../../../core/hooks/useValidateCreateTown";
+import {useValidatePlaceScout} from "../../../../core/hooks/useValidatePlaceScout";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";

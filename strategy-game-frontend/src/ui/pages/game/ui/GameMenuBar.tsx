@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {useCountryMoney} from "../../../../core/actions/hooks/useCountryMoney";
+import {useCountryMoney} from "../../../../core/hooks/useCountryMoney";
 import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
 import {UserStateHooks} from "../../../../external/state/user/userStateHooks";
 import "./gameMenuBar.css";
