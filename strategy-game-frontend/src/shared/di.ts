@@ -3,14 +3,14 @@ export function createDiContainer(): DiContainer {
 }
 
 export interface DiContainer {
-    bind: (qualifier: string, builder: (ctx: DiContext) => any, config?: DiBeanConfig) => void;
+    bind: (qualifier: Qualifier<any>, builder: (ctx: DiContext) => any, config?: DiBeanConfig) => void;
     createEager: () => void;
     getContext: () => DiContext;
 }
 
 
 export interface DiContext {
-    get: <T>(qualifier: string) => T;
+    get: <T>(qualifier: Qualifier<T>) => T;
 }
 
 
@@ -35,35 +35,35 @@ class DiContainerImpl implements DiContainer, DiContext {
     private readonly singletons = new Map<String, any>();
 
 
-    bind(qualifier: string, builder: (ctx: DiContext) => any, config?: DiBeanConfig): void {
-        this.bindings.set(qualifier, builder);
-        this.configs.set(qualifier, this.buildFullConfig(config));
+    bind(qualifier: Qualifier<any>, builder: (ctx: DiContext) => any, config?: DiBeanConfig): void {
+        this.bindings.set(qualifier.id, builder);
+        this.configs.set(qualifier.id, this.buildFullConfig(config));
     }
 
-    get<T>(qualifier: string): T {
-        if (this.singletons.has(qualifier)) {
-            return this.singletons.get(qualifier);
+    get<T>(qualifier: Qualifier<T>): T {
+        if (this.singletons.has(qualifier.id)) {
+            return this.singletons.get(qualifier.id);
         } else {
             console.debug("creating new bean", qualifier);
-            const config = this.configs.get(qualifier);
-            const binding = this.bindings.get(qualifier);
+            const config = this.configs.get(qualifier.id);
+            const binding = this.bindings.get(qualifier.id);
             if (binding === undefined || config === undefined) {
                 throw new Error("No bean for qualifier " + qualifier);
             }
             const bean = binding(this);
             if (config.lifetime === "singleton") {
-                this.singletons.set(qualifier, bean);
+                this.singletons.set(qualifier.id, bean);
             }
             return bean;
         }
     }
 
     createEager(): void {
-        console.log(JSON.stringify(Array.from(this.configs.entries()), null, "   "))
+        console.log(JSON.stringify(Array.from(this.configs.entries()), null, "   "));
         Array.from(this.configs.entries())
             .filter(entry => entry[1].creation === "eager")
             .forEach(entry => {
-                this.get(entry[0].toString());
+                this.get(qualifier(entry[0].toString()));
             });
     }
 
@@ -89,4 +89,12 @@ class DiContainerImpl implements DiContainer, DiContext {
         };
     }
 
+}
+
+export function qualifier<T>(id: string): Qualifier<T> {
+    return {id: id};
+}
+
+interface Qualifier<T> {
+    id: string,
 }

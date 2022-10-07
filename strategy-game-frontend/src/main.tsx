@@ -11,6 +11,8 @@ import {InputMouseMoveAction} from "./core/inputMouseMoveAction";
 import {InputMouseScrollAction} from "./core/inputMouseScrollAction";
 import {GameCanvasHandle} from "./core/rendering/gameCanvasHandle";
 import {Renderer} from "./core/rendering/renderer";
+import {GameApi} from "./core/required/gameApi";
+import {UserApi} from "./core/required/userApi";
 import {SetGameStateAction} from "./core/setGameStateAction";
 import {TilePicker} from "./core/tilemap/tilePicker";
 import {TurnAddCommandAction} from "./core/turnAddCommandAction";
@@ -28,7 +30,7 @@ import {GameConfigStateAccess} from "./external/state/gameconfig/gameConfigState
 import {LocalGameStateAccess} from "./external/state/localgame/localGameStateAccess";
 import {UIStateAccess} from "./external/state/ui/uiStateAccess";
 import {UserStateAccess} from "./external/state/user/userStateAccess";
-import {createDiContainer} from "./shared/di";
+import {createDiContainer, qualifier} from "./shared/di";
 import {App} from "./ui/App";
 import "./ui/index.css";
 
@@ -44,66 +46,68 @@ const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 
 export namespace AppConfig {
 
-    const QUALIFIERS = {
-        LocalGameStateAccess: "LocalGameStateAccess",
-        UserStateAccess: "UserStateAccess",
-        GameStateAccess: "GameStateAccess",
-        GameConfigStateAccess: "GameConfigStateAccess",
-        UIStateAccess: "UIStateAccess",
-        GameCanvasHandle: "GameCanvasHandle",
-        Renderer: "Renderer",
-        TilePicker: "TilePicker",
-        SetGameStateAction: "SetGameStateAction",
-        HttpClient: "HttpClient",
-        WebsocketClient: "WebsocketClient",
-        MessageHandler: "MessageHandler",
-        GameApi: "GameApi",
-        UserApi: "UserApi",
-        UserSignUpAction: "UserSignUpAction",
-        UserLoginAction: "UserLoginAction",
-        UserLogOutAction: "UserLogOutAction",
-        GameCreateAction: "GameCreateAction",
-        GameJoinAction: "GameJoinAction",
-        GameConnectAction: "GameConnectAction",
-        TurnSubmitAction: "TurnSubmitAction",
-        TurnAddCommandAction: "TurnAddCommandAction",
-        GameInitAction: "GameInitAction",
-        GameUpdateAction: "GameUpdateAction",
-        GameDisposeAction: "GameDisposeAction",
-        InputClickAction: "InputClickAction",
-        InputMouseMoveAction: "InputMouseMoveAction",
-        InputMouseScrollAction: "InputMouseScrollAction",
+    qualifier<GameApi>("GameApi")
+
+    const Q = {
+        LocalGameStateAccess: qualifier<LocalGameStateAccess>("LocalGameStateAccess"),
+        UserStateAccess: qualifier<UserStateAccess>("UserStateAccess"),
+        GameStateAccess: qualifier<GameStateAccess>("GameStateAccess"),
+        GameConfigStateAccess: qualifier<GameConfigStateAccess>("GameConfigStateAccess"),
+        UIStateAccess: qualifier<UIStateAccess>("UIStateAccess"),
+        GameCanvasHandle: qualifier<GameCanvasHandle>("GameCanvasHandle"),
+        Renderer: qualifier<Renderer>("Renderer"),
+        TilePicker: qualifier<TilePicker>("TilePicker"),
+        SetGameStateAction: qualifier<SetGameStateAction>("SetGameStateAction"),
+        HttpClient: qualifier<HttpClient>("HttpClient"),
+        WebsocketClient: qualifier<WebsocketClient>("WebsocketClient"),
+        MessageHandler: qualifier<MessageHandler>("MessageHandler"),
+        GameApi: qualifier<GameApi>("GameApi"),
+        UserApi: qualifier<UserApi>("UserApi"),
+        UserSignUpAction: qualifier<UserSignUpAction>("UserSignUpAction"),
+        UserLoginAction: qualifier<UserLoginAction>("UserLoginAction"),
+        UserLogOutAction: qualifier<UserLogOutAction>("UserLogOutAction"),
+        GameCreateAction: qualifier<GameCreateAction>("GameCreateAction"),
+        GameJoinAction: qualifier<GameJoinAction>("GameJoinAction"),
+        GameConnectAction: qualifier<GameConnectAction>("GameConnectAction"),
+        TurnSubmitAction: qualifier<TurnSubmitAction>("TurnSubmitAction"),
+        TurnAddCommandAction: qualifier<TurnAddCommandAction>("TurnAddCommandAction"),
+        GameInitAction: qualifier<GameInitAction>("GameInitAction"),
+        GameUpdateAction: qualifier<GameUpdateAction>("GameUpdateAction"),
+        GameDisposeAction: qualifier<GameDisposeAction>("GameDisposeAction"),
+        InputClickAction: qualifier<InputClickAction>("InputClickAction"),
+        InputMouseMoveAction: qualifier<InputMouseMoveAction>("InputMouseMoveAction"),
+        InputMouseScrollAction: qualifier<InputMouseScrollAction>("InputMouseScrollAction"),
     };
 
     const diContainer = createDiContainer();
-    diContainer.bind(QUALIFIERS.LocalGameStateAccess, ctx => new LocalGameStateAccess());
-    diContainer.bind(QUALIFIERS.UserStateAccess, ctx => new UserStateAccess());
-    diContainer.bind(QUALIFIERS.GameStateAccess, ctx => new GameStateAccess());
-    diContainer.bind(QUALIFIERS.GameConfigStateAccess, ctx => new GameConfigStateAccess());
-    diContainer.bind(QUALIFIERS.UIStateAccess, ctx => new UIStateAccess());
-    diContainer.bind(QUALIFIERS.GameCanvasHandle, ctx => new GameCanvasHandle());
-    diContainer.bind(QUALIFIERS.Renderer, ctx => new Renderer(ctx.get(QUALIFIERS.GameCanvasHandle), ctx.get(QUALIFIERS.LocalGameStateAccess), ctx.get(QUALIFIERS.GameStateAccess), ctx.get(QUALIFIERS.UserStateAccess)));
-    diContainer.bind(QUALIFIERS.TilePicker, ctx => new TilePicker(ctx.get(QUALIFIERS.LocalGameStateAccess), ctx.get(QUALIFIERS.GameStateAccess), ctx.get(QUALIFIERS.GameCanvasHandle)));
-    diContainer.bind(QUALIFIERS.SetGameStateAction, ctx => new SetGameStateAction(ctx.get(QUALIFIERS.LocalGameStateAccess), ctx.get(QUALIFIERS.GameStateAccess)));
-    diContainer.bind(QUALIFIERS.HttpClient, ctx => new HttpClient(API_BASE_URL));
-    diContainer.bind(QUALIFIERS.WebsocketClient, ctx => new WebsocketClient(API_WS_BASE_URL));
-    diContainer.bind(QUALIFIERS.MessageHandler, ctx => new MessageHandler(ctx.get(QUALIFIERS.SetGameStateAction)));
-    diContainer.bind(QUALIFIERS.GameApi, ctx => new GameApiImpl(ctx.get(QUALIFIERS.HttpClient), ctx.get(QUALIFIERS.WebsocketClient), ctx.get(QUALIFIERS.MessageHandler), ctx.get(QUALIFIERS.UserStateAccess)));
-    diContainer.bind(QUALIFIERS.UserApi, ctx => new UserApiImpl(ctx.get(QUALIFIERS.HttpClient), ctx.get(QUALIFIERS.UserStateAccess)));
-    diContainer.bind(QUALIFIERS.UserSignUpAction, ctx => new UserSignUpAction(ctx.get(QUALIFIERS.UserApi)));
-    diContainer.bind(QUALIFIERS.UserLoginAction, ctx => new UserLoginAction(ctx.get(QUALIFIERS.UserApi), ctx.get(QUALIFIERS.GameApi), ctx.get(QUALIFIERS.UserStateAccess), ctx.get(QUALIFIERS.GameConfigStateAccess)));
-    diContainer.bind(QUALIFIERS.UserLogOutAction, ctx => new UserLogOutAction(ctx.get(QUALIFIERS.UserStateAccess)));
-    diContainer.bind(QUALIFIERS.GameCreateAction, ctx => new GameCreateAction(ctx.get(QUALIFIERS.GameApi)));
-    diContainer.bind(QUALIFIERS.GameJoinAction, ctx => new GameJoinAction(ctx.get(QUALIFIERS.GameApi)));
-    diContainer.bind(QUALIFIERS.GameConnectAction, ctx => new GameConnectAction(ctx.get(QUALIFIERS.GameApi), ctx.get(QUALIFIERS.LocalGameStateAccess)));
-    diContainer.bind(QUALIFIERS.TurnSubmitAction, ctx => new TurnSubmitAction(ctx.get(QUALIFIERS.LocalGameStateAccess), ctx.get(QUALIFIERS.GameApi)));
-    diContainer.bind(QUALIFIERS.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(QUALIFIERS.LocalGameStateAccess), ctx.get(QUALIFIERS.GameConfigStateAccess)));
-    diContainer.bind(QUALIFIERS.GameInitAction, ctx => new GameInitAction(ctx.get(QUALIFIERS.GameCanvasHandle), ctx.get(QUALIFIERS.Renderer)));
-    diContainer.bind(QUALIFIERS.GameUpdateAction, ctx => new GameUpdateAction(ctx.get(QUALIFIERS.Renderer)));
-    diContainer.bind(QUALIFIERS.GameDisposeAction, ctx => new GameDisposeAction(ctx.get(QUALIFIERS.GameCanvasHandle), ctx.get(QUALIFIERS.Renderer)));
-    diContainer.bind(QUALIFIERS.InputClickAction, ctx => new InputClickAction(ctx.get(QUALIFIERS.TilePicker), ctx.get(QUALIFIERS.LocalGameStateAccess), ctx.get(QUALIFIERS.UIStateAccess)));
-    diContainer.bind(QUALIFIERS.InputMouseMoveAction, ctx => new InputMouseMoveAction(ctx.get(QUALIFIERS.TilePicker), ctx.get(QUALIFIERS.LocalGameStateAccess)));
-    diContainer.bind(QUALIFIERS.InputMouseScrollAction, ctx => new InputMouseScrollAction(ctx.get(QUALIFIERS.LocalGameStateAccess)));
+    diContainer.bind(Q.LocalGameStateAccess, ctx => new LocalGameStateAccess());
+    diContainer.bind(Q.UserStateAccess, ctx => new UserStateAccess());
+    diContainer.bind(Q.GameStateAccess, ctx => new GameStateAccess());
+    diContainer.bind(Q.GameConfigStateAccess, ctx => new GameConfigStateAccess());
+    diContainer.bind(Q.UIStateAccess, ctx => new UIStateAccess());
+    diContainer.bind(Q.GameCanvasHandle, ctx => new GameCanvasHandle());
+    diContainer.bind(Q.Renderer, ctx => new Renderer(ctx.get(Q.GameCanvasHandle), ctx.get(Q.LocalGameStateAccess), ctx.get(Q.GameStateAccess), ctx.get(Q.UserStateAccess)));
+    diContainer.bind(Q.TilePicker, ctx => new TilePicker(ctx.get(Q.LocalGameStateAccess), ctx.get(Q.GameStateAccess), ctx.get(Q.GameCanvasHandle)));
+    diContainer.bind(Q.SetGameStateAction, ctx => new SetGameStateAction(ctx.get(Q.LocalGameStateAccess), ctx.get(Q.GameStateAccess)));
+    diContainer.bind(Q.HttpClient, ctx => new HttpClient(API_BASE_URL));
+    diContainer.bind(Q.WebsocketClient, ctx => new WebsocketClient(API_WS_BASE_URL));
+    diContainer.bind(Q.MessageHandler, ctx => new MessageHandler(ctx.get(Q.SetGameStateAction)));
+    diContainer.bind(Q.GameApi, ctx => new GameApiImpl(ctx.get(Q.HttpClient), ctx.get(Q.WebsocketClient), ctx.get(Q.MessageHandler), ctx.get(Q.UserStateAccess)));
+    diContainer.bind(Q.UserApi, ctx => new UserApiImpl(ctx.get(Q.HttpClient), ctx.get(Q.UserStateAccess)));
+    diContainer.bind(Q.UserSignUpAction, ctx => new UserSignUpAction(ctx.get(Q.UserApi)));
+    diContainer.bind(Q.UserLoginAction, ctx => new UserLoginAction(ctx.get(Q.UserApi), ctx.get(Q.GameApi), ctx.get(Q.UserStateAccess), ctx.get(Q.GameConfigStateAccess)));
+    diContainer.bind(Q.UserLogOutAction, ctx => new UserLogOutAction(ctx.get(Q.UserStateAccess)));
+    diContainer.bind(Q.GameCreateAction, ctx => new GameCreateAction(ctx.get(Q.GameApi)));
+    diContainer.bind(Q.GameJoinAction, ctx => new GameJoinAction(ctx.get(Q.GameApi)));
+    diContainer.bind(Q.GameConnectAction, ctx => new GameConnectAction(ctx.get(Q.GameApi), ctx.get(Q.LocalGameStateAccess)));
+    diContainer.bind(Q.TurnSubmitAction, ctx => new TurnSubmitAction(ctx.get(Q.LocalGameStateAccess), ctx.get(Q.GameApi)));
+    diContainer.bind(Q.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(Q.LocalGameStateAccess), ctx.get(Q.GameConfigStateAccess)));
+    diContainer.bind(Q.GameInitAction, ctx => new GameInitAction(ctx.get(Q.GameCanvasHandle), ctx.get(Q.Renderer)));
+    diContainer.bind(Q.GameUpdateAction, ctx => new GameUpdateAction(ctx.get(Q.Renderer)));
+    diContainer.bind(Q.GameDisposeAction, ctx => new GameDisposeAction(ctx.get(Q.GameCanvasHandle), ctx.get(Q.Renderer)));
+    diContainer.bind(Q.InputClickAction, ctx => new InputClickAction(ctx.get(Q.TilePicker), ctx.get(Q.LocalGameStateAccess), ctx.get(Q.UIStateAccess)));
+    diContainer.bind(Q.InputMouseMoveAction, ctx => new InputMouseMoveAction(ctx.get(Q.TilePicker), ctx.get(Q.LocalGameStateAccess)));
+    diContainer.bind(Q.InputMouseScrollAction, ctx => new InputMouseScrollAction(ctx.get(Q.LocalGameStateAccess)));
     diContainer.createEager();
 
     export const di = diContainer.getContext();
@@ -111,7 +115,7 @@ export namespace AppConfig {
     let extContext: any = null;
 
     export function debugLooseWebglContext() {
-        const canvasHandle: GameCanvasHandle = AppConfig.di.get("GameCanvasHandle");
+        const canvasHandle: GameCanvasHandle = AppConfig.di.get(Q.GameCanvasHandle);
         if (canvasHandle.getGL()) {
             extContext = canvasHandle.getGL().getExtension("WEBGL_lose_context");
             if (extContext) {
