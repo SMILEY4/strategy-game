@@ -1,11 +1,13 @@
-import {AuthData} from "../../../models/authData";
-import {UserStateAccess} from "../../state/user/userStateAccess";
-import {HttpClient} from "./httpClient";
+import {UserApi} from "../../core/required/userApi";
+import {AuthData} from "../../models/authData";
+import {UserStateAccess} from "../state/user/userStateAccess";
+import {HttpClient} from "./http/httpClient";
 
-export class HttpUserApi {
+export class UserApiImpl implements UserApi {
 
     private readonly httpClient: HttpClient;
     private readonly userStateAccess: UserStateAccess;
+
 
     constructor(httpClient: HttpClient, userStateAccess: UserStateAccess) {
         this.httpClient = httpClient;
