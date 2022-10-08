@@ -59,7 +59,6 @@ class DiContainerImpl implements DiContainer, DiContext {
     }
 
     createEager(): void {
-        console.log(JSON.stringify(Array.from(this.configs.entries()), null, "   "));
         Array.from(this.configs.entries())
             .filter(entry => entry[1].creation === "eager")
             .forEach(entry => {
