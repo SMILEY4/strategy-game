@@ -1,4 +1,4 @@
-import React, {ReactElement, useState} from "react";
+import React, {ReactElement} from "react";
 import {useCityAt} from "../../../../core/hooks/useCityAt";
 import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
 import {useSelectedTilePosition} from "../../../../core/hooks/useSelectedTilePosition";
@@ -6,11 +6,9 @@ import {useTileAt} from "../../../../core/hooks/useTileAt";
 import {useValidateCreateCity} from "../../../../core/hooks/useValidateCreateCity";
 import {useValidateCreateTown} from "../../../../core/hooks/useValidateCreateTown";
 import {useValidatePlaceScout} from "../../../../core/hooks/useValidatePlaceScout";
-import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {AppConfig} from "../../../../main";
 import {CommandCreateCity} from "../../../../models/state/command";
 import {TilePosition} from "../../../../models/state/tilePosition";
-import {TextField} from "../../../components/specific/TextField";
 
 
 export function MenuSelectedTile(): ReactElement {
@@ -104,35 +102,17 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
     const city = useCityAt(props.selectedTile);
     const canCreateCity = useValidateCreateCity(props.selectedTile);
     const canCreateTown = useValidateCreateTown(props.selectedTile);
-    const openFrame = UiStateHooks.useOpenFrame();
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
 
     function createCity() {
         if (props.selectedTile) {
-            openFrame(
-                "dialog.create-city",
-                {
-                    centered: {
-                        width: 320,
-                        height: 200
-                    }
-                },
-                frameId => <CreateCityDialog frameId={frameId} tile={props.selectedTile!!}/>
-            );
+            uiService.openDialogCreateCity(props.selectedTile);
         }
     }
 
     function createTown() {
         if (props.selectedTile) {
-            openFrame(
-                "dialog.create-town",
-                {
-                    centered: {
-                        width: 320,
-                        height: 200
-                    }
-                },
-                frameId => <CreateTownDialog frameId={frameId} tile={props.selectedTile!!}/>
-            );
+            uiService.openDialogCreateTown(props.selectedTile);
         }
     }
 
@@ -229,53 +209,3 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
     }
 }
 
-
-function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
-    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
-    const close = UiStateHooks.useCloseFrame(props.frameId);
-    const [name, setName] = useState("");
-
-    return (
-        <div>
-            Order creation of new city?
-            <TextField value={name} onAccept={setName}/>
-            <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAccept()}>Create City</button>
-        </div>
-    );
-
-    function onCancel() {
-        close();
-    }
-
-    function onAccept() {
-        close();
-        actionAddCommand.addCreateCity(props.tile, name, null);
-    }
-}
-
-
-function CreateTownDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
-    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
-    const close = UiStateHooks.useCloseFrame(props.frameId);
-    const [name, setName] = useState("");
-    const tile = useTileAt(props.tile);
-
-    return (
-        <div>
-            Order creation of new city?
-            <TextField value={name} onAccept={setName}/>
-            <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAccept(tile?.generalData?.owner?.cityId!!)}>Create Town</button>
-        </div>
-    );
-
-    function onCancel() {
-        close();
-    }
-
-    function onAccept(cityId: string) {
-        close();
-        actionAddCommand.addCreateCity(props.tile, name, cityId);
-    }
-}

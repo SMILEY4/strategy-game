@@ -1,15 +1,14 @@
 import React, {ReactElement} from "react";
 import {AiOutlineClose} from "react-icons/ai";
 import {BsPinAngle, BsTextareaResize} from "react-icons/bs";
-import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {UiFrameData} from "../../../../external/state/ui/uiStore";
+import {AppConfig} from "../../../../main";
 import {useMenuFrame} from "../../primitives/menuFramePrimitive";
 import "./dialog.css";
 
 export function Dialog(props: { data: UiFrameData }): ReactElement {
 
-    const closeDialog = UiStateHooks.useCloseFrame(props.data.frameId);
-    const pinDialog = UiStateHooks.usePinFrame(props.data.frameId);
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
 
     const {
         posX,
@@ -38,9 +37,9 @@ export function Dialog(props: { data: UiFrameData }): ReactElement {
             <div className="dialog-header">
                 <div className="dialog-title">{props.data.menuId}</div>
                 {props.data.enablePin && (
-                    <div className="dialog-pin" onClick={pinDialog}><BsPinAngle size={20}/></div>
+                    <div className="dialog-pin" onClick={() => uiService.pin(props.data.frameId)}><BsPinAngle size={20}/></div>
                 )}
-                <div className="dialog-close" onClick={closeDialog}><AiOutlineClose size={20}/></div>
+                <div className="dialog-close" onClick={() => uiService.close(props.data.frameId)}><AiOutlineClose size={20}/></div>
             </div>
 
             <div className="dialog-body">

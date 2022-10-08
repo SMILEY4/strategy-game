@@ -1,11 +1,11 @@
 import {ReactElement} from "react";
 import {GrStatusUnknown} from "react-icons/gr";
-import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
+import {AppConfig} from "../../../../main";
 
 export function CategoryOther(): ReactElement {
-    const open = UiStateHooks.useOpenPrimaryMenuDialog(<MenuOther/>);
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     return (
-        <div onClick={open}>
+        <div onClick={() => uiService.openToolbarMenuOther()}>
             <GrStatusUnknown/>
         </div>
     );

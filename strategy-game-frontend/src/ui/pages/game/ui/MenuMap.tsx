@@ -1,13 +1,13 @@
 import {ReactElement} from "react";
 import {FiMap} from "react-icons/fi";
 import {useMapMode} from "../../../../core/hooks/useMapMode";
-import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
+import {AppConfig} from "../../../../main";
 import {MapMode} from "../../../../models/state/mapMode";
 
 export function CategoryMap(): ReactElement {
-    const open = UiStateHooks.useOpenPrimaryMenuDialog(<MenuMap/>);
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     return (
-        <div onClick={open}>
+        <div onClick={() => uiService.openToolbarMenuMap()}>
             <FiMap/>
         </div>
     );
