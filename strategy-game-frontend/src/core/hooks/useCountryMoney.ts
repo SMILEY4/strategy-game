@@ -1,9 +1,9 @@
-import {GameStateHooks} from "../../external/state/game/gameStateHooks";
-import {LocalGameStateHooks} from "../../external/state/localgame/localGameStateHooks";
+import {useCommands} from "./useCommands";
+import {useCountryPlayer} from "./useCountryPlayer";
 
 export function useCountryMoney(): number {
-    const commands = LocalGameStateHooks.useCommands();
-    const country = GameStateHooks.usePlayerCountry();
+    const commands = useCommands();
+    const country = useCountryPlayer();
     const money = ((country && country.advancedData) ? country.advancedData.resources.money : 0);
     const commandCost = commands.map(cmd => cmd.cost.money).reduce((a, b) => a + b, 0);
     return money - commandCost;

@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import {FiMap} from "react-icons/fi";
-import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
+import {useMapMode} from "../../../../core/hooks/useMapMode";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {MapMode} from "../../../../models/state/mapMode";
 
@@ -16,7 +16,7 @@ export function CategoryMap(): ReactElement {
 
 export function MenuMap(): ReactElement {
 
-    const [mode, setMode] = LocalGameStateHooks.useMapMode();
+    const [mode, setMode] = useMapMode();
 
     return (
         <div>

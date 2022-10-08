@@ -1,5 +1,5 @@
+import {WorldStore} from "../../../external/state/world/worldStore";
 import {GameStore} from "../../../external/state/game/gameStore";
-import {LocalGameStore} from "../../../external/state/localgame/localGameStore";
 import {City} from "../../../models/state/city";
 import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../models/state/command";
 import {Country} from "../../../models/state/country";
@@ -75,7 +75,7 @@ export class TileObjectRenderer {
     }
 
 
-    public render(camera: Camera, gameState: GameStore.StateValues, localGameState: LocalGameStore.StateValues) {
+    public render(camera: Camera, gameState: WorldStore.StateValues, localGameState: GameStore.StateValues) {
 
         const userId = this.userRepository.getUserId();
         const userCountryId = gameState.countries.find(c => c.userId === userId)?.countryId; // TODO: replace with gameRepo.getUserCountry()

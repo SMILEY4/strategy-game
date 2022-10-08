@@ -1,19 +1,20 @@
 import React, {ReactElement, useState} from "react";
+import {useCityAt} from "../../../../core/hooks/useCityAt";
+import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
+import {useSelectedTilePosition} from "../../../../core/hooks/useSelectedTilePosition";
+import {useTileAt} from "../../../../core/hooks/useTileAt";
 import {useValidateCreateCity} from "../../../../core/hooks/useValidateCreateCity";
 import {useValidateCreateTown} from "../../../../core/hooks/useValidateCreateTown";
 import {useValidatePlaceScout} from "../../../../core/hooks/useValidatePlaceScout";
-import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
-import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
 import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
 import {AppConfig} from "../../../../main";
 import {CommandCreateCity} from "../../../../models/state/command";
 import {TilePosition} from "../../../../models/state/tilePosition";
 import {TextField} from "../../../components/specific/TextField";
-import useTileAt = GameStateHooks.useTileAt;
 
 
 export function MenuSelectedTile(): ReactElement {
-    const selectedTile = LocalGameStateHooks.useSelectedTilePosition();
+    const selectedTile = useSelectedTilePosition();
     return (
         <div>
             <h3>Selected Tile</h3>
@@ -41,7 +42,7 @@ function SectionTile(props: { selectedTile: TilePosition | null }): ReactElement
 
 
 function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const tile = GameStateHooks.useTileAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const tile = useTileAt(props.selectedTile);
     if (props.selectedTile && tile) {
         return (
             <>
@@ -69,7 +70,7 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
 
 
 function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const tile = GameStateHooks.useTileAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const tile = useTileAt(props.selectedTile);
     if (tile) {
         if (tile.generalData) {
             if (tile.generalData.owner) {
@@ -100,9 +101,9 @@ function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElemen
 
 
 function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const city = GameStateHooks.useCityAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    const canCreateCity = useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    const canCreateTown = useValidateCreateTown(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const city = useCityAt(props.selectedTile);
+    const canCreateCity = useValidateCreateCity(props.selectedTile);
+    const canCreateTown = useValidateCreateTown(props.selectedTile);
     const openFrame = UiStateHooks.useOpenFrame();
 
     function createCity() {
@@ -181,8 +182,7 @@ function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElem
 function SectionScouts(props: { selectedTile: TilePosition | null }): ReactElement | null {
 
     const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
-
-    const canPlaceScout = useValidatePlaceScout(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const canPlaceScout = useValidatePlaceScout(props.selectedTile);
 
     function placeScout() {
         if (props.selectedTile) {
@@ -203,7 +203,7 @@ function SectionScouts(props: { selectedTile: TilePosition | null }): ReactEleme
 }
 
 function SectionCommands(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const commands = LocalGameStateHooks.useCommandsAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
+    const commands = useCommandsAt(props.selectedTile);
     if (props.selectedTile) {
         return (
             <>
@@ -259,7 +259,7 @@ function CreateTownDialog(props: { frameId: string, tile: TilePosition }): React
     const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
-    const tile = useTileAt(props.tile.q, props.tile.r);
+    const tile = useTileAt(props.tile);
 
     return (
         <div>

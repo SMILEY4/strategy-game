@@ -1,18 +1,19 @@
-import {GameStateHooks} from "../../external/state/game/gameStateHooks";
-import {GameStore} from "../../external/state/game/gameStore";
-import {GameConfigStateHooks} from "../../external/state/gameconfig/gameConfigStateHooks";
-import {LocalGameStore} from "../../external/state/localgame/localGameStore";
-import {CommandPlaceScout} from "../../models/state/command";
+import {TilePosition} from "../../models/state/tilePosition";
 import {TileVisibility} from "../../models/state/tileVisibility";
 import {validations} from "../../shared/validation";
+import {useCountryPlayer} from "./useCountryPlayer";
+import {useGameConfig} from "./useGameConfig";
+import {useScoutCommands} from "./useScoutCommands";
+import {useScouts} from "./useScouts";
+import {useTileAt} from "./useTileAt";
 
-export function useValidatePlaceScout(q: number, r: number): boolean {
+export function useValidatePlaceScout(pos: TilePosition | null): boolean {
 
-    const gameConfig = GameConfigStateHooks.useGameConfig();
-    const country = GameStateHooks.usePlayerCountry()!!;
-    const scouts = GameStore.useState(state => state.scouts);
-    const scoutCommands = LocalGameStore.useState(state => state.commands.filter(c => c.commandType === "place-scout") as CommandPlaceScout[]);
-    const tile = GameStateHooks.useTileAt(q, r);
+    const gameConfig = useGameConfig();
+    const country = useCountryPlayer();
+    const scouts = useScouts();
+    const scoutCommands = useScoutCommands();
+    const tile = useTileAt(pos);
 
     if (tile) {
         return validations(ctx => {

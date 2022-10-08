@@ -1,17 +1,19 @@
-import {GameStateHooks} from "../../external/state/game/gameStateHooks";
-import {GameStore} from "../../external/state/game/gameStore";
-import {GameConfigStateHooks} from "../../external/state/gameconfig/gameConfigStateHooks";
 import {TerrainType} from "../../models/state/terrainType";
+import {TilePosition} from "../../models/state/tilePosition";
 import {validations} from "../../shared/validation";
+import {useCities} from "./useCities";
 import {useCountryMoney} from "./useCountryMoney";
+import {useCountryPlayer} from "./useCountryPlayer";
+import {useGameConfig} from "./useGameConfig";
+import {useTileAt} from "./useTileAt";
 
-export function useValidateCreateCity(q: number, r: number): boolean {
+export function useValidateCreateCity(pos: TilePosition | null): boolean {
 
-    const gameConfig = GameConfigStateHooks.useGameConfig();
-    const country = GameStateHooks.usePlayerCountry()!!;
+    const gameConfig = useGameConfig();
+    const country = useCountryPlayer();
     const currentAmountMoney = useCountryMoney();
-    const cities = GameStore.useState(state => state.cities);
-    const tile = GameStateHooks.useTileAt(q, r);
+    const cities = useCities();
+    const tile = useTileAt(pos);
 
     if (tile) {
         return validations(ctx => {

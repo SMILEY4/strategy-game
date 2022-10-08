@@ -1,7 +1,7 @@
-import {UIService} from "../../core/required/UIService";
-import {MenuSelectedTile} from "../../ui/pages/game/ui/MenuSelectedTile";
-import {UiFrames} from "./ui/uiFrames";
-import {UiStore} from "./ui/uiStore";
+import {UIService} from "../../../core/required/UIService";
+import {MenuSelectedTile} from "../../../ui/pages/game/ui/MenuSelectedTile";
+import {UiFrames} from "./uiFrames";
+import {UiStore} from "./uiStore";
 import FrameLayout = UiFrames.FrameLayout;
 
 export class UIServiceImpl implements UIService {

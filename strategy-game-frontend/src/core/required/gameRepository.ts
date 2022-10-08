@@ -1,4 +1,4 @@
-import {LocalGameStore} from "../../external/state/localgame/localGameStore";
+import {GameStore} from "../../external/state/game/gameStore";
 import {CameraState} from "../../models/state/cameraState";
 import {Command} from "../../models/state/command";
 import {GameState} from "../../models/state/gameState";
@@ -6,7 +6,7 @@ import {TilePosition} from "../../models/state/tilePosition";
 
 export interface GameRepository {
     getRevisionId: () => string
-    getCompleteState: () => LocalGameStore.StateValues
+    getCompleteState: () => GameStore.StateValues
 
     setGameState: (state: GameState) => void
     getGameState: () => GameState

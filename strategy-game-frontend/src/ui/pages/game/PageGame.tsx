@@ -1,6 +1,6 @@
 import {ReactElement, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {LocalGameStateHooks} from "../../../external/state/localgame/localGameStateHooks";
+import {useGameState} from "../../../core/hooks/useGameState";
 import {GameState} from "../../../models/state/gameState";
 import {MenuFrameStack} from "../../components/specific/dialog/MenuFrameStack";
 import {Canvas} from "./canvas/Canvas";
@@ -9,7 +9,7 @@ import {GameMenuBar} from "./ui/GameMenuBar";
 
 export function PageGame(): ReactElement {
 
-    const currentState = LocalGameStateHooks.useCurrentGameState();
+    const currentState = useGameState();
     const navigate = useNavigate();
 
 
@@ -41,9 +41,9 @@ export function PageGame(): ReactElement {
         );
     }
 
-    if(currentState === GameState.LOADING) {
-        return renderLoadingScreen()
+    if (currentState === GameState.LOADING) {
+        return renderLoadingScreen();
     } else {
-        return renderGameScreen()
+        return renderGameScreen();
     }
 }

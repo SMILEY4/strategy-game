@@ -1,4 +1,4 @@
-import {GameStore} from "../../external/state/game/gameStore";
+import {WorldStore} from "../../external/state/world/worldStore";
 import {City} from "../../models/state/city";
 import {Country} from "../../models/state/country";
 import {Marker} from "../../models/state/marker";
@@ -7,7 +7,7 @@ import {Tile} from "../../models/state/tile";
 
 export interface WorldRepository {
     getRevisionId: () => string
-    getCompleteState: () => GameStore.StateValues
+    getCompleteState: () => WorldStore.StateValues
 
     set: (currentTurn: number, tiles: Tile[], countries: Country[], cities: City[], markers: Marker[], scouts: Scout[]) => void
 

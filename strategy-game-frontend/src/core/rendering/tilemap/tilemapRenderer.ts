@@ -1,5 +1,5 @@
+import {WorldStore} from "../../../external/state/world/worldStore";
 import {GameStore} from "../../../external/state/game/gameStore";
-import {LocalGameStore} from "../../../external/state/localgame/localGameStore";
 import {MapMode} from "../../../models/state/mapMode";
 import {TileLayerMeta} from "../../../models/state/tileLayerMeta";
 import {GameCanvasHandle} from "../gameCanvasHandle";
@@ -90,7 +90,7 @@ export class TilemapRenderer {
     }
 
 
-    public render(revisionId: string, camera: Camera, gameState: GameStore.StateValues, localGameState: LocalGameStore.StateValues) {
+    public render(revisionId: string, camera: Camera, gameState: WorldStore.StateValues, localGameState: GameStore.StateValues) {
 
         if (this.lastRevisionId != revisionId) {
             this.lastRevisionId = revisionId;
