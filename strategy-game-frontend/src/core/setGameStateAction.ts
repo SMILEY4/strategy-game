@@ -1,5 +1,3 @@
-import {GameStateAccess} from "../external/state/game/gameStateAccess";
-import {LocalGameStateAccess} from "../external/state/localgame/localGameStateAccess";
 import {MsgMarkerTileContent, MsgScoutTileContent} from "../models/messaging/messagingTileContent";
 import {PayloadGameState} from "../models/messaging/payloadGameState";
 import {City} from "../models/state/city";

@@ -3,88 +3,74 @@ import {CameraState} from "../../models/state/cameraState";
 import {Command} from "../../models/state/command";
 import {GameState} from "../../models/state/gameState";
 import {TilePosition} from "../../models/state/tilePosition";
-import {LocalGameStateAccess} from "./localgame/localGameStateAccess";
 import {LocalGameStore} from "./localgame/localGameStore";
 
 export class GameRepositoryImpl implements GameRepository {
 
-    private readonly localGameStateAccess: LocalGameStateAccess;
-
-    constructor(localGameStateAccess: LocalGameStateAccess) {
-        this.localGameStateAccess = localGameStateAccess;
-
-    }
-
-
     getRevisionId(): string {
-        return this.localGameStateAccess.getStateRevision();
+        return LocalGameStore.useState.getState().revisionId;
     }
-
 
     getCompleteState(): LocalGameStore.StateValues {
-        return this.localGameStateAccess.getState();
+        return LocalGameStore.useState.getState();
     }
 
-
     setGameState(state: GameState): void {
-        this.localGameStateAccess.setCurrentState(state);
+        LocalGameStore.useState.getState().setCurrentState(state);
     }
 
     getGameState(): GameState {
-        return this.localGameStateAccess.getCurrentState();
+        return LocalGameStore.useState.getState().currentState;
     }
 
     clearMouseOverTile(): void {
-        this.localGameStateAccess.clearMouseOverTile();
+        LocalGameStore.useState.getState().setTileMouseOver(null);
     }
-
 
     setMouseOverTile(q: number, r: number): void {
-        this.localGameStateAccess.setMouseOverTile(q, r);
+        LocalGameStore.useState.getState().setTileMouseOver({
+            q: q,
+            r: r
+        });
     }
-
 
     clearSelectedTile(): void {
-        this.localGameStateAccess.clearSelectedTile();
+        LocalGameStore.useState.getState().setTileSelected(null);
     }
-
 
     setSelectedTile(q: number, r: number): void {
-        this.localGameStateAccess.setSelectedTile(q, r);
+        LocalGameStore.useState.getState().setTileSelected({
+            q: q,
+            r: r
+        });
     }
-
 
     getSelectedTile(): TilePosition | null {
-        return this.localGameStateAccess.getSelectedTile();
+        return LocalGameStore.useState.getState().tileSelected;
     }
-
 
     setCameraPosition(x: number, y: number): void {
-        this.localGameStateAccess.setCameraPosition(x, y);
+        LocalGameStore.useState.getState().setCameraPosition(x, y);
     }
 
-
     setCameraZoom(zoom: number): void {
-        this.localGameStateAccess.setCameraZoom(zoom);
+        LocalGameStore.useState.getState().setCameraZoom(zoom);
     }
 
     getCamera(): CameraState {
-        return this.localGameStateAccess.getCamera();
+        return LocalGameStore.useState.getState().camera;
     }
-
 
     clearCommands(): void {
-        this.localGameStateAccess.clearCommands();
+        LocalGameStore.useState.getState().clearCommands();
     }
-
 
     addCommand(command: Command): void {
-        this.localGameStateAccess.addCommand(command);
+        LocalGameStore.useState.getState().addCommand(command);
     }
 
-
     getCommands(): Command[] {
-        return this.localGameStateAccess.getCommands();
+        return LocalGameStore.useState.getState().commands;
     }
 
 }

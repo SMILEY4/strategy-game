@@ -4,36 +4,25 @@ import {Country} from "../../models/state/country";
 import {Marker} from "../../models/state/marker";
 import {Scout} from "../../models/state/scout";
 import {Tile} from "../../models/state/tile";
-import {GameStateAccess} from "./game/gameStateAccess";
+import {orNull} from "../../shared/utils";
 import {GameStore} from "./game/gameStore";
 
 export class WorldRepositoryImpl implements WorldRepository {
 
-    private readonly gameStateAccess: GameStateAccess;
-
-    constructor(gameStateAccess: GameStateAccess) {
-        this.gameStateAccess = gameStateAccess;
-
-    }
-
-
     getRevisionId(): string {
-        return this.gameStateAccess.getStateRevision();
+        return GameStore.useState.getState().revisionId;
     }
-
 
     getCompleteState(): GameStore.StateValues {
-        return this.gameStateAccess.getState();
+        return GameStore.useState.getState();
     }
-
 
     set(currentTurn: number, tiles: Tile[], countries: Country[], cities: City[], markers: Marker[], scouts: Scout[]): void {
-        this.gameStateAccess.setState(currentTurn, tiles, countries, cities, markers, scouts);
+        GameStore.useState.getState().setState(currentTurn, tiles, countries, cities, markers, scouts);
     }
 
-
     getTileAt(q: number, r: number): Tile | null {
-        return this.gameStateAccess.getTileAt(q, r)
+        return orNull(GameStore.useState.getState().tiles.find(t => t.position.q === q && t.position.r === r))
     }
 
 }

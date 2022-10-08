@@ -1,17 +1,13 @@
 import {UIService} from "../../core/required/UIService";
 import {MenuSelectedTile} from "../../ui/pages/game/ui/MenuSelectedTile";
-import {UIStateAccess} from "./ui/uiStateAccess";
+import {UiFrames} from "./ui/uiFrames";
+import {UiStore} from "./ui/uiStore";
+import FrameLayout = UiFrames.FrameLayout;
 
 export class UIServiceImpl implements UIService {
 
-    private readonly uiStateAccess: UIStateAccess;
-
-    constructor(uiStateAccess: UIStateAccess) {
-        this.uiStateAccess = uiStateAccess;
-    }
-
     openMenuSelectedTile(): void {
-        this.uiStateAccess.openFrame(
+        this.openFrame(
             "topbar.category.menu",
             {
                 vertical: {
@@ -22,6 +18,22 @@ export class UIServiceImpl implements UIService {
                 }
             },
             () => <MenuSelectedTile/>
+        );
+    }
+
+    private openFrame(menuId: string, layout: FrameLayout, content: (frameId: string) => any) {
+        const frames = UiStore.useState.getState().frames;
+        const addFrame = UiStore.useState.getState().addFrame;
+        const bringToFront = UiStore.useState.getState().bringFrameToFront;
+        const setContent = UiStore.useState.getState().setFrameContent;
+        UiFrames.openFrame(
+            menuId,
+            layout,
+            content,
+            frames,
+            addFrame,
+            bringToFront,
+            setContent
         );
     }
 

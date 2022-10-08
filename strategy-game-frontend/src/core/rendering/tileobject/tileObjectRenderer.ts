@@ -1,12 +1,11 @@
 import {GameStore} from "../../../external/state/game/gameStore";
 import {LocalGameStore} from "../../../external/state/localgame/localGameStore";
-import {UserStateAccess} from "../../../external/state/user/userStateAccess";
 import {City} from "../../../models/state/city";
 import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../models/state/command";
 import {Country} from "../../../models/state/country";
 import {UserRepository} from "../../required/userRepository";
-import {GameCanvasHandle} from "../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
+import {GameCanvasHandle} from "../gameCanvasHandle";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
@@ -160,7 +159,8 @@ export class TileObjectRenderer {
     private addCitySprite(q: number, r: number, isCity: boolean, color: number[]) {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] * (isCity ? 1 : 0.6);
-        const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * (isCity ? 1 : 0.6);;
+        const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * (isCity ? 1 : 0.6);
+        ;
         this.addObject(x, y, width, height, color, 0, 1 / 3, 2 / 3, 0, 1);
     }
 

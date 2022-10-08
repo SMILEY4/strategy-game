@@ -1,3 +1,7 @@
+export function optional<T>(value: T | null | undefined): Optional<T> {
+    return Optional.of(value)
+}
+
 export class Optional<T> {
 
     static of<T>(value: T | null | undefined): Optional<T> {
@@ -42,9 +46,9 @@ export class Optional<T> {
         }
     }
 
-    getValueOrThrow(): T {
+    getValueOrThrow(errorMessage?: string): T {
         if (this.isEmpty()) {
-            throw new Error("Cannot get value from this optional");
+            throw new Error(errorMessage ? errorMessage : "Cannot get value from this optional");
         } else {
             return this.value!!;
         }
