@@ -1,7 +1,7 @@
-import {GameStateAccess} from "../../external/state/game/gameStateAccess";
-import {LocalGameStateAccess} from "../../external/state/localgame/localGameStateAccess";
-import {UserStateAccess} from "../../external/state/user/userStateAccess";
 import {CameraState} from "../../models/state/cameraState";
+import {GameRepository} from "../required/gameRepository";
+import {UserRepository} from "../required/userRepository";
+import {WorldRepository} from "../required/worldRepository";
 import {GameCanvasHandle} from "./gameCanvasHandle";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {TileObjectRenderer} from "./tileobject/tileObjectRenderer";
@@ -10,19 +10,17 @@ import {Camera} from "./utils/camera";
 export class Renderer {
 
     private readonly canvasHandle: GameCanvasHandle;
-
-    private readonly localGameStateAccess: LocalGameStateAccess;
-    private readonly gameStateAccess: GameStateAccess;
-
+    private readonly gameRepository: GameRepository;
+    private readonly worldRepository: WorldRepository;
     private readonly tilemapRenderer: TilemapRenderer;
     private readonly tileObjectRenderer: TileObjectRenderer;
 
-    constructor(canvasHandle: GameCanvasHandle, localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess, userAccess: UserStateAccess) {
+    constructor(canvasHandle: GameCanvasHandle, gameRepository: GameRepository, worldRepository: WorldRepository, userRepository: UserRepository) {
         this.canvasHandle = canvasHandle;
-        this.localGameStateAccess = localGameStateAccess;
-        this.gameStateAccess = gameStateAccess;
+        this.gameRepository = gameRepository;
+        this.worldRepository = worldRepository;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle);
-        this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, userAccess);
+        this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, userRepository);
     }
 
 
@@ -41,9 +39,9 @@ export class Renderer {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        const gameState = this.gameStateAccess.getState();
-        const localGameState = this.localGameStateAccess.getState();
-        const combinedRevId = this.gameStateAccess.getStateRevision() + "_" + this.localGameStateAccess.getStateRevision();
+        const gameState = this.worldRepository.getCompleteState();
+        const localGameState = this.gameRepository.getCompleteState();
+        const combinedRevId = this.worldRepository.getRevisionId() + "_" + this.gameRepository.getRevisionId();
         const camera = this.createCamera(localGameState.camera);
 
         this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);

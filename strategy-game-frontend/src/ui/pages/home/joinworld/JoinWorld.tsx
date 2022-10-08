@@ -5,10 +5,11 @@ import "./joinWorld.css";
 
 export function JoinWorld(): ReactElement {
 
+    const actionJoin = AppConfig.di.get(AppConfig.DIQ.GameJoinAction);
+    const actionConnect = AppConfig.di.get(AppConfig.DIQ.GameConnectAction);
     const [worldId, setWorldId] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
-
 
     return (
         <div className="join-world">
@@ -22,17 +23,15 @@ export function JoinWorld(): ReactElement {
         </div>
     );
 
-
     function onChangeWorldId(e: any) {
         setWorldId(e.target.value);
         setError("");
     }
 
-
     function onJoin() {
         if (worldId) {
-            AppConfig.gameLobbyJoin.perform(worldId)
-                .then(() => AppConfig.gameLobbyConnect.perform(worldId))
+            actionJoin.perform(worldId)
+                .then(() => actionConnect.perform(worldId))
                 .then(() => navigate("/game"))
                 .catch(e => setError(e.toString()));
         } else {

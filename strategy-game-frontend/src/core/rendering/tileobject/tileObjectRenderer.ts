@@ -4,6 +4,7 @@ import {UserStateAccess} from "../../../external/state/user/userStateAccess";
 import {City} from "../../../models/state/city";
 import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../models/state/command";
 import {Country} from "../../../models/state/country";
+import {UserRepository} from "../../required/userRepository";
 import {GameCanvasHandle} from "../gameCanvasHandle";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {BatchRenderer} from "../utils/batchRenderer";
@@ -19,16 +20,16 @@ export class TileObjectRenderer {
     private readonly COLOR_WHITE: [number, number, number, number] = [1, 1, 1, 1];
 
     private readonly gameCanvas: GameCanvasHandle;
-    private readonly userAccess: UserStateAccess;
+    private readonly userRepository: UserRepository;
     private batchRenderer: BatchRenderer = null as any;
     private textRenderer: TextRenderer = null as any;
     private shader: ShaderProgram = null as any;
     private textureSprites: Texture = null as any;
 
 
-    constructor(gameCanvas: GameCanvasHandle, userAccess: UserStateAccess) {
+    constructor(gameCanvas: GameCanvasHandle, userRepository: UserRepository) {
         this.gameCanvas = gameCanvas;
-        this.userAccess = userAccess;
+        this.userRepository = userRepository;
     }
 
 
@@ -77,8 +78,8 @@ export class TileObjectRenderer {
 
     public render(camera: Camera, gameState: GameStore.StateValues, localGameState: LocalGameStore.StateValues) {
 
-        const userId = this.userAccess.getUserId();
-        const userCountryId = gameState.countries.find(c => c.userId === userId)?.countryId;
+        const userId = this.userRepository.getUserId();
+        const userCountryId = gameState.countries.find(c => c.userId === userId)?.countryId; // TODO: replace with gameRepo.getUserCountry()
 
         this.prepareLabelTexture(gameState.cities, localGameState.commands);
 

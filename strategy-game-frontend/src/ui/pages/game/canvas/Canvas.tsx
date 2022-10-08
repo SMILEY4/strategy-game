@@ -11,6 +11,14 @@ export function Canvas() {
     const mouseDownInCanvas = useRef<boolean>(false);
     const timestampMouseDown = useRef<number>(0);
 
+    const actionMouseMove = AppConfig.di.get(AppConfig.DIQ.InputMouseMoveAction);
+    const actionMouseScroll = AppConfig.di.get(AppConfig.DIQ.InputMouseScrollAction);
+    const actionMouseClick = AppConfig.di.get(AppConfig.DIQ.InputClickAction);
+    const actionGameInit = AppConfig.di.get(AppConfig.DIQ.GameInitAction);
+    const actionGameUpdate = AppConfig.di.get(AppConfig.DIQ.GameUpdateAction);
+    const actionGameDispose = AppConfig.di.get(AppConfig.DIQ.GameDisposeAction);
+
+
     useEffect(() => {
         if (canvasRef.current) {
             resizeCanvas(canvasRef.current);
@@ -70,7 +78,7 @@ export function Canvas() {
     }
 
     function mouseMove(e: MouseEvent) {
-        AppConfig.gameInputMouseMove.perform(
+        actionMouseMove.perform(
             e.movementX,
             e.movementY,
             e.clientX,
@@ -95,25 +103,25 @@ export function Canvas() {
     }
 
     function scroll(e: WheelEvent) {
-        AppConfig.gameInputMouseScroll.perform(e.deltaY);
+        actionMouseScroll.perform(e.deltaY);
     }
 
     function click(duration: number, e: MouseEvent) {
         if (duration < 150) {
-            AppConfig.gameInputClick.perform(e.clientX, e.clientY);
+            actionMouseClick.perform(e.clientX, e.clientY);
         }
     }
 
     function onInitialize(canvas: HTMLCanvasElement) {
-        AppConfig.gameInit.perform(canvas);
+        actionGameInit.perform(canvas);
     }
 
     function onRender() {
-        AppConfig.gameUpdate.perform();
+        actionGameUpdate.perform();
     }
 
     function onDispose() {
-        AppConfig.gameDispose.perform();
+        actionGameDispose.perform();
     }
 
     return (

@@ -157,9 +157,11 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
 
 function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElement | null {
 
+    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
+
     function placeMarker() {
         if (props.selectedTile) {
-            AppConfig.turnAddCommand.addPlaceMarker(props.selectedTile);
+            actionAddCommand.addPlaceMarker(props.selectedTile);
         }
     }
 
@@ -178,11 +180,13 @@ function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElem
 
 function SectionScouts(props: { selectedTile: TilePosition | null }): ReactElement | null {
 
+    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
+
     const canPlaceScout = useValidatePlaceScout(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
 
     function placeScout() {
         if (props.selectedTile) {
-            AppConfig.turnAddCommand.addPlaceScout(props.selectedTile);
+            actionAddCommand.addPlaceScout(props.selectedTile);
         }
     }
 
@@ -227,6 +231,7 @@ function SectionCommands(props: { selectedTile: TilePosition | null }): ReactEle
 
 
 function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
+    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
 
@@ -245,12 +250,13 @@ function CreateCityDialog(props: { frameId: string, tile: TilePosition }): React
 
     function onAccept() {
         close();
-        AppConfig.turnAddCommand.addCreateCity(props.tile, name, null);
+        actionAddCommand.addCreateCity(props.tile, name, null);
     }
 }
 
 
 function CreateTownDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
+    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
     const close = UiStateHooks.useCloseFrame(props.frameId);
     const [name, setName] = useState("");
     const tile = useTileAt(props.tile.q, props.tile.r);
@@ -270,6 +276,6 @@ function CreateTownDialog(props: { frameId: string, tile: TilePosition }): React
 
     function onAccept(cityId: string) {
         close();
-        AppConfig.turnAddCommand.addCreateCity(props.tile, name, cityId);
+        actionAddCommand.addCreateCity(props.tile, name, cityId);
     }
 }

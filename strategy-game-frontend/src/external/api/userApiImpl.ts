@@ -1,17 +1,17 @@
 import {UserApi} from "../../core/required/userApi";
+import {UserRepository} from "../../core/required/userRepository";
 import {AuthData} from "../../models/authData";
-import {UserStateAccess} from "../state/user/userStateAccess";
 import {HttpClient} from "./http/httpClient";
 
 export class UserApiImpl implements UserApi {
 
     private readonly httpClient: HttpClient;
-    private readonly userStateAccess: UserStateAccess;
+    private readonly userRepository: UserRepository;
 
 
-    constructor(httpClient: HttpClient, userStateAccess: UserStateAccess) {
+    constructor(httpClient: HttpClient, userRepository: UserRepository) {
         this.httpClient = httpClient;
-        this.userStateAccess = userStateAccess;
+        this.userRepository = userRepository;
     }
 
 
@@ -55,7 +55,7 @@ export class UserApiImpl implements UserApi {
                     password: password,
                 },
                 requireAuth: true,
-                token: this.userStateAccess.getToken()
+                token: this.userRepository.getAuthToken()
             })
             .then(() => undefined);
     }

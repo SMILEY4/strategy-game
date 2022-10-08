@@ -10,14 +10,18 @@ export class UserStateAccess {
         UserStore.useState.getState().clearAuth();
     }
 
-    getToken(): string {
+    getToken(): string | null {
         const token = UserStore.useState.getState().idToken;
-        return token ? token : "";
+        return token ? token : null;
     }
 
-    getUserId(): string {
+    getUserId(): string | null {
         const token = this.getToken();
-        return UserStore.userIdFromToken(token);
+        if (token) {
+            return UserStore.userIdFromToken(token);
+        } else {
+            return null;
+        }
     }
 
 }

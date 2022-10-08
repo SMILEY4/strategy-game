@@ -12,5 +12,3 @@ export class GameConfigStateAccess {
     }
 
 }
-
-export const GAME_CONFIG = new GameConfigStateAccess();

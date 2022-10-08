@@ -4,6 +4,7 @@ import {AppConfig} from "../../../../main";
 import {GameState} from "../../../../models/state/gameState";
 
 export function NextTurnAction(): ReactElement {
+    const actionSubmit = AppConfig.di.get(AppConfig.DIQ.TurnSubmitAction)
     const gameState = LocalGameStateHooks.useCurrentGameState();
     return (
         <div
@@ -15,6 +16,6 @@ export function NextTurnAction(): ReactElement {
     );
 
     function submitTurn() {
-        AppConfig.turnSubmit.perform();
+        actionSubmit.perform();
     }
 }

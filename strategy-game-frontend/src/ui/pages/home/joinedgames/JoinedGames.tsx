@@ -2,11 +2,11 @@ import React, {ReactElement, useEffect, useState} from "react";
 import {AppConfig} from "../../../../main";
 
 export function JoinedGames(): ReactElement {
-
+    const actionListGames = AppConfig.di.get(AppConfig.DIQ.GameListAction);
     const [games, setGames] = useState<string[]>([]);
 
     useEffect(() => {
-        AppConfig.apiGame.list()
+        actionListGames.perform()
             .then((list: string[]) => setGames(list));
     }, []);
 

@@ -12,6 +12,8 @@ import {TerrainType} from "../models/state/terrainType";
 import {Tile} from "../models/state/tile";
 import {TileLayerMeta} from "../models/state/tileLayerMeta";
 import {orDefault} from "../shared/utils";
+import {GameRepository} from "./required/gameRepository";
+import {WorldRepository} from "./required/worldRepository";
 import {TileBorderCalculator} from "./tileBorderCalculator";
 import colorToRgbArray = Color.colorToRgbArray;
 
@@ -20,12 +22,12 @@ import colorToRgbArray = Color.colorToRgbArray;
  */
 export class SetGameStateAction {
 
-    private readonly localGameStateAccess: LocalGameStateAccess;
-    private readonly gameStateAccess: GameStateAccess;
+    private readonly gameRepository: GameRepository;
+    private readonly worldRepository: WorldRepository;
 
-    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess) {
-        this.localGameStateAccess = localGameStateAccess;
-        this.gameStateAccess = gameStateAccess;
+    constructor(gameRepository: GameRepository, worldRepository: WorldRepository) {
+        this.gameRepository = gameRepository;
+        this.worldRepository = worldRepository;
     }
 
     perform(game: PayloadGameState): void {
@@ -33,7 +35,7 @@ export class SetGameStateAction {
         const countries = this.getCountries(game);
         const tiles = this.getTiles(game);
         this.enrichTilesLayerData(tiles, game);
-        this.gameStateAccess.setState(
+        this.worldRepository.set(
             game.turn,
             tiles,
             countries,
@@ -41,8 +43,8 @@ export class SetGameStateAction {
             this.getMarkers(game),
             this.getScouts(game)
         );
-        this.localGameStateAccess.clearCommands();
-        this.localGameStateAccess.setCurrentState(GameState.PLAYING);
+        this.gameRepository.clearCommands();
+        this.gameRepository.setGameState(GameState.PLAYING);
     }
 
 

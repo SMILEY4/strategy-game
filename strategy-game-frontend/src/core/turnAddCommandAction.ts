@@ -1,26 +1,26 @@
-import {GameConfigStateAccess} from "../external/state/gameconfig/gameConfigStateAccess";
-import {LocalGameStateAccess} from "../external/state/localgame/localGameStateAccess";
 import {Command, CommandCreateCity} from "../models/state/command";
 import {GameState} from "../models/state/gameState";
 import {TilePosition} from "../models/state/tilePosition";
+import {GameConfigRepository} from "./required/gameConfigRepository";
+import {GameRepository} from "./required/gameRepository";
 
 /**
  * Add a command - all added commands will be submitted at the end of the turn
  */
 export class TurnAddCommandAction {
 
-    private readonly localGameStateAccess: LocalGameStateAccess;
-    private readonly gameConfig: GameConfigStateAccess;
+    private readonly gameRepository: GameRepository;
+    private readonly gameConfigRepository: GameConfigRepository;
 
-    constructor(gameStateAccess: LocalGameStateAccess, gameConfig: GameConfigStateAccess) {
-        this.localGameStateAccess = gameStateAccess;
-        this.gameConfig = gameConfig;
+    constructor(gameRepository: GameRepository, gameConfigRepository: GameConfigRepository) {
+        this.gameRepository = gameRepository;
+        this.gameConfigRepository = gameConfigRepository;
     }
 
     perform(command: Command): void {
         console.log("add command", command);
-        if (this.localGameStateAccess.getCurrentState() == GameState.PLAYING) {
-            this.localGameStateAccess.addCommand(command);
+        if (this.gameRepository.getGameState() == GameState.PLAYING) {
+            this.gameRepository.addCommand(command);
         }
     }
 
@@ -50,7 +50,7 @@ export class TurnAddCommandAction {
         this.perform({
             commandType: "create-city",
             cost: {
-                money: this.gameConfig.getGameConfig().cityCost
+                money: this.gameConfigRepository.getConfig().cityCost
             },
             q: tilePos.q,
             r: tilePos.r,

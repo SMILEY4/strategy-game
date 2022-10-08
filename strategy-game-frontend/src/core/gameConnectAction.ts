@@ -1,6 +1,6 @@
-import {LocalGameStateAccess} from "../external/state/localgame/localGameStateAccess";
 import {GameState} from "../models/state/gameState";
 import {GameApi} from "./required/gameApi";
+import {GameRepository} from "./required/gameRepository";
 
 /**
  * Connect to a game
@@ -8,17 +8,17 @@ import {GameApi} from "./required/gameApi";
 export class GameConnectAction {
 
     private readonly gameApi: GameApi;
-    private readonly gameStateAccess: LocalGameStateAccess;
+    private readonly gameRepository: GameRepository;
 
-    constructor(gameApi: GameApi, gameStateAccess: LocalGameStateAccess) {
+    constructor(gameApi: GameApi, gameRepository: GameRepository) {
         this.gameApi = gameApi;
-        this.gameStateAccess = gameStateAccess;
+        this.gameRepository = gameRepository;
     }
 
     perform(gameId: string): Promise<void> {
         console.log("connect to game ", gameId);
         return this.gameApi.connect(gameId).then(() => {
-            this.gameStateAccess.setCurrentState(GameState.LOADING);
+            this.gameRepository.setGameState(GameState.LOADING);
         });
     }
 

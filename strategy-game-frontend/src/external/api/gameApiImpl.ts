@@ -1,7 +1,7 @@
 import {GameApi} from "../../core/required/gameApi";
+import {UserRepository} from "../../core/required/userRepository";
 import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../models/state/command";
 import {GameConfig} from "../../models/state/gameConfig";
-import {UserStateAccess} from "../state/user/userStateAccess";
 import {HttpClient} from "./http/httpClient";
 import {MessageHandler} from "./messageHandler";
 import {WebsocketClient} from "./messaging/websocketClient";
@@ -11,14 +11,14 @@ export class GameApiImpl implements GameApi {
     private readonly httpClient: HttpClient;
     private readonly websocketClient: WebsocketClient;
     private readonly messageHandler: MessageHandler;
-    private readonly userStateAccess: UserStateAccess;
+    private readonly userRepository: UserRepository;
 
 
-    constructor(httpClient: HttpClient, websocketClient: WebsocketClient, messageHandler: MessageHandler, userStateAccess: UserStateAccess) {
+    constructor(httpClient: HttpClient, websocketClient: WebsocketClient, messageHandler: MessageHandler, userRepository: UserRepository) {
         this.httpClient = httpClient;
         this.websocketClient = websocketClient;
         this.messageHandler = messageHandler;
-        this.userStateAccess = userStateAccess;
+        this.userRepository = userRepository;
     }
 
 
@@ -27,7 +27,7 @@ export class GameApiImpl implements GameApi {
             .get({
                 url: "/api/game/config",
                 requireAuth: true,
-                token: this.userStateAccess.getToken()
+                token: this.userRepository.getAuthToken()
             })
             .then(response => response.json());
     }
@@ -38,7 +38,7 @@ export class GameApiImpl implements GameApi {
             .get({
                 url: "/api/game/list",
                 requireAuth: true,
-                token: this.userStateAccess.getToken()
+                token: this.userRepository.getAuthToken()
             })
             .then(response => response.json());
     }
@@ -49,7 +49,7 @@ export class GameApiImpl implements GameApi {
             .post({
                 url: "/api/game/create",
                 requireAuth: true,
-                token: this.userStateAccess.getToken()
+                token: this.userRepository.getAuthToken()
             })
             .then(response => response.text());
     }
@@ -60,14 +60,14 @@ export class GameApiImpl implements GameApi {
             .post({
                 url: `/api/game/join/${gameId}`,
                 requireAuth: true,
-                token: this.userStateAccess.getToken()
+                token: this.userRepository.getAuthToken()
             })
             .then(() => undefined);
     }
 
 
     connect(gameId: string): Promise<void> {
-        const url = `/api/game/${gameId}?token=${this.userStateAccess.getToken()}`;
+        const url = `/api/game/${gameId}?token=${this.userRepository.getAuthToken()}`;
         console.log("open websocket-connection:", url);
         return this.websocketClient.open(url, message => {
             this.messageHandler.onMessage(message.type, message.payload);

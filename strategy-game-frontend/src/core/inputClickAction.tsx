@@ -1,7 +1,6 @@
-import {LocalGameStateAccess} from "../external/state/localgame/localGameStateAccess";
-import {UIStateAccess} from "../external/state/ui/uiStateAccess";
 import {Tile} from "../models/state/tile";
-import {MenuSelectedTile} from "../ui/pages/game/ui/MenuSelectedTile";
+import {GameRepository} from "./required/gameRepository";
+import {UIService} from "./required/UIService";
 import {TilePicker} from "./tilemap/tilePicker";
 
 /**
@@ -10,14 +9,14 @@ import {TilePicker} from "./tilemap/tilePicker";
 export class InputClickAction {
 
     private readonly tilePicker: TilePicker;
-    private readonly gameStateAccess: LocalGameStateAccess;
-    private readonly uiStateAccess: UIStateAccess;
+    private readonly gameRepository: GameRepository;
+    private readonly uiService: UIService;
 
 
-    constructor(tilePicker: TilePicker, gameStateAccess: LocalGameStateAccess, uiStateAccess: UIStateAccess) {
+    constructor(tilePicker: TilePicker, gameRepository: GameRepository, uiService: UIService) {
         this.tilePicker = tilePicker;
-        this.gameStateAccess = gameStateAccess;
-        this.uiStateAccess = uiStateAccess;
+        this.gameRepository = gameRepository;
+        this.uiService = uiService;
     }
 
 
@@ -26,25 +25,14 @@ export class InputClickAction {
         if (tile) {
             this.clickOnTile(tile);
         } else {
-            this.gameStateAccess.clearSelectedTile();
+            this.gameRepository.clearSelectedTile();
         }
     }
 
 
     private clickOnTile(tile: Tile) {
-        this.gameStateAccess.setSelectedTile(tile.position.q, tile.position.r);
-        this.uiStateAccess.openFrame(
-            "topbar.category.menu",
-            {
-                vertical: {
-                    x: 10,
-                    width: 320,
-                    top: 50,
-                    bottom: 10
-                }
-            },
-            () => <MenuSelectedTile/>
-        );
+        this.gameRepository.setSelectedTile(tile.position.q, tile.position.r);
+        this.uiService.openMenuSelectedTile;
     }
 
 }

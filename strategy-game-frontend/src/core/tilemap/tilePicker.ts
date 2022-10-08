@@ -1,21 +1,21 @@
-import {GameStateAccess} from "../../external/state/game/gameStateAccess";
-import {LocalGameStateAccess} from "../../external/state/localgame/localGameStateAccess";
 import {Tile} from "../../models/state/tile";
 import {GameCanvasHandle} from "../rendering/gameCanvasHandle";
 import {Camera} from "../rendering/utils/camera";
 import {mat3} from "../rendering/utils/mat3";
+import {GameRepository} from "../required/gameRepository";
+import {WorldRepository} from "../required/worldRepository";
 import {TilemapUtils} from "./tilemapUtils";
 
 export class TilePicker {
 
-    private readonly gameStateAccess: GameStateAccess;
-    private readonly localGameStateAccess: LocalGameStateAccess;
+    private readonly worldRepository: WorldRepository;
+    private readonly gameRepository: GameRepository;
     private readonly canvasHandle: GameCanvasHandle;
 
 
-    constructor(localGameStateAccess: LocalGameStateAccess, gameStateAccess: GameStateAccess, canvasHandle: GameCanvasHandle) {
-        this.localGameStateAccess = localGameStateAccess;
-        this.gameStateAccess = gameStateAccess;
+    constructor(gameRepository: GameRepository, worldRepository: WorldRepository, canvasHandle: GameCanvasHandle) {
+        this.gameRepository = gameRepository;
+        this.worldRepository = worldRepository;
         this.canvasHandle = canvasHandle;
     }
 
@@ -24,7 +24,7 @@ export class TilePicker {
         const mouseClipPos = this.toClipSpace(x, y);
         const viewProjMatrix = this.cameraMatrix();
         const hexPos = TilePicker.toHexPos(viewProjMatrix, mouseClipPos);
-        const tile = this.gameStateAccess.getTileAt(hexPos[0], hexPos[1]);
+        const tile = this.worldRepository.getTileAt(hexPos[0], hexPos[1]);
         return tile ? tile : null;
     }
 
@@ -40,7 +40,7 @@ export class TilePicker {
 
 
     private cameraMatrix(): Float32Array {
-        const cameraState = this.localGameStateAccess.getCamera();
+        const cameraState = this.gameRepository.getCamera();
         const camera = new Camera();
         camera.setPosition(cameraState.x, cameraState.y);
         camera.setZoom(cameraState.zoom);

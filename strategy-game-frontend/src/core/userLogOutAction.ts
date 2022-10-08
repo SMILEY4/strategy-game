@@ -1,19 +1,19 @@
-import {UserStateAccess} from "../external/state/user/userStateAccess";
+import {UserRepository} from "./required/userRepository";
 
 /**
  * Log out
  */
 export class UserLogOutAction {
 
-    private readonly userStateAccess: UserStateAccess;
+    private readonly userRepository: UserRepository;
 
-    constructor(userStateAccess: UserStateAccess) {
-        this.userStateAccess = userStateAccess;
+    constructor(userRepository: UserRepository) {
+        this.userRepository = userRepository;
     }
 
     perform(): void {
-        console.debug("Logging Out")
-        this.userStateAccess.clearAuth();
+        console.debug("Logging Out");
+        this.userRepository.clearAuth();
     }
 
 }

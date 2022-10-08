@@ -1,4 +1,4 @@
-import {LocalGameStateAccess} from "../external/state/localgame/localGameStateAccess";
+import {GameRepository} from "./required/gameRepository";
 import {TilePicker} from "./tilemap/tilePicker";
 
 /**
@@ -7,12 +7,12 @@ import {TilePicker} from "./tilemap/tilePicker";
 export class InputMouseMoveAction {
 
     private readonly tilePicker: TilePicker;
-    private readonly gameStateAccess: LocalGameStateAccess;
+    private readonly gameRepository: GameRepository;
 
 
-    constructor(tilePicker: TilePicker, gameStateAccess: LocalGameStateAccess) {
+    constructor(tilePicker: TilePicker, gameRepository: GameRepository) {
         this.tilePicker = tilePicker;
-        this.gameStateAccess = gameStateAccess;
+        this.gameRepository = gameRepository;
     }
 
 
@@ -24,10 +24,10 @@ export class InputMouseMoveAction {
 
     private updateCamera(leftBtnDown: boolean, dx: number, dy: number) {
         if (leftBtnDown) {
-            const camera = this.gameStateAccess.getCamera();
+            const camera = this.gameRepository.getCamera();
             const x = camera.x + dx / camera.zoom;
             const y = camera.y - dy / camera.zoom;
-            this.gameStateAccess.setCameraPosition(x, y);
+            this.gameRepository.setCameraPosition(x, y);
         }
     }
 
@@ -35,9 +35,9 @@ export class InputMouseMoveAction {
     private updateMouseOverTile(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
         if (tile) {
-            this.gameStateAccess.setMouseOverTile(tile.position.q, tile.position.r);
+            this.gameRepository.setMouseOverTile(tile.position.q, tile.position.r);
         } else {
-            this.gameStateAccess.clearMouseOverTile();
+            this.gameRepository.clearMouseOverTile();
         }
     }
 
