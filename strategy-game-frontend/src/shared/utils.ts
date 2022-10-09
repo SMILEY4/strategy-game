@@ -6,6 +6,14 @@ export function orDefault<T>(value: T | null | undefined, defaultValue: T): T {
     }
 }
 
+export function orNull<T>(value: T | null | undefined): T | null {
+    if (value == null || value == undefined) {
+        return null;
+    } else {
+        return value;
+    }
+}
+
 export function generateId(): string {
     return crypto.randomUUID();
 }

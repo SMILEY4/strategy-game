@@ -4,6 +4,7 @@ import "./createWorld.css";
 
 export function CreateWorld(): ReactElement {
 
+    const actionCreateGame = AppConfig.di.get(AppConfig.DIQ.GameCreateAction);
     const [worldId, setWorldId] = useState("");
     const [error, setError] = useState("");
 
@@ -17,7 +18,7 @@ export function CreateWorld(): ReactElement {
     );
 
     function onCreateWorld() {
-        AppConfig.gameLobbyCreate.perform()
+        actionCreateGame.perform()
             .then(gameId => setWorldId(gameId))
             .catch(e => setError(e.toString()));
     }

@@ -1,4 +1,5 @@
-import create, {SetState} from "zustand";
+import create from "zustand";
+import {SetState} from "../../../shared/zustandUtils";
 
 export interface UiFrameData {
     frameId: string, // unique id of the
@@ -75,7 +76,7 @@ export namespace UiStore {
     }
 
 
-    export const useState = create<State>((set: SetState<State>) => ({
+    export const useState = create<State>()((set) => ({
         ...initialStateValues,
         ...stateActions(set)
     }));
