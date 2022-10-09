@@ -1,10 +1,11 @@
-import create, {SetState} from "zustand";
+import create from "zustand";
 import {CameraState} from "../../../models/state/cameraState";
 import {Command} from "../../../models/state/command";
 import {GameState} from "../../../models/state/gameState";
 import {MapMode} from "../../../models/state/mapMode";
 import {TilePosition} from "../../../models/state/tilePosition";
 import {generateId} from "../../../shared/utils";
+import {SetState} from "../../../shared/zustandUtils";
 
 export namespace GameStore {
 
@@ -86,7 +87,7 @@ export namespace GameStore {
     }
 
 
-    export const useState = create<State>((set: SetState<State>) => ({
+    export const useState = create<State>()((set) => ({
         ...initialStateValues,
         ...stateActions(set)
     }));

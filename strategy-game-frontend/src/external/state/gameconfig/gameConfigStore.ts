@@ -1,5 +1,6 @@
-import create, {SetState} from "zustand";
+import create from "zustand";
 import {GameConfig} from "../../../models/state/gameConfig";
+import {SetState} from "../../../shared/zustandUtils";
 
 export namespace GameConfigStore {
 
@@ -27,7 +28,7 @@ export namespace GameConfigStore {
     }
 
 
-    export const useState = create<State>((set: SetState<State>) => ({
+    export const useState = create<State>()((set) => ({
         ...initialStateValues,
         ...stateActions(set)
     }));

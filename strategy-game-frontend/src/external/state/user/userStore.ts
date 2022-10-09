@@ -1,5 +1,7 @@
 import jwt_decode from "jwt-decode";
-import create, {SetState} from "zustand";
+import create from "zustand";
+import {SetState} from "../../../shared/zustandUtils";
+
 
 export namespace UserStore {
 
@@ -7,17 +9,15 @@ export namespace UserStore {
         idToken: string | null,
     }
 
-
-    const initialStateValues: StateValues = {
-        idToken: null
-    };
-
-
     interface StateActions {
         setAuth: (token: string) => void;
         clearAuth: () => void;
     }
 
+
+    const initialStateValues: StateValues = {
+        idToken: null
+    };
 
     function stateActions(set: SetState<State>): StateActions {
         return {
@@ -35,7 +35,7 @@ export namespace UserStore {
     }
 
 
-    export const useState = create<State>((set: SetState<State>) => ({
+    export const useState = create<State>()((set) => ({
         ...initialStateValues,
         ...stateActions(set)
     }));
