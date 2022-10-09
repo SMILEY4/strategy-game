@@ -1,4 +1,4 @@
-import {Country} from "../../../models/state/country";
+import {ResourceType} from "../../../models/state/resourceType";
 import {TerrainType} from "../../../models/state/terrainType";
 import {Tile} from "../../../models/state/tile";
 import {TileLayerMeta} from "../../../models/state/tileLayerMeta";
@@ -98,12 +98,13 @@ export namespace TileVertexBuilder {
     }
 
     /**
-     * @return the terrain-id and visibility (id, visId) for each vertex
+     * @return the (terrainId, resourceId, visibilityId) for each vertex
      */
     function buildTerrainData(tile: Tile): ([number])[] {
         const terrainId: number = tile.dataTier1 ? terrainTypeToId(tile.dataTier1.terrainType) : -1;
+        const resourceId: number = tile.dataTier1 ? resourceTypeToId(tile.dataTier1.resourceType) : -1;
         const visibility = tileVisibilityToId(tile.visibility);
-        return Array(13).fill([terrainId, visibility]);
+        return Array(13).fill([terrainId, resourceId, visibility]);
     }
 
     /**
@@ -153,6 +154,22 @@ export namespace TileVertexBuilder {
         }
         if (type == TerrainType.MOUNTAIN) {
             return 2;
+        }
+        return -1;
+    }
+
+    function resourceTypeToId(type: ResourceType): number {
+        if (type === ResourceType.FOREST) {
+            return 0;
+        }
+        if (type === ResourceType.FISH) {
+            return 1;
+        }
+        if (type === ResourceType.STONE) {
+            return 2;
+        }
+        if (type === ResourceType.METAL) {
+            return 3;
         }
         return -1;
     }

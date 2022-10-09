@@ -1,3 +1,4 @@
+import {ResourceType} from "./resourceType";
 import {TerrainType} from "./terrainType";
 import {TilePosition} from "./tilePosition";
 import {TileVisibility} from "./tileVisibility";
@@ -13,6 +14,7 @@ export interface Tile {
 
 export interface TileDataTier1 {
     terrainType: TerrainType,
+    resourceType: ResourceType,
     owner: ({
         countryId: string,
         cityId: string

@@ -5,7 +5,7 @@ uniform mat3 u_viewProjection;
 in vec2 in_worldPosition;
 in vec2 in_tilePosition;
 in vec3 in_cornerData;
-in vec2 in_terrainData;
+in vec3 in_terrainData;
 
 in vec3 in_layer_values_country;
 in vec3 in_layer_values_city;
@@ -15,7 +15,7 @@ in vec3 in_layer_borders_city;
 
 flat out vec2 v_tilePosition;
 out vec3 v_cornerData;
-flat out vec2 v_terrainData;
+flat out vec3 v_terrainData;
 
 flat out vec3 v_layer_values_country;
 flat out vec3 v_layer_values_city;

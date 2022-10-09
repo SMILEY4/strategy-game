@@ -25,6 +25,7 @@ export function MenuMap(): ReactElement {
             <button onClick={() => setMode(MapMode.COUNTRIES)} disabled={mode === MapMode.COUNTRIES}>Countries</button>
             <button onClick={() => setMode(MapMode.CITIES)} disabled={mode === MapMode.CITIES}>Cities</button>
             <button onClick={() => setMode(MapMode.TERRAIN)} disabled={mode === MapMode.TERRAIN}>Terrain</button>
+            <button onClick={() => setMode(MapMode.RESOURCES)} disabled={mode === MapMode.RESOURCES}>Resources</button>
         </div>
     );
 

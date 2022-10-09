@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.ports.models.entities
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 
 data class TileEntity(
     var gameId: String,
@@ -19,6 +19,7 @@ data class TileEntity(
 
 data class TileData(
     var terrainType: String,
+    var resourceType: String,
 )
 
 data class TileOwner(
@@ -31,6 +32,7 @@ data class TileInfluence(
     val cityId: String,
     val amount: Double
 )
+
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

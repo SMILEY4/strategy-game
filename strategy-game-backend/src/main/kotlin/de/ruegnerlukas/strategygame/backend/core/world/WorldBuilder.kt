@@ -3,11 +3,11 @@ package de.ruegnerlukas.strategygame.backend.core.world
 import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilePosition
 import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilemapPositionsBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.shared.FastNoiseLite
-import java.lang.Double.max
-import java.lang.Double.min
+import de.ruegnerlukas.strategygame.backend.shared.WeightedCollection
 import kotlin.random.Random
 
 class WorldBuilder {
@@ -22,6 +22,24 @@ class WorldBuilder {
         this.SetFractalWeightedStrength(0.2f)
     }
 
+    private val resourceConfig = mapOf(
+        TileType.LAND to WeightedCollection<TileResourceType>().apply {
+            add(0.6, TileResourceType.NONE)
+            add(0.2, TileResourceType.FOREST)
+            add(0.15, TileResourceType.STONE)
+            add(0.05, TileResourceType.METAL)
+        },
+        TileType.WATER to WeightedCollection<TileResourceType>().apply {
+            add(0.7, TileResourceType.NONE)
+            add(0.3, TileResourceType.FISH)
+        },
+        TileType.MOUNTAIN to WeightedCollection<TileResourceType>().apply {
+            add(0.1, TileResourceType.NONE)
+            add(0.5, TileResourceType.STONE)
+            add(0.3, TileResourceType.METAL)
+        }
+    )
+
     private var random = Random(0)
 
     fun buildTiles(settings: WorldSettings): List<Tile> {
@@ -32,22 +50,28 @@ class WorldBuilder {
     }
 
     private fun buildTileAt(position: TilePosition, settings: WorldSettings): Tile {
+        val height = noise.GetNoise(position.q.toFloat(), position.r.toFloat())
+        val terrainType = settings.singleTileType ?: tileTypeAt(height)
         return Tile(
             q = position.q,
             r = position.r,
-            type = settings.singleTileType ?: tileTypeAt(position)
+            type = terrainType,
+            resource = resourceTypeAt(terrainType)
         )
     }
 
-    private fun tileTypeAt(position: TilePosition): TileType {
-        val noiseValue = noise.GetNoise(position.q.toFloat(), position.r.toFloat())
-        return if (noiseValue < 0) {
+    private fun tileTypeAt(height: Float): TileType {
+        return if (height < 0) {
             TileType.WATER
-        } else if (noiseValue > 0.4 && random.nextFloat() > 0.35) {
+        } else if (height > 0.4 && random.nextFloat() > 0.35) {
             TileType.MOUNTAIN
         } else {
             TileType.LAND
         }
+    }
+
+    private fun resourceTypeAt(terrain: TileType): TileResourceType {
+        return resourceConfig[terrain]?.chooseRandom(random) ?: TileResourceType.NONE
     }
 
 }

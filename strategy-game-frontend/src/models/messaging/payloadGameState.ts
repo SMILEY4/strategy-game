@@ -15,6 +15,7 @@ export interface PayloadGameState {
         },
         dataTier1: {
             terrainType: string,
+            resourceType: string,
             owner: ({
                 countryId: string,
                 cityId: string

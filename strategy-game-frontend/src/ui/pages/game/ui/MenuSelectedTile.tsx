@@ -1,4 +1,5 @@
 import React, {ReactElement} from "react";
+import {Simulate} from "react-dom/test-utils";
 import {useCityAt} from "../../../../core/hooks/useCityAt";
 import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
 import {useSelectedTilePosition} from "../../../../core/hooks/useSelectedTilePosition";
@@ -29,11 +30,14 @@ export function MenuSelectedTile(): ReactElement {
 
 
 function SectionTile(props: { selectedTile: TilePosition | null }): ReactElement {
+    const tile = useTileAt(props.selectedTile)
     return (
         <ul>
-            {props.selectedTile && <li>{"q: " + props.selectedTile.q}</li>}
-            {props.selectedTile && <li>{"r: " + props.selectedTile.r}</li>}
-            {!props.selectedTile && <li>no tile selected</li>}
+            {tile && <li>{"q: " + tile.position.q}</li>}
+            {tile && <li>{"r: " + tile.position.r}</li>}
+            {tile && <li>{"terrain: " + (tile.dataTier1 ? tile.dataTier1.terrainType : "?")}</li>}
+            {tile && <li>{"resource: " + (tile.dataTier1 ? tile.dataTier1.resourceType : "?")}</li>}
+            {!tile && <li>no tile selected</li>}
         </ul>
     );
 }

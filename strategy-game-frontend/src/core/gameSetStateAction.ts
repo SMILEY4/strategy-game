@@ -5,6 +5,7 @@ import {Color} from "../models/state/Color";
 import {Country} from "../models/state/country";
 import {GameState} from "../models/state/gameState";
 import {Marker} from "../models/state/marker";
+import {ResourceType} from "../models/state/resourceType";
 import {Scout} from "../models/state/scout";
 import {TerrainType} from "../models/state/terrainType";
 import {Tile} from "../models/state/tile";
@@ -70,6 +71,7 @@ export class GameSetStateAction {
             visibility: tile.dataTier0.visibility,
             dataTier1: tile.dataTier1 ? {
                 terrainType: this.getTerrainType(tile.dataTier1.terrainType),
+                resourceType: this.getResourceType(tile.dataTier1.resourceType),
                 owner: tile.dataTier1.owner ? {
                     countryId: tile.dataTier1.owner?.countryId,
                     countryColor: game.countries.find(c => c.dataTier1.countryId === tile.dataTier1?.owner?.countryId)?.dataTier1.color,
@@ -98,6 +100,25 @@ export class GameSetStateAction {
             return TerrainType.LAND;
         }
         throw new Error("Unknown terrain type: '" + strType + "'");
+    }
+
+    private getResourceType(strType: string): ResourceType {
+        if (strType === "NONE") {
+            return ResourceType.NONE;
+        }
+        if (strType === "FOREST") {
+            return ResourceType.FOREST;
+        }
+        if (strType === "FISH") {
+            return ResourceType.FISH;
+        }
+        if (strType === "STONE") {
+            return ResourceType.STONE;
+        }
+        if (strType === "METAL") {
+            return ResourceType.METAL;
+        }
+        throw new Error("Unknown resource type: '" + strType + "'");
     }
 
     private getMarkers(game: PayloadGameState): Marker[] {

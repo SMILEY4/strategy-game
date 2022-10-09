@@ -34,6 +34,7 @@ data class TileDTODataTier0(
  */
 data class TileDTODataTier1(
     val terrainType: String,
+    val resourceType: String,
     val owner: TileDTOOwner?,
 )
 

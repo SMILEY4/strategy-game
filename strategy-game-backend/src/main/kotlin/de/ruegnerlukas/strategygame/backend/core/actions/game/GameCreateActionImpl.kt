@@ -46,6 +46,7 @@ class GameCreateActionImpl(
 				position = TilePosition(it.q, it.r),
 				data = TileData(
 					terrainType = it.type.name,
+					resourceType = it.resource.name
 				),
 				content = trackingListOf(),
 				influences = mutableListOf(),
