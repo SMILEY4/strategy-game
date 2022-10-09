@@ -5,7 +5,7 @@ import {MsgTileContent} from "./messagingTileContent";
 export interface PayloadGameState {
     turn: number,
     tiles: ({
-        baseData: {
+        dataTier0: {
             tileId: string,
             position: {
                 q: number,
@@ -13,14 +13,14 @@ export interface PayloadGameState {
             },
             visibility: TileVisibility
         },
-        generalData: {
+        dataTier1: {
             terrainType: string,
             owner: ({
                 countryId: string,
                 cityId: string
             }) | null,
         } | null,
-        advancedData: {
+        dataTier2: {
             influences: ({
                 countryId: string,
                 cityId: string,
@@ -30,12 +30,12 @@ export interface PayloadGameState {
         } | null
     })[],
     countries: ({
-        baseData: {
+        dataTier1: {
             countryId: string,
             userId: string,
             color: Color
         },
-        advancedData: {
+        dataTier3: {
             resources: {
                 money: number
             }

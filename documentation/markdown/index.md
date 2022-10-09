@@ -8,7 +8,7 @@
     - [Player Command Resolution](./technical/commandresolution.md) 
   - [Frontend](./technical/frontend.md)
   - [Resources and useful Links](./technical/usefulresources.md)
-- Gameplay
+- Gameplay and Systems
   - [Ideas/Brainstorming](./game/ideas.md)
   - [Turn Resolution](./game/turnResolution.md)
   - [Cities and Towns](./game/cities.md)

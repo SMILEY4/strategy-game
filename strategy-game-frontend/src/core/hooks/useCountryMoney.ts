@@ -7,7 +7,7 @@ export function useCountryMoney(): number {
     if (country === null) {
         return 0;
     }
-    const money = ((country && country.advancedData) ? country.advancedData.resources.money : 0);
+    const money = ((country && country.dataTier3) ? country.dataTier3.resources.money : 0);
     const commandCost = commands.map(cmd => cmd.cost.money).reduce((a, b) => a + b, 0);
     return money - commandCost;
 }

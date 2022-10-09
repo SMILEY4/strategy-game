@@ -23,3 +23,14 @@ title: Fog-of-War and Visibility
 ## Discovered Countries
 
 - a country A has discovered and knows of country B if A as discovered a tile that is owned by B 
+
+
+
+## Object Visibility
+
+- objects expose different information to the player based on its current visibility level
+  - "dataTier0" for UNDISCOVERED, i.e, data that is always available
+  - "dataTier1" for DISCOVERED, i.e. data that is always available once discovered
+  - "dataTier2" for VISIBILE, i.e. data that is only available when visible
+  - "dataTier3" for data that is only available to the owner
+

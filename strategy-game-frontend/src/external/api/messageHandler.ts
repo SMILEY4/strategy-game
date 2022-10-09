@@ -1,12 +1,12 @@
-import {SetGameStateAction} from "../../core/setGameStateAction";
+import {GameSetStateAction} from "../../core/setGameStateAction";
 import {PayloadGameState} from "../../models/messaging/payloadGameState";
 
 
 export class MessageHandler {
 
-    private readonly gameSetState: SetGameStateAction;
+    private readonly gameSetState: GameSetStateAction;
 
-    constructor(gameSetState: SetGameStateAction) {
+    constructor(gameSetState: GameSetStateAction) {
         this.gameSetState = gameSetState;
     }
 

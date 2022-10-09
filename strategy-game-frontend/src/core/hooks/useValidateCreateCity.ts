@@ -18,7 +18,7 @@ export function useValidateCreateCity(pos: TilePosition | null): boolean {
     if (tile) {
         return validations(ctx => {
             ctx.validate("CITY.TARGET_TILE_TYPE", () => {
-                return tile.generalData?.terrainType === TerrainType.LAND;
+                return tile.dataTier1?.terrainType === TerrainType.LAND;
             });
             ctx.validate("CITY.TILE_SPACE", () => {
                 return !cities.find(c => c.tile.tileId === tile.tileId);
@@ -27,21 +27,21 @@ export function useValidateCreateCity(pos: TilePosition | null): boolean {
                 return currentAmountMoney >= gameConfig.cityCost;
             });
             ctx.validate("CITY.TARGET_TILE_OWNER", () => {
-                return tile.generalData?.owner == null || tile.generalData.owner.countryId == country.countryId;
+                return tile.dataTier1?.owner == null || tile.dataTier1.owner.countryId == country.countryId;
             });
             ctx.validate("CITY.COUNTRY_INFLUENCE", () => {
-                if (tile.advancedData) {
+                if (tile.dataTier2) {
                     // country owns tile
-                    if (tile.generalData?.owner?.countryId == country.countryId) {
+                    if (tile.dataTier1?.owner?.countryId == country.countryId) {
                         return true;
                     }
                     // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-                    const maxForeignInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId !== country.countryId).map(i => i.amount));
+                    const maxForeignInfluence = Math.max(...tile.dataTier2.influences.filter(i => i.countryId !== country.countryId).map(i => i.amount));
                     if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
                         return true;
                     }
                     // country has the most influence on tile
-                    const maxCountryInfluence = Math.max(...tile.advancedData.influences.filter(i => i.countryId === country.countryId).map(i => i.amount));
+                    const maxCountryInfluence = Math.max(...tile.dataTier2.influences.filter(i => i.countryId === country.countryId).map(i => i.amount));
                     return maxCountryInfluence >= maxForeignInfluence;
                 } else {
                     return true;

@@ -18,7 +18,7 @@ export function useValidateCreateTown(pos: TilePosition | null): boolean {
     if (tile) {
         return validations(ctx => {
             ctx.validate("TOWN.TARGET_TILE_TYPE", () => {
-                return tile.generalData?.terrainType === TerrainType.LAND;
+                return tile.dataTier1?.terrainType === TerrainType.LAND;
             });
             ctx.validate("TOWN.TILE_SPACE", () => {
                 return !cities.find(c => c.tile.tileId === tile.tileId);
@@ -27,7 +27,7 @@ export function useValidateCreateTown(pos: TilePosition | null): boolean {
                 return currentAmountMoney >= gameConfig.townCost;
             });
             ctx.validate("TOWN.TARGET_TILE_OWNER", () => {
-                return tile.generalData?.owner?.countryId == country.countryId;
+                return tile.dataTier1?.owner?.countryId == country.countryId;
             });
         }).isValid();
     } else {

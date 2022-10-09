@@ -55,7 +55,7 @@ All messages follow the following format
       "turn": "Int - the current turn",
       "tiles": [
           {
-              "baseData": {
+              "dataTier0": {
                   "tileId": "String - the id of the tile",
                   "position": {
                       "q": "Int - the q-coordinate of the tile",
@@ -63,7 +63,7 @@ All messages follow the following format
                   },
                   "visibility": "String - UNKNOWN | DISCOVERED | VISIBLE"
               },
-              "generalData?": {
+              "dataTier1?": {
                   "terrainType": "String - the type of the terrain",
                   "owner?": {
                       "countryId": "String - the id of the country owning this tile",
@@ -71,7 +71,7 @@ All messages follow the following format
                       "cityId": "String - the id of the city this tile belongs to",
                   }
               },
-              "advancedData?": {
+              "dataTier2?": {
               	"influences": [
                       {
                           "countryId": "String - the id of the country or '?'",
@@ -96,7 +96,7 @@ All messages follow the following format
       ],
       "countries": [
           {
-              "baseData": {
+              "dataTier1": {
                   "countryId": "String - the id of the country",
                   "userId": "String - the id of the owner",
                   "color": {
@@ -105,7 +105,7 @@ All messages follow the following format
                       "blue": "Int [0,255]",
                   }
               },
-              "advancedData?": {
+              "dataTier3?": {
                   "resources": {
                       "money": "Float - the amount of available money"
                   }

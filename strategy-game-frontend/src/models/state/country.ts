@@ -4,10 +4,10 @@ export interface Country {
     countryId: string,
     userId: string,
     color: Color,
-    advancedData: CountryAdvancedData | null
+    dataTier3: CountryDataTier3 | null
 }
 
-export interface CountryAdvancedData {
+export interface CountryDataTier3 {
     resources: {
         money: number
     },

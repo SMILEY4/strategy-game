@@ -101,7 +101,7 @@ export namespace TileVertexBuilder {
      * @return the terrain-id and visibility (id, visId) for each vertex
      */
     function buildTerrainData(tile: Tile): ([number])[] {
-        const terrainId: number = tile.generalData ? terrainTypeToId(tile.generalData.terrainType) : -1;
+        const terrainId: number = tile.dataTier1 ? terrainTypeToId(tile.dataTier1.terrainType) : -1;
         const visibility = tileVisibilityToId(tile.visibility);
         return Array(13).fill([terrainId, visibility]);
     }

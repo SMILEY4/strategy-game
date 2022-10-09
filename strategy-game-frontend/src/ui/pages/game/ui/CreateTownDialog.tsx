@@ -15,7 +15,7 @@ export function CreateTownDialog(props: { frameId: string, tile: TilePosition })
             Order creation of new city?
             <TextField value={name} onAccept={setName}/>
             <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAccept(tile?.generalData?.owner?.cityId!!)}>Create Town</button>
+            <button onClick={() => onAccept(tile?.dataTier1?.owner?.cityId!!)}>Create Town</button>
         </div>
     );
 

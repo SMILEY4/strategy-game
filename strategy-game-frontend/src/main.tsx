@@ -6,6 +6,7 @@ import {GameDisposeAction} from "./core/gameDisposeAction";
 import {GameInitAction} from "./core/gameInitAction";
 import {GameJoinAction} from "./core/gameJoinAction";
 import {GameListAction} from "./core/gameListAction";
+import {GameSetStateAction} from "./core/gameSetStateAction";
 import {GameUpdateAction} from "./core/gameUpdateAction";
 import {InputClickAction} from "./core/inputClickAction";
 import {InputMouseMoveAction} from "./core/inputMouseMoveAction";
@@ -19,7 +20,6 @@ import {UIService} from "./core/required/UIService";
 import {UserApi} from "./core/required/userApi";
 import {UserRepository} from "./core/required/userRepository";
 import {WorldRepository} from "./core/required/worldRepository";
-import {SetGameStateAction} from "./core/setGameStateAction";
 import {TilePicker} from "./core/tilemap/tilePicker";
 import {TurnAddCommandAction} from "./core/turnAddCommandAction";
 import {TurnSubmitAction} from "./core/turnSubmitAction";
@@ -63,6 +63,7 @@ export namespace AppConfig {
         GameJoinAction: qualifier<GameJoinAction>("GameJoinAction"),
         GameListAction: qualifier<GameListAction>("GameListAction"),
         GameRepository: qualifier<GameRepository>("GameRepository"),
+        GameSetStateAction: qualifier<GameSetStateAction>("GameSetStateAction"),
         GameUpdateAction: qualifier<GameUpdateAction>("GameUpdateAction"),
         HttpClient: qualifier<HttpClient>("HttpClient"),
         InputClickAction: qualifier<InputClickAction>("InputClickAction"),
@@ -70,7 +71,6 @@ export namespace AppConfig {
         InputMouseScrollAction: qualifier<InputMouseScrollAction>("InputMouseScrollAction"),
         MessageHandler: qualifier<MessageHandler>("MessageHandler"),
         Renderer: qualifier<Renderer>("Renderer"),
-        SetGameStateAction: qualifier<SetGameStateAction>("SetGameStateAction"),
         TilePicker: qualifier<TilePicker>("TilePicker"),
         TurnAddCommandAction: qualifier<TurnAddCommandAction>("TurnAddCommandAction"),
         TurnSubmitAction: qualifier<TurnSubmitAction>("TurnSubmitAction"),
@@ -95,14 +95,14 @@ export namespace AppConfig {
     diContainer.bind(DIQ.GameJoinAction, ctx => new GameJoinAction(ctx.get(DIQ.GameApi)));
     diContainer.bind(DIQ.GameListAction, ctx => new GameListAction(ctx.get(DIQ.GameApi)));
     diContainer.bind(DIQ.GameRepository, ctx => new GameRepositoryImpl());
+    diContainer.bind(DIQ.GameSetStateAction, ctx => new GameSetStateAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository)));
     diContainer.bind(DIQ.GameUpdateAction, ctx => new GameUpdateAction(ctx.get(DIQ.Renderer)));
     diContainer.bind(DIQ.HttpClient, ctx => new HttpClient(API_BASE_URL));
     diContainer.bind(DIQ.InputClickAction, ctx => new InputClickAction(ctx.get(DIQ.TilePicker), ctx.get(DIQ.GameRepository), ctx.get(DIQ.UIService)));
     diContainer.bind(DIQ.InputMouseMoveAction, ctx => new InputMouseMoveAction(ctx.get(DIQ.TilePicker), ctx.get(DIQ.GameRepository)));
     diContainer.bind(DIQ.InputMouseScrollAction, ctx => new InputMouseScrollAction(ctx.get(DIQ.GameRepository)));
-    diContainer.bind(DIQ.MessageHandler, ctx => new MessageHandler(ctx.get(DIQ.SetGameStateAction)));
+    diContainer.bind(DIQ.MessageHandler, ctx => new MessageHandler(ctx.get(DIQ.GameSetStateAction)));
     diContainer.bind(DIQ.Renderer, ctx => new Renderer(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.UserRepository)));
-    diContainer.bind(DIQ.SetGameStateAction, ctx => new SetGameStateAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository)));
     diContainer.bind(DIQ.TilePicker, ctx => new TilePicker(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.GameCanvasHandle)));
     diContainer.bind(DIQ.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameConfigRepository)));
     diContainer.bind(DIQ.TurnSubmitAction, ctx => new TurnSubmitAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameApi)));

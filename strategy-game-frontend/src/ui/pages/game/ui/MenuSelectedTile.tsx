@@ -45,10 +45,10 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
         return (
             <>
                 <h3>Influences</h3>
-                {tile.advancedData && (
+                {tile.dataTier2 && (
                     <ul>
                         {
-                            tile.advancedData.influences.map(influence => (
+                            tile.dataTier2.influences.map(influence => (
                                 <>
                                     <li>{influence.countryId + "." + influence.cityId + " = " + influence.amount}</li>
                                 </>
@@ -56,7 +56,7 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
                         }
                     </ul>
                 )}
-                {(tile.advancedData === null || tile.advancedData === undefined) && (
+                {(tile.dataTier2 === null || tile.dataTier2 === undefined) && (
                     <div>Not Visible</div>
                 )}
             </>
@@ -70,14 +70,14 @@ function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactE
 function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElement | null {
     const tile = useTileAt(props.selectedTile);
     if (tile) {
-        if (tile.generalData) {
-            if (tile.generalData.owner) {
+        if (tile.dataTier1) {
+            if (tile.dataTier1.owner) {
                 return (
                     <>
                         <h3>Owner</h3>
                         <ul>
-                            <li>{"Country = " + tile.generalData.owner?.countryId}</li>
-                            <li>{"City = " + tile.generalData.owner?.cityId}</li>
+                            <li>{"Country = " + tile.dataTier1.owner?.countryId}</li>
+                            <li>{"City = " + tile.dataTier1.owner?.cityId}</li>
                         </ul>
                     </>
                 );

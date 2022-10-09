@@ -6,12 +6,12 @@ export interface Tile {
     tileId: string,
     position: TilePosition,
     visibility: TileVisibility,
-    generalData: TileGeneralData | null,
-    advancedData: TileAdvancedData | null,
-    layers: TileLayer[];
+    layers: TileLayer[],
+    dataTier1: TileDataTier1 | null,
+    dataTier2: TileDataTier2 | null,
 }
 
-export interface TileGeneralData {
+export interface TileDataTier1 {
     terrainType: TerrainType,
     owner: ({
         countryId: string,
@@ -19,7 +19,7 @@ export interface TileGeneralData {
     }) | null,
 }
 
-export interface TileAdvancedData {
+export interface TileDataTier2 {
     influences: ({
         countryId: string,
         cityId: string,

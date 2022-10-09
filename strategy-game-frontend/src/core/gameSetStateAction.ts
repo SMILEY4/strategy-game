@@ -18,7 +18,7 @@ import colorToRgbArray = Color.colorToRgbArray;
 /**
  * Set the world/game state
  */
-export class SetGameStateAction {
+export class GameSetStateAction {
 
     private readonly gameRepository: GameRepository;
     private readonly worldRepository: WorldRepository;
@@ -48,12 +48,12 @@ export class SetGameStateAction {
 
     private getCountries(game: PayloadGameState): Country[] {
         return game.countries.map(country => ({
-            countryId: country.baseData.countryId,
-            userId: country.baseData.userId,
-            color: country.baseData.color,
-            advancedData: country.advancedData ? {
+            countryId: country.dataTier1.countryId,
+            userId: country.dataTier1.userId,
+            color: country.dataTier1.color,
+            dataTier3: country.dataTier3 ? {
                 resources: {
-                    money: country.advancedData.resources.money
+                    money: country.dataTier3.resources.money
                 }
             } : null
         }));
@@ -62,22 +62,22 @@ export class SetGameStateAction {
 
     private getTiles(game: PayloadGameState): Tile[] {
         return game.tiles.map(tile => ({
-            tileId: tile.baseData.tileId,
+            tileId: tile.dataTier0.tileId,
             position: {
-                q: tile.baseData.position.q,
-                r: tile.baseData.position.r
+                q: tile.dataTier0.position.q,
+                r: tile.dataTier0.position.r
             },
-            visibility: tile.baseData.visibility,
-            generalData: tile.generalData ? {
-                terrainType: this.getTerrainType(tile.generalData.terrainType),
-                owner: tile.generalData.owner ? {
-                    countryId: tile.generalData.owner?.countryId,
-                    countryColor: game.countries.find(c => c.baseData.countryId === tile.generalData?.owner?.countryId)?.baseData.color,
-                    cityId: tile.generalData.owner.cityId,
+            visibility: tile.dataTier0.visibility,
+            dataTier1: tile.dataTier1 ? {
+                terrainType: this.getTerrainType(tile.dataTier1.terrainType),
+                owner: tile.dataTier1.owner ? {
+                    countryId: tile.dataTier1.owner?.countryId,
+                    countryColor: game.countries.find(c => c.dataTier1.countryId === tile.dataTier1?.owner?.countryId)?.dataTier1.color,
+                    cityId: tile.dataTier1.owner.cityId,
                 } : null,
             } : null,
-            advancedData: tile.advancedData ? {
-                influences: tile.advancedData.influences.map(influence => ({
+            dataTier2: tile.dataTier2 ? {
+                influences: tile.dataTier2.influences.map(influence => ({
                     countryId: influence.countryId,
                     cityId: influence.cityId,
                     amount: influence.amount
@@ -103,14 +103,14 @@ export class SetGameStateAction {
     private getMarkers(game: PayloadGameState): Marker[] {
         const markers: Marker[] = [];
         game.tiles.forEach(tile => {
-            if (tile.advancedData) {
-                tile.advancedData.content.forEach(content => {
+            if (tile.dataTier2) {
+                tile.dataTier2.content.forEach(content => {
                     if (content.type === "marker") {
                         markers.push({
                             tile: {
-                                tileId: tile.baseData.tileId,
-                                q: tile.baseData.position.q,
-                                r: tile.baseData.position.r
+                                tileId: tile.dataTier0.tileId,
+                                q: tile.dataTier0.position.q,
+                                r: tile.dataTier0.position.r
                             },
                             countryId: (content as MsgMarkerTileContent).countryId
                         });
@@ -125,14 +125,14 @@ export class SetGameStateAction {
     private getScouts(game: PayloadGameState): Scout[] {
         const scouts: Scout[] = [];
         game.tiles.forEach(tile => {
-            if (tile.advancedData) {
-                tile.advancedData.content.forEach(content => {
+            if (tile.dataTier2) {
+                tile.dataTier2.content.forEach(content => {
                     if (content.type === "scout") {
                         scouts.push({
                             tile: {
-                                tileId: tile.baseData.tileId,
-                                q: tile.baseData.position.q,
-                                r: tile.baseData.position.r
+                                tileId: tile.dataTier0.tileId,
+                                q: tile.dataTier0.position.q,
+                                r: tile.dataTier0.position.r
                             },
                             turn: (content as MsgScoutTileContent).turn,
                             countryId: (content as MsgScoutTileContent).countryId
@@ -182,21 +182,21 @@ export class SetGameStateAction {
     }
 
     private getTileCountryLayerValue(tile: Tile, game: PayloadGameState): number[] {
-        const country = game.countries.find(country => country.baseData.countryId === tile.generalData?.owner?.countryId);
-        return colorToRgbArray(orDefault(country?.baseData.color, Color.INVALID));
+        const country = game.countries.find(country => country.dataTier1.countryId === tile.dataTier1?.owner?.countryId);
+        return colorToRgbArray(orDefault(country?.dataTier1.color, Color.INVALID));
     }
 
     private getTileCountryLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
-        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.countryId);
+        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.countryId);
     }
 
     private getTileCityLayerValue(tile: Tile, game: PayloadGameState): number[] {
-        const city = game.cities.find(city => city.cityId === tile.generalData?.owner?.cityId);
+        const city = game.cities.find(city => city.cityId === tile.dataTier1?.owner?.cityId);
         return colorToRgbArray(orDefault(city?.color, Color.INVALID));
     }
 
     private getTileCityLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
-        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.generalData?.owner?.cityId);
+        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.cityId);
     }
 
 }

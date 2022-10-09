@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 
 data class TileDTO(
-    val baseData: TileDTOBaseData,
-    val generalData: TileDTOGeneralData?,
-    val advancedData: TileDTOAdvancedData?,
+    val dataTier0: TileDTODataTier0,
+    val dataTier1: TileDTODataTier1?,
+    val dataTier2: TileDTODataTier2?,
 )
 
 
@@ -22,17 +22,17 @@ enum class TileDTOVisibility {
 /**
  * The data that is always available
  */
-data class TileDTOBaseData(
+data class TileDTODataTier0(
     val tileId: String,
     val position: TilePosition,
-    val  visibility: TileDTOVisibility,
+    val visibility: TileDTOVisibility,
 )
 
 
 /**
  * The data that is available for discovered and visible tiles
  */
-data class TileDTOGeneralData(
+data class TileDTODataTier1(
     val terrainType: String,
     val owner: TileDTOOwner?,
 )
@@ -41,7 +41,7 @@ data class TileDTOGeneralData(
 /**
  * The data that is available for visible tiles
  */
-data class TileDTOAdvancedData(
+data class TileDTODataTier2(
     val influences: List<TileDTOInfluence>,
     val content: List<TileDTOContent>
 )
