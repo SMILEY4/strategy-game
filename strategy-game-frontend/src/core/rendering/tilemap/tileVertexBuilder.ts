@@ -151,6 +151,9 @@ export namespace TileVertexBuilder {
         if (type == TerrainType.LAND) {
             return 1;
         }
+        if (type == TerrainType.MOUNTAIN) {
+            return 2;
+        }
         return -1;
     }
 

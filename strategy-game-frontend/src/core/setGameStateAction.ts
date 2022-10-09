@@ -69,7 +69,7 @@ export class SetGameStateAction {
             },
             visibility: tile.baseData.visibility,
             generalData: tile.generalData ? {
-                terrainType: tile.generalData.terrainType === "LAND" ? TerrainType.LAND : TerrainType.WATER,
+                terrainType: this.getTerrainType(tile.generalData.terrainType),
                 owner: tile.generalData.owner ? {
                     countryId: tile.generalData.owner?.countryId,
                     countryColor: game.countries.find(c => c.baseData.countryId === tile.generalData?.owner?.countryId)?.baseData.color,
@@ -87,6 +87,18 @@ export class SetGameStateAction {
         }));
     }
 
+    private getTerrainType(strType: string): TerrainType {
+        if (strType === "WATER") {
+            return TerrainType.WATER;
+        }
+        if (strType === "MOUNTAIN") {
+            return TerrainType.MOUNTAIN;
+        }
+        if (strType === "LAND") {
+            return TerrainType.LAND;
+        }
+        throw new Error("Unknown terrain type: '" + strType + "'");
+    }
 
     private getMarkers(game: PayloadGameState): Marker[] {
         const markers: Marker[] = [];

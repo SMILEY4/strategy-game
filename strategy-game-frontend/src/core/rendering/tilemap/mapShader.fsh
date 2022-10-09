@@ -25,8 +25,11 @@ vec3 calcTerrainColor(float terrainId) {
     if (terrainId < 0.5) { // 0 -> water
         return vec3(1.0/255.0, 96.0/255.0, 154.0/255.0);
     }
-    if (terrainId > 0.5) { // 1 -> land
+    if (terrainId < 1.5) { // 1 -> land
         return vec3(87.0/255.0, 139.0/255.0, 69.0/255.0);
+    }
+    if (terrainId < 2.5) { // 2 -> mountain
+        return vec3(88.0/255.0, 99.0/255.0, 85.0/255.0);
     }
     return vec3(0.0);
 }

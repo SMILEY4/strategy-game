@@ -1,4 +1,5 @@
 export enum TerrainType {
     LAND = "LAND",
-    WATER = "WATER"
+    WATER = "WATER",
+    MOUNTAIN = "MOUNTAIN"
 }

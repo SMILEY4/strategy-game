@@ -25,7 +25,7 @@ enum class TileDTOVisibility {
 data class TileDTOBaseData(
     val tileId: String,
     val position: TilePosition,
-    val visibility: TileDTOVisibility,
+    val  visibility: TileDTOVisibility,
 )
 
 

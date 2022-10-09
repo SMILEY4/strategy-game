@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models
 import java.util.Random
 
 data class WorldSettings(
-	val size: Int = 20,
+	val size: Int = 30,
 	val seed: Int = Random().nextInt(),
 	val singleTileType: TileType?, // if not null = all tiles will be of this type
 ) {

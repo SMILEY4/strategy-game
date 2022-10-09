@@ -1,8 +1,12 @@
 import {Country} from "../../models/state/country";
 import {optional} from "../../shared/optional";
 import {useCountry} from "./useCountry";
-import {useUserId} from "./useUserId";
+import {useUserIdOrNull} from "./useUserId";
 
 export function useCountryPlayer(): Country {
-    return optional(useCountry(useUserId())).getValueOrThrow();
+    return optional(useCountryPlayerOrNull()).getValueOrThrow();
+}
+
+export function useCountryPlayerOrNull(): Country | null {
+    return useCountry(useUserIdOrNull());
 }

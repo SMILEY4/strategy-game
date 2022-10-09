@@ -1,7 +1,8 @@
 import {ReactElement} from "react";
 import {useCountry} from "../../../../core/hooks/useCountry";
 import {useCountryMoney} from "../../../../core/hooks/useCountryMoney";
-import {useUserId} from "../../../../core/hooks/useUserId";
+import {useCountryPlayerOrNull} from "../../../../core/hooks/useCountryPlayer";
+import {useUserId, useUserIdOrNull} from "../../../../core/hooks/useUserId";
 import {Color} from "../../../../models/state/Color";
 import "./gameMenuBar.css";
 import {CategoryDebug} from "./MenuDebug";
@@ -11,8 +12,7 @@ import {NextTurnAction} from "./NextTurnAction";
 
 export function GameMenuBar(): ReactElement {
 
-    const userId = useUserId();
-    const country = useCountry(userId);
+    const country = useCountryPlayerOrNull();
     const countryColor = country ? country.color : Color.BLACK;
 
     return (
