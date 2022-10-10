@@ -9,6 +9,10 @@ export interface Country {
 
 export interface CountryDataTier3 {
     resources: {
-        money: number
+        money: number,
+        wood: number,
+        food: number,
+        stone: number,
+        metal: number
     },
 }

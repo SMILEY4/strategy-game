@@ -1,8 +1,7 @@
 import {ReactElement} from "react";
-import {useCountry} from "../../../../core/hooks/useCountry";
 import {useCountryMoney} from "../../../../core/hooks/useCountryMoney";
 import {useCountryPlayerOrNull} from "../../../../core/hooks/useCountryPlayer";
-import {useUserId, useUserIdOrNull} from "../../../../core/hooks/useUserId";
+import {useCountryResources} from "../../../../core/hooks/useCountryResources";
 import {Color} from "../../../../models/state/Color";
 import "./gameMenuBar.css";
 import {CategoryDebug} from "./MenuDebug";
@@ -14,6 +13,7 @@ export function GameMenuBar(): ReactElement {
 
     const country = useCountryPlayerOrNull();
     const countryColor = country ? country.color : Color.BLACK;
+    const countryResources = useCountryResources()
 
     return (
         <div className="game-menu-bar">
@@ -25,7 +25,11 @@ export function GameMenuBar(): ReactElement {
                 <CategoryMap/>
             </div>
             <div className="info-section">
-                <MoneyResource/>
+                <ResourceDisplay label={"Money"} amount={countryResources.money}/>
+                <ResourceDisplay label={"Food"} amount={countryResources.food}/>
+                <ResourceDisplay label={"Wood"} amount={countryResources.wood}/>
+                <ResourceDisplay label={"Stone"} amount={countryResources.stone}/>
+                <ResourceDisplay label={"Metal"} amount={countryResources.metal}/>
             </div>
             <div className="action-section">
                 <NextTurnAction/>
@@ -34,9 +38,8 @@ export function GameMenuBar(): ReactElement {
     );
 }
 
-export function MoneyResource(): ReactElement {
-    const money = useCountryMoney();
+export function ResourceDisplay(props: {label: string, amount: number}): ReactElement {
     return (
-        <div>{"Money: " + money}</div>
+        <div>{props.label + ": " + props.amount}</div>
     );
 }

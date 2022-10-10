@@ -54,7 +54,11 @@ export class GameSetStateAction {
             color: country.dataTier1.color,
             dataTier3: country.dataTier3 ? {
                 resources: {
-                    money: country.dataTier3.resources.money
+                    money: country.dataTier3.resources.money,
+                    wood: country.dataTier3.resources.wood,
+                    food: country.dataTier3.resources.food,
+                    stone: country.dataTier3.resources.stone,
+                    metal: country.dataTier3.resources.metal
                 }
             } : null
         }));
