@@ -111,7 +111,7 @@ class GameExtendedDTOCreator(
         return TileDTODataTier0(
             tileId = tileEntity.getKeyOrThrow(),
             position = tileEntity.position,
-            visibility = TileDTOVisibility.VISIBLE // calculateTileVisibility(countryId, tileEntity, tiles) TODO: all visible for testing
+            visibility = calculateTileVisibility(countryId, tileEntity, tiles)
         )
     }
 
