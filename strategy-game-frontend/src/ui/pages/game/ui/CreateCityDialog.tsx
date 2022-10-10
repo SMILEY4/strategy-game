@@ -22,7 +22,7 @@ export function CreateCityDialog(props: { frameId: string, tile: TilePosition })
     }
 
     function onAccept() {
-        close();
+        uiService.close(props.frameId);
         actionAddCommand.addCreateCity(props.tile, name, null);
     }
 }

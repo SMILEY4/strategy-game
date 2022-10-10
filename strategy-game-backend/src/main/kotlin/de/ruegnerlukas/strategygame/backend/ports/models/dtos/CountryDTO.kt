@@ -27,5 +27,9 @@ data class CountryDTODataTier3(
 
 
 data class CountryDTOResources(
-    val money: Float
+    var money: Float,
+    var wood: Float,
+    var food: Float,
+    var stone: Float,
+    var metal: Float,
 )

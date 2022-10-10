@@ -107,7 +107,11 @@ All messages follow the following format
               },
               "dataTier3?": {
                   "resources": {
-                      "money": "Float - the amount of available money"
+                      "money": "Float - the amount of available money",
+                      "wood": "Float - the amount of available wood",
+                      "food": "Float - the amount of available food",
+                      "stone": "Float - the amount of available stone",
+                      "metal": "Float - the amount of available metal",
                   }
               }
           }

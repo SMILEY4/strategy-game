@@ -3,16 +3,16 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTO
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier3
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier1
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier3
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTOResources
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ScoutTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTO
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier2
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier0
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier1
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier2
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOOwner
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOVisibility
@@ -184,7 +184,11 @@ class GameExtendedDTOCreator(
         if (playerCountryId == countryEntity.key) {
             dataTier3 = CountryDTODataTier3(
                 resources = CountryDTOResources(
-                    money = countryEntity.resources.money
+                    money = countryEntity.resources.money,
+                    wood = countryEntity.resources.wood,
+                    food = countryEntity.resources.food,
+                    stone = countryEntity.resources.stone,
+                    metal = countryEntity.resources.metal,
                 )
             )
         }

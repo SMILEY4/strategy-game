@@ -87,9 +87,13 @@ class GameJoinActionImpl(
             CountryEntity(
                 gameId = game.getKeyOrThrow(),
                 userId = userId,
-                color = COUNTRY_COLORS[(game.players.size-1) % COUNTRY_COLORS.size],
+                color = COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size],
                 resources = CountryResources(
-                    money = gameConfig.startingAmountMoney
+                    money = gameConfig.startingAmountMoney,
+                    wood = gameConfig.startingAmountWood,
+                    food = gameConfig.startingAmountFood,
+                    stone = gameConfig.startingAmountStone,
+                    metal = gameConfig.startingAmountMetal
                 )
             )
         ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.key}") }
