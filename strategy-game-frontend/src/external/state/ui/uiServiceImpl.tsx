@@ -15,11 +15,12 @@ import FrameLayout = UiFrames.FrameLayout;
 export class UIServiceImpl implements UIService {
 
     close(frameId: string): void {
-        UiStore.useState().removeFrame(frameId);
+        console.log("CLOSE ", frameId);
+        UiStore.useState.getState().removeFrame(frameId);
     }
 
     pin(frameId: string): void {
-        UiStore.useState().updateFrame(frameId, frame => ({
+        UiStore.useState.getState().updateFrame(frameId, frame => ({
             ...frame,
             menuId: generateId(),
             enablePin: false
