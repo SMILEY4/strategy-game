@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.config
 
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateBuildingCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateTownCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
@@ -40,6 +41,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQu
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateTownCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
@@ -106,6 +108,7 @@ val applicationDependencies = module {
     single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl() }
     single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
     single<ResolveCreateTownCommand> { ResolveCreateTownCommandImpl(get(), get()) }
+    single<ResolveCreateBuildingCommand> { ResolveCreateBuildingCommandImpl() }
     single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get()) }
     single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
     single<GamesListAction> { GamesListActionImpl(get()) }
