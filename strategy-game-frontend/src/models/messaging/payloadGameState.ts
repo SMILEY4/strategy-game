@@ -57,6 +57,14 @@ export interface PayloadGameState {
         name: string,
         color: Color,
         city: boolean,
-        parentCity: string | null
+        parentCity: string | null,
+        buildings: ({
+            type: string,
+            tile: {
+                tileId: string,
+                q: number,
+                r: number
+            } | null
+        })[]
     })[]
 }

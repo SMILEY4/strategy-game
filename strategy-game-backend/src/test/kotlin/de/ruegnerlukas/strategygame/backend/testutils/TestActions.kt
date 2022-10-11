@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateBuildingCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateTownCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
@@ -69,6 +70,7 @@ object TestActions {
                     ReservationInsertImpl(database),
                     GameConfig.default()
                 ),
+                ResolveCreateBuildingCommandImpl(),
                 ResolveCreateTownCommandImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()
@@ -107,6 +109,7 @@ object TestActions {
             ReservationInsertImpl(database),
             GameConfig.default()
         ),
+        ResolveCreateBuildingCommandImpl(),
         ResolveCreateTownCommandImpl(
             ReservationInsertImpl(database),
             GameConfig.default()
@@ -123,6 +126,7 @@ object TestActions {
                 ReservationInsertImpl(database),
                 GameConfig.default()
             ),
+            ResolveCreateBuildingCommandImpl(),
             ResolveCreateTownCommandImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()

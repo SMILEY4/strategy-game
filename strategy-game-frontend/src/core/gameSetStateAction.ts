@@ -1,5 +1,6 @@
 import {MsgMarkerTileContent, MsgScoutTileContent} from "../models/messaging/messagingTileContent";
 import {PayloadGameState} from "../models/messaging/payloadGameState";
+import {stringToBuildingType} from "../models/state/buildingType";
 import {City} from "../models/state/city";
 import {Color} from "../models/state/Color";
 import {Country} from "../models/state/country";
@@ -181,7 +182,15 @@ export class GameSetStateAction {
                 r: city.tile.r
             },
             isCity: city.city,
-            parentCity: city.parentCity
+            parentCity: city.parentCity,
+            buildings: city.buildings.map(b => ({
+                type: stringToBuildingType(b.type),
+                tile: b.tile ? {
+                    tileId: b.tile.tileId,
+                    q: b.tile.q,
+                    r: b.tile.r
+                } : null
+            }))
         }));
     }
 

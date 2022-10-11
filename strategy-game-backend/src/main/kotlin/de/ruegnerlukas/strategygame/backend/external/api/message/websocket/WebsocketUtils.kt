@@ -4,6 +4,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.MessageMetadata
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Json
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.ApplicationCallPipeline
@@ -17,6 +18,7 @@ import io.ktor.server.routing.RoutingResolveContext
 import io.ktor.util.pipeline.PipelineContext
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
+import org.slf4j.event.LoggingEvent
 
 
 object WebsocketUtils {

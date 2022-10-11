@@ -1,7 +1,13 @@
+import {BuildingType} from "./buildingType";
+
 export interface Command {
-    commandType: "place-marker"  | "place-scout" | "create-city";
+    commandType: "place-marker"  | "place-scout" | "create-city" | "create-building";
     cost: {
-        money: number
+        money: number,
+        wood: number,
+        food: number,
+        stone: number,
+        metal: number
     }
 }
 
@@ -23,4 +29,10 @@ export interface CommandCreateCity extends Command {
     q: number,
     r: number,
     parentCity: string | null
+}
+
+export interface CommandCreateBuilding extends Command {
+    commandType: "create-building"
+    cityId: string,
+    buildingType: BuildingType
 }

@@ -58,7 +58,7 @@ class CreateTownCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn - gameCfg().townCost * 2
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn - gameCfg().townCostMoney * 2
             }
         }
     }
@@ -96,7 +96,7 @@ class CreateTownCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
             }
         }
     }
@@ -115,7 +115,7 @@ class CreateTownCommandResolutionTest : StringSpec({
                 }
             }
             endTurn()
-            setCountryMoney(getCountryId("user"), gameCfg().townCost - 1f)
+            setCountryMoney(getCountryId("user"), gameCfg().townCostMoney - 1f)
             resolveCommands {
                 createTown(getCountryId("user")) {
                     q = 2
@@ -135,7 +135,7 @@ class CreateTownCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().townCost - 1f
+                amount = gameCfg().townCostMoney - 1f
             }
         }
     }
@@ -174,7 +174,7 @@ class CreateTownCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
             }
         }
     }
@@ -212,7 +212,7 @@ class CreateTownCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
             }
         }
     }
@@ -261,7 +261,7 @@ class CreateTownCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost * 2 + gameCfg().cityIncomePerTurn * 2
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney * 2 + gameCfg().cityIncomePerTurn * 2
             }
         }
     }

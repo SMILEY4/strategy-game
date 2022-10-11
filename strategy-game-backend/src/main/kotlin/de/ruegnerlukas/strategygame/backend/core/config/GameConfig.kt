@@ -28,11 +28,27 @@ data class GameConfig(
     /**
      * the amount of money a town costs to build
      */
-    val townCost: Float = 25f,
+    val townCostMoney: Float = 25f,
     /**
      * the amount of money a city costs to build
      */
-    val cityCost: Float = 50f,
+    val cityCostMoney: Float = 50f,
+    /**
+     * the amount of wood a building in a city costs to build
+     */
+    val buildingCostWood: Float = 100f,
+    /**
+     * the amount of stone a building in a city costs to build
+     */
+    val buildingCostStone: Float = 50f,
+    /**
+     * The max amount of buildings in a town
+     */
+    val townBuildingSlots: Int = 6,
+    /**
+     * The max amount of buildings in a city
+     */
+    val cityBuildingSlots: Int = 6,
     /**
      * the max amount of influence another country can have on a tile to still be able to build the city
      */

@@ -27,7 +27,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
             }
         }
     }
@@ -69,7 +69,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost * 2 + gameCfg().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney * 2 + gameCfg().cityIncomePerTurn
             }
         }
     }
@@ -109,11 +109,11 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
             }
             expectCountryMoney {
                 countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
             }
         }
     }
@@ -168,7 +168,7 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            setCountryMoney(getCountryId("user"), gameCfg().cityCost - 1f)
+            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney - 1f)
             resolveCommands {
                 createCity(getCountryId("user")) {
                     q = 0
@@ -180,7 +180,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             expectNoCities()
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().cityCost - 1f
+                amount = gameCfg().cityCostMoney - 1f
             }
         }
     }
@@ -191,7 +191,7 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            setCountryMoney(getCountryId("user"), gameCfg().cityCost + 1f)
+            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney + 1f)
             resolveCommands {
                 createCity(getCountryId("user")) {
                     q = 10
@@ -251,7 +251,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
             }
         }
     }
@@ -289,7 +289,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
             }
             expectCountryMoney {
                 countryId = getCountryId("user-2")
@@ -331,7 +331,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCost + gameCfg().cityIncomePerTurn
+                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
             }
             expectCountryMoney {
                 countryId = getCountryId("user-2")

@@ -5,6 +5,7 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.CreateBuildingValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
@@ -23,7 +24,9 @@ import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
-class ResolveCreateBuildingCommandImpl : ResolveCreateBuildingCommand, Logging {
+class ResolveCreateBuildingCommandImpl(
+    private val gameConfig: GameConfig
+) : ResolveCreateBuildingCommand, Logging {
 
     override suspend fun perform(
         command: CommandEntity<CreateBuildingCommandDataEntity>,
@@ -33,7 +36,7 @@ class ResolveCreateBuildingCommandImpl : ResolveCreateBuildingCommand, Logging {
         return either {
             val city = findCity(command.data.cityId, game).bind()
             val country = findCountry(city.countryId, game).bind()
-            validateCommand(command.countryId, city, country).ifInvalid<Unit> { reasons ->
+            validateCommand(command.countryId, city, country, gameConfig).ifInvalid<Unit> { reasons ->
                 return@either reasons.map { CommandResolutionError(command, it) }
             }
             createBuilding(game, city, command.data.buildingType)
@@ -76,7 +79,7 @@ class ResolveCreateBuildingCommandImpl : ResolveCreateBuildingCommand, Logging {
     }
 
 
-    private fun decideTargetTile(game: GameExtendedEntity, city: CityEntity, buildingType: BuildingType): TileRef {
+    private fun decideTargetTile(game: GameExtendedEntity, city: CityEntity, buildingType: BuildingType): TileRef? {
         return positionsCircle(city.tile, 1)
             .asSequence()
             .filter { it.q != city.tile.q && it.r != city.tile.r }
@@ -92,14 +95,14 @@ class ResolveCreateBuildingCommandImpl : ResolveCreateBuildingCommand, Logging {
                 }
             }
             .toList()
-            .random()
-            .let { TileRef(it.getKeyOrThrow(), it.position.q, it.position.r) }
+            .randomOrNull()
+            ?.let { TileRef(it.getKeyOrThrow(), it.position.q, it.position.r) }
     }
 
 
     private fun updateCountryResources(country: CountryEntity) {
-        country.resources.wood -= 100
-        country.resources.stone -= 50
+        country.resources.wood -= gameConfig.buildingCostWood
+        country.resources.stone -= gameConfig.buildingCostStone
     }
 
 }
@@ -111,11 +114,12 @@ private object CreateBuildingValidations {
         countryId: String,
         city: CityEntity,
         country: CountryEntity,
+        gameConfig: GameConfig
     ): ValidationContext {
         return validations(false) {
             validCityOwner(city, countryId)
-            validCitySpace(city)
-            validResources(country)
+            validCitySpace(gameConfig, city)
+            validResources(gameConfig, country)
         }
     }
 
@@ -125,20 +129,20 @@ private object CreateBuildingValidations {
         }
     }
 
-    fun ValidationContext.validCitySpace(city: CityEntity) {
+    fun ValidationContext.validCitySpace(gameConfig: GameConfig, city: CityEntity) {
         validate("BUILDING.CITY_SPACE") {
             if (city.city) {
-                6 - city.buildings.size > 0
+                (gameConfig.cityBuildingSlots - city.buildings.size) > 0
             } else {
-                3 - city.buildings.size > 0
+                (gameConfig.townBuildingSlots - city.buildings.size) > 0
             }
         }
     }
 
-    fun ValidationContext.validResources(country: CountryEntity) {
+    fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
         validate("BUILDING.RESOURCES") {
-            country.resources.wood >= 100
-            country.resources.stone >= 50
+            country.resources.wood >= gameConfig.buildingCostWood
+            country.resources.stone >= gameConfig.buildingCostStone
         }
     }
 

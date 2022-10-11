@@ -1,6 +1,10 @@
 export interface GameConfig {
-    townCost: number,
-    cityCost: number,
+    townCostMoney: number,
+    cityCostMoney: number,
+    buildingCostWood: number,
+    buildingCostStone: number,
+    townBuildingSlots: number,
+    cityBuildingSlots: number,
     cityTileMaxForeignInfluence: number,
     cityIncomePerTurn: number,
     cityInfluenceAmount: number,

@@ -24,7 +24,7 @@ export function useValidateCreateCity(pos: TilePosition | null): boolean {
                 return !cities.find(c => c.tile.tileId === tile.tileId);
             });
             ctx.validate("CITY.RESOURCES", () => {
-                return currentAmountMoney >= gameConfig.cityCost;
+                return currentAmountMoney >= gameConfig.cityCostMoney;
             });
             ctx.validate("CITY.TARGET_TILE_OWNER", () => {
                 return tile.dataTier1?.owner == null || tile.dataTier1.owner.countryId == country.countryId;

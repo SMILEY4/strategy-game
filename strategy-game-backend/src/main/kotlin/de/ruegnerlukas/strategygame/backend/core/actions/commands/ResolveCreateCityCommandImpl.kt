@@ -10,7 +10,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
@@ -85,7 +84,7 @@ class ResolveCreateCityCommandImpl(
 
 
     private fun updateCountryResources(country: CountryEntity) {
-        country.resources.money -= gameConfig.cityCost
+        country.resources.money -= gameConfig.cityCostMoney
     }
 
 }
@@ -130,7 +129,7 @@ private object CreateCityValidations {
 
     fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
         validate("CITY.RESOURCES") {
-            country.resources.money >= gameConfig.cityCost
+            country.resources.money >= gameConfig.cityCostMoney
         }
     }
 

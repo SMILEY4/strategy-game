@@ -3,6 +3,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.BuildingType
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 @JsonSubTypes(
     JsonSubTypes.Type(value = PlaceMarkerCommand::class),
     JsonSubTypes.Type(value = CreateCityCommand::class),
+    JsonSubTypes.Type(value = CreateBuildingCommand::class),
     JsonSubTypes.Type(value = PlaceScoutCommand::class),
 )
 sealed class PlayerCommand(
@@ -39,6 +41,16 @@ class CreateCityCommand(
 ) : PlayerCommand(TYPE) {
     companion object {
         internal const val TYPE = "create-city"
+    }
+}
+
+@JsonTypeName(CreateBuildingCommand.TYPE)
+class CreateBuildingCommand(
+    val cityId: String,
+    val buildingType: BuildingType,
+) : PlayerCommand(TYPE) {
+    companion object {
+        internal const val TYPE = "create-building"
     }
 }
 

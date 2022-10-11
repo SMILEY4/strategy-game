@@ -78,7 +78,7 @@ export class TileObjectRenderer {
     public render(camera: Camera, gameState: WorldStore.StateValues, localGameState: GameStore.StateValues) {
 
         const userId = this.userRepository.getUserId();
-        const userCountryId = gameState.countries.find(c => c.userId === userId)?.countryId; // TODO: replace with gameRepo.getUserCountry()
+        const userCountryId = gameState.countries.find(c => c.userId === userId)?.countryId;
 
         this.prepareLabelTexture(gameState.cities, localGameState.commands);
 

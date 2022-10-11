@@ -3,12 +3,16 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateBuildingCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateTownCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
@@ -17,6 +21,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceScoutComm
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.TurnSubmitActionError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
@@ -37,7 +42,7 @@ class TurnSubmitActionImpl(
         return either {
             val game = getGame(gameId)
             val country = getCountry(game, userId)
-            updatePlayerState(game, userId)
+            updatePlayerState(game, userId).bind()
             saveCommands(game, country, commands)
             maybeEndTurn(game)
         }
@@ -65,11 +70,14 @@ class TurnSubmitActionImpl(
     /**
      * Set the state of the given player to "submitted"
      */
-    private suspend fun updatePlayerState(game: GameEntity, userId: String) {
+    private suspend fun updatePlayerState(game: GameEntity, userId: String): Either<TurnSubmitActionError, Unit> {
         val player = game.players.find { it.userId == userId }
         if (player != null) {
             player.state = PlayerEntity.STATE_SUBMITTED
             gameUpdate.execute(game)
+            return Unit.right()
+        } else {
+            return NotParticipantError.left()
         }
     }
 
@@ -96,6 +104,7 @@ class TurnSubmitActionImpl(
                         createCommandCreateTown(game, country, command)
                     }
                 }
+                is CreateBuildingCommand -> createCommandCreateBuilding(game, country, command)
                 is PlaceScoutCommand -> createCommandPlaceScout(game, country, command)
             }
         }
@@ -148,6 +157,21 @@ class TurnSubmitActionImpl(
             )
         )
     }
+
+    /**
+     * create a command-entity from the given [CreateCityCommand]
+     */
+    private fun createCommandCreateBuilding(game: GameEntity, country: CountryEntity, cmd: CreateBuildingCommand): CommandEntity<*> {
+        return CommandEntity(
+            turn = game.turn,
+            countryId = country.getKeyOrThrow(),
+            data = CreateBuildingCommandDataEntity(
+                cityId = cmd.cityId,
+                buildingType = cmd.buildingType
+            )
+        )
+    }
+
 
 
     /**
