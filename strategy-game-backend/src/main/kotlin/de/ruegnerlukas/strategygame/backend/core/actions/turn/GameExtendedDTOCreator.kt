@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier1
@@ -207,7 +208,8 @@ class GameExtendedDTOCreator(
             name = cityEntity.name,
             color = cityEntity.color,
             city = cityEntity.city,
-            parentCity = cityEntity.parentCity
+            parentCity = cityEntity.parentCity,
+            buildings = cityEntity.buildings.map { BuildingDTO(it.type.name, it.tile) }
         )
     }
 

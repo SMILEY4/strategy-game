@@ -1,13 +1,14 @@
 import React, {ReactElement} from "react";
-import {Simulate} from "react-dom/test-utils";
 import {useCityAt} from "../../../../core/hooks/useCityAt";
 import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
 import {useSelectedTilePosition} from "../../../../core/hooks/useSelectedTilePosition";
 import {useTileAt} from "../../../../core/hooks/useTileAt";
+import {useValidateCreateBuilding} from "../../../../core/hooks/useValidateCreateBuilding";
 import {useValidateCreateCity} from "../../../../core/hooks/useValidateCreateCity";
 import {useValidateCreateTown} from "../../../../core/hooks/useValidateCreateTown";
 import {useValidatePlaceScout} from "../../../../core/hooks/useValidatePlaceScout";
 import {AppConfig} from "../../../../main";
+import {BuildingType} from "../../../../models/state/buildingType";
 import {CommandCreateCity} from "../../../../models/state/command";
 import {TilePosition} from "../../../../models/state/tilePosition";
 
@@ -30,7 +31,7 @@ export function MenuSelectedTile(): ReactElement {
 
 
 function SectionTile(props: { selectedTile: TilePosition | null }): ReactElement {
-    const tile = useTileAt(props.selectedTile)
+    const tile = useTileAt(props.selectedTile);
     return (
         <ul>
             {tile && <li>{"q: " + tile.position.q}</li>}
@@ -106,7 +107,10 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
     const city = useCityAt(props.selectedTile);
     const canCreateCity = useValidateCreateCity(props.selectedTile);
     const canCreateTown = useValidateCreateTown(props.selectedTile);
+    const validateCreateBuilding = useValidateCreateBuilding(city)
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
+    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
+
 
     function createCity() {
         if (props.selectedTile) {
@@ -120,18 +124,64 @@ function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement
         }
     }
 
+    function createBuilding(type: BuildingType) {
+        if (city) {
+            actionAddCommand.addCreateBuilding(city.cityId, type);
+        }
+    }
+
     if (props.selectedTile) {
         return (
             <>
                 <h3>City</h3>
+                <button disabled={!canCreateCity} onClick={createCity}>Create City</button>
+                <button disabled={!canCreateTown} onClick={createTown}>Create Town</button>
                 {city && (
                     <ul>
                         <li>{"name: " + city.name}</li>
                         <li>{"country: " + city.countryId}</li>
+                        <li>
+                            <b>Buildings</b>
+                            <ul>
+                                <li>
+                                    {city.buildings.filter(b => b.type === BuildingType.LUMBER_CAMP).length + "x"}
+                                    <button disabled={!validateCreateBuilding(BuildingType.LUMBER_CAMP)}
+                                            onClick={() => createBuilding(BuildingType.LUMBER_CAMP)}>
+                                        Lumber Camp
+                                    </button>
+                                </li>
+                                <li>
+                                    {city.buildings.filter(b => b.type === BuildingType.MINE).length + "x"}
+                                    <button disabled={!validateCreateBuilding(BuildingType.MINE)}
+                                            onClick={() => createBuilding(BuildingType.MINE)}>
+                                        Mine
+                                    </button>
+                                </li>
+                                <li>
+                                    {city.buildings.filter(b => b.type === BuildingType.QUARRY).length + "x"}
+                                    <button disabled={!validateCreateBuilding(BuildingType.QUARRY)}
+                                            onClick={() => createBuilding(BuildingType.QUARRY)}>
+                                        Quarry
+                                    </button>
+                                </li>
+                                <li>
+                                    {city.buildings.filter(b => b.type === BuildingType.HARBOR).length + "x"}
+                                    <button disabled={!validateCreateBuilding(BuildingType.HARBOR)}
+                                            onClick={() => createBuilding(BuildingType.HARBOR)}>
+                                        Harbor
+                                    </button>
+                                </li>
+                                <li>
+                                    {city.buildings.filter(b => b.type === BuildingType.FARM).length + "x"}
+                                    <button disabled={!validateCreateBuilding(BuildingType.FARM)}
+                                            onClick={() => createBuilding(BuildingType.FARM)}>
+                                        Farm
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 )}
-                <button disabled={!canCreateCity} onClick={createCity}>Create City</button>
-                <button disabled={!canCreateTown} onClick={createTown}>Create Town</button>
             </>
         );
     } else {

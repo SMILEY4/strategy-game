@@ -77,13 +77,14 @@ class ResolveCreateCityCommandImpl(
             color = RGBColor.random(),
             city = true,
             parentCity = null,
+            buildings = mutableListOf(),
             key = reservationInsert.reserveCity()
         ).also { game.cities.add(it) }
     }
 
 
     private fun updateCountryResources(country: CountryEntity) {
-        country.resources.money -= gameConfig.cityCost
+        country.resources.money -= gameConfig.cityCostMoney
     }
 
 }
@@ -128,7 +129,7 @@ private object CreateCityValidations {
 
     fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
         validate("CITY.RESOURCES") {
-            country.resources.money >= gameConfig.cityCost
+            country.resources.money >= gameConfig.cityCostMoney
         }
     }
 

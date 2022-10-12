@@ -1,3 +1,4 @@
+import {BuildingType} from "./buildingType";
 import {TileRef} from "./tileRef";
 
 export interface City {
@@ -6,5 +7,9 @@ export interface City {
     countryId: string,
     tile: TileRef,
     isCity: boolean,
-    parentCity: string | null
+    parentCity: string | null,
+    buildings: ({
+        type: BuildingType,
+        tile: TileRef | null
+    })[]
 }

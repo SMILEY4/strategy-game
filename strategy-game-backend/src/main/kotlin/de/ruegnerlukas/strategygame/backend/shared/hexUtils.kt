@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.shared
 
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import kotlin.math.abs
 
 /**
@@ -75,6 +76,14 @@ fun hexDistance(q0: Int, r0: Int, q1: Int, r1: Int): Int {
 /**
  * @return all [TilePosition]s that lie inside the given circle
  */
+fun positionsCircle(center: TileRef, radius: Int): List<TilePosition> {
+    return positionsCircle(center.q, center.r, radius)
+}
+
+
+/**
+ * @return all [TilePosition]s that lie inside the given circle
+ */
 fun positionsCircle(center: TilePosition, radius: Int): List<TilePosition> {
     return positionsCircle(center.q, center.r, radius)
 }
@@ -89,6 +98,14 @@ fun positionsCircle(centerQ: Int, centerR: Int, radius: Int): List<TilePosition>
             add(TilePosition(q, r))
         }
     }
+}
+
+
+/**
+ * iterate over all [TilePosition]s that lie inside the given circle
+ */
+fun positionsCircle(center: TileRef, radius: Int, consumer: (q: Int, r: Int) -> Unit) {
+    return positionsCircle(center.q, center.r, radius, consumer)
 }
 
 

@@ -1,4 +1,4 @@
-import {GameSetStateAction} from "../../core/setGameStateAction";
+import {GameSetStateAction} from "../../core/gameSetStateAction";
 import {PayloadGameState} from "../../models/messaging/payloadGameState";
 
 

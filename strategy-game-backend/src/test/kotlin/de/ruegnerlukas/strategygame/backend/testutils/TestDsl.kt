@@ -3,11 +3,13 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateBuildingCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateTownCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
@@ -259,6 +261,10 @@ class GameTestContext {
                 is PlaceScoutCommandDataEntity -> PlaceScoutCommand(
                     q = (cmd.data as PlaceScoutCommandDataEntity).q,
                     r = (cmd.data as PlaceScoutCommandDataEntity).r,
+                )
+                is CreateBuildingCommandDataEntity -> CreateBuildingCommand(
+                    cityId = (cmd.data as CreateBuildingCommandDataEntity).cityId,
+                    buildingType = (cmd.data as CreateBuildingCommandDataEntity).buildingType,
                 )
             }
         })

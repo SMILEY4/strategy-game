@@ -1,6 +1,7 @@
 import {GameApi} from "../../core/required/gameApi";
 import {UserRepository} from "../../core/required/userRepository";
-import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../models/state/command";
+import {BuildingType} from "../../models/state/buildingType";
+import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../models/state/command";
 import {GameConfig} from "../../models/state/gameConfig";
 import {HttpClient} from "./http/httpClient";
 import {MessageHandler} from "./messageHandler";
@@ -107,6 +108,14 @@ export class GameApiImpl implements GameApi {
                             q: cmdCreateCity.q,
                             r: cmdCreateCity.r,
                             parentCity: cmdCreateCity.parentCity
+                        };
+                    }
+                    if (cmd.commandType === "create-building") {
+                        const cmdCreateBuilding = cmd as CommandCreateBuilding;
+                        return {
+                            type: "create-building",
+                            cityId: cmdCreateBuilding.cityId,
+                            buildingType: cmdCreateBuilding.buildingType
                         };
                     }
                     return undefined;

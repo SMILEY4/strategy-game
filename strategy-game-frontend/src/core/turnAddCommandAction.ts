@@ -1,4 +1,5 @@
-import {Command, CommandCreateCity} from "../models/state/command";
+import {BuildingType} from "../models/state/buildingType";
+import {Command, CommandCreateBuilding, CommandCreateCity} from "../models/state/command";
 import {GameState} from "../models/state/gameState";
 import {TilePosition} from "../models/state/tilePosition";
 import {GameConfigRepository} from "./required/gameConfigRepository";
@@ -28,7 +29,11 @@ export class TurnAddCommandAction {
         this.perform({
             commandType: "place-marker",
             cost: {
-                money: 0
+                money: 0,
+                wood: 0,
+                food: 0,
+                stone: 0,
+                metal: 0
             },
             q: tilePos.q,
             r: tilePos.r
@@ -39,7 +44,11 @@ export class TurnAddCommandAction {
         this.perform({
             commandType: "place-scout",
             cost: {
-                money: 0
+                money: 0,
+                wood: 0,
+                food: 0,
+                stone: 0,
+                metal: 0
             },
             q: tilePos.q,
             r: tilePos.r
@@ -50,7 +59,11 @@ export class TurnAddCommandAction {
         this.perform({
             commandType: "create-city",
             cost: {
-                money: this.gameConfigRepository.getConfig().cityCost
+                money: this.gameConfigRepository.getConfig().cityCostMoney,
+                wood: 0,
+                food: 0,
+                stone: 0,
+                metal: 0
             },
             q: tilePos.q,
             r: tilePos.r,
@@ -58,4 +71,20 @@ export class TurnAddCommandAction {
             parentCity: parentCity
         } as CommandCreateCity);
     }
+
+    addCreateBuilding(cityId: string, buildingType: BuildingType) {
+        this.perform({
+            commandType: "create-building",
+            cost: {
+                money: 0,
+                wood: this.gameConfigRepository.getConfig().buildingCostWood,
+                food: 0,
+                stone: this.gameConfigRepository.getConfig().buildingCostStone,
+                metal: 0
+            },
+            cityId: cityId,
+            buildingType: buildingType
+        } as CommandCreateBuilding);
+    }
+
 }
