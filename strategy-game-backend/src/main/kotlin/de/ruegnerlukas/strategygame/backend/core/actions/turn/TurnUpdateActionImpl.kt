@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.distance
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
@@ -30,24 +30,22 @@ class TurnUpdateActionImpl(
 
 
     private fun updateCountryResources(game: GameExtendedEntity) {
-        game.cities
-            .filter { it.city }
-            .forEach { city ->
-                game.countries.find { it.key == city.countryId }?.let { it.resources.money += gameConfig.cityIncomePerTurn }
-                game.countries.find { it.key == city.countryId }?.let { it.resources.food -= if (city.city) 10 else 5 }
-            }
-        game.tiles.forEach { tile ->
-            tile.owner?.countryId.let { ownerId ->
-                if (tile.data.resourceType != TileResourceType.NONE.name) {
-                    game.countries.find { it.key == ownerId }?.let { country ->
-                        when (tile.data.resourceType) {
-                            TileResourceType.FISH.name -> country.resources.food += 10
-                            TileResourceType.FOREST.name -> country.resources.wood += 10
-                            TileResourceType.STONE.name -> country.resources.stone += 10
-                            TileResourceType.METAL.name -> country.resources.metal += 10
+        game.cities.forEach { city ->
+            val country = game.countries.find { it.key == city.countryId }
+            if (country != null) {
+                country.resources.money += gameConfig.cityIncomePerTurn
+                country.resources.food -= if (city.city) 10 else 5
+                city.buildings
+                    .filter { it.tile != null }
+                    .forEach { building ->
+                        when (building.type) {
+                            BuildingType.LUMBER_CAMP -> country.resources.wood += if (city.city) 10 else 5
+                            BuildingType.MINE -> country.resources.metal += if (city.city) 10 else 5
+                            BuildingType.QUARRY -> country.resources.stone += if (city.city) 10 else 5
+                            BuildingType.HARBOR -> country.resources.food += if (city.city) 10 else 5
+                            BuildingType.FARM -> country.resources.food += if (city.city) 10 else 5
                         }
                     }
-                }
             }
         }
     }
