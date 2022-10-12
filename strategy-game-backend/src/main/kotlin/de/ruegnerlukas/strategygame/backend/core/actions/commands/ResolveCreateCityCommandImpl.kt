@@ -16,12 +16,14 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileOwner
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.max
+import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
@@ -41,7 +43,8 @@ class ResolveCreateCityCommandImpl(
             validateCommand(gameConfig, command.data.name, game, country, targetTile).ifInvalid<Unit> { reasons ->
                 return@either reasons.map { CommandResolutionError(command, it) }
             }
-            createCity(game, country.getKeyOrThrow(), targetTile, command.data.name)
+            val cityId = createCity(game, country.getKeyOrThrow(), targetTile, command.data.name)
+            switchTileCityOwner(game, country.getKeyOrThrow(), cityId, targetTile)
             updateCountryResources(country)
             emptyList()
         }
@@ -68,8 +71,8 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private suspend fun createCity(game: GameExtendedEntity, countryId: String, tile: TileEntity, name: String) {
-        CityEntity(
+    private suspend fun createCity(game: GameExtendedEntity, countryId: String, tile: TileEntity, name: String): String {
+        return CityEntity(
             gameId = tile.gameId,
             countryId = countryId,
             tile = TileRef(tile.getKeyOrThrow(), tile.position.q, tile.position.r),
@@ -79,7 +82,20 @@ class ResolveCreateCityCommandImpl(
             parentCity = null,
             buildings = mutableListOf(),
             key = reservationInsert.reserveCity()
-        ).also { game.cities.add(it) }
+        ).also { game.cities.add(it) }.getKeyOrThrow()
+    }
+
+
+    private fun switchTileCityOwner(game: GameExtendedEntity, countryId: String, cityId: String, targetTile: TileEntity) {
+        positionsCircle(targetTile.position, 1) { q, r ->
+            game.tiles.find { it.position.q == q && it.position.r == r }?.let { tile ->
+                val otherCity = game.cities.find { it.tile.tileId == tile.getKeyOrThrow() }
+                if (tile.owner?.countryId == countryId && !(otherCity != null && otherCity.city)) {
+                    tile.owner = TileOwner(countryId, cityId)
+                    otherCity?.parentCity = cityId
+                }
+            }
+        }
     }
 
 
