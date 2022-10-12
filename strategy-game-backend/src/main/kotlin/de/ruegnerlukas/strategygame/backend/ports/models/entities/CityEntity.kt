@@ -12,7 +12,7 @@ class CityEntity(
     val name: String,
     val color: RGBColor,
     val city: Boolean,
-    val parentCity: String?,
+    var parentCity: String?,
     val buildings: MutableList<Building>,
     key: String? = null,
 ) : DbEntity(key)
