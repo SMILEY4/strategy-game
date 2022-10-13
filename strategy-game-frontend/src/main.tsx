@@ -11,10 +11,15 @@ import {GameUpdateAction} from "./core/gameUpdateAction";
 import {InputClickAction} from "./core/inputClickAction";
 import {InputMouseMoveAction} from "./core/inputMouseMoveAction";
 import {InputMouseScrollAction} from "./core/inputMouseScrollAction";
+import SHADER_SRC_COMMON from "./core/rendering/common/common.glsl?raw";
 import {GameCanvasHandle} from "./core/rendering/gameCanvasHandle";
 import {Renderer} from "./core/rendering/renderer";
+import SHADER_SRC_TILEMAP_FRAG from "./core/rendering/tilemap/mapShader.fsh?raw";
+import SHADER_SRC_TILEMAP_VERT from "./core/rendering/tilemap/mapShader.vsh?raw";
 import {TilemapRenderer} from "./core/rendering/tilemap/tilemapRenderer";
 import {TileObjectRenderer} from "./core/rendering/tileobject/tileObjectRenderer";
+import SHADER_SRC_TILE_OBJECT_FRAG from "./core/rendering/tileobject/tileObjectShader.fsh?raw";
+import SHADER_SRC_TILE_OBJECT_VERT from "./core/rendering/tileobject/tileObjectShader.vsh?raw";
 import {ShaderSourceManager} from "./core/rendering/utils/shaderSourceManager";
 import {GameApi} from "./core/required/gameApi";
 import {GameConfigRepository} from "./core/required/gameConfigRepository";
@@ -40,10 +45,7 @@ import {UIServiceImpl} from "./external/state/ui/uiServiceImpl";
 import {UserRepositoryImpl} from "./external/state/user/userRepositoryImpl";
 import {WorldRepositoryImpl} from "./external/state/world/worldRepositoryImpl";
 import {createDiContainer, qualifier} from "./shared/di";
-import SHADER_SRC_TILEMAP_FRAG from "./core/rendering/tilemap/mapShader.fsh?raw";
-import SHADER_SRC_TILEMAP_VERT from "./core/rendering/tilemap/mapShader.vsh?raw";
-import SHADER_SRC_TILE_OBJECT_FRAG from "./core/rendering/tileobject/tileObjectShader.fsh?raw";
-import SHADER_SRC_TILE_OBJECT_VERT from "./core/rendering/tileobject/tileObjectShader.vsh?raw";
+
 import {App} from "./ui/App";
 import "./ui/index.css";
 
@@ -105,6 +107,7 @@ export namespace AppConfig {
     diContainer.bind(DIQ.MessageHandler, ctx => new MessageHandler(ctx.get(DIQ.GameSetStateAction)));
     diContainer.bind(DIQ.Renderer, ctx => new Renderer(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.ShaderSourceManager), ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.UserRepository)));
     diContainer.bind(DIQ.ShaderSourceManager, ctx => new ShaderSourceManager()
+        .add("common", SHADER_SRC_COMMON)
         .add(TilemapRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILEMAP_VERT)
         .add(TilemapRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILEMAP_FRAG)
         .add(TileObjectRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILE_OBJECT_VERT)
