@@ -7,21 +7,25 @@ import {BaseRenderer} from "../utils/baseRenderer";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
-import SRC_SHADER_FRAGMENT from "./mapShader.fsh?raw";
-import SRC_SHADER_VERTEX from "./mapShader.vsh?raw";
+import {ShaderSourceManager} from "../utils/shaderSourceManager";
 import {TileVertexBuilder} from "./tileVertexBuilder";
 
 export class TilemapRenderer {
 
+    public static readonly SHADER_SRC_KEY_VERTEX = "tilemap.vertex"
+    public static readonly SHADER_SRC_KEY_FRAGMENT = "tilemap.fragment"
+
     private readonly gameCanvas: GameCanvasHandle;
+    private readonly shaderSourceManager: ShaderSourceManager;
     private batchRenderer: BatchRenderer = null as any;
     private shader: ShaderProgram = null as any;
     private baseRenderer: BaseRenderer = null as any;
     private lastRevisionId: String = "";
 
 
-    constructor(gameCanvas: GameCanvasHandle) {
+    constructor(gameCanvas: GameCanvasHandle, shaderSourceManager: ShaderSourceManager) {
         this.gameCanvas = gameCanvas;
+        this.shaderSourceManager = shaderSourceManager;
     }
 
 
@@ -30,8 +34,8 @@ export class TilemapRenderer {
         this.batchRenderer = new BatchRenderer(this.gameCanvas.getGL(), 64000, true);
         this.shader = new ShaderProgram(this.gameCanvas.getGL(), {
             debugName: "tilemap",
-            sourceVertex: SRC_SHADER_VERTEX,
-            sourceFragment: SRC_SHADER_FRAGMENT,
+            sourceVertex: this.shaderSourceManager.resolve(TilemapRenderer.SHADER_SRC_KEY_VERTEX),
+            sourceFragment: this.shaderSourceManager.resolve(TilemapRenderer.SHADER_SRC_KEY_FRAGMENT),
             attributes: [
                 {
                     name: "in_worldPosition",

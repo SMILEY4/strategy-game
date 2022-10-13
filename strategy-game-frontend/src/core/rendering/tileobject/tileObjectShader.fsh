@@ -1,4 +1,5 @@
 #version 300 es
+#line 2
 precision mediump float;
 
 uniform sampler2D u_texture_sprites;

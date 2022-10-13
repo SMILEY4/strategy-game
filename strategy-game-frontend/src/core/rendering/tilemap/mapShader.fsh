@@ -1,4 +1,5 @@
 #version 300 es
+#line 2
 precision mediump float;
 
 uniform vec2 u_tileMouseOver;
@@ -17,53 +18,47 @@ flat in vec3 v_layer_borders_city;
 
 out vec4 outColor;
 
+#pragma useModule(terrainColor)
 
-vec3 calcTerrainColor(float terrainId) {
-    if (terrainId < -0.5) { // -1 -> undiscovered
-        return vec3(0.2);
-    }
-    if (terrainId < 0.5) { // 0 -> water
-        return vec3(1.0/255.0, 96.0/255.0, 154.0/255.0);
-    }
-    if (terrainId < 1.5) { // 1 -> land
-        return vec3(87.0/255.0, 139.0/255.0, 69.0/255.0);
-    }
-    if (terrainId < 2.5) { // 2 -> mountain
-        return vec3(88.0/255.0, 99.0/255.0, 85.0/255.0);
-    }
-    return vec3(0.0);
-}
+#pragma useModule(grayscaleColor)
+
+#pragma useModule(blend)
+
+#pragma useModule(eqFloat)
+#pragma useModule(eqVec2)
+#pragma useModule(isTrueFloat)
+
 
 vec3 calcGrayscaleTerrainColor(float terrainId) {
-    vec3 terrainColor = calcTerrainColor(v_terrainData.x);
-    return (vec3(terrainColor.r+terrainColor.g+terrainColor.b) / 3.0) * 1.75;
+    vec3 terrainColor = terrainColor(v_terrainData.x);
+    return grayscaleColor(terrainColor, 1.75);
 }
 
 
 vec3 calcResourceColor(float resourceId) {
-    if(resourceId < 0.5) { // forest
+    if (eqFloat(resourceId, 0.0)) { // 0 -> forest
         return vec3(21.0 / 255.0, 112.0 / 255.0, 49.0 / 255.0);
     }
-    if(resourceId < 1.5) { // fish
+    if (eqFloat(resourceId, 1.0)) { // 1 -> fish
         return vec3(57.0 / 255.0, 96.0 / 255.0, 204.0 / 255.0);
     }
-    if(resourceId < 2.5) { // stone
+    if (eqFloat(resourceId, 2.0)) { // 2 -> stone
         return vec3(74.0 / 255.0, 74.0 / 255.0, 74.0 / 255.0);
     }
-    if(resourceId < 3.5) { // metal
+    if (eqFloat(resourceId, 3.0)) { // 3 -> metal
         return vec3(150.0 / 255.0, 150.0 / 255.0, 150.0 / 255.0);
     }
     return vec3(0.0);
 }
 
 vec3 applyFogOfWar(vec3 color, float visibilityId) {
-    if (visibilityId < 0.5) { // 0 -> undiscovered
+    if (eqFloat(visibilityId, 0.0)) { // 0 -> undiscovered
         return vec3(0.2);
     }
-    if (visibilityId < 1.5) { // 1 -> discovered
+    if (eqFloat(visibilityId, 1.0)) { // 1 -> discovered
         return mix(color, vec3(0.2), 0.5);
     }
-    if (visibilityId < 2.5) { // 2 -> visible
+    if (eqFloat(visibilityId, 2.0)) { // 2 -> visible
         return color;
     }
     return vec3(0.2);
@@ -71,33 +66,19 @@ vec3 applyFogOfWar(vec3 color, float visibilityId) {
 
 
 bool isMouseOver(vec2 tilePos) {
-    return abs(u_tileMouseOver.x - tilePos.x) < 0.01 && abs(u_tileMouseOver.y - tilePos.y) < 0.01;
+    return eqVec2(u_tileMouseOver, tilePos);
 }
 
 
 bool isSelected(vec2 tilePos) {
-    return abs(u_tileSelected.x - tilePos.x) < 0.01 && abs(u_tileSelected.y - tilePos.y) < 0.01;
-}
-
-
-vec3 blend(vec3 background, vec4 foreground) {
-    return vec3(
-    background.r * (1.0 - foreground.a) + foreground.r * foreground.a,
-    background.g * (1.0 - foreground.a) + foreground.g * foreground.a,
-    background.b * (1.0 - foreground.a) + foreground.b * foreground.a
-    );
-}
-
-
-bool isTrue(float value) {
-    return 0.5 < value && value <  1.5;
+    return eqVec2(u_tileSelected, tilePos);
 }
 
 
 bool isBorder(float distToCenter, float distToCornerA, float distToCornerB, vec3 borderData, float size) {
-    return (isTrue(borderData.x) && distToCenter > (1.0-size))
-    || (isTrue(borderData.y) && distToCornerA < size && distToCenter > (1.0-size))
-    || (isTrue(borderData.z) && distToCornerB < size && distToCenter > (1.0-size));
+    return (isTrueFloat(borderData.x) && distToCenter > (1.0-size))
+    || (isTrueFloat(borderData.y) && distToCornerA < size && distToCenter > (1.0-size))
+    || (isTrueFloat(borderData.z) && distToCornerB < size && distToCenter > (1.0-size));
 }
 
 
@@ -110,7 +91,7 @@ bool isBorder(vec3 cornerData, vec3 borderData, float size) {
 vec3 renderMapModeDefault() {
 
     // base terrain color
-    vec3 color = applyFogOfWar(calcTerrainColor(v_terrainData.x), v_terrainData.z);
+    vec3 color = applyFogOfWar(terrainColor(v_terrainData.x), v_terrainData.z);
 
     // overlay color
     if (v_layer_values_country.r > -0.1) {
@@ -190,7 +171,7 @@ vec3 renderMapModeCities() {
 vec3 renderMapModeTerrain() {
 
     // base terrain color
-    vec3 terrainColor = calcTerrainColor(v_terrainData.x);
+    vec3 terrainColor = terrainColor(v_terrainData.x);
     vec3 color = applyFogOfWar(terrainColor, v_terrainData.z);
 
     // borders
@@ -207,7 +188,7 @@ vec3 renderMapModeTerrain() {
 vec3 renderMapModeResources() {
 
     // base terrain color
-    vec3 terrainColor = blend(calcGrayscaleTerrainColor(v_terrainData.x), vec4(calcTerrainColor(v_terrainData.x).rgb, 0.5));
+    vec3 terrainColor = blend(calcGrayscaleTerrainColor(v_terrainData.x), vec4(terrainColor(v_terrainData.x).rgb, 0.5));
     vec3 color = applyFogOfWar(terrainColor, v_terrainData.z);
 
     // resource color

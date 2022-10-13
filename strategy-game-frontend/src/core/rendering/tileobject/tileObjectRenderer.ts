@@ -9,16 +9,19 @@ import {GameCanvasHandle} from "../gameCanvasHandle";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
+import {ShaderSourceManager} from "../utils/shaderSourceManager";
 import {TextEntryRegion, TextRenderer} from "../utils/textRenderer";
 import Texture from "../utils/texture";
-import SRC_SHADER_FRAGMENT from "./tileObjectShader.fsh?raw";
-import SRC_SHADER_VERTEX from "./tileObjectShader.vsh?raw";
 
 export class TileObjectRenderer {
+
+    public static readonly SHADER_SRC_KEY_VERTEX = "tileObject.vertex"
+    public static readonly SHADER_SRC_KEY_FRAGMENT = "tileObject.fragment"
 
     private readonly COLOR_WHITE: [number, number, number, number] = [1, 1, 1, 1];
 
     private readonly gameCanvas: GameCanvasHandle;
+    private readonly shaderSourceManager: ShaderSourceManager;
     private readonly userRepository: UserRepository;
     private batchRenderer: BatchRenderer = null as any;
     private textRenderer: TextRenderer = null as any;
@@ -26,8 +29,9 @@ export class TileObjectRenderer {
     private textureSprites: Texture = null as any;
 
 
-    constructor(gameCanvas: GameCanvasHandle, userRepository: UserRepository) {
+    constructor(gameCanvas: GameCanvasHandle, shaderSourceManager: ShaderSourceManager, userRepository: UserRepository) {
         this.gameCanvas = gameCanvas;
+        this.shaderSourceManager = shaderSourceManager;
         this.userRepository = userRepository;
     }
 
@@ -35,8 +39,8 @@ export class TileObjectRenderer {
     public initialize() {
         this.shader = new ShaderProgram(this.gameCanvas.getGL(), {
             debugName: "tileContent",
-            sourceVertex: SRC_SHADER_VERTEX,
-            sourceFragment: SRC_SHADER_FRAGMENT,
+            sourceVertex: this.shaderSourceManager.resolve(TileObjectRenderer.SHADER_SRC_KEY_VERTEX),
+            sourceFragment: this.shaderSourceManager.resolve(TileObjectRenderer.SHADER_SRC_KEY_FRAGMENT),
             attributes: [
                 {
                     name: "in_position", // x, y

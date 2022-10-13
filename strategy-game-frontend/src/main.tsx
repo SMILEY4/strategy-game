@@ -11,8 +11,16 @@ import {GameUpdateAction} from "./core/gameUpdateAction";
 import {InputClickAction} from "./core/inputClickAction";
 import {InputMouseMoveAction} from "./core/inputMouseMoveAction";
 import {InputMouseScrollAction} from "./core/inputMouseScrollAction";
+import SHADER_SRC_COMMON from "./core/rendering/common/common.glsl?raw";
 import {GameCanvasHandle} from "./core/rendering/gameCanvasHandle";
 import {Renderer} from "./core/rendering/renderer";
+import SHADER_SRC_TILEMAP_FRAG from "./core/rendering/tilemap/mapShader.fsh?raw";
+import SHADER_SRC_TILEMAP_VERT from "./core/rendering/tilemap/mapShader.vsh?raw";
+import {TilemapRenderer} from "./core/rendering/tilemap/tilemapRenderer";
+import {TileObjectRenderer} from "./core/rendering/tileobject/tileObjectRenderer";
+import SHADER_SRC_TILE_OBJECT_FRAG from "./core/rendering/tileobject/tileObjectShader.fsh?raw";
+import SHADER_SRC_TILE_OBJECT_VERT from "./core/rendering/tileobject/tileObjectShader.vsh?raw";
+import {ShaderSourceManager} from "./core/rendering/utils/shaderSourceManager";
 import {GameApi} from "./core/required/gameApi";
 import {GameConfigRepository} from "./core/required/gameConfigRepository";
 import {GameRepository} from "./core/required/gameRepository";
@@ -37,15 +45,9 @@ import {UIServiceImpl} from "./external/state/ui/uiServiceImpl";
 import {UserRepositoryImpl} from "./external/state/user/userRepositoryImpl";
 import {WorldRepositoryImpl} from "./external/state/world/worldRepositoryImpl";
 import {createDiContainer, qualifier} from "./shared/di";
+
 import {App} from "./ui/App";
 import "./ui/index.css";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-    <App/>
-);
-// !! Strict-Mode tells react to re-render components twice (calls useEffect 2x) in dev-mode !!
-// ==> handle communication with logic outside react-lifecycle with care (or move strict-mode to "page"-level)
-// ==> https://reactjs.org/docs/strict-mode.html
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -71,6 +73,7 @@ export namespace AppConfig {
         InputMouseScrollAction: qualifier<InputMouseScrollAction>("InputMouseScrollAction"),
         MessageHandler: qualifier<MessageHandler>("MessageHandler"),
         Renderer: qualifier<Renderer>("Renderer"),
+        ShaderSourceManager: qualifier<ShaderSourceManager>("ShaderSourceManager"),
         TilePicker: qualifier<TilePicker>("TilePicker"),
         TurnAddCommandAction: qualifier<TurnAddCommandAction>("TurnAddCommandAction"),
         TurnSubmitAction: qualifier<TurnSubmitAction>("TurnSubmitAction"),
@@ -102,7 +105,14 @@ export namespace AppConfig {
     diContainer.bind(DIQ.InputMouseMoveAction, ctx => new InputMouseMoveAction(ctx.get(DIQ.TilePicker), ctx.get(DIQ.GameRepository)));
     diContainer.bind(DIQ.InputMouseScrollAction, ctx => new InputMouseScrollAction(ctx.get(DIQ.GameRepository)));
     diContainer.bind(DIQ.MessageHandler, ctx => new MessageHandler(ctx.get(DIQ.GameSetStateAction)));
-    diContainer.bind(DIQ.Renderer, ctx => new Renderer(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.UserRepository)));
+    diContainer.bind(DIQ.Renderer, ctx => new Renderer(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.ShaderSourceManager), ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.UserRepository)));
+    diContainer.bind(DIQ.ShaderSourceManager, ctx => new ShaderSourceManager()
+        .add("common", SHADER_SRC_COMMON)
+        .add(TilemapRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILEMAP_VERT)
+        .add(TilemapRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILEMAP_FRAG)
+        .add(TileObjectRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILE_OBJECT_VERT)
+        .add(TileObjectRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILE_OBJECT_FRAG)
+    );
     diContainer.bind(DIQ.TilePicker, ctx => new TilePicker(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.GameCanvasHandle)));
     diContainer.bind(DIQ.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameConfigRepository)));
     diContainer.bind(DIQ.TurnSubmitAction, ctx => new TurnSubmitAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameApi)));
@@ -137,5 +147,10 @@ export namespace AppConfig {
             extContext.restoreContext();
         }
     }
+
+    ReactDOM.createRoot(document.getElementById("root")!).render(<App/>);
+// !! Strict-Mode tells react to re-render components twice (calls useEffect 2x) in dev-mode !!
+// ==> Problems with canvas/rendering
+// ==> https://reactjs.org/docs/strict-mode.html
 
 }

@@ -6,6 +6,7 @@ import {GameCanvasHandle} from "./gameCanvasHandle";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {TileObjectRenderer} from "./tileobject/tileObjectRenderer";
 import {Camera} from "./utils/camera";
+import {ShaderSourceManager} from "./utils/shaderSourceManager";
 
 export class Renderer {
 
@@ -15,12 +16,12 @@ export class Renderer {
     private readonly tilemapRenderer: TilemapRenderer;
     private readonly tileObjectRenderer: TileObjectRenderer;
 
-    constructor(canvasHandle: GameCanvasHandle, gameRepository: GameRepository, worldRepository: WorldRepository, userRepository: UserRepository) {
+    constructor(canvasHandle: GameCanvasHandle, shaderSourceManager: ShaderSourceManager, gameRepository: GameRepository, worldRepository: WorldRepository, userRepository: UserRepository) {
         this.canvasHandle = canvasHandle;
         this.gameRepository = gameRepository;
         this.worldRepository = worldRepository;
-        this.tilemapRenderer = new TilemapRenderer(canvasHandle);
-        this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, userRepository);
+        this.tilemapRenderer = new TilemapRenderer(canvasHandle, shaderSourceManager);
+        this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, shaderSourceManager, userRepository);
     }
 
 

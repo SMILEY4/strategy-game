@@ -1,5 +1,5 @@
 import {GLBuffer} from "./glBuffer";
-import {GLErrors} from "./webglErrors";
+import {ShaderProgramBuilder} from "./shaderProgramBuilder";
 
 
 export enum ShaderAttributeType {
@@ -95,10 +95,7 @@ export class ShaderProgram {
         this.gl = gl;
         this.data = data;
         this.data.debugName = this.data.debugName ? this.data.debugName : "noname";
-
-        const shaderVertex = ShaderProgram.createShader(gl, "vertex", this.data.sourceVertex);
-        const shaderFragment = ShaderProgram.createShader(gl, "fragment", this.data.sourceFragment);
-        this.programHandle = ShaderProgram.createShaderProgram(gl, shaderVertex, shaderFragment);
+        this.programHandle = ShaderProgramBuilder.build(gl, data);
         this.attributeLocations = ShaderProgram.getAttributeLocations(gl, this.programHandle, this.data.attributes);
         this.uniformLocations = ShaderProgram.getUniformLocations(gl, this.programHandle, this.data.uniforms);
     }
@@ -198,6 +195,7 @@ export class ShaderProgram {
         return value;
     }
 
+
     private setUniformValue(uniform: ShaderUniformData, values: number[]) {
         const location = this.uniformLocations.get(uniform.name);
         if (location === null || location === undefined) {
@@ -276,46 +274,6 @@ export class ShaderProgram {
     }
 
 
-    private static createShader(gl: WebGL2RenderingContext, type: "vertex" | "fragment", source: string): WebGLShader {
-        // create a new shader handle
-        const shader = gl.createShader(type === "vertex" ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
-        if (!shader) {
-            throw new Error("Could not create " + type + " shader");
-        }
-        // upload and compile shader-source
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-        // check status if successful
-        if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            return shader;
-        } else {
-            gl.deleteShader(shader);
-            throw new Error("Error during " + type + " shader creation: " + GLErrors.glErrorToString(gl.getError()) + " - " + gl.getShaderInfoLog(shader));
-        }
-    }
-
-
-    private static createShaderProgram(gl: WebGL2RenderingContext, shaderVertex: WebGLShader, vertexFragment: WebGLShader): WebGLProgram {
-        // create a new program handle
-        const program = gl.createProgram();
-        if (!program) {
-            throw new Error("Could not create shader program");
-        }
-        // attach the vertex and fragment shaders to the created program
-        gl.attachShader(program, shaderVertex);
-        gl.attachShader(program, vertexFragment);
-        // complete shader program creation
-        gl.linkProgram(program);
-        // check status if successful
-        if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            return program;
-        } else {
-            gl.deleteProgram(program);
-            throw new Error("Error during shader program creation: " + GLErrors.glErrorToString(gl.getError()) + " - " + gl.getProgramInfoLog(program));
-        }
-    }
-
-
     private static getAttributeLocations(gl: WebGL2RenderingContext, program: WebGLProgram, attributeData: ShaderAttributeData[]): Map<string, GLint> {
         const locations: Map<string, GLint> = new Map();
         attributeData.forEach(attrib => {
@@ -380,7 +338,6 @@ export class ShaderProgram {
                 return 4;
             case ShaderAttributeType.HALF_FLOAT:
                 return 2;
-
         }
     }
 

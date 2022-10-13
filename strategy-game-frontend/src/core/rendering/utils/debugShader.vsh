@@ -1,4 +1,5 @@
 #version 300 es
+#line 2
 
 uniform mat3 u_viewProjection;
 
