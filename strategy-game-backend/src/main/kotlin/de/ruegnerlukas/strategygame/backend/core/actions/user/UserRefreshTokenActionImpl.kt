@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.core.actions.user
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 

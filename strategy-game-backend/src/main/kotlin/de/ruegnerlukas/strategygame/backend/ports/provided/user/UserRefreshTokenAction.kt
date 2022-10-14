@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.user
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
 
 interface UserRefreshTokenAction {
 

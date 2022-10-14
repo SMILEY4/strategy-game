@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateUserData
+import de.ruegnerlukas.strategygame.backend.ports.models.LoginData
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction

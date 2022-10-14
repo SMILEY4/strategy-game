@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.core.world
 
-import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
@@ -41,17 +40,17 @@ class WorldBuilder {
 
     private var random = Random(0)
 
-    fun buildTiles(settings: WorldSettings): List<Tile> {
+    fun buildTiles(settings: WorldSettings): List<WorldTile> {
         noise.SetSeed(settings.seed)
         random = Random(settings.seed)
         val tilePositions = TilemapPositionsBuilder().createHexagon(settings.size)
         return tilePositions.map { buildTileAt(it, settings) }
     }
 
-    private fun buildTileAt(position: TilePosition, settings: WorldSettings): Tile {
+    private fun buildTileAt(position: TilePosition, settings: WorldSettings): WorldTile {
         val height = noise.GetNoise(position.q.toFloat(), position.r.toFloat())
         val terrainType = settings.singleTileType ?: tileTypeAt(height)
-        return Tile(
+        return WorldTile(
             q = position.q,
             r = position.r,
             type = terrainType,

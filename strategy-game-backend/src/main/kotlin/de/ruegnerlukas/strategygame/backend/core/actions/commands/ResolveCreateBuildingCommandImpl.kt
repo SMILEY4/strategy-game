@@ -6,17 +6,17 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.CreateBuildingValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.ports.models.Building
+import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.Building
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateBuildingCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.City
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -29,8 +29,8 @@ class ResolveCreateBuildingCommandImpl(
 ) : ResolveCreateBuildingCommand, Logging {
 
     override suspend fun perform(
-        command: CommandEntity<CreateBuildingCommandDataEntity>,
-        game: GameExtendedEntity
+        command: Command<CreateBuildingCommandData>,
+        game: GameExtended
     ): Either<ResolveCommandsAction.ResolveCommandsActionError, List<CommandResolutionError>> {
         log().info("Resolving '${command.data.type}'-command for game ${game.game.key} and country ${command.countryId}")
         return either {
@@ -46,7 +46,7 @@ class ResolveCreateBuildingCommandImpl(
     }
 
 
-    private fun findCity(cityId: String, state: GameExtendedEntity): Either<ResolveCommandsAction.ResolveCommandsActionError, CityEntity> {
+    private fun findCity(cityId: String, state: GameExtended): Either<ResolveCommandsAction.ResolveCommandsActionError, City> {
         val city = state.cities.find { it.getKeyOrThrow() == cityId }
         if (city == null) {
             return ResolveCommandsAction.CityNotFoundError.left()
@@ -58,8 +58,8 @@ class ResolveCreateBuildingCommandImpl(
 
     private fun findCountry(
         countryId: String,
-        state: GameExtendedEntity
-    ): Either<ResolveCommandsAction.ResolveCommandsActionError, CountryEntity> {
+        state: GameExtended
+    ): Either<ResolveCommandsAction.ResolveCommandsActionError, Country> {
         val country = state.countries.find { it.key == countryId }
         if (country == null) {
             return ResolveCommandsAction.CountryNotFoundError.left()
@@ -69,7 +69,7 @@ class ResolveCreateBuildingCommandImpl(
     }
 
 
-    private fun createBuilding(game: GameExtendedEntity, city: CityEntity, buildingType: BuildingType) {
+    private fun createBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
         city.buildings.add(
             Building(
                 type = buildingType,
@@ -79,7 +79,7 @@ class ResolveCreateBuildingCommandImpl(
     }
 
 
-    private fun decideTargetTile(game: GameExtendedEntity, city: CityEntity, buildingType: BuildingType): TileRef? {
+    private fun decideTargetTile(game: GameExtended, city: City, buildingType: BuildingType): TileRef? {
         return positionsCircle(city.tile, 1)
             .asSequence()
             .filter { it.q != city.tile.q && it.r != city.tile.r }
@@ -100,7 +100,7 @@ class ResolveCreateBuildingCommandImpl(
     }
 
 
-    private fun updateCountryResources(country: CountryEntity) {
+    private fun updateCountryResources(country: Country) {
         country.resources.wood -= gameConfig.buildingCostWood
         country.resources.stone -= gameConfig.buildingCostStone
     }
@@ -112,8 +112,8 @@ private object CreateBuildingValidations {
 
     fun validateCommand(
         countryId: String,
-        city: CityEntity,
-        country: CountryEntity,
+        city: City,
+        country: Country,
         gameConfig: GameConfig
     ): ValidationContext {
         return validations(false) {
@@ -123,13 +123,13 @@ private object CreateBuildingValidations {
         }
     }
 
-    fun ValidationContext.validCityOwner(city: CityEntity, countryId: String) {
+    fun ValidationContext.validCityOwner(city: City, countryId: String) {
         validate("BUILDING.CITY_OWNER") {
             city.countryId == countryId
         }
     }
 
-    fun ValidationContext.validCitySpace(gameConfig: GameConfig, city: CityEntity) {
+    fun ValidationContext.validCitySpace(gameConfig: GameConfig, city: City) {
         validate("BUILDING.CITY_SPACE") {
             if (city.city) {
                 (gameConfig.cityBuildingSlots - city.buildings.size) > 0
@@ -139,7 +139,7 @@ private object CreateBuildingValidations {
         }
     }
 
-    fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
+    fun ValidationContext.validResources(gameConfig: GameConfig, country: Country) {
         validate("BUILDING.RESOURCES") {
             country.resources.wood >= gameConfig.buildingCostWood
             country.resources.stone >= gameConfig.buildingCostStone

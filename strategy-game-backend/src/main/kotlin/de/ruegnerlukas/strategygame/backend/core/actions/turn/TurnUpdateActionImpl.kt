@@ -1,16 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.ports.models.distance
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileInfluence
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileOwner
+import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.ports.models.City
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.TileInfluence
+import de.ruegnerlukas.strategygame.backend.ports.models.TileOwner
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
+import de.ruegnerlukas.strategygame.backend.shared.distance
 import de.ruegnerlukas.strategygame.backend.shared.max
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import kotlin.math.max
@@ -19,7 +19,7 @@ class TurnUpdateActionImpl(
     private val gameConfig: GameConfig
 ) : TurnUpdateAction {
 
-    override fun perform(game: GameExtendedEntity) {
+    override fun perform(game: GameExtended) {
         updateCountryResources(game)
         updateTileInfluences(game)
         updateTileOwner(game)
@@ -29,7 +29,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateCountryResources(game: GameExtendedEntity) {
+    private fun updateCountryResources(game: GameExtended) {
         game.cities.forEach { city ->
             val country = game.countries.find { it.key == city.countryId }
             if (country != null) {
@@ -51,14 +51,14 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateTileInfluences(game: GameExtendedEntity) {
+    private fun updateTileInfluences(game: GameExtended) {
         game.tiles.forEach { tile ->
             updateTileInfluences(game, tile)
         }
     }
 
 
-    private fun updateTileInfluences(game: GameExtendedEntity, tile: TileEntity) {
+    private fun updateTileInfluences(game: GameExtended, tile: Tile) {
         tile.influences.clear()
         game.cities.forEach { city ->
             updateTileInfluences(tile, city)
@@ -66,7 +66,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateTileInfluences(tile: TileEntity, city: CityEntity) {
+    private fun updateTileInfluences(tile: Tile, city: City) {
         val cityInfluence = if (city.city) {
             calcInfluence(tile.position.distance(city.tile), gameConfig.cityInfluenceSpread, gameConfig.cityInfluenceAmount)
         } else {
@@ -78,7 +78,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun addTileInfluence(tile: TileEntity, city: CityEntity, influenceValue: Double) {
+    private fun addTileInfluence(tile: Tile, city: City, influenceValue: Double) {
         tile.influences.add(
             TileInfluence(
                 countryId = city.countryId,
@@ -94,7 +94,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateTileOwner(game: GameExtendedEntity) {
+    private fun updateTileOwner(game: GameExtended) {
         game.tiles.filter { it.owner == null }.forEach { tile ->
             val maxInfluence = tile.influences.max { it.amount }
             if (maxInfluence != null && maxInfluence.amount >= gameConfig.tileOwnerInfluenceThreshold) {
@@ -107,7 +107,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateDiscoveredTilesByInfluence(game: GameExtendedEntity) {
+    private fun updateDiscoveredTilesByInfluence(game: GameExtended) {
         game.tiles.forEach { tile ->
             game.countries
                 .filter { !hasDiscovered(it.getKeyOrThrow(), tile) }
@@ -120,7 +120,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateDiscoveredTilesByScout(game: GameExtendedEntity) {
+    private fun updateDiscoveredTilesByScout(game: GameExtended) {
         game.tiles
             .asSequence()
             .filter { tile -> tile.content.any { it.type == ScoutTileContent.TYPE } }
@@ -139,7 +139,7 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun updateTileContent(game: GameExtendedEntity) {
+    private fun updateTileContent(game: GameExtended) {
         game.tiles
             .asSequence()
             .filter { tile -> tile.content.isNotEmpty() }
@@ -164,9 +164,9 @@ class TurnUpdateActionImpl(
     }
 
 
-    private fun hasDiscovered(countryId: String, tile: TileEntity) = tile.discoveredByCountries.contains(countryId)
+    private fun hasDiscovered(countryId: String, tile: Tile) = tile.discoveredByCountries.contains(countryId)
 
 
-    private fun hasInfluence(countryId: String, tile: TileEntity) = tile.influences.any { it.countryId == countryId }
+    private fun hasInfluence(countryId: String, tile: Tile) = tile.influences.any { it.countryId == countryId }
 
 }

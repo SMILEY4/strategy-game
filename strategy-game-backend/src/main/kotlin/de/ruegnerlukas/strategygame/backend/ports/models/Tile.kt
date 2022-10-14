@@ -1,23 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.ports.models
 
-
-enum class TileType {
-    LAND,
-    WATER,
-    MOUNTAIN,
-}
-
-enum class TileResourceType {
-    NONE,
-    FOREST,
-    FISH,
-    STONE,
-    METAL
-}
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 
 data class Tile(
-    val q: Int,
-    val r: Int,
-    val type: TileType,
-	val resource: TileResourceType
-)
+    var gameId: String,
+    val position: TilePosition,
+    val data: TileData,
+    val influences: MutableList<TileInfluence>,
+    var owner: TileOwner?,
+    val discoveredByCountries: MutableList<String>,
+    val content: MutableList<TileContent>
+) : DbEntity()

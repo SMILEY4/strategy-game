@@ -2,13 +2,13 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : TilesQueryByGameAndPosition {
 
-    override suspend fun execute(gameId: String, positions: List<TilePosition>): List<TileEntity> {
+    override suspend fun execute(gameId: String, positions: List<TilePosition>): List<Tile> {
         database.assertCollections(Collections.TILES)
         return database.query(
             """
@@ -18,7 +18,7 @@ class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : Ti
                     RETURN tile
 			""".trimIndent(),
             mapOf("gameId" to gameId),
-            TileEntity::class.java
+            Tile::class.java
         )
     }
 

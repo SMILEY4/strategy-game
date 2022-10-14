@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models.entities
+package de.ruegnerlukas.strategygame.backend.ports.models
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 
 
-class CommandEntity<T : CommandDataEntity>(
+class Command<T : CommandData>(
     val countryId: String,
     val turn: Int,
     val data: T
@@ -19,69 +19,69 @@ class CommandEntity<T : CommandDataEntity>(
     property = "type"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = CreateCityCommandDataEntity::class),
-    JsonSubTypes.Type(value = CreateTownCommandDataEntity::class),
-    JsonSubTypes.Type(value = CreateBuildingCommandDataEntity::class),
-    JsonSubTypes.Type(value = PlaceMarkerCommandDataEntity::class),
-    JsonSubTypes.Type(value = PlaceScoutCommandDataEntity::class),
+    JsonSubTypes.Type(value = CreateCityCommandData::class),
+    JsonSubTypes.Type(value = CreateTownCommandData::class),
+    JsonSubTypes.Type(value = CreateBuildingCommandData::class),
+    JsonSubTypes.Type(value = PlaceMarkerCommandData::class),
+    JsonSubTypes.Type(value = PlaceScoutCommandData::class),
 )
-sealed class CommandDataEntity(
+sealed class CommandData(
     val type: String
 )
 
 
-@JsonTypeName(CreateCityCommandDataEntity.TYPE)
-class CreateCityCommandDataEntity(
+@JsonTypeName(CreateCityCommandData.TYPE)
+class CreateCityCommandData(
     val q: Int,
     val r: Int,
     val name: String,
-) : CommandDataEntity(TYPE) {
+) : CommandData(TYPE) {
     companion object {
         internal const val TYPE = "create-city"
     }
 }
 
 
-@JsonTypeName(CreateTownCommandDataEntity.TYPE)
-class CreateTownCommandDataEntity(
+@JsonTypeName(CreateTownCommandData.TYPE)
+class CreateTownCommandData(
     val q: Int,
     val r: Int,
     val name: String,
     val parentCity: String
-) : CommandDataEntity(TYPE) {
+) : CommandData(TYPE) {
     companion object {
         internal const val TYPE = "create-town"
     }
 }
 
 
-@JsonTypeName(CreateBuildingCommandDataEntity.TYPE)
-class CreateBuildingCommandDataEntity(
+@JsonTypeName(CreateBuildingCommandData.TYPE)
+class CreateBuildingCommandData(
     val cityId: String,
     val buildingType: BuildingType,
-) : CommandDataEntity(TYPE) {
+) : CommandData(TYPE) {
     companion object {
         internal const val TYPE = "create-building"
     }
 }
 
 
-@JsonTypeName(PlaceMarkerCommandDataEntity.TYPE)
-class PlaceMarkerCommandDataEntity(
+@JsonTypeName(PlaceMarkerCommandData.TYPE)
+class PlaceMarkerCommandData(
     val q: Int,
     val r: Int
-) : CommandDataEntity(TYPE) {
+) : CommandData(TYPE) {
     companion object {
         internal const val TYPE = "place-marker"
     }
 }
 
 
-@JsonTypeName(PlaceScoutCommandDataEntity.TYPE)
-class PlaceScoutCommandDataEntity(
+@JsonTypeName(PlaceScoutCommandData.TYPE)
+class PlaceScoutCommandData(
     val q: Int,
     val r: Int
-) : CommandDataEntity(TYPE) {
+) : CommandData(TYPE) {
     companion object {
         internal const val TYPE = "place-scout"
     }

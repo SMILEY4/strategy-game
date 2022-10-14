@@ -6,11 +6,11 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceMarkerValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
@@ -21,8 +21,8 @@ import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
 
     override suspend fun perform(
-        command: CommandEntity<PlaceMarkerCommandDataEntity>,
-        game: GameExtendedEntity
+        command: Command<PlaceMarkerCommandData>,
+        game: GameExtended
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
         log().info("Resolving 'place-marker'-command for game ${game.game.key} and country ${command.countryId}")
         return either {
@@ -36,7 +36,7 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
     }
 
 
-    private fun findTile(q: Int, r: Int, state: GameExtendedEntity): Either<ResolveCommandsActionError, TileEntity> {
+    private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
         if (targetTile == null) {
             return ResolveCommandsAction.TileNotFoundError.left()
@@ -46,7 +46,7 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
     }
 
 
-    private fun addMarker(tile: TileEntity, countryId: String) {
+    private fun addMarker(tile: Tile, countryId: String) {
         tile.content.add(MarkerTileContent(countryId))
     }
 
@@ -55,13 +55,13 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
 
 private object PlaceMarkerValidations {
 
-    fun validateCommand(targetTile: TileEntity): ValidationContext {
+    fun validateCommand(targetTile: Tile): ValidationContext {
         return validations(false) {
             validTileSpace(targetTile)
         }
     }
 
-    fun ValidationContext.validTileSpace(tile: TileEntity) {
+    fun ValidationContext.validTileSpace(tile: Tile) {
         validate("MARKER.TILE_SPACE") {
             tile.content.none { it.type == MarkerTileContent.TYPE }
         }

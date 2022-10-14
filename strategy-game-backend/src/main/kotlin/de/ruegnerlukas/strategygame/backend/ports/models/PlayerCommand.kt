@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.ports.models
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.BuildingType
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -43,6 +42,7 @@ class CreateCityCommand(
         internal const val TYPE = "create-city"
     }
 }
+
 
 @JsonTypeName(CreateBuildingCommand.TYPE)
 class CreateBuildingCommand(

@@ -10,15 +10,15 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateBuildingCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateTownCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceScoutCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateTownCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
@@ -52,7 +52,7 @@ class TurnSubmitActionImpl(
     /**
      * Fetch the game with the given id. Since we already found a player, we can assume the game exists
      */
-    private suspend fun getGame(gameId: String): GameEntity {
+    private suspend fun getGame(gameId: String): Game {
         return gameQuery.execute(gameId)
             .getOrElse { throw Exception("Could not get game $gameId") }
     }
@@ -61,7 +61,7 @@ class TurnSubmitActionImpl(
     /**
      * Fetch the country for the given user and game
      */
-    private suspend fun getCountry(game: GameEntity, userId: String): CountryEntity {
+    private suspend fun getCountry(game: Game, userId: String): Country {
         return countryByGameAndUserQuery.execute(game.getKeyOrThrow(), userId)
             .getOrElse { throw Exception("Country for user $userId in game ${game.key} not found.") }
     }
@@ -70,10 +70,10 @@ class TurnSubmitActionImpl(
     /**
      * Set the state of the given player to "submitted"
      */
-    private suspend fun updatePlayerState(game: GameEntity, userId: String): Either<TurnSubmitActionError, Unit> {
+    private suspend fun updatePlayerState(game: Game, userId: String): Either<TurnSubmitActionError, Unit> {
         val player = game.players.find { it.userId == userId }
         if (player != null) {
-            player.state = PlayerEntity.STATE_SUBMITTED
+            player.state = Player.STATE_SUBMITTED
             gameUpdate.execute(game)
             return Unit.right()
         } else {
@@ -85,7 +85,7 @@ class TurnSubmitActionImpl(
     /**
      * save the given commands at the given game
      */
-    private suspend fun saveCommands(game: GameEntity, country: CountryEntity, commands: List<PlayerCommand>) {
+    private suspend fun saveCommands(game: Game, country: Country, commands: List<PlayerCommand>) {
         commandsInsert.execute(createCommands(game, country, commands))
     }
 
@@ -93,7 +93,7 @@ class TurnSubmitActionImpl(
     /**
      * create the command-entities from the given [PlayerCommand]s
      */
-    private fun createCommands(game: GameEntity, country: CountryEntity, commands: List<PlayerCommand>): List<CommandEntity<*>> {
+    private fun createCommands(game: Game, country: Country, commands: List<PlayerCommand>): List<Command<*>> {
         return commands.map { command ->
             when (command) {
                 is PlaceMarkerCommand -> createCommandPlaceMarker(game, country, command)
@@ -114,11 +114,11 @@ class TurnSubmitActionImpl(
     /**
      * create a command-entity from the given [PlaceMarkerCommand]
      */
-    private fun createCommandPlaceMarker(game: GameEntity, country: CountryEntity, cmd: PlaceMarkerCommand): CommandEntity<*> {
-        return CommandEntity(
+    private fun createCommandPlaceMarker(game: Game, country: Country, cmd: PlaceMarkerCommand): Command<*> {
+        return Command(
             turn = game.turn,
             countryId = country.getKeyOrThrow(),
-            data = PlaceMarkerCommandDataEntity(
+            data = PlaceMarkerCommandData(
                 q = cmd.q,
                 r = cmd.r
             )
@@ -129,11 +129,11 @@ class TurnSubmitActionImpl(
     /**
      * create a command-entity from the given [CreateCityCommand]
      */
-    private fun createCommandCreateTown(game: GameEntity, country: CountryEntity, cmd: CreateCityCommand): CommandEntity<*> {
-        return CommandEntity(
+    private fun createCommandCreateTown(game: Game, country: Country, cmd: CreateCityCommand): Command<*> {
+        return Command(
             turn = game.turn,
             countryId = country.getKeyOrThrow(),
-            data = CreateTownCommandDataEntity(
+            data = CreateTownCommandData(
                 q = cmd.q,
                 r = cmd.r,
                 name = cmd.name.trim(),
@@ -146,11 +146,11 @@ class TurnSubmitActionImpl(
     /**
      * create a command-entity from the given [CreateCityCommand]
      */
-    private fun createCommandCreateCity(game: GameEntity, country: CountryEntity, cmd: CreateCityCommand): CommandEntity<*> {
-        return CommandEntity(
+    private fun createCommandCreateCity(game: Game, country: Country, cmd: CreateCityCommand): Command<*> {
+        return Command(
             turn = game.turn,
             countryId = country.getKeyOrThrow(),
-            data = CreateCityCommandDataEntity(
+            data = CreateCityCommandData(
                 q = cmd.q,
                 r = cmd.r,
                 name = cmd.name.trim(),
@@ -161,11 +161,11 @@ class TurnSubmitActionImpl(
     /**
      * create a command-entity from the given [CreateCityCommand]
      */
-    private fun createCommandCreateBuilding(game: GameEntity, country: CountryEntity, cmd: CreateBuildingCommand): CommandEntity<*> {
-        return CommandEntity(
+    private fun createCommandCreateBuilding(game: Game, country: Country, cmd: CreateBuildingCommand): Command<*> {
+        return Command(
             turn = game.turn,
             countryId = country.getKeyOrThrow(),
-            data = CreateBuildingCommandDataEntity(
+            data = CreateBuildingCommandData(
                 cityId = cmd.cityId,
                 buildingType = cmd.buildingType
             )
@@ -177,11 +177,11 @@ class TurnSubmitActionImpl(
     /**
      * create a command-entity from the given [PlaceScoutCommand]
      */
-    private fun createCommandPlaceScout(game: GameEntity, country: CountryEntity, cmd: PlaceScoutCommand): CommandEntity<*> {
-        return CommandEntity(
+    private fun createCommandPlaceScout(game: Game, country: Country, cmd: PlaceScoutCommand): Command<*> {
+        return Command(
             turn = game.turn,
             countryId = country.getKeyOrThrow(),
-            data = PlaceScoutCommandDataEntity(
+            data = PlaceScoutCommandData(
                 q = cmd.q,
                 r = cmd.r
             )
@@ -192,8 +192,8 @@ class TurnSubmitActionImpl(
     /**
      * End turn if all players submitted their commands (none in state "playing")
      */
-    private suspend fun maybeEndTurn(game: GameEntity) {
-        val countPlaying = game.players.count { it.state == PlayerEntity.STATE_PLAYING && it.connectionId != null }
+    private suspend fun maybeEndTurn(game: Game) {
+        val countPlaying = game.players.count { it.state == Player.STATE_PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
             val result = actionEndTurn.perform(game.getKeyOrThrow())
             if (result is Either.Left) {

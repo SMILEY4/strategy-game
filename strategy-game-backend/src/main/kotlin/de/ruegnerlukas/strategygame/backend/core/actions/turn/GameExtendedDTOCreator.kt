@@ -1,6 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.turn
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.ports.models.City
+import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTO
@@ -17,12 +23,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier2
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOOwner
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOVisibility
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 class GameExtendedDTOCreator(
@@ -32,7 +32,7 @@ class GameExtendedDTOCreator(
     private val unknownCountryId = "?"
     private val unknownCityId = "?"
 
-    fun create(userId: String, game: GameExtendedEntity): GameExtendedDTO {
+    fun create(userId: String, game: GameExtended): GameExtendedDTO {
         val playerCountry = game.countries.first { it.userId == userId }
         val knownCountryIds = getKnownCountryIds(playerCountry.getKeyOrThrow(), game.tiles).toSet()
 
@@ -56,7 +56,7 @@ class GameExtendedDTOCreator(
     }
 
 
-    private fun getKnownCountryIds(countryId: String, tiles: List<TileEntity>): List<String> {
+    private fun getKnownCountryIds(countryId: String, tiles: List<Tile>): List<String> {
         return (tiles
             .filter { calculateTileVisibility(countryId, it, tiles) != TileDTOVisibility.UNKNOWN }
             .mapNotNull { tile -> tile.owner?.countryId }
@@ -65,7 +65,7 @@ class GameExtendedDTOCreator(
     }
 
 
-    private fun calculateTileVisibility(countryId: String, tile: TileEntity, tiles: List<TileEntity>): TileDTOVisibility {
+    private fun calculateTileVisibility(countryId: String, tile: Tile, tiles: List<Tile>): TileDTOVisibility {
         if (tile.discoveredByCountries.contains(countryId)) {
 
             val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
@@ -91,15 +91,15 @@ class GameExtendedDTOCreator(
     }
 
 
-    private fun buildTile(countryId: String, tileEntity: TileEntity, knownCountries: Set<String>, tiles: List<TileEntity>): TileDTO {
-        val baseData = buildTileDataTier0(countryId, tileEntity, tiles)
+    private fun buildTile(countryId: String, tile: Tile, knownCountries: Set<String>, tiles: List<Tile>): TileDTO {
+        val baseData = buildTileDataTier0(countryId, tile, tiles)
         var generalData: TileDTODataTier1? = null
         var advancedData: TileDTODataTier2? = null
         if (baseData.visibility == TileDTOVisibility.DISCOVERED || baseData.visibility == TileDTOVisibility.VISIBLE) {
-            generalData = buildTileDataTier1(tileEntity)
+            generalData = buildTileDataTier1(tile)
         }
         if (baseData.visibility == TileDTOVisibility.VISIBLE) {
-            advancedData = buildTileDataTier2(countryId, tileEntity, knownCountries)
+            advancedData = buildTileDataTier2(countryId, tile, knownCountries)
         }
         return TileDTO(
             dataTier0 = baseData,
@@ -108,26 +108,26 @@ class GameExtendedDTOCreator(
         )
     }
 
-    private fun buildTileDataTier0(countryId: String, tileEntity: TileEntity, tiles: List<TileEntity>): TileDTODataTier0 {
+    private fun buildTileDataTier0(countryId: String, tile: Tile, tiles: List<Tile>): TileDTODataTier0 {
         return TileDTODataTier0(
-            tileId = tileEntity.getKeyOrThrow(),
-            position = tileEntity.position,
-            visibility = calculateTileVisibility(countryId, tileEntity, tiles)
+            tileId = tile.getKeyOrThrow(),
+            position = tile.position,
+            visibility = calculateTileVisibility(countryId, tile, tiles)
         )
     }
 
-    private fun buildTileDataTier1(tileEntity: TileEntity): TileDTODataTier1 {
+    private fun buildTileDataTier1(tile: Tile): TileDTODataTier1 {
         return TileDTODataTier1(
-            terrainType = tileEntity.data.terrainType,
-            resourceType = tileEntity.data.resourceType,
-            owner = tileEntity.owner?.let { TileDTOOwner(it.countryId, it.cityId) }
+            terrainType = tile.data.terrainType,
+            resourceType = tile.data.resourceType,
+            owner = tile.owner?.let { TileDTOOwner(it.countryId, it.cityId) }
         )
     }
 
-    private fun buildTileDataTier2(countryId: String, tileEntity: TileEntity, knownCountries: Set<String>): TileDTODataTier2 {
+    private fun buildTileDataTier2(countryId: String, tile: Tile, knownCountries: Set<String>): TileDTODataTier2 {
         return TileDTODataTier2(
-            influences = buildTileInfluences(countryId, tileEntity, knownCountries),
-            content = tileEntity.content.map {
+            influences = buildTileInfluences(countryId, tile, knownCountries),
+            content = tile.content.map {
                 when (it) {
                     is MarkerTileContent -> MarkerTileDTOContent(it.countryId)
                     is ScoutTileContent -> ScoutTileDTOContent(it.countryId, it.turn)
@@ -136,10 +136,10 @@ class GameExtendedDTOCreator(
         )
     }
 
-    private fun buildTileInfluences(countryId: String, tileEntity: TileEntity, knownCountries: Set<String>): List<TileDTOInfluence> {
+    private fun buildTileInfluences(countryId: String, tile: Tile, knownCountries: Set<String>): List<TileDTOInfluence> {
         val influences = mutableListOf<TileDTOInfluence>()
         influences.addAll( // player country
-            tileEntity.influences
+            tile.influences
                 .filter { influence -> influence.countryId == countryId }
                 .map { influence ->
                     TileDTOInfluence(
@@ -150,7 +150,7 @@ class GameExtendedDTOCreator(
                 }
         )
         influences.addAll( // foreign known countries
-            tileEntity.influences
+            tile.influences
                 .filter { influence -> influence.countryId != countryId && knownCountries.contains(influence.countryId) }
                 .map { influence ->
                     TileDTOInfluence(
@@ -163,7 +163,7 @@ class GameExtendedDTOCreator(
         TileDTOInfluence(
             countryId = unknownCountryId,
             cityId = unknownCityId,
-            amount = tileEntity.influences
+            amount = tile.influences
                 .filter { influence -> !knownCountries.contains(influence.countryId) }
                 .sumOf { influence -> influence.amount },
         ).let {
@@ -175,21 +175,21 @@ class GameExtendedDTOCreator(
     }
 
 
-    private fun buildCountry(playerCountryId: String, countryEntity: CountryEntity): CountryDTO {
+    private fun buildCountry(playerCountryId: String, country: Country): CountryDTO {
         val dataTier1 = CountryDTODataTier1(
-            countryId = countryEntity.getKeyOrThrow(),
-            userId = countryEntity.userId,
-            color = countryEntity.color
+            countryId = country.getKeyOrThrow(),
+            userId = country.userId,
+            color = country.color
         )
         var dataTier3: CountryDTODataTier3? = null
-        if (playerCountryId == countryEntity.key) {
+        if (playerCountryId == country.key) {
             dataTier3 = CountryDTODataTier3(
                 resources = CountryDTOResources(
-                    money = countryEntity.resources.money,
-                    wood = countryEntity.resources.wood,
-                    food = countryEntity.resources.food,
-                    stone = countryEntity.resources.stone,
-                    metal = countryEntity.resources.metal,
+                    money = country.resources.money,
+                    wood = country.resources.wood,
+                    food = country.resources.food,
+                    stone = country.resources.stone,
+                    metal = country.resources.metal,
                 )
             )
         }
@@ -200,16 +200,16 @@ class GameExtendedDTOCreator(
     }
 
 
-    private fun buildCity(cityEntity: CityEntity): CityDTO {
+    private fun buildCity(city: City): CityDTO {
         return CityDTO(
-            cityId = cityEntity.getKeyOrThrow(),
-            countryId = cityEntity.countryId,
-            tile = cityEntity.tile,
-            name = cityEntity.name,
-            color = cityEntity.color,
-            city = cityEntity.city,
-            parentCity = cityEntity.parentCity,
-            buildings = cityEntity.buildings.map { BuildingDTO(it.type.name, it.tile) }
+            cityId = city.getKeyOrThrow(),
+            countryId = city.countryId,
+            tile = city.tile,
+            name = city.name,
+            color = city.color,
+            city = city.city,
+            parentCity = city.parentCity,
+            buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile) }
         )
     }
 

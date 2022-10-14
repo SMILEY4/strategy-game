@@ -1,13 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class CommandsByGameQueryImpl(private val database: ArangoDatabase) : CommandsByGameQuery {
 
-	override suspend fun execute(gameId: String, turn: Int): List<CommandEntity<*>> {
+	override suspend fun execute(gameId: String, turn: Int): List<Command<*>> {
 		database.assertCollections(Collections.COMMANDS, Collections.COUNTRIES)
 		return database.query(
 			"""
@@ -17,7 +17,7 @@ class CommandsByGameQueryImpl(private val database: ArangoDatabase) : CommandsBy
 						RETURN command
 			""".trimIndent(),
 			mapOf("gameId" to gameId, "turn" to turn),
-			CommandEntity::class.java
+			Command::class.java
 		)
 	}
 

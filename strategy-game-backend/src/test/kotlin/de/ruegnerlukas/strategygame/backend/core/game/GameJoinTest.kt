@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.game
 
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.entities.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.testutils.gameTest
 import io.kotest.core.spec.style.StringSpec
@@ -14,7 +14,7 @@ class GameJoinTest : StringSpec({
             expectPlayers {
                 player {
                     userId = "user"
-                    state = PlayerEntity.STATE_PLAYING
+                    state = Player.STATE_PLAYING
                     connectionId = null
                 }
             }
@@ -29,12 +29,12 @@ class GameJoinTest : StringSpec({
             expectPlayers {
                 player {
                     userId = "user-1"
-                    state = PlayerEntity.STATE_PLAYING
+                    state = Player.STATE_PLAYING
                     connectionId = null
                 }
                 player {
                     userId = "user-2"
-                    state = PlayerEntity.STATE_PLAYING
+                    state = Player.STATE_PLAYING
                     connectionId = null
                 }
             }
@@ -53,12 +53,12 @@ class GameJoinTest : StringSpec({
             expectPlayers {
                 player {
                     userId = "user-1"
-                    state = PlayerEntity.STATE_PLAYING
+                    state = Player.STATE_PLAYING
                     connectionId = null
                 }
                 player {
                     userId = "user-2"
-                    state = PlayerEntity.STATE_PLAYING
+                    state = Player.STATE_PLAYING
                     connectionId = null
                 }
             }

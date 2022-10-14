@@ -7,10 +7,10 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.COUNTRY_COLORS
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryResources
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlayerEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.ports.models.CountryResources
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameJoinActionErrors
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameNotFoundError
@@ -46,7 +46,7 @@ class GameJoinActionImpl(
     /**
      * Find and return the game with the given id or an [GameNotFoundError] if the game does not exist
      */
-    private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
+    private suspend fun findGame(gameId: String): Either<GameNotFoundError, Game> {
         return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
@@ -54,7 +54,7 @@ class GameJoinActionImpl(
     /**
      * Validate whether the given user can join the given game. Return nothing or an [UserAlreadyPlayerError]
      */
-    private fun validate(game: GameEntity, userId: String): Either<UserAlreadyPlayerError, Unit> {
+    private fun validate(game: Game, userId: String): Either<UserAlreadyPlayerError, Unit> {
         val existsPlayer = game.players.map { it.userId }.contains(userId)
         if (existsPlayer) {
             return UserAlreadyPlayerError.left()
@@ -67,12 +67,12 @@ class GameJoinActionImpl(
     /**
      * Add the user as a player to the given game
      */
-    private suspend fun insertPlayer(game: GameEntity, userId: String) {
+    private suspend fun insertPlayer(game: Game, userId: String) {
         game.players.add(
-            PlayerEntity(
+            Player(
                 userId = userId,
                 connectionId = null,
-                state = PlayerEntity.STATE_PLAYING,
+                state = Player.STATE_PLAYING,
             )
         )
         gameUpdate.execute(game)
@@ -82,9 +82,9 @@ class GameJoinActionImpl(
     /**
      * Add the country for the given user to the given game
      */
-    private suspend fun insertCountry(game: GameEntity, userId: String): String {
+    private suspend fun insertCountry(game: Game, userId: String): String {
         return countryInsert.execute(
-            CountryEntity(
+            Country(
                 gameId = game.getKeyOrThrow(),
                 userId = userId,
                 color = COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size],

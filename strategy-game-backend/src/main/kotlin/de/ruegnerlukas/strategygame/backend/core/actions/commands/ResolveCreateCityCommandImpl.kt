@@ -10,13 +10,13 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileOwner
+import de.ruegnerlukas.strategygame.backend.ports.models.City
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TileOwner
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
@@ -33,8 +33,8 @@ class ResolveCreateCityCommandImpl(
 ) : ResolveCreateCityCommand, Logging {
 
     override suspend fun perform(
-        command: CommandEntity<CreateCityCommandDataEntity>,
-        game: GameExtendedEntity
+        command: Command<CreateCityCommandData>,
+        game: GameExtended
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
         log().info("Resolving '${command.data.type}'-command for game ${game.game.key} and country ${command.countryId}")
         return either {
@@ -51,7 +51,7 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private fun findCountry(countryId: String, state: GameExtendedEntity): Either<ResolveCommandsActionError, CountryEntity> {
+    private fun findCountry(countryId: String, state: GameExtended): Either<ResolveCommandsActionError, Country> {
         val country = state.countries.find { it.key == countryId }
         if (country == null) {
             return ResolveCommandsAction.CountryNotFoundError.left()
@@ -61,7 +61,7 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private fun findTile(q: Int, r: Int, state: GameExtendedEntity): Either<ResolveCommandsActionError, TileEntity> {
+    private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
         if (targetTile == null) {
             return ResolveCommandsAction.TileNotFoundError.left()
@@ -71,8 +71,8 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private suspend fun createCity(game: GameExtendedEntity, countryId: String, tile: TileEntity, name: String): String {
-        return CityEntity(
+    private suspend fun createCity(game: GameExtended, countryId: String, tile: Tile, name: String): String {
+        return City(
             gameId = tile.gameId,
             countryId = countryId,
             tile = TileRef(tile.getKeyOrThrow(), tile.position.q, tile.position.r),
@@ -86,7 +86,7 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private fun switchTileCityOwner(game: GameExtendedEntity, countryId: String, cityId: String, targetTile: TileEntity) {
+    private fun switchTileCityOwner(game: GameExtended, countryId: String, cityId: String, targetTile: Tile) {
         positionsCircle(targetTile.position, 1) { q, r ->
             game.tiles.find { it.position.q == q && it.position.r == r }?.let { tile ->
                 val otherCity = game.cities.find { it.tile.tileId == tile.getKeyOrThrow() }
@@ -99,7 +99,7 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private fun updateCountryResources(country: CountryEntity) {
+    private fun updateCountryResources(country: Country) {
         country.resources.money -= gameConfig.cityCostMoney
     }
 
@@ -111,9 +111,9 @@ private object CreateCityValidations {
     fun validateCommand(
         gameConfig: GameConfig,
         name: String,
-        game: GameExtendedEntity,
-        country: CountryEntity,
-        targetTile: TileEntity
+        game: GameExtended,
+        country: Country,
+        targetTile: Tile
     ): ValidationContext {
         return validations(false) {
             validName(name)
@@ -131,31 +131,31 @@ private object CreateCityValidations {
         }
     }
 
-    fun ValidationContext.validTargetTileType(tile: TileEntity) {
+    fun ValidationContext.validTargetTileType(tile: Tile) {
         validate("CITY.TARGET_TILE_TYPE") {
             tile.data.terrainType == TileType.LAND.name
         }
     }
 
-    fun ValidationContext.validTileSpace(target: TileEntity, cities: List<CityEntity>) {
+    fun ValidationContext.validTileSpace(target: Tile, cities: List<City>) {
         validate("CITY.TILE_SPACE") {
             cities.find { it.tile.tileId == target.key } == null
         }
     }
 
-    fun ValidationContext.validResources(gameConfig: GameConfig, country: CountryEntity) {
+    fun ValidationContext.validResources(gameConfig: GameConfig, country: Country) {
         validate("CITY.RESOURCES") {
             country.resources.money >= gameConfig.cityCostMoney
         }
     }
 
-    fun ValidationContext.validTileOwner(country: CountryEntity, target: TileEntity) {
+    fun ValidationContext.validTileOwner(country: Country, target: Tile) {
         validate("CITY.TARGET_TILE_OWNER") {
             target.owner == null || target.owner?.countryId == country.key
         }
     }
 
-    fun ValidationContext.validTileInfluence(gameConfig: GameConfig, country: CountryEntity, target: TileEntity) {
+    fun ValidationContext.validTileInfluence(gameConfig: GameConfig, country: Country, target: Tile) {
         validate("CITY.COUNTRY_INFLUENCE") {
             // country owns tile
             if (target.owner != null && target.owner?.countryId == country.key) {

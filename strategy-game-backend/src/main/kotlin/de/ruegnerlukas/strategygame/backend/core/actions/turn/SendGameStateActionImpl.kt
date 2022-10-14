@@ -6,7 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction.SendGameStateActionError
@@ -32,7 +32,7 @@ class SendGameStateActionImpl(
     }
 
 
-    override suspend fun perform(game: GameExtendedEntity, userId: String): Either<SendGameStateActionError, Unit> {
+    override suspend fun perform(game: GameExtended, userId: String): Either<SendGameStateActionError, Unit> {
         log().info("Sending game-state of game ${game.game.getKeyOrThrow()} to connected player(s)")
         return either {
             val connectionId = getConnectionId(game, userId).bind()
@@ -45,7 +45,7 @@ class SendGameStateActionImpl(
     /**
      * Find and return the game or a [GameNotFoundError] if a game with that id does not exist
      */
-    private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameExtendedEntity> {
+    private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameExtended> {
         return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
@@ -53,7 +53,7 @@ class SendGameStateActionImpl(
     /**
      * get connection id of player or null
      */
-    private fun getConnectionId(game: GameExtendedEntity, userId: String): Either<UserNotConnectedError, Int> {
+    private fun getConnectionId(game: GameExtended, userId: String): Either<UserNotConnectedError, Int> {
         return game.game.players
             .filter { it.userId == userId }
             .filter { it.connectionId !== null }
@@ -66,7 +66,7 @@ class SendGameStateActionImpl(
     /**
      * Convert the given game to a dto specific for the given player
      */
-    private fun convertToDTO(userId: String, game: GameExtendedEntity): GameExtendedDTO {
+    private fun convertToDTO(userId: String, game: GameExtended): GameExtendedDTO {
         return GameExtendedDTOCreator(gameConfig).create(userId, game)
     }
 

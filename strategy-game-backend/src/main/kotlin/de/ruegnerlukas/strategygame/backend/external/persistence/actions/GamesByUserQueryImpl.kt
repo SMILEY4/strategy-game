@@ -1,13 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GamesByUserQuery
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class GamesByUserQueryImpl(private val database: ArangoDatabase) : GamesByUserQuery {
 
-	override suspend fun execute(userId: String): List<GameEntity> {
+	override suspend fun execute(userId: String): List<Game> {
 		database.assertCollections(Collections.GAMES)
 		return database.query(
 			"""
@@ -16,7 +16,7 @@ class GamesByUserQueryImpl(private val database: ArangoDatabase) : GamesByUserQu
 					RETURN game
 			""".trimIndent(),
 			mapOf("userId" to userId),
-			GameEntity::class.java
+			Game::class.java
 		)
 	}
 

@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.user
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthDataExtended
 
 interface UserLoginAction {
 
@@ -19,6 +19,6 @@ interface UserLoginAction {
         override fun toString(): String = this.javaClass.simpleName
     }
 
-    fun perform(email: String, password: String): Either<UserLoginActionError, ExtendedAuthData>
+    fun perform(email: String, password: String): Either<UserLoginActionError, AuthDataExtended>
 
 }

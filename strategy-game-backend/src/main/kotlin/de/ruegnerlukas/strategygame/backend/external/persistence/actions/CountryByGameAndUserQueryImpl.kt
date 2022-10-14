@@ -2,14 +2,14 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class CountryByGameAndUserQueryImpl(private val database: ArangoDatabase) : CountryByGameAndUserQuery {
 
-	override suspend fun execute(gameId: String, userId: String): Either<EntityNotFoundError, CountryEntity> {
+	override suspend fun execute(gameId: String, userId: String): Either<EntityNotFoundError, Country> {
 		database.assertCollections(Collections.COUNTRIES)
 		return database
 			.querySingle(
@@ -19,7 +19,7 @@ class CountryByGameAndUserQueryImpl(private val database: ArangoDatabase) : Coun
 						RETURN country
 				""".trimIndent(),
 				mapOf("gameId" to gameId, "userId" to userId),
-				CountryEntity::class.java
+				Country::class.java
 			)
 			.mapLeft { EntityNotFoundError }
 	}

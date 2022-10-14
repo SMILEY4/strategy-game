@@ -2,9 +2,9 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileData
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameInsert
@@ -28,8 +28,8 @@ class GameCreateActionImpl(
 	/**
 	 * Build the game entity
 	 */
-	private fun buildGame(): GameEntity {
-		return GameEntity(
+	private fun buildGame(): Game {
+		return Game(
 			turn = 0,
 			players = mutableListOf()
 		)
@@ -39,9 +39,9 @@ class GameCreateActionImpl(
 	/**
 	 * Build the tile entities
 	 */
-	private fun buildTiles(worldSettings: WorldSettings): List<TileEntity> {
+	private fun buildTiles(worldSettings: WorldSettings): List<Tile> {
 		return WorldBuilder().buildTiles(worldSettings).map {
-			TileEntity(
+			Tile(
 				gameId = "",
 				position = TilePosition(it.q, it.r),
 				data = TileData(
@@ -60,7 +60,7 @@ class GameCreateActionImpl(
 	/**
 	 * Write the given game entity to the database
 	 */
-	private suspend fun save(game: GameEntity, tiles: List<TileEntity>): String {
+	private suspend fun save(game: Game, tiles: List<Tile>): String {
 		return gameInsert.execute(game, tiles)
 	}
 
