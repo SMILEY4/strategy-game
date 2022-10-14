@@ -18,6 +18,10 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActio
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.user.UserCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.user.UserDeleteActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.user.UserLoginActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.user.UserRefreshTokenActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
@@ -58,6 +62,10 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAct
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
@@ -87,6 +95,11 @@ val applicationDependencies = module {
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().db) } } withOptions { createdAtStart() }
+
+    single<UserCreateAction> { UserCreateActionImpl(get()) }
+    single<UserDeleteAction> { UserDeleteActionImpl(get()) }
+    single<UserLoginAction> { UserLoginActionImpl(get()) }
+    single<UserRefreshTokenAction> { UserRefreshTokenActionImpl(get()) }
 
     single<CommandsInsert> { CommandsInsertImpl(get()) }
     single<GameInsert> { GameInsertImpl(get()) }

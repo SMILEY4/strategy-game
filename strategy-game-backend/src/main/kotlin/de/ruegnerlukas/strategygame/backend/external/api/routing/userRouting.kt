@@ -4,6 +4,10 @@ import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.CreateUserData
 import de.ruegnerlukas.strategygame.backend.ports.models.auth.LoginData
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.traceId
 import io.github.smiley4.ktorswaggerui.dsl.delete
@@ -23,7 +27,10 @@ import org.koin.ktor.ext.inject
  */
 fun Route.userRoutes() {
 
-    val userIdentityService by inject<UserIdentityService>()
+    val userCreate by inject<UserCreateAction>()
+    val userLogin by inject<UserLoginAction>()
+    val userRefresh by inject<UserRefreshTokenAction>()
+    val userDelete by inject<UserDeleteAction>()
 
     route("user") {
         post("signup", {
@@ -53,7 +60,7 @@ fun Route.userRoutes() {
         }) {
             withLoggingContext(traceId()) {
                 call.receive<CreateUserData>().let { requestData ->
-                    when (val result = userIdentityService.createUser(requestData.email, requestData.password, requestData.username)) {
+                    when (val result = userCreate.perform(requestData.email, requestData.password, requestData.username)) {
                         is Either.Right -> ApiResponse.respondSuccess(call)
                         is Either.Left -> ApiResponse.respondFailure(call, result.value)
                     }
@@ -93,12 +100,12 @@ fun Route.userRoutes() {
         }) {
             withLoggingContext(traceId()) {
                 call.receive<LoginData>().let { requestData ->
-                    when (val result = userIdentityService.authenticate(requestData.email, requestData.password)) {
+                    when (val result = userLogin.perform(requestData.email, requestData.password)) {
                         is Either.Right -> ApiResponse.respondSuccess(call, AuthData(result.value))
                         is Either.Left -> when (result.value) {
-                            UserIdentityService.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
-                            UserIdentityService.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
-                            UserIdentityService.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
+                            UserLoginAction.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
+                            UserLoginAction.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
+                            UserLoginAction.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
                         }
                     }
                 }
@@ -137,12 +144,12 @@ fun Route.userRoutes() {
         }) {
             withLoggingContext(traceId()) {
                 call.receive<String>().let { requestData ->
-                    when (val result = userIdentityService.refreshAuthentication(requestData)) {
+                    when (val result = userRefresh.perform(requestData)) {
                         is Either.Right -> ApiResponse.respondSuccess(call, result.value)
                         is Either.Left -> when (result.value) {
-                            UserIdentityService.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
-                            UserIdentityService.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
-                            UserIdentityService.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
+                            UserRefreshTokenAction.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
+                            UserRefreshTokenAction.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
+                            UserRefreshTokenAction.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
                         }
                     }
                 }
@@ -170,10 +177,12 @@ fun Route.userRoutes() {
             }) {
                 withLoggingContext(traceId()) {
                     call.receive<LoginData>().let { requestData ->
-                        when (val result = userIdentityService.deleteUser(requestData.email, requestData.password)) {
+                        when (val result = userDelete.perform(requestData.email, requestData.password)) {
                             is Either.Right -> ApiResponse.respondSuccess(call)
                             is Either.Left -> when (result.value) {
-                                UserIdentityService.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
+                                UserDeleteAction.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
+                                UserDeleteAction.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
+                                UserDeleteAction.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
                             }
                         }
                     }

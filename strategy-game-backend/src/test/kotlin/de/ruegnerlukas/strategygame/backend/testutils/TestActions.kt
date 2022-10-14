@@ -70,7 +70,9 @@ object TestActions {
                     ReservationInsertImpl(database),
                     GameConfig.default()
                 ),
-                ResolveCreateBuildingCommandImpl(),
+                ResolveCreateBuildingCommandImpl(
+                    GameConfig.default()
+                ),
                 ResolveCreateTownCommandImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()
@@ -109,7 +111,9 @@ object TestActions {
             ReservationInsertImpl(database),
             GameConfig.default()
         ),
-        ResolveCreateBuildingCommandImpl(),
+        ResolveCreateBuildingCommandImpl(
+            GameConfig.default()
+        ),
         ResolveCreateTownCommandImpl(
             ReservationInsertImpl(database),
             GameConfig.default()
@@ -126,7 +130,9 @@ object TestActions {
                 ReservationInsertImpl(database),
                 GameConfig.default()
             ),
-            ResolveCreateBuildingCommandImpl(),
+            ResolveCreateBuildingCommandImpl(
+                GameConfig.default()
+            ),
             ResolveCreateTownCommandImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()
