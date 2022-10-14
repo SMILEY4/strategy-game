@@ -1,5 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.world.tilemap
+package de.ruegnerlukas.strategygame.backend.core.world
 
+import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import java.lang.Integer.min
 import kotlin.math.floor
 import kotlin.math.max

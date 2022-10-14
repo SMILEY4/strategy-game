@@ -1,8 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.world
 
-import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilePosition
-import de.ruegnerlukas.strategygame.backend.core.world.tilemap.TilemapPositionsBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
