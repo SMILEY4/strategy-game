@@ -8,11 +8,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesUpdate
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 
 class TilesUpdateImpl(private val database: ArangoDatabase) : TilesUpdate {
 
     override suspend fun execute(tiles: List<Tile>): Either<EntityNotFoundError, Unit> {
-        return if (database.replaceDocuments(Collections.TILES, tiles).size == tiles.size) {
+        return if (database.replaceDocuments(Collections.TILES, tiles.map { TileEntity.of(it) }).size == tiles.size) {
             Unit.right()
         } else {
             EntityNotFoundError.left()

@@ -33,7 +33,7 @@ class SendGameStateActionImpl(
 
 
     override suspend fun perform(game: GameExtended, userId: String): Either<SendGameStateActionError, Unit> {
-        log().info("Sending game-state of game ${game.game.getKeyOrThrow()} to connected player(s)")
+        log().info("Sending game-state of game ${game.game.gameId} to connected player(s)")
         return either {
             val connectionId = getConnectionId(game, userId).bind()
             val gameDto = convertToDTO(userId, game)

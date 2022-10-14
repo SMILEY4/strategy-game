@@ -4,6 +4,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CommandEntity
 
 class CommandsByGameQueryImpl(private val database: ArangoDatabase) : CommandsByGameQuery {
 
@@ -17,8 +18,8 @@ class CommandsByGameQueryImpl(private val database: ArangoDatabase) : CommandsBy
 						RETURN command
 			""".trimIndent(),
 			mapOf("gameId" to gameId, "turn" to turn),
-			Command::class.java
-		)
+			CommandEntity::class.java
+		).map { it.asServiceModel() }
 	}
 
 }

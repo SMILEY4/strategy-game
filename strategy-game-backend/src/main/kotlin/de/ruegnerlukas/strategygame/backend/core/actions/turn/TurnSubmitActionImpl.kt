@@ -5,20 +5,21 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
+import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateTownCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
@@ -62,8 +63,8 @@ class TurnSubmitActionImpl(
      * Fetch the country for the given user and game
      */
     private suspend fun getCountry(game: Game, userId: String): Country {
-        return countryByGameAndUserQuery.execute(game.getKeyOrThrow(), userId)
-            .getOrElse { throw Exception("Country for user $userId in game ${game.key} not found.") }
+        return countryByGameAndUserQuery.execute(game.gameId, userId)
+            .getOrElse { throw Exception("Country for user $userId in game ${game.gameId} not found.") }
     }
 
 
@@ -116,8 +117,9 @@ class TurnSubmitActionImpl(
      */
     private fun createCommandPlaceMarker(game: Game, country: Country, cmd: PlaceMarkerCommand): Command<*> {
         return Command(
+            commandId = DbId.PLACEHOLDER,
             turn = game.turn,
-            countryId = country.getKeyOrThrow(),
+            countryId = country.countryId,
             data = PlaceMarkerCommandData(
                 q = cmd.q,
                 r = cmd.r
@@ -131,8 +133,9 @@ class TurnSubmitActionImpl(
      */
     private fun createCommandCreateTown(game: Game, country: Country, cmd: CreateCityCommand): Command<*> {
         return Command(
+            commandId = DbId.PLACEHOLDER,
             turn = game.turn,
-            countryId = country.getKeyOrThrow(),
+            countryId = country.countryId,
             data = CreateTownCommandData(
                 q = cmd.q,
                 r = cmd.r,
@@ -148,8 +151,9 @@ class TurnSubmitActionImpl(
      */
     private fun createCommandCreateCity(game: Game, country: Country, cmd: CreateCityCommand): Command<*> {
         return Command(
+            commandId = DbId.PLACEHOLDER,
             turn = game.turn,
-            countryId = country.getKeyOrThrow(),
+            countryId = country.countryId,
             data = CreateCityCommandData(
                 q = cmd.q,
                 r = cmd.r,
@@ -158,13 +162,15 @@ class TurnSubmitActionImpl(
         )
     }
 
+
     /**
      * create a command-entity from the given [CreateCityCommand]
      */
     private fun createCommandCreateBuilding(game: Game, country: Country, cmd: CreateBuildingCommand): Command<*> {
         return Command(
+            commandId = DbId.PLACEHOLDER,
             turn = game.turn,
-            countryId = country.getKeyOrThrow(),
+            countryId = country.countryId,
             data = CreateBuildingCommandData(
                 cityId = cmd.cityId,
                 buildingType = cmd.buildingType
@@ -173,14 +179,14 @@ class TurnSubmitActionImpl(
     }
 
 
-
     /**
      * create a command-entity from the given [PlaceScoutCommand]
      */
     private fun createCommandPlaceScout(game: Game, country: Country, cmd: PlaceScoutCommand): Command<*> {
         return Command(
+            commandId = DbId.PLACEHOLDER,
             turn = game.turn,
-            countryId = country.getKeyOrThrow(),
+            countryId = country.countryId,
             data = PlaceScoutCommandData(
                 q = cmd.q,
                 r = cmd.r
@@ -195,11 +201,11 @@ class TurnSubmitActionImpl(
     private suspend fun maybeEndTurn(game: Game) {
         val countPlaying = game.players.count { it.state == Player.STATE_PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
-            val result = actionEndTurn.perform(game.getKeyOrThrow())
+            val result = actionEndTurn.perform(game.gameId)
             if (result is Either.Left) {
                 when (result.value) {
-                    TurnEndAction.GameNotFoundError -> throw Exception("Could not find game ${game.key} when ending turn")
-                    TurnEndAction.CommandResolutionFailedError -> throw Exception("Could not resolve turn for game ${game.key}")
+                    TurnEndAction.GameNotFoundError -> throw Exception("Could not find game ${game.gameId} when ending turn")
+                    TurnEndAction.CommandResolutionFailedError -> throw Exception("Could not resolve turn for game ${game.gameId}")
                 }
             }
         }

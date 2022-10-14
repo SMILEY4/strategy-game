@@ -1,88 +1,47 @@
 package de.ruegnerlukas.strategygame.backend.ports.models
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
-
 
 class Command<T : CommandData>(
+    val commandId: String,
     val countryId: String,
     val turn: Int,
     val data: T
-) : DbEntity()
-
-
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
-)
-@JsonSubTypes(
-    JsonSubTypes.Type(value = CreateCityCommandData::class),
-    JsonSubTypes.Type(value = CreateTownCommandData::class),
-    JsonSubTypes.Type(value = CreateBuildingCommandData::class),
-    JsonSubTypes.Type(value = PlaceMarkerCommandData::class),
-    JsonSubTypes.Type(value = PlaceScoutCommandData::class),
-)
-sealed class CommandData(
-    val type: String
 )
 
 
-@JsonTypeName(CreateCityCommandData.TYPE)
+sealed class CommandData {
+    fun displayName() = this::class.simpleName ?: "?"
+}
+
+
 class CreateCityCommandData(
     val q: Int,
     val r: Int,
     val name: String,
-) : CommandData(TYPE) {
-    companion object {
-        internal const val TYPE = "create-city"
-    }
-}
+) : CommandData()
 
 
-@JsonTypeName(CreateTownCommandData.TYPE)
 class CreateTownCommandData(
     val q: Int,
     val r: Int,
     val name: String,
     val parentCity: String
-) : CommandData(TYPE) {
-    companion object {
-        internal const val TYPE = "create-town"
-    }
-}
+) : CommandData()
 
 
-@JsonTypeName(CreateBuildingCommandData.TYPE)
 class CreateBuildingCommandData(
     val cityId: String,
     val buildingType: BuildingType,
-) : CommandData(TYPE) {
-    companion object {
-        internal const val TYPE = "create-building"
-    }
-}
+) : CommandData()
 
 
-@JsonTypeName(PlaceMarkerCommandData.TYPE)
 class PlaceMarkerCommandData(
     val q: Int,
     val r: Int
-) : CommandData(TYPE) {
-    companion object {
-        internal const val TYPE = "place-marker"
-    }
-}
+) : CommandData()
 
 
-@JsonTypeName(PlaceScoutCommandData.TYPE)
 class PlaceScoutCommandData(
     val q: Int,
     val r: Int
-) : CommandData(TYPE) {
-    companion object {
-        internal const val TYPE = "place-scout"
-    }
-}
+) : CommandData()

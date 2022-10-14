@@ -2,18 +2,19 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateTownCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
@@ -49,7 +50,7 @@ class GameTestContext {
 
     private val commandResolutionErrors = mutableMapOf<Int, MutableList<CommandResolutionError>>()
 
-    suspend fun getCityId(name: String) = TestUtils.getCities(database, gameId!!).find { it.name == name }!!.getKeyOrThrow()
+    suspend fun getCityId(name: String) = TestUtils.getCities(database, gameId!!).find { it.name == name }!!.cityId
 
     //=======================//
     //      CREATE GAME      //
@@ -59,7 +60,7 @@ class GameTestContext {
         val config = CreateGameConfig().apply(block)
         gameId = TestActions.gameCreateAction(database).perform(config.worldSettings)
         TestUtils.getGame(database, gameId!!).let {
-            it.key shouldBe gameId
+            it.gameId shouldBe gameId
             it.turn shouldBe 0
         }
         config.getUsers().forEach { joinGame(it) }
@@ -91,7 +92,7 @@ class GameTestContext {
         TestActions.gameJoinAction(database).perform(config.userId!!, config.gameId ?: gameId!!).also {
             if (config.expectedError == null) {
                 it shouldBeOk true
-                countryIds[config.userId!!] = TestUtils.getCountry(database, gameId!!, config.userId!!).key!!
+                countryIds[config.userId!!] = TestUtils.getCountry(database, gameId!!, config.userId!!).countryId
             } else {
                 it shouldBeError config.expectedError
             }
@@ -172,6 +173,7 @@ class GameTestContext {
             val config = CommandCreateCityConfig().apply(block)
             commands.add(
                 Command(
+                    commandId = DbId.PLACEHOLDER,
                     countryId = countryId,
                     turn = turn,
                     data = CreateCityCommandData(
@@ -193,6 +195,7 @@ class GameTestContext {
             val config = CommandCreateTownConfig().coApply(block)
             commands.add(
                 Command(
+                    commandId = DbId.PLACEHOLDER,
                     countryId = countryId,
                     turn = turn,
                     data = CreateTownCommandData(
@@ -216,6 +219,7 @@ class GameTestContext {
             val config = CommandPlaceMarkerConfig().coApply(block)
             commands.add(
                 Command(
+                    commandId = DbId.PLACEHOLDER,
                     countryId = countryId,
                     turn = turn,
                     data = PlaceMarkerCommandData(
@@ -248,20 +252,24 @@ class GameTestContext {
                     name = (cmd.data as CreateCityCommandData).name,
                     parentCity = null,
                 )
+
                 is CreateTownCommandData -> CreateCityCommand(
                     q = (cmd.data as CreateTownCommandData).q,
                     r = (cmd.data as CreateTownCommandData).r,
                     name = (cmd.data as CreateTownCommandData).name,
                     parentCity = (cmd.data as CreateTownCommandData).parentCity,
                 )
+
                 is PlaceMarkerCommandData -> PlaceMarkerCommand(
                     q = (cmd.data as PlaceMarkerCommandData).q,
                     r = (cmd.data as PlaceMarkerCommandData).r,
                 )
+
                 is PlaceScoutCommandData -> PlaceScoutCommand(
                     q = (cmd.data as PlaceScoutCommandData).q,
                     r = (cmd.data as PlaceScoutCommandData).r,
                 )
+
                 is CreateBuildingCommandData -> CreateBuildingCommand(
                     cityId = (cmd.data as CreateBuildingCommandData).cityId,
                     buildingType = (cmd.data as CreateBuildingCommandData).buildingType,

@@ -6,6 +6,7 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.ports.models.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.CountryResources
@@ -85,7 +86,8 @@ class GameJoinActionImpl(
     private suspend fun insertCountry(game: Game, userId: String): String {
         return countryInsert.execute(
             Country(
-                gameId = game.getKeyOrThrow(),
+                countryId = DbId.PLACEHOLDER,
+                gameId = game.gameId,
                 userId = userId,
                 color = COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size],
                 resources = CountryResources(
@@ -96,7 +98,7 @@ class GameJoinActionImpl(
                     metal = gameConfig.startingAmountMetal
                 )
             )
-        ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.key}") }
+        ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.gameId}") }
     }
 
 

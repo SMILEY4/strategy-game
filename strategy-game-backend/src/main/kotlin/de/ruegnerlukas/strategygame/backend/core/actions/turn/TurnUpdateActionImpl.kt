@@ -31,7 +31,7 @@ class TurnUpdateActionImpl(
 
     private fun updateCountryResources(game: GameExtended) {
         game.cities.forEach { city ->
-            val country = game.countries.find { it.key == city.countryId }
+            val country = game.countries.find { it.countryId == city.countryId }
             if (country != null) {
                 country.resources.money += gameConfig.cityIncomePerTurn
                 country.resources.food -= if (city.city) 10 else 5
@@ -82,7 +82,7 @@ class TurnUpdateActionImpl(
         tile.influences.add(
             TileInfluence(
                 countryId = city.countryId,
-                cityId = city.parentCity ?: city.getKeyOrThrow(),
+                cityId = city.parentCity ?: city.cityId,
                 amount = influenceValue
             )
         )
@@ -110,10 +110,10 @@ class TurnUpdateActionImpl(
     private fun updateDiscoveredTilesByInfluence(game: GameExtended) {
         game.tiles.forEach { tile ->
             game.countries
-                .filter { !hasDiscovered(it.getKeyOrThrow(), tile) }
+                .filter { !hasDiscovered(it.countryId, tile) }
                 .forEach { country ->
-                    if (tile.owner?.countryId == country.getKeyOrThrow() || hasInfluence(country.getKeyOrThrow(), tile)) {
-                        tile.discoveredByCountries.add(country.getKeyOrThrow())
+                    if (tile.owner?.countryId == country.countryId || hasInfluence(country.countryId, tile)) {
+                        tile.discoveredByCountries.add(country.countryId)
                     }
                 }
         }
@@ -153,7 +153,6 @@ class TurnUpdateActionImpl(
                                 contentToRemove.add(content)
                             }
                         }
-
                         else -> {
                             /*Nothing to do*/
                         }

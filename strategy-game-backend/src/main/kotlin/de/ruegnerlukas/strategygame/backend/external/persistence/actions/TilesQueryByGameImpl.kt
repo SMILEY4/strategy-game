@@ -4,6 +4,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 
 class TilesQueryByGameImpl(private val database: ArangoDatabase) : TilesQueryByGame {
 
@@ -16,8 +17,8 @@ class TilesQueryByGameImpl(private val database: ArangoDatabase) : TilesQueryByG
 					RETURN tile
 			""".trimIndent(),
             mapOf("gameId" to gameId),
-            Tile::class.java
-        )
+            TileEntity::class.java
+        ).map { it.asServiceModel() }
     }
 
 }

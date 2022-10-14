@@ -36,15 +36,15 @@ class ResolveCreateCityCommandImpl(
         command: Command<CreateCityCommandData>,
         game: GameExtended
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving '${command.data.type}'-command for game ${game.game.key} and country ${command.countryId}")
+        log().info("Resolving '${command.data.displayName()}'-command for game ${game.game.gameId} and country ${command.countryId}")
         return either {
             val country = findCountry(command.countryId, game).bind()
             val targetTile = findTile(command.data.q, command.data.r, game).bind()
             validateCommand(gameConfig, command.data.name, game, country, targetTile).ifInvalid<Unit> { reasons ->
                 return@either reasons.map { CommandResolutionError(command, it) }
             }
-            val cityId = createCity(game, country.getKeyOrThrow(), targetTile, command.data.name)
-            switchTileCityOwner(game, country.getKeyOrThrow(), cityId, targetTile)
+            val cityId = createCity(game, country.countryId, targetTile, command.data.name)
+            switchTileCityOwner(game, country.countryId, cityId, targetTile)
             updateCountryResources(country)
             emptyList()
         }
@@ -52,7 +52,7 @@ class ResolveCreateCityCommandImpl(
 
 
     private fun findCountry(countryId: String, state: GameExtended): Either<ResolveCommandsActionError, Country> {
-        val country = state.countries.find { it.key == countryId }
+        val country = state.countries.find { it.countryId == countryId }
         if (country == null) {
             return ResolveCommandsAction.CountryNotFoundError.left()
         } else {
@@ -73,23 +73,23 @@ class ResolveCreateCityCommandImpl(
 
     private suspend fun createCity(game: GameExtended, countryId: String, tile: Tile, name: String): String {
         return City(
+            cityId = reservationInsert.reserveCity(),
             gameId = tile.gameId,
             countryId = countryId,
-            tile = TileRef(tile.getKeyOrThrow(), tile.position.q, tile.position.r),
+            tile = TileRef(tile.tileId, tile.position.q, tile.position.r),
             name = name,
             color = RGBColor.random(),
             city = true,
             parentCity = null,
             buildings = mutableListOf(),
-            key = reservationInsert.reserveCity()
-        ).also { game.cities.add(it) }.getKeyOrThrow()
+        ).also { game.cities.add(it) }.cityId
     }
 
 
     private fun switchTileCityOwner(game: GameExtended, countryId: String, cityId: String, targetTile: Tile) {
         positionsCircle(targetTile.position, 1) { q, r ->
             game.tiles.find { it.position.q == q && it.position.r == r }?.let { tile ->
-                val otherCity = game.cities.find { it.tile.tileId == tile.getKeyOrThrow() }
+                val otherCity = game.cities.find { it.tile.tileId == tile.tileId }
                 if (tile.owner?.countryId == countryId && !(otherCity != null && otherCity.city)) {
                     tile.owner = TileOwner(countryId, cityId)
                     otherCity?.parentCity = cityId
@@ -139,7 +139,7 @@ private object CreateCityValidations {
 
     fun ValidationContext.validTileSpace(target: Tile, cities: List<City>) {
         validate("CITY.TILE_SPACE") {
-            cities.find { it.tile.tileId == target.key } == null
+            cities.find { it.tile.tileId == target.tileId } == null
         }
     }
 
@@ -151,23 +151,23 @@ private object CreateCityValidations {
 
     fun ValidationContext.validTileOwner(country: Country, target: Tile) {
         validate("CITY.TARGET_TILE_OWNER") {
-            target.owner == null || target.owner?.countryId == country.key
+            target.owner == null || target.owner?.countryId == country.countryId
         }
     }
 
     fun ValidationContext.validTileInfluence(gameConfig: GameConfig, country: Country, target: Tile) {
         validate("CITY.COUNTRY_INFLUENCE") {
             // country owns tile
-            if (target.owner != null && target.owner?.countryId == country.key) {
+            if (target.owner != null && target.owner?.countryId == country.countryId) {
                 return@validate true
             }
             // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-            val maxForeignInfluence = target.influences.filter { it.countryId != country.key }.map { it.amount }.max { it } ?: 0.0
+            val maxForeignInfluence = target.influences.filter { it.countryId != country.countryId }.map { it.amount }.max { it } ?: 0.0
             if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
                 return@validate true
             }
             // country has the most influence on tile
-            val maxCountryInfluence = target.influences.filter { it.countryId == country.key }.map { it.amount }.max { it } ?: 0.0
+            val maxCountryInfluence = target.influences.filter { it.countryId == country.countryId }.map { it.amount }.max { it } ?: 0.0
             if (maxCountryInfluence >= maxForeignInfluence) {
                 return@validate true
             }

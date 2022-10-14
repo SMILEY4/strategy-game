@@ -1,8 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.models
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
-
 data class Tile(
+    val tileId: String,
     var gameId: String,
     val position: TilePosition,
     val data: TileData,
@@ -10,4 +9,4 @@ data class Tile(
     var owner: TileOwner?,
     val discoveredByCountries: MutableList<String>,
     val content: MutableList<TileContent>
-) : DbEntity()
+)

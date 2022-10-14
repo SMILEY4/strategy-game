@@ -33,14 +33,14 @@ class ResolveCreateTownCommandImpl(
         command: Command<CreateTownCommandData>,
         game: GameExtended
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving 'create-town'-command for game ${game.game.key} and country ${command.countryId}")
+        log().info("Resolving '${command.data.displayName()}'-command for game ${game.game.gameId} and country ${command.countryId}")
         return either {
             val country = findCountry(command.countryId, game).bind()
             val targetTile = findTile(command.data.q, command.data.r, game).bind()
             validateCommand(gameConfig, command.data.name, game, country, targetTile, command.data.parentCity).ifInvalid<Unit> { reasons ->
                 return@either reasons.map { CommandResolutionError(command, it) }
             }
-            createTown(game, country.getKeyOrThrow(), command.data.parentCity, targetTile, command.data.name)
+            createTown(game, country.countryId, command.data.parentCity, targetTile, command.data.name)
             updateCountryResources(country)
             emptyList()
         }
@@ -48,7 +48,7 @@ class ResolveCreateTownCommandImpl(
 
 
     private fun findCountry(countryId: String, state: GameExtended): Either<ResolveCommandsActionError, Country> {
-        val country = state.countries.find { it.key == countryId }
+        val country = state.countries.find { it.countryId == countryId }
         if (country == null) {
             return ResolveCommandsAction.CountryNotFoundError.left()
         } else {
@@ -69,15 +69,15 @@ class ResolveCreateTownCommandImpl(
 
     private suspend fun createTown(game: GameExtended, countryId: String, parentCity: String, tile: Tile, name: String) {
         City(
+            cityId = reservationInsert.reserveCity(),
             gameId = tile.gameId,
             countryId = countryId,
-            tile = TileRef(tile.getKeyOrThrow(), tile.position.q, tile.position.r),
+            tile = TileRef(tile.tileId, tile.position.q, tile.position.r),
             name = name,
             color = RGBColor.random(),
             city = false,
             parentCity = parentCity,
             buildings = mutableListOf(),
-            key = reservationInsert.reserveCity()
         ).also { game.cities.add(it) }
     }
 
@@ -121,7 +121,7 @@ private object CreateTownValidations {
 
     fun ValidationContext.validTileSpace(target: Tile, cities: List<City>) {
         validate("TOWN.TILE_SPACE") {
-            cities.find { it.tile.tileId == target.key } == null
+            cities.find { it.tile.tileId == target.tileId } == null
         }
     }
 
@@ -133,7 +133,7 @@ private object CreateTownValidations {
 
     fun ValidationContext.validTileOwner(country: Country, target: Tile, parentCity: String) {
         validate("TOWN.TARGET_TILE_OWNER") {
-            target.owner?.countryId == country.key && target.owner?.cityId == parentCity
+            target.owner?.countryId == country.countryId && target.owner?.cityId == parentCity
         }
     }
 

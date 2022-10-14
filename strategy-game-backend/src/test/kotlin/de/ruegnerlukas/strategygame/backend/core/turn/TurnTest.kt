@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core
+package de.ruegnerlukas.strategygame.backend.core.turn
 
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.testutils.gameTest

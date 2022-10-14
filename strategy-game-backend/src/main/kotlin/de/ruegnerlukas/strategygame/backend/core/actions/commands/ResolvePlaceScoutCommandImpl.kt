@@ -27,7 +27,7 @@ class ResolvePlaceScoutCommandImpl(
         command: Command<PlaceScoutCommandData>,
         game: GameExtended
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving 'place-scout'-command for game ${game.game.key} and country ${command.countryId}")
+        log().info("Resolving '${command.data.displayName()}'-command for game ${game.game.gameId} and country ${command.countryId}")
         return either {
             val targetTile = findTile(command.data.q, command.data.r, game).bind()
             validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->

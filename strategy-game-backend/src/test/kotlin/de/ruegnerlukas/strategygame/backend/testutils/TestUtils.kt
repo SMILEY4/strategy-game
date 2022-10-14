@@ -12,10 +12,13 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.Player
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CityEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CountryEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.Player
 
 object TestUtils {
 
@@ -24,7 +27,8 @@ object TestUtils {
 	}
 
 	suspend fun getCountry(database: ArangoDatabase, countryId: String): Country {
-		return database.getDocument(Collections.COUNTRIES, countryId, Country::class.java)
+		return database.getDocument(Collections.COUNTRIES, countryId, CountryEntity::class.java)
+			.map { it.asServiceModel() }
 			.getOrHandle { throw Exception("country with id=$countryId not found") }
 	}
 
@@ -34,7 +38,8 @@ object TestUtils {
 	}
 
 	suspend fun updateCountry(database: ArangoDatabase, country: Country) {
-		database.replaceDocument(Collections.COUNTRIES, country.key!!, country)
+		val entity = CountryEntity.of(country)
+		database.replaceDocument(Collections.COUNTRIES, entity.getKeyOrThrow(), entity)
 	}
 
 	suspend fun getGame(database: ArangoDatabase, gameId: String): Game {
@@ -74,7 +79,7 @@ object TestUtils {
 
 	suspend fun getCitiesAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<City> {
 		val tile = getTiles(database, gameId).first { it.position.q == q && it.position.r == r }
-		return getCities(database, gameId).filter { it.tile.tileId == tile.key }
+		return getCities(database, gameId).filter { it.tile.tileId == tile.tileId }
 	}
 
 	suspend fun getCities(database: ArangoDatabase, gameId: String): List<City> {
@@ -85,8 +90,8 @@ object TestUtils {
 					RETURN city
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
-			City::class.java
-		)
+			CityEntity::class.java
+		).map { it.asServiceModel() }
 	}
 
 	suspend fun getTiles(database: ArangoDatabase, gameId: String): List<Tile> {
@@ -97,8 +102,8 @@ object TestUtils {
 					RETURN tile
 			""".trimIndent(),
 			mapOf("gameId" to gameId),
-			Tile::class.java
-		)
+			TileEntity::class.java
+		).map { it.asServiceModel() }
 	}
 
 	suspend fun <R> withGameExtended(database: ArangoDatabase, gameId: String, block: suspend (game: GameExtended) -> R): R {

@@ -32,7 +32,7 @@ class ResolveCreateBuildingCommandImpl(
         command: Command<CreateBuildingCommandData>,
         game: GameExtended
     ): Either<ResolveCommandsAction.ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving '${command.data.type}'-command for game ${game.game.key} and country ${command.countryId}")
+        log().info("Resolving '${command.data.displayName()}'-command for game ${game.game.gameId} and country ${command.countryId}")
         return either {
             val city = findCity(command.data.cityId, game).bind()
             val country = findCountry(city.countryId, game).bind()
@@ -47,7 +47,7 @@ class ResolveCreateBuildingCommandImpl(
 
 
     private fun findCity(cityId: String, state: GameExtended): Either<ResolveCommandsAction.ResolveCommandsActionError, City> {
-        val city = state.cities.find { it.getKeyOrThrow() == cityId }
+        val city = state.cities.find { it.cityId == cityId }
         if (city == null) {
             return ResolveCommandsAction.CityNotFoundError.left()
         } else {
@@ -60,7 +60,7 @@ class ResolveCreateBuildingCommandImpl(
         countryId: String,
         state: GameExtended
     ): Either<ResolveCommandsAction.ResolveCommandsActionError, Country> {
-        val country = state.countries.find { it.key == countryId }
+        val country = state.countries.find { it.countryId == countryId }
         if (country == null) {
             return ResolveCommandsAction.CountryNotFoundError.left()
         } else {
@@ -84,7 +84,7 @@ class ResolveCreateBuildingCommandImpl(
             .asSequence()
             .filter { it.q != city.tile.q && it.r != city.tile.r }
             .mapNotNull { pos -> game.tiles.find { it.position.q == pos.q && it.position.r == pos.r } }
-            .filter { tile -> city.buildings.none { tile.getKeyOrThrow() == it.tile?.tileId } }
+            .filter { tile -> city.buildings.none { tile.tileId == it.tile?.tileId } }
             .filter {
                 when (buildingType) {
                     BuildingType.LUMBER_CAMP -> it.data.resourceType == TileResourceType.FOREST.name
@@ -96,7 +96,7 @@ class ResolveCreateBuildingCommandImpl(
             }
             .toList()
             .randomOrNull()
-            ?.let { TileRef(it.getKeyOrThrow(), it.position.q, it.position.r) }
+            ?.let { TileRef(it.tileId, it.position.q, it.position.r) }
     }
 
 

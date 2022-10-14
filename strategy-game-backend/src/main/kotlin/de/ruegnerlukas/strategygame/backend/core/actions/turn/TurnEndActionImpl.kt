@@ -71,7 +71,7 @@ class TurnEndActionImpl(
      * Resolve/Apply the commands of the (ended) turn
      */
     private suspend fun resolveCommands(game: GameExtended): Either<CommandResolutionFailedError, List<CommandResolutionError>> {
-        val commands = commandsByGameQuery.execute(game.game.getKeyOrThrow(), game.game.turn)
+        val commands = commandsByGameQuery.execute(game.game.gameId, game.game.turn)
         return actionResolveCommands.perform(game, commands).mapLeft { CommandResolutionFailedError }
     }
 
@@ -92,7 +92,7 @@ class TurnEndActionImpl(
             .filter { it.connectionId != null }
             .forEach {
                 actionSendGameState.perform(game, it.userId)
-                    .getOrElse { throw Exception("Could not send state of game ${game.game.getKeyOrThrow()} to player ${it.userId}") }
+                    .getOrElse { throw Exception("Could not send state of game ${game.game.gameId} to player ${it.userId}") }
             }
     }
 

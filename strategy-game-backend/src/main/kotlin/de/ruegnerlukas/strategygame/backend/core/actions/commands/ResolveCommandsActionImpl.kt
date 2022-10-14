@@ -32,7 +32,7 @@ class ResolveCommandsActionImpl(
         game: GameExtended,
         commands: List<Command<*>>
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving ${commands.size} commands for game ${game.game.key}")
+        log().info("Resolving ${commands.size} commands for game ${game.game.gameId}")
         return either {
             resolveCommands(game, commands).bind()
         }

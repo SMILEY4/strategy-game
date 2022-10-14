@@ -34,14 +34,14 @@ class GameExtendedDTOCreator(
 
     fun create(userId: String, game: GameExtended): GameExtendedDTO {
         val playerCountry = game.countries.first { it.userId == userId }
-        val knownCountryIds = getKnownCountryIds(playerCountry.getKeyOrThrow(), game.tiles).toSet()
+        val knownCountryIds = getKnownCountryIds(playerCountry.countryId, game.tiles).toSet()
 
         val tileDTOs: List<TileDTO> = game.tiles
-            .map { tileEntity -> buildTile(playerCountry.getKeyOrThrow(), tileEntity, knownCountryIds, game.tiles) }
+            .map { tileEntity -> buildTile(playerCountry.countryId, tileEntity, knownCountryIds, game.tiles) }
 
         val countryDTOs = knownCountryIds
-            .map { countryId -> game.countries.first { it.key == countryId } }
-            .map { country -> buildCountry(playerCountry.getKeyOrThrow(), country) }
+            .map { countryId -> game.countries.first { it.countryId == countryId } }
+            .map { country -> buildCountry(playerCountry.countryId, country) }
 
         val cityDTOs = game.cities
             .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
@@ -110,7 +110,7 @@ class GameExtendedDTOCreator(
 
     private fun buildTileDataTier0(countryId: String, tile: Tile, tiles: List<Tile>): TileDTODataTier0 {
         return TileDTODataTier0(
-            tileId = tile.getKeyOrThrow(),
+            tileId = tile.tileId,
             position = tile.position,
             visibility = calculateTileVisibility(countryId, tile, tiles)
         )
@@ -177,12 +177,12 @@ class GameExtendedDTOCreator(
 
     private fun buildCountry(playerCountryId: String, country: Country): CountryDTO {
         val dataTier1 = CountryDTODataTier1(
-            countryId = country.getKeyOrThrow(),
+            countryId = country.countryId,
             userId = country.userId,
             color = country.color
         )
         var dataTier3: CountryDTODataTier3? = null
-        if (playerCountryId == country.key) {
+        if (playerCountryId == country.countryId) {
             dataTier3 = CountryDTODataTier3(
                 resources = CountryDTOResources(
                     money = country.resources.money,
@@ -202,7 +202,7 @@ class GameExtendedDTOCreator(
 
     private fun buildCity(city: City): CityDTO {
         return CityDTO(
-            cityId = city.getKeyOrThrow(),
+            cityId = city.cityId,
             countryId = city.countryId,
             tile = city.tile,
             name = city.name,

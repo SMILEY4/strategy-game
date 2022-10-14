@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 
 class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : TilesQueryByGameAndPosition {
 
@@ -18,8 +19,8 @@ class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : Ti
                     RETURN tile
 			""".trimIndent(),
             mapOf("gameId" to gameId),
-            Tile::class.java
-        )
+            TileEntity::class.java
+        ).map { it.asServiceModel() }
     }
 
     private fun strPos(positions: List<TilePosition>): String {

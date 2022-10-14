@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
+import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
@@ -30,6 +31,7 @@ class GameCreateActionImpl(
 	 */
 	private fun buildGame(): Game {
 		return Game(
+			gameId = DbId.PLACEHOLDER,
 			turn = 0,
 			players = mutableListOf()
 		)
@@ -42,6 +44,7 @@ class GameCreateActionImpl(
 	private fun buildTiles(worldSettings: WorldSettings): List<Tile> {
 		return WorldBuilder().buildTiles(worldSettings).map {
 			Tile(
+				tileId = DbId.PLACEHOLDER,
 				gameId = "",
 				position = TilePosition(it.q, it.r),
 				data = TileData(
