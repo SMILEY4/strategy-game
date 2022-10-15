@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.config
+package de.ruegnerlukas.strategygame.backend.app
 
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateBuildingCommandImpl

@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.ports.required
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.config.Config
-import de.ruegnerlukas.strategygame.backend.config.ConfigData
+import de.ruegnerlukas.strategygame.backend.app.Config
+import de.ruegnerlukas.strategygame.backend.app.ConfigData
 import de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.models.AuthData

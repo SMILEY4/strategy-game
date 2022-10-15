@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.integration
 
-import de.ruegnerlukas.strategygame.backend.config.applicationDependencies
+import de.ruegnerlukas.strategygame.backend.app.applicationDependencies
 import org.junit.jupiter.api.Test
 import org.koin.dsl.koinApplication
 import org.koin.test.KoinTest

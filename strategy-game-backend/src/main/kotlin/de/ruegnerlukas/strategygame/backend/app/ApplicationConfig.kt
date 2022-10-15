@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.config
+package de.ruegnerlukas.strategygame.backend.app
 
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter

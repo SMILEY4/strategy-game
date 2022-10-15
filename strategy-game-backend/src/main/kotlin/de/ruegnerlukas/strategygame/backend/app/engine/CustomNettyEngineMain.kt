@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.config.engine
+package de.ruegnerlukas.strategygame.backend.app.engine
 
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.engine.addShutdownHook
