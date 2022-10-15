@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.provided.turn
+package de.ruegnerlukas.strategygame.backend.ports.provided.sendstate
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended

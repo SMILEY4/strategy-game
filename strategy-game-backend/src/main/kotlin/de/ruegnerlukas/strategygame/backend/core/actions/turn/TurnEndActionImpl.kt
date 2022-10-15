@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError

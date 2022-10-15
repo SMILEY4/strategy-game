@@ -14,7 +14,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
@@ -58,7 +58,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction

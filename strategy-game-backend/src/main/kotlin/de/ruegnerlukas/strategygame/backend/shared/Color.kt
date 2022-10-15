@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models
+package de.ruegnerlukas.strategygame.backend.shared
 
 import java.lang.Float.max
 import java.lang.Float.min

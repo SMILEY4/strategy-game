@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.dtos
 
-import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
+import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 
 data class CityDTO(
@@ -12,10 +12,4 @@ data class CityDTO(
     val city: Boolean,
     val parentCity: String?,
     val buildings: List<BuildingDTO>
-)
-
-
-data class BuildingDTO(
-    val type: String,
-    val tile: TileRef?
 )

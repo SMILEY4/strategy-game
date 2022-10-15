@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.turn
+package de.ruegnerlukas.strategygame.backend.core.actions.sendstate
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
@@ -25,9 +25,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOOwner
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOVisibility
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
-class GameExtendedDTOCreator(
-    private val gameConfig: GameConfig
-) {
+class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
     private val unknownCountryId = "?"
     private val unknownCityId = "?"

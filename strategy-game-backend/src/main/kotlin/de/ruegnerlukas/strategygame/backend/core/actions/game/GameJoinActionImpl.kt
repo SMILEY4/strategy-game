@@ -7,7 +7,7 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
-import de.ruegnerlukas.strategygame.backend.ports.models.COUNTRY_COLORS
+import de.ruegnerlukas.strategygame.backend.shared.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.CountryResources
 import de.ruegnerlukas.strategygame.backend.ports.models.Game

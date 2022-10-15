@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
+import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 
 class CityEntity(

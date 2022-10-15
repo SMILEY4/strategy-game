@@ -7,7 +7,7 @@ import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.CreateCityValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.RGBColor
+import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
