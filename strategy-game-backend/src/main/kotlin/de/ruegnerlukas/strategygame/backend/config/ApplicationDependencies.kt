@@ -75,6 +75,8 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.Reservati
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesUpdate
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotlinx.coroutines.runBlocking
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
@@ -87,6 +89,7 @@ val applicationDependencies = module {
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().db) } } withOptions { createdAtStart() }
+    single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT)  }
 
     single<CommandsInsert> { CommandsInsertImpl(get()) }
     single<GameInsert> { GameInsertImpl(get()) }

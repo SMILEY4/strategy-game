@@ -2,16 +2,6 @@ version: "2.1"
 
 services:
 
-    app:
-        image: strategy-game:latest
-        container_name: strategy-game-backend
-        depends_on:
-            - database
-        links:
-            - database
-        ports:
-            - "8080:8080"
-
     database:
         image: arangodb:latest
         container_name: strategy-game-database
@@ -32,7 +22,6 @@ services:
             - ./../../monitoring/prometheus:/etc/prometheus/
             - prometheus-data:/prometheus
         links:
-            - app
             - database
         command: --config.file=/etc/prometheus/prometheus.yml
 

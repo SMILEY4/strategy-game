@@ -43,6 +43,10 @@ dependencies {
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
+    implementation("io.ktor:ktor-server-metrics:$versionKtor")
+    implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
+
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
     implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")

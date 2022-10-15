@@ -18,17 +18,28 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics
+import io.micrometer.core.instrument.binder.system.UptimeMetrics
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import mu.KotlinLogging
 import org.koin.core.logger.Logger
 import org.koin.core.logger.MESSAGE
@@ -71,6 +82,9 @@ fun Application.module() {
             val httpMethod = call.request.httpMethod.value
             val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
             "${status.toString()}: $httpMethod - $route"
+        }
+        filter { call ->
+            !call.request.path().startsWith("/api/metrics")
         }
     }
     install(ContentNegotiation) {
@@ -133,6 +147,19 @@ fun Application.module() {
                 }
             }
         }
+    }
+    val meterRegistry by inject<PrometheusMeterRegistry>()
+    install(MicrometerMetrics) {
+        registry = meterRegistry
+        meterBinders = listOf(
+            ClassLoaderMetrics(),
+            JvmMemoryMetrics(),
+            JvmGcMetrics(),
+            ProcessorMetrics(),
+            JvmThreadMetrics(),
+            FileDescriptorMetrics(),
+            UptimeMetrics()
+        )
     }
     apiRoutes()
 }
