@@ -131,7 +131,7 @@ private object CreateBuildingValidations {
 
     fun ValidationContext.validCitySpace(gameConfig: GameConfig, city: City) {
         validate("BUILDING.CITY_SPACE") {
-            if (city.city) {
+            if (city.isCity) {
                 (gameConfig.cityBuildingSlots - city.buildings.size) > 0
             } else {
                 (gameConfig.townBuildingSlots - city.buildings.size) > 0

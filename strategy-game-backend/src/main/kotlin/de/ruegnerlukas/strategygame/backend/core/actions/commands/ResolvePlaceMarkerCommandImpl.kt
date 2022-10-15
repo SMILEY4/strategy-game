@@ -63,7 +63,7 @@ private object PlaceMarkerValidations {
 
     fun ValidationContext.validTileSpace(tile: Tile) {
         validate("MARKER.TILE_SPACE") {
-            tile.content.none { it.type == MarkerTileContent.TYPE }
+            tile.content.none { it is MarkerTileContent }
         }
     }
 

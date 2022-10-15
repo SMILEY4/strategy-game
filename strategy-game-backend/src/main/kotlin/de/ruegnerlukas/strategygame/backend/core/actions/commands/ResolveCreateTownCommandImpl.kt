@@ -75,7 +75,7 @@ class ResolveCreateTownCommandImpl(
             tile = TileRef(tile.tileId, tile.position.q, tile.position.r),
             name = name,
             color = RGBColor.random(),
-            city = false,
+            isCity = false,
             parentCity = parentCity,
             buildings = mutableListOf(),
         ).also { game.cities.add(it) }

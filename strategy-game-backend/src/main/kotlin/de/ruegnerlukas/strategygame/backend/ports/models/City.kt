@@ -9,7 +9,7 @@ class City(
     val tile: TileRef,
     val name: String,
     val color: RGBColor,
-    val city: Boolean,
+    val isCity: Boolean,
     var parentCity: String?,
     val buildings: MutableList<Building>,
 )

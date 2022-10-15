@@ -79,7 +79,7 @@ class ResolveCreateCityCommandImpl(
             tile = TileRef(tile.tileId, tile.position.q, tile.position.r),
             name = name,
             color = RGBColor.random(),
-            city = true,
+            isCity = true,
             parentCity = null,
             buildings = mutableListOf(),
         ).also { game.cities.add(it) }.cityId
@@ -90,7 +90,7 @@ class ResolveCreateCityCommandImpl(
         positionsCircle(targetTile.position, 1) { q, r ->
             game.tiles.find { it.position.q == q && it.position.r == r }?.let { tile ->
                 val otherCity = game.cities.find { it.tile.tileId == tile.tileId }
-                if (tile.owner?.countryId == countryId && !(otherCity != null && otherCity.city)) {
+                if (tile.owner?.countryId == countryId && !(otherCity != null && otherCity.isCity)) {
                     tile.owner = TileOwner(countryId, cityId)
                     otherCity?.parentCity = cityId
                 }

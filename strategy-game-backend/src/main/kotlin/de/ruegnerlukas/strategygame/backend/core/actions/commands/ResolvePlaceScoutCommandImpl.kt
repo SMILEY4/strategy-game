@@ -72,8 +72,7 @@ private object PlaceScoutValidations {
     fun ValidationContext.validTileSpace(countryId: String, tile: Tile) {
         validate("SCOUT.TILE_SPACE") {
             tile.content
-                .filter { it.type == ScoutTileContent.TYPE }
-                .map { it as ScoutTileContent }
+                .filterIsInstance<ScoutTileContent>()
                 .none { it.countryId == countryId }
         }
     }
@@ -82,7 +81,7 @@ private object PlaceScoutValidations {
         validate("SCOUT.AMOUNT") {
             tiles
                 .asSequence()
-                .mapNotNull { tile -> tile.content.find { it.type == ScoutTileContent.TYPE }?.let { it as ScoutTileContent } }
+                .mapNotNull { tile -> tile.content.find { it is ScoutTileContent }?.let { it as ScoutTileContent } }
                 .filter { scout -> scout.countryId == countryId }
                 .count() < gameConfig.scoutsMaxAmount
         }

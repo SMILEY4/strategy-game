@@ -69,7 +69,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
                 .asSequence()
                 .mapNotNull { pos -> tiles.find { it.position.q == pos.q && it.position.r == pos.r } }
-                .mapNotNull { t -> t.content.find { it.type == ScoutTileContent.TYPE }?.let { it as ScoutTileContent } }
+                .mapNotNull { t -> t.content.find { it is ScoutTileContent }?.let { it as ScoutTileContent } }
                 .any { it.countryId == countryId }
             if (scoutNearby) {
                 return TileDTOVisibility.VISIBLE
@@ -205,7 +205,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             tile = city.tile,
             name = city.name,
             color = city.color,
-            city = city.city,
+            city = city.isCity,
             parentCity = city.parentCity,
             buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile) }
         )

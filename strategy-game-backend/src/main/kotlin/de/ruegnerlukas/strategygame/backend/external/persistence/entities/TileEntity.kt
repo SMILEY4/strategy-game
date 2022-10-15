@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.entities
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.TileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.TileInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.TileOwner
@@ -16,7 +15,7 @@ class TileEntity(
     val influences: List<TileInfluence>,
     val owner: TileOwner?,
     val discoveredByCountries: List<String>,
-    val content: List<TileContent>,
+    val content: List<TileEntityContent>,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -29,7 +28,7 @@ class TileEntity(
             influences = serviceModel.influences,
             owner = serviceModel.owner,
             discoveredByCountries = serviceModel.discoveredByCountries,
-            content = serviceModel.content,
+            content = serviceModel.content.map { TileEntityContent.of(it) },
         )
     }
 
@@ -41,7 +40,7 @@ class TileEntity(
         influences = this.influences.toMutableList(),
         owner = this.owner,
         discoveredByCountries = this.discoveredByCountries.toMutableList(),
-        content = this.content.toMutableList(),
+        content = this.content.map { it.asServiceModel() }.toMutableList(),
     )
 
 }

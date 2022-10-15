@@ -13,7 +13,7 @@ class CityEntity(
     val tile: TileRef,
     val name: String,
     val color: RGBColor,
-    val city: Boolean,
+    val isCity: Boolean,
     val parentCity: String?,
     val buildings: List<Building>,
     key: String? = null,
@@ -27,7 +27,7 @@ class CityEntity(
             tile = serviceModel.tile,
             name = serviceModel.name,
             color = serviceModel.color,
-            city = serviceModel.city,
+            isCity = serviceModel.isCity,
             parentCity = serviceModel.parentCity,
             buildings = serviceModel.buildings,
         )
@@ -40,7 +40,7 @@ class CityEntity(
         tile = this.tile,
         name = this.name,
         color = this.color,
-        city = this.city,
+        isCity = this.isCity,
         parentCity = this.parentCity,
         buildings = this.buildings.toMutableList(),
     )

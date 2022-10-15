@@ -34,16 +34,16 @@ class TurnUpdateActionImpl(
             val country = game.countries.find { it.countryId == city.countryId }
             if (country != null) {
                 country.resources.money += gameConfig.cityIncomePerTurn
-                country.resources.food -= if (city.city) 10 else 5
+                country.resources.food -= if (city.isCity) 10 else 5
                 city.buildings
                     .filter { it.tile != null }
                     .forEach { building ->
                         when (building.type) {
-                            BuildingType.LUMBER_CAMP -> country.resources.wood += if (city.city) 10 else 5
-                            BuildingType.MINE -> country.resources.metal += if (city.city) 10 else 5
-                            BuildingType.QUARRY -> country.resources.stone += if (city.city) 10 else 5
-                            BuildingType.HARBOR -> country.resources.food += if (city.city) 10 else 5
-                            BuildingType.FARM -> country.resources.food += if (city.city) 10 else 5
+                            BuildingType.LUMBER_CAMP -> country.resources.wood += if (city.isCity) 10 else 5
+                            BuildingType.MINE -> country.resources.metal += if (city.isCity) 10 else 5
+                            BuildingType.QUARRY -> country.resources.stone += if (city.isCity) 10 else 5
+                            BuildingType.HARBOR -> country.resources.food += if (city.isCity) 10 else 5
+                            BuildingType.FARM -> country.resources.food += if (city.isCity) 10 else 5
                         }
                     }
             }
@@ -67,7 +67,7 @@ class TurnUpdateActionImpl(
 
 
     private fun updateTileInfluences(tile: Tile, city: City) {
-        val cityInfluence = if (city.city) {
+        val cityInfluence = if (city.isCity) {
             calcInfluence(tile.position.distance(city.tile), gameConfig.cityInfluenceSpread, gameConfig.cityInfluenceAmount)
         } else {
             calcInfluence(tile.position.distance(city.tile), gameConfig.townInfluenceSpread, gameConfig.townInfluenceAmount)
@@ -123,11 +123,10 @@ class TurnUpdateActionImpl(
     private fun updateDiscoveredTilesByScout(game: GameExtended) {
         game.tiles
             .asSequence()
-            .filter { tile -> tile.content.any { it.type == ScoutTileContent.TYPE } }
+            .filter { tile -> tile.content.any { it is ScoutTileContent } }
             .forEach { tile ->
                 tile.content
-                    .filter { it.type == ScoutTileContent.TYPE }
-                    .map { it as ScoutTileContent }
+                    .filterIsInstance<ScoutTileContent>()
                     .forEach { scout ->
                         positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
                             .asSequence()

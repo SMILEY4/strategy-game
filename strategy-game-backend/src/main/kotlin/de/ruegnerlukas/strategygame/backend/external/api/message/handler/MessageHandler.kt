@@ -9,23 +9,23 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
  * Message-dispatcher for websocket messages
  */
 class MessageHandler(
-	private val turnSubmitAction: TurnSubmitAction
+    private val turnSubmitAction: TurnSubmitAction
 ) : Logging {
 
-	/**
-	 * Called for any incoming message
-	 * @param message the message
-	 */
-	suspend fun onMessage(message: Message<*>) {
-		log().info("Received message '${message.type}' from connection ${message.meta?.connectionId}")
-		when (message.type) {
-			SubmitTurnMessage.TYPE -> handleSubmitTurn(message as SubmitTurnMessage)
-			else -> log().info("Unknown message type: ${message.type}")
-		}
-	}
+    /**
+     * Called for any incoming message
+     * @param message the message
+     */
+    suspend fun onMessage(message: Message<*>) {
+        log().info("Received message '${message.type}' from connection ${message.meta?.connectionId}")
+        when (message.type) {
+            SubmitTurnMessage.TYPE -> handleSubmitTurn(message as SubmitTurnMessage)
+            else -> log().info("Unknown message type: ${message.type}")
+        }
+    }
 
-	private suspend fun handleSubmitTurn(message: SubmitTurnMessage) {
-		turnSubmitAction.perform(message.meta!!.userId, message.meta!!.gameId, message.payload.commands)
-	}
+    private suspend fun handleSubmitTurn(message: SubmitTurnMessage) {
+        turnSubmitAction.perform(message.meta!!.userId, message.meta!!.gameId, message.payload.commands.map { it.asServiceModel() })
+    }
 
 }
