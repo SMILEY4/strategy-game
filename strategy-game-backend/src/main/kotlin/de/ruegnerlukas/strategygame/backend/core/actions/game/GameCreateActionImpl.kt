@@ -7,6 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.containers.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
@@ -33,7 +34,7 @@ class GameCreateActionImpl(
 		return Game(
 			gameId = DbId.PLACEHOLDER,
 			turn = 0,
-			players = mutableListOf()
+			players = PlayerContainer()
 		)
 	}
 

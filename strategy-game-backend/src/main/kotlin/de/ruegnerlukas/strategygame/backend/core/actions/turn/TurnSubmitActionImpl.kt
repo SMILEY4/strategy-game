@@ -72,7 +72,7 @@ class TurnSubmitActionImpl(
      * Set the state of the given player to "submitted"
      */
     private suspend fun updatePlayerState(game: Game, userId: String): Either<TurnSubmitActionError, Unit> {
-        val player = game.players.find { it.userId == userId }
+        val player = game.players.findByUserId(userId)
         if (player != null) {
             player.state = Player.STATE_SUBMITTED
             gameUpdate.execute(game)

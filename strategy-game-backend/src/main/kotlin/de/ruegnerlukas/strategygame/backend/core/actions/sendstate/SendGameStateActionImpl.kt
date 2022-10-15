@@ -51,12 +51,7 @@ class SendGameStateActionImpl(
      * get connection id of player or null
      */
     private fun getConnectionId(game: GameExtended, userId: String): Either<UserNotConnectedError, Int> {
-        return game.game.players
-            .filter { it.userId == userId }
-            .filter { it.connectionId !== null }
-            .map { it.connectionId!! }
-            .firstOrNull()?.right()
-            ?: UserNotConnectedError.left()
+        return game.game.players.findByUserId(userId)?.connectionId?.right() ?: UserNotConnectedError.left()
     }
 
     /**

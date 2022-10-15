@@ -56,8 +56,7 @@ class GameJoinActionImpl(
      * Validate whether the given user can join the given game. Return nothing or an [UserAlreadyPlayerError]
      */
     private fun validate(game: Game, userId: String): Either<UserAlreadyPlayerError, Unit> {
-        val existsPlayer = game.players.map { it.userId }.contains(userId)
-        if (existsPlayer) {
+        if (game.players.existsByUserId(userId)) {
             return UserAlreadyPlayerError.left()
         } else {
             return Unit.right()

@@ -43,7 +43,7 @@ class GameConnectActionImpl(
      * Write the new connection of the player to the db.
      */
     private suspend fun setConnection(game: Game, userId: String, connectionId: Int): Either<InvalidPlayerState, Unit> {
-        val player = game.players.find { it.userId == userId }
+        val player = game.players.findByUserId(userId)
         if (player != null && player.connectionId == null) {
             player.connectionId = connectionId
             gameUpdate.execute(game)

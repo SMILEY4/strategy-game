@@ -38,7 +38,7 @@ class GameRequestConnectionActionImpl(
 	 * Validate whether the given user can connect to the given game. Return nothing or an [GameRequestConnectionActionError]
 	 */
 	private fun validatePlayer(game: Game, userId: String): Either<GameRequestConnectionActionError, Unit> {
-		val player = game.players.find { it.userId == userId }
+		val player = game.players.findByUserId(userId)
 		if (player != null) {
 			if (player.connectionId == null) {
 				return Unit.right()
