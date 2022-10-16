@@ -99,8 +99,8 @@ val applicationDependencies = module {
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().db) } } withOptions { createdAtStart() }
-    single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT)  }
-    single<MonitoringService> { MonitoringServiceImpl(get(), get())  }
+    single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
+    single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
 
     single<UserCreateAction> { UserCreateActionImpl(get()) }
     single<UserDeleteAction> { UserDeleteActionImpl(get()) }
