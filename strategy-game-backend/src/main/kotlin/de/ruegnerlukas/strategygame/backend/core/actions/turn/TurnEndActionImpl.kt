@@ -13,6 +13,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.Co
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction.TurnEndActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedUpdate
@@ -27,18 +29,21 @@ class TurnEndActionImpl(
     private val commandsByGameQuery: CommandsByGameQuery,
 ) : TurnEndAction, Logging {
 
+    private val metricId = metricCoreAction(TurnEndAction::class)
+
     override suspend fun perform(gameId: String): Either<TurnEndActionError, Unit> {
-        log().info("End turn of game $gameId")
-        return either {
-            val game = findGameState(gameId).bind()
-            resolveCommands(game).bind()
-            updateGameWorld(game)
-            updateGameInfo(game)
-            saveGameState(game)
-            sendGameStateMessages(game)
+        return Monitoring.coTime(metricId) {
+            log().info("End turn of game $gameId")
+            either {
+                val game = findGameState(gameId).bind()
+                resolveCommands(game).bind()
+                updateGameWorld(game)
+                updateGameInfo(game)
+                saveGameState(game)
+                sendGameStateMessages(game)
+            }
         }
     }
-
 
     /**
      * Find and return the [GameExtendedEntity] or [GameNotFoundError] if the game does not exist
@@ -47,14 +52,12 @@ class TurnEndActionImpl(
         return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
-
     /**
      * Update the game state (e.g. player income/resources, timers, ...)
      */
     private fun updateGameWorld(game: GameExtendedEntity) {
         actionUpdateTurn.perform(game)
     }
-
 
     /**
      * Update the state of the game to prepare it for the next turn
@@ -66,7 +69,6 @@ class TurnEndActionImpl(
         }
     }
 
-
     /**
      * Resolve/Apply the commands of the (ended) turn
      */
@@ -75,14 +77,12 @@ class TurnEndActionImpl(
         return actionResolveCommands.perform(game, commands).mapLeft { CommandResolutionFailedError }
     }
 
-
     /**
      * Update the game state in the database
      */
     private suspend fun saveGameState(game: GameExtendedEntity) {
         gameExtendedUpdate.execute(game)
     }
-
 
     /**
      * Send the new game-state to the connected players

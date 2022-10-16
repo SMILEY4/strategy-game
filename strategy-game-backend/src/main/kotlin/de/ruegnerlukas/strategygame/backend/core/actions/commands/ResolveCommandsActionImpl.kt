@@ -18,6 +18,9 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreat
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateTownCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class ResolveCommandsActionImpl(
@@ -28,13 +31,17 @@ class ResolveCommandsActionImpl(
     private val resolvePlaceScoutCommand: ResolvePlaceScoutCommand
 ) : ResolveCommandsAction, Logging {
 
+    private val metricId = metricCoreAction(ResolveCommandsAction::class)
+
     override suspend fun perform(
         game: GameExtendedEntity,
         commands: List<CommandEntity<*>>
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving ${commands.size} commands for game ${game.game.key}")
-        return either {
-            resolveCommands(game, commands).bind()
+        return Monitoring.coTime(metricId) {
+            log().info("Resolving ${commands.size} commands for game ${game.game.key}")
+            either {
+                resolveCommands(game, commands).bind()
+            }
         }
     }
 
@@ -63,15 +70,19 @@ class ResolveCommandsActionImpl(
             is PlaceMarkerCommandDataEntity -> {
                 resolvePlaceMarkerCommand.perform(command as CommandEntity<PlaceMarkerCommandDataEntity>, game)
             }
+
             is CreateCityCommandDataEntity -> {
                 resolveCreateCityCommand.perform(command as CommandEntity<CreateCityCommandDataEntity>, game)
             }
+
             is CreateTownCommandDataEntity -> {
                 resolveCreateTownCommand.perform(command as CommandEntity<CreateTownCommandDataEntity>, game)
             }
+
             is CreateBuildingCommandDataEntity -> {
                 resolveCreateBuildingCommand.perform(command as CommandEntity<CreateBuildingCommandDataEntity>, game)
             }
+
             is PlaceScoutCommandDataEntity -> {
                 resolvePlaceScoutCommand.perform(command as CommandEntity<PlaceScoutCommandDataEntity>, game)
             }

@@ -23,6 +23,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.TurnSubmitActionError
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
@@ -37,17 +39,20 @@ class TurnSubmitActionImpl(
     private val commandsInsert: CommandsInsert,
 ) : TurnSubmitAction, Logging {
 
+    private val metricId = metricCoreAction(TurnSubmitAction::class)
+
     override suspend fun perform(userId: String, gameId: String, commands: List<PlayerCommand>): Either<TurnSubmitActionError, Unit> {
-        log().info("user $userId submits ${commands.size} commands for game $gameId")
-        return either {
-            val game = getGame(gameId)
-            val country = getCountry(game, userId)
-            updatePlayerState(game, userId).bind()
-            saveCommands(game, country, commands)
-            maybeEndTurn(game)
+        return Monitoring.coTime(metricId) {
+            log().info("user $userId submits ${commands.size} commands for game $gameId")
+            either {
+                val game = getGame(gameId)
+                val country = getCountry(game, userId)
+                updatePlayerState(game, userId).bind()
+                saveCommands(game, country, commands)
+                maybeEndTurn(game)
+            }
         }
     }
-
 
     /**
      * Fetch the game with the given id. Since we already found a player, we can assume the game exists
@@ -57,7 +62,6 @@ class TurnSubmitActionImpl(
             .getOrElse { throw Exception("Could not get game $gameId") }
     }
 
-
     /**
      * Fetch the country for the given user and game
      */
@@ -65,7 +69,6 @@ class TurnSubmitActionImpl(
         return countryByGameAndUserQuery.execute(game.getKeyOrThrow(), userId)
             .getOrElse { throw Exception("Country for user $userId in game ${game.key} not found.") }
     }
-
 
     /**
      * Set the state of the given player to "submitted"
@@ -81,14 +84,12 @@ class TurnSubmitActionImpl(
         }
     }
 
-
     /**
      * save the given commands at the given game
      */
     private suspend fun saveCommands(game: GameEntity, country: CountryEntity, commands: List<PlayerCommand>) {
         commandsInsert.execute(createCommands(game, country, commands))
     }
-
 
     /**
      * create the command-entities from the given [PlayerCommand]s
@@ -104,12 +105,12 @@ class TurnSubmitActionImpl(
                         createCommandCreateTown(game, country, command)
                     }
                 }
+
                 is CreateBuildingCommand -> createCommandCreateBuilding(game, country, command)
                 is PlaceScoutCommand -> createCommandPlaceScout(game, country, command)
             }
         }
     }
-
 
     /**
      * create a command-entity from the given [PlaceMarkerCommand]
@@ -124,7 +125,6 @@ class TurnSubmitActionImpl(
             )
         )
     }
-
 
     /**
      * create a command-entity from the given [CreateCityCommand]
@@ -141,7 +141,6 @@ class TurnSubmitActionImpl(
             )
         )
     }
-
 
     /**
      * create a command-entity from the given [CreateCityCommand]
@@ -172,8 +171,6 @@ class TurnSubmitActionImpl(
         )
     }
 
-
-
     /**
      * create a command-entity from the given [PlaceScoutCommand]
      */
@@ -187,7 +184,6 @@ class TurnSubmitActionImpl(
             )
         )
     }
-
 
     /**
      * End turn if all players submitted their commands (none in state "playing")

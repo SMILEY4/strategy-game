@@ -19,6 +19,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateTownCommand
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
@@ -29,20 +31,31 @@ class ResolveCreateTownCommandImpl(
     private val gameConfig: GameConfig,
 ) : ResolveCreateTownCommand, Logging {
 
+    private val metricId = metricCoreAction(ResolveCreateTownCommand::class)
+
     override suspend fun perform(
         command: CommandEntity<CreateTownCommandDataEntity>,
         game: GameExtendedEntity
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving 'create-town'-command for game ${game.game.key} and country ${command.countryId}")
-        return either {
-            val country = findCountry(command.countryId, game).bind()
-            val targetTile = findTile(command.data.q, command.data.r, game).bind()
-            validateCommand(gameConfig, command.data.name, game, country, targetTile, command.data.parentCity).ifInvalid<Unit> { reasons ->
-                return@either reasons.map { CommandResolutionError(command, it) }
+        return Monitoring.coTime(metricId) {
+            log().info("Resolving 'create-town'-command for game ${game.game.key} and country ${command.countryId}")
+            either {
+                val country = findCountry(command.countryId, game).bind()
+                val targetTile = findTile(command.data.q, command.data.r, game).bind()
+                validateCommand(
+                    gameConfig,
+                    command.data.name,
+                    game,
+                    country,
+                    targetTile,
+                    command.data.parentCity
+                ).ifInvalid<Unit> { reasons ->
+                    return@either reasons.map { CommandResolutionError(command, it) }
+                }
+                createTown(game, country.getKeyOrThrow(), command.data.parentCity, targetTile, command.data.name)
+                updateCountryResources(country)
+                emptyList()
             }
-            createTown(game, country.getKeyOrThrow(), command.data.parentCity, targetTile, command.data.name)
-            updateCountryResources(country)
-            emptyList()
         }
     }
 

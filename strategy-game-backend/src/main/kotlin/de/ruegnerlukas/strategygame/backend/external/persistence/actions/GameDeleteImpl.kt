@@ -2,18 +2,24 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameDelete
 import de.ruegnerlukas.strategygame.backend.shared.parallelIO
 
 class GameDeleteImpl(private val database: ArangoDatabase) : GameDelete {
 
+    private val metricId = metricDbQuery(GameDelete::class)
+
     override suspend fun execute(gameId: String) {
-        parallelIO(
-            { deleteGame(gameId) },
-            { deleteTiles(gameId) },
-            { deleteCountries(gameId) },
-            { deleteCities(gameId) }
-        )
+        Monitoring.coTime(metricId) {
+            parallelIO(
+                { deleteGame(gameId) },
+                { deleteTiles(gameId) },
+                { deleteCountries(gameId) },
+                { deleteCities(gameId) }
+            )
+        }
     }
 
     private suspend fun deleteGame(gameId: String) {

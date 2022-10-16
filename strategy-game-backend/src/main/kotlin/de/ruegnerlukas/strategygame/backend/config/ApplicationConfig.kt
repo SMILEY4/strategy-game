@@ -5,8 +5,10 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
 import io.github.smiley4.ktorswaggerui.dsl.AuthType
@@ -28,6 +30,7 @@ import io.ktor.server.request.path
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
+import io.ktor.server.routing.RoutingApplicationCall
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
@@ -38,8 +41,6 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
 import mu.KotlinLogging
 import org.koin.core.logger.Logger
 import org.koin.core.logger.MESSAGE
@@ -148,9 +149,9 @@ fun Application.module() {
             }
         }
     }
-    val meterRegistry by inject<PrometheusMeterRegistry>()
+    val monitoring by inject<MonitoringService>()
     install(MicrometerMetrics) {
-        registry = meterRegistry
+        registry = monitoring.getRegistry()
         meterBinders = listOf(
             ClassLoaderMetrics(),
             JvmMemoryMetrics(),
@@ -160,7 +161,14 @@ fun Application.module() {
             FileDescriptorMetrics(),
             UptimeMetrics()
         )
+        timers { call, _ ->
+            if (call is RoutingApplicationCall) {
+                tag("route", call.route.toDisplayString())
+            }
+        }
     }
+
+
     apiRoutes()
 }
 
