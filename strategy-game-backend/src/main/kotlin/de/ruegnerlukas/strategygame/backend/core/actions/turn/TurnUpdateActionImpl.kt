@@ -11,6 +11,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileOwner
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.max
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import kotlin.math.max
@@ -19,13 +22,17 @@ class TurnUpdateActionImpl(
     private val gameConfig: GameConfig
 ) : TurnUpdateAction {
 
+    private val metricId = metricCoreAction(TurnUpdateAction::class)
+
     override fun perform(game: GameExtendedEntity) {
-        updateCountryResources(game)
-        updateTileInfluences(game)
-        updateTileOwner(game)
-        updateDiscoveredTilesByInfluence(game)
-        updateDiscoveredTilesByScout(game)
-        updateTileContent(game)
+        Monitoring.time(metricId) {
+            updateCountryResources(game)
+            updateTileInfluences(game)
+            updateTileOwner(game)
+            updateDiscoveredTilesByInfluence(game)
+            updateDiscoveredTilesByScout(game)
+            updateTileContent(game)
+        }
     }
 
 
@@ -153,7 +160,6 @@ class TurnUpdateActionImpl(
                                 contentToRemove.add(content)
                             }
                         }
-
                         else -> {
                             /*Nothing to do*/
                         }

@@ -10,44 +10,48 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConne
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameRequestConnectionActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.NotParticipantError
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class GameRequestConnectionActionImpl(
-	private val gameQuery: GameQuery,
+    private val gameQuery: GameQuery,
 ) : GameRequestConnectionAction, Logging {
 
-	override suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit> {
-		log().info("Requesting to connect to game $gameId as user $userId")
-		return either {
-			val game = findGame(gameId).bind()
-			validatePlayer(game, userId).bind()
-		}
-	}
+    private val metricId = metricCoreAction(GameRequestConnectionAction::class)
 
+    override suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit> {
+        return Monitoring.coTime(metricId) {
+            log().info("Requesting to connect to game $gameId as user $userId")
+            either {
+                val game = findGame(gameId).bind()
+                validatePlayer(game, userId).bind()
+            }
+        }
+    }
 
-	/**
-	 * Find and return the game or an [GameNotFoundError] if the game does not exist
-	 */
-	private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
-		return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
-	}
+    /**
+     * Find and return the game or an [GameNotFoundError] if the game does not exist
+     */
+    private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
+        return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
+    }
 
-
-	/**
-	 * Validate whether the given user can connect to the given game. Return nothing or an [GameRequestConnectionActionError]
-	 */
-	private fun validatePlayer(game: GameEntity, userId: String): Either<GameRequestConnectionActionError, Unit> {
-		val player = game.players.find { it.userId == userId }
-		if (player != null) {
-			if (player.connectionId == null) {
-				return Unit.right()
-			} else {
-				return AlreadyConnectedError.left()
-			}
-		} else {
-			return NotParticipantError.left()
-		}
-	}
+    /**
+     * Validate whether the given user can connect to the given game. Return nothing or an [GameRequestConnectionActionError]
+     */
+    private fun validatePlayer(game: GameEntity, userId: String): Either<GameRequestConnectionActionError, Unit> {
+        val player = game.players.find { it.userId == userId }
+        if (player != null) {
+            if (player.connectionId == null) {
+                return Unit.right()
+            } else {
+                return AlreadyConnectedError.left()
+            }
+        } else {
+            return NotParticipantError.left()
+        }
+    }
 
 }

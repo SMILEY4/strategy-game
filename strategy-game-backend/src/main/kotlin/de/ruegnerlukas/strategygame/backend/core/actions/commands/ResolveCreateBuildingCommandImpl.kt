@@ -19,6 +19,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateBuilding
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
@@ -28,20 +30,24 @@ class ResolveCreateBuildingCommandImpl(
     private val gameConfig: GameConfig
 ) : ResolveCreateBuildingCommand, Logging {
 
+    private val metricId = metricCoreAction(ResolveCreateBuildingCommand::class)
+
     override suspend fun perform(
         command: CommandEntity<CreateBuildingCommandDataEntity>,
         game: GameExtendedEntity
     ): Either<ResolveCommandsAction.ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving '${command.data.type}'-command for game ${game.game.key} and country ${command.countryId}")
-        return either {
-            val city = findCity(command.data.cityId, game).bind()
-            val country = findCountry(city.countryId, game).bind()
-            validateCommand(command.countryId, city, country, gameConfig).ifInvalid<Unit> { reasons ->
-                return@either reasons.map { CommandResolutionError(command, it) }
+        return Monitoring.coTime(metricId) {
+            log().info("Resolving '${command.data.type}'-command for game ${game.game.key} and country ${command.countryId}")
+            either {
+                val city = findCity(command.data.cityId, game).bind()
+                val country = findCountry(city.countryId, game).bind()
+                validateCommand(command.countryId, city, country, gameConfig).ifInvalid<Unit> { reasons ->
+                    return@either reasons.map { CommandResolutionError(command, it) }
+                }
+                createBuilding(game, city, command.data.buildingType)
+                updateCountryResources(country)
+                emptyList()
             }
-            createBuilding(game, city, command.data.buildingType)
-            updateCountryResources(country)
-            emptyList()
         }
     }
 

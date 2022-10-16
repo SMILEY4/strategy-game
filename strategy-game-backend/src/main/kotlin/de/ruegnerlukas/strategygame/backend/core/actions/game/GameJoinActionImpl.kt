@@ -16,6 +16,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.G
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.UserAlreadyPlayerError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
@@ -31,17 +33,20 @@ class GameJoinActionImpl(
     private val actionUncoverMapArea: UncoverMapAreaAction,
 ) : GameJoinAction, Logging {
 
+    private val metricId = metricCoreAction(GameJoinAction::class)
+
     override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
-        log().info("Joining game $gameId as user $userId)")
-        return either {
-            val game = findGame(gameId).bind()
-            validate(game, userId).bind()
-            insertPlayer(game, userId)
-            val countryId = insertCountry(game, userId)
-            uncoverStartingArea(countryId, gameId)
+        return Monitoring.coTime(metricId) {
+            log().info("Joining game $gameId as user $userId)")
+            either {
+                val game = findGame(gameId).bind()
+                validate(game, userId).bind()
+                insertPlayer(game, userId)
+                val countryId = insertCountry(game, userId)
+                uncoverStartingArea(countryId, gameId)
+            }
         }
     }
-
 
     /**
      * Find and return the game with the given id or an [GameNotFoundError] if the game does not exist
@@ -49,7 +54,6 @@ class GameJoinActionImpl(
     private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
         return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
-
 
     /**
      * Validate whether the given user can join the given game. Return nothing or an [UserAlreadyPlayerError]
@@ -62,7 +66,6 @@ class GameJoinActionImpl(
             return Unit.right()
         }
     }
-
 
     /**
      * Add the user as a player to the given game
@@ -77,7 +80,6 @@ class GameJoinActionImpl(
         )
         gameUpdate.execute(game)
     }
-
 
     /**
      * Add the country for the given user to the given game
@@ -98,7 +100,6 @@ class GameJoinActionImpl(
             )
         ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.key}") }
     }
-
 
     /**
      * Pick a random starting location and uncover the surrounding tiles

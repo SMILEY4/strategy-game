@@ -23,36 +23,40 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEn
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
-class GameExtendedDTOCreator(
-    private val gameConfig: GameConfig
-) {
+class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
+
+    private val metricId = metricCoreAction(GameExtendedDTOCreator::class)
 
     private val unknownCountryId = "?"
     private val unknownCityId = "?"
 
     fun create(userId: String, game: GameExtendedEntity): GameExtendedDTO {
-        val playerCountry = game.countries.first { it.userId == userId }
-        val knownCountryIds = getKnownCountryIds(playerCountry.getKeyOrThrow(), game.tiles).toSet()
+        return Monitoring.time(metricId) {
+            val playerCountry = game.countries.first { it.userId == userId }
+            val knownCountryIds = getKnownCountryIds(playerCountry.getKeyOrThrow(), game.tiles).toSet()
 
-        val tileDTOs: List<TileDTO> = game.tiles
-            .map { tileEntity -> buildTile(playerCountry.getKeyOrThrow(), tileEntity, knownCountryIds, game.tiles) }
+            val tileDTOs: List<TileDTO> = game.tiles
+                .map { tileEntity -> buildTile(playerCountry.getKeyOrThrow(), tileEntity, knownCountryIds, game.tiles) }
 
-        val countryDTOs = knownCountryIds
-            .map { countryId -> game.countries.first { it.key == countryId } }
-            .map { country -> buildCountry(playerCountry.getKeyOrThrow(), country) }
+            val countryDTOs = knownCountryIds
+                .map { countryId -> game.countries.first { it.key == countryId } }
+                .map { country -> buildCountry(playerCountry.getKeyOrThrow(), country) }
 
-        val cityDTOs = game.cities
-            .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
-            .map { buildCity(it) }
+            val cityDTOs = game.cities
+                .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
+                .map { buildCity(it) }
 
-        return GameExtendedDTO(
-            turn = game.game.turn,
-            tiles = tileDTOs,
-            countries = countryDTOs,
-            cities = cityDTOs,
-        )
+            GameExtendedDTO(
+                turn = game.game.turn,
+                tiles = tileDTOs,
+                countries = countryDTOs,
+                cities = cityDTOs,
+            )
+        }
     }
 
 

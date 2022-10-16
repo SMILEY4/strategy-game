@@ -1,25 +1,31 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : TilesQueryByGameAndPosition {
 
+    private val metricId = metricDbQuery(TilesQueryByGameAndPosition::class)
+
     override suspend fun execute(gameId: String, positions: List<TilePosition>): List<TileEntity> {
-        database.assertCollections(Collections.TILES)
-        return database.query(
-            """
+        return Monitoring.coTime(metricId) {
+            database.assertCollections(Collections.TILES)
+            database.query(
+                """
                 FOR tile IN ${Collections.TILES}
                     FILTER tile.gameId == @gameId
                     FILTER CONTAINS_ARRAY(${strPos(positions)}, tile.position)
                     RETURN tile
-			""".trimIndent(),
-            mapOf("gameId" to gameId),
-            TileEntity::class.java
-        )
+                """.trimIndent(),
+                mapOf("gameId" to gameId),
+                TileEntity::class.java
+            )
+        }
     }
 
     private fun strPos(positions: List<TilePosition>): String {

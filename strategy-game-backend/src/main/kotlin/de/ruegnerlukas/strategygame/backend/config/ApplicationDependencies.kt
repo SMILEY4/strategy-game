@@ -23,6 +23,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.handler.Message
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebSocketMessageProducer
+import de.ruegnerlukas.strategygame.backend.external.monitoring.MonitoringServiceImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
@@ -59,6 +60,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
@@ -75,6 +77,8 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.Reservati
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesUpdate
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotlinx.coroutines.runBlocking
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
@@ -87,22 +91,24 @@ val applicationDependencies = module {
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().db) } } withOptions { createdAtStart() }
+    single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT)  }
+    single<MonitoringService> { MonitoringServiceImpl(get(), get())  }
 
-    single<CommandsInsert> { CommandsInsertImpl(get()) }
-    single<GameInsert> { GameInsertImpl(get()) }
-    single<CommandsByGameQuery> { CommandsByGameQueryImpl(get()) }
-    single<GameQuery> { GameQueryImpl(get()) }
-    single<GamesByUserQuery> { GamesByUserQueryImpl(get()) }
-    single<GameExtendedQuery> { GameExtendedQueryImpl(get()) }
-    single<GameUpdate> { GameUpdateImpl(get()) }
-    single<GameDelete> { GameDeleteImpl(get()) }
-    single<CountryInsert> { CountryInsertImpl(get()) }
-    single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
-    single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get()) }
-    single<ReservationInsert> { ReservationInsertImpl(get()) }
-    single<TilesQueryByGame> { TilesQueryByGameImpl(get()) }
-    single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get()) }
-    single<TilesUpdate> { TilesUpdateImpl(get()) }
+    single<CommandsInsert> { CommandsInsertImpl(get(), get()) }
+    single<GameInsert> { GameInsertImpl(get(), get()) }
+    single<CommandsByGameQuery> { CommandsByGameQueryImpl(get(), get()) }
+    single<GameQuery> { GameQueryImpl(get(), get()) }
+    single<GamesByUserQuery> { GamesByUserQueryImpl(get(), get()) }
+    single<GameExtendedQuery> { GameExtendedQueryImpl(get(), get()) }
+    single<GameUpdate> { GameUpdateImpl(get(), get()) }
+    single<GameDelete> { GameDeleteImpl(get(), get()) }
+    single<CountryInsert> { CountryInsertImpl(get(), get()) }
+    single<GameExtendedUpdate> { GameExtendedUpdateImpl(get(), get()) }
+    single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get(), get()) }
+    single<ReservationInsert> { ReservationInsertImpl(get(), get()) }
+    single<TilesQueryByGame> { TilesQueryByGameImpl(get(), get()) }
+    single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get(), get()) }
+    single<TilesUpdate> { TilesUpdateImpl(get(), get()) }
 
     single<GameConfig> { GameConfig.default() }
     single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl() }

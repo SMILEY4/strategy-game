@@ -12,6 +12,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAct
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction.SendGameStateActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction.UserNotConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
@@ -21,13 +23,17 @@ class SendGameStateActionImpl(
     private val messageProducer: GameMessageProducer,
 ) : SendGameStateAction, Logging {
 
+    private val metricId = metricCoreAction(SendGameStateAction::class)
+
     override suspend fun perform(gameId: String, userId: String): Either<SendGameStateActionError, Unit> {
-        log().info("Sending game-state of game $gameId to connected player(s)")
-        return either {
-            val game = findGame(gameId).bind()
-            val connectionId = getConnectionId(game, userId).bind()
-            val gameDto = convertToDTO(userId, game)
-            sendGameStateMessage(connectionId, gameDto)
+        return Monitoring.coTime(metricId) {
+            log().info("Sending game-state of game $gameId to connected player(s)")
+            either {
+                val game = findGame(gameId).bind()
+                val connectionId = getConnectionId(game, userId).bind()
+                val gameDto = convertToDTO(userId, game)
+                sendGameStateMessage(connectionId, gameDto)
+            }
         }
     }
 
@@ -41,14 +47,12 @@ class SendGameStateActionImpl(
         }
     }
 
-
     /**
      * Find and return the game or a [GameNotFoundError] if a game with that id does not exist
      */
     private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameExtendedEntity> {
         return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
-
 
     /**
      * get connection id of player or null
@@ -62,14 +66,12 @@ class SendGameStateActionImpl(
             ?: UserNotConnectedError.left()
     }
 
-
     /**
      * Convert the given game to a dto specific for the given player
      */
     private fun convertToDTO(userId: String, game: GameExtendedEntity): GameExtendedDTO {
         return GameExtendedDTOCreator(gameConfig).create(userId, game)
     }
-
 
     /**
      * Send the new game-state to the connected player

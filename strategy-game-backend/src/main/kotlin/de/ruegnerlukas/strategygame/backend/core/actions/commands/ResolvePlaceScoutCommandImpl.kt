@@ -4,9 +4,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validScoutAmount
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validTileSpace
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validTileVisibility
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
@@ -18,6 +15,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
+import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
@@ -26,18 +25,22 @@ class ResolvePlaceScoutCommandImpl(
     private val gameConfig: GameConfig
 ) : ResolvePlaceScoutCommand, Logging {
 
+    private val metricId = metricCoreAction(ResolvePlaceScoutCommand::class)
+
     override suspend fun perform(
         command: CommandEntity<PlaceScoutCommandDataEntity>,
         game: GameExtendedEntity
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
-        log().info("Resolving 'place-scout'-command for game ${game.game.key} and country ${command.countryId}")
-        return either {
-            val targetTile = findTile(command.data.q, command.data.r, game).bind()
-            validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->
-                return@either reasons.map { CommandResolutionError(command, it) }
+        return Monitoring.coTime(metricId) {
+            log().info("Resolving 'place-scout'-command for game ${game.game.key} and country ${command.countryId}")
+            either {
+                val targetTile = findTile(command.data.q, command.data.r, game).bind()
+                validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->
+                    return@either reasons.map { CommandResolutionError(command, it) }
+                }
+                addScout(targetTile, command.countryId, command.turn)
+                emptyList()
             }
-            addScout(targetTile, command.countryId, command.turn)
-            emptyList()
         }
     }
 
