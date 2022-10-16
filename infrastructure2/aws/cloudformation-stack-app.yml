@@ -1,0 +1,882 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+    EnvName:
+        Type: "String"
+        Description: "Name of the created environment added to the names of all created resources. The (beginning) delimiter is specified in the parameter-value."
+        Default: ""
+    WebAppCertificateArn:
+        Type: "String"
+        Description: "Arn of the certificate for the webapp. Must be in region us-east-1"
+        Default: "arn:aws:acm:us-east-1:627717213620:certificate/cdda0fd0-9560-4f70-b9bd-19b4fdb28967"
+    ApiCertificateArn:
+        Type: "String"
+        Description: "Arn of the certificate for the api."
+        Default: "arn:aws:acm:eu-central-1:627717213620:certificate/f808e2b7-a447-4520-b878-2ebedbdc65db"
+    WebAppDomain:
+        Type: "String"
+        Description: "Domain name of the webapp (without www)"
+        Default: "strategy-game.lruegner.de"
+    ApiAppDomain:
+        Type: "String"
+        Description: "Domain name of the api (without www)"
+        Default: "api.strategy-game.lruegner.de"
+    HostedZoneId:
+        Type: "String"
+        Description: "Id of the hosted zone of the domain"
+        Default: "Z0864027FH95HV1Z970G"
+    Ec2InstanceKeyPairName:
+        Type: "String"
+        Description: "Name of a key-pair for ec2-instances"
+        Default: "ec2-kp"
+    GitHubRepositoryId:
+        Type: "String"
+        Description: "The id of the source GithubRepository, i.e. <owner>/<repo-name>"
+        Default: "SMILEY4/strategy-game"
+    GitBranch:
+        Type: "String"
+        Description: "Name of the git-branch to build and deploy"
+        Default: "deployment-marker"
+    GithubCodeStarConnectionArn:
+        Type: "String"
+        Description: "Arn of the already created codestar connection to github"
+        Default: "arn:aws:codestar-connections:eu-central-1:627717213620:connection/16c629c9-0240-49a9-a2bf-93ea8ef91b10"
+
+Resources:
+
+    #===================================================================================================================
+    #    WebApp-Bucket
+    #===================================================================================================================
+    
+    WebAppBucket:
+        Type: "AWS::S3::Bucket"
+        Properties:
+            BucketName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".webapp"
+            AccessControl: "Private"
+            CorsConfiguration:
+                CorsRules:
+                    -   AllowedHeaders:
+                            - "*"
+                        AllowedMethods:
+                            - "GET"
+                        AllowedOrigins:
+                            - "*"
+                        MaxAge: 1800
+
+    WebAppOriginAccessIdentity:
+        Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+        Properties:
+            CloudFrontOriginAccessIdentityConfig:
+                Comment: !Join
+                    - ""
+                    -   - "strategy-game"
+                        - !Ref EnvName
+                        - ".webapp"
+
+    WebAppBucketPolicy:
+        Type: "AWS::S3::BucketPolicy"
+        Properties:
+            Bucket: !Ref WebAppBucket
+            PolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    -   Effect: "Allow"
+                        Principal:
+                            CanonicalUser: !GetAtt WebAppOriginAccessIdentity.S3CanonicalUserId
+                        Action: 's3:GetObject'
+                        Resource: !Join
+                            - ""
+                            -   - "arn:aws:s3:::"
+                                - !Ref WebAppBucket
+                                - "/*"
+
+
+    #===================================================================================================================
+    #    Cloudfront
+    #===================================================================================================================
+
+    BasicAuthFunction:
+        Type: "AWS::CloudFront::Function"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - "_basic-auth-function"
+            AutoPublish: true
+            FunctionCode: |
+                var user = {
+                    username: 'user',
+                    password: 'pass',
+                }
+                
+                var response401 = {
+                    statusCode: 401,
+                    statusDescription: 'Unauthorized',
+                    headers: {
+                        'www-authenticate': {value:'Basic'},
+                    }
+                };
+
+                var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+                function btoa(input) {
+                        input = String(input);
+                        var bitmap, a, b, c,
+                            result = "", i = 0,
+                            rest = input.length % 3; // To determine the final padding
+                        for (; i < input.length;) {
+                            if ((a = input.charCodeAt(i++)) > 255
+                                    || (b = input.charCodeAt(i++)) > 255
+                                    || (c = input.charCodeAt(i++)) > 255)
+                                throw new TypeError("Failed to execute 'btoa' on 'Window': The string to be encoded contains characters outside of the Latin1 range.");
+                
+                            bitmap = (a << 16) | (b << 8) | c;
+                            result += b64.charAt(bitmap >> 18 & 63) + b64.charAt(bitmap >> 12 & 63)
+                                    + b64.charAt(bitmap >> 6 & 63) + b64.charAt(bitmap & 63);
+                        }
+                        // If there's need of padding, replace the last 'A's with equal signs
+                        return rest ? result.slice(0, rest - 3) + "===".substring(rest) : result;
+                    }
+                
+                function handler(event) {
+                    var request = event.request;
+                    var headers = request.headers;
+                    var auth = request.headers.authorization && request.headers.authorization.value;
+                    if(!auth || !auth.startsWith('Basic ')) {
+                        return response401
+                    } else {
+                        var authString = 'Basic ' + btoa(user.username + ':' + user.password);
+                        if(authString === auth) {
+                            return request
+                        } else {
+                            return response401
+                        }
+                    }
+                }
+            FunctionConfig:
+                Comment: ""
+                Runtime: "cloudfront-js-1.0"
+
+    CloudFrontDistribution:
+        Type: "AWS::CloudFront::Distribution"
+        Properties:
+            DistributionConfig:
+                Aliases:
+                    - !Join
+                        - ""
+                        -   - ""
+                            - !Ref WebAppDomain
+                Origins:
+                    -   DomainName: !Join
+                            - ""
+                            -   - !Ref WebAppBucket
+                                - ".s3.eu-central-1.amazonaws.com"
+                        Id: !Ref WebAppBucket
+                        S3OriginConfig:
+                            OriginAccessIdentity: !Join
+                                - ""
+                                -   - "origin-access-identity/cloudfront/"
+                                    - !Ref WebAppOriginAccessIdentity
+                Enabled: true
+                DefaultRootObject: index.html
+                DefaultCacheBehavior:
+                    TargetOriginId: !Ref WebAppBucket
+                    ViewerProtocolPolicy: "redirect-to-https"
+                    AllowedMethods:
+                        - "GET"
+                        - "HEAD"
+                        - "OPTIONS"
+                    DefaultTTL: 0
+                    MaxTTL: 0
+                    MinTTL: 0
+                    ForwardedValues:
+                        QueryString: false
+                        Headers:
+                            - "Origin"
+                            - "Access-Control-Request-Headers"
+                            - "Access-Control-Request-Method"
+                    FunctionAssociations:
+                        -   EventType: "viewer-request"
+                            FunctionARN: !GetAtt BasicAuthFunction.FunctionARN
+                ViewerCertificate:
+                    AcmCertificateArn: !Ref WebAppCertificateArn
+                    MinimumProtocolVersion: "TLSv1.2_2021"
+                    SslSupportMethod: "sni-only"
+                HttpVersion: "http2"
+                PriceClass: "PriceClass_100"
+
+    #===================================================================================================================
+    #    EC2 Backend-Server
+    #===================================================================================================================
+
+    ServerInstanceRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".server"
+            Path: "/"
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "ec2.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            ManagedPolicyArns:
+                - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
+                - "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
+                - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
+    ServerInstanceProfile:
+        Type: "AWS::IAM::InstanceProfile"
+        Properties:
+            InstanceProfileName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - "server"
+            Path: "/"
+            Roles:
+                - !Ref ServerInstanceRole
+
+    ServerSecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".server"
+            GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+            SecurityGroupIngress:
+                -   IpProtocol: tcp
+                    FromPort: 8080
+                    ToPort: 8080
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: tcp
+                    FromPort: 443
+                    ToPort: 443
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: tcp
+                    FromPort: 22
+                    ToPort: 22
+                    CidrIp: 0.0.0.0/0
+
+    ServerInstance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            ImageId: "ami-02584c1c9d05efa69" # Ubuntu 20.04 LTS
+            InstanceType: "t2.micro"
+            IamInstanceProfile: !Ref ServerInstanceProfile
+            SecurityGroupIds:
+                - !Ref ServerSecurityGroup
+            KeyName: !Ref Ec2InstanceKeyPairName
+            UserData:
+                Fn::Base64: |
+                    #!/bin/bash -xe
+
+                    sudo apt update -y
+                    
+                    #install aws-cli
+                    sudo apt-get install awscli -y
+                    
+                    #install docker
+                    sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+                    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+                    apt-cache policy docker-ce
+                    sudo apt install docker-ce -y
+    
+                    #install docker compose
+                    apt-get install docker-compose-plugin -y
+    
+                    # install CodeDeploy-Agent
+                    # see: https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html
+                    sudo apt-get install ruby-full -y
+                    sudo apt install wget -y
+                    cd /home/ubuntu
+                    wget https://aws-codedeploy-eu-central-1.s3.eu-central-1.amazonaws.com/latest/install
+                    chmod +x ./install
+                    sudo ./install auto
+            Tags:
+                -   Key: "CodeDeployTag"
+                    Value: !Join
+                        - ""
+                        -   - "strategy-game"
+                            - !Ref EnvName
+                            - ".server"
+
+
+    #===================================================================================================================
+    #    Application Load Balancer (for tls)
+    #===================================================================================================================
+
+    AppLoadBalancerTargetGroup:
+        Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - "-target-group"
+            VpcId: "vpc-0858e870bf56854b7"
+            Port: 8080
+            Protocol: "HTTP"
+            Targets:
+                -   Id: !Ref ServerInstance
+                    Port: 8080
+            HealthCheckProtocol: "HTTP"
+            HealthCheckPath: "/api/health"
+            Matcher:
+                HttpCode: "200-299"
+            HealthCheckIntervalSeconds: 300
+            HealthCheckTimeoutSeconds: 15
+            HealthyThresholdCount: 5
+            UnhealthyThresholdCount: 3
+
+    AppLoadBalancer:
+        Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - "-alb"
+            Scheme: "internet-facing"
+            Subnets:
+                - "subnet-0927ddea905ede759"
+                - "subnet-0b2b346e5f55a7a3a"
+                - "subnet-05b5e8e70a2ebc72a"
+            SecurityGroups:
+                - !GetAtt ServerSecurityGroup.GroupId
+
+    AppLoadBalancerListener:
+        Type: "AWS::ElasticLoadBalancingV2::Listener"
+        Properties:
+            LoadBalancerArn: !Ref AppLoadBalancer
+            DefaultActions:
+                -   Type: "forward"
+                    TargetGroupArn: !Ref AppLoadBalancerTargetGroup
+            Port: 443
+            Protocol: "HTTPS"
+            Certificates:
+                -   CertificateArn: !Ref ApiCertificateArn
+
+    #===================================================================================================================
+    #    Route53
+    #===================================================================================================================
+
+    Route53Records:
+        Type: "AWS::Route53::RecordSetGroup"
+        Properties:
+            HostedZoneId: !Ref HostedZoneId
+            RecordSets:
+                -   Name: !Join
+                        - ""
+                        -   - ""
+                            - !Ref WebAppDomain
+                            - "."
+                    Type: "A"
+                    AliasTarget:
+                        DNSName: !GetAtt CloudFrontDistribution.DomainName
+                        HostedZoneId: "Z2FDTNDATAQYW2"
+                -   Name: !Join
+                        - ""
+                        -   - !Ref ApiAppDomain
+                            - "."
+                    Type: "A"
+                    AliasTarget:
+                        DNSName: !GetAtt AppLoadBalancer.DNSName
+                        HostedZoneId: !GetAtt AppLoadBalancer.CanonicalHostedZoneID
+
+    #===================================================================================================================
+    #    Build/Deploy-Pipeline
+    #===================================================================================================================
+
+    # Build Stage
+
+    BuildLogBucket:
+        Type: "AWS::S3::Bucket"
+        DeletionPolicy: "Delete"
+        Properties:
+            BucketName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".build-log"
+            LifecycleConfiguration:
+                Rules:
+                    -   ExpirationInDays: 7
+                        Status: Enabled
+
+    CodeBuildRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".code-build"
+            Path: "/"
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "codebuild.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            Policies:
+                -   PolicyName: "S3"
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -   Effect: "Allow"
+                                Action:
+                                    - "codebuild:BatchPutCodeCoverages"
+                                    - "codebuild:BatchPutTestCases"
+                                    - "codebuild:CreateReport"
+                                    - "codebuild:CreateReportGroup"
+                                    - "codebuild:UpdateReport"
+                                    - "ecr:BatchCheckLayerAvailability"
+                                    - "ecr:BatchDeleteImage"
+                                    - "ecr:BatchGetImage"
+                                    - "ecr:CompleteLayerUpload"
+                                    - "ecr:DescribeImages"
+                                    - "ecr:DescribePullThroughCacheRules"
+                                    - "ecr:GetAuthorizationToken"
+                                    - "ecr:GetDownloadUrlForLayer"
+                                    - "ecr:InitiateLayerUpload"
+                                    - "ecr:ListImages"
+                                    - "ecr:ListImages"
+                                    - "ecr:PutImage"
+                                    - "ecr:UploadLayerPart"
+                                    - "imagebuilder:GetComponent"
+                                    - "imagebuilder:GetContainerRecipe"
+                                    - "logs:CreateLogGroup"
+                                    - "logs:CreateLogStream"
+                                    - "logs:PutLogEvents"
+                                    - "s3:*"
+                                    - "s3:GetBucketAcl"
+                                    - "s3:GetBucketLocation"
+                                    - "s3:GetObject"
+                                    - "s3:GetObjectVersion"
+                                    - "s3:PutObject"
+                                Resource: "*"
+                            -   Effect: Allow
+                                Action:
+                                    - 'codecommit:GitPull'
+                                Resource:
+                                    - !Sub arn:aws:codecommit:*:*:${GitHubRepositoryId}
+
+    CodeBuildProjectBackend:
+        Type: "AWS::CodeBuild::Project"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - "_backend"
+            ServiceRole: !Ref CodeBuildRole
+            Artifacts:
+                Type: "CODEPIPELINE"
+            Source:
+                Type: "CODEPIPELINE"
+                BuildSpec: "infrastructure2/aws/buildspec-backend.yml"
+            Environment:
+                ComputeType: "BUILD_GENERAL1_SMALL"
+                Type: "LINUX_CONTAINER"
+                Image: "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+                PrivilegedMode: true
+            LogsConfig:
+                S3Logs:
+                    Location: !Join
+                        - ""
+                        -   - !GetAtt BuildLogBucket.Arn
+                            - "/backend"
+                    Status: "ENABLED"
+
+    CodeBuildProjectFrontend:
+        Type: "AWS::CodeBuild::Project"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - "_frontend"
+            ServiceRole: !Ref CodeBuildRole
+            Artifacts:
+                Type: "CODEPIPELINE"
+            Source:
+                Type: "CODEPIPELINE"
+                BuildSpec: "infrastructure2/aws/buildspec-frontend.yml"
+            Environment:
+                ComputeType: "BUILD_GENERAL1_SMALL"
+                Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+                Type: "LINUX_CONTAINER"
+            LogsConfig:
+                S3Logs:
+                    Location: !Join
+                        - ""
+                        -   - !GetAtt BuildLogBucket.Arn
+                            - "/frontend"
+                    Status: "ENABLED"
+
+    # Deploy Stage
+
+    CodeDeployRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".code-deploy"
+            Path: "/"
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "codedeploy.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            ManagedPolicyArns:
+                - "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+
+    CodeDeployApplicationBackend:
+        Type: "AWS::CodeDeploy::Application"
+        Properties:
+            ApplicationName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".backend"
+            ComputePlatform: "Server"
+
+    DeploymentGroupBackend:
+        Type: "AWS::CodeDeploy::DeploymentGroup"
+        Properties:
+            DeploymentGroupName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".backend"
+            ServiceRoleArn: !GetAtt CodeDeployRole.Arn
+            ApplicationName: !Ref CodeDeployApplicationBackend
+            DeploymentConfigName: "CodeDeployDefault.AllAtOnce"
+            DeploymentStyle:
+                DeploymentType: "IN_PLACE"
+                DeploymentOption: "WITHOUT_TRAFFIC_CONTROL"
+            Ec2TagFilters:
+                -   Key: "CodeDeployTag"
+                    Value: !Join
+                        - ""
+                        -   - "strategy-game"
+                            - !Ref EnvName
+                            - ".server"
+                    Type: "KEY_AND_VALUE"
+
+
+    # Pipeline
+
+    CodePipelineRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".code-pipeline"
+            Path: "/"
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "codepipeline.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            Policies:
+                -   PolicyName: "root"
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -   Action:
+                                    - "iam:PassRole"
+                                Resource: "*"
+                                Effect: "Allow"
+                                Condition:
+                                    StringEqualsIfExists:
+                                        iam:PassedToService:
+                                            - "cloudformation.amazonaws.com"
+                                            - "elasticbeanstalk.amazonaws.com"
+                                            - "ec2.amazonaws.com"
+                                            - "ecs-tasks.amazonaws.com"
+                            -   Action:
+                                    - "appconfig:GetDeployment"
+                                    - "appconfig:StartDeployment"
+                                    - "appconfig:StopDeployment"
+                                    - "autoscaling:*"
+                                    - "cloudformation:*"
+                                    - "cloudformation:CreateChangeSet"
+                                    - "cloudformation:CreateStack"
+                                    - "cloudformation:DeleteChangeSet"
+                                    - "cloudformation:DeleteStack"
+                                    - "cloudformation:DescribeChangeSet"
+                                    - "cloudformation:DescribeStacks"
+                                    - "cloudformation:ExecuteChangeSet"
+                                    - "cloudformation:SetStackPolicy"
+                                    - "cloudformation:UpdateStack"
+                                    - "cloudformation:ValidateTemplate"
+                                    - "cloudformation:ValidateTemplate"
+                                    - "cloudwatch:*"
+                                    - "codebuild:BatchGetBuildBatches"
+                                    - "codebuild:BatchGetBuilds"
+                                    - "codebuild:StartBuild"
+                                    - "codebuild:StartBuildBatch"
+                                    - "codecommit:CancelUploadArchive"
+                                    - "codecommit:GetBranch"
+                                    - "codecommit:GetCommit"
+                                    - "codecommit:GetRepository"
+                                    - "codecommit:GetUploadArchiveStatus"
+                                    - "codecommit:UploadArchive"
+                                    - "codedeploy:CreateDeployment"
+                                    - "codedeploy:GetApplication"
+                                    - "codedeploy:GetApplicationRevision"
+                                    - "codedeploy:GetDeployment"
+                                    - "codedeploy:GetDeploymentConfig"
+                                    - "codedeploy:RegisterApplicationRevision"
+                                    - "codestar-connections:UseConnection"
+                                    - "devicefarm:CreateUpload"
+                                    - "devicefarm:GetRun"
+                                    - "devicefarm:GetUpload"
+                                    - "devicefarm:ListDevicePools"
+                                    - "devicefarm:ListProjects"
+                                    - "devicefarm:ScheduleRun"
+                                    - "ec2:*"
+                                    - "ecr:DescribeImages"
+                                    - "ecs:*"
+                                    - "elasticbeanstalk:*"
+                                    - "elasticloadbalancing:*"
+                                    - "lambda:InvokeFunction"
+                                    - "lambda:ListFunctions"
+                                    - "opsworks:CreateDeployment"
+                                    - "opsworks:DescribeApps"
+                                    - "opsworks:DescribeCommands"
+                                    - "opsworks:DescribeDeployments"
+                                    - "opsworks:DescribeInstances"
+                                    - "opsworks:DescribeStacks"
+                                    - "opsworks:UpdateApp"
+                                    - "opsworks:UpdateStack"
+                                    - "rds:*"
+                                    - "s3:*"
+                                    - "servicecatalog:CreateProvisioningArtifact"
+                                    - "servicecatalog:DeleteProvisioningArtifact"
+                                    - "servicecatalog:DescribeProvisioningArtifact"
+                                    - "servicecatalog:ListProvisioningArtifacts"
+                                    - "servicecatalog:UpdateProduct"
+                                    - "sns:*"
+                                    - "sqs:*"
+                                    - "states:DescribeExecution"
+                                    - "states:DescribeStateMachine"
+                                    - "states:StartExecution"
+                                Resource: "*"
+                                Effect: "Allow"
+
+    BackendArtifactBucket:
+        Type: "AWS::S3::Bucket"
+        DeletionPolicy: "Delete"
+        Properties:
+            BucketName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".backend.artifacts"
+            LifecycleConfiguration:
+                Rules:
+                    -   ExpirationInDays: 7
+                        Status: Enabled
+
+    PipelineBackend:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".backend"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref BackendArtifactBucket
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: !Ref GitBranch
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_backend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectBackend
+                            InputArtifacts:
+                                -   Name: "strategy-game_backend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_backend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeDeploy"
+                            Configuration:
+                                ApplicationName: !Ref CodeDeployApplicationBackend
+                                DeploymentGroupName: !Ref DeploymentGroupBackend
+                            InputArtifacts:
+                                -   Name: "strategy-game_backend_build-artifact"
+                            RunOrder: 1
+
+    FrontendArtifactBucket:
+        Type: "AWS::S3::Bucket"
+        DeletionPolicy: "Delete"
+        Properties:
+            BucketName: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".frontend.artifacts"
+            LifecycleConfiguration:
+                Rules:
+                    -   ExpirationInDays: 7
+                        Status: Enabled
+
+    PipelineFrontend:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".frontend"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref FrontendArtifactBucket
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: !Ref GitBranch
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectFrontend
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "S3"
+                            Configuration:
+                                BucketName: !Ref WebAppBucket
+                                Extract: Yes
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+
+
+Outputs:
+    WebAppBucketName:
+        Description: "Name of the s3 bucket holding the webapp"
+        Value: !Ref WebAppBucket
+    BuildLogBucketName:
+        Description: "Name of the s3 bucket holding build logs"
+        Value: !Ref BuildLogBucket
+    BackendArtifactBucketName:
+        Description: "Name of the s3 bucket holding the backend build artifacts"
+        Value: !Ref BackendArtifactBucket
+    FrontendArtifactBucketName:
+        Description: "Name of the s3 bucket holding the frontend build artifacts"
+        Value: !Ref FrontendArtifactBucket
+    BackendPipelineName:
+        Description: "The name of the build/deploy-pipeline for the backend"
+        Value: !Ref PipelineBackend
+    FrontendPipelineName:
+        Description: "The name of the build/deploy-pipeline for the frontend"
+        Value: !Ref PipelineFrontend
+    ServerInstanceId:
+        Description: "The id of the ec-instance"
+        Value: !Ref ServerInstance
+    UrlWebApp:
+        Description: "The public url for the webapp"
+        Value: !Join
+            - ""
+            -   - ""
+                - !Ref WebAppDomain
+    UrlApi:
+        Description: "The public url for the api"
+        Value: !Join
+            - ""
+            -   - !Ref ApiAppDomain

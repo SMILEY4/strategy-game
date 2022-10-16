@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+    install:
+        runtime-versions:
+            nodejs: 12
+    build:
+        commands:
+            - yum install tree -y
+            - cd strategy-game-frontend
+            - aws s3 cp s3://strategy-game.config/frontend/.env.local env/.env.local
+            - aws s3 cp s3://strategy-game.config/frontend/.env.production.local env/.env.production.local
+            - tree -a -L 5
+            - npm install
+            - npm run build
+    post_build:
+        commands:
+            - echo Build completed
+
+artifacts:
+    files:
+        - "**/*"
+    base-directory: "strategy-game-frontend/dist"
