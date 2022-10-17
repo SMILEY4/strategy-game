@@ -5,8 +5,6 @@ services:
     app:
         image: strategy-game:latest
         container_name: strategy-game-backend
-        depends_on:
-            - database
         links:
             - database
         ports:
@@ -29,7 +27,7 @@ services:
         ports:
             - "9000:9090"
         volumes:
-            - ./../../monitoring/prometheus:/etc/prometheus/
+            - ./monitoring/prometheus:/etc/prometheus/
             - prometheus-data:/prometheus
         links:
             - app
@@ -42,8 +40,8 @@ services:
             - "3001:3000"
         user: "104"
         volumes:
-            - ./../../monitoring/grafana/dashboards:/etc/grafana/dashboards
-            - ./../../monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+            - ./monitoring/grafana/dashboards:/etc/grafana/dashboards
+            - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
             - grafana-data:/var/lib/grafana
         links:
             - prometheus
