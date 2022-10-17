@@ -19,7 +19,10 @@ import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.UserIdPrincipal
+import io.ktor.server.auth.basic
 import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.logging.toLogString
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -28,6 +31,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.request.uri
+import io.ktor.server.request.userAgent
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.RoutingApplicationCall
@@ -82,7 +86,8 @@ fun Application.module() {
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
             val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
-            "${status.toString()}: $httpMethod - $route"
+            val userAgent = call.request.userAgent() ?: "?"
+            "${status.toString()}: $httpMethod - $route      (userAgent=$userAgent)"
         }
         filter { call ->
             !call.request.path().startsWith("/api/metrics")
@@ -112,6 +117,15 @@ fun Application.module() {
     val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
         jwt { userIdentityService.configureAuthentication(this) }
+        basic("auth-swagger") {
+            validate { credentials ->
+                if (credentials.name == Config.get().swagger.user && credentials.password == Config.get().swagger.password) {
+                    UserIdPrincipal(credentials.name)
+                } else {
+                    null
+                }
+            }
+        }
     }
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -123,6 +137,7 @@ fun Application.module() {
         swagger {
             forwardRoot = true
             swaggerUrl = "/swagger-ui"
+            authentication = "auth-swagger"
         }
         info {
             title = "Strategy Game API"
@@ -168,7 +183,5 @@ fun Application.module() {
         }
     }
 
-
     apiRoutes()
 }
-
