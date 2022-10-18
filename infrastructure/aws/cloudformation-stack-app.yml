@@ -111,7 +111,7 @@ Resources:
             FunctionCode: |
                 var user = {
                     username: 'user',
-                    password: 'pass',
+                    password: '2Ny31EuPjrbu',
                 }
                 
                 var response401 = {
