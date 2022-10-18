@@ -122,25 +122,14 @@ Resources:
                     }
                 };
 
-                var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-                function btoa(input) {
-                        input = String(input);
-                        var bitmap, a, b, c,
-                            result = "", i = 0,
-                            rest = input.length % 3; // To determine the final padding
-                        for (; i < input.length;) {
-                            if ((a = input.charCodeAt(i++)) > 255
-                                    || (b = input.charCodeAt(i++)) > 255
-                                    || (c = input.charCodeAt(i++)) > 255)
-                                throw new TypeError("Failed to execute 'btoa' on 'Window': The string to be encoded contains characters outside of the Latin1 range.");
-                
-                            bitmap = (a << 16) | (b << 8) | c;
-                            result += b64.charAt(bitmap >> 18 & 63) + b64.charAt(bitmap >> 12 & 63)
-                                    + b64.charAt(bitmap >> 6 & 63) + b64.charAt(bitmap & 63);
-                        }
-                        // If there's need of padding, replace the last 'A's with equal signs
-                        return rest ? result.slice(0, rest - 3) + "===".substring(rest) : result;
-                    }
+                function toB64(a) {
+                    // source: https://gist.github.com/oeon/0ada0457194ebf70ec2428900ba76255
+                    var c, d, e, f, g, h, i, j, o, b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", k = 0, l = 0, m = "", n = [];
+                    if (!a) return a;
+                    do c = a.charCodeAt(k++), d = a.charCodeAt(k++), e = a.charCodeAt(k++), j = c << 16 | d << 8 | e, 
+                    f = 63 & j >> 18, g = 63 & j >> 12, h = 63 & j >> 6, i = 63 & j, n[l++] = b.charAt(f) + b.charAt(g) + b.charAt(h) + b.charAt(i); while (k < a.length);
+                    return m = n.join(""), o = a.length % 3, (o ? m.slice(0, o - 3) :m) + "===".slice(o || 3);
+                }
                 
                 function handler(event) {
                     var request = event.request;
@@ -149,7 +138,7 @@ Resources:
                     if(!auth || !auth.startsWith('Basic ')) {
                         return response401
                     } else {
-                        var authString = 'Basic ' + btoa(user.username + ':' + user.password);
+                        var authString = 'Basic ' + toB64(user.username + ':' + user.password);
                         if(authString === auth) {
                             return request
                         } else {
