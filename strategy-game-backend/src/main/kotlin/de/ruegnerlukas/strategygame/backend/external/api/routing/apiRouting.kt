@@ -6,6 +6,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.response.respond
@@ -30,9 +31,11 @@ fun Application.apiRoutes() {
             get("/health") {
                 call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
             }
-            get("/metrics") {
-                val metrics = meterRegistry.scrape()
-                call.respondText { metrics }
+            authenticate("auth-technical-user") {
+                get("/metrics") {
+                    val metrics = meterRegistry.scrape()
+                    call.respondText { metrics }
+                }
             }
         }
     }

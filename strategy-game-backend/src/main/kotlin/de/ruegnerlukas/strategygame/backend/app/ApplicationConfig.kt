@@ -22,7 +22,6 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
 import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.logging.toLogString
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -90,7 +89,9 @@ fun Application.module() {
             "${status.toString()}: $httpMethod - $route      (userAgent=$userAgent)"
         }
         filter { call ->
-            !call.request.path().startsWith("/api/metrics")
+            listOf("api/metrics", "api/health").none {
+                call.request.path().startsWith(it)
+            }
         }
     }
     install(ContentNegotiation) {
@@ -117,9 +118,11 @@ fun Application.module() {
     val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
         jwt { userIdentityService.configureAuthentication(this) }
-        basic("auth-swagger") {
+        basic("auth-technical-user") {
             validate { credentials ->
-                if (credentials.name == Config.get().swagger.user && credentials.password == Config.get().swagger.password) {
+                val username = Config.get().auth.technicalUsername
+                val password = Config.get().auth.technicalPassword
+                if (credentials.name == username && credentials.password == password) {
                     UserIdPrincipal(credentials.name)
                 } else {
                     null
@@ -137,7 +140,7 @@ fun Application.module() {
         swagger {
             forwardRoot = true
             swaggerUrl = "/swagger-ui"
-            authentication = "auth-swagger"
+            authentication = "auth-technical-user"
         }
         info {
             title = "Strategy Game API"

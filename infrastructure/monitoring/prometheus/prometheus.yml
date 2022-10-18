@@ -1,11 +1,14 @@
 scrape_configs:
     - job_name: 'backend'
       metrics_path: /api/metrics
-      scrape_interval: 30s
+      basic_auth:
+        username: 'tech-user'
+        password_file: './secret.local.txt'
+      scrape_interval: 180s
       static_configs:
           - targets: ['app:8080', 'host.docker.internal:8080']
     - job_name: 'database'
       metrics_path: /_admin/metrics/v2
-      scrape_interval: 30s
+      scrape_interval: 180s
       static_configs:
           - targets: ['database:8529']
