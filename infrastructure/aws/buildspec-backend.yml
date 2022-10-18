@@ -12,8 +12,8 @@ phases:
             - REPOSITORY_URI=$ECR_URI/$ECR_REPO
             - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
             - echo Find git-tag...
-            - chmod +x infrastructure2/aws/codebuild-git-wrapper.sh
-            - infrastructure2/aws/codebuild-git-wrapper.sh https://github.com/SMILEY4/strategy-game.git deployment-marker
+            - chmod +x infrastructure/aws/codebuild-git-wrapper.sh
+            - infrastructure/aws/codebuild-git-wrapper.sh https://github.com/SMILEY4/strategy-game.git deployment-marker
             - GIT_TAG=$(git tag --points-at HEAD)
             - IMAGE_TAG=${GIT_TAG:-$COMMIT_HASH}
             - echo Logging in to Amazon ECR...
@@ -41,6 +41,6 @@ phases:
 
 artifacts:
     files:
-        - infrastructure2/aws/backend/*
-        - infrastructure2/docker-compose.yml
+        - infrastructure/aws/backend/*
+        - infrastructure/docker-compose.yml
     discard-paths: yes
