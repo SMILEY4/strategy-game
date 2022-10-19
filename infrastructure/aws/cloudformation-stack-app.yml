@@ -4,7 +4,7 @@ Parameters:
     EnvName:
         Type: "String"
         Description: "Name of the created environment added to the names of all created resources. The (beginning) delimiter is specified in the parameter-value."
-        Default: ""
+        Default: "-dev"
     WebAppCertificateArn:
         Type: "String"
         Description: "Arn of the certificate for the webapp. Must be in region us-east-1"
@@ -41,10 +41,14 @@ Parameters:
         Type: "String"
         Description: "Arn of the already created codestar connection to github"
         Default: "arn:aws:codestar-connections:eu-central-1:627717213620:connection/16c629c9-0240-49a9-a2bf-93ea8ef91b10"
+    GeneralLogBucketName:
+        Type: "String"
+        Description: "The name of the s3-bucket to use for general system logs"
+        Default: "strategy-game.logs"
     BuildLogBucketName:
         Type: "String"
         Description: "The name of the s3-bucket to use for build logs"
-        Default: "strategy-game.build.log"
+        Default: "strategy-game.logs.build"
     BackendArtifactBucketName:
         Type: "String"
         Description: "The name of the s3-bucket to use for backend build-artifacts"
@@ -209,6 +213,11 @@ Resources:
                     SslSupportMethod: "sni-only"
                 HttpVersion: "http2"
                 PriceClass: "PriceClass_100"
+                Logging:
+                    Bucket: !Ref GeneralLogBucketName
+                    Prefix: "cloudfront/"
+                    IncludeCookies: false
+
 
     #===================================================================================================================
     #    EC2 Backend-Server
@@ -359,7 +368,13 @@ Resources:
                 - "subnet-05b5e8e70a2ebc72a"
             SecurityGroups:
                 - !GetAtt ServerSecurityGroup.GroupId
-
+            LoadBalancerAttributes:
+                -   Key: "access_logs.s3.enabled"
+                    Value: "true"
+                -   Key: "access_logs.s3.bucket"
+                    Value: !Ref GeneralLogBucketName
+                -   Key: "access_logs.s3.prefix"
+                    Value: "loadbalancer/"
     AppLoadBalancerListener:
         Type: "AWS::ElasticLoadBalancingV2::Listener"
         Properties:

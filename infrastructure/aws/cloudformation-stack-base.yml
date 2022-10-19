@@ -17,11 +17,21 @@ Resources:
     #    Common S3-Buckets
     #===================================================================================================================
 
+    GeneralLogBucket:
+        Type: "AWS::S3::Bucket"
+        DeletionPolicy: "Delete"
+        Properties:
+            BucketName: "strategy-game.logs"
+            LifecycleConfiguration:
+                Rules:
+                    -   ExpirationInDays: 7
+                        Status: Enabled
+
     BuildLogBucket:
         Type: "AWS::S3::Bucket"
         DeletionPolicy: "Delete"
         Properties:
-            BucketName: "strategy-game.build.log"
+            BucketName: "strategy-game.logs.build"
             LifecycleConfiguration:
                 Rules:
                     -   ExpirationInDays: 7
@@ -48,6 +58,9 @@ Resources:
                         Status: Enabled
 
 Outputs:
+    GeneralLogBucketName:
+        Description: "Name of the s3-bucket holding general system logs"
+        Value: !Ref GeneralLogBucket
     BuildLogBucketName:
         Description: "Name of the s3-bucket holding build logs"
         Value: !Ref BuildLogBucket
