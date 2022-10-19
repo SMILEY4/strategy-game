@@ -13,7 +13,10 @@ export class GameListAction {
 
     perform(): Promise<string[]> {
         console.debug("Listing Games");
-        return this.gameApi.list();
+        return this.gameApi.list().catch(error => {
+            console.error("Could not list games", error);
+            return [];
+        });
     }
 
 

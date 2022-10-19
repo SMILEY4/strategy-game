@@ -1,5 +1,5 @@
 import {UserRepository} from "../../../core/required/userRepository";
-import {optional} from "../../../shared/optional";
+import {Optional, optional} from "../../../shared/optional";
 import {UserStore} from "./userStore";
 
 export class UserRepositoryImpl implements UserRepository {
@@ -18,7 +18,7 @@ export class UserRepositoryImpl implements UserRepository {
 
     getAuthToken(): string {
         return optional(UserStore.useState.getState().idToken)
-            .getValueOrThrow("Not authenticated");
+            .getValueOrThrow("Not authenticated (no token set)");
     }
 
     getUserId(): string {
