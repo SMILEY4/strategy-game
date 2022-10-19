@@ -41,6 +41,18 @@ Parameters:
         Type: "String"
         Description: "Arn of the already created codestar connection to github"
         Default: "arn:aws:codestar-connections:eu-central-1:627717213620:connection/16c629c9-0240-49a9-a2bf-93ea8ef91b10"
+    BuildLogBucketName:
+        Type: "String"
+        Description: "The name of the s3-bucket to use for build logs"
+        Default: "strategy-game.build.log"
+    BackendArtifactBucketName:
+        Type: "String"
+        Description: "The name of the s3-bucket to use for backend build-artifacts"
+        Default: "strategy-game.artifacts.backend"
+    FrontendArtifactBucketName:
+        Type: "String"
+        Description: "The name of the s3-bucket to use for frontend build-artifacts"
+        Default: "strategy-game.artifacts.frontend"
 
 Resources:
 
@@ -393,20 +405,6 @@ Resources:
 
     # Build Stage
 
-    BuildLogBucket:
-        Type: "AWS::S3::Bucket"
-        DeletionPolicy: "Delete"
-        Properties:
-            BucketName: !Join
-                - ""
-                -   - "strategy-game"
-                    - !Ref EnvName
-                    - ".build-log"
-            LifecycleConfiguration:
-                Rules:
-                    -   ExpirationInDays: 7
-                        Status: Enabled
-
     CodeBuildRole:
         Type: "AWS::IAM::Role"
         Properties:
@@ -491,7 +489,7 @@ Resources:
                 S3Logs:
                     Location: !Join
                         - ""
-                        -   - !GetAtt BuildLogBucket.Arn
+                        -   - !Ref BuildLogBucketName
                             - "/backend"
                     Status: "ENABLED"
 
@@ -517,7 +515,7 @@ Resources:
                 S3Logs:
                     Location: !Join
                         - ""
-                        -   - !GetAtt BuildLogBucket.Arn
+                        -   - !Ref BuildLogBucketName
                             - "/frontend"
                     Status: "ENABLED"
 
@@ -685,20 +683,6 @@ Resources:
                                 Resource: "*"
                                 Effect: "Allow"
 
-    BackendArtifactBucket:
-        Type: "AWS::S3::Bucket"
-        DeletionPolicy: "Delete"
-        Properties:
-            BucketName: !Join
-                - ""
-                -   - "strategy-game"
-                    - !Ref EnvName
-                    - ".backend.artifacts"
-            LifecycleConfiguration:
-                Rules:
-                    -   ExpirationInDays: 7
-                        Status: Enabled
-
     PipelineBackend:
         Type: "AWS::CodePipeline::Pipeline"
         Properties:
@@ -711,7 +695,7 @@ Resources:
             RestartExecutionOnUpdate: false
             ArtifactStore:
                 Type: "S3"
-                Location: !Ref BackendArtifactBucket
+                Location: !Ref BackendArtifactBucketName
             Stages:
                 -   Name: "Source"
                     Actions:
@@ -760,20 +744,6 @@ Resources:
                                 -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
 
-    FrontendArtifactBucket:
-        Type: "AWS::S3::Bucket"
-        DeletionPolicy: "Delete"
-        Properties:
-            BucketName: !Join
-                - ""
-                -   - "strategy-game"
-                    - !Ref EnvName
-                    - ".frontend.artifacts"
-            LifecycleConfiguration:
-                Rules:
-                    -   ExpirationInDays: 7
-                        Status: Enabled
-
     PipelineFrontend:
         Type: "AWS::CodePipeline::Pipeline"
         Properties:
@@ -786,7 +756,7 @@ Resources:
             RestartExecutionOnUpdate: false
             ArtifactStore:
                 Type: "S3"
-                Location: !Ref FrontendArtifactBucket
+                Location: !Ref FrontendArtifactBucketName
             Stages:
                 -   Name: "Source"
                     Actions:
@@ -840,15 +810,6 @@ Outputs:
     WebAppBucketName:
         Description: "Name of the s3 bucket holding the webapp"
         Value: !Ref WebAppBucket
-    BuildLogBucketName:
-        Description: "Name of the s3 bucket holding build logs"
-        Value: !Ref BuildLogBucket
-    BackendArtifactBucketName:
-        Description: "Name of the s3 bucket holding the backend build artifacts"
-        Value: !Ref BackendArtifactBucket
-    FrontendArtifactBucketName:
-        Description: "Name of the s3 bucket holding the frontend build artifacts"
-        Value: !Ref FrontendArtifactBucket
     BackendPipelineName:
         Description: "The name of the build/deploy-pipeline for the backend"
         Value: !Ref PipelineBackend
