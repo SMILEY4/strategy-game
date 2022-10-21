@@ -11,7 +11,7 @@ services:
             - "8080:8080"
 
     database:
-        image: arangodb:latest
+        image: arangodb:3.10.0
         container_name: strategy-game-database
         environment:
             ARANGO_NO_AUTH: 1
@@ -22,7 +22,7 @@ services:
             - arangodb_apps_data_container:/var/lib/arangodb3-apps
 
     prometheus:
-        image: prom/prometheus
+        image: prom/prometheus:v2.39.1
         restart: always
         ports:
             - "9000:9090"
@@ -35,7 +35,7 @@ services:
         command: --config.file=/etc/prometheus/prometheus.yml
 
     grafana:
-        image: grafana/grafana:5.1.0
+        image: grafana/grafana:9.2.1
         ports:
             - "3001:3000"
         user: "104"
@@ -43,6 +43,8 @@ services:
             - ./monitoring/grafana/dashboards:/etc/grafana/dashboards
             - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
             - grafana-data:/var/lib/grafana
+        env_file:
+            - ./monitoring/grafana/config.env
         links:
             - prometheus
 
