@@ -107,21 +107,21 @@ val applicationDependencies = module {
     single<UserLoginAction> { UserLoginActionImpl(get()) }
     single<UserRefreshTokenAction> { UserRefreshTokenActionImpl(get()) }
 
-    single<CommandsInsert> { CommandsInsertImpl(get(), get()) }
-    single<GameInsert> { GameInsertImpl(get(), get()) }
-    single<CommandsByGameQuery> { CommandsByGameQueryImpl(get(), get()) }
-    single<GameQuery> { GameQueryImpl(get(), get()) }
-    single<GamesByUserQuery> { GamesByUserQueryImpl(get(), get()) }
-    single<GameExtendedQuery> { GameExtendedQueryImpl(get(), get()) }
-    single<GameUpdate> { GameUpdateImpl(get(), get()) }
-    single<GameDelete> { GameDeleteImpl(get(), get()) }
-    single<CountryInsert> { CountryInsertImpl(get(), get()) }
-    single<GameExtendedUpdate> { GameExtendedUpdateImpl(get(), get()) }
-    single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get(), get()) }
-    single<ReservationInsert> { ReservationInsertImpl(get(), get()) }
-    single<TilesQueryByGame> { TilesQueryByGameImpl(get(), get()) }
-    single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get(), get()) }
-    single<TilesUpdate> { TilesUpdateImpl(get(), get()) }
+    single<CommandsInsert> { CommandsInsertImpl(get()) }
+    single<GameInsert> { GameInsertImpl(get()) }
+    single<CommandsByGameQuery> { CommandsByGameQueryImpl(get()) }
+    single<GameQuery> { GameQueryImpl(get()) }
+    single<GamesByUserQuery> { GamesByUserQueryImpl(get()) }
+    single<GameExtendedQuery> { GameExtendedQueryImpl(get()) }
+    single<GameUpdate> { GameUpdateImpl(get()) }
+    single<GameDelete> { GameDeleteImpl(get()) }
+    single<CountryInsert> { CountryInsertImpl(get()) }
+    single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
+    single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get()) }
+    single<ReservationInsert> { ReservationInsertImpl(get()) }
+    single<TilesQueryByGame> { TilesQueryByGameImpl(get()) }
+    single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get()) }
+    single<TilesUpdate> { TilesUpdateImpl(get()) }
 
     single<GameConfig> { GameConfig.default() }
     single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl() }
