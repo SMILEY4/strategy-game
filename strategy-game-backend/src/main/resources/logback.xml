@@ -9,15 +9,13 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>strategy-game-backend.log</file>
+        <file>log/strategy-game-backend.log</file>
         <append>true</append>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
-        <encoder>
-            <pattern>
-                %d{YYYY-MM-dd HH:mm:ss.SSS} %-5level %thread %logger{36} - %msg%n
-            </pattern>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"application":"backend"}</customFields>
         </encoder>
     </appender>
 
