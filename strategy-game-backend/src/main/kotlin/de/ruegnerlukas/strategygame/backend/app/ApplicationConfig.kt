@@ -90,7 +90,7 @@ fun Application.module() {
         }
         filter { call ->
             listOf("api/metrics", "api/health").none {
-                call.request.path().startsWith(it)
+                call.request.path().contains(it)
             }
         }
     }
