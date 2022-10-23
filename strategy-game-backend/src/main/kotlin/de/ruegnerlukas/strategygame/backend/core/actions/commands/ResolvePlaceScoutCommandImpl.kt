@@ -7,11 +7,11 @@ import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceScoutCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.ScoutTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
@@ -28,11 +28,11 @@ class ResolvePlaceScoutCommandImpl(
     private val metricId = metricCoreAction(ResolvePlaceScoutCommand::class)
 
     override suspend fun perform(
-        command: CommandEntity<PlaceScoutCommandDataEntity>,
-        game: GameExtendedEntity
+        command: Command<PlaceScoutCommandData>,
+        game: GameExtended
     ): Either<ResolveCommandsActionError, List<CommandResolutionError>> {
         return Monitoring.coTime(metricId) {
-            log().info("Resolving 'place-scout'-command for game ${game.game.key} and country ${command.countryId}")
+            log().info("Resolving '${command.data.displayName()}'-command for game ${game.game.gameId} and country ${command.countryId}")
             either {
                 val targetTile = findTile(command.data.q, command.data.r, game).bind()
                 validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->
@@ -45,13 +45,13 @@ class ResolvePlaceScoutCommandImpl(
     }
 
 
-    private fun findTile(q: Int, r: Int, state: GameExtendedEntity): Either<ResolveCommandsActionError, TileEntity> {
+    private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
         return targetTile?.right() ?: ResolveCommandsAction.TileNotFoundError.left()
     }
 
 
-    private fun addScout(tile: TileEntity, countryId: String, turn: Int) {
+    private fun addScout(tile: Tile, countryId: String, turn: Int) {
         tile.content.add(ScoutTileContent(countryId, turn))
     }
 
@@ -60,7 +60,7 @@ class ResolvePlaceScoutCommandImpl(
 
 private object PlaceScoutValidations {
 
-    fun validateCommand(gameConfig: GameConfig, countryId: String, targetTile: TileEntity, game: GameExtendedEntity): ValidationContext {
+    fun validateCommand(gameConfig: GameConfig, countryId: String, targetTile: Tile, game: GameExtended): ValidationContext {
         return validations(false) {
             validTileVisibility(countryId, targetTile)
             validTileSpace(countryId, targetTile)
@@ -69,26 +69,25 @@ private object PlaceScoutValidations {
     }
 
 
-    fun ValidationContext.validTileVisibility(countryId: String, tile: TileEntity) {
+    fun ValidationContext.validTileVisibility(countryId: String, tile: Tile) {
         validate("SCOUT.TILE_VISIBILITY") {
             tile.discoveredByCountries.contains(countryId)
         }
     }
 
-    fun ValidationContext.validTileSpace(countryId: String, tile: TileEntity) {
+    fun ValidationContext.validTileSpace(countryId: String, tile: Tile) {
         validate("SCOUT.TILE_SPACE") {
             tile.content
-                .filter { it.type == ScoutTileContent.TYPE }
-                .map { it as ScoutTileContent }
+                .filterIsInstance<ScoutTileContent>()
                 .none { it.countryId == countryId }
         }
     }
 
-    fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: List<TileEntity>) {
+    fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: List<Tile>) {
         validate("SCOUT.AMOUNT") {
             tiles
                 .asSequence()
-                .mapNotNull { tile -> tile.content.find { it.type == ScoutTileContent.TYPE }?.let { it as ScoutTileContent } }
+                .mapNotNull { tile -> tile.content.find { it is ScoutTileContent }?.let { it as ScoutTileContent } }
                 .filter { scout -> scout.countryId == countryId }
                 .count() < gameConfig.scoutsMaxAmount
         }

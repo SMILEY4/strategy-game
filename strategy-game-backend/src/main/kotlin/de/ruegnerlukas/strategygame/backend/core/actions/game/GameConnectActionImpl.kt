@@ -5,12 +5,12 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.InvalidPlayerState
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
@@ -39,15 +39,15 @@ class GameConnectActionImpl(
     /**
      * Find and return the game or an [GameNotFoundError] if the game does not exist
      */
-    private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
+    private suspend fun findGame(gameId: String): Either<GameNotFoundError, Game> {
         return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
     /**
      * Write the new connection of the player to the db.
      */
-    private suspend fun setConnection(game: GameEntity, userId: String, connectionId: Int): Either<InvalidPlayerState, Unit> {
-        val player = game.players.find { it.userId == userId }
+    private suspend fun setConnection(game: Game, userId: String, connectionId: Int): Either<InvalidPlayerState, Unit> {
+        val player = game.players.findByUserId(userId)
         if (player != null && player.connectionId == null) {
             player.connectionId = connectionId
             gameUpdate.execute(game)

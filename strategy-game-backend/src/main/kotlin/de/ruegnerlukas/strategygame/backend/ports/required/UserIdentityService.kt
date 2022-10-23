@@ -1,12 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.ports.required
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.config.Config
-import de.ruegnerlukas.strategygame.backend.config.ConfigData
+import de.ruegnerlukas.strategygame.backend.app.Config
+import de.ruegnerlukas.strategygame.backend.app.ConfigData
 import de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService
 import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {
@@ -86,7 +86,7 @@ interface UserIdentityService {
     /**
      * Authenticate the given user.
      */
-    fun authenticate(email: String, password: String): Either<AuthUserError, ExtendedAuthData>
+    fun authenticate(email: String, password: String): Either<AuthUserError, AuthDataExtended>
 
 
     /**

@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
@@ -26,20 +26,28 @@ class GameDisconnectActionImpl(
     /**
      * find all games of the current user
      */
-    private suspend fun findGames(userId: String): List<GameEntity> {
+    private suspend fun findGames(userId: String): List<Game> {
         return gamesByUserQuery.execute(userId)
     }
 
     /**
      * Set all connections of the given user to "null"
      */
-    private suspend fun clearConnections(userId: String, games: List<GameEntity>) {
-        games
-            .filter { game -> game.players.find { it.userId == userId }?.connectionId != null }
+    private suspend fun clearConnections(userId: String, games: List<Game>) {
+        gamesWithConnectedUser(
+            games, userId
+        )
             .forEach { game ->
-                game.players.find { it.userId == userId }?.connectionId = null
+                game.players.findByUserId(userId)?.connectionId = null
                 gameUpdate.execute(game)
             }
+    }
+
+    /**
+     * Find all games the player with the given userId is currently connected to
+     */
+    private fun gamesWithConnectedUser(games: List<Game>, userId: String): List<Game> {
+        return games.filter { game -> game.players.findByUserId(userId)?.connectionId != null }
     }
 
 }

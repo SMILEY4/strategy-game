@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend
 
-import de.ruegnerlukas.strategygame.backend.config.engine.CustomNettyEngineMain
+import de.ruegnerlukas.strategygame.backend.app.engine.CustomNettyEngineMain
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 object ApplicationMode {

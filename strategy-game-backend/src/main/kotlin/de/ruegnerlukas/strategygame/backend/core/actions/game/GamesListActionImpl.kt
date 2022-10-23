@@ -23,7 +23,7 @@ class GamesListActionImpl(
      * Find all games with the given user as a player and return the ids
      */
     private suspend fun getGameIds(userId: String): List<String> {
-        return gamesByUserQuery.execute(userId).map { it.getKeyOrThrow() }
+        return gamesByUserQuery.execute(userId).map { it.gameId }
     }
 
 }

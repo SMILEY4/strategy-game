@@ -12,7 +12,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.SendGameStateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
@@ -70,7 +70,9 @@ object TestActions {
                     ReservationInsertImpl(database),
                     GameConfig.default()
                 ),
-                ResolveCreateBuildingCommandImpl(),
+                ResolveCreateBuildingCommandImpl(
+                    GameConfig.default()
+                ),
                 ResolveCreateTownCommandImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()
@@ -109,7 +111,9 @@ object TestActions {
             ReservationInsertImpl(database),
             GameConfig.default()
         ),
-        ResolveCreateBuildingCommandImpl(),
+        ResolveCreateBuildingCommandImpl(
+            GameConfig.default()
+        ),
         ResolveCreateTownCommandImpl(
             ReservationInsertImpl(database),
             GameConfig.default()
@@ -126,7 +130,9 @@ object TestActions {
                 ReservationInsertImpl(database),
                 GameConfig.default()
             ),
-            ResolveCreateBuildingCommandImpl(),
+            ResolveCreateBuildingCommandImpl(
+                GameConfig.default()
+            ),
             ResolveCreateTownCommandImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()

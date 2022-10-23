@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.ports.required.persistence
 
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 
 interface GameInsert {
-	suspend fun execute(game: GameEntity, tiles: List<TileEntity>): String
+	suspend fun execute(game: Game, tiles: List<Tile>): String
 }

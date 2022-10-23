@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
@@ -28,14 +28,14 @@ class UncoverMapAreaActionImpl(
     /**
      * Find all tiles with the given positions
      */
-    private suspend fun findTiles(gameId: String, positions: List<TilePosition>): List<TileEntity> {
+    private suspend fun findTiles(gameId: String, positions: List<TilePosition>): List<Tile> {
         return tilesByPosition.execute(gameId, positions)
     }
 
     /**
      * Mark the given tiles as discovered by the given country and update them in the database
      */
-    private suspend fun uncoverTiles(tiles: List<TileEntity>, countryId: String) {
+    private suspend fun uncoverTiles(tiles: List<Tile>, countryId: String) {
         tiles
             .filter { !it.discoveredByCountries.contains(countryId) }
             .forEach {

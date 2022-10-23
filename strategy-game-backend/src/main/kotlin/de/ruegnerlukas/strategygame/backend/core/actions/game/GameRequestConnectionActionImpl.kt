@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameNotFoundError
@@ -34,15 +34,15 @@ class GameRequestConnectionActionImpl(
     /**
      * Find and return the game or an [GameNotFoundError] if the game does not exist
      */
-    private suspend fun findGame(gameId: String): Either<GameNotFoundError, GameEntity> {
+    private suspend fun findGame(gameId: String): Either<GameNotFoundError, Game> {
         return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
     /**
      * Validate whether the given user can connect to the given game. Return nothing or an [GameRequestConnectionActionError]
      */
-    private fun validatePlayer(game: GameEntity, userId: String): Either<GameRequestConnectionActionError, Unit> {
-        val player = game.players.find { it.userId == userId }
+    private fun validatePlayer(game: Game, userId: String): Either<GameRequestConnectionActionError, Unit> {
+        val player = game.players.findByUserId(userId)
         if (player != null) {
             if (player.connectionId == null) {
                 return Unit.right()

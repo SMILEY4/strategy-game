@@ -2,18 +2,19 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateTownCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateBuildingCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateCityCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CreateTownCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceMarkerCommandDataEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.PlaceScoutCommandDataEntity
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
@@ -49,7 +50,7 @@ class GameTestContext {
 
     private val commandResolutionErrors = mutableMapOf<Int, MutableList<CommandResolutionError>>()
 
-    suspend fun getCityId(name: String) = TestUtils.getCities(database, gameId!!).find { it.name == name }!!.getKeyOrThrow()
+    suspend fun getCityId(name: String) = TestUtils.getCities(database, gameId!!).find { it.name == name }!!.cityId
 
     //=======================//
     //      CREATE GAME      //
@@ -59,7 +60,7 @@ class GameTestContext {
         val config = CreateGameConfig().apply(block)
         gameId = TestActions.gameCreateAction(database).perform(config.worldSettings)
         TestUtils.getGame(database, gameId!!).let {
-            it.key shouldBe gameId
+            it.gameId shouldBe gameId
             it.turn shouldBe 0
         }
         config.getUsers().forEach { joinGame(it) }
@@ -91,7 +92,7 @@ class GameTestContext {
         TestActions.gameJoinAction(database).perform(config.userId!!, config.gameId ?: gameId!!).also {
             if (config.expectedError == null) {
                 it shouldBeOk true
-                countryIds[config.userId!!] = TestUtils.getCountry(database, gameId!!, config.userId!!).key!!
+                countryIds[config.userId!!] = TestUtils.getCountry(database, gameId!!, config.userId!!).countryId
             } else {
                 it shouldBeError config.expectedError
             }
@@ -164,17 +165,18 @@ class GameTestContext {
 
         var expectedActionError: ResolveCommandsAction.TileNotFoundError? = null
 
-        private val commands = mutableListOf<CommandEntity<*>>()
+        private val commands = mutableListOf<Command<*>>()
 
         fun getCommands() = commands
 
         fun createCity(countryId: String, turn: Int = 0, block: CommandCreateCityConfig.() -> Unit) {
             val config = CommandCreateCityConfig().apply(block)
             commands.add(
-                CommandEntity(
+                Command(
+                    commandId = DbId.PLACEHOLDER,
                     countryId = countryId,
                     turn = turn,
-                    data = CreateCityCommandDataEntity(
+                    data = CreateCityCommandData(
                         q = config.q!!,
                         r = config.r!!,
                         name = config.name!!,
@@ -192,10 +194,11 @@ class GameTestContext {
         suspend fun createTown(countryId: String, turn: Int = 0, block: suspend CommandCreateTownConfig.() -> Unit) {
             val config = CommandCreateTownConfig().coApply(block)
             commands.add(
-                CommandEntity(
+                Command(
+                    commandId = DbId.PLACEHOLDER,
                     countryId = countryId,
                     turn = turn,
-                    data = CreateTownCommandDataEntity(
+                    data = CreateTownCommandData(
                         q = config.q!!,
                         r = config.r!!,
                         name = config.name!!,
@@ -215,10 +218,11 @@ class GameTestContext {
         suspend fun placeMarker(countryId: String, turn: Int = 0, block: suspend CommandPlaceMarkerConfig.() -> Unit) {
             val config = CommandPlaceMarkerConfig().coApply(block)
             commands.add(
-                CommandEntity(
+                Command(
+                    commandId = DbId.PLACEHOLDER,
                     countryId = countryId,
                     turn = turn,
-                    data = PlaceMarkerCommandDataEntity(
+                    data = PlaceMarkerCommandData(
                         q = config.q!!,
                         r = config.r!!,
                     )
@@ -242,29 +246,33 @@ class GameTestContext {
         val config = ResolveCommandsConfig().coApply(block)
         TestActions.turnSubmitAction(database).perform(userId, gameId!!, config.getCommands().map { cmd ->
             when (cmd.data) {
-                is CreateCityCommandDataEntity -> CreateCityCommand(
-                    q = (cmd.data as CreateCityCommandDataEntity).q,
-                    r = (cmd.data as CreateCityCommandDataEntity).r,
-                    name = (cmd.data as CreateCityCommandDataEntity).name,
+                is CreateCityCommandData -> CreateCityCommand(
+                    q = (cmd.data as CreateCityCommandData).q,
+                    r = (cmd.data as CreateCityCommandData).r,
+                    name = (cmd.data as CreateCityCommandData).name,
                     parentCity = null,
                 )
-                is CreateTownCommandDataEntity -> CreateCityCommand(
-                    q = (cmd.data as CreateTownCommandDataEntity).q,
-                    r = (cmd.data as CreateTownCommandDataEntity).r,
-                    name = (cmd.data as CreateTownCommandDataEntity).name,
-                    parentCity = (cmd.data as CreateTownCommandDataEntity).parentCity,
+
+                is CreateTownCommandData -> CreateCityCommand(
+                    q = (cmd.data as CreateTownCommandData).q,
+                    r = (cmd.data as CreateTownCommandData).r,
+                    name = (cmd.data as CreateTownCommandData).name,
+                    parentCity = (cmd.data as CreateTownCommandData).parentCity,
                 )
-                is PlaceMarkerCommandDataEntity -> PlaceMarkerCommand(
-                    q = (cmd.data as PlaceMarkerCommandDataEntity).q,
-                    r = (cmd.data as PlaceMarkerCommandDataEntity).r,
+
+                is PlaceMarkerCommandData -> PlaceMarkerCommand(
+                    q = (cmd.data as PlaceMarkerCommandData).q,
+                    r = (cmd.data as PlaceMarkerCommandData).r,
                 )
-                is PlaceScoutCommandDataEntity -> PlaceScoutCommand(
-                    q = (cmd.data as PlaceScoutCommandDataEntity).q,
-                    r = (cmd.data as PlaceScoutCommandDataEntity).r,
+
+                is PlaceScoutCommandData -> PlaceScoutCommand(
+                    q = (cmd.data as PlaceScoutCommandData).q,
+                    r = (cmd.data as PlaceScoutCommandData).r,
                 )
-                is CreateBuildingCommandDataEntity -> CreateBuildingCommand(
-                    cityId = (cmd.data as CreateBuildingCommandDataEntity).cityId,
-                    buildingType = (cmd.data as CreateBuildingCommandDataEntity).buildingType,
+
+                is CreateBuildingCommandData -> CreateBuildingCommand(
+                    cityId = (cmd.data as CreateBuildingCommandData).cityId,
+                    buildingType = (cmd.data as CreateBuildingCommandData).buildingType,
                 )
             }
         })

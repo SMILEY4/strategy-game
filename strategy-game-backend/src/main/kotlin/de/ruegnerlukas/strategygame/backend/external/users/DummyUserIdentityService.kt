@@ -5,8 +5,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthDataExtended
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
@@ -69,9 +69,9 @@ class DummyUserIdentityService : UserIdentityService {
 		}
 	}
 
-	override fun authenticate(email: String, password: String): Either<UserIdentityService.AuthUserError, ExtendedAuthData> {
+	override fun authenticate(email: String, password: String): Either<UserIdentityService.AuthUserError, AuthDataExtended> {
 		return Either.Right(
-			ExtendedAuthData(
+			AuthDataExtended(
 				idToken = makeToken(email),
 				refreshToken = "someRefreshToken",
 				accessToken = "someAccessToken",

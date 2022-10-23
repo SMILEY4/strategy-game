@@ -1,9 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.ports.required.persistence
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 
 interface TilesUpdate {
-	suspend fun execute(tiles: List<TileEntity>): Either<EntityNotFoundError, Unit>
+	suspend fun execute(tiles: List<Tile>): Either<EntityNotFoundError, Unit>
 }

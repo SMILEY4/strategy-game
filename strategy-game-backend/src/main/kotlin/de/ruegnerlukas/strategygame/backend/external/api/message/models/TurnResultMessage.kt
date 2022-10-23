@@ -2,8 +2,6 @@ package de.ruegnerlukas.strategygame.backend.external.api.message.models
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.TurnResultMessage.Companion.TurnResultPayload
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CommandResolutionErrorDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 
