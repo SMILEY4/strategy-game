@@ -3,7 +3,7 @@ scrape_configs:
       metrics_path: /api/metrics
       basic_auth:
         username: 'tech-user'
-        password_file: './secret.local.txt'
+        password_file: './secret.txt'
       scrape_interval: 90s
       static_configs:
           - targets: ['app:8080', 'host.docker.internal:8080']
