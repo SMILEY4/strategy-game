@@ -138,7 +138,7 @@ fun Application.module() {
     }
     install(SwaggerUI) {
         swagger {
-            forwardRoot = true
+            forwardRoot = false
             swaggerUrl = "/swagger-ui"
             authentication = "auth-technical-user"
         }

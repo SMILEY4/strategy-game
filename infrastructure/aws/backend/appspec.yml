@@ -13,12 +13,12 @@ permissions:
 
 
 hooks:
+    ApplicationStop:
+      - location: kill_container.sh
+        timeout: 300
     AfterInstall:
         - location: load_image.sh
           timeout: 300
     ApplicationStart:
         - location: start_container.sh
           timeout: 300
-    ApplicationStop:
-        - location: kill_container.sh
-          timeout: 20

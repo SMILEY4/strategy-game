@@ -2,4 +2,5 @@
 
 set -e
 
-docker rm -f strategy-game || true
+cd /home/ubuntu/server
+sudo docker compose down
