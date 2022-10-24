@@ -30,8 +30,8 @@ services:
             - ./monitoring/prometheus:/etc/prometheus/
             - prometheus-data:/prometheus
         links:
-            - app
             - database
+            - app
         command: --config.file=/etc/prometheus/prometheus.yml
 
     grafana:
@@ -43,8 +43,6 @@ services:
             - ./monitoring/grafana/dashboards:/etc/grafana/dashboards
             - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
             - grafana-data:/var/lib/grafana
-        env_file:
-            - ./monitoring/grafana/config.env
         links:
             - prometheus
 
