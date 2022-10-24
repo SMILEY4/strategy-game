@@ -28,6 +28,9 @@ phases:
             - aws s3 cp s3://strategy-game.config/backend/application.prod.local.conf src/main/resources/application.prod.local.conf
             - echo Building the Docker image...
             - docker build -t $REPOSITORY_URI:latest .
+            - cd ..
+            - cp ./infrastructure/aws/backend/appspec.yml ./appspec.yml 
+
     post_build:
         commands:
             - echo Build completed on `date`
@@ -38,8 +41,7 @@ phases:
             - echo Deleting untagged Images...
             - IMAGES_TO_DELETE=$( aws ecr list-images --region $ECR_REGION --repository-name $ECR_REPO --filter "tagStatus=UNTAGGED" --query 'imageIds[*]' --output json )
             - aws ecr batch-delete-image --region $ECR_REGION --repository-name $ECR_REPO --image-ids "$IMAGES_TO_DELETE" || true
-            - cp ./infrastructure/aws/backend/appspec.yml ./appspec.yml 
-
+            
 artifacts:
     files:
         - infrastructure/aws/backend/*
