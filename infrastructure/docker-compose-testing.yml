@@ -17,7 +17,7 @@ services:
         image: prom/prometheus:v2.39.1
         restart: always
         ports:
-            - "9000:9090"
+            - "9090:9090"
         volumes:
             - ./monitoring/prometheus:/etc/prometheus/
             - prometheus-data:/prometheus
