@@ -14,11 +14,11 @@ permissions:
 
 hooks:
     ApplicationStop:
-      - location: kill_container.sh
+      - location: infrastructure/aws/backend/stop.sh
         timeout: 300
     AfterInstall:
-        - location: load_image.sh
+        - location: infrastructure/aws/backend/prepare.sh
           timeout: 300
     ApplicationStart:
-        - location: start_container.sh
+        - location: infrastructure/aws/backend/start.sh
           timeout: 300

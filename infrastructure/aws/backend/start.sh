@@ -2,5 +2,5 @@
 
 set -e
 
-cd /home/ubuntu/server
+cd /home/ubuntu/server/infrastructure
 sudo docker compose up -d
