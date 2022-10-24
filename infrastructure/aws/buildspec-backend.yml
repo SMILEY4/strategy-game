@@ -44,4 +44,3 @@ artifacts:
         - infrastructure/aws/backend/*
         - infrastructure/docker-compose.yml
         - infrastructure/monitoring/**/*
-    discard-paths: yes
