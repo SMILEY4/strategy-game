@@ -129,6 +129,8 @@ After the creation finished, the outputs of the stack contain the webapp-url, se
 
 # Connecting to the EC2-Instance
 
+**"normal" ssh**
+
 Securely connecting to an ec2-instance via ssh is done with AWS Instance Connect. The required cli can be installed with pip with the command `pip install ec2instanceconnectcli`.
 
 Afterwards, connect to the instance with the following command:
@@ -139,6 +141,16 @@ mssh ubuntu@instanceid
 
 - *instanceid*: is the id of the instance and can be viewed in the AWS-Console in the overview of the instance, in the CloudFormation-Outputs or with the "tools"-script with `.\tools print serverid`
   - Example: `mssh ubuntu@i-4879dfeba59ea8728`
+
+**ssh-tunnel**
+
+```
+ssh -i key ubuntu@publicIPv4DNS -L localport:localhost:hostport
+```
+
+- Example: `ssh -i .\ec2-kp.pem ubuntu@ec2-3-76-31-177.eu-central-1.compute.amazonaws.com -L 8080:localhost:8080`
+
+- Common Problem: "*open failed: connect failed: Connection refused*" => usually, nothing is bound to the (remote) port / nothing is using the specified port
 
 
 
