@@ -44,6 +44,7 @@ phases:
             
 artifacts:
     files:
+        - appspec.yml
         - infrastructure/aws/backend/*
         - infrastructure/docker-compose.yml
         - infrastructure/monitoring/**/*
