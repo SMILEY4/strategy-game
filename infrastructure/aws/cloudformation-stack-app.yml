@@ -497,7 +497,7 @@ Resources:
             Environment:
                 ComputeType: "BUILD_GENERAL1_SMALL"
                 Type: "LINUX_CONTAINER"
-                Image: "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+                Image: "aws/codebuild/amazonlinux2-aarch64-standard:2.0"
                 PrivilegedMode: true
             LogsConfig:
                 S3Logs:

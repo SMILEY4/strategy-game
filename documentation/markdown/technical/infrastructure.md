@@ -145,7 +145,7 @@ mssh ubuntu@instanceid
 **ssh-tunnel**
 
 ```
-ssh -i key ubuntu@publicIPv4DNS -N -L localport:localhost:hostport
+ssh -i key ubuntu@publicIPv4DNS -N localport:localhost:hostport
 ```
 
 - Example: `ssh -i .\ec2-kp.pem ubuntu@ec2-3-76-31-177.eu-central-1.compute.amazonaws.com -L 8080:localhost:8080`
