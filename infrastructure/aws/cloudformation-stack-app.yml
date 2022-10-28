@@ -284,7 +284,7 @@ Resources:
         Type: "AWS::EC2::Instance"
         Properties:
             ImageId: "ami-02584c1c9d05efa69" # Ubuntu 20.04 LTS
-            InstanceType: "t2.micro"
+            InstanceType: "t4g.small"
             IamInstanceProfile: !Ref ServerInstanceProfile
             SecurityGroupIds:
                 - !Ref ServerSecurityGroup

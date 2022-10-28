@@ -31,7 +31,7 @@ services:
             - "3001:3000"
         user: "104"
         volumes:
-            - ./monitoring/grafana/dashboards:/etc/grafana/dashboards
+            - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
             - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
             - grafana-data:/var/lib/grafana
         links:
