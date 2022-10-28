@@ -283,7 +283,7 @@ Resources:
     ServerInstance:
         Type: "AWS::EC2::Instance"
         Properties:
-            ImageId: "ami-02584c1c9d05efa69" # Ubuntu 20.04 LTS
+            ImageId: "ami-07f04613f3950ffdd" # Ubuntu, 20.04 LTS, arm64
             InstanceType: "t4g.small"
             IamInstanceProfile: !Ref ServerInstanceProfile
             SecurityGroupIds:
@@ -306,7 +306,7 @@ Resources:
                     sudo apt install docker-ce -y
     
                     #install docker compose
-                    apt-get install docker-compose-plugin -y
+                    sudo apt-get install docker-compose-plugin -y
     
                     # install CodeDeploy-Agent
                     # see: https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install-ubuntu.html
