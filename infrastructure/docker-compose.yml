@@ -51,38 +51,38 @@ services:
             - prometheus
 
 # run without log-management for now. Current ec2-instance has not enough memory. Elasicsearch alone req. min 2G (-> switch to t4g.medium with 4G ?)
-    filebeat:
-        image: docker.elastic.co/beats/filebeat:8.4.3
-        container_name: strategy-game-filebeat
-        user: root
-        volumes:
-            - ./monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-            - app_logs:/etc/filebeat/datasources/backend
-        command: filebeat -e -strict.perms=false
-
-    elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
-        container_name: strategy-game-elasticsearch
-        environment:
-            - xpack.security.enabled=false
-            - discovery.type=single-node
-        cap_add:
-            - IPC_LOCK
-        volumes:
-            - elasticsearch-data:/usr/share/elasticsearch/data
-        ports:
-            - 9200:9200
-            - 9300:9300
-
-    kibana:
-        image: docker.elastic.co/kibana/kibana:8.4.3
-        container_name: strategy-game-kibana
-        ports:
-            - 5601:5601
-        links:
-            - elasticsearch
-        environment:
-            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    filebeat:
+#        image: docker.elastic.co/beats/filebeat:8.4.3
+#        container_name: strategy-game-filebeat
+#        user: root
+#        volumes:
+#            - ./monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+#            - app_logs:/etc/filebeat/datasources/backend
+#        command: filebeat -e -strict.perms=false
+#
+#    elasticsearch:
+#        image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+#        container_name: strategy-game-elasticsearch
+#        environment:
+#            - xpack.security.enabled=false
+#            - discovery.type=single-node
+#        cap_add:
+#            - IPC_LOCK
+#        volumes:
+#            - elasticsearch-data:/usr/share/elasticsearch/data
+#        ports:
+#            - 9200:9200
+#            - 9300:9300
+#
+#    kibana:
+#        image: docker.elastic.co/kibana/kibana:8.4.3
+#        container_name: strategy-game-kibana
+#        ports:
+#            - 5601:5601
+#        links:
+#            - elasticsearch
+#        environment:
+#            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
 
 volumes:
     app_logs:
