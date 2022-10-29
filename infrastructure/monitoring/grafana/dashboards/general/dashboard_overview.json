@@ -127,7 +127,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(up{job=\"backend\"})",
+          "expr": "up{job=\"backend\",instance=$instance}",
           "instant": false,
           "legendFormat": "",
           "range": true,
@@ -202,8 +202,8 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "process_uptime_seconds{job=\"backend\"}",
-          "legendFormat": "__auto",
+          "expr": "process_uptime_seconds{job=\"backend\",instance=$instance}",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
         }
@@ -300,7 +300,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "rate(system_cpu_usage{job=\"backend\"}[$rateInterval])*100",
+          "expr": "rate(system_cpu_usage{job=\"backend\",instance=$instance}[$rateInterval])*100",
           "legendFormat": "CPU Usage",
           "range": true,
           "refId": "A"
@@ -391,7 +391,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(process_cpu_usage{job=\"backend\"}[$rateInterval])*100",
+          "expr": "rate(process_cpu_usage{job=\"backend\",instance=$instance}[$rateInterval])*100",
           "legendFormat": "CPU Usage",
           "range": true,
           "refId": "A"
@@ -481,7 +481,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(jvm_memory_used_bytes{job=\"backend\", area=\"heap\"})",
+          "expr": "sum(jvm_memory_used_bytes{job=\"backend\",instance=$instance,area=\"heap\"})",
           "legendFormat": "Used",
           "range": true,
           "refId": "A"
@@ -492,7 +492,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(jvm_memory_committed_bytes{job=\"backend\", area=\"heap\"})",
+          "expr": "sum(jvm_memory_committed_bytes{job=\"backend\",instance=$instance,area=\"heap\"})",
           "hide": false,
           "legendFormat": "Committed",
           "range": true,
@@ -504,7 +504,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(jvm_memory_max_bytes{job=\"backend\", area=\"heap\"})",
+          "expr": "sum(jvm_memory_max_bytes{job=\"backend\",instance=$instance,area=\"heap\"})",
           "hide": false,
           "legendFormat": "Max",
           "range": true,
@@ -595,7 +595,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "jvm_threads_live_threads{job=\"backend\"}",
+          "expr": "jvm_threads_live_threads{job=\"backend\",instance=$instance}",
           "legendFormat": "Live Threads",
           "range": true,
           "refId": "A"
@@ -635,7 +635,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -698,7 +698,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "increase(core_action_seconds_count[$rateInterval])",
+          "expr": "increase(core_action_seconds_count{instance=$instance}[$rateInterval])",
           "legendFormat": "{{name}}",
           "range": true,
           "refId": "A"
@@ -725,7 +725,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -788,7 +788,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(core_action_seconds_sum[$rateInterval])",
+          "expr": "rate(core_action_seconds_sum{instance=$instance}[$rateInterval])",
           "legendFormat": "{{name}}",
           "range": true,
           "refId": "A"
@@ -815,7 +815,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -878,7 +878,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "increase(db_query_seconds_count[$rateInterval])",
+          "expr": "increase(db_query_seconds_count{instance=$instance}[$rateInterval])",
           "hide": false,
           "legendFormat": "{{name}}",
           "range": true,
@@ -906,7 +906,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -969,7 +969,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(db_query_seconds_sum[$rateInterval])",
+          "expr": "rate(db_query_seconds_sum{instance=$instance}[$rateInterval])",
           "legendFormat": "{{name}}",
           "range": true,
           "refId": "A"
@@ -1071,7 +1071,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (increase(ktor_http_server_requests_seconds_count{route!=\"/api/metrics\",route!=\"/api/health\"}[$rateInterval]))",
+          "expr": "sum (increase(ktor_http_server_requests_seconds_count{route!=\"/api/metrics\",route!=\"/api/health\",instance=$instance}[$rateInterval]))",
           "legendFormat": "Total Requests",
           "range": true,
           "refId": "A"
@@ -1082,7 +1082,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^2..$\", route!=\"/api/metrics\",route!=\"/api/health\"}[1m]))",
+          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^2..$\", route!=\"/api/metrics\",route!=\"/api/health\",instance=$instance}[1m]))",
           "hide": false,
           "legendFormat": "2XX Success Rate",
           "range": true,
@@ -1094,7 +1094,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^5..$\", route!=\"/api/metrics\",route!=\"/api/health\"}[1m]))",
+          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^5..$\", route!=\"/api/metrics\",route!=\"/api/health\",instance=$instance}[1m]))",
           "hide": false,
           "legendFormat": "5XX Errors Rate",
           "range": true,
@@ -1106,7 +1106,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^4..$\", status!=\"^401$\", route!=\"/api/metrics\",route!=\"/api/health\"}[1m]))",
+          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^4..$\", status!=\"^401$\", route!=\"/api/metrics\",route!=\"/api/health\",instance=$instance}[1m]))",
           "hide": false,
           "legendFormat": "4XX Errors Rate",
           "range": true,
@@ -1118,7 +1118,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^401$\", route!=\"/api/metrics\",route!=\"/api/health\"}[1m]))",
+          "expr": "sum (increase(ktor_http_server_requests_seconds_count{status=~\"^401$\", route!=\"/api/metrics\",route!=\"/api/health\",instance=$instance}[1m]))",
           "hide": false,
           "legendFormat": "Unauthorized Errors Rate",
           "range": true,
@@ -1183,7 +1183,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "topk(9, sort_desc(sum by(route, method) (ktor_http_server_requests_seconds_count{route!=\"/api/metrics\",route!=\"/api/health\"})))",
+          "expr": "topk(9, sort_desc(sum by(route, method) (ktor_http_server_requests_seconds_count{route!=\"/api/metrics\",route!=\"/api/health\",instance=$instance})))",
           "instant": true,
           "legendFormat": "{{method}} {{route}} {{status}}",
           "range": false,
@@ -1258,7 +1258,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "topk(10, sort_desc(sum by(route, method, status) (ktor_http_server_requests_seconds_count{ status!=\"200\"})))",
+          "expr": "topk(10, sort_desc(sum by(route, method, status) (ktor_http_server_requests_seconds_count{status!=\"200\",instance=$instance})))",
           "instant": true,
           "legendFormat": "{{method}} {{route}} {{status}}",
           "range": false,
@@ -1398,7 +1398,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1448,7 +1448,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(ktor_http_server_requests_seconds{instance=\"$instance\", route!=\"/api/metrics\", route!=\"/api/health\", quantile=\"0.5\"}[$rateInterval])",
+          "expr": "rate(ktor_http_server_requests_seconds{route!=\"/api/metrics\", route!=\"/api/health\", quantile=\"0.5\",instance=$instance}[$rateInterval])",
           "legendFormat": "{{route}} 50%",
           "range": true,
           "refId": "A"
@@ -1487,7 +1487,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1537,7 +1537,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(ktor_http_server_requests_seconds{instance=\"$instance\", route!=\"/api/metrics\", route!=\"/api/health\", quantile=\"0.9\"}[$rateInterval])",
+          "expr": "rate(ktor_http_server_requests_seconds{route!=\"/api/metrics\", route!=\"/api/health\", quantile=\"0.9\",instance=$instance}[$rateInterval])",
           "legendFormat": "{{route}} 95%",
           "range": true,
           "refId": "A"
@@ -2044,17 +2044,44 @@
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "\"host.docker.internal:8080\"",
+          "value": "\"host.docker.internal:8080\""
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "instance",
+        "options": [
+          {
+            "selected": false,
+            "text": "\"app:8080\"",
+            "value": "\"app:8080\""
+          },
+          {
+            "selected": true,
+            "text": "\"host.docker.internal:8080\"",
+            "value": "\"host.docker.internal:8080\""
+          }
+        ],
+        "query": "\"app:8080\", \"host.docker.internal:8080\"",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "2022-10-23T22:55:39.308Z",
-    "to": "2022-10-23T23:00:43.057Z"
+    "from": "now-15m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Overview",
   "uid": "Cwlh9XS4z",
-  "version": 11,
+  "version": 13,
   "weekStart": ""
 }
