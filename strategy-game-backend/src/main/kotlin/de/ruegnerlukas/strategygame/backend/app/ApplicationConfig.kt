@@ -185,6 +185,5 @@ fun Application.module() {
             }
         }
     }
-
     apiRoutes()
 }

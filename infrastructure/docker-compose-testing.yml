@@ -15,6 +15,7 @@ services:
 
     prometheus:
         image: prom/prometheus:v2.39.1
+        container_name: strategy-game-prometheus
         restart: always
         ports:
             - "9090:9090"
@@ -27,6 +28,7 @@ services:
 
     grafana:
         image: grafana/grafana:9.2.1
+        container_name: strategy-game-grafana
         ports:
             - "3001:3000"
         user: "104"
@@ -38,8 +40,8 @@ services:
             - prometheus
 
     filebeat:
-        container_name: filebeat
         image: docker.elastic.co/beats/filebeat:8.4.3
+        container_name: strategy-game-filebeat
         user: root
         volumes:
             - ./monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
@@ -48,7 +50,7 @@ services:
 
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
-        container_name: elasticsearch
+        container_name: strategy-game-elasticsearch
         environment:
             - xpack.security.enabled=false
             - discovery.type=single-node
@@ -61,8 +63,8 @@ services:
             - 9300:9300
 
     kibana:
-        container_name: kibana
         image: docker.elastic.co/kibana/kibana:8.4.3
+        container_name: strategy-game-kibana
         ports:
             - 5601:5601
         links:
