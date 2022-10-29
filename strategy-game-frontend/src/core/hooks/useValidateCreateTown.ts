@@ -1,5 +1,5 @@
-import {TerrainType} from "../../models/state/terrainType";
-import {TilePosition} from "../../models/state/tilePosition";
+import {TerrainType} from "../models/terrainType";
+import {TilePosition} from "../models/tilePosition";
 import {validations} from "../../shared/validation";
 import {useCities} from "./useCities";
 import {useCountryMoney} from "./useCountryMoney";

@@ -8,9 +8,9 @@ import {useValidateCreateCity} from "../../../../core/hooks/useValidateCreateCit
 import {useValidateCreateTown} from "../../../../core/hooks/useValidateCreateTown";
 import {useValidatePlaceScout} from "../../../../core/hooks/useValidatePlaceScout";
 import {AppConfig} from "../../../../main";
-import {BuildingType} from "../../../../models/state/buildingType";
-import {CommandCreateCity} from "../../../../models/state/command";
-import {TilePosition} from "../../../../models/state/tilePosition";
+import {BuildingType} from "../../../../core/models/buildingType";
+import {CommandCreateCity} from "../../../../core/models/command";
+import {TilePosition} from "../../../../core/models/tilePosition";
 
 
 export function MenuSelectedTile(): ReactElement {

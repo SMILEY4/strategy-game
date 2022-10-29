@@ -1,4 +1,4 @@
-import {CameraState} from "../../models/state/cameraState";
+import {CameraState} from "../models/cameraState";
 import {GameRepository} from "../required/gameRepository";
 import {UserRepository} from "../required/userRepository";
 import {WorldRepository} from "../required/worldRepository";

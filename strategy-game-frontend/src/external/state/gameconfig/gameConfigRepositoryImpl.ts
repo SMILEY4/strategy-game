@@ -1,5 +1,5 @@
 import {GameConfigRepository} from "../../../core/required/gameConfigRepository";
-import {GameConfig} from "../../../models/state/gameConfig";
+import {GameConfig} from "../../../core/models/gameConfig";
 import {GameConfigStore} from "./gameConfigStore";
 
 export class GameConfigRepositoryImpl implements GameConfigRepository {

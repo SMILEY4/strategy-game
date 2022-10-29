@@ -1,5 +1,5 @@
-import {Command} from "../../models/state/command";
-import {GameConfig} from "../../models/state/gameConfig";
+import {Command} from "../models/command";
+import {GameConfig} from "../models/gameConfig";
 
 export interface GameApi {
     config: () => Promise<GameConfig>;

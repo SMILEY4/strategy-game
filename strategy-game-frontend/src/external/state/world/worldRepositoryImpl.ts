@@ -1,9 +1,9 @@
 import {WorldRepository} from "../../../core/required/worldRepository";
-import {City} from "../../../models/state/city";
-import {Country} from "../../../models/state/country";
-import {Marker} from "../../../models/state/marker";
-import {Scout} from "../../../models/state/scout";
-import {Tile} from "../../../models/state/tile";
+import {City} from "../../../core/models/city";
+import {Country} from "../../../core/models/country";
+import {Marker} from "../../../core/models/marker";
+import {Scout} from "../../../core/models/scout";
+import {Tile} from "../../../core/models/tile";
 import {orNull} from "../../../shared/utils";
 import {WorldStore} from "./worldStore";
 

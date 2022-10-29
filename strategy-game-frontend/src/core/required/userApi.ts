@@ -1,4 +1,4 @@
-import {AuthData} from "../../models/authData";
+import {AuthData} from "../models/authData";
 
 export interface UserApi {
     signUp: (email: string, password: string, username: string) => Promise<void>;

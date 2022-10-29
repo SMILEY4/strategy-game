@@ -1,5 +1,5 @@
 import {WorldStore} from "../../external/state/world/worldStore";
-import {Country} from "../../models/state/country";
+import {Country} from "../models/country";
 import {orNull} from "../../shared/utils";
 
 export function useCountry(userId: string | null): Country | null {

@@ -1,9 +1,9 @@
 import create from "zustand";
-import {CameraState} from "../../../models/state/cameraState";
-import {Command} from "../../../models/state/command";
-import {GameState} from "../../../models/state/gameState";
-import {MapMode} from "../../../models/state/mapMode";
-import {TilePosition} from "../../../models/state/tilePosition";
+import {CameraState} from "../../../core/models/cameraState";
+import {Command} from "../../../core/models/command";
+import {GameState} from "../../../core/models/gameState";
+import {MapMode} from "../../../core/models/mapMode";
+import {TilePosition} from "../../../core/models/tilePosition";
 import {generateId} from "../../../shared/utils";
 import {SetState} from "../../../shared/zustandUtils";
 

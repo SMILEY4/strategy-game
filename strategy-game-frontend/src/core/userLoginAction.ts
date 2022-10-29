@@ -1,4 +1,4 @@
-import {AuthData} from "../models/authData";
+import {AuthData} from "./models/authData";
 import {GameApi} from "./required/gameApi";
 import {GameConfigRepository} from "./required/gameConfigRepository";
 import {UserApi} from "./required/userApi";

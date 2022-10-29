@@ -1,5 +1,5 @@
 import {ComponentMeta, ComponentStory} from "@storybook/react";
-import {SelectField} from "../ui/components/specific/test/SelectField";
+import {SelectField} from "../components/specific/test/SelectField";
 
 export default {
 	title: "SelectField",

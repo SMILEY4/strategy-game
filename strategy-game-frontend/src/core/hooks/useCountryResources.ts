@@ -1,5 +1,5 @@
-import {Command} from "../../models/state/command";
-import {Country} from "../../models/state/country";
+import {Command} from "../models/command";
+import {Country} from "../models/country";
 import {useCommands} from "./useCommands";
 import {useCountryPlayerOrNull} from "./useCountryPlayer";
 

@@ -1,8 +1,8 @@
 import {GameRepository} from "../../../core/required/gameRepository";
-import {CameraState} from "../../../models/state/cameraState";
-import {Command} from "../../../models/state/command";
-import {GameState} from "../../../models/state/gameState";
-import {TilePosition} from "../../../models/state/tilePosition";
+import {CameraState} from "../../../core/models/cameraState";
+import {Command} from "../../../core/models/command";
+import {GameState} from "../../../core/models/gameState";
+import {TilePosition} from "../../../core/models/tilePosition";
 import {GameStore} from "./gameStore";
 
 export class GameRepositoryImpl implements GameRepository {

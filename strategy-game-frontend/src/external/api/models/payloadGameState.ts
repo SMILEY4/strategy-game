@@ -1,5 +1,5 @@
-import {Color} from "../state/Color";
-import {TileVisibility} from "../state/tileVisibility";
+import {Color} from "../../../core/models/Color";
+import {TileVisibility} from "../../../core/models/tileVisibility";
 import {MsgTileContent} from "./messagingTileContent";
 
 export interface PayloadGameState {

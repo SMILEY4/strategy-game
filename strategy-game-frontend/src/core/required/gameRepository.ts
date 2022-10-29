@@ -1,8 +1,8 @@
 import {GameStore} from "../../external/state/game/gameStore";
-import {CameraState} from "../../models/state/cameraState";
-import {Command} from "../../models/state/command";
-import {GameState} from "../../models/state/gameState";
-import {TilePosition} from "../../models/state/tilePosition";
+import {CameraState} from "../models/cameraState";
+import {Command} from "../models/command";
+import {GameState} from "../models/gameState";
+import {TilePosition} from "../models/tilePosition";
 
 export interface GameRepository {
     getRevisionId: () => string

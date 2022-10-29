@@ -1,7 +1,7 @@
 import {GameApi} from "../../core/required/gameApi";
 import {UserRepository} from "../../core/required/userRepository";
-import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../models/state/command";
-import {GameConfig} from "../../models/state/gameConfig";
+import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../core/models/command";
+import {GameConfig} from "../../core/models/gameConfig";
 import {HttpClient} from "./http/httpClient";
 import {MessageHandler} from "./messageHandler";
 import {WebsocketClient} from "./messaging/websocketClient";

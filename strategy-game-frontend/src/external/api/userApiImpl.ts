@@ -1,6 +1,6 @@
 import {UserApi} from "../../core/required/userApi";
 import {UserRepository} from "../../core/required/userRepository";
-import {AuthData} from "../../models/authData";
+import {AuthData} from "../../core/models/authData";
 import {HttpClient} from "./http/httpClient";
 
 export class UserApiImpl implements UserApi {

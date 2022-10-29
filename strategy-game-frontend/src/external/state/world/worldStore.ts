@@ -1,9 +1,9 @@
 import create, {SetState} from "zustand";
-import {City} from "../../../models/state/city";
-import {Country} from "../../../models/state/country";
-import {Marker} from "../../../models/state/marker";
-import {Scout} from "../../../models/state/scout";
-import {Tile} from "../../../models/state/tile";
+import {City} from "../../../core/models/city";
+import {Country} from "../../../core/models/country";
+import {Marker} from "../../../core/models/marker";
+import {Scout} from "../../../core/models/scout";
+import {Tile} from "../../../core/models/tile";
 import {generateId} from "../../../shared/utils";
 
 export namespace WorldStore {

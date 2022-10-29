@@ -1,4 +1,4 @@
-import {GameState} from "../models/state/gameState";
+import {GameState} from "./models/gameState";
 import {GameApi} from "./required/gameApi";
 import {GameRepository} from "./required/gameRepository";
 

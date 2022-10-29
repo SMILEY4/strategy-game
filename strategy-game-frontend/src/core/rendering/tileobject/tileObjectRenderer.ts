@@ -1,8 +1,8 @@
 import {WorldStore} from "../../../external/state/world/worldStore";
 import {GameStore} from "../../../external/state/game/gameStore";
-import {City} from "../../../models/state/city";
-import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../models/state/command";
-import {Country} from "../../../models/state/country";
+import {City} from "../../models/city";
+import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../models/command";
+import {Country} from "../../models/country";
 import {UserRepository} from "../../required/userRepository";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {GameCanvasHandle} from "../gameCanvasHandle";

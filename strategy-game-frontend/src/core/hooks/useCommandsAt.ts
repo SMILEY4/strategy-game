@@ -1,6 +1,6 @@
 import {GameStore} from "../../external/state/game/gameStore";
-import {Command, CommandCreateCity, CommandPlaceMarker} from "../../models/state/command";
-import {TilePosition} from "../../models/state/tilePosition";
+import {Command, CommandCreateCity, CommandPlaceMarker} from "../models/command";
+import {TilePosition} from "../models/tilePosition";
 
 export function useCommandsAt(pos: TilePosition | null): Command[] {
     return GameStore.useState(state => state.commands.filter(cmd => {
