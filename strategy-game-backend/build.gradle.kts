@@ -39,13 +39,13 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:$versionKtor")
     testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
     testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
+    implementation("io.ktor:ktor-server-metrics:$versionKtor")
+    implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
 
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
-    implementation("io.ktor:ktor-server-metrics:$versionKtor")
-    implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
 
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
@@ -56,6 +56,7 @@ dependencies {
     val versionKotlinLogging: String by project
     implementation("ch.qos.logback:logback-classic:$versionLogback")
     implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.2")
 
     val versionArangoDb: String by project
     val versionJacksonDataformatVelocypack: String by project

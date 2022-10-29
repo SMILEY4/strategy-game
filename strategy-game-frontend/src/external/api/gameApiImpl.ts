@@ -1,6 +1,5 @@
 import {GameApi} from "../../core/required/gameApi";
 import {UserRepository} from "../../core/required/userRepository";
-import {BuildingType} from "../../models/state/buildingType";
 import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../models/state/command";
 import {GameConfig} from "../../models/state/gameConfig";
 import {HttpClient} from "./http/httpClient";
@@ -24,45 +23,45 @@ export class GameApiImpl implements GameApi {
 
 
     config(): Promise<GameConfig> {
-        return this.httpClient
-            .get({
+        return Promise.resolve()
+            .then(() => this.httpClient.get({
                 url: "/api/game/config",
                 requireAuth: true,
                 token: this.userRepository.getAuthToken()
-            })
+            }))
             .then(response => response.json());
     }
 
 
     list(): Promise<string[]> {
-        return this.httpClient
-            .get({
+        return Promise.resolve()
+            .then(() => this.httpClient.get({
                 url: "/api/game/list",
                 requireAuth: true,
                 token: this.userRepository.getAuthToken()
-            })
+            }))
             .then(response => response.json());
     }
 
 
     create(): Promise<string> {
-        return this.httpClient
-            .post({
+        return Promise.resolve()
+            .then(() => this.httpClient.post({
                 url: "/api/game/create",
                 requireAuth: true,
                 token: this.userRepository.getAuthToken()
-            })
+            }))
             .then(response => response.text());
     }
 
 
     join(gameId: string): Promise<void> {
-        return this.httpClient
-            .post({
+        return Promise.resolve()
+            .then(() => this.httpClient.post({
                 url: `/api/game/join/${gameId}`,
                 requireAuth: true,
                 token: this.userRepository.getAuthToken()
-            })
+            }))
             .then(() => undefined);
     }
 

@@ -79,8 +79,14 @@ object Config {
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ConfigData(
 	val identityProvider: String, // either "cognito" or "dummy"
+	val auth: AuthConfig,
 	val aws: AwsConfig,
-	val db: DbConfig
+	val db: DbConfig,
+)
+
+data class AuthConfig(
+	val technicalUsername: String,
+	val technicalPassword: String
 )
 
 data class AwsConfig(

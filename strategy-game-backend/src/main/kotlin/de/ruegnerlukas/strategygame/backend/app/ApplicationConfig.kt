@@ -19,6 +19,8 @@ import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.UserIdPrincipal
+import io.ktor.server.auth.basic
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.callloging.CallLogging
@@ -28,6 +30,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.request.uri
+import io.ktor.server.request.userAgent
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.RoutingApplicationCall
@@ -82,10 +85,13 @@ fun Application.module() {
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
             val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
-            "${status.toString()}: $httpMethod - $route"
+            val userAgent = call.request.userAgent() ?: "?"
+            "${status.toString()}: $httpMethod - $route      (userAgent=$userAgent)"
         }
         filter { call ->
-            !call.request.path().startsWith("/api/metrics")
+            listOf("api/metrics", "api/health").none {
+                call.request.path().contains(it)
+            }
         }
     }
     install(ContentNegotiation) {
@@ -112,6 +118,17 @@ fun Application.module() {
     val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
         jwt { userIdentityService.configureAuthentication(this) }
+        basic("auth-technical-user") {
+            validate { credentials ->
+                val username = Config.get().auth.technicalUsername
+                val password = Config.get().auth.technicalPassword
+                if (credentials.name == username && credentials.password == password) {
+                    UserIdPrincipal(credentials.name)
+                } else {
+                    null
+                }
+            }
+        }
     }
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -121,8 +138,9 @@ fun Application.module() {
     }
     install(SwaggerUI) {
         swagger {
-            forwardRoot = true
+            forwardRoot = false
             swaggerUrl = "/swagger-ui"
+            authentication = "auth-technical-user"
         }
         info {
             title = "Strategy Game API"
@@ -167,8 +185,5 @@ fun Application.module() {
             }
         }
     }
-
-
     apiRoutes()
 }
-

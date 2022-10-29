@@ -1,2 +1,2 @@
-.idea
-__pycache__
+# hide secret configs
+*.local.txt

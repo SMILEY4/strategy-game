@@ -26,7 +26,7 @@ export class UserLoginAction {
         return this.userApi.login(email, password).then((authData: AuthData) => {
             this.userRepository.setAuthToken(authData.idToken);
             this.gameApi.config()
-                .then(config => this.gameConfigRepository.setConfig(config));
+                .then(config => this.gameConfigRepository.setConfig(config))
         });
     }
 
