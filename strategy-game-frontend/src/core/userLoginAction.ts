@@ -1,4 +1,3 @@
-import {AuthData} from "../models/authData";
 import {GameApi} from "./required/gameApi";
 import {GameConfigRepository} from "./required/gameConfigRepository";
 import {UserApi} from "./required/userApi";
@@ -23,10 +22,10 @@ export class UserLoginAction {
 
     perform(email: string, password: string): Promise<void> {
         console.debug("Logging in");
-        return this.userApi.login(email, password).then((authData: AuthData) => {
-            this.userRepository.setAuthToken(authData.idToken);
+        return this.userApi.login(email, password).then((token: string) => {
+            this.userRepository.setAuthToken(token);
             this.gameApi.config()
-                .then(config => this.gameConfigRepository.setConfig(config))
+                .then(config => this.gameConfigRepository.setConfig(config));
         });
     }
 

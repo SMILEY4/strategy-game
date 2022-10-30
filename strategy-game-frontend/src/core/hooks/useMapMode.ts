@@ -1,5 +1,5 @@
 import {GameStore} from "../../external/state/game/gameStore";
-import {MapMode} from "../../models/state/mapMode";
+import {MapMode} from "../models/mapMode";
 
 export function useMapMode(): [MapMode, (mode: MapMode) => void] {
     const currentMode = GameStore.useState(state => state.mapMode);

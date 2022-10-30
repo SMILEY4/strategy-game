@@ -2,7 +2,7 @@ import {ReactElement} from "react";
 import {useCountryMoney} from "../../../../core/hooks/useCountryMoney";
 import {useCountryPlayerOrNull} from "../../../../core/hooks/useCountryPlayer";
 import {useCountryResources} from "../../../../core/hooks/useCountryResources";
-import {Color} from "../../../../models/state/Color";
+import {Color} from "../../../../core/models/Color";
 import "./gameMenuBar.css";
 import {CategoryDebug} from "./MenuDebug";
 import {CategoryMap} from "./MenuMap";

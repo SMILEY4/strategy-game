@@ -1,6 +1,5 @@
 import {UserApi} from "../../core/required/userApi";
 import {UserRepository} from "../../core/required/userRepository";
-import {AuthData} from "../../models/authData";
 import {HttpClient} from "./http/httpClient";
 
 export class UserApiImpl implements UserApi {
@@ -29,7 +28,7 @@ export class UserApiImpl implements UserApi {
     }
 
 
-    login(email: string, password: string): Promise<AuthData> {
+    login(email: string, password: string): Promise<string> {
         return this.httpClient
             .post({
                 url: "/api/user/login",
@@ -39,10 +38,7 @@ export class UserApiImpl implements UserApi {
                 },
             })
             .then(response => response.json())
-            .then(data => ({
-                idToken: data.idToken,
-                refreshToken: data.refreshToken
-            }));
+            .then(data => data.idToken);
     }
 
 

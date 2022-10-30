@@ -1,7 +1,7 @@
-import {BuildingType} from "../models/state/buildingType";
-import {Command, CommandCreateBuilding, CommandCreateCity} from "../models/state/command";
-import {GameState} from "../models/state/gameState";
-import {TilePosition} from "../models/state/tilePosition";
+import {BuildingType} from "./models/buildingType";
+import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "./models/command";
+import {GameState} from "./models/gameState";
+import {TilePosition} from "./models/tilePosition";
 import {GameConfigRepository} from "./required/gameConfigRepository";
 import {GameRepository} from "./required/gameRepository";
 
@@ -37,7 +37,7 @@ export class TurnAddCommandAction {
             },
             q: tilePos.q,
             r: tilePos.r
-        } as Command);
+        } as CommandPlaceMarker);
     }
 
     addPlaceScout(tilePos: TilePosition) {
@@ -52,7 +52,7 @@ export class TurnAddCommandAction {
             },
             q: tilePos.q,
             r: tilePos.r
-        } as Command);
+        } as CommandPlaceScout);
     }
 
     addCreateCity(tilePos: TilePosition, name: string, parentCity: string | null) {

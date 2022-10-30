@@ -1,5 +1,5 @@
 import {GameSetStateAction} from "../../core/gameSetStateAction";
-import {PayloadGameState} from "../../models/messaging/payloadGameState";
+import {PayloadGameState} from "./models/payloadGameState";
 
 
 export class MessageHandler {

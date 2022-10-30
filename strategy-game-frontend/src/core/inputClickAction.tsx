@@ -1,4 +1,4 @@
-import {Tile} from "../models/state/tile";
+import {Tile} from "./models/tile";
 import {GameRepository} from "./required/gameRepository";
 import {UIService} from "./required/UIService";
 import {TilePicker} from "./tilemap/tilePicker";

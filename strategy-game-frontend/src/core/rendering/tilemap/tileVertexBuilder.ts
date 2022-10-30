@@ -1,8 +1,8 @@
-import {ResourceType} from "../../../models/state/resourceType";
-import {TerrainType} from "../../../models/state/terrainType";
-import {Tile} from "../../../models/state/tile";
-import {TileLayerMeta} from "../../../models/state/tileLayerMeta";
-import {TileVisibility} from "../../../models/state/tileVisibility";
+import {ResourceType} from "../../models/resourceType";
+import {TerrainType} from "../../models/terrainType";
+import {Tile} from "../../models/tile";
+import {TileLayerMeta} from "../../models/tileLayerMeta";
+import {TileVisibility} from "../../models/tileVisibility";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 
 export namespace TileVertexBuilder {

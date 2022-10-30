@@ -1,8 +1,8 @@
-import {WorldStore} from "../../../external/state/world/worldStore";
 import {GameStore} from "../../../external/state/game/gameStore";
-import {City} from "../../../models/state/city";
-import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../models/state/command";
-import {Country} from "../../../models/state/country";
+import {WorldStore} from "../../../external/state/world/worldStore";
+import {City} from "../../models/city";
+import {Command, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../models/command";
+import {Country} from "../../models/country";
 import {UserRepository} from "../../required/userRepository";
 import {TilemapUtils} from "../../tilemap/tilemapUtils";
 import {GameCanvasHandle} from "../gameCanvasHandle";
@@ -15,8 +15,8 @@ import Texture from "../utils/texture";
 
 export class TileObjectRenderer {
 
-    public static readonly SHADER_SRC_KEY_VERTEX = "tileObject.vertex"
-    public static readonly SHADER_SRC_KEY_FRAGMENT = "tileObject.fragment"
+    public static readonly SHADER_SRC_KEY_VERTEX = "tileObject.vertex";
+    public static readonly SHADER_SRC_KEY_FRAGMENT = "tileObject.fragment";
 
     private readonly COLOR_WHITE: [number, number, number, number] = [1, 1, 1, 1];
 
@@ -82,7 +82,8 @@ export class TileObjectRenderer {
     public render(camera: Camera, gameState: WorldStore.StateValues, localGameState: GameStore.StateValues) {
 
         const userId = this.userRepository.getUserId();
-        const userCountryId = gameState.countries.find(c => c.userId === userId)?.countryId;
+        const userCountryId = gameState.countries.byUserId(userId)?.countryId;
+        const countries = gameState.countries.all();
 
         this.prepareLabelTexture(gameState.cities, localGameState.commands);
 
@@ -90,7 +91,7 @@ export class TileObjectRenderer {
 
         // CITIES
         gameState.cities.forEach(e => {
-            this.addCitySprite(e.tile.q, e.tile.r, e.isCity, this.getColor(gameState.countries, e.countryId, false));
+            this.addCitySprite(e.tile.q, e.tile.r, e.isCity, this.getColor(countries, e.countryId, false));
             this.addCityLabel(camera.getZoom(), e.tile.q, e.tile.r, this.textRenderer.getRegion(e.name));
         });
 
@@ -98,27 +99,27 @@ export class TileObjectRenderer {
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
             .forEach(e => {
-                this.addCitySprite(e.q, e.r, e.parentCity === null, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true));
+                this.addCitySprite(e.q, e.r, e.parentCity === null, this.getColor(countries, (userCountryId ? userCountryId : "?"), true));
                 this.addCityLabel(camera.getZoom(), e.q, e.r, this.textRenderer.getRegion(e.name + " (P)"));
             });
 
         // MARKERS
         gameState.markers
-            .forEach(e => this.addMarkerSprite(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false)));
+            .forEach(e => this.addMarkerSprite(e.tile.q, e.tile.r, this.getColor(countries, e.countryId, false)));
 
         localGameState.commands
             .filter(e => e.commandType === "place-marker")
             .map(e => e as CommandPlaceMarker)
-            .forEach(e => this.addMarkerSprite(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true)));
+            .forEach(e => this.addMarkerSprite(e.q, e.r, this.getColor(countries, (userCountryId ? userCountryId : "?"), true)));
 
         // SCOUTS
         gameState.scouts
-            .forEach(e => this.addScoutSprite(e.tile.q, e.tile.r, this.getColor(gameState.countries, e.countryId, false)));
+            .forEach(e => this.addScoutSprite(e.tile.q, e.tile.r, this.getColor(countries, e.countryId, false)));
 
         localGameState.commands
             .filter(e => e.commandType === "place-scout")
             .map(e => e as CommandPlaceScout)
-            .forEach(e => this.addScoutSprite(e.q, e.r, this.getColor(gameState.countries, (userCountryId ? userCountryId : "?"), true)));
+            .forEach(e => this.addScoutSprite(e.q, e.r, this.getColor(countries, (userCountryId ? userCountryId : "?"), true)));
 
         this.textureSprites.bind(0);
         this.textRenderer.getTexture()?.bind(1);
@@ -164,7 +165,6 @@ export class TileObjectRenderer {
         const [x, y] = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         const width = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] * (isCity ? 1 : 0.6);
         const height = TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * (isCity ? 1 : 0.6);
-        ;
         this.addObject(x, y, width, height, color, 0, 1 / 3, 2 / 3, 0, 1);
     }
 

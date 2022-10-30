@@ -1,5 +1,5 @@
 import {ComponentMeta, ComponentStory} from "@storybook/react";
-import {TextField} from "../ui/components/specific/TextField";
+import {TextField} from "../components/specific/TextField";
 import {useState} from "react";
 
 export default {

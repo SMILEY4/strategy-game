@@ -1,9 +1,9 @@
 import {WorldStore} from "../../external/state/world/worldStore";
-import {City} from "../../models/state/city";
-import {Country} from "../../models/state/country";
-import {Marker} from "../../models/state/marker";
-import {Scout} from "../../models/state/scout";
-import {Tile} from "../../models/state/tile";
+import {City} from "../models/city";
+import {Country} from "../models/country";
+import {Marker} from "../models/marker";
+import {Scout} from "../models/scout";
+import {Tile} from "../models/tile";
 
 export interface WorldRepository {
     getRevisionId: () => string

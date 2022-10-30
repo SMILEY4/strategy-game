@@ -1,6 +1,6 @@
 import React from "react";
 import {UIService} from "../../../core/required/UIService";
-import {TilePosition} from "../../../models/state/tilePosition";
+import {TilePosition} from "../../../core/models/tilePosition";
 import {generateId} from "../../../shared/utils";
 import {CreateCityDialog} from "../../../ui/pages/game/ui/CreateCityDialog";
 import {CreateTownDialog} from "../../../ui/pages/game/ui/CreateTownDialog";

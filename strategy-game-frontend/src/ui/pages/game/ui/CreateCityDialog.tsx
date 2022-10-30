@@ -1,6 +1,6 @@
 import React, {ReactElement, useState} from "react";
 import {AppConfig} from "../../../../main";
-import {TilePosition} from "../../../../models/state/tilePosition";
+import {TilePosition} from "../../../../core/models/tilePosition";
 import {TextField} from "../../../components/specific/TextField";
 
 export function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {

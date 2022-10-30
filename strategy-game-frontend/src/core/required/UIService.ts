@@ -1,4 +1,4 @@
-import {TilePosition} from "../../models/state/tilePosition";
+import {TilePosition} from "../models/tilePosition";
 
 export interface UIService {
     close: (frameId: string) => void

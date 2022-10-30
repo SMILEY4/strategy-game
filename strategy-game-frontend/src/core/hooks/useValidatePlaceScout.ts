@@ -1,5 +1,5 @@
-import {TilePosition} from "../../models/state/tilePosition";
-import {TileVisibility} from "../../models/state/tileVisibility";
+import {TilePosition} from "../models/tilePosition";
+import {TileVisibility} from "../models/tileVisibility";
 import {validations} from "../../shared/validation";
 import {useCountryPlayer} from "./useCountryPlayer";
 import {useGameConfig} from "./useGameConfig";

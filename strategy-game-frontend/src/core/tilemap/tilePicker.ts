@@ -1,4 +1,4 @@
-import {Tile} from "../../models/state/tile";
+import {Tile} from "../models/tile";
 import {GameCanvasHandle} from "../rendering/gameCanvasHandle";
 import {Camera} from "../rendering/utils/camera";
 import {mat3} from "../rendering/utils/mat3";

@@ -1,6 +1,6 @@
 import {WorldStore} from "../../external/state/world/worldStore";
-import {City} from "../../models/state/city";
-import {TilePosition} from "../../models/state/tilePosition";
+import {City} from "../models/city";
+import {TilePosition} from "../models/tilePosition";
 import {orNull} from "../../shared/utils";
 
 export function useCityAt(pos: TilePosition | null): City | null {

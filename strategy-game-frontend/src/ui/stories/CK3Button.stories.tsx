@@ -1,4 +1,4 @@
-import {CK3Button} from "../ui/components/specific/test/CK3Button";
+import {CK3Button} from "../components/specific/test/CK3Button";
 import {ComponentMeta, ComponentStory} from "@storybook/react";
 
 export default {

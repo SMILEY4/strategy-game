@@ -1,6 +1,6 @@
 import {WorldStore} from "../../external/state/world/worldStore";
-import {Tile} from "../../models/state/tile";
-import {TilePosition} from "../../models/state/tilePosition";
+import {Tile} from "../models/tile";
+import {TilePosition} from "../models/tilePosition";
 import {orNull} from "../../shared/utils";
 
 export function useTileAt(pos: TilePosition | null): Tile | null {

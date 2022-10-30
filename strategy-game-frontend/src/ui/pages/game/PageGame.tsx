@@ -1,7 +1,7 @@
 import {ReactElement, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {useGameState} from "../../../core/hooks/useGameState";
-import {GameState} from "../../../models/state/gameState";
+import {GameState} from "../../../core/models/gameState";
 import {MenuFrameStack} from "../../components/specific/dialog/MenuFrameStack";
 import {Canvas} from "./canvas/Canvas";
 import "./pageGame.css";

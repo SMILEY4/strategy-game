@@ -2,7 +2,7 @@ import {ReactElement} from "react";
 import {FiMap} from "react-icons/fi";
 import {useMapMode} from "../../../../core/hooks/useMapMode";
 import {AppConfig} from "../../../../main";
-import {MapMode} from "../../../../models/state/mapMode";
+import {MapMode} from "../../../../core/models/mapMode";
 
 export function CategoryMap(): ReactElement {
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);

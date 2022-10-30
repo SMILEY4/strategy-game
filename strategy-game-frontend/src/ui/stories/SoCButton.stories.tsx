@@ -1,6 +1,6 @@
 import {ComponentMeta, ComponentStory} from "@storybook/react";
-import {SoCButton} from "../ui/components/specific/test/SoCButton";
-import {SoCPanel2} from "../ui/components/specific/test/SoCPanel2";
+import {SoCButton} from "../components/specific/test/SoCButton";
+import {SoCPanel2} from "../components/specific/test/SoCPanel2";
 
 export default {
     title: "SoCButton",

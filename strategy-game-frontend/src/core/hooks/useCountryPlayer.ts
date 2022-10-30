@@ -1,4 +1,4 @@
-import {Country} from "../../models/state/country";
+import {Country} from "../models/country";
 import {optional} from "../../shared/optional";
 import {useCountry} from "./useCountry";
 import {useUserIdOrNull} from "./useUserId";

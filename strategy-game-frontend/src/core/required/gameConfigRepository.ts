@@ -1,4 +1,4 @@
-import {GameConfig} from "../../models/state/gameConfig";
+import {GameConfig} from "../models/gameConfig";
 
 export interface GameConfigRepository {
     setConfig: (config: GameConfig) => void
