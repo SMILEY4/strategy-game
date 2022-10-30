@@ -19,7 +19,7 @@ export class TileBorderCalculator {
 
     constructor(tiles: Tile[]) {
         const map: Tile[][] = [];
-        tiles.forEach(tile => {
+        tiles.forEach(tile => { //TODO: maybe store tiles in state as 2d array / optimized for 2d-indexing ?
             if (map[tile.position.q] === undefined) {
                 map[tile.position.q] = [];
             }

@@ -1,6 +1,6 @@
 import {MsgMarkerTileContent, MsgScoutTileContent} from "../external/api/models/messagingTileContent";
 import {PayloadGameState} from "../external/api/models/payloadGameState";
-import {stringToBuildingType} from "./models/buildingType";
+import {BuildingType} from "./models/buildingType";
 import {City} from "./models/city";
 import {Color} from "./models/Color";
 import {Country} from "./models/country";
@@ -75,8 +75,8 @@ export class GameSetStateAction {
             },
             visibility: tile.dataTier0.visibility,
             dataTier1: tile.dataTier1 ? {
-                terrainType: this.getTerrainType(tile.dataTier1.terrainType),
-                resourceType: this.getResourceType(tile.dataTier1.resourceType),
+                terrainType: TerrainType.fromString(tile.dataTier1.terrainType),
+                resourceType: ResourceType.fromString(tile.dataTier1.resourceType),
                 owner: tile.dataTier1.owner ? {
                     countryId: tile.dataTier1.owner?.countryId,
                     countryColor: game.countries.find(c => c.dataTier1.countryId === tile.dataTier1?.owner?.countryId)?.dataTier1.color,
@@ -92,38 +92,6 @@ export class GameSetStateAction {
             } : null,
             layers: []
         }));
-    }
-
-    private getTerrainType(strType: string): TerrainType {
-        if (strType === "WATER") {
-            return TerrainType.WATER;
-        }
-        if (strType === "MOUNTAIN") {
-            return TerrainType.MOUNTAIN;
-        }
-        if (strType === "LAND") {
-            return TerrainType.LAND;
-        }
-        throw new Error("Unknown terrain type: '" + strType + "'");
-    }
-
-    private getResourceType(strType: string): ResourceType {
-        if (strType === "NONE") {
-            return ResourceType.NONE;
-        }
-        if (strType === "FOREST") {
-            return ResourceType.FOREST;
-        }
-        if (strType === "FISH") {
-            return ResourceType.FISH;
-        }
-        if (strType === "STONE") {
-            return ResourceType.STONE;
-        }
-        if (strType === "METAL") {
-            return ResourceType.METAL;
-        }
-        throw new Error("Unknown resource type: '" + strType + "'");
     }
 
     private getMarkers(game: PayloadGameState): Marker[] {
@@ -184,7 +152,7 @@ export class GameSetStateAction {
             isCity: city.city,
             parentCity: city.parentCity,
             buildings: city.buildings.map(b => ({
-                type: stringToBuildingType(b.type),
+                type: BuildingType.fromString(b.type),
                 tile: b.tile ? {
                     tileId: b.tile.tileId,
                     q: b.tile.q,

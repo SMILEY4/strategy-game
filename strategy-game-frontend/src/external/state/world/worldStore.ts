@@ -1,17 +1,19 @@
-import create, {SetState} from "zustand";
+import create from "zustand";
 import {City} from "../../../core/models/city";
 import {Country} from "../../../core/models/country";
 import {Marker} from "../../../core/models/marker";
 import {Scout} from "../../../core/models/scout";
 import {Tile} from "../../../core/models/tile";
 import {generateId} from "../../../shared/utils";
+import {SetState} from "../../../shared/zustandUtils";
+import {CountryContainer} from "../models/countryContainer";
 
 export namespace WorldStore {
 
     export interface StateValues {
         revisionId: string,
         currentTurn: number
-        countries: Country[],
+        countries: CountryContainer,
         tiles: Tile[],
         markers: Marker[],
         scouts: Scout[],
@@ -21,7 +23,7 @@ export namespace WorldStore {
     const initialStateValues: StateValues = {
         revisionId: generateId(),
         currentTurn: 0,
-        countries: [],
+        countries: new CountryContainer([]),
         tiles: [],
         markers: [],
         scouts: [],
@@ -36,7 +38,7 @@ export namespace WorldStore {
             cities: City[],
             markers: Marker[],
             scouts: Scout[]
-        ) => void
+        ) => void;
     }
 
     function stateActions(set: SetState<State>): StateActions {
@@ -51,7 +53,7 @@ export namespace WorldStore {
             ) => set(() => ({
                 currentTurn: currentTurn,
                 tiles: tiles,
-                countries: countries,
+                countries: new CountryContainer(countries),
                 cities: cities,
                 markers: markers,
                 scouts: scouts,

@@ -1,10 +1,11 @@
+import {Command} from "../../core/models/command";
+import {GameConfig} from "../../core/models/gameConfig";
 import {GameApi} from "../../core/required/gameApi";
 import {UserRepository} from "../../core/required/userRepository";
-import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../core/models/command";
-import {GameConfig} from "../../core/models/gameConfig";
 import {HttpClient} from "./http/httpClient";
 import {MessageHandler} from "./messageHandler";
 import {WebsocketClient} from "./messaging/websocketClient";
+import {PayloadSubmitTurn} from "./models/payloadSubmitTurn";
 
 export class GameApiImpl implements GameApi {
 
@@ -81,46 +82,7 @@ export class GameApiImpl implements GameApi {
 
 
     submitTurn(commands: Command[]): void {
-        this.websocketClient.send("submit-turn", {
-                commands: commands.map(cmd => {
-                    if (cmd.commandType === "place-marker") {
-                        const cmdPlaceMarker = cmd as CommandPlaceMarker;
-                        return {
-                            type: "place-marker",
-                            q: cmdPlaceMarker.q,
-                            r: cmdPlaceMarker.r,
-                        };
-                    }
-                    if (cmd.commandType === "place-scout") {
-                        const cmdPlaceScout = cmd as CommandPlaceScout;
-                        return {
-                            type: "place-scout",
-                            q: cmdPlaceScout.q,
-                            r: cmdPlaceScout.r,
-                        };
-                    }
-                    if (cmd.commandType === "create-city") {
-                        const cmdCreateCity = cmd as CommandCreateCity;
-                        return {
-                            type: "create-city",
-                            name: cmdCreateCity.name,
-                            q: cmdCreateCity.q,
-                            r: cmdCreateCity.r,
-                            parentCity: cmdCreateCity.parentCity
-                        };
-                    }
-                    if (cmd.commandType === "create-building") {
-                        const cmdCreateBuilding = cmd as CommandCreateBuilding;
-                        return {
-                            type: "create-building",
-                            cityId: cmdCreateBuilding.cityId,
-                            buildingType: cmdCreateBuilding.buildingType
-                        };
-                    }
-                    return undefined;
-                })
-            }
-        );
+        this.websocketClient.send("submit-turn", PayloadSubmitTurn.buildSubmitTurnPayload(commands));
     }
 
 }
