@@ -37,11 +37,13 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$versionKtor")
     implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
     implementation("io.ktor:ktor-server-status-pages:$versionKtor")
-    testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
-    testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
     implementation("io.ktor:ktor-server-metrics:$versionKtor")
     implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.9.2")
+    testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
+    testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
+
+    val versionMicrometerPrometheus: String by project
+    implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
 
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
@@ -109,12 +111,3 @@ tasks.shadowJar {
         attributes(Pair("Main-Class", "io.ktor.server.netty.EngineMain"))
     }
 }
-
-abstract class PrintVersionTask : DefaultTask() {
-    @TaskAction
-    fun greet() {
-        println(project.version)
-    }
-}
-
-tasks.register<PrintVersionTask>("printVersion")
