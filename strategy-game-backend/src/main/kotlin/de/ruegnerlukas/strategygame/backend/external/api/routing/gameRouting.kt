@@ -7,7 +7,10 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
-import de.ruegnerlukas.strategygame.backend.shared.traceId
+import de.ruegnerlukas.strategygame.backend.shared.mdcGameId
+import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
+import de.ruegnerlukas.strategygame.backend.shared.mdcUserId
+import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -16,7 +19,6 @@ import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
-import mu.withLoggingContext
 import org.koin.ktor.ext.inject
 
 
@@ -56,8 +58,8 @@ fun Route.gameRoutes() {
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
-                    val userId = getUserIdOrThrow(call)
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
                     val gameId = createGame.perform(WorldSettings.default())
                     when (val joinResult = joinGame.perform(userId, gameId)) {
                         is Either.Right -> ApiResponse.respondSuccess(call, gameId)
@@ -94,8 +96,10 @@ fun Route.gameRoutes() {
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
-                    when (val result = joinGame.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)) {
+                val gameId = call.parameters["gameId"]!!
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
+                    when (val result = joinGame.perform(userId, gameId)) {
                         is Either.Right -> ApiResponse.respondSuccess(call)
                         is Either.Left -> when (result.value) {
                             GameJoinAction.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
@@ -117,8 +121,9 @@ fun Route.gameRoutes() {
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
-                    val gameIds = listGames.perform(getUserIdOrThrow(call))
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
+                    val gameIds = listGames.perform(userId)
                     ApiResponse.respondSuccess(call, gameIds)
                 }
             }
@@ -137,8 +142,10 @@ fun Route.gameRoutes() {
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
-                    deleteGame.perform(call.parameters["gameId"]!!)
+                val gameId = call.parameters["gameId"]!!
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
+                    deleteGame.perform(gameId)
                     ApiResponse.respondSuccess(call)
                 }
             }
@@ -155,7 +162,7 @@ fun Route.gameRoutes() {
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(getUserIdOrThrow(call))) {
                     ApiResponse.respondSuccess(call, gameConfig)
                 }
             }

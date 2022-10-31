@@ -9,7 +9,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.shared.traceId
+import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
+import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.HttpStatusCode
@@ -18,7 +19,6 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
-import mu.withLoggingContext
 import org.koin.ktor.ext.inject
 
 
@@ -58,7 +58,7 @@ fun Route.userRoutes() {
                 }
             }
         }) {
-            withLoggingContext(traceId()) {
+            withLoggingContextAsync(mdcTraceId()) {
                 call.receive<CreateUserData>().let { requestData ->
                     when (val result = userCreate.perform(requestData.email, requestData.password, requestData.username)) {
                         is Either.Right -> ApiResponse.respondSuccess(call)
@@ -98,7 +98,7 @@ fun Route.userRoutes() {
                 }
             }
         }) {
-            withLoggingContext(traceId()) {
+            withLoggingContextAsync(mdcTraceId()) {
                 call.receive<LoginData>().let { requestData ->
                     when (val result = userLogin.perform(requestData.email, requestData.password)) {
                         is Either.Right -> ApiResponse.respondSuccess(call, AuthData(result.value))
@@ -142,7 +142,7 @@ fun Route.userRoutes() {
                 }
             }
         }) {
-            withLoggingContext(traceId()) {
+            withLoggingContextAsync(mdcTraceId()) {
                 call.receive<String>().let { requestData ->
                     when (val result = userRefresh.perform(requestData)) {
                         is Either.Right -> ApiResponse.respondSuccess(call, result.value)
@@ -175,7 +175,7 @@ fun Route.userRoutes() {
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
+                withLoggingContextAsync(mdcTraceId()) {
                     call.receive<LoginData>().let { requestData ->
                         when (val result = userDelete.perform(requestData.email, requestData.password)) {
                             is Either.Right -> ApiResponse.respondSuccess(call)
