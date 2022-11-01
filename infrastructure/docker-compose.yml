@@ -9,6 +9,7 @@ services:
             - database
         ports:
             - "8080:8080"
+            - "8443:8443"
         volumes:
             - app_logs:/log
             - ./sslCert/keystore.jks:/home/sslCert/keystore.jks
