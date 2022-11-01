@@ -248,6 +248,7 @@ Resources:
                 - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
                 - "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
                 - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+                - "arn:aws:iam::627717213620:policy/certbot.route53"
 
     ServerInstanceProfile:
         Type: "AWS::IAM::InstanceProfile"
@@ -298,10 +299,11 @@ Resources:
                     #!/bin/bash -xe
 
                     sudo apt update -y
+                    sudo apt-get update -y
                     
                     #install aws-cli
                     sudo apt-get install awscli -y
-                    
+
                     #install docker
                     sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
                     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -320,6 +322,14 @@ Resources:
                     wget https://aws-codedeploy-eu-central-1.s3.eu-central-1.amazonaws.com/latest/install
                     chmod +x ./install
                     sudo ./install auto
+
+                    # install things required for ssl-cert handling
+                    sudo apt-get install certbot -y
+                    sudo apt install python3-pip -y
+                    sudo pip3 install --upgrade awscli
+                    sudo pip3 install certbot_dns_route53
+                    sudo apt install openjdk-17-jre-headless -y
+
             Tags:
                 -   Key: "CodeDeployTag"
                     Value: !Join
@@ -500,7 +510,7 @@ Resources:
                 BuildSpec: "infrastructure/aws/buildspec-backend.yml"
             Environment:
                 ComputeType: "BUILD_GENERAL1_SMALL"
-                Type: "LINUX_CONTAINER"
+                Type: "ARM_CONTAINER"
                 Image: "aws/codebuild/amazonlinux2-aarch64-standard:2.0"
                 PrivilegedMode: true
             LogsConfig:
