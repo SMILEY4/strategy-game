@@ -9,10 +9,6 @@ Parameters:
         Type: "String"
         Description: "Arn of the certificate for the webapp. Must be in region us-east-1"
         Default: "arn:aws:acm:us-east-1:627717213620:certificate/cdda0fd0-9560-4f70-b9bd-19b4fdb28967"
-    ApiCertificateArn:
-        Type: "String"
-        Description: "Arn of the certificate for the api."
-        Default: "arn:aws:acm:eu-central-1:627717213620:certificate/f808e2b7-a447-4520-b878-2ebedbdc65db"
     WebAppDomain:
         Type: "String"
         Description: "Domain name of the webapp (without www)"
@@ -344,67 +340,6 @@ Resources:
 
 
     #===================================================================================================================
-    #    Application Load Balancer (for tls)
-    #===================================================================================================================
-
-    AppLoadBalancerTargetGroup:
-        Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-        Properties:
-            Name: !Join
-                - ""
-                -   - "strategy-game"
-                    - !Ref EnvName
-                    - "-target-group"
-            VpcId: "vpc-0858e870bf56854b7"
-            Port: 8080
-            Protocol: "HTTP"
-            Targets:
-                -   Id: !Ref ServerInstance
-                    Port: 8080
-            HealthCheckProtocol: "HTTP"
-            HealthCheckPath: "/api/health"
-            Matcher:
-                HttpCode: "200-299"
-            HealthCheckIntervalSeconds: 300
-            HealthCheckTimeoutSeconds: 15
-            HealthyThresholdCount: 5
-            UnhealthyThresholdCount: 3
-
-    AppLoadBalancer:
-        Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
-        Properties:
-            Name: !Join
-                - ""
-                -   - "strategy-game"
-                    - !Ref EnvName
-                    - "-alb"
-            Scheme: "internet-facing"
-            Subnets:
-                - "subnet-0927ddea905ede759"
-                - "subnet-0b2b346e5f55a7a3a"
-                - "subnet-05b5e8e70a2ebc72a"
-            SecurityGroups:
-                - !GetAtt ServerSecurityGroup.GroupId
-#            LoadBalancerAttributes: # TODO: ALB doesnt seem to have permissions to push to s3-bucket
-#                -   Key: "access_logs.s3.enabled"
-#                    Value: "true"
-#                -   Key: "access_logs.s3.bucket"
-#                    Value: !Ref GeneralLogBucketName
-#                -   Key: "access_logs.s3.prefix"
-#                    Value: "loadbalancer"
-    AppLoadBalancerListener:
-        Type: "AWS::ElasticLoadBalancingV2::Listener"
-        Properties:
-            LoadBalancerArn: !Ref AppLoadBalancer
-            DefaultActions:
-                -   Type: "forward"
-                    TargetGroupArn: !Ref AppLoadBalancerTargetGroup
-            Port: 443
-            Protocol: "HTTPS"
-            Certificates:
-                -   CertificateArn: !Ref ApiCertificateArn
-
-    #===================================================================================================================
     #    Route53
     #===================================================================================================================
 
@@ -427,9 +362,10 @@ Resources:
                         -   - !Ref ApiAppDomain
                             - "."
                     Type: "A"
-                    AliasTarget:
-                        DNSName: !GetAtt AppLoadBalancer.DNSName
-                        HostedZoneId: !GetAtt AppLoadBalancer.CanonicalHostedZoneID
+                    TTL: 300
+                    ResourceRecords:
+                        - !GetAtt ServerInstance.PublicIp
+
 
     #===================================================================================================================
     #    Build/Deploy-Pipeline
