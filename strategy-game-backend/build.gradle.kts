@@ -49,7 +49,6 @@ dependencies {
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
-
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
     implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")

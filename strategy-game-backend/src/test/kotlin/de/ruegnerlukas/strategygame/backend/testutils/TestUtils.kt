@@ -61,7 +61,7 @@ object TestUtils {
 	suspend fun getPlayers(database: ArangoDatabase, gameId: String): List<Player> {
 		return GameQueryImpl(database).execute(gameId)
 			.getOrHandle { throw Exception("Game $gameId not found") }
-			.players
+			.players.toList()
 	}
 
 	suspend fun getMarkersAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<Pair<Tile, MarkerTileContent>> {
