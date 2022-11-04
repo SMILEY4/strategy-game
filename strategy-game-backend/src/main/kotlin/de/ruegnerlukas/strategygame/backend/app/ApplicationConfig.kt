@@ -15,7 +15,6 @@ import io.github.smiley4.ktorswaggerui.dsl.AuthType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.network.tls.certificates.generateCertificate
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -51,7 +50,6 @@ import org.koin.core.logger.MESSAGE
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.slf4j.event.Level
-import java.io.File
 import java.time.Duration
 
 
@@ -59,7 +57,6 @@ import java.time.Duration
  * The main-module for configuring Ktor. Referenced in "application.conf".
  */
 fun Application.module() {
-
     install(Koin) {
         modules(applicationDependencies)
         logger(object : Logger() {

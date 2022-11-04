@@ -7,3 +7,4 @@ log/strategy-game-backend.log
 *.local.txt
 test.db
 dev.db
+*.jks
