@@ -39,6 +39,7 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:$versionKtor")
     implementation("io.ktor:ktor-server-metrics:$versionKtor")
     implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
+    implementation("io.ktor:ktor-network-tls-certificates:$versionKtor")
     testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
     testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
 
@@ -47,7 +48,6 @@ dependencies {
 
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
-
 
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")

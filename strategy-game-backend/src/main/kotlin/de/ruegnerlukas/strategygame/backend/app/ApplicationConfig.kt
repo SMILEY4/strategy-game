@@ -57,7 +57,6 @@ import java.time.Duration
  * The main-module for configuring Ktor. Referenced in "application.conf".
  */
 fun Application.module() {
-
     install(Koin) {
         modules(applicationDependencies)
         logger(object : Logger() {
