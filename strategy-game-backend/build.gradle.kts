@@ -40,6 +40,7 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics:$versionKtor")
     implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
     implementation("io.ktor:ktor-network-tls-certificates:$versionKtor")
+    implementation("io.ktor:ktor-server-html-builder:$versionKtor")
     testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
     testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
 
