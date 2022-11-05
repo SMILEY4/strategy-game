@@ -18,7 +18,7 @@
     - Discovered Countries
   
 - [Changelog](./changelog/changelog.md)
-- Milestones/Roadmap
+- Milestone-Plans/Roadmap
   - [Milestone 0.2](./roadmap/milestone_0_2.md)
   - [Milestone 0.3](./roadmap/milestone_0_3.md)
 
