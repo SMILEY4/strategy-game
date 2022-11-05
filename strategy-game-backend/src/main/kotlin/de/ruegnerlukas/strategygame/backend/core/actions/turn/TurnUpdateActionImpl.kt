@@ -40,16 +40,22 @@ class TurnUpdateActionImpl(
             val country = game.countries.find { it.countryId == city.countryId }
             if (country != null) {
                 country.resources.money += gameConfig.cityIncomePerTurn
-                country.resources.food -= if (city.isCity) 10 else 5
+                country.resources.food -= if (city.isCity) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
+                println("UPDATE RESOURCES $city ${city.buildings}")
                 city.buildings
                     .filter { it.tile != null }
                     .forEach { building ->
+                        val production = if(city.isCity) {
+                            gameConfig.cityBuildingProductionPerTurn
+                        } else {
+                            gameConfig.townBuildingProductionPerTurn
+                        }
                         when (building.type) {
-                            BuildingType.LUMBER_CAMP -> country.resources.wood += if (city.isCity) 10 else 5
-                            BuildingType.MINE -> country.resources.metal += if (city.isCity) 10 else 5
-                            BuildingType.QUARRY -> country.resources.stone += if (city.isCity) 10 else 5
-                            BuildingType.HARBOR -> country.resources.food += if (city.isCity) 10 else 5
-                            BuildingType.FARM -> country.resources.food += if (city.isCity) 10 else 5
+                            BuildingType.LUMBER_CAMP -> country.resources.wood += production
+                            BuildingType.MINE -> country.resources.metal += production
+                            BuildingType.QUARRY -> country.resources.stone += production
+                            BuildingType.HARBOR -> country.resources.food += production
+                            BuildingType.FARM -> country.resources.food += production
                         }
                     }
             }

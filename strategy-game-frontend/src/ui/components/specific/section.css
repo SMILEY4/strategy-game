@@ -1,0 +1,15 @@
+.section {
+	padding: 5px;
+}
+
+.section > .header {
+	font-weight:      bold;
+	font-size:        1.2rem;
+	background-color: #797979;
+	padding:          5px;
+}
+
+.section > .body {
+	border: 1px solid #797979;
+	padding:          5px
+}

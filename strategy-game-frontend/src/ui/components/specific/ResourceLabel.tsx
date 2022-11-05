@@ -4,25 +4,27 @@ import resourceIconMoneyImageUrl from "/resource_icon_money.png?url";
 import resourceIconStoneImageUrl from "/resource_icon_stone.png?url";
 import resourceIconWoodImageUrl from "/resource_icon_wood.png?url";
 import {ReactElement} from "react";
-import "./resourceWidget.css";
-import {ResourceValue} from "../../../../../core/models/resourceValue";
+import "./resourceLabel.css";
 
 
-export function ResourceWidget(props: {resource: ResourceValue}): ReactElement {
+export function ResourceLabel(props: {
+    type: "money" | "wood" | "stone" | "metal" | "food",
+    value: number,
+    showPlusSign: boolean
+}): ReactElement {
 
     return (
-        <div className="resource-widget">
-            <div className={"icon " + props.resource.type} style={{
-                backgroundImage: getBackgroundImage(props.resource.type)
+        <span className="resource-label">
+            <span className={"value " + side(props.value, props.showPlusSign)}>
+                {formatNumber(props.value, props.showPlusSign)}
+            </span>
+            <span className={"icon " + props.type} style={{
+                backgroundImage: getBackgroundImage(props.type)
             }}/>
-            <div className={"labels"}>
-                <div className={"amount " + side(props.resource.value)}>{formatNumber(props.resource.value, false)}</div>
-                <div className={"change " + side(props.resource.change)}>{formatNumber(props.resource.change, true)}</div>
-            </div>
-        </div>
+        </span>
     );
 
-    function formatNumber(value: number, positiveSign: boolean): string {
+    function formatNumber(value: number, showPlusSign: boolean): string {
         let absValue = Math.abs(value);
         let isThousands = false;
         if (absValue >= 1000) {
@@ -34,7 +36,7 @@ export function ResourceWidget(props: {resource: ResourceValue}): ReactElement {
             return "-" + absValue + (isThousands ? "K" : "");
         }
         if (value > 0) {
-            return (positiveSign ? "+" : "") + absValue + (isThousands ? "K" : "");
+            return (showPlusSign ? "+" : "") + absValue + (isThousands ? "K" : "");
         }
         return "" + absValue + (isThousands ? "K" : "");
     }
@@ -43,14 +45,14 @@ export function ResourceWidget(props: {resource: ResourceValue}): ReactElement {
         return +parseFloat("" + value).toFixed(dp);
     }
 
-    function side(value: number): string {
+    function side(value: number, showPlusSign: boolean): string {
         if (value < 0) {
             return "negative";
         }
-        if (value > 0) {
+        if (value > 0 && showPlusSign) {
             return "positive";
         }
-        return "none";
+        return "neutral";
     }
 
     function getBackgroundImage(type: "money" | "food" | "wood" | "stone" | "metal"): string {

@@ -54,6 +54,7 @@ services:
         environment:
             - xpack.security.enabled=false
             - discovery.type=single-node
+        mem_limit: 2048m
         cap_add:
             - IPC_LOCK
         volumes:
