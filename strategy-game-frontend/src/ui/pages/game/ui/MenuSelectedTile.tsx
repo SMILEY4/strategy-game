@@ -1,4 +1,5 @@
 import React, {ReactElement} from "react";
+import {CgShapeHexagon} from "react-icons/cg";
 import {useCityAt} from "../../../../core/hooks/useCityAt";
 import {useCityById} from "../../../../core/hooks/useCityById";
 import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
@@ -17,6 +18,14 @@ import {AdvButton} from "../../../components/specific/AdvButton";
 import {ResourceLabel} from "../../../components/specific/ResourceLabel";
 import {Section} from "../../../components/specific/Section";
 
+export function CategorySelectedTile(): ReactElement {
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService)
+    return (
+        <div onClick={() => uiService.openToolbarMenuSelectedTile()}>
+            <CgShapeHexagon/>
+        </div>
+    );
+}
 
 export function MenuSelectedTile(): ReactElement {
     const selectedTilePos = useSelectedTilePosition();

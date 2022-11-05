@@ -5,7 +5,7 @@ import {Color} from "../../../../../core/models/Color";
 import "./gameMenuBar.css";
 import {CategoryDebug} from "../MenuDebug";
 import {CategoryMap} from "../MenuMap";
-import {CategoryOther} from "../MenuOther";
+import {CategorySelectedTile} from "../MenuSelectedTile";
 import {NextTurnAction} from "./NextTurnAction";
 import {ResourceWidget} from "./ResourceWidget";
 
@@ -20,8 +20,8 @@ export function GameMenuBar(): ReactElement {
             <div className="country-color"
                  style={{backgroundColor: `rgb(${countryColor.red},${countryColor.green},${countryColor.blue})`}}/>
             <div className="category-area">
-                <CategoryOther/>
                 <CategoryDebug/>
+                <CategorySelectedTile/>
                 <CategoryMap/>
             </div>
             <div className="info-section">
