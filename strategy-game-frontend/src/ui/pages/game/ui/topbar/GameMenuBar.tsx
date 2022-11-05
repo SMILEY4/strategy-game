@@ -1,13 +1,13 @@
 import {ReactElement} from "react";
-import {useCountryMoney} from "../../../../core/hooks/useCountryMoney";
-import {useCountryPlayerOrNull} from "../../../../core/hooks/useCountryPlayer";
-import {useCountryResources} from "../../../../core/hooks/useCountryResources";
-import {Color} from "../../../../core/models/Color";
+import {useCountryPlayerOrNull} from "../../../../../core/hooks/useCountryPlayer";
+import {useCountryResources} from "../../../../../core/hooks/useCountryResources";
+import {Color} from "../../../../../core/models/Color";
 import "./gameMenuBar.css";
-import {CategoryDebug} from "./MenuDebug";
-import {CategoryMap} from "./MenuMap";
-import {CategoryOther} from "./MenuOther";
+import {CategoryDebug} from "../MenuDebug";
+import {CategoryMap} from "../MenuMap";
+import {CategoryOther} from "../MenuOther";
 import {NextTurnAction} from "./NextTurnAction";
+import {ResourceWidget} from "./ResourceWidget";
 
 export function GameMenuBar(): ReactElement {
 
@@ -25,21 +25,15 @@ export function GameMenuBar(): ReactElement {
                 <CategoryMap/>
             </div>
             <div className="info-section">
-                <ResourceDisplay label={"Money"} amount={countryResources.money}/>
-                <ResourceDisplay label={"Food"} amount={countryResources.food}/>
-                <ResourceDisplay label={"Wood"} amount={countryResources.wood}/>
-                <ResourceDisplay label={"Stone"} amount={countryResources.stone}/>
-                <ResourceDisplay label={"Metal"} amount={countryResources.metal}/>
+                <ResourceWidget resource={countryResources.money}/>
+                <ResourceWidget resource={countryResources.wood}/>
+                <ResourceWidget resource={countryResources.stone}/>
+                <ResourceWidget resource={countryResources.metal}/>
+                <ResourceWidget resource={countryResources.food}/>
             </div>
             <div className="action-section">
                 <NextTurnAction/>
             </div>
         </div>
-    );
-}
-
-export function ResourceDisplay(props: {label: string, amount: number}): ReactElement {
-    return (
-        <div>{props.label + ": " + props.amount}</div>
     );
 }

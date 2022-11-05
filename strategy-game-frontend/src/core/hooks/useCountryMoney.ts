@@ -1,5 +1,5 @@
 import {useCountryResources} from "./useCountryResources";
 
 export function useCountryMoney(): number {
-    return useCountryResources().money;
+    return useCountryResources().money.value;
 }

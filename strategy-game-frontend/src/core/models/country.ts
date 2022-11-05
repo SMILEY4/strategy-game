@@ -1,4 +1,5 @@
 import {Color} from "./Color";
+import {ResourceValue} from "./resourceValue";
 
 export interface Country {
     countryId: string,
@@ -9,10 +10,10 @@ export interface Country {
 
 export interface CountryDataTier3 {
     resources: {
-        money: number,
-        wood: number,
-        food: number,
-        stone: number,
-        metal: number
+        money: ResourceValue,
+        wood: ResourceValue,
+        food: ResourceValue,
+        stone: ResourceValue,
+        metal: ResourceValue
     },
 }

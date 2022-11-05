@@ -26,6 +26,14 @@ https://axiomsofdominion.substack.com/archive?sort=new ⚠
 
 - turn based fantasy game -> seems to have similar ideas
 
+https://community.knightsofhonor.com/index/dev-diaries/
+
+- Knights of Honor II - Dev Diary (Blog)
+
+http://www.cheatbook.de/wfiles/knightsofhonor.htm
+
+- Knights of Honor - Manual/Guide/FAQ
+
 
 
 # Turn-Based (WeGo) ❤
@@ -797,3 +805,41 @@ What if defender does not find out about pending war ? (suprised by declaration 
 # [Video] Raising a Medieval Army
 
 https://www.youtube.com/watch?v=ZQHfit8b6VA&t=180s
+
+
+
+# Royal Court/Council
+
+- Royal Court consists of King (i.e. Player) and up to x other characters
+
+- each character has certain abilities and a class
+- player can freely choose who, which classes and how many to have at the court
+- characters class defines what special actions he/she can perform
+  - Marshal - command armies
+  - Merchant
+  - Diplomat
+  - Spy
+  - Administrator
+  - ...
+- characters in the court can also govern cities, giving the city/area additional effects
+
+
+
+# Society / Opinion
+
+- people separated into different classes with different goals, things that influence their opinion and its effects
+-  Peasantry (unskilled labour)
+  - want: safety and protection
+  - affected by: provide basic goods, protect from invasions, no unnecessary wars
+  - effects: basic goods production, rebellion risk, morale of militia units in army 
+- craftsmen (skilled labour, guilds)
+  - ...
+- Nobility
+  - want: personal influence
+  - affected by: financial stability, winning wars, politics, diplomatic decisions
+  - effects: crown authority, loyalty of knights
+- Merchants
+  - want: 
+  - affected by: new trade opportunities, protection of trade, ...
+  - effects: gold income, trade efficiency, cost of buying supplies
+- ...
