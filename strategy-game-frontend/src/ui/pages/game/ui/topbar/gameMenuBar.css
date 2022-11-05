@@ -56,12 +56,6 @@
 }
 
 
-.game-menu-bar > .info-section > * {
-	border:  1px solid #777777;
-	padding: 1px 10px;
-}
-
-
 .game-menu-bar > .action-section {
 	display:         flex;
 	align-items:     center;

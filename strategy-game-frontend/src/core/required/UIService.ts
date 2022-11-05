@@ -6,7 +6,6 @@ export interface UIService {
     openToolbarMenuSelectedTile: () => void;
     openToolbarMenuDebug: () => void;
     openToolbarMenuMap: () => void;
-    openToolbarMenuOther: () => void;
     openDialogCreateCity: (pos: TilePosition | null) => void
     openDialogCreateTown: (pos: TilePosition | null) => void
     repositionAll: () => void

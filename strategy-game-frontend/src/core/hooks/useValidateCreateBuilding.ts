@@ -32,7 +32,7 @@ export function useValidateCreateBuilding(city: City | null): (type: BuildingTyp
                     }
                 });
                 ctx.validate("BUILDING.RESOURCES", () => {
-                    return resources.wood >= config.buildingCostWood && resources.stone >= config.buildingCostStone;
+                    return resources.wood.value >= config.buildingCostWood && resources.stone.value >= config.buildingCostStone;
                 });
             }).isValid();
         };

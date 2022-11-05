@@ -1,0 +1,49 @@
+.resource-widget {
+	max-height:      30px;
+	width:           100px;
+	display:         flex;
+	justify-content: space-between;
+	align-items:     center;
+	gap:             5px;
+}
+
+
+.resource-widget > .icon {
+	min-width:        30px;
+	min-height:       30px;
+	max-width:        30px;
+	max-height:       30px;
+	background-size: cover;
+}
+
+
+.resource-widget > .labels {
+	flex-grow: 1;
+}
+
+.resource-widget > .labels > * {
+	margin: -5px 0;
+}
+
+
+.resource-widget > .labels > .amount {
+	font-weight: bold;
+	font-size:   1rem;
+}
+
+.resource-widget > .labels > .amount.negative {
+	color: #800000;
+}
+
+.resource-widget > .labels > .change {
+	font-style: italic;
+	font-size:  0.75rem;
+}
+
+.resource-widget > .labels > .change.positive {
+	color: #006e00;
+}
+
+.resource-widget > .labels > .change.negative {
+	color: #800000;
+}

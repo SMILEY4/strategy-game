@@ -6,7 +6,6 @@ import {CreateCityDialog} from "../../../ui/pages/game/ui/CreateCityDialog";
 import {CreateTownDialog} from "../../../ui/pages/game/ui/CreateTownDialog";
 import {MenuDebug} from "../../../ui/pages/game/ui/MenuDebug";
 import {MenuMap} from "../../../ui/pages/game/ui/MenuMap";
-import {MenuOther} from "../../../ui/pages/game/ui/MenuOther";
 import {MenuSelectedTile} from "../../../ui/pages/game/ui/MenuSelectedTile";
 import {UiFrames} from "./uiFrames";
 import {UiStore} from "./uiStore";
@@ -68,20 +67,6 @@ export class UIServiceImpl implements UIService {
                 }
             },
             () => <MenuMap/>);
-    }
-
-    openToolbarMenuOther(): void {
-        this.openFrame(
-            "topbar.category.menu",
-            {
-                vertical: {
-                    x: 10,
-                    width: 320,
-                    top: 50,
-                    bottom: 10
-                }
-            },
-            () => <MenuOther/>);
     }
 
     openDialogCreateCity(pos: TilePosition | null): void {

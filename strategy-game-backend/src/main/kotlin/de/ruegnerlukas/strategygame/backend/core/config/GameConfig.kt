@@ -8,11 +8,11 @@ data class GameConfig(
     /**
      * the amount of wood a country starts with
      */
-    val startingAmountWood: Float = 200f,
+    val startingAmountWood: Float = 300f,
     /**
      * the amount of food a country starts with
      */
-    val startingAmountFood: Float = 200f,
+    val startingAmountFood: Float = 300f,
     /**
      * the amount of stone a country starts with
      */
@@ -57,6 +57,22 @@ data class GameConfig(
      * the amount of money produced by a city each turn
      */
     val cityIncomePerTurn: Float = 10f,
+    /**
+     * the amount of food consumed by a city each turn
+     */
+    val cityFoodCostPerTurn: Float = 10f,
+    /**
+     * the amount of food consumed by a town each turn
+     */
+    val townFoodCostPerTurn: Float = 5f,
+    /**
+     * the amount of resources produced by buildings in a city each turn
+     */
+    val cityBuildingProductionPerTurn: Float = 10f,
+    /**
+     * the amount of resources produced by buildings in a town each turn
+     */
+    val townBuildingProductionPerTurn: Float = 5f,
     /**
      * the max amount of influence a town generates
      */

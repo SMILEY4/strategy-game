@@ -1,6 +1,9 @@
 import {ReactElement} from "react";
 import {CgDebug} from "react-icons/cg";
+import {MapMode} from "../../../../core/models/mapMode";
 import {AppConfig} from "../../../../main";
+import {AdvButton} from "../../../components/specific/AdvButton";
+import {Section} from "../../../components/specific/Section";
 
 export function CategoryDebug(): ReactElement {
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService)
@@ -24,12 +27,29 @@ export function MenuDebug(): ReactElement {
     }
 
     return (
-        <div>
-            <h3>Debug-Menu</h3>
-            <button onClick={uiService.repositionAll}>Center Dialogs</button>
-            <button onClick={debugLooseContext}>Loose WebGL context</button>
-            <button onClick={debugRestoreContext}>Restore WebGL context</button>
-        </div>
+        <Section title={"Debug Actions"}>
+            <AdvButton
+                label={"Center Dialogs"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={false}
+                onClick={uiService.repositionAll}
+            />
+            <AdvButton
+                label={"Loose WebGL-Context"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={false}
+                onClick={debugLooseContext}
+            />
+            <AdvButton
+                label={"Restore WebGL-Context"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={false}
+                onClick={debugRestoreContext}
+            />
+        </Section>
     );
 
 }

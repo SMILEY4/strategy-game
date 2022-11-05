@@ -5,7 +5,7 @@ import {GameState} from "../../../core/models/gameState";
 import {MenuFrameStack} from "../../components/specific/dialog/MenuFrameStack";
 import {Canvas} from "./canvas/Canvas";
 import "./pageGame.css";
-import {GameMenuBar} from "./ui/GameMenuBar";
+import {GameMenuBar} from "./ui/topbar/GameMenuBar";
 
 export function PageGame(): ReactElement {
 
