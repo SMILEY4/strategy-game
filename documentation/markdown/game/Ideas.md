@@ -34,6 +34,8 @@ http://www.cheatbook.de/wfiles/knightsofhonor.htm
 
 - Knights of Honor - Manual/Guide/FAQ
 
+https://michaeltedin.com/worldbuilding-102-economics-in-fantasy-societies-part-1/
+
 
 
 # Turn-Based (WeGo) ❤
@@ -843,3 +845,125 @@ https://www.youtube.com/watch?v=ZQHfit8b6VA&t=180s
   - affected by: new trade opportunities, protection of trade, ...
   - effects: gold income, trade efficiency, cost of buying supplies
 - ...
+
+
+
+# Population Mechanics
+
+**Social classes**
+
+- structured into classes (~https://en.wikipedia.org/wiki/Estates_of_the_realm)
+  - freemen = free landed peasantry
+  - peasants/Serfs = unfree peasantry or peasantry without own land -> work on land of gentry
+  - gentry/nobility = landed elite, do not work, live off revenue taken from peasanty
+  - burghers = merchants, income directly from trade
+- determines, what the pop produces, consumes, its political weight, happiness modifiers, ...
+- each settlement has x amount of any class 
+- class structure approaches its optimal ratio over time through promotion and demotion
+
+
+
+**Jobs/occupations**
+
+- each pop can have different jobs based on social class and available buildings
+- peasants/Serfs (= "farmers and farm labourers")
+  - produce food on land of gentry
+- freemen
+  - by default: produce food -> subsistence farming 
+  - if buildings and enough food available -> work in those buildings instead
+- gentry
+  - dont work
+- burghers
+  - manage trade of goods between provinces
+
+
+
+**Peasant/Serfs**
+
+- children of peasants are also peasants
+- is subject to his lord
+- not allowed to migrate to other settlements
+- does not pay state tax
+- pays rent to his lord (in form of produced food, labor, taxes)
+  - ~20%
+  - as ratio gentry to peasants increases -> gentry will take larger and larger fraction of income
+  - rest goes to own consumption
+  - surplus sold on market as own income
+  - additional tax on income to lord ?
+- use their wealth to consume small amount of resources of varying types
+
+
+
+**Freemen**
+
+- represent free landed peasantry
+- can migrate to other cities with better opportunities
+- produce resources
+  - by default: produce food -> subsistence farming  (own consumption), sell surplus
+  - if buildings and enough food available -> work in those buildings instead
+    - craftsmen -> sell goods
+    - become merchant
+    - administrative jobs
+    - ...
+- are paid according to the amount+price of a resource they produce
+- use their wealth to consume moderate amount of resources of varying types
+- pay state tax from income
+
+
+
+**Gentry,Nobility**
+
+- represent landed elite
+- pay state tax
+- don't work / produce goods
+- take the resources from peasants
+  - money
+  - food, sell surplus
+- purchase large amounts of resources (luxury silks, ...)
+
+
+
+**Promotion/demotions**
+
+- freeman -> peasant/serf, when ...
+  - unable to care for his own
+    - low income
+    - not enough food
+    - war
+    - marauders, plundering
+- peasant/serf -> freemen, when ...
+  - good harvest -> enough surplus -> enough income -> purchase own freedom
+
+
+
+**Growth**
+
+- each turn, x new pop spawn for each type (based on class)
+- historic average pop growth per year (https://en.wikipedia.org/wiki/Medieval_demography)
+  - 0.10 % - 0.20%
+
+
+
+**founding new settlements**
+
+- comes with x pops of any class
+- each turn population grows/decreases based on available resources
+  - growth
+    - birth
+    - migration
+  - decrease
+    - death
+    - migration
+- each turn, population of a class can change class -> promotion/demotion
+  - restricted by rights (e.g. peasant has no rights, can not be come nobility by law)
+
+
+
+
+
+
+
+
+
+
+
