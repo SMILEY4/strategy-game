@@ -19,6 +19,7 @@ class Report {
         addValue(world, "serfs.stored.money") { w -> w.cities.map { it.getPop<SerfPopUnit>().getResourcesStored(ResourceType.MONEY) }.sum() }
         addValue(world, "serfs.food.produced") { w -> w.cities.map { it.getPop<SerfPopUnit>().getResourceInput(ResourceType.FOOD, "raw-production") }.sum() }
         addValue(world, "serfs.food.consumed") { w -> w.cities.map { it.getPop<SerfPopUnit>().getResourceOutput(ResourceType.FOOD, "consumption") }.sum() }
+        addValue(world, "food.price") { w -> w.cities.map { it.market.getResourcePriceModifier(ResourceType.FOOD) }.first() * 50f }
     }
 
     private fun addValue(world: World, name: String, provider: (world: World) -> Number) {

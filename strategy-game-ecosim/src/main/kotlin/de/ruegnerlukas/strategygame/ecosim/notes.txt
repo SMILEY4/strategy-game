@@ -1,0 +1,42 @@
+Ideas new system
+
+- population-amount more "civilisation"-like
+    - 1 pop =/= 1 person
+    - 1 pop = 1 population/size-tier => does not have to scale e.g. linearly
+    - easier for player to understand: "5 pop city vs 10 pop city" VS "184 pop city vs 19520 pop city"
+    - easier to design functions for -> less range in scale "1-100" vs 1-100000"
+
+- growth/decline
+    - each pop-type in each city has a growth-meter
+        - reaches +100% -> new pop spawns
+        - reaches -100% -> one pop dies
+    - fill up meter over time via
+        - base rate
+        - food surplus/security
+        - social class
+        - ...
+    - decrease meter over time via
+        - food deficiency/famine
+        - plague
+        - low sanitation
+        - social class
+        - ...
+
+- types
+    - peasants
+    - craftsmen
+    - nobility
+
+- settlement evolution
+    - starts with 1 peasant pop
+        - used for farm-buildings, and "simple" crafts
+        - if valid workspace < pops (peasants):
+            - subsidized farms -> little impact on eco
+    - if workspace with more complex crafts (e.g. armory, ...)
+        - if valid workspace < pops (craftsmen)
+            - pops (craftsmen) migrate to city with free workspace
+            - pops (craftsmen) become peasants
+        - if valid workspace > pops (craftsmen)
+            - "unemployed" peasants can become craftsmen
+    - if economy of city large enough
+        - nobility-pop can spawn

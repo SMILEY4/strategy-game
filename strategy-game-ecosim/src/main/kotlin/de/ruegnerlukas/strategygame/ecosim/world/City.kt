@@ -3,9 +3,8 @@ package de.ruegnerlukas.strategygame.ecosim.world
 class City(
     val name: String,
     val population: List<PopUnit>,
-    val resourceNodes: List<ResourceNode>,
+    val market: Market,
     var foodYield: Float,
-    var marketPriceFood: Float
 ) {
 
     inline fun <reified T: PopUnit> getPop(): T {

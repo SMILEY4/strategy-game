@@ -1,12 +1,9 @@
 package de.ruegnerlukas.strategygame.ecosim.world
 
-open class PopUnit(
-    var amount: Int,
-    var foodConsumption: Float,
-    var growthProgress: Float = 0f,
+data class Market(
     val resourcesIn: MutableMap<ResourceType, MutableList<Pair<Float, String>>> = mutableMapOf(),
     val resourcesOut: MutableMap<ResourceType, MutableList<Pair<Float, String>>> = mutableMapOf(),
-    val resourcesStored: MutableMap<ResourceType, Float> = mutableMapOf(),
+    val priceModifier: MutableMap<ResourceType, Float> = ResourceType.values().associateWith { 1f }.toMutableMap()
 ) {
 
     fun addResourceInput(type: ResourceType, amount: Float, reason: String) {
@@ -52,31 +49,12 @@ open class PopUnit(
         return getTotalResourceInput(type) - getTotalResourceOutput(type)
     }
 
-    fun getResourcesStored(type: ResourceType): Float {
-        return resourcesStored[type] ?: 0f
+    fun setResourcePriceModifier(type: ResourceType, modifier: Float) {
+        priceModifier[type] = modifier
     }
 
-    fun storeResources(type: ResourceType, amount: Float) {
-        resourcesStored[type] = getResourcesStored(type) + amount
+    fun getResourcePriceModifier(type: ResourceType): Float {
+        return priceModifier.getOrDefault(ResourceType.FOOD, 1f)
     }
 
-    fun depositResources(type: ResourceType, amount: Float) {
-        resourcesStored[type] = getResourcesStored(type) - amount
-    }
 }
-
-class SerfPopUnit(
-    amount: Int,
-    foodConsumption: Float,
-    var foodTaxRate: Float,
-) : PopUnit(amount, foodConsumption)
-
-class FreemenPopUnit(
-    amount: Int,
-    foodConsumption: Float
-) : PopUnit(amount, foodConsumption)
-
-class GentryPopUnit(
-    amount: Int,
-    foodConsumption: Float
-) : PopUnit(amount, foodConsumption)

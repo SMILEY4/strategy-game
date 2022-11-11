@@ -3,9 +3,9 @@ package de.ruegnerlukas.strategygame.ecosim.simulation.actions
 import de.ruegnerlukas.strategygame.ecosim.simulation.SimAction
 import de.ruegnerlukas.strategygame.ecosim.simulation.SimContext
 import de.ruegnerlukas.strategygame.ecosim.simulation.Simulation
-import java.lang.Math.random
+import de.ruegnerlukas.strategygame.ecosim.world.ResourceType
 
-class ActionPrepare(simulation: Simulation) : SimAction(simulation) {
+class ActionReset(simulation: Simulation) : SimAction(simulation) {
 
     override fun execute(simContext: SimContext) {
         simContext.world.cities.forEach { city ->
@@ -13,6 +13,8 @@ class ActionPrepare(simulation: Simulation) : SimAction(simulation) {
                 pops.resourcesIn.clear()
                 pops.resourcesOut.clear()
             }
+            city.market.resourcesIn.clear()
+            city.market.resourcesOut.clear()
         }
     }
 

@@ -16,7 +16,7 @@ class ActionPopsSerfsBuyFood(simulation: Simulation) : SimAction(simulation) {
             val availableFood = pops.getResourceBalance(ResourceType.FOOD)
             if (availableFood < 0) {
                 val requiredFood = abs(availableFood)
-                val requiredMoney = requiredFood * city.marketPriceFood
+                val requiredMoney = requiredFood * 1f * city.market.getResourcePriceModifier(ResourceType.FOOD)
                 val availableMoney = pops.getResourcesStored(ResourceType.MONEY) + pops.getResourceBalance(ResourceType.MONEY)
                 if (availableMoney > 0 && requiredMoney > 0) {
                     val usedMoney = min(availableMoney, requiredMoney)
@@ -31,6 +31,11 @@ class ActionPopsSerfsBuyFood(simulation: Simulation) : SimAction(simulation) {
                         usedMoney,
                         "buy-food"
                     )
+//                    city.market.addResourceOutput(
+//                        ResourceType.FOOD,
+//                        amountFoodBuy,
+//                        "serfs"
+//                    )
                 }
             }
         }

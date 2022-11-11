@@ -14,7 +14,7 @@ class ActionPopsSerfsSellFood(simulation: Simulation) : SimAction(simulation) {
             val amountSellFood = pops.getResourceBalance(ResourceType.FOOD) * 0.8f
             pops.addResourceInput(
                 ResourceType.MONEY,
-                amountSellFood * city.marketPriceFood,
+                amountSellFood * 1f * city.market.getResourcePriceModifier(ResourceType.FOOD),
                 "food-market"
             )
             pops.addResourceOutput(
@@ -22,6 +22,11 @@ class ActionPopsSerfsSellFood(simulation: Simulation) : SimAction(simulation) {
                 amountSellFood,
                 "food-market"
             )
+//            city.market.addResourceInput(
+//                ResourceType.FOOD,
+//                amountSellFood,
+//                "serfs"
+//            )
         }
     }
 

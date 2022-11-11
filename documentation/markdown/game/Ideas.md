@@ -961,9 +961,29 @@ https://www.youtube.com/watch?v=ZQHfit8b6VA&t=180s
 
 
 
+# Economic Actions
+
+As a ruler, one's economic action would have to be to pounder those  different advantages and problems, what I see as the key for an  economically successful era would be:
+https://historum.com/t/medieval-economy-simulator.21223/post-489892
+
+1.  Attracting merchants and ideally fairs by guaranteeing their safety and other stuff merchant need (everything from a good commercial law to  available brothels). Here avoiding civil strife and internal conflits is critical.
+2. Attracting artisans and guildsmen (and for the countryside freemen and monasteries).
+3. Guaranteeing a level of welfare among the population (distribute grains  in times of dearth, allow charity, open mounts of piety, etc.).
+4. Having a tax base as large as possible and access to good financers (allowing to borrow and invest).
+5. Crushing an economic rival militarily if need be.
+6. Avoiding rent-seeking behaviours by the nobility and the clergy. In the  same way smart taxation may foster growth and avoid revolts.
+7. Medieval men often experienced shortages of money, leading to standstill of the economy. Guaranteeing a reasonable level of liquidity could be a ruler's role. In Portugal, they adopted a simple system: they stole  gold from the Arabs. Elsewhere, not debasing the currency (usually to  pay for war) and supporting export trade was enough. You need to have a  mint.
+8. Diplomatic activity could help one's merchants to secure good positions  in foreign markets (see Venice and the Chrysobulla of 1084 if memory  serves).
+9. The court's consumption may favour the development of some luxury  productions which later can become important export items (see French  wines, Italian cloth, etc.).
+10. Some large investments may take place via or thank to the ruler (think polders in Holland or canals in ... China).
 
 
 
 
 
+# Sinews Of War - CK3 Mod
+
+https://steamcommunity.com/sharedfiles/filedetails/?id=2566883856
+
+https://www.youtube.com/watch?v=plk5a6qm1h8
 

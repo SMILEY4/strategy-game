@@ -21,6 +21,11 @@ class ActionPopsSerfsRawResourceProduction(simulation: Simulation) : SimAction(s
                 producedFood,
                 "raw-production"
             )
+            city.market.addResourceInput(
+                ResourceType.FOOD,
+                producedFood,
+                "raw-production"
+            )
         }
     }
 

@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.ecosim.utils.nextIntBetweenInclusive
 import de.ruegnerlukas.strategygame.ecosim.world.City
 import de.ruegnerlukas.strategygame.ecosim.world.FreemenPopUnit
 import de.ruegnerlukas.strategygame.ecosim.world.GentryPopUnit
+import de.ruegnerlukas.strategygame.ecosim.world.Market
 import de.ruegnerlukas.strategygame.ecosim.world.PopUnit
 import de.ruegnerlukas.strategygame.ecosim.world.ResourceNode
 import de.ruegnerlukas.strategygame.ecosim.world.ResourceType
@@ -23,9 +24,8 @@ class BasicTest : StringSpec({
                 City(
                     name = "city_a",
                     population = getInitPopulation(),
-                    resourceNodes = getResourceNodes(),
-                    marketPriceFood = 1f,
-                    foodYield = 1.3f
+                    foodYield = 1.3f,
+                    market = Market()
                 ),
             ),
             agricultureEfficiency = 1.0f
@@ -59,14 +59,15 @@ fun getInitPopulation(): List<PopUnit> {
                 foodConsumption = 0.6f
             )
         )
-        add(
-            FreemenPopUnit(
-                amount = Random().nextIntBetweenInclusive(freemenAmount),
-            )
-        )
+//        add(
+//            FreemenPopUnit(
+//                amount = Random().nextIntBetweenInclusive(freemenAmount),
+//            )
+//        )
         add(
             GentryPopUnit(
                 amount = Random().nextIntBetweenInclusive(gentryAmount),
+                foodConsumption = 1.5f
             )
         )
     }
