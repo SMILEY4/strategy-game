@@ -1,16 +1,14 @@
 package de.ruegnerlukas.strategygame.ecosim
 
 import de.ruegnerlukas.strategygame.ecosim.report.Report
+import de.ruegnerlukas.strategygame.ecosim.simulation.SimSetup
 import de.ruegnerlukas.strategygame.ecosim.utils.WeightedCollection
-import de.ruegnerlukas.strategygame.ecosim.utils.nextIntBetweenInclusive
+import de.ruegnerlukas.strategygame.ecosim.world.Building
 import de.ruegnerlukas.strategygame.ecosim.world.City
-import de.ruegnerlukas.strategygame.ecosim.world.FreemenPopUnit
-import de.ruegnerlukas.strategygame.ecosim.world.GentryPopUnit
-import de.ruegnerlukas.strategygame.ecosim.world.Market
+import de.ruegnerlukas.strategygame.ecosim.world.PopType
 import de.ruegnerlukas.strategygame.ecosim.world.PopUnit
 import de.ruegnerlukas.strategygame.ecosim.world.ResourceNode
 import de.ruegnerlukas.strategygame.ecosim.world.ResourceType
-import de.ruegnerlukas.strategygame.ecosim.world.SerfPopUnit
 import de.ruegnerlukas.strategygame.ecosim.world.World
 import io.kotest.core.spec.style.StringSpec
 import java.util.Random
@@ -24,11 +22,11 @@ class BasicTest : StringSpec({
                 City(
                     name = "city_a",
                     population = getInitPopulation(),
-                    foodYield = 1.3f,
-                    market = Market()
+                    buildings = mutableListOf(
+                        Building.farm()
+                    )
                 ),
             ),
-            agricultureEfficiency = 1.0f
         )
 
         val simulation = SimSetup.build(world)
@@ -47,31 +45,10 @@ class BasicTest : StringSpec({
 })
 
 
-fun getInitPopulation(): List<PopUnit> {
-    val serfAmount = 5 to 20
-    val freemenAmount = 2 to 10
-    val gentryAmount = 1 to 2
-    return mutableListOf<PopUnit>().apply {
-        add(
-            SerfPopUnit(
-                amount = Random().nextIntBetweenInclusive(serfAmount),
-                foodTaxRate = 0.5f,
-                foodConsumption = 0.6f
-            )
-        )
-//        add(
-//            FreemenPopUnit(
-//                amount = Random().nextIntBetweenInclusive(freemenAmount),
-//            )
-//        )
-        add(
-            GentryPopUnit(
-                amount = Random().nextIntBetweenInclusive(gentryAmount),
-                foodConsumption = 1.5f
-            )
-        )
-    }
+fun getInitPopulation(): MutableList<PopUnit> {
+    return mutableListOf(PopUnit(type = PopType.SUBSISTENCE_FARMER, amount = 1))
 }
+
 
 fun getResourceNodes(): List<ResourceNode> {
     return WeightedCollection<ResourceType>()

@@ -987,3 +987,10 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=2566883856
 
 https://www.youtube.com/watch?v=plk5a6qm1h8
 
+
+
+# Artisans
+
+https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
+
+-> often times formed guilds

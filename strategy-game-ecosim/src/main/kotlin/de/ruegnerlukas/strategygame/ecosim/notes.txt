@@ -40,3 +40,63 @@ Ideas new system
             - "unemployed" peasants can become craftsmen
     - if economy of city large enough
         - nobility-pop can spawn
+
+
+
+SIMULATION STEP
+
+- for each city
+    - for each building
+        - grab matching workers
+        - if workers missing: convert subsistence farmers to employee -> convert to matching pop
+    - unemployed pops become either subsistence farmers or migrate to other/better city
+
+
+    - for each building
+        - produce and handle resources (see buildings)
+
+
+
+FARM
+
+- produces x food
+- if no noble present
+    - food goes 100% to peasants
+- if noble is present
+    - food goes 60% to peasants
+    - food goes 40% to noble
+
+IRON MINE
+
+- produces x metal
+- if no noble present
+    - metal goes 100% to peasants
+- if noble is present
+    - metal goes 100% to noble
+    - peasants are paid by noble (70% of market price)
+
+
+FOREST
+
+- produces x wood
+- if no noble present
+    - wood goes 100% to peasants
+- if noble is present
+    - wood goes 100% to noble
+    - peasants are paid by noble (70% of market price)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
