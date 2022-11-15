@@ -88,11 +88,19 @@ FOREST
 
 
 
+Settlement
 
+peasants
+💹 food surplus/safety
+💹 migration
+🔻 starvation
+🔻 population amount
 
-
-
-
+artisans
+💹 food surplus/safety
+🔻 migration
+🔻 starvation
+🔻 population amount (overpop)
 
 
 

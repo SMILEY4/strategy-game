@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.ecosim.simulation
 
 import kotlin.reflect.KClass
 
-class Simulation(private val context: SimContext) {
+class Simulation(val context: SimContext) {
 
     private val actions = mutableListOf<SimAction>()
 

@@ -36,6 +36,17 @@ http://www.cheatbook.de/wfiles/knightsofhonor.htm
 
 https://michaeltedin.com/worldbuilding-102-economics-in-fantasy-societies-part-1/
 
+https://forums.civfanatics.com/threads/citizens-in-civilization-vii.676009/
+
+https://github.com/Gedemon/Civ6-GCO/blob/master/Concepts.lua
+
+​	https://forums.civfanatics.com/threads/gedemons-civilization-development-thread.615222
+
+https://forums.civfanatics.com/forums/civ4col-medieval-conquests.483
+
+- civ4col -> civilisation game with basic production chains + basic automated trade
+- medieval conquest -> mod for middle ages
+
 
 
 # Turn-Based (WeGo) ❤
@@ -994,3 +1005,100 @@ https://www.youtube.com/watch?v=plk5a6qm1h8
 https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
 
 -> often times formed guilds
+
+
+
+
+
+# City Upgrades
+
+- when a town is large enough -> can be upgraded to ...
+  - city  = same mechanics as town, but larger/more
+  - freetown = more independent, does not contribute as much to nation, less administration
+  - stronghold = less economy, more defense
+- maybe: every x pops, a city can be "upgraded" again, i.e. change its designation
+
+
+
+
+
+# Thread "Problemedicals Civ 7 Ideas/Wishlist"
+
+**Pops / Specialists**
+
+\- Reworking the Specialist mechanics. This idea would probably meet some hostility and dislike, but I would make Specialists permanent. Sure, it somewhat implies that your citizens are immortal, but, on the other  hand, it's not actually implied in previous games that your city has 20  people when you see a number "20" on the city screen: both are just  game's way of representation. A generic base citizen would be converted  to a Specialist after spending N turns working a specific tile  improvement or building slot (e.g. Farmer after working a Farm for 10  turns). After that you can either plug this Specialist in a  corresponding tile or slot for additional bonuses, or instead this  Specialist could be made working a different slot with much scarcer  results (Farmers wouldn't have an easy time working in a Mine or a  Library). A long and costly re-specialization process would naturally be available. Migration systems feels like a natural extension of this new mechanics - if you have an industrial city that pumps out more Worker  specialists that you have slots for in this city, unemployed Workers  might move in search for a job into the nearest city, and it wouldn't be necessary for this city to be yours. Refugees and war captives could  also be represented by this approach.
+
+
+
+# Population Types in City
+
+- peasants, artisans, nobles
+- settlement starts with only peasants
+- 
+
+
+
+# Resources, Production Chains and Buildings
+
+**buildings**
+
+- basics
+
+  - construction
+    - requires resources for x turns while being built -> determines build duration
+    - cost of resources determines gold-price of building -> what the player pays
+    - example:
+      - building requires 10 wood, 5 tools
+      - each turn, nation produces, 2 wood, 2 tools
+      - Wood currently costs 0.5 Gold, Tools cost 1 Gold
+      - building takes 5 turns to complete and costs 10 Gold
+
+  - require worker-pop of specific type to function
+    - consume
+      - some resource
+      - ...
+
+  - produce
+    - some resource
+      - some effect
+
+- building levels
+  - buildings can be leveld up or down
+    - each level up improves production
+      - more produced resources
+      - better output effects
+      - less required resource
+      - fewer negative effects 
+      - ...
+    - but requires more/more complex inputs
+      - more workers required
+      - different (harder to get) input resources
+      - more input resources of same type (-> "all or nothing")
+      - more negative side effects
+      - ...
+    - example: "Toolmakers Workshop"
+      - lvl 1: 1x Wood -> 1x Tool
+      - lvl 2: 2x Wood -> 2x Tool
+      - lvl 3: 1x Wood, 1x Metal -> 3x Tool
+    - example: "Mine"
+      - lvl 1: / -> 1x Metal
+      - lvl 2: 1x Tool -> 2x Metal
+- types of buildings
+  - simple-buildings: take resource x and produce resource y
+    - example: "Toolmakers Workshop": 1x Wood -> 1x Tool
+  -  augmenting buildings: take resource x and output more of resource x
+    - example: " Cattle farm" 2x Food -> 3x Food
+    - chance to produce more of resource without directly harvesting it, but risk: if not enough of resource to enable building -> even less of that resource
+  - sinks: buildings that take resources but, don't produce any goods (just effects?)
+    - example: "Administrative building": 1x Paper -> administation
+
+**Production Chains**
+
+- as simple as possible, as complex as necessary
+- any resource should have multiple uses (except "end products")
+- inspiration
+  - Civilisation 4: Colonisation: https://civilization.fandom.com/wiki/List_of_buildings_in_Civ4Col
+  - Anno 1404: https://www.anno1404-rechner.de/produktionsketten.php?lang=en
+  - Farthes Frontier: https://farthestfrontier.miraheze.org/wiki/Resources
+  - Foundation: https://foundation-game.fandom.com/wiki/Buildings
+  - Banished: https://banished-wiki.com/wiki/Main_Page

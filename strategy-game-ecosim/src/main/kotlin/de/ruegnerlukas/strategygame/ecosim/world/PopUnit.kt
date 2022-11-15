@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.ecosim.world
 
 enum class PopType {
-    SUBSISTENCE_FARMER,
     PEASANT,
     ARTISAN,
     GENTRY

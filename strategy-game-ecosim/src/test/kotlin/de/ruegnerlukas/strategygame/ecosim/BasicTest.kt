@@ -4,6 +4,7 @@ import de.ruegnerlukas.strategygame.ecosim.report.Report
 import de.ruegnerlukas.strategygame.ecosim.simulation.SimSetup
 import de.ruegnerlukas.strategygame.ecosim.utils.WeightedCollection
 import de.ruegnerlukas.strategygame.ecosim.world.Building
+import de.ruegnerlukas.strategygame.ecosim.world.BuildingType
 import de.ruegnerlukas.strategygame.ecosim.world.City
 import de.ruegnerlukas.strategygame.ecosim.world.PopType
 import de.ruegnerlukas.strategygame.ecosim.world.PopUnit
@@ -16,37 +17,71 @@ import java.util.Random
 class BasicTest : StringSpec({
 
     "basics" {
-
-        val world = World(
-            cities = listOf(
-                City(
-                    name = "city_a",
-                    population = getInitPopulation(),
-                    buildings = mutableListOf(
-                        Building.farm()
-                    )
-                ),
-            ),
-        )
-
-        val simulation = SimSetup.build(world)
-        val report = Report()
-
-        report.add(world)
-        for (i in 0..100) {
-            simulation.run()
-            report.add(world)
-        }
-
-        report.showPlot()
-
+        run()
     }
 
 })
 
 
+fun main() {
+    run()
+}
+
+fun run() {
+    val world = World(
+        cities = listOf(
+            City(
+                name = "city_a",
+                population = getInitPopulation(),
+                buildings = mutableListOf(
+                    Building.farm()
+                )
+            ),
+        ),
+    )
+
+    val simulation = SimSetup.build(world)
+    val report = Report()
+
+    do {
+        report.add(world)
+        report.print()
+
+        val input = readLine()?.trim()?.lowercase()
+        if(input == "q") {
+            break
+        }
+        if (BuildingType.values().map { it.toString().lowercase() }.contains(input)) {
+            BuildingType.values().find { it.toString().lowercase() == input }?.let { type ->
+                val building = when (type) {
+                    BuildingType.FARM -> Building.farm()
+                    BuildingType.IRON_MINE -> Building.ironMine()
+                }
+                simulation.context.world.cities.first().buildings.add(building)
+            }
+
+        }
+
+        simulation.run()
+
+    } while (true)
+
+    report.showPlot()
+
+//        report.add(world)
+//        for (i in 0..100) {
+//            simulation.run()
+//            report.add(world)
+//            println("===========================")
+//        }
+//        report.showPlot()
+
+}
+
+
+
 fun getInitPopulation(): MutableList<PopUnit> {
-    return mutableListOf(PopUnit(type = PopType.SUBSISTENCE_FARMER, amount = 1))
+    return mutableListOf(PopUnit(type = PopType.PEASANT, amount = 1))
 }
 
 

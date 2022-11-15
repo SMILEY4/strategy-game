@@ -5,7 +5,8 @@ import kotlin.math.max
 class City(
     val name: String,
     val population: MutableList<PopUnit>,
-    val buildings: MutableList<Building>
+    val buildings: MutableList<Building>,
+    var overpopulationModifier: Float = 0f
 ) {
 
     fun getPop(type: PopType): PopUnit {

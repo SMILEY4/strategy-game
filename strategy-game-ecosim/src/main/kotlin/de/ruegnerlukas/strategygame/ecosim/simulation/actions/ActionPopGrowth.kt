@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.ecosim.simulation.Simulation
 import de.ruegnerlukas.strategygame.ecosim.world.City
 import de.ruegnerlukas.strategygame.ecosim.world.PopUnit
 import de.ruegnerlukas.strategygame.ecosim.world.ResourceType
+import kotlin.math.min
 
 class ActionPopGrowth(simulation: Simulation) : SimAction(simulation) {
 
@@ -20,7 +21,8 @@ class ActionPopGrowth(simulation: Simulation) : SimAction(simulation) {
 
     private fun calcProgress(pops: PopUnit) {
         val foodBalance = pops.getResourceBalance(ResourceType.FOOD)
-        pops.growthProgress += foodBalance / pops.amount
+        val progress = min(foodBalance / pops.amount, 0.5f) // todo: calc progress from food differently ? "food safety" instead of surplus ?
+        pops.growthProgress += progress
     }
 
     private fun calcGrowth(pops: PopUnit, city: City) {
