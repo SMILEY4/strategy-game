@@ -47,6 +47,8 @@ https://forums.civfanatics.com/forums/civ4col-medieval-conquests.483
 - civ4col -> civilisation game with basic production chains + basic automated trade
 - medieval conquest -> mod for middle ages
 
+https://download.kalypsomedia.com/manuals/Manual_GAM-EN.pdf
+
 
 
 # Turn-Based (WeGo) ❤
@@ -1038,7 +1040,7 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
 
 
 
-# Resources, Production Chains and Buildings
+# Resources, Production Chains, Buildings, Trade
 
 **buildings**
 
@@ -1102,3 +1104,48 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
   - Farthes Frontier: https://farthestfrontier.miraheze.org/wiki/Resources
   - Foundation: https://foundation-game.fandom.com/wiki/Buildings
   - Banished: https://banished-wiki.com/wiki/Main_Page
+  - Grand Ages Medieval: https://grandagesmedieval.fandom.com/wiki/Production_buildings
+
+**Locations, Trade**
+
+- structure
+
+  - Nation has multiple cities
+
+  - cities have multiple towns
+  - one city + its towns define one area/province inside a nation
+
+- functionality
+
+  - cities, towns produce,consume resources
+  - resources are shared by all cities,towns inside one province
+  - resource storage is shared by all cities,towns inside one province
+  - trade is only between cities in provinces
+
+
+
+# Trade Routes
+
+- city/province starts with one trade route -> player can choose where to connect to
+- when the city grows / when more trade develops, additional capacity for trade routes is unlocked
+  - player builds trade network over time
+  - influences structure of network
+  - influences major hubs (cities with many trade routes) by promoting trade in that city
+  - not all at once -> not too much micromanagement
+- possible to change target of trade route every x turns
+- max. amount of resources that can be transported via one trade route is limited by
+  - type of route (land, river, sea)
+  - tech, policies, buildings, amount of merchants, ...
+  - protection (less protected routes -> more plunderers/bandits -> less resources)
+
+
+
+
+# Monetary Income
+
+- trade
+  - internal trade
+    - always x% of traded value as taxes
+  - trade with other nations
+    - sell to other nation -> receive x% of trade value from other nation
+    - buy from other nation -> pay x% of trade value to other nation

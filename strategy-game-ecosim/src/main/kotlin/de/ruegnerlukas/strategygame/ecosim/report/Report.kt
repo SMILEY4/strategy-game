@@ -2,9 +2,6 @@ package de.ruegnerlukas.strategygame.ecosim.report
 
 import com.github.sh0nk.matplotlib4j.NumpyUtils
 import com.github.sh0nk.matplotlib4j.Plot
-import de.ruegnerlukas.strategygame.ecosim.world.PopType
-import de.ruegnerlukas.strategygame.ecosim.world.ResourceType
-import de.ruegnerlukas.strategygame.ecosim.world.World
 import kotlin.math.min
 
 class Report {
@@ -12,18 +9,18 @@ class Report {
     private val values = mutableMapOf<String, MutableList<Double>>()
     private val plt = Plot.create()
 
-    fun add(world: World) {
-        addValue(world, "pop.psnt") { w -> w.cities.sumOf { it.getPop(PopType.PEASANT).amount } }
-        addValue(world, "pop-growth.psnt") { w -> w.cities.first().getPop(PopType.PEASANT).growthProgress }
-        addValue(world, "food-blnc.psnt") { w -> w.cities.first().getPop(PopType.PEASANT).getResourceBalance(ResourceType.FOOD) }
-        addValue(world, "city.overpop") { w -> w.cities.first().overpopulationModifier }
-    }
-
-    private fun addValue(world: World, name: String, provider: (world: World) -> Number) {
-        values
-            .computeIfAbsent(name) { mutableListOf() }
-            .add(provider(world).toDouble())
-    }
+//    fun add(world: World) {
+//        addValue(world, "pop.psnt") { w -> w.cities.sumOf { it.getPop(PopType.PEASANT).amount } }
+//        addValue(world, "pop-growth.psnt") { w -> w.cities.first().getPop(PopType.PEASANT).growthProgress }
+//        addValue(world, "food-blnc.psnt") { w -> w.cities.first().getPop(PopType.PEASANT).getResourceBalance(ResourceType.FOOD) }
+//        addValue(world, "city.overpop") { w -> w.cities.first().overpopulationModifier }
+//    }
+//
+//    private fun addValue(world: World, name: String, provider: (world: World) -> Number) {
+//        values
+//            .computeIfAbsent(name) { mutableListOf() }
+//            .add(provider(world).toDouble())
+//    }
 
     fun showPlot() {
         plt.close()
