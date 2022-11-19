@@ -11,7 +11,7 @@ data class TradeNetwork(
 
     fun asDotGraph(): String {
         val entriesNodes = dotNodes(nodes)
-        val entriesEdges = dotEdges(routes)
+        val entriesEdges = dotEdges(routes, true)
         return "digraph G {\n" +
                 entriesNodes.joinToString("\n") + "\n" +
                 entriesEdges.joinToString("\n") +
@@ -29,13 +29,17 @@ data class TradeNetwork(
         return entriesNodes
     }
 
-    fun dotEdges(routes: List<TradeRoute>): MutableList<String> {
+    fun dotEdges(routes: List<TradeRoute>, unidir: Boolean): MutableList<String> {
         val entriesEdges = mutableListOf<String>()
+        val visitedEdges = mutableListOf<Pair<TradeNode, TradeNode>>()
         routes.forEach { route ->
-            if (route.rating.second) {
-                entriesEdges.add("${route.from.name} -> ${route.to.name}[color=green];")
-            } else {
-                entriesEdges.add("${route.from.name} -> ${route.to.name}[color=red];")
+            if (!visitedEdges.contains(route.from to route.to) && !visitedEdges.contains(route.to to route.from)) {
+                if (unidir) {
+                    entriesEdges.add("${route.from.name} -> ${route.to.name}[label=\"${route.length}\"=dir=both];")
+                    visitedEdges.add(route.from to route.to)
+                } else {
+                    entriesEdges.add("${route.from.name} -> ${route.to.name}[label=\"${route.length}\"];")
+                }
             }
         }
         return entriesEdges;

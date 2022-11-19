@@ -61,7 +61,8 @@ class TradeTest : StringSpec({
 
         println()
         println("TRADE ROUTES")
-        system.generatePrimaryTradeRoutes().forEach { route ->
+        val primTradeRoutes = system.generatePrimaryTradeRoutes()
+        primTradeRoutes.forEach { route ->
             println("${route.from.name} -> ${route.to.name}[color=blue,label=\"${route.tradeAmount}\"];")
         }
         println("NODES OUTCOME")
@@ -78,7 +79,9 @@ class TradeTest : StringSpec({
         }
         println()
 
-
+        network.dotEdges(primTradeRoutes, false).forEach {
+            println(it)
+        }
 
         println()
         println(network.asDotGraph())

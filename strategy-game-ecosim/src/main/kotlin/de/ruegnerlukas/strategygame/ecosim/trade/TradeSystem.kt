@@ -20,12 +20,6 @@ class TradeSystem(private val network: TradeNetwork) {
         node.demand = -(1.0 / (avg / local)) + 1.0
     }
 
-    fun updateTradeRouteRating() {
-        network.routes.forEach { route ->
-            route.rating = getTradeRouteRating(route.from, route.to)
-        }
-    }
-
     fun getTradeRouteRating(origin: TradeNode, destination: TradeNode): Pair<Double, Boolean> {
         val demandOrigin = origin.demand
         val demandDestination = destination.demand
@@ -36,53 +30,19 @@ class TradeSystem(private val network: TradeNetwork) {
         }
     }
 
-    fun getValidSortedRoutes(): List<TradeRoute> {
-        return network.routes
-            .filter { it.rating.second }
-            .sortedByDescending { it.rating.first }
-    }
-
-
-    fun updateTrade() {
-        getValidSortedRoutes().forEach { route ->
-            val availableFrom = route.from.getCurrentBalance()
-            val availableTo = route.to.getCurrentBalance()
-            if (availableFrom > 0 && availableFrom > availableTo) {
-                route.from.sellTo(1.0, route.to.name)
-                route.to.buyFrom(1.0, route.from.name)
-            }
-        }
-    }
-
-    fun stepTrade() {
-        updateTradeNodesDemand()
-        updateTradeRouteRating()
-        updateTrade()
-    }
-
-
-    fun getTree(root: TradeNode): List<TradeRoute> {
-        val visited = mutableSetOf<String>()
-        val edges = mutableListOf<TradeRoute>()
-        visited.add(root.name)
-        while (visited.size < network.nodes.size) {
-            visited
-                .flatMap { node -> network.routes.filter { it.from.name == node } }
-                .sortedBy { it.rating.first }
-                .forEach { route ->
-                    if (!visited.contains(route.to.name)) {
-                        edges.add(route)
-                        visited.add(route.to.name)
-                    }
-                }
-        }
-        return edges
-    }
-
-
     fun generatePrimaryTradeRoutes(): List<TradeRoute> {
-        // each node can only create one/n trade route
-        // the node generating the route chooses if it's the "origin" or destination
+        /*
+        each node can only create one/n trade route
+        the node generating the route chooses if it's the "origin" or destination
+
+        sort nodes by who has the most to sell, for each node
+            get list of valid target nodes (connected + in range)
+            create list of possible trade routes from targets (2x routes per target - one for each direction)
+            rate each route based on supply/demand of origin and target
+            create route with best rating
+         */
+
+        val maxTradeDist = 4
 
         val avgAvailability = averageResourceAvailability()
         val primaryRoutes = mutableListOf<TradeRoute>()
@@ -94,6 +54,8 @@ class TradeSystem(private val network: TradeNetwork) {
                     .asSequence()
                     .filter { it != node }
                     .flatMap { listOf(TradeRoute(node, it), TradeRoute(it, node)) }
+                    .onEach { it.length = calcPath(it.from, it.to).size }
+                    .filter { it.length <= maxTradeDist }
                     .onEach { it.rating = getTradeRouteRating(it.from, it.to) }
                     .filter { it.rating.second }
                     .sortedByDescending { it.rating.first }
@@ -116,8 +78,44 @@ class TradeSystem(private val network: TradeNetwork) {
     fun calcTradeAmount(route: TradeRoute): Double {
         val tradeTarget = ((route.from.getCurrentBalance() + route.to.getCurrentBalance()) / 2f)
         val reqAmount = -(route.to.getCurrentBalance() - tradeTarget)
-        println("${route.from.name}:${route.from.getCurrentBalance()} -> ${route.to.name}:${route.to.getCurrentBalance()} ==> $tradeTarget | $reqAmount")
         return min(route.from.getCurrentBalance(), reqAmount)
+    }
+
+
+    fun calcPath(source: TradeNode, target: TradeNode): List<TradeNode> {
+        val q = mutableListOf<TradeNode>()
+        val dist = mutableMapOf<TradeNode, Double>()
+        val prev = mutableMapOf<TradeNode, TradeNode?>()
+        network.nodes.forEach { v ->
+            dist[v] = Double.POSITIVE_INFINITY
+            prev[v] = null
+            q.add(v)
+        }
+        dist[source] = 0.0
+        while (q.isNotEmpty()) {
+            val u = q.sortedBy { dist[it] }.first()
+            if (u == target) {
+                val s = mutableListOf<TradeNode>()
+                if (prev[u] != null || u == source) {
+                    var u0: TradeNode? = u
+                    while (u0 != null) {
+                        s.add(0, u0)
+                        u0 = prev[u0]
+                    }
+                    return s
+                }
+            } else {
+                q.remove(u)
+                network.routes.filter { it.from == u }.filter { q.contains(it.to) }.map { it.to }.toSet().forEach { v ->
+                    val alt = dist[u]!! + 1.0
+                    if (alt < dist[v]!!) {
+                        dist[v] = alt
+                        prev[v] = u
+                    }
+                }
+            }
+        }
+        return emptyList()
     }
 
 

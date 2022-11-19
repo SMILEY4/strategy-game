@@ -1149,3 +1149,36 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
   - trade with other nations
     - sell to other nation -> receive x% of trade value from other nation
     - buy from other nation -> pay x% of trade value to other nation
+
+
+
+# Trade Routes II
+
+- each city has number of possible trade routes
+
+- auto chooses best routes based on
+
+  - distance
+  - supply/demand of target and origin
+
+  ```
+  - get list of valid target nodes (connected + in range)
+  - create list of possible trade routes from targets (2x routes per target - one for each direction)
+  - rate each route based on supply/demand of origin and target
+  - create route with best rating
+  ```
+
+- routes are updated each x turns
+
+- variables
+
+  - amount of trade routes = amount of merchant pops -> based on buildings
+  - max route carry capacity -> based on buildings + tech + security of route
+  - max route length -> based on tech
+  - ...
+
+- income generation
+
+  - https://endlesslegend.fandom.com/wiki/Trade_Routes
+  - route generates (primary) wealth in exporting city based on resource type, amount, ...
+  - route generates add. wealth in each city it passes through (% of primary wealth) 
