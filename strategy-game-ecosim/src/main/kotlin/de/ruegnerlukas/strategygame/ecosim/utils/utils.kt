@@ -13,3 +13,7 @@ fun Float.formatPercentage(): String {
 fun Double.formatPercentage(): String {
     return "%.2f".format(this * 100) + "%"
 }
+
+fun mix(x: Double, y: Double, a: Double): Double {
+    return x * (1.0-a) + y * a
+}
