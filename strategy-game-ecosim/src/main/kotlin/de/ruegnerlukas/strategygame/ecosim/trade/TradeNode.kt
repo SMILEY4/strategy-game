@@ -18,7 +18,7 @@ data class TradeNode(
     }
 
     fun buyFrom(amount: Double, other: String) {
-        tradedAmount += tradedAmount
+        tradedAmount += amount
         buyLog[other] = buyLog[other]?.plus(amount) ?: amount
     }
 

@@ -37,7 +37,7 @@ class TradeTest : StringSpec({
                 TradeRoute(nodeJ, nodeF), TradeRoute(nodeF, nodeJ),
                 TradeRoute(nodeI, nodeF), TradeRoute(nodeF, nodeI),
                 TradeRoute(nodeH, nodeF), TradeRoute(nodeF, nodeH),
-                TradeRoute(nodeJ, nodeI), TradeRoute(nodeJ, nodeI),
+                TradeRoute(nodeJ, nodeI), TradeRoute(nodeI, nodeJ),
                 TradeRoute(nodeI, nodeH), TradeRoute(nodeH, nodeI),
                 TradeRoute(nodeE, nodeG), TradeRoute(nodeG, nodeE),
                 TradeRoute(nodeE, nodeH), TradeRoute(nodeH, nodeE),
@@ -53,72 +53,36 @@ class TradeTest : StringSpec({
         )
 
         val system = TradeSystem(network)
-        system.updateTradeNodeDemand()
-        system.updateTradeRouteRating()
-
+        system.updateTradeNodesDemand()
 
         println()
         println(network.asDotGraph())
         println()
 
         println()
-        network.nodes.sortedBy { it.localResourceAvailability }.forEach {
-            println("//================= ${it.name} =================//")
-            val tree = TradeNetwork(
-                nodes = listOf(
-                    nodeA,
-                    nodeB,
-                    nodeC,
-                    nodeD,
-                    nodeE,
-                    nodeF,
-                    nodeG,
-                    nodeH,
-                    nodeI,
-                    nodeJ,
-                    nodeK,
-                    nodeL,
-                    nodeM,
-                    nodeN,
-                    nodeO,
-                    nodeP
-                ),
-                routes = system.getTree(it)
-            )
-            println(tree.asDotGraph())
+        println("TRADE ROUTES")
+        system.generatePrimaryTradeRoutes().forEach { route ->
+            println("${route.from.name} -> ${route.to.name}[color=blue,label=\"${route.tradeAmount}\"];")
+        }
+        println("NODES OUTCOME")
+        network.nodes.forEach { node ->
+            println("${node.name}:  ${node.localResourceAvailability} -> ${node.getCurrentBalance()}       (${node.tradedAmount})")
+//            if (node.buyLog.isNotEmpty()) {
+//                println("  Buy from")
+//                node.buyLog.forEach { (other, amount) -> println("    - $other $amount") }
+//            }
+//            if (node.sellLog.isNotEmpty()) {
+//                println("  Sell to")
+//                node.sellLog.forEach { (other, amount) -> println("    - $other $amount") }
+//            }
         }
         println()
 
-//        for (i in 1..100) {
-//            system.stepTrade()
-//        }
-//
-//        system.updateTradeNodeDemand()
-//        system.updateTradeRouteRating()
-//
-//        println()
-//        network.nodes.forEach { node ->
-//            println("${node.name}: ${node.localResourceAvailability} / ${node.tradedAmount} => ${node.getCurrentBalance()}")
-//        }
-//        println()
-//
-//        println()
-//        network.nodes.forEach { node ->
-//            println(node.name)
-//            println("   sell to:")
-//            node.sellLog.forEach { (other, amount) ->
-//                println("      - $other = $amount")
-//            }
-//            println("   buy from:")
-//            node.buyLog.forEach { (other, amount) ->
-//                println("      - $other = $amount")
-//            }
-//        }
-//        println()
-//
-//        println()
-//        println(network.asDotGraph())
-//        println()
+
+
+        println()
+        println(network.asDotGraph())
+        println()
 
     }
 })
