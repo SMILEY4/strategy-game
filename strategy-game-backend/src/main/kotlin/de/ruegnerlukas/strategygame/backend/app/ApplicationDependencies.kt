@@ -25,7 +25,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.user.UserRefreshTokenAc
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.ConnectionHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.monitoring.MonitoringServiceImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
@@ -85,6 +84,8 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.Reservati
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesUpdate
+import io.github.smiley4.ktorwebsocketsextended.WSExtended
+import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotlinx.coroutines.runBlocking
@@ -95,12 +96,12 @@ import org.koin.dsl.module
 @Suppress("RemoveExplicitTypeArguments")
 val applicationDependencies = module {
 
-    single<ConnectionHandler> { ConnectionHandler() }
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().db) } } withOptions { createdAtStart() }
     single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
     single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
+    single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
 
     single<UserCreateAction> { UserCreateActionImpl(get()) }
     single<UserDeleteAction> { UserDeleteActionImpl(get()) }

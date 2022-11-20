@@ -25,7 +25,7 @@ class GameConnectActionImpl(
 
     private val metricId = metricCoreAction(GameConnectAction::class)
 
-    override suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<GameConnectActionError, Unit> {
+    override suspend fun perform(userId: String, gameId: String, connectionId: Long): Either<GameConnectActionError, Unit> {
         return Monitoring.coTime(metricId) {
             log().info("Connect user $userId ($connectionId) to game $gameId")
             either {
@@ -46,7 +46,7 @@ class GameConnectActionImpl(
     /**
      * Write the new connection of the player to the db.
      */
-    private suspend fun setConnection(game: Game, userId: String, connectionId: Int): Either<InvalidPlayerState, Unit> {
+    private suspend fun setConnection(game: Game, userId: String, connectionId: Long): Either<InvalidPlayerState, Unit> {
         val player = game.players.findByUserId(userId)
         if (player != null && player.connectionId == null) {
             player.connectionId = connectionId

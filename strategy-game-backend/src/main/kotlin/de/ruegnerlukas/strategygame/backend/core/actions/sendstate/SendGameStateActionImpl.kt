@@ -56,7 +56,7 @@ class SendGameStateActionImpl(
     /**
      * get connection id of player or null
      */
-    private fun getConnectionId(game: GameExtended, userId: String): Either<UserNotConnectedError, Int> {
+    private fun getConnectionId(game: GameExtended, userId: String): Either<UserNotConnectedError, Long> {
         return game.game.players.findByUserId(userId)?.connectionId?.right() ?: UserNotConnectedError.left()
     }
 
@@ -70,7 +70,7 @@ class SendGameStateActionImpl(
     /**
      * Send the new game-state to the connected player
      */
-    private suspend fun sendGameStateMessage(connectionId: Int, game: GameExtendedDTO) {
+    private suspend fun sendGameStateMessage(connectionId: Long, game: GameExtendedDTO) {
         messageProducer.sendGamedState(connectionId, game)
     }
 

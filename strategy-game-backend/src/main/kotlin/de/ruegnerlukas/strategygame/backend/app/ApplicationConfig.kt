@@ -12,6 +12,7 @@ import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
 import io.github.smiley4.ktorswaggerui.dsl.AuthType
+import io.github.smiley4.ktorwebsocketsextended.WebsocketsExtended
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -21,7 +22,9 @@ import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
+import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.auth.principal
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -51,6 +54,7 @@ import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.slf4j.event.Level
 import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 
 /**
@@ -77,6 +81,9 @@ fun Application.module() {
         timeout = Duration.ofSeconds(15)
         maxFrameSize = Long.MAX_VALUE
         masking = false
+    }
+    install(WebsocketsExtended) {
+        ticketTTL = 30.seconds
     }
     install(CallLogging) {
         level = Level.INFO

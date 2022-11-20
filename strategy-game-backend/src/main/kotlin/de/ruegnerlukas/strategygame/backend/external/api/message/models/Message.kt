@@ -20,7 +20,7 @@ sealed class Message<T>(
 )
 
 data class MessageMetadata(
-	val connectionId: Int,
+	val connectionId: Long,
 	val userId: String,
 	val gameId: String,
 )
