@@ -16,10 +16,14 @@ import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
 import io.github.smiley4.ktorwebsocketsextended.routing.webSocketExt
 import io.github.smiley4.ktorwebsocketsextended.routing.webSocketTicket
 import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 
+private const val GAME_ID = "gameId"
+private const val USER_ID = "userId"
 
 /**
  * Configuration for game-websocket routes
@@ -34,16 +38,16 @@ fun Route.gameWebsocketRoutes() {
     route("game") {
         authenticate {
             route("/wsticket") {
-                webSocketTicket()
+                webSocketTicket {
+                    mapOf(USER_ID to it.principal<JWTPrincipal>()?.subject!!)
+                }
             }
         }
-        webSocketExt("{gameId}", authenticate = true) {
-            provideTicket {
-                it.parameters["ticket"]!!
-            }
+        webSocketExt("{$GAME_ID}", authenticate = true) {
+            provideTicket { it.parameters["ticket"]!! }
             onConnect { call, data ->
-                val userId = data["userId"]!! as String
-                val gameId = call.parameters["gameId"]!!.also { data["gameId"] = it }
+                val userId = data[USER_ID]!! as String
+                val gameId = call.parameters[GAME_ID]!!.also { data[GAME_ID] = it }
                 withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
                     when (val result = requestConnection.perform(userId, gameId)) {
                         is Either.Right -> {
@@ -58,22 +62,22 @@ fun Route.gameWebsocketRoutes() {
                 }
             }
             onOpen { connection ->
-                val userId = connection.getData<String>("userId")!!
-                val gameId = connection.getData<String>("gameId")!!
+                val userId = connection.getData<String>(USER_ID)!!
+                val gameId = connection.getData<String>(GAME_ID)!!
                 connectAction.perform(userId, gameId, connection.getId())
             }
             text {
                 onEach { connection, message ->
-                    val userId = connection.getData<String>("userId")!!
-                    val gameId = connection.getData<String>("gameId")!!
+                    val userId = connection.getData<String>(USER_ID)!!
+                    val gameId = connection.getData<String>(GAME_ID)!!
                     buildMessage<Message<*>>(connection.getId(), userId, gameId, message).let {
                         messageHandler.onMessage(it)
                     }
                 }
             }
             onClose { connection ->
-                val userId = connection.getData<String>("userId")!!
-                val gameId = connection.getData<String>("gameId")!!
+                val userId = connection.getData<String>(USER_ID)!!
+                val gameId = connection.getData<String>(GAME_ID)!!
                 withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
                     disconnectAction.perform(userId)
                 }

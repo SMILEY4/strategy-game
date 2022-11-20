@@ -84,9 +84,6 @@ fun Application.module() {
     }
     install(WebsocketsExtended) {
         ticketTTL = 30.seconds
-        ticketData { call ->
-            mapOf("userId" to call.principal<JWTPrincipal>()?.subject!!)
-        }
     }
     install(CallLogging) {
         level = Level.INFO
