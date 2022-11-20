@@ -68,9 +68,9 @@ export class GameApiImpl implements GameApi {
 
 
     connect(gameId: string): Promise<void> {
-        const url = `/api/game/${gameId}?token=${this.userRepository.getAuthToken()}`;
+        const url = `/api/game/${gameId}`;
         console.log("open websocket-connection:", url);
-        return this.websocketClient.open(url, message => {
+        return this.websocketClient.open(url, this.userRepository.getAuthToken(), message => {
             this.messageHandler.onMessage(message.type, message.payload);
         });
     }

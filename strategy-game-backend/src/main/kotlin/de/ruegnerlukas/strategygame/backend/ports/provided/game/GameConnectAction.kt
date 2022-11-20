@@ -8,6 +8,6 @@ interface GameConnectAction {
 	object GameNotFoundError : GameConnectActionError()
 	object InvalidPlayerState : GameConnectActionError()
 
-	suspend fun perform(userId: String, gameId: String, connectionId: Int): Either<GameConnectActionError, Unit>
+	suspend fun perform(userId: String, gameId: String, connectionId: Long): Either<GameConnectActionError, Unit>
 
 }

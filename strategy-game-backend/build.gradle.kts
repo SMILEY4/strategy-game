@@ -44,11 +44,15 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
     testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
 
+    val versionKtorSwaggerUi: String by project
+    implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
+
+    val versionKtorWebsocketsExtended: String by project
+    implementation("io.github.smiley4:ktor-websockets-extended:$versionKtorWebsocketsExtended")
+
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
 
-    val versionKtorSwaggerUi: String by project
-    implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")

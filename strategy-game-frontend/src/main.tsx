@@ -122,7 +122,7 @@ export namespace AppConfig {
     diContainer.bind(DIQ.UserLogOutAction, ctx => new UserLogOutAction(ctx.get(DIQ.UserRepository)));
     diContainer.bind(DIQ.UserRepository, ctx => new UserRepositoryImpl());
     diContainer.bind(DIQ.UserSignUpAction, ctx => new UserSignUpAction(ctx.get(DIQ.UserApi)));
-    diContainer.bind(DIQ.WebsocketClient, ctx => new WebsocketClient(API_WS_BASE_URL));
+    diContainer.bind(DIQ.WebsocketClient, ctx => new WebsocketClient(ctx.get(DIQ.HttpClient), API_WS_BASE_URL));
     diContainer.bind(DIQ.WorldRepository, ctx => new WorldRepositoryImpl());
     diContainer.createEager();
 

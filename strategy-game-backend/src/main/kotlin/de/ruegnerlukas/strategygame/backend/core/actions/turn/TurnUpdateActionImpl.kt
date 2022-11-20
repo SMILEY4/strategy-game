@@ -41,7 +41,6 @@ class TurnUpdateActionImpl(
             if (country != null) {
                 country.resources.money += gameConfig.cityIncomePerTurn
                 country.resources.food -= if (city.isCity) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
-                println("UPDATE RESOURCES $city ${city.buildings}")
                 city.buildings
                     .filter { it.tile != null }
                     .forEach { building ->
