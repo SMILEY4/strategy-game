@@ -15,9 +15,9 @@ class CountryEntity(
 ) : DbEntity(key) {
 
     companion object {
-        fun of(serviceModel: Country) = CountryEntity(
+        fun of(serviceModel: Country, gameId: String) = CountryEntity(
             key = DbId.asDbId(serviceModel.countryId),
-            gameId = serviceModel.gameId,
+            gameId = gameId,
             userId = serviceModel.userId,
             color = serviceModel.color,
             resources = serviceModel.resources,
@@ -26,7 +26,6 @@ class CountryEntity(
 
     fun asServiceModel() = Country(
         countryId = this.getKeyOrThrow(),
-        gameId = this.gameId,
         userId = this.userId,
         color = this.color,
         resources = this.resources,

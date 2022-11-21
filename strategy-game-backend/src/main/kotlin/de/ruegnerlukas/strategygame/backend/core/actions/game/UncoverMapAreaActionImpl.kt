@@ -21,7 +21,7 @@ class UncoverMapAreaActionImpl(
         Monitoring.coTime(metricId) {
             val positions = positionsCircle(center, radius)
             val tiles = findTiles(gameId, positions)
-            uncoverTiles(tiles, countryId)
+            uncoverTiles(tiles, countryId, gameId)
         }
     }
 
@@ -35,13 +35,13 @@ class UncoverMapAreaActionImpl(
     /**
      * Mark the given tiles as discovered by the given country and update them in the database
      */
-    private suspend fun uncoverTiles(tiles: List<Tile>, countryId: String) {
+    private suspend fun uncoverTiles(tiles: List<Tile>, countryId: String, gameId: String) {
         tiles
             .filter { !it.discoveredByCountries.contains(countryId) }
             .forEach {
                 it.discoveredByCountries.add(countryId)
             }
-        tilesUpdate.execute(tiles)
+        tilesUpdate.execute(tiles, gameId)
     }
 
 }

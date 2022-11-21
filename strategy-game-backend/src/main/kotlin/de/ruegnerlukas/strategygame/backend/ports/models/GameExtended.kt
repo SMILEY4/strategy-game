@@ -8,4 +8,5 @@ data class GameExtended(
     val tiles: List<Tile>,
     val countries: List<Country>,
     val cities: TrackingList<City>,
+    val provinces: TrackingList<Province>
 )

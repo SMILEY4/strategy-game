@@ -20,9 +20,9 @@ class CityEntity(
 ) : DbEntity(key) {
 
     companion object {
-        fun of(serviceModel: City) = CityEntity(
+        fun of(serviceModel: City, gameId: String) = CityEntity(
             key = DbId.asDbId(serviceModel.cityId),
-            gameId = serviceModel.gameId,
+            gameId = gameId,
             countryId = serviceModel.countryId,
             tile = serviceModel.tile,
             name = serviceModel.name,
@@ -35,7 +35,6 @@ class CityEntity(
 
     fun asServiceModel() = City(
         cityId = this.getKeyOrThrow(),
-        gameId = this.gameId,
         countryId = this.countryId,
         tile = this.tile,
         name = this.name,

@@ -88,7 +88,6 @@ class GameJoinActionImpl(
         return countryInsert.execute(
             Country(
                 countryId = DbId.PLACEHOLDER,
-                gameId = game.gameId,
                 userId = userId,
                 color = COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size],
                 resources = CountryResources(
@@ -98,7 +97,8 @@ class GameJoinActionImpl(
                     stone = gameConfig.startingAmountStone,
                     metal = gameConfig.startingAmountMetal
                 )
-            )
+            ),
+            game.gameId
         ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.gameId}") }
     }
 

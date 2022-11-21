@@ -4,7 +4,6 @@ import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
 class City(
     val cityId: String,
-    val gameId: String,
     val countryId: String,
     val tile: TileRef,
     val name: String,

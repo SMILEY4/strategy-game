@@ -80,7 +80,6 @@ class ResolveCreateCityCommandImpl(
     private suspend fun createCity(game: GameExtended, countryId: String, tile: Tile, name: String): String {
         return City(
             cityId = reservationInsert.reserveCity(),
-            gameId = tile.gameId,
             countryId = countryId,
             tile = TileRef(tile.tileId, tile.position.q, tile.position.r),
             name = name,

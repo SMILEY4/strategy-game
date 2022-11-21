@@ -14,9 +14,9 @@ class CountryInsertImpl(private val database: ArangoDatabase) : CountryInsert {
 
     private val metricId = metricDbQuery(CountryInsert::class)
 
-    override suspend fun execute(country: Country): Either<ArangoDbError, String> {
+    override suspend fun execute(country: Country, gameId: String): Either<ArangoDbError, String> {
         return Monitoring.coTime(metricId) {
-            database.insertDocument(Collections.COUNTRIES, CountryEntity.of(country)).map { it.key }
+            database.insertDocument(Collections.COUNTRIES, CountryEntity.of(country, gameId)).map { it.key }
         }
     }
 

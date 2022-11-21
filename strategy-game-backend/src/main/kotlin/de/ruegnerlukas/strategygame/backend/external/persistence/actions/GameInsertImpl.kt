@@ -17,9 +17,9 @@ class GameInsertImpl(private val database: ArangoDatabase) : GameInsert {
 
     override suspend fun execute(game: Game, tiles: List<Tile>): String {
         return Monitoring.coTime(metricId) {
-            val keyGame = insertGame(game)
-            insertTiles(keyGame, tiles)
-            keyGame
+            val gameId = insertGame(game)
+            insertTiles(gameId, tiles)
+            gameId
         }
     }
 
@@ -27,9 +27,8 @@ class GameInsertImpl(private val database: ArangoDatabase) : GameInsert {
         return database.insertDocument(Collections.GAMES, GameEntity.of(game)).getOrThrow().key
     }
 
-    private suspend fun insertTiles(keyGame: String, tiles: List<Tile>) {
-        tiles.forEach { it.gameId = keyGame }
-        database.insertDocuments(Collections.TILES, tiles.map { TileEntity.of(it) })
+    private suspend fun insertTiles(gameId: String, tiles: List<Tile>) {
+        database.insertDocuments(Collections.TILES, tiles.map { TileEntity.of(it, gameId) })
     }
 
 }

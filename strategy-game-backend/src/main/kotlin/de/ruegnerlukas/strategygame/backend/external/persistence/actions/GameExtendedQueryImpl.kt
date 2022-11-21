@@ -8,11 +8,13 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDa
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
@@ -31,13 +33,15 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
                 parZip(
                     { fetchCountries(gameId) },
                     { fetchTiles(gameId) },
-                    { fetchCities(gameId) }
-                ) { countries, tiles, cities ->
+                    { fetchCities(gameId) },
+                    { fetchProvinces(gameId) }
+                ) { countries, tiles, cities, provinces ->
                     GameExtended(
                         game = game,
                         countries = countries,
                         tiles = tiles,
                         cities = cities.tracking(),
+                        provinces = provinces.tracking()
                     )
                 }
             }
@@ -89,5 +93,20 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
             CityEntity::class.java
         ).map { it.asServiceModel() }
     }
+
+    private suspend fun fetchProvinces(gameId: String): List<Province> {
+        database.assertCollections(Collections.PROVINCES)
+        return database.query(
+            """
+				FOR province IN ${Collections.PROVINCES}
+					FILTER province._documentType != "reservation"
+					FILTER province.gameId == @gameId
+					RETURN province
+			""".trimIndent(),
+            mapOf("gameId" to gameId),
+            ProvinceEntity::class.java
+        ).map { it.asServiceModel() }
+    }
+
 
 }
