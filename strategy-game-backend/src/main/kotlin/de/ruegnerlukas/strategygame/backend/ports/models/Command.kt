@@ -18,6 +18,7 @@ class CreateCityCommandData(
     val q: Int,
     val r: Int,
     val name: String,
+    val withNewProvince: Boolean
 ) : CommandData()
 
 

@@ -8,7 +8,6 @@ class City(
     val tile: TileRef,
     val name: String,
     val color: RGBColor,
-    val isCity: Boolean,
-    var parentCity: String?,
+    val isProvinceCapital: Boolean,
     val buildings: MutableList<Building>,
 )
