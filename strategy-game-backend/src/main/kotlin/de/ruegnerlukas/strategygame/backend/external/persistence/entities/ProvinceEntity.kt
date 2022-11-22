@@ -18,7 +18,7 @@ class ProvinceEntity(
             gameId = gameId,
             countryId = serviceModel.countryId,
             cityIds = serviceModel.cityIds.toList(),
-            provinceCityId = serviceModel.provinceCityId
+            provinceCityId = serviceModel.provinceCapitalCityId
         )
     }
 
@@ -26,7 +26,7 @@ class ProvinceEntity(
         provinceId = this.getKeyOrThrow(),
         countryId = this.countryId,
         cityIds = this.cityIds.toList(),
-        provinceCityId = this.provinceCityId
+        provinceCapitalCityId = this.provinceCityId
     )
 
 }

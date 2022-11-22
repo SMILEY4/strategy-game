@@ -7,7 +7,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateTownCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
@@ -15,7 +14,6 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveComma
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateTownCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
@@ -26,7 +24,6 @@ class ResolveCommandsActionImpl(
     private val resolvePlaceMarkerCommand: ResolvePlaceMarkerCommand,
     private val resolveCreateCityCommand: ResolveCreateCityCommand,
     private val resolveCreateBuildingCommand: ResolveCreateBuildingCommand,
-    private val resolveCreateTownCommand: ResolveCreateTownCommand,
     private val resolvePlaceScoutCommand: ResolvePlaceScoutCommand
 ) : ResolveCommandsAction, Logging {
 
@@ -69,19 +66,12 @@ class ResolveCommandsActionImpl(
             is PlaceMarkerCommandData -> {
                 resolvePlaceMarkerCommand.perform(command as Command<PlaceMarkerCommandData>, game)
             }
-
             is CreateCityCommandData -> {
                 resolveCreateCityCommand.perform(command as Command<CreateCityCommandData>, game)
             }
-
-            is CreateTownCommandData -> {
-                resolveCreateTownCommand.perform(command as Command<CreateTownCommandData>, game)
-            }
-
             is CreateBuildingCommandData -> {
                 resolveCreateBuildingCommand.perform(command as Command<CreateBuildingCommandData>, game)
             }
-
             is PlaceScoutCommandData -> {
                 resolvePlaceScoutCommand.perform(command as Command<PlaceScoutCommandData>, game)
             }

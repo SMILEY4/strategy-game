@@ -22,14 +22,6 @@ class CreateCityCommandData(
 ) : CommandData()
 
 
-class CreateTownCommandData(
-    val q: Int,
-    val r: Int,
-    val name: String,
-    val parentCity: String
-) : CommandData()
-
-
 class CreateBuildingCommandData(
     val cityId: String,
     val buildingType: BuildingType,

@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
@@ -15,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTOResources
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ScoutTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier0
@@ -32,6 +34,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
     private val metricId = metricCoreAction(GameExtendedDTOCreator::class)
 
     private val unknownCountryId = "?"
+    private val unknownProvinceId = "?"
     private val unknownCityId = "?"
 
     fun create(userId: String, game: GameExtended): GameExtendedDTO {
@@ -50,11 +53,16 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
                 .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
                 .map { buildCity(it) }
 
+            val provinceDTOs = game.provinces
+                .filter { province -> province.cityIds.any { provinceCityId -> cityDTOs.find { it.cityId == provinceCityId } != null } }
+                .map { buildProvince(it) }
+
             GameExtendedDTO(
                 turn = game.game.turn,
                 tiles = tileDTOs,
                 countries = countryDTOs,
                 cities = cityDTOs,
+                provinces = provinceDTOs
             )
         }
     }
@@ -124,7 +132,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
         return TileDTODataTier1(
             terrainType = tile.data.terrainType,
             resourceType = tile.data.resourceType,
-            owner = tile.owner?.let { TileDTOOwner(it.countryId, it.cityId) }
+            owner = tile.owner?.let { TileDTOOwner(it.countryId, it.provinceId, it.cityId) }
         )
     }
 
@@ -148,6 +156,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
                 .map { influence ->
                     TileDTOInfluence(
                         countryId = influence.countryId,
+                        provinceId = influence.provinceId,
                         cityId = influence.cityId,
                         amount = influence.amount
                     )
@@ -159,6 +168,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
                 .map { influence ->
                     TileDTOInfluence(
                         countryId = influence.countryId,
+                        provinceId = influence.provinceId,
                         cityId = influence.cityId,
                         amount = influence.amount
                     )
@@ -166,6 +176,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
         )
         TileDTOInfluence(
             countryId = unknownCountryId,
+            provinceId = unknownProvinceId,
             cityId = unknownCityId,
             amount = tile.influences
                 .filter { influence -> !knownCountries.contains(influence.countryId) }
@@ -211,9 +222,18 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             tile = city.tile,
             name = city.name,
             color = city.color,
-            city = city.isCity,
-            parentCity = city.parentCity,
+            city = city.isProvinceCapital,
             buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile) }
+        )
+    }
+
+
+    private fun buildProvince(province: Province): ProvinceDTO {
+        return ProvinceDTO(
+            provinceId = province.provinceId,
+            countryId = province.countryId,
+            cityIds = province.cityIds,
+            provinceCapitalCityId = province.provinceCapitalCityId,
         )
     }
 

@@ -10,6 +10,5 @@ data class CityDTO(
     val name: String,
     val color: RGBColor,
     val city: Boolean,
-    val parentCity: String?,
     val buildings: List<BuildingDTO>
 )

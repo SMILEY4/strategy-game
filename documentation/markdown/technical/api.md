@@ -39,6 +39,12 @@ All messages follow the following format
               "q": "Int - the q-coordinate of the new city",
               "r": "Int - the r-coordinate of the new city",
               "name": "String - the name of the new city",
+              "withNewProvince": "Bool - whether to add it to an existing province or create a new one with the city as its capital"
+          },
+          {
+              "type": "place-scout",
+              "q": "Int - the q-coordinate of the scout",
+              "r": "Int - the r-coordinate of the scout",
           }
       ]
   }
@@ -67,22 +73,18 @@ All messages follow the following format
                   "terrainType": "String - the type of the terrain",
                   "owner?": {
                       "countryId": "String - the id of the country owning this tile",
+                      "provinceId": "String - the id of the province owning this tile "
   
-                      "cityId": "String - the id of the city this tile belongs to",
+                      "cityId": "String|null - the id of the city this tile belongs to",
                   }
               },
               "dataTier2?": {
               	"influences": [
                       {
                           "countryId": "String - the id of the country or '?'",
+                          "provinceId": "String - the id of the province or '?'",
+                          "cityId": "String - the id of the city or  '?'",
                           "value": "Double - the total amount of influence of the  country on the tile",
-                          "sources": [
-                              {
-                                  "cityId": "String - the id of the city",
-  
-                                  "value": "Double - the amount of influence of the  city on the tile",
-                              }
-                          ]
                       }
                   ],
                   "content": [
@@ -131,6 +133,16 @@ All messages follow the following format
                   "green": "Int [0,255]",
                   "blue": "Int [0,255]",
               }
+          }
+      ],
+      "provinces": [
+          {
+              "provinceId" : "String - the id of the province",
+              "provinceId" : "String - the id of the owner country",
+              "cityIds": [
+                  "String - the ids of cities in this province (incl. capital)"
+              ],
+              "provinceCapitalCityId": "String - the id of the province capital city"
           }
       ]
   }
