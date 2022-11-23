@@ -55,15 +55,17 @@ class ResolveCreateCityCommandImpl(
                     }
                 val createNewProvince = cmdData.withNewProvince || targetTile.owner == null
                 val cityId: String
+                val provinceId: String
                 if (createNewProvince) {
                     cityId = createCity(game, country.countryId, targetTile, cmdData.name, true)
-                    createProvince(game, country.countryId, cityId)
+                    provinceId = createProvince(game, country.countryId, cityId)
                 } else {
                     cityId = createCity(game, country.countryId, targetTile, cmdData.name, false)
-                    val provinceId = targetTile.owner?.provinceId ?: throw Exception("No province is owning target tile")
+                    provinceId = targetTile.owner?.provinceId ?: throw Exception("No province is owning target tile")
                     game.provinces.find { it.provinceId == provinceId }?.cityIds?.add(cityId)
                 }
                 updateTiles(game, cityId)
+                claimCityTiles(game, country.countryId, provinceId, cityId)
                 updateCountryResources(country)
                 emptyList()
             }
@@ -173,11 +175,7 @@ class ResolveCreateCityCommandImpl(
         if (tile.owner == null) {
             val maxInfluence = tile.influences.max { it.amount }
             if (maxInfluence != null && maxInfluence.amount >= gameConfig.tileOwnerInfluenceThreshold) {
-                tile.owner = TileOwner(
-                    countryId = maxInfluence.countryId,
-                    provinceId = maxInfluence.provinceId,
-                    cityId = maxInfluence.cityId
-                )
+                claimTile(tile, maxInfluence.countryId, maxInfluence.provinceId, null)
             }
         }
     }
@@ -198,6 +196,31 @@ class ResolveCreateCityCommandImpl(
 
 
     private fun hasInfluence(countryId: String, tile: Tile) = tile.influences.any { it.countryId == countryId }
+
+
+    private fun claimCityTiles(game: GameExtended, countryId: String, provinceId: String, cityId: String) {
+        val city = game.cities.find { it.cityId == cityId } ?: throw Exception("Could not find created city")
+        positionsCircle(city.tile, 1) { q, r ->
+            game.tiles.find { it.position.q == q && it.position.r == r }?.let { tile ->
+                if (tile.owner == null) {
+                    claimTile(tile, countryId, provinceId, cityId)
+                } else if (tile.owner?.countryId == countryId) {
+                    val existingCity = game.cities.find { it.tile.tileId == tile.tileId && it.cityId != cityId }
+                    if (existingCity == null) {
+                        claimTile(tile, countryId, provinceId, cityId)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun claimTile(tile: Tile, countryId: String, provinceId: String, cityId: String?) {
+        tile.owner = TileOwner(
+            countryId = countryId,
+            provinceId = provinceId,
+            cityId = cityId
+        )
+    }
 
 }
 
