@@ -4,20 +4,6 @@ import {GLBuffer, GLBufferType, GLBufferUsage} from "./glBuffer";
 import {ShaderProgram, ShaderUniformValues} from "./shaderProgram";
 import {VertexBatchCollector} from "./vertexBatchCollector";
 
-export interface BatchContext {
-    camera: Camera,
-    batches: Batch[]
-}
-
-export interface Batch {
-    arrays: {
-        currentIndexOffset: number,
-        indices: number[],
-        vertices: number[]
-    },
-    task: BaseRenderTask
-}
-
 export class BatchRenderer {
 
     public static readonly UNIFORM_VIEW_PROJECTION_MATRIX = "u_viewProjection";

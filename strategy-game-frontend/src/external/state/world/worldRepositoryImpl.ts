@@ -1,3 +1,4 @@
+import {Province} from "../../../core/models/province";
 import {WorldRepository} from "../../../core/required/worldRepository";
 import {City} from "../../../core/models/city";
 import {Country} from "../../../core/models/country";
@@ -17,8 +18,15 @@ export class WorldRepositoryImpl implements WorldRepository {
         return WorldStore.useState.getState();
     }
 
-    set(currentTurn: number, tiles: Tile[], countries: Country[], cities: City[], markers: Marker[], scouts: Scout[]): void {
-        WorldStore.useState.getState().setState(currentTurn, tiles, countries, cities, markers, scouts);
+    set(currentTurn: number,
+        tiles: Tile[],
+        countries: Country[],
+        cities: City[],
+        provinces: Province[],
+        markers: Marker[],
+        scouts: Scout[]
+    ): void {
+        WorldStore.useState.getState().setState(currentTurn, tiles, countries, cities, provinces, markers, scouts);
     }
 
     getTileAt(q: number, r: number): Tile | null {

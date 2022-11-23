@@ -84,7 +84,7 @@ All messages follow the following format
                           "countryId": "String - the id of the country or '?'",
                           "provinceId": "String - the id of the province or '?'",
                           "cityId": "String - the id of the city or  '?'",
-                          "value": "Double - the total amount of influence of the  country on the tile",
+                          "amount": "Double - the total amount of influence of the  country on the tile",
                       }
                   ],
                   "content": [
@@ -122,7 +122,8 @@ All messages follow the following format
       	{
           	"cityId": "String - the id of the city",
           	"countryId": "String - the id of the owner-country",
-          	"tile": {
+          	"isProvinceCapital": "Boolean - whether this city is the capital of the province",
+              "tile": {
               	"tileId": "String - the id of the tile",
               	"q": "Int - the q-coordinate of the tile",
               	"r": "Int - the r-coordinate of the tile",
@@ -132,13 +133,23 @@ All messages follow the following format
                   "red": "Int [0,255]",
                   "green": "Int [0,255]",
                   "blue": "Int [0,255]",
-              }
+              },
+              "buildings": [
+                  {
+                      "type": "String - the type of the building",
+                      "tile": {
+                          "tileId": "String - the id of the worked tile",
+                          "q": "Int - the q-coordinate of the worked tile",
+                          "r": "Int - the r-coordinate of the worked tile",
+                      }
+                  }
+              ]
           }
       ],
       "provinces": [
           {
               "provinceId" : "String - the id of the province",
-              "provinceId" : "String - the id of the owner country",
+              "countryId" : "String - the id of the owner country",
               "cityIds": [
                   "String - the ids of cities in this province (incl. capital)"
               ],

@@ -25,7 +25,7 @@ class ProvinceEntity(
     fun asServiceModel() = Province(
         provinceId = this.getKeyOrThrow(),
         countryId = this.countryId,
-        cityIds = this.cityIds.toList(),
+        cityIds = this.cityIds.toMutableList(),
         provinceCapitalCityId = this.provinceCityId
     )
 

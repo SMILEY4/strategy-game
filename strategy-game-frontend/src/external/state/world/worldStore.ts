@@ -2,6 +2,7 @@ import create from "zustand";
 import {City} from "../../../core/models/city";
 import {Country} from "../../../core/models/country";
 import {Marker} from "../../../core/models/marker";
+import {Province} from "../../../core/models/province";
 import {Scout} from "../../../core/models/scout";
 import {Tile} from "../../../core/models/tile";
 import {generateId} from "../../../shared/utils";
@@ -17,7 +18,8 @@ export namespace WorldStore {
         tiles: Tile[],
         markers: Marker[],
         scouts: Scout[],
-        cities: City[]
+        cities: City[],
+        provinces: Province[],
     }
 
     const initialStateValues: StateValues = {
@@ -27,7 +29,8 @@ export namespace WorldStore {
         tiles: [],
         markers: [],
         scouts: [],
-        cities: []
+        cities: [],
+        provinces: [],
     };
 
     interface StateActions {
@@ -36,6 +39,7 @@ export namespace WorldStore {
             tiles: Tile[],
             countries: Country[],
             cities: City[],
+            provinces: Province[],
             markers: Marker[],
             scouts: Scout[]
         ) => void;
@@ -48,6 +52,7 @@ export namespace WorldStore {
                 tiles: Tile[],
                 countries: Country[],
                 cities: City[],
+                provinces: Province[],
                 markers: Marker[],
                 scouts: Scout[]
             ) => set(() => ({
@@ -57,6 +62,7 @@ export namespace WorldStore {
                 cities: cities,
                 markers: markers,
                 scouts: scouts,
+                provinces: provinces,
                 revisionId: generateId()
             })),
         };

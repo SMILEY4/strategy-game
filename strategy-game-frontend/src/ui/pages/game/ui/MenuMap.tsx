@@ -37,6 +37,13 @@ export function MenuMap(): ReactElement {
                 onClick={() => setMode(MapMode.COUNTRIES)}
             />
             <AdvButton
+                label={"Provinces"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={mode === MapMode.PROVINCES}
+                onClick={() => setMode(MapMode.PROVINCES)}
+            />
+            <AdvButton
                 label={"Cities"}
                 actionCosts={[]}
                 turnCosts={[]}

@@ -1163,3 +1163,21 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
   - deseases
   - happiness
   - ...
+
+
+
+
+
+# "Custom Civilizations"
+
+- predefined civs
+  - problem: how to name civs historical ? fantasy "races" ?  > roleplay problems !!
+
+- coose civ bonuses before game
+  - problem: what if civs bonuses have no effect due to random spawn
+- solution:
+  - list of civ bonuses / effects
+  - choose 1 bonus after turn 2, 4, 8, 16 -> build your civ over time
+  - first effects generic, later ones more and more specific
+  - player can adapt to random spawn position and generated world
+  - the more the player knows about world, the more specific effects he can choose

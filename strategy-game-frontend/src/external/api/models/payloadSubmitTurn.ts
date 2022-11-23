@@ -27,7 +27,7 @@ export interface SubmitCommandCreateCity extends SubmitCommand {
     name: string,
     q: number,
     r: number,
-    parentCity: string | null
+    withNewProvince: boolean
 }
 
 export interface SubmitCommandCreateBuilding extends SubmitCommand {
@@ -70,7 +70,7 @@ export namespace PayloadSubmitTurn {
                     name: cmdCreateCity.name,
                     q: cmdCreateCity.q,
                     r: cmdCreateCity.r,
-                    parentCity: cmdCreateCity.parentCity
+                    withNewProvince: cmdCreateCity.withNewProvince
                 };
             }),
             whenCase<string, SubmitCommandCreateBuilding>("create-building", () => {

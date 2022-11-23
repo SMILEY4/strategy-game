@@ -7,6 +7,7 @@ import {Color} from "./models/Color";
 import {Country} from "./models/country";
 import {GameState} from "./models/gameState";
 import {Marker} from "./models/marker";
+import {Province} from "./models/province";
 import {ResourceType} from "./models/resourceType";
 import {Scout} from "./models/scout";
 import {TerrainType} from "./models/terrainType";
@@ -40,8 +41,9 @@ export class GameSetStateAction {
             tiles,
             countries,
             this.getCities(game),
+            this.getProvinces(game),
             this.getMarkers(game),
-            this.getScouts(game)
+            this.getScouts(game),
         );
         this.gameRepository.clearCommands();
         this.gameRepository.setGameState(GameState.PLAYING);
@@ -59,11 +61,11 @@ export class GameSetStateAction {
 
     private getCountryResources(country: any): any {
         const countryPrev = this.worldRepository.getCompleteState().countries.byCountryId(country.dataTier1.countryId);
-        const nextMoney = country.dataTier3.resources.money
-        const nextWood = country.dataTier3.resources.wood
-        const nextFood = country.dataTier3.resources.food
-        const nextStone = country.dataTier3.resources.stone
-        const nextMetal = country.dataTier3.resources.metal
+        const nextMoney = country.dataTier3.resources.money;
+        const nextWood = country.dataTier3.resources.wood;
+        const nextFood = country.dataTier3.resources.food;
+        const nextStone = country.dataTier3.resources.stone;
+        const nextMetal = country.dataTier3.resources.metal;
         const prevMoney = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.money.value : nextMoney;
         const prevWood = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.wood.value : nextWood;
         const prevFood = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.food.value : nextFood;
@@ -72,8 +74,8 @@ export class GameSetStateAction {
         return {
             resources: {
                 money: {type: "money", value: nextMoney, change: nextMoney - prevMoney},
-                wood: {type: "wood", value: nextWood, change: nextWood- prevWood},
-                food: {type: "food", value: nextFood, change: nextFood- prevFood},
+                wood: {type: "wood", value: nextWood, change: nextWood - prevWood},
+                food: {type: "food", value: nextFood, change: nextFood - prevFood},
                 stone: {type: "stone", value: nextStone, change: nextStone - prevStone},
                 metal: {type: "metal", value: nextMetal, change: nextMetal - prevMetal}
             }
@@ -93,6 +95,7 @@ export class GameSetStateAction {
                 resourceType: ResourceType.fromString(tile.dataTier1.resourceType),
                 owner: tile.dataTier1.owner ? {
                     countryId: tile.dataTier1.owner?.countryId,
+                    provinceId: tile.dataTier1.owner?.provinceId,
                     countryColor: game.countries.find(c => c.dataTier1.countryId === tile.dataTier1?.owner?.countryId)?.dataTier1.color,
                     cityId: tile.dataTier1.owner.cityId,
                 } : null,
@@ -100,6 +103,7 @@ export class GameSetStateAction {
             dataTier2: tile.dataTier2 ? {
                 influences: tile.dataTier2.influences.map(influence => ({
                     countryId: influence.countryId,
+                    provinceId: influence.provinceId,
                     cityId: influence.cityId,
                     amount: influence.amount
                 })),
@@ -163,8 +167,7 @@ export class GameSetStateAction {
                 q: city.tile.q,
                 r: city.tile.r
             },
-            isCity: city.city,
-            parentCity: city.parentCity,
+            isProvinceCapital: city.isProvinceCapital,
             buildings: city.buildings.map(b => ({
                 type: BuildingType.fromString(b.type),
                 tile: b.tile ? {
@@ -173,6 +176,16 @@ export class GameSetStateAction {
                     r: b.tile.r
                 } : null
             }))
+        }));
+    }
+
+
+    private getProvinces(game: PayloadGameState): Province[] {
+        return game.provinces.map(province => ({
+            provinceId: province.provinceId,
+            countryId: province.countryId,
+            cityIds: province.cityIds,
+            provinceCapitalCityId: province.provinceCapitalCityId,
         }));
     }
 
@@ -190,6 +203,11 @@ export class GameSetStateAction {
                 borderDirections: this.getTileCountryLayerBorders(tile, borderCalculator)
             },
             {
+                layerId: TileLayerMeta.ID_PROVINCE,
+                value: this.getTileProvinceLayerValue(tile, game),
+                borderDirections: this.getTileProvinceLayerBorders(tile, borderCalculator)
+            },
+            {
                 layerId: TileLayerMeta.ID_CITY,
                 value: this.getTileCityLayerValue(tile, game),
                 borderDirections: this.getTileCityLayerBorders(tile, borderCalculator)
@@ -204,6 +222,16 @@ export class GameSetStateAction {
 
     private getTileCountryLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.countryId);
+    }
+
+    private getTileProvinceLayerValue(tile: Tile, game: PayloadGameState): number[] {
+        const province = game.provinces.find(province => province.provinceId === tile.dataTier1?.owner?.provinceId);
+        const capital = game.cities.find(city => city.cityId == province?.provinceCapitalCityId)
+        return colorToRgbArray(orDefault(capital?.color, Color.INVALID));
+    }
+
+    private getTileProvinceLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
+        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.provinceId);
     }
 
     private getTileCityLayerValue(tile: Tile, game: PayloadGameState): number[] {

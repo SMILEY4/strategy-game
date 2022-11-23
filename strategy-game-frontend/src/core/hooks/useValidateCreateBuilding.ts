@@ -25,7 +25,7 @@ export function useValidateCreateBuilding(city: City | null): (type: BuildingTyp
                         .map(cmd => cmd as CommandCreateBuilding)
                         .filter(cmd => cmd.cityId === city.cityId)
                         .length;
-                    if (city.isCity) {
+                    if (city.isProvinceCapital) {
                         return config.cityBuildingSlots - (city.buildings.length + amountBuildingCommands) > 0;
                     } else {
                         return config.townBuildingSlots - (city.buildings.length + amountBuildingCommands) > 0;
