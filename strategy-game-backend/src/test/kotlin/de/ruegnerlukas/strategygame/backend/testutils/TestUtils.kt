@@ -37,8 +37,8 @@ object TestUtils {
 			.getOrHandle { throw Exception("country with gameId=$gameId and userId=$userId not found") }
 	}
 
-	suspend fun updateCountry(database: ArangoDatabase, country: Country) {
-		val entity = CountryEntity.of(country)
+	suspend fun updateCountry(database: ArangoDatabase, gameId: String, country: Country) {
+		val entity = CountryEntity.of(country, gameId)
 		database.replaceDocument(Collections.COUNTRIES, entity.getKeyOrThrow(), entity)
 	}
 

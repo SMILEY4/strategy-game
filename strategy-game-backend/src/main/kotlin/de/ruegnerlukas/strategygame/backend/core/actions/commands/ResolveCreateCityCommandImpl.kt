@@ -66,7 +66,7 @@ class ResolveCreateCityCommandImpl(
                 }
                 updateTiles(game, cityId)
                 claimCityTiles(game, country.countryId, provinceId, cityId)
-                updateCountryResources(country)
+                updateCountryResources(country, createNewProvince)
                 emptyList()
             }
         }
@@ -116,8 +116,8 @@ class ResolveCreateCityCommandImpl(
     }
 
 
-    private fun updateCountryResources(country: Country) {
-        country.resources.money -= gameConfig.cityCostMoney
+    private fun updateCountryResources(country: Country, isProvinceCapital: Boolean) {
+        country.resources.money -= if(isProvinceCapital) gameConfig.cityCostMoney else gameConfig.townCostMoney
     }
 
 
