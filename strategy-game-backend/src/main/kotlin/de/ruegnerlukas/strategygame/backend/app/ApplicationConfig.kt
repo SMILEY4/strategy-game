@@ -90,7 +90,9 @@ fun Application.module() {
         format { call ->
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
-            val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
+            val route = call.request.uri
+                .replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
+                .replace(Regex("ticket=.*?(?=(&|\$))"), "ticket=SECRET")
             val userAgent = call.request.userAgent() ?: "?"
             "${status.toString()}: $httpMethod - $route      (userAgent=$userAgent)"
         }

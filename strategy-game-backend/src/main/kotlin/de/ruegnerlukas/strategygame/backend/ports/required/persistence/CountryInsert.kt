@@ -5,5 +5,5 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDbError
 
 interface CountryInsert {
-	suspend fun execute(country: Country): Either<ArangoDbError, String>
+	suspend fun execute(country: Country, gameId: String): Either<ArangoDbError, String>
 }

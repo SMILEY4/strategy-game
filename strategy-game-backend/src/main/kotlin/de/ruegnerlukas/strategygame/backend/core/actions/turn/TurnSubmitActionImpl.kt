@@ -12,7 +12,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateTownCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
@@ -99,14 +98,7 @@ class TurnSubmitActionImpl(
         return commands.map { command ->
             when (command) {
                 is PlaceMarkerCommand -> createCommandPlaceMarker(game, country, command)
-                is CreateCityCommand -> {
-                    if (command.parentCity == null) {
-                        createCommandCreateCity(game, country, command)
-                    } else {
-                        createCommandCreateTown(game, country, command)
-                    }
-                }
-
+                is CreateCityCommand -> createCommandCreateCity(game, country, command)
                 is CreateBuildingCommand -> createCommandCreateBuilding(game, country, command)
                 is PlaceScoutCommand -> createCommandPlaceScout(game, country, command)
             }
@@ -131,23 +123,6 @@ class TurnSubmitActionImpl(
     /**
      * create a command-entity from the given [CreateCityCommand]
      */
-    private fun createCommandCreateTown(game: Game, country: Country, cmd: CreateCityCommand): Command<*> {
-        return Command(
-            commandId = DbId.PLACEHOLDER,
-            turn = game.turn,
-            countryId = country.countryId,
-            data = CreateTownCommandData(
-                q = cmd.q,
-                r = cmd.r,
-                name = cmd.name.trim(),
-                parentCity = cmd.parentCity!!
-            )
-        )
-    }
-
-    /**
-     * create a command-entity from the given [CreateCityCommand]
-     */
     private fun createCommandCreateCity(game: Game, country: Country, cmd: CreateCityCommand): Command<*> {
         return Command(
             commandId = DbId.PLACEHOLDER,
@@ -157,12 +132,13 @@ class TurnSubmitActionImpl(
                 q = cmd.q,
                 r = cmd.r,
                 name = cmd.name.trim(),
+                withNewProvince = cmd.withNewProvince
             )
         )
     }
 
     /**
-     * create a command-entity from the given [CreateCityCommand]
+     * create a command-entity from the given [CreateBuildingCommand]
      */
     private fun createCommandCreateBuilding(game: Game, country: Country, cmd: CreateBuildingCommand): Command<*> {
         return Command(

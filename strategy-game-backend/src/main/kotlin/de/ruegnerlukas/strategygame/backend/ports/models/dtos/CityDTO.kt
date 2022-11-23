@@ -9,7 +9,6 @@ data class CityDTO(
     val tile: TileRef,
     val name: String,
     val color: RGBColor,
-    val city: Boolean,
-    val parentCity: String?,
+    val isProvinceCapital: Boolean,
     val buildings: List<BuildingDTO>
 )

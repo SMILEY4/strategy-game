@@ -20,9 +20,9 @@ class TileEntity(
 ) : DbEntity(key) {
 
     companion object {
-        fun of(serviceModel: Tile) = TileEntity(
+        fun of(serviceModel: Tile, gameId: String) = TileEntity(
             key = DbId.asDbId(serviceModel.tileId),
-            gameId = serviceModel.gameId,
+            gameId = gameId,
             position = serviceModel.position,
             data = serviceModel.data,
             influences = serviceModel.influences,
@@ -34,7 +34,6 @@ class TileEntity(
 
     fun asServiceModel() = Tile(
         tileId = this.getKeyOrThrow(),
-        gameId = this.gameId,
         position = this.position,
         data = this.data,
         influences = this.influences.toMutableList(),

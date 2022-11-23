@@ -8,14 +8,13 @@ export function CreateTownDialog(props: { frameId: string, tile: TilePosition })
     const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     const [name, setName] = useState("");
-    const tile = useTileAt(props.tile);
 
     return (
         <div>
             Order creation of new city?
             <TextField value={name} onAccept={setName}/>
             <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAccept(tile?.dataTier1?.owner?.cityId!!)}>Create Town</button>
+            <button onClick={onAccept}>Create Town</button>
         </div>
     );
 
@@ -23,8 +22,8 @@ export function CreateTownDialog(props: { frameId: string, tile: TilePosition })
         uiService.close(props.frameId);
     }
 
-    function onAccept(cityId: string) {
+    function onAccept() {
         uiService.close(props.frameId);
-        actionAddCommand.addCreateCity(props.tile, name, cityId);
+        actionAddCommand.addCreateCity(props.tile, name, false);
     }
 }

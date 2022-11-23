@@ -1032,14 +1032,6 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
 
 
 
-# Population Types in City
-
-- peasants, artisans, nobles
-- settlement starts with only peasants
-- 
-
-
-
 # Resources, Production Chains, Buildings, Trade
 
 **buildings**
@@ -1149,3 +1141,43 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
   - trade with other nations
     - sell to other nation -> receive x% of trade value from other nation
     - buy from other nation -> pay x% of trade value to other nation
+
+
+
+# Population Growth
+
+- based on multiple factors
+- growth-meter
+  - when at +100% -> new pop spawns
+  - when at -100% -> one pop dies
+- bonus points
+  - food security -> food available in region
+  - local food security -> food produced in city/town
+  - good sanitation
+  - freshwater
+  - happiness
+  - ...
+- negative points
+  - population density
+  - food shortage
+  - deseases
+  - happiness
+  - ...
+
+
+
+
+
+# "Custom Civilizations"
+
+- predefined civs
+  - problem: how to name civs historical ? fantasy "races" ?  > roleplay problems !!
+
+- coose civ bonuses before game
+  - problem: what if civs bonuses have no effect due to random spawn
+- solution:
+  - list of civ bonuses / effects
+  - choose 1 bonus after turn 2, 4, 8, 16 -> build your civ over time
+  - first effects generic, later ones more and more specific
+  - player can adapt to random spawn position and generated world
+  - the more the player knows about world, the more specific effects he can choose

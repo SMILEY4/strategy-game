@@ -131,9 +131,10 @@ export class TilemapRenderer {
     private mapModeId(mode: MapMode): number {
         if (mode === MapMode.DEFAULT) return 0;
         if (mode === MapMode.COUNTRIES) return 1;
-        if (mode === MapMode.CITIES) return 2;
-        if (mode === MapMode.TERRAIN) return 3;
-        if (mode === MapMode.RESOURCES) return 4;
+        if (mode === MapMode.PROVINCES) return 2;
+        if (mode === MapMode.CITIES) return 3;
+        if (mode === MapMode.TERRAIN) return 4;
+        if (mode === MapMode.RESOURCES) return 5;
         return 0;
     }
 

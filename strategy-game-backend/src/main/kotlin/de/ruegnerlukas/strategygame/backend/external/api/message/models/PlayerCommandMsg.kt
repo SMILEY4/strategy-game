@@ -35,7 +35,7 @@ sealed class PlayerCommandMsg(
                 q = this.q,
                 r = this.r,
                 name = this.name,
-                parentCity = this.parentCity
+                withNewProvince = this.withNewProvince
             )
             is PlaceMarkerCommandMsg -> PlaceMarkerCommand(
                 q = this.q,
@@ -67,7 +67,7 @@ class CreateCityCommandMsg(
     val q: Int,
     val r: Int,
     val name: String,
-    val parentCity: String?
+    val withNewProvince: Boolean
 ) : PlayerCommandMsg(TYPE) {
     companion object {
         internal const val TYPE = "create-city"

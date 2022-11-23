@@ -13,35 +13,31 @@ class CityEntity(
     val tile: TileRef,
     val name: String,
     val color: RGBColor,
-    val isCity: Boolean,
-    val parentCity: String?,
+    val isProvinceCapital: Boolean,
     val buildings: List<Building>,
     key: String? = null,
 ) : DbEntity(key) {
 
     companion object {
-        fun of(serviceModel: City) = CityEntity(
+        fun of(serviceModel: City, gameId: String) = CityEntity(
             key = DbId.asDbId(serviceModel.cityId),
-            gameId = serviceModel.gameId,
+            gameId = gameId,
             countryId = serviceModel.countryId,
             tile = serviceModel.tile,
             name = serviceModel.name,
             color = serviceModel.color,
-            isCity = serviceModel.isCity,
-            parentCity = serviceModel.parentCity,
+            isProvinceCapital = serviceModel.isProvinceCapital,
             buildings = serviceModel.buildings,
         )
     }
 
     fun asServiceModel() = City(
         cityId = this.getKeyOrThrow(),
-        gameId = this.gameId,
         countryId = this.countryId,
         tile = this.tile,
         name = this.name,
         color = this.color,
-        isCity = this.isCity,
-        parentCity = this.parentCity,
+        isProvinceCapital = this.isProvinceCapital,
         buildings = this.buildings.toMutableList(),
     )
 

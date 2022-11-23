@@ -1,7 +1,7 @@
 import {GameApi} from "./required/gameApi";
 
 /**
- * Join a game as a player (dont connect yet)
+ * Join a game as a player (don't connect yet)
  */
 export class GameJoinAction {
 

@@ -17,13 +17,15 @@ export interface TileDataTier1 {
     resourceType: ResourceType,
     owner: ({
         countryId: string,
-        cityId: string
+        provinceId: string,
+        cityId: string | null
     }) | null,
 }
 
 export interface TileDataTier2 {
     influences: ({
         countryId: string,
+        provinceId: string,
         cityId: string,
         amount: number,
     })[],

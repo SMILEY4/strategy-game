@@ -28,7 +28,7 @@ export interface CommandCreateCity extends Command {
     name: string,
     q: number,
     r: number,
-    parentCity: string | null
+    withNewProvince: boolean
 }
 
 export interface CommandCreateBuilding extends Command {

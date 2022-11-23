@@ -2,13 +2,17 @@ package de.ruegnerlukas.strategygame.backend.ports.required
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
+import kotlinx.html.InputType
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.reflect.KClass
 
 
 object Monitoring {
 
-    val monitoring by inject<MonitoringService>(MonitoringService::class.java)
+    var enabled = true
+
+    val monitoring: MonitoringService
+        get() = if (enabled) inject<MonitoringService>(MonitoringService::class.java).value else NoOpMonitoringService()
 
     fun count(id: MonitoringService.Companion.MetricId, amount: Number) = monitoring.count(id, amount)
 
@@ -48,5 +52,30 @@ interface MonitoringService {
     fun summary(id: MetricId, amount: Number)
 
     fun getRegistry(): MeterRegistry
+
+}
+
+class NoOpMonitoringService : MonitoringService {
+
+    override fun count(id: MonitoringService.Companion.MetricId, amount: Number) {
+    }
+
+    override fun <T> time(id: MonitoringService.Companion.MetricId, block: () -> T): T {
+        return block()
+    }
+
+    override suspend fun <T> coTime(id: MonitoringService.Companion.MetricId, block: suspend () -> T): T {
+        return block()
+    }
+
+    override fun gauge(id: MonitoringService.Companion.MetricId, block: () -> Number) {
+    }
+
+    override fun summary(id: MonitoringService.Companion.MetricId, amount: Number) {
+    }
+
+    override fun getRegistry(): MeterRegistry {
+        throw UnsupportedOperationException()
+    }
 
 }

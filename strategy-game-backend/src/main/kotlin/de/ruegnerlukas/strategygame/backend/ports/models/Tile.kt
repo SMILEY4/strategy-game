@@ -2,7 +2,6 @@ package de.ruegnerlukas.strategygame.backend.ports.models
 
 data class Tile(
     val tileId: String,
-    var gameId: String,
     val position: TilePosition,
     val data: TileData,
     val influences: MutableList<TileInfluence>,

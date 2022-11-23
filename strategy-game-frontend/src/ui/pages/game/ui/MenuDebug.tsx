@@ -1,6 +1,5 @@
 import {ReactElement} from "react";
 import {CgDebug} from "react-icons/cg";
-import {MapMode} from "../../../../core/models/mapMode";
 import {AppConfig} from "../../../../main";
 import {AdvButton} from "../../../components/specific/AdvButton";
 import {Section} from "../../../components/specific/Section";

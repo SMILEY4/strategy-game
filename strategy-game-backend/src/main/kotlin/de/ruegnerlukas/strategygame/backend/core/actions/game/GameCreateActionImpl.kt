@@ -48,7 +48,6 @@ class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateActio
         return WorldBuilder().buildTiles(worldSettings).map {
             Tile(
                 tileId = DbId.PLACEHOLDER,
-                gameId = "",
                 position = TilePosition(it.q, it.r),
                 data = TileData(
                     terrainType = it.type.name,

@@ -74,7 +74,7 @@ class CreateCityCommandResolutionTest : StringSpec({
         }
     }
 
-    "create two cities next to each other in the same turn, create both" {
+    "create two cities next to each other in the same turn, create one" {
         gameTest {
             createGame {
                 worldSettings = WorldSettings.landOnly()
@@ -100,12 +100,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "City 1"
                     countryId = getCountryId("user-1")
                 }
-                city {
-                    q = 1
-                    r = 0
-                    name = "City 2"
-                    countryId = getCountryId("user-2")
-                }
             }
             expectCountryMoney {
                 countryId = getCountryId("user-1")
@@ -113,7 +107,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
+                amount = gameCfg().startingAmountMoney
             }
         }
     }

@@ -13,7 +13,7 @@ class CreateCityCommand(
     val q: Int,
     val r: Int,
     val name: String,
-    val parentCity: String?
+    val withNewProvince: Boolean
 ) : PlayerCommand()
 
 

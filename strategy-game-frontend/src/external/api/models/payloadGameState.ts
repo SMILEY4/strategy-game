@@ -18,12 +18,14 @@ export interface PayloadGameState {
             resourceType: string,
             owner: ({
                 countryId: string,
-                cityId: string
+                provinceId: string
+                cityId: string | null
             }) | null,
         } | null,
         dataTier2: {
             influences: ({
                 countryId: string,
+                provinceId: string,
                 cityId: string,
                 amount: number
             })[],
@@ -54,10 +56,9 @@ export interface PayloadGameState {
             q: number,
             r: number
         },
+        isProvinceCapital: boolean,
         name: string,
         color: Color,
-        city: boolean,
-        parentCity: string | null,
         buildings: ({
             type: string,
             tile: {
@@ -66,5 +67,11 @@ export interface PayloadGameState {
                 r: number
             } | null
         })[]
+    })[],
+    provinces: ({
+        provinceId: string,
+        countryId: string,
+        cityIds: string[],
+        provinceCapitalCityId: string
     })[]
 }

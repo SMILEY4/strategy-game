@@ -4,6 +4,7 @@ import {useCityAt} from "../../../../core/hooks/useCityAt";
 import {useCityById} from "../../../../core/hooks/useCityById";
 import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
 import {useGameConfig} from "../../../../core/hooks/useGameConfig";
+import {useProvinceByCity} from "../../../../core/hooks/useProvinceByCity";
 import {useSelectedTilePosition} from "../../../../core/hooks/useSelectedTilePosition";
 import {useTileAt} from "../../../../core/hooks/useTileAt";
 import {useValidateCreateBuilding} from "../../../../core/hooks/useValidateCreateBuilding";
@@ -58,9 +59,10 @@ function SectionTile(props: { tile: Tile }): ReactElement {
 
 function SectionCity(props: { tile: Tile }): ReactElement {
     const city = useCityAt(props.tile.position);
-    const parentCity = useCityById(city?.parentCity);
+    const province = useProvinceByCity(city?.cityId)
+    const provinceCapital = useCityById(province?.provinceCapitalCityId)
     const config = useGameConfig();
-    const buildingProduction = city?.isCity ? config.cityBuildingProductionPerTurn : config.townBuildingProductionPerTurn;
+    const buildingProduction = city?.isProvinceCapital ? config.cityBuildingProductionPerTurn : config.townBuildingProductionPerTurn;
     const canCreateCity = useValidateCreateCity(props.tile.position);
     const canCreateTown = useValidateCreateTown(props.tile.position);
     const validateCreateBuilding = useValidateCreateBuilding(city);
@@ -85,9 +87,9 @@ function SectionCity(props: { tile: Tile }): ReactElement {
         return (
             <Section title="City">
                 <p>{"Name: " + city.name}</p>
-                <p>{"Region: " + (city.parentCity ? parentCity?.name : city.name)}</p>
+                <p>{"Province: " + provinceCapital?.name}</p>
                 <p>{"Country: " + city.countryId}</p>
-                <b>{"Buildings (" + city.buildings.length + "/" + (city.isCity ? config.cityBuildingSlots : config.townBuildingSlots) + ")"}</b>
+                <b>{"Buildings (" + city.buildings.length + "/" + (city.isProvinceCapital ? config.cityBuildingSlots : config.townBuildingSlots) + ")"}</b>
                 <AdvButton
                     label={"Add Lumber Camp"}
                     actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}

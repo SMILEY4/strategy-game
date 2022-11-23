@@ -10,7 +10,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateTownCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 
@@ -40,13 +39,8 @@ class CommandEntity<T : CommandEntityData>(
                 is CreateCityCommandData -> CreateCityCommandEntityData(
                     q = serviceModel.q,
                     r = serviceModel.r,
-                    name = serviceModel.name
-                )
-                is CreateTownCommandData -> CreateTownCommandEntityData(
-                    q = serviceModel.q,
-                    r = serviceModel.r,
                     name = serviceModel.name,
-                    parentCity = serviceModel.parentCity
+                    withNewProvince = serviceModel.withNewProvince
                 )
                 is PlaceMarkerCommandData -> PlaceMarkerCommandEntityData(
                     q = serviceModel.q,
@@ -77,13 +71,8 @@ class CommandEntity<T : CommandEntityData>(
             is CreateCityCommandEntityData -> CreateCityCommandData(
                 q = entity.q,
                 r = entity.r,
-                name = entity.name
-            )
-            is CreateTownCommandEntityData -> CreateTownCommandData(
-                q = entity.q,
-                r = entity.r,
                 name = entity.name,
-                parentCity = entity.parentCity
+                withNewProvince = entity.withNewProvince
             )
             is PlaceMarkerCommandEntityData -> PlaceMarkerCommandData(
                 q = entity.q,
@@ -98,7 +87,6 @@ class CommandEntity<T : CommandEntityData>(
 
 }
 
-
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
@@ -106,7 +94,6 @@ class CommandEntity<T : CommandEntityData>(
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = CreateCityCommandEntityData::class),
-    JsonSubTypes.Type(value = CreateTownCommandEntityData::class),
     JsonSubTypes.Type(value = CreateBuildingCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceMarkerCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceScoutCommandEntityData::class),
@@ -115,31 +102,17 @@ sealed class CommandEntityData(
     val type: String
 )
 
-
 @JsonTypeName(CreateCityCommandEntityData.TYPE)
 class CreateCityCommandEntityData(
     val q: Int,
     val r: Int,
     val name: String,
+    val withNewProvince: Boolean,
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "create-city"
     }
 }
-
-
-@JsonTypeName(CreateTownCommandEntityData.TYPE)
-class CreateTownCommandEntityData(
-    val q: Int,
-    val r: Int,
-    val name: String,
-    val parentCity: String
-) : CommandEntityData(TYPE) {
-    companion object {
-        internal const val TYPE = "create-town"
-    }
-}
-
 
 @JsonTypeName(CreateBuildingCommandEntityData.TYPE)
 class CreateBuildingCommandEntityData(
@@ -151,7 +124,6 @@ class CreateBuildingCommandEntityData(
     }
 }
 
-
 @JsonTypeName(PlaceMarkerCommandEntityData.TYPE)
 class PlaceMarkerCommandEntityData(
     val q: Int,
@@ -161,7 +133,6 @@ class PlaceMarkerCommandEntityData(
         internal const val TYPE = "place-marker"
     }
 }
-
 
 @JsonTypeName(PlaceScoutCommandEntityData.TYPE)
 class PlaceScoutCommandEntityData(
