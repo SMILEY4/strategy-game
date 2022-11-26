@@ -1,0 +1,29 @@
+@startuml
+digraph G {
+
+    createCityCommandEvent[shape=box,style=filled,color=slategray1];
+    createCityEvent[shape=box,style=filled,color=slategray1];
+    tileInfluenceUpdateEvent[shape=box,style=filled,color=slategray1];
+
+    CityCreationAction[style=filled,color=rosybrown1];
+    CityCreationCostAction[style=filled,color=rosybrown1];
+    CityInfluenceUpdateAction[style=filled,color=rosybrown1];
+    CityTileOwnershipAction[style=filled,color=rosybrown1];
+    InfluenceVisibilityUpdateAction[style=filled,color=rosybrown1];
+    InfluenceOwnershipUpdateAction[style=filled,color=rosybrown1];
+
+    createCityCommandEvent -> CityCreationAction;
+
+    CityCreationAction -> createCityEvent;
+
+    createCityEvent -> CityCreationCostAction;
+    createCityEvent -> CityInfluenceUpdateAction;
+    createCityEvent -> CityTileOwnershipAction;
+
+    CityInfluenceUpdateAction -> tileInfluenceUpdateEvent;
+
+    tileInfluenceUpdateEvent -> InfluenceVisibilityUpdateAction;
+    tileInfluenceUpdateEvent -> InfluenceOwnershipUpdateAction;
+}
+
+@enduml

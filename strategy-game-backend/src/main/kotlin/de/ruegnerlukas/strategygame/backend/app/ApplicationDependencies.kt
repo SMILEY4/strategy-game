@@ -5,6 +5,16 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateB
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityCreationAction
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityCreationCostAction
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityInfluenceUpdateAction
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityTileOwnershipAction
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.InfluenceOwnershipUpdateAction
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.InfluenceVisibilityUpdateAction
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.TileInfluenceUpdateEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDeleteActionImpl
@@ -124,7 +134,7 @@ val applicationDependencies = module {
 
     single<GameConfig> { GameConfig.default() }
     single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl() }
-    single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
+    single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get(), get()) }
     single<ResolveCreateBuildingCommand> { ResolveCreateBuildingCommandImpl(get()) }
     single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get()) }
     single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
@@ -141,5 +151,16 @@ val applicationDependencies = module {
     single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
+
+    single<GameEventManager> {
+        GameEventManager().also {
+            it.register(CreateCityCommandEvent::class.simpleName!!, CityCreationAction(get()))
+            it.register(CreateCityEvent::class.simpleName!!, CityCreationCostAction(get()))
+            it.register(CreateCityEvent::class.simpleName!!, CityInfluenceUpdateAction(get()))
+            it.register(CreateCityEvent::class.simpleName!!, CityTileOwnershipAction(get()))
+            it.register(TileInfluenceUpdateEvent::class.simpleName!!, InfluenceOwnershipUpdateAction(get()))
+            it.register(TileInfluenceUpdateEvent::class.simpleName!!, InfluenceVisibilityUpdateAction(get()))
+        }
+    }
 
 }

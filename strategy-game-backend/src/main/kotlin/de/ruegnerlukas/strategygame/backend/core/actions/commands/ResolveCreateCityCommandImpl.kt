@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
@@ -34,6 +36,7 @@ import kotlin.math.max
 class ResolveCreateCityCommandImpl(
     private val reservationInsert: ReservationInsert,
     private val gameConfig: GameConfig,
+    private val gameEventManager: GameEventManager
 ) : ResolveCreateCityCommand, Logging {
 
     private val metricId = MonitoringService.metricCoreAction(ResolveCreateCityCommand::class)
@@ -53,20 +56,22 @@ class ResolveCreateCityCommandImpl(
                     .ifInvalid<Unit> { reasons ->
                         return@either reasons.map { CommandResolutionError(command, it) }
                     }
-                val createNewProvince = cmdData.withNewProvince || targetTile.owner == null
-                val cityId: String
-                val provinceId: String
-                if (createNewProvince) {
-                    cityId = createCity(game, country.countryId, targetTile, cmdData.name, true)
-                    provinceId = createProvince(game, country.countryId, cityId)
-                } else {
-                    cityId = createCity(game, country.countryId, targetTile, cmdData.name, false)
-                    provinceId = targetTile.owner?.provinceId ?: throw Exception("No province is owning target tile")
-                    game.provinces.find { it.provinceId == provinceId }?.cityIds?.add(cityId)
-                }
-                updateTiles(game, cityId)
-                claimCityTiles(game, country.countryId, provinceId, cityId)
-                updateCountryResources(country, createNewProvince)
+                gameEventManager.send(CreateCityCommandEvent::class.simpleName!!, CreateCityCommandEvent(game, command))
+
+//                val createNewProvince = cmdData.withNewProvince || targetTile.owner == null
+//                val cityId: String
+//                val provinceId: String
+//                if (createNewProvince) {
+//                    cityId = createCity(game, country.countryId, targetTile, cmdData.name, true)
+//                    provinceId = createProvince(game, country.countryId, cityId)
+//                } else {
+//                    cityId = createCity(game, country.countryId, targetTile, cmdData.name, false)
+//                    provinceId = targetTile.owner?.provinceId ?: throw Exception("No province is owning target tile")
+//                    game.provinces.find { it.provinceId == provinceId }?.cityIds?.add(cityId)
+//                }
+//                updateTiles(game, cityId)
+//                claimCityTiles(game, country.countryId, provinceId, cityId)
+//                updateCountryResources(country, createNewProvince)
                 emptyList()
             }
         }
