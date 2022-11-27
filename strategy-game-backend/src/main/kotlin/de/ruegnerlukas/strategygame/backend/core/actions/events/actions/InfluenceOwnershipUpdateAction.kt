@@ -27,7 +27,7 @@ class InfluenceOwnershipUpdateAction(private val gameConfig: GameConfig) : GameA
 
 
     private fun updateTileOwner(tile: Tile) {
-        if (tile.owner == null) {
+        if (tile.owner?.cityId == null) {
             val maxInfluence = tile.influences.max { it.amount }
             if (maxInfluence != null && maxInfluence.amount >= gameConfig.tileOwnerInfluenceThreshold) {
                 tile.owner = TileOwner(

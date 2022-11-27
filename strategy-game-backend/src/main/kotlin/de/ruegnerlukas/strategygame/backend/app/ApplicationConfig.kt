@@ -127,6 +127,7 @@ fun Application.module() {
     install(Authentication) {
         jwt { userIdentityService.configureAuthentication(this) }
         basic("auth-technical-user") {
+            realm = "strategy-game"
             validate { credentials ->
                 val username = Config.get().auth.technicalUsername
                 val password = Config.get().auth.technicalPassword

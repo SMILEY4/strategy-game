@@ -5,10 +5,13 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.PlaceScoutCommandEvent
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
@@ -22,7 +25,8 @@ import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
 class ResolvePlaceScoutCommandImpl(
-    private val gameConfig: GameConfig
+    private val gameConfig: GameConfig,
+    private val gameEventManager: GameEventManager,
 ) : ResolvePlaceScoutCommand, Logging {
 
     private val metricId = metricCoreAction(ResolvePlaceScoutCommand::class)
@@ -38,7 +42,7 @@ class ResolvePlaceScoutCommandImpl(
                 validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                addScout(targetTile, command.countryId, command.turn)
+                gameEventManager.send(PlaceScoutCommandEvent::class.simpleName!!, PlaceScoutCommandEvent(game, command))
                 emptyList()
             }
         }
@@ -48,11 +52,6 @@ class ResolvePlaceScoutCommandImpl(
     private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
         return targetTile?.right() ?: ResolveCommandsAction.TileNotFoundError.left()
-    }
-
-
-    private fun addScout(tile: Tile, countryId: String, turn: Int) {
-        tile.content.add(ScoutTileContent(countryId, turn))
     }
 
 }

@@ -28,7 +28,7 @@ class CityInfluenceUpdateAction(private val gameConfig: GameConfig) : GameAction
     override suspend fun perform(event: CreateCityEvent): List<GameEvent> {
         val city = getCity(event)
         val modifiedTiles = mutableListOf<Tile>()
-        positionsCircle(city.tile, 5) { q, r ->
+        positionsCircle(city.tile, gameConfig.cityMaxRange) { q, r ->
             getTile(event, q, r)?.let { tile ->
                 updateTile(event.game, tile)
                 modifiedTiles.add(tile)

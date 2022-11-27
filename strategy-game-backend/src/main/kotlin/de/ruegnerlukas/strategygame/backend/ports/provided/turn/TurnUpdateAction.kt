@@ -4,6 +4,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 
 interface TurnUpdateAction {
 
-	fun perform(game: GameExtended)
+	suspend fun perform(game: GameExtended)
 
 }

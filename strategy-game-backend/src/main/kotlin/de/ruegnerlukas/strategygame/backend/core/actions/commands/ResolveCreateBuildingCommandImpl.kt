@@ -5,6 +5,9 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.CreateBuildingValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateBuildingCommandEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
@@ -27,7 +30,8 @@ import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
 class ResolveCreateBuildingCommandImpl(
-    private val gameConfig: GameConfig
+    private val gameConfig: GameConfig,
+    private val gameEventManager: GameEventManager
 ) : ResolveCreateBuildingCommand, Logging {
 
     private val metricId = metricCoreAction(ResolveCreateBuildingCommand::class)
@@ -44,8 +48,7 @@ class ResolveCreateBuildingCommandImpl(
                 validateCommand(command.countryId, city, country, gameConfig).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                createBuilding(game, city, command.data.buildingType)
-                updateCountryResources(country)
+                gameEventManager.send(CreateBuildingCommandEvent::class.simpleName!!, CreateBuildingCommandEvent(game, command))
                 emptyList()
             }
         }
@@ -72,43 +75,6 @@ class ResolveCreateBuildingCommandImpl(
         } else {
             return country.right()
         }
-    }
-
-
-    private fun createBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
-        city.buildings.add(
-            Building(
-                type = buildingType,
-                tile = decideTargetTile(game, city, buildingType)
-            )
-        )
-    }
-
-
-    private fun decideTargetTile(game: GameExtended, city: City, buildingType: BuildingType): TileRef? {
-        return positionsCircle(city.tile, 1)
-            .asSequence()
-            .filter { it.q != city.tile.q && it.r != city.tile.r }
-            .mapNotNull { pos -> game.tiles.find { it.position.q == pos.q && it.position.r == pos.r } }
-            .filter { tile -> city.buildings.none { tile.tileId == it.tile?.tileId } }
-            .filter {
-                when (buildingType) {
-                    BuildingType.LUMBER_CAMP -> it.data.resourceType == TileResourceType.FOREST.name
-                    BuildingType.MINE -> it.data.resourceType == TileResourceType.METAL.name
-                    BuildingType.QUARRY -> it.data.resourceType == TileResourceType.STONE.name
-                    BuildingType.HARBOR -> it.data.resourceType == TileResourceType.FISH.name
-                    BuildingType.FARM -> it.data.terrainType == TileType.LAND.name
-                }
-            }
-            .toList()
-            .randomOrNull()
-            ?.let { TileRef(it.tileId, it.position.q, it.position.r) }
-    }
-
-
-    private fun updateCountryResources(country: Country) {
-        country.resources.wood -= gameConfig.buildingCostWood
-        country.resources.stone -= gameConfig.buildingCostStone
     }
 
 }
