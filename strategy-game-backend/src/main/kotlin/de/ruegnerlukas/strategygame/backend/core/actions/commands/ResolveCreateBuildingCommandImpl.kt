@@ -6,26 +6,19 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.CreateBuildingValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateBuildingCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.ports.models.Building
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
@@ -48,7 +41,7 @@ class ResolveCreateBuildingCommandImpl(
                 validateCommand(command.countryId, city, country, gameConfig).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                gameEventManager.send(CreateBuildingCommandEvent::class.simpleName!!, CreateBuildingCommandEvent(game, command))
+                gameEventManager.send(GameEventCommandBuildingCreate::class.simpleName!!, GameEventCommandBuildingCreate(game, command))
                 emptyList()
             }
         }

@@ -5,7 +5,7 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
@@ -13,25 +13,16 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.TileInfluence
-import de.ruegnerlukas.strategygame.backend.ports.models.TileOwner
-import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.RGBColor
-import de.ruegnerlukas.strategygame.backend.shared.distance
 import de.ruegnerlukas.strategygame.backend.shared.max
-import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
-import kotlin.math.max
 
 class ResolveCreateCityCommandImpl(
     private val gameConfig: GameConfig,
@@ -55,7 +46,7 @@ class ResolveCreateCityCommandImpl(
                     .ifInvalid<Unit> { reasons ->
                         return@either reasons.map { CommandResolutionError(command, it) }
                     }
-                gameEventManager.send(CreateCityCommandEvent::class.simpleName!!, CreateCityCommandEvent(game, command))
+                gameEventManager.send(GameEventCommandCityCreate::class.simpleName!!, GameEventCommandCityCreate(game, command))
                 emptyList()
             }
         }

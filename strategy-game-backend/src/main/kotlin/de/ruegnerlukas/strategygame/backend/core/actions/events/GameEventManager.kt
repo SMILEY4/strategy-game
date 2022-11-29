@@ -18,12 +18,15 @@ class GameEventManager : Logging {
     }
 
     private suspend fun <T : GameEvent> handleEvent(eventType: GameEventType, event: T): List<GameEvent> {
-        val actions: List<GameAction<T>> = (actions[eventType] ?: emptyList()) as List<GameAction<T>>
-        log().debug("Handling event of type $eventType - found ${actions.size} actions")
-        return actions.flatMap {
-            log().debug("Running action ${it::class.simpleName} triggered by $eventType")
-            it.perform(event)
-        }
+        return getActions<T>(eventType)
+            .also { actions -> log().debug("Handling event of type $eventType - found ${actions.size} actions") }
+            .onEach { action -> log().debug("Running action ${action::class.simpleName} triggered by $eventType") }
+            .flatMap { action -> action.perform(event) }
+    }
+
+    private fun <T : GameEvent> getActions(eventType: GameEventType): List<GameAction<T>> {
+        @Suppress("UNCHECKED_CAST")
+        return (actions[eventType] ?: emptyList()) as List<GameAction<T>>
     }
 
 }

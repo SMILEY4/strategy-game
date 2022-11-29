@@ -3,17 +3,15 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventType
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.WorldUpdateEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 
-class UpdateScoutLifetimeAction(private val gameConfig: GameConfig) : GameAction<WorldUpdateEvent>() {
+class GameActionScoutLifetime(
+    private val gameConfig: GameConfig
+) : GameAction<GameEventWorldUpdate>(GameEventWorldUpdate.TYPE) {
 
-    override suspend fun triggeredBy(): List<GameEventType> {
-        return listOf(WorldUpdateEvent::class.java.simpleName)
-    }
-
-    override suspend fun perform(event: WorldUpdateEvent): List<GameEvent> {
+    override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
         event.game.tiles
             .asSequence()
             .map { tile -> tile to tile.content.find { it is ScoutTileContent } }

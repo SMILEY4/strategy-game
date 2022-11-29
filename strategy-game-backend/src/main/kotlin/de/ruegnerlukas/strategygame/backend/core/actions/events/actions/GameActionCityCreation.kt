@@ -2,9 +2,8 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventType
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
@@ -14,14 +13,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
-class CityCreationAction(private val reservationInsert: ReservationInsert) : GameAction<CreateCityCommandEvent>() {
+class GameActionCityCreation(
+    private val reservationInsert: ReservationInsert
+) : GameAction<GameEventCommandCityCreate>() {
 
-    override suspend fun triggeredBy(): List<GameEventType> {
-        return listOf(CreateCityCommandEvent::class.simpleName!!)
-    }
-
-
-    override suspend fun perform(event: CreateCityCommandEvent): List<GameEvent> {
+    override suspend fun perform(event: GameEventCommandCityCreate): List<GameEvent> {
         val targetTile = getTargetTile(event)
         val country = getCountry(event)
 
@@ -35,18 +31,18 @@ class CityCreationAction(private val reservationInsert: ReservationInsert) : Gam
             provinceId = targetTile.owner?.provinceId ?: throw Exception("No province is owning target tile")
             event.game.provinces.find { it.provinceId == provinceId }?.cityIds?.add(cityId)
         }
-        return listOf(CreateCityEvent(event.game, cityId))
+        return listOf(GameEventCityCreate(event.game, cityId))
     }
 
-    private fun getTargetTile(event: CreateCityCommandEvent): Tile {
+    private fun getTargetTile(event: GameEventCommandCityCreate): Tile {
         return event.game.tiles.find { it.position.q == event.command.data.q && it.position.r == event.command.data.r }!!
     }
 
-    private fun getCountry(event: CreateCityCommandEvent): Country {
+    private fun getCountry(event: GameEventCommandCityCreate): Country {
         return event.game.countries.find { it.countryId == event.command.countryId }!!
     }
 
-    private fun shouldCreateNewProvince(event: CreateCityCommandEvent, targetTile: Tile): Boolean {
+    private fun shouldCreateNewProvince(event: GameEventCommandCityCreate, targetTile: Tile): Boolean {
         return event.command.data.withNewProvince || targetTile.owner == null
     }
 

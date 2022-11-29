@@ -2,9 +2,8 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventType
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.TileInfluenceUpdateEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
@@ -18,14 +17,11 @@ import kotlin.math.max
 /**
  * handles the influence-change after building a city
  */
-class CityInfluenceUpdateAction(private val gameConfig: GameConfig) : GameAction<CreateCityEvent>() {
+class GameActionCityInfluence(
+    private val gameConfig: GameConfig
+) : GameAction<GameEventCityCreate>(GameEventCityCreate.TYPE) {
 
-    override suspend fun triggeredBy(): List<GameEventType> {
-        return listOf(CreateCityEvent::class.simpleName!!)
-    }
-
-
-    override suspend fun perform(event: CreateCityEvent): List<GameEvent> {
+    override suspend fun perform(event: GameEventCityCreate): List<GameEvent> {
         val city = getCity(event)
         val modifiedTiles = mutableListOf<Tile>()
         positionsCircle(city.tile, gameConfig.cityMaxRange) { q, r ->
@@ -34,7 +30,7 @@ class CityInfluenceUpdateAction(private val gameConfig: GameConfig) : GameAction
                 modifiedTiles.add(tile)
             }
         }
-        return listOf(TileInfluenceUpdateEvent(event.game, modifiedTiles))
+        return listOf(GameEventTileInfluenceUpdate(event.game, modifiedTiles))
     }
 
 
@@ -73,7 +69,7 @@ class CityInfluenceUpdateAction(private val gameConfig: GameConfig) : GameAction
         return max((-(distance.toDouble() / spread) + 1) * amount, 0.0)
     }
 
-    private fun getCity(event: CreateCityEvent): City {
+    private fun getCity(event: GameEventCityCreate): City {
         return event.game.cities.find { it.cityId == event.createdCityId }!!
     }
 
@@ -81,7 +77,7 @@ class CityInfluenceUpdateAction(private val gameConfig: GameConfig) : GameAction
         return game.provinces.find { it.cityIds.contains(cityId) }!!
     }
 
-    private fun getTile(event: CreateCityEvent, q: Int, r: Int): Tile? {
+    private fun getTile(event: GameEventCityCreate, q: Int, r: Int): Tile? {
         return event.game.tiles.find { it.position.q == q && it.position.r == r }
     }
 

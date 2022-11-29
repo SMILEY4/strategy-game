@@ -1,13 +1,20 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.events.events
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventType
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 
-class PlaceScoutCommandEvent(
+class GameEventCommandMarkerPlace(
     game: GameExtended,
-    val command: Command<PlaceScoutCommandData>
-) : GameEvent(PlaceScoutCommandEvent::class.simpleName!!, game)
+    val command: Command<PlaceMarkerCommandData>
+) : GameEvent(game) {
+
+    companion object {
+        val TYPE: GameEventType = GameEventCommandMarkerPlace::class.simpleName!!
+    }
+
+    override val gameEventType = GameEventBuildingCreate.TYPE
+
+}

@@ -6,12 +6,11 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.PlaceScoutCommandEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandScoutPlace
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
@@ -42,7 +41,7 @@ class ResolvePlaceScoutCommandImpl(
                 validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                gameEventManager.send(PlaceScoutCommandEvent::class.simpleName!!, PlaceScoutCommandEvent(game, command))
+                gameEventManager.send(GameEventCommandScoutPlace::class.simpleName!!, GameEventCommandScoutPlace(game, command))
                 emptyList()
             }
         }

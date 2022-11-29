@@ -6,26 +6,26 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateC
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.BuildingCreationAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.BuildingCreationCostAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityCreationAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityCreationCostAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityInfluenceUpdateAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.CityTileOwnershipAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.InfluenceOwnershipUpdateAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.InfluenceVisibilityUpdateAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.PlaceMarkerAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.PlaceScoutAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.TickCountryResourcesAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.UpdateScoutLifetimeAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateBuildingCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateBuildingEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.PlaceMarkerCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.PlaceScoutCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.TileInfluenceUpdateEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.WorldUpdateEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionBuildingCreation
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionBuildingCreationCost
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityCreation
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityCreationCost
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityInfluence
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityTileOwnership
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceOwnership
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceVisibility
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarkerPlace
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutPlace
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResource
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutLifetime
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventBuildingCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandMarkerPlace
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandScoutPlace
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDeleteActionImpl
@@ -165,18 +165,18 @@ val applicationDependencies = module {
 
     single<GameEventManager> {
         GameEventManager().also {
-            it.register(CreateCityCommandEvent::class.simpleName!!, CityCreationAction(get()))
-            it.register(CreateCityEvent::class.simpleName!!, CityCreationCostAction(get()))
-            it.register(CreateCityEvent::class.simpleName!!, CityInfluenceUpdateAction(get()))
-            it.register(CreateCityEvent::class.simpleName!!, CityTileOwnershipAction(get()))
-            it.register(TileInfluenceUpdateEvent::class.simpleName!!, InfluenceOwnershipUpdateAction(get()))
-            it.register(TileInfluenceUpdateEvent::class.simpleName!!, InfluenceVisibilityUpdateAction(get()))
-            it.register(CreateBuildingCommandEvent::class.simpleName!!, BuildingCreationAction())
-            it.register(CreateBuildingEvent::class.simpleName!!, BuildingCreationCostAction(get()))
-            it.register(PlaceMarkerCommandEvent::class.simpleName!!, PlaceMarkerAction())
-            it.register(PlaceScoutCommandEvent::class.simpleName!!, PlaceScoutAction(get()))
-            it.register(WorldUpdateEvent::class.simpleName!!, UpdateScoutLifetimeAction(get()))
-            it.register(WorldUpdateEvent::class.simpleName!!, TickCountryResourcesAction(get()))
+            it.register(GameEventBuildingCreate.TYPE, GameActionBuildingCreationCost(get()))
+            it.register(GameEventCityCreate.TYPE, GameActionCityCreationCost(get()))
+            it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(get()))
+            it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
+            it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
+            it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(get()))
+            it.register(GameEventCommandMarkerPlace.TYPE, GameActionMarkerPlace())
+            it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(get()))
+            it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(get()))
+            it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
+            it.register(GameEventWorldUpdate.TYPE, GameActionCountryResource(get()))
+            it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(get()))
         }
     }
 

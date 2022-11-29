@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.logviewer.LogViewer
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application

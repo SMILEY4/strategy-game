@@ -2,9 +2,8 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventType
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateBuildingCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateBuildingEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventBuildingCreate
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
@@ -14,13 +13,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
-class BuildingCreationAction : GameAction<CreateBuildingCommandEvent>() {
+class GameActionBuildingCreation : GameAction<GameEventCommandBuildingCreate>(GameEventCommandBuildingCreate.TYPE) {
 
-    override suspend fun triggeredBy(): List<GameEventType> {
-        return listOf(CreateBuildingCommandEvent::class.simpleName!!)
-    }
-
-    override suspend fun perform(event: CreateBuildingCommandEvent): List<GameEvent> {
+    override suspend fun perform(event: GameEventCommandBuildingCreate): List<GameEvent> {
         val city = getCity(event)
         val buildingType = getBuildingType(event)
         city.buildings.add(
@@ -29,16 +24,16 @@ class BuildingCreationAction : GameAction<CreateBuildingCommandEvent>() {
                 tile = decideTargetTile(event.game, city, buildingType)
             )
         )
-        return listOf(CreateBuildingEvent(event.game, event.command.countryId))
+        return listOf(GameEventBuildingCreate(event.game, event.command.countryId))
     }
 
 
-    private fun getCity(event: CreateBuildingCommandEvent): City {
+    private fun getCity(event: GameEventCommandBuildingCreate): City {
         return event.game.cities.find { it.cityId == event.command.data.cityId }!!
     }
 
 
-    private fun getBuildingType(event: CreateBuildingCommandEvent): BuildingType {
+    private fun getBuildingType(event: GameEventCommandBuildingCreate): BuildingType {
         return event.command.data.buildingType
     }
 

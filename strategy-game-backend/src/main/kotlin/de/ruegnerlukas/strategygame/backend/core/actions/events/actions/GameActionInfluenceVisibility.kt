@@ -2,10 +2,7 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventType
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.CreateCityCommandEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.TileInfluenceUpdateEvent
-import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
@@ -13,13 +10,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 /**
  * handles the changed visibility after updating the influence of some tiles
  */
-class InfluenceVisibilityUpdateAction(private val gameConfig: GameConfig) : GameAction<TileInfluenceUpdateEvent>() {
+class GameActionInfluenceVisibility : GameAction<GameEventTileInfluenceUpdate>(GameEventTileInfluenceUpdate.TYPE) {
 
-    override suspend fun triggeredBy(): List<GameEventType> {
-        return listOf(TileInfluenceUpdateEvent::class.simpleName!!)
-    }
-
-    override suspend fun perform(event: TileInfluenceUpdateEvent): List<GameEvent> {
+    override suspend fun perform(event: GameEventTileInfluenceUpdate): List<GameEvent> {
         event.tiles.forEach { tile ->
             updateTile(event.game, tile)
         }
@@ -35,7 +28,6 @@ class InfluenceVisibilityUpdateAction(private val gameConfig: GameConfig) : Game
                 }
             }
         }
-
     }
 
 

@@ -2,19 +2,15 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventType
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.WorldUpdateEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 
-class TickCountryResourcesAction(private val gameConfig: GameConfig) : GameAction<WorldUpdateEvent>() {
+class GameActionCountryResource(
+    private val gameConfig: GameConfig
+) : GameAction<GameEventWorldUpdate>(GameEventWorldUpdate.TYPE) {
 
-    override suspend fun triggeredBy(): List<GameEventType> {
-        return listOf(WorldUpdateEvent::class.java.simpleName)
-    }
-
-    override suspend fun perform(event: WorldUpdateEvent): List<GameEvent> {
+    override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
         event.game.cities.forEach { city ->
             val country = event.game.countries.find { it.countryId == city.countryId }
             if (country != null) {
@@ -23,7 +19,7 @@ class TickCountryResourcesAction(private val gameConfig: GameConfig) : GameActio
                 city.buildings
                     .filter { it.tile != null }
                     .forEach { building ->
-                        val production = if(city.isProvinceCapital) {
+                        val production = if (city.isProvinceCapital) {
                             gameConfig.cityBuildingProductionPerTurn
                         } else {
                             gameConfig.townBuildingProductionPerTurn

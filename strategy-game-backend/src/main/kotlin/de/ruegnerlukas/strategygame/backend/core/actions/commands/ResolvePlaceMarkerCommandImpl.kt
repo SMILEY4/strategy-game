@@ -6,7 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceMarkerValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.PlaceMarkerCommandEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandMarkerPlace
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
@@ -39,7 +39,7 @@ class ResolvePlaceMarkerCommandImpl(
                 validateCommand(targetTile).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                gameEventManager.send(PlaceMarkerCommandEvent::class.simpleName!!, PlaceMarkerCommandEvent(game, command))
+                gameEventManager.send(GameEventCommandMarkerPlace::class.simpleName!!, GameEventCommandMarkerPlace(game, command))
                 emptyList()
             }
         }
