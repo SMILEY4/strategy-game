@@ -55,7 +55,7 @@ class TurnEndActionImpl(
     /**
      * Update the game state (e.g. player income/resources, timers, ...)
      */
-    private fun updateGameWorld(game: GameExtended) {
+    private suspend fun updateGameWorld(game: GameExtended) {
         actionUpdateTurn.perform(game)
     }
 
