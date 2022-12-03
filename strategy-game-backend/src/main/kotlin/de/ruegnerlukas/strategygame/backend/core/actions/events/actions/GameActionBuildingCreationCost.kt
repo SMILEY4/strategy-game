@@ -3,11 +3,14 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventBuildingCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 
 /**
- * Handles the cost of building a city
+ * Removes the resource cost of creating a building from the country
+ * - triggered by [GameEventBuildingCreate]
+ * - triggers nothing
  */
 class GameActionBuildingCreationCost(
     private val gameConfig: GameConfig
@@ -20,7 +23,7 @@ class GameActionBuildingCreationCost(
     }
 
     private fun getCountry(event: GameEventBuildingCreate): Country {
-        return event.game.countries.find { it.countryId == event.countryId }!!
+        return event.country
     }
 
     private fun removeCost(country: Country) {

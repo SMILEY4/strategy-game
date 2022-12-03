@@ -15,7 +15,9 @@ import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import kotlin.math.max
 
 /**
- * handles the influence-change after building a city
+ * Re-calculates the influence on tiles near the created city
+ * - triggered by [GameEventCityCreate]
+ * - triggers [GameEventTileInfluenceUpdate]
  */
 class GameActionCityInfluence(
     private val gameConfig: GameConfig
@@ -69,13 +71,16 @@ class GameActionCityInfluence(
         return max((-(distance.toDouble() / spread) + 1) * amount, 0.0)
     }
 
+
     private fun getCity(event: GameEventCityCreate): City {
-        return event.game.cities.find { it.cityId == event.createdCityId }!!
+        return event.city
     }
+
 
     private fun getProvince(game: GameExtended, cityId: String): Province {
         return game.provinces.find { it.cityIds.contains(cityId) }!!
     }
+
 
     private fun getTile(event: GameEventCityCreate, q: Int, r: Int): Tile? {
         return event.game.tiles.find { it.position.q == q && it.position.r == r }

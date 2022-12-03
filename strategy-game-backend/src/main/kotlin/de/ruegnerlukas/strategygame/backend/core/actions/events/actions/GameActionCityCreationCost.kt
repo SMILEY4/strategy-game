@@ -8,7 +8,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 
 /**
- * Handles the cost of building a city
+ * Removes the resource cost of creating a new city from the country
+ * - triggered by [GameEventCityCreate]
+ * - triggers nothing
  */
 class GameActionCityCreationCost(
     private val gameConfig: GameConfig
@@ -16,22 +18,24 @@ class GameActionCityCreationCost(
 
     override suspend fun perform(event: GameEventCityCreate): List<GameEvent> {
         val city = getCity(event)
-        val country = getCountry(event, city)
+        val country = getCountry(event)
         removeCityFoundingCost(country, city)
         return listOf()
     }
 
-    private fun getCity(event: GameEventCityCreate): City {
-        return event.game.cities.find { it.cityId == event.createdCityId }!!
-    }
-
-    private fun getCountry(event: GameEventCityCreate, city: City): Country {
-        return event.game.countries.find { it.countryId == city.countryId }!!
-    }
 
     private fun removeCityFoundingCost(country: Country, city: City) {
         country.resources.money -= if (city.isProvinceCapital) gameConfig.cityCostMoney else gameConfig.townCostMoney
     }
 
+
+    private fun getCity(event: GameEventCityCreate): City {
+        return event.city
+    }
+
+
+    private fun getCountry(event: GameEventCityCreate): Country {
+        return event.country
+    }
 
 }

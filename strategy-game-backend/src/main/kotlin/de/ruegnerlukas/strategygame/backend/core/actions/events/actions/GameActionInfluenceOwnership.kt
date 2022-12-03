@@ -5,11 +5,14 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TileInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.TileOwner
 import de.ruegnerlukas.strategygame.backend.shared.max
 
 /**
- * handles the changed ownership after updating the influence of some tiles
+ * Re-calculates the owner of the tiles after a change in influence
+ * - triggered by [GameEventTileInfluenceUpdate]
+ * - triggers nothing
  */
 class GameActionInfluenceOwnership(
     private val gameConfig: GameConfig
@@ -17,23 +20,39 @@ class GameActionInfluenceOwnership(
 
     override suspend fun perform(event: GameEventTileInfluenceUpdate): List<GameEvent> {
         event.tiles.forEach { tile ->
-            updateTileOwner(tile)
+            if (tile.owner?.cityId == null) {
+                updateTileOwner(tile)
+            }
         }
         return listOf()
     }
 
 
     private fun updateTileOwner(tile: Tile) {
-        if (tile.owner?.cityId == null) {
-            val maxInfluence = tile.influences.max { it.amount }
-            if (maxInfluence != null && maxInfluence.amount >= gameConfig.tileOwnerInfluenceThreshold) {
-                tile.owner = TileOwner(
-                    countryId = maxInfluence.countryId,
-                    provinceId = maxInfluence.provinceId,
-                    cityId = null
-                )
+        getMaxInfluence(tile)?.let { maxInfluence ->
+            if (isRelevantInfluence(maxInfluence)) {
+                setTileOwner(tile, maxInfluence)
             }
         }
+    }
+
+
+    private fun getMaxInfluence(tile: Tile): TileInfluence? {
+        return tile.influences.max { it.amount }
+    }
+
+
+    private fun isRelevantInfluence(influence: TileInfluence): Boolean {
+        return influence.amount >= gameConfig.tileOwnerInfluenceThreshold
+    }
+
+
+    private fun setTileOwner(tile: Tile, influence: TileInfluence) {
+        tile.owner = TileOwner(
+            countryId = influence.countryId,
+            provinceId = influence.provinceId,
+            cityId = null
+        )
     }
 
 }

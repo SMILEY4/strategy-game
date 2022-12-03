@@ -8,7 +8,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 
 /**
- * handles the changed visibility after updating the influence of some tiles
+ * Uncovers/Discovers tiles after a change in influence
+ * - triggered by [GameEventTileInfluenceUpdate]
+ * - triggers nothing
  */
 class GameActionInfluenceVisibility : GameAction<GameEventTileInfluenceUpdate>(GameEventTileInfluenceUpdate.TYPE) {
 
@@ -22,19 +24,35 @@ class GameActionInfluenceVisibility : GameAction<GameEventTileInfluenceUpdate>(G
 
     private fun updateTile(game: GameExtended, tile: Tile) {
         game.countries.forEach { country ->
-            if (!hasDiscovered(country, tile)) {
-                if (isOwner(country, tile) || hasInfluence(country.countryId, tile)) {
-                    tile.discoveredByCountries.add(country.countryId)
-                }
+            if (canDiscover(tile, country)) {
+                discoverTile(tile, country)
             }
         }
     }
 
 
-    private fun hasDiscovered(country: Country, tile: Tile) = tile.discoveredByCountries.contains(country.countryId)
+    private fun canDiscover(tile: Tile, country: Country): Boolean {
+        return !hasDiscovered(country, tile) && (isOwner(country, tile) || hasInfluence(country.countryId, tile))
+    }
 
-    private fun hasInfluence(countryId: String, tile: Tile) = tile.influences.any { it.countryId == countryId }
 
-    private fun isOwner(country: Country, tile: Tile) = tile.owner?.countryId == country.countryId
+    private fun hasDiscovered(country: Country, tile: Tile): Boolean {
+        return tile.discoveredByCountries.contains(country.countryId)
+    }
+
+
+    private fun isOwner(country: Country, tile: Tile): Boolean {
+        return tile.owner?.countryId == country.countryId
+    }
+
+
+    private fun hasInfluence(countryId: String, tile: Tile): Boolean {
+        return tile.influences.any { it.countryId == countryId }
+    }
+
+
+    private fun discoverTile(tile: Tile, country: Country) {
+        tile.discoveredByCountries.add(country.countryId)
+    }
 
 }
