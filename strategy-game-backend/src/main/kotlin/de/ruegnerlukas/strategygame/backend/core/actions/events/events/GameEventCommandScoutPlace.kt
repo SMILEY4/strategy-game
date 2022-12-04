@@ -15,6 +15,6 @@ class GameEventCommandScoutPlace(
         val TYPE: GameEventType = GameEventCommandScoutPlace::class.simpleName!!
     }
 
-    override val gameEventType = GameEventBuildingCreate.TYPE
+    override val gameEventType = TYPE
 
 }

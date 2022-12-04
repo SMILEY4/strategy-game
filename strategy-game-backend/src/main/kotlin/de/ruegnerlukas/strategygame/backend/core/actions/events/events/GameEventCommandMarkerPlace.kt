@@ -15,6 +15,6 @@ class GameEventCommandMarkerPlace(
         val TYPE: GameEventType = GameEventCommandMarkerPlace::class.simpleName!!
     }
 
-    override val gameEventType = GameEventBuildingCreate.TYPE
+    override val gameEventType = TYPE
 
 }

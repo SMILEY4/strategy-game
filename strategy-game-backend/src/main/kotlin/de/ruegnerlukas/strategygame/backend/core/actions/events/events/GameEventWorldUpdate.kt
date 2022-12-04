@@ -12,6 +12,6 @@ class GameEventWorldUpdate(
         val TYPE: GameEventType = GameEventWorldUpdate::class.simpleName!!
     }
 
-    override val gameEventType = GameEventBuildingCreate.TYPE
+    override val gameEventType = TYPE
 
 }

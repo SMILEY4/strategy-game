@@ -9,6 +9,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
@@ -24,24 +26,24 @@ class GameActionBuildingCreation : GameAction<GameEventCommandBuildingCreate>(Ga
     override suspend fun perform(event: GameEventCommandBuildingCreate): List<GameEvent> {
         val city = getCity(event)
         val buildingType = getBuildingType(event)
-        city.buildings.add(buildBuilding(event.game, city, buildingType))
+        addBuilding(event.game, city, buildingType)
         return listOf(GameEventBuildingCreate(event.game, getCountry(event)))
     }
 
-    private fun buildBuilding(game: GameExtended, city: City, buildingType: BuildingType): Building {
-        return Building(
-            type = buildingType,
-            tile = decideTargetTile(game, city, buildingType)
-        )
+
+    private fun addBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
+        decideTargetTile(game, city, buildingType)
+            .let { Building(type = buildingType, tile = it) }
+            .also { city.buildings.add(it) }
     }
 
 
     private fun decideTargetTile(game: GameExtended, city: City, buildingType: BuildingType): TileRef? {
         return positionsCircle(city.tile, 1)
             .asSequence()
-            .filter { it.q != city.tile.q && it.r != city.tile.r }
-            .mapNotNull { pos -> game.tiles.find { it.position.q == pos.q && it.position.r == pos.r } }
-            .filter { tile -> city.buildings.none { tile.tileId == it.tile?.tileId } }
+            .filter { !isSameTile(city, it) }
+            .mapNotNull { getTile(game, it) }
+            .filter { isTileFreeForBuilding(it, city) }
             .filter {
                 when (buildingType) {
                     BuildingType.LUMBER_CAMP -> it.data.resourceType == TileResourceType.FOREST.name
@@ -69,6 +71,21 @@ class GameActionBuildingCreation : GameAction<GameEventCommandBuildingCreate>(Ga
 
     private fun getBuildingType(event: GameEventCommandBuildingCreate): BuildingType {
         return event.command.data.buildingType
+    }
+
+
+    private fun isSameTile(city: City, pos: TilePosition): Boolean {
+        return city.tile.q == pos.q && city.tile.r == pos.r
+    }
+
+
+    private fun getTile(game: GameExtended, pos: TilePosition): Tile? {
+        return game.tiles.find { it.position.q == pos.q && it.position.r == pos.r }
+    }
+
+
+    private fun isTileFreeForBuilding(tile: Tile, city: City): Boolean {
+        return city.buildings.none { tile.tileId == it.tile?.tileId }
     }
 
 }

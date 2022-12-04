@@ -14,6 +14,6 @@ class GameEventTileInfluenceUpdate(
         val TYPE: GameEventType = GameEventTileInfluenceUpdate::class.simpleName!!
     }
 
-    override val gameEventType = GameEventBuildingCreate.TYPE
+    override val gameEventType = TYPE
 
 }

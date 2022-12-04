@@ -15,6 +15,6 @@ class GameEventCommandBuildingCreate(
         val TYPE: GameEventType = GameEventCommandBuildingCreate::class.simpleName!!
     }
 
-    override val gameEventType = GameEventCityCreate.TYPE
+    override val gameEventType = TYPE
 
 }
