@@ -12,11 +12,10 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier1
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier3
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTOResources
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDTO
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDataTier3
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ScoutTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier0
@@ -47,7 +46,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
             val countryDTOs = knownCountryIds
                 .map { countryId -> game.countries.first { it.countryId == countryId } }
-                .map { country -> buildCountry(playerCountry.countryId, country) }
+                .map { country -> buildCountry(country) }
 
             val cityDTOs = game.cities
                 .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
@@ -55,7 +54,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
             val provinceDTOs = game.provinces
                 .filter { province -> province.cityIds.any { provinceCityId -> cityDTOs.find { it.cityId == provinceCityId } != null } }
-                .map { buildProvince(it) }
+                .map { buildProvince(it, playerCountry.countryId) }
 
             GameExtendedDTO(
                 turn = game.game.turn,
@@ -190,27 +189,14 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
     }
 
 
-    private fun buildCountry(playerCountryId: String, country: Country): CountryDTO {
+    private fun buildCountry(country: Country): CountryDTO {
         val dataTier1 = CountryDTODataTier1(
             countryId = country.countryId,
             userId = country.userId,
             color = country.color
         )
-        var dataTier3: CountryDTODataTier3? = null
-        if (playerCountryId == country.countryId) {
-            dataTier3 = CountryDTODataTier3(
-                resources = CountryDTOResources(
-                    money = country.resources.money,
-                    wood = country.resources.wood,
-                    food = country.resources.food,
-                    stone = country.resources.stone,
-                    metal = country.resources.metal,
-                )
-            )
-        }
         return CountryDTO(
             dataTier1 = dataTier1,
-            dataTier3 = dataTier3
         )
     }
 
@@ -228,12 +214,19 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
     }
 
 
-    private fun buildProvince(province: Province): ProvinceDTO {
+    private fun buildProvince(province: Province, playerCountryId: String): ProvinceDTO {
         return ProvinceDTO(
             provinceId = province.provinceId,
             countryId = province.countryId,
             cityIds = province.cityIds,
             provinceCapitalCityId = province.provinceCapitalCityId,
+            dataTier3 = if (playerCountryId == province.countryId) ProvinceDataTier3(
+                balanceMoney = province.turnResourceBalance?.get("money") ?: 0f,
+                balanceFood = province.turnResourceBalance?.get("food") ?: 0f,
+                balanceWood = province.turnResourceBalance?.get("wood") ?: 0f,
+                balanceStone = province.turnResourceBalance?.get("stone") ?: 0f,
+                balanceIron = province.turnResourceBalance?.get("metal") ?: 0f,
+            ) else null
         )
     }
 

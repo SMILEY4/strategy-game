@@ -2,7 +2,6 @@ import {TerrainType} from "../models/terrainType";
 import {TilePosition} from "../models/tilePosition";
 import {validations} from "../../shared/validation";
 import {useCities} from "./useCities";
-import {useCountryMoney} from "./useCountryMoney";
 import {useCountryPlayer} from "./useCountryPlayer";
 import {useGameConfig} from "./useGameConfig";
 import {useTileAt} from "./useTileAt";
@@ -11,7 +10,6 @@ export function useValidateCreateCity(pos: TilePosition | null): boolean {
 
     const gameConfig = useGameConfig();
     const country = useCountryPlayer();
-    const currentAmountMoney = useCountryMoney();
     const cities = useCities();
     const tile = useTileAt(pos);
 
@@ -22,9 +20,6 @@ export function useValidateCreateCity(pos: TilePosition | null): boolean {
             });
             ctx.validate("CITY.TILE_SPACE", () => {
                 return !cities.find(c => c.tile.tileId === tile.tileId);
-            });
-            ctx.validate("CITY.RESOURCES", () => {
-                return currentAmountMoney >= gameConfig.cityCostMoney;
             });
             ctx.validate("CITY.TARGET_TILE_OWNER", () => {
                 return tile.dataTier1?.owner == null || tile.dataTier1.owner.countryId == country.countryId;

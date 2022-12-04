@@ -37,16 +37,7 @@ export interface PayloadGameState {
             countryId: string,
             userId: string,
             color: Color
-        },
-        dataTier3: {
-            resources: {
-                money: number,
-                wood: number,
-                food: number,
-                stone: number,
-                metal: number
-            }
-        } | null
+        }
     })[],
     cities: ({
         cityId: string,
@@ -72,6 +63,13 @@ export interface PayloadGameState {
         provinceId: string,
         countryId: string,
         cityIds: string[],
-        provinceCapitalCityId: string
+        provinceCapitalCityId: string,
+        dataTier3: {
+            balanceMoney: number,
+            balanceFood: number,
+            balanceWood: number,
+            balanceStone: number,
+            balanceIron: number,
+        } | null
     })[]
 }

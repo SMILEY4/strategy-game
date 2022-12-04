@@ -55,31 +55,7 @@ export class GameSetStateAction {
             countryId: country.dataTier1.countryId,
             userId: country.dataTier1.userId,
             color: country.dataTier1.color,
-            dataTier3: country.dataTier3 ? this.getCountryResources(country) : null
         }));
-    }
-
-    private getCountryResources(country: any): any {
-        const countryPrev = this.worldRepository.getCompleteState().countries.byCountryId(country.dataTier1.countryId);
-        const nextMoney = country.dataTier3.resources.money;
-        const nextWood = country.dataTier3.resources.wood;
-        const nextFood = country.dataTier3.resources.food;
-        const nextStone = country.dataTier3.resources.stone;
-        const nextMetal = country.dataTier3.resources.metal;
-        const prevMoney = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.money.value : nextMoney;
-        const prevWood = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.wood.value : nextWood;
-        const prevFood = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.food.value : nextFood;
-        const prevStone = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.stone.value : nextStone;
-        const prevMetal = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.metal.value : nextMetal;
-        return {
-            resources: {
-                money: {type: "money", value: nextMoney, change: nextMoney - prevMoney},
-                wood: {type: "wood", value: nextWood, change: nextWood - prevWood},
-                food: {type: "food", value: nextFood, change: nextFood - prevFood},
-                stone: {type: "stone", value: nextStone, change: nextStone - prevStone},
-                metal: {type: "metal", value: nextMetal, change: nextMetal - prevMetal}
-            }
-        };
     }
 
     private getTiles(game: PayloadGameState): Tile[] {
@@ -186,6 +162,13 @@ export class GameSetStateAction {
             countryId: province.countryId,
             cityIds: province.cityIds,
             provinceCapitalCityId: province.provinceCapitalCityId,
+            resources: province.dataTier3 ? {
+                money: province.dataTier3.balanceMoney,
+                wood: province.dataTier3.balanceWood,
+                food: province.dataTier3.balanceFood,
+                stone: province.dataTier3.balanceStone,
+                metal: province.dataTier3.balanceIron,
+            } : null,
         }));
     }
 

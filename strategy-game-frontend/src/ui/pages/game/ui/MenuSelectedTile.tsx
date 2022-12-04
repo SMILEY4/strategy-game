@@ -4,6 +4,7 @@ import {useCityAt} from "../../../../core/hooks/useCityAt";
 import {useCityById} from "../../../../core/hooks/useCityById";
 import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
 import {useGameConfig} from "../../../../core/hooks/useGameConfig";
+import {useProvinceAt} from "../../../../core/hooks/useProvinceAt";
 import {useProvinceByCity} from "../../../../core/hooks/useProvinceByCity";
 import {useSelectedTilePosition} from "../../../../core/hooks/useSelectedTilePosition";
 import {useTileAt} from "../../../../core/hooks/useTileAt";
@@ -20,7 +21,7 @@ import {ResourceLabel} from "../../../components/specific/ResourceLabel";
 import {Section} from "../../../components/specific/Section";
 
 export function CategorySelectedTile(): ReactElement {
-    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService)
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     return (
         <div onClick={() => uiService.openToolbarMenuSelectedTile()}>
             <CgShapeHexagon/>
@@ -37,6 +38,7 @@ export function MenuSelectedTile(): ReactElement {
                 <>
                     <SectionTile tile={selectedTile}/>
                     <SectionCity tile={selectedTile}/>
+                    <SectionProvince tile={selectedTile}/>
                     <SectionCommands tile={selectedTile}/>
                     <SectionActions tile={selectedTile}/>
                 </>
@@ -57,10 +59,35 @@ function SectionTile(props: { tile: Tile }): ReactElement {
     );
 }
 
+
+function SectionProvince(props: { tile: Tile }): ReactElement {
+    const province = useProvinceAt(props.tile.position);
+    const city = useCityById(province?.provinceCapitalCityId)
+    if (province && city) {
+        return (
+            <Section title={"Province"}>
+                <p>{"Capital: " + city.name}</p>
+                <p>{"Amount Cities: " + province.cityIds.length}</p>
+                <p>Resources</p>
+                <ul>
+                    <li><ResourceLabel type={"money"} value={province.resources?.money || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={"food"} value={province.resources?.food || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={"wood"} value={province.resources?.wood || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={"stone"} value={province.resources?.stone || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={"metal"} value={province.resources?.metal || 0} showPlusSign={true}/></li>
+                </ul>
+            </Section>
+        );
+    } else {
+        return (<div/>);
+    }
+}
+
+
 function SectionCity(props: { tile: Tile }): ReactElement {
     const city = useCityAt(props.tile.position);
-    const province = useProvinceByCity(city?.cityId)
-    const provinceCapital = useCityById(province?.provinceCapitalCityId)
+    const province = useProvinceByCity(city?.cityId);
+    const provinceCapital = useCityById(province?.provinceCapitalCityId);
     const config = useGameConfig();
     const buildingProduction = city?.isProvinceCapital ? config.cityBuildingProductionPerTurn : config.townBuildingProductionPerTurn;
     const canCreateCity = useValidateCreateCity(props.tile.position);
@@ -92,35 +119,35 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                 <b>{"Buildings (" + city.buildings.length + "/" + (city.isProvinceCapital ? config.cityBuildingSlots : config.townBuildingSlots) + ")"}</b>
                 <AdvButton
                     label={"Add Lumber Camp"}
-                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    actionCosts={[]}
                     turnCosts={[{type: "wood", value: buildingProduction}]}
                     disabled={!validateCreateBuilding(BuildingType.LUMBER_CAMP)}
                     onClick={() => createBuilding(BuildingType.LUMBER_CAMP)}
                 />
                 <AdvButton
                     label={"Add Quarry"}
-                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    actionCosts={[]}
                     turnCosts={[{type: "stone", value: buildingProduction}]}
                     disabled={!validateCreateBuilding(BuildingType.QUARRY)}
                     onClick={() => createBuilding(BuildingType.QUARRY)}
                 />
                 <AdvButton
                     label={"Add Mine"}
-                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    actionCosts={[]}
                     turnCosts={[{type: "metal", value: buildingProduction}]}
                     disabled={!validateCreateBuilding(BuildingType.MINE)}
                     onClick={() => createBuilding(BuildingType.MINE)}
                 />
                 <AdvButton
                     label={"Add Harbour"}
-                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    actionCosts={[]}
                     turnCosts={[{type: "food", value: buildingProduction}]}
                     disabled={!validateCreateBuilding(BuildingType.HARBOR)}
                     onClick={() => createBuilding(BuildingType.HARBOR)}
                 />
                 <AdvButton
                     label={"Add Farm"}
-                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    actionCosts={[]}
                     turnCosts={[{type: "food", value: buildingProduction}]}
                     disabled={!validateCreateBuilding(BuildingType.FARM)}
                     onClick={() => createBuilding(BuildingType.FARM)}
@@ -152,14 +179,14 @@ function SectionCity(props: { tile: Tile }): ReactElement {
             <Section title="City">
                 <AdvButton
                     label={"Create City"}
-                    actionCosts={[{type: "money", value: -config.cityCostMoney}]}
+                    actionCosts={[]}
                     turnCosts={[{type: "money", value: config.cityIncomePerTurn}, {type: "food", value: -config.cityFoodCostPerTurn}]}
                     disabled={!canCreateCity}
                     onClick={createCity}
                 />
                 <AdvButton
                     label={"Create Town"}
-                    actionCosts={[{type: "money", value: -config.townCostMoney}]}
+                    actionCosts={[]}
                     turnCosts={[{type: "food", value: -config.townFoodCostPerTurn}]}
                     disabled={!canCreateTown}
                     onClick={createTown}

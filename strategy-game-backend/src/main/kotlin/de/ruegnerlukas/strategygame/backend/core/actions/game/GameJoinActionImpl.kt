@@ -9,7 +9,6 @@ import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.shared.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.ports.models.CountryResources
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
@@ -90,13 +89,6 @@ class GameJoinActionImpl(
                 countryId = DbId.PLACEHOLDER,
                 userId = userId,
                 color = COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size],
-                resources = CountryResources(
-                    money = gameConfig.startingAmountMoney,
-                    wood = gameConfig.startingAmountWood,
-                    food = gameConfig.startingAmountFood,
-                    stone = gameConfig.startingAmountStone,
-                    metal = gameConfig.startingAmountMetal
-                )
             ),
             game.gameId
         ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.gameId}") }

@@ -4,7 +4,6 @@ import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
 class CountryDTO(
     val dataTier1: CountryDTODataTier1,
-    val dataTier3: CountryDTODataTier3?
 )
 
 /**
@@ -14,11 +13,4 @@ data class CountryDTODataTier1(
     val countryId: String,
     val userId: String,
     val color: RGBColor
-)
-
-/**
- * only available to player playing the country
- */
-data class CountryDTODataTier3(
-    val resources: CountryDTOResources
 )

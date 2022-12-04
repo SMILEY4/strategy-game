@@ -7,16 +7,14 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMa
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionBuildingCreation
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionBuildingCreationCost
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityCreation
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityCreationCost
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityInfluence
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityTileOwnership
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceOwnership
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceVisibility
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarkerPlace
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResource
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResources
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutLifetime
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventBuildingCreate
@@ -37,7 +35,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActi
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserDeleteActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserLoginActionImpl
@@ -80,7 +77,6 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAc
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
@@ -158,15 +154,12 @@ val applicationDependencies = module {
     single<GameJoinAction> { GameJoinActionImpl(get(), get(), get(), get(), get(), get()) }
     single<GameRequestConnectionAction> { GameRequestConnectionActionImpl(get()) }
     single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get()) }
-    single<TurnUpdateAction> { TurnUpdateActionImpl(get()) }
     single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
 
     single<GameEventManager> {
         GameEventManager().also {
-            it.register(GameEventBuildingCreate.TYPE, GameActionBuildingCreationCost(get()))
-            it.register(GameEventCityCreate.TYPE, GameActionCityCreationCost(get()))
             it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(get()))
             it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
             it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
@@ -175,7 +168,7 @@ val applicationDependencies = module {
             it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(get()))
             it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(get()))
             it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
-            it.register(GameEventWorldUpdate.TYPE, GameActionCountryResource(get()))
+            it.register(GameEventWorldUpdate.TYPE, GameActionCountryResources(get()))
             it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(get()))
         }
     }
