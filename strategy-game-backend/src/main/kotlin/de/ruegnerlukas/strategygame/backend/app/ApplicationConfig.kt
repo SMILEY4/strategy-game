@@ -22,9 +22,7 @@ import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.basic
-import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.auth.principal
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -127,6 +125,7 @@ fun Application.module() {
     install(Authentication) {
         jwt { userIdentityService.configureAuthentication(this) }
         basic("auth-technical-user") {
+            realm = "strategy-game"
             validate { credentials ->
                 val username = Config.get().auth.technicalUsername
                 val password = Config.get().auth.technicalPassword

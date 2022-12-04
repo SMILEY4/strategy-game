@@ -1,0 +1,65 @@
+@startuml
+digraph G {
+
+    End_Turn[style=filled,color=aquamarine];
+    Command_Resolution[style=filled,color=aquamarine];
+
+    worldUpdateEvent[shape=box,style=filled,color=slategray1];
+    createCityCommandEvent[shape=box,style=filled,color=slategray1];
+    createCityEvent[shape=box,style=filled,color=slategray1];
+    createBuildingCommandEvent[shape=box,style=filled,color=slategray1];
+    createBuildingEvent[shape=box,style=filled,color=slategray1];
+    tileInfluenceUpdateEvent[shape=box,style=filled,color=slategray1];
+    placeMarkerCommandEvent[shape=box,style=filled,color=slategray1];
+    placeScoutCommandEvent[shape=box,style=filled,color=slategray1];
+
+    CityCreationAction[style=filled,color=rosybrown1];
+    CityCreationCostAction[style=filled,color=rosybrown1];
+    BuildingCreationAction[style=filled,color=rosybrown1];
+    BuildingCreationCostAction[style=filled,color=rosybrown1];
+    CityInfluenceUpdateAction[style=filled,color=rosybrown1];
+    CityTileOwnershipAction[style=filled,color=rosybrown1];
+    InfluenceVisibilityUpdateAction[style=filled,color=rosybrown1];
+    InfluenceOwnershipUpdateAction[style=filled,color=rosybrown1];
+    PlaceMarkerAction[style=filled,color=rosybrown1];
+    PlaceScoutAction[style=filled,color=rosybrown1];
+    UpdateScoutLifetimeAction[style=filled,color=rosybrown1];
+    TickCountryResourcesAction[style=filled,color=rosybrown1];
+
+    End_Turn -> Command_Resolution;
+
+    Command_Resolution -> createCityCommandEvent;
+    Command_Resolution -> createBuildingCommandEvent;
+    Command_Resolution -> placeMarkerCommandEvent;
+    Command_Resolution -> placeScoutCommandEvent;
+
+    createCityCommandEvent -> CityCreationAction;
+
+    CityCreationAction -> createCityEvent;
+
+    createCityEvent -> CityCreationCostAction;
+    createCityEvent -> CityInfluenceUpdateAction;
+    createCityEvent -> CityTileOwnershipAction;
+
+    CityInfluenceUpdateAction -> tileInfluenceUpdateEvent;
+
+    tileInfluenceUpdateEvent -> InfluenceVisibilityUpdateAction;
+    tileInfluenceUpdateEvent -> InfluenceOwnershipUpdateAction;
+
+    createBuildingCommandEvent -> BuildingCreationAction;
+
+    BuildingCreationAction -> createBuildingEvent;
+
+    createBuildingEvent -> BuildingCreationCostAction;
+
+    placeMarkerCommandEvent -> PlaceMarkerAction;
+
+    placeScoutCommandEvent -> PlaceScoutAction;
+
+    End_Turn -> worldUpdateEvent;
+
+    worldUpdateEvent -> UpdateScoutLifetimeAction;
+    worldUpdateEvent -> TickCountryResourcesAction;
+}
+
+@enduml

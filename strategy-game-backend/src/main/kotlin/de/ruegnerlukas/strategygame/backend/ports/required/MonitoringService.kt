@@ -2,7 +2,6 @@ package de.ruegnerlukas.strategygame.backend.ports.required
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
-import kotlinx.html.InputType
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.reflect.KClass
 
@@ -58,6 +57,7 @@ interface MonitoringService {
 class NoOpMonitoringService : MonitoringService {
 
     override fun count(id: MonitoringService.Companion.MetricId, amount: Number) {
+        // nothing to do
     }
 
     override fun <T> time(id: MonitoringService.Companion.MetricId, block: () -> T): T {
@@ -69,9 +69,11 @@ class NoOpMonitoringService : MonitoringService {
     }
 
     override fun gauge(id: MonitoringService.Companion.MetricId, block: () -> Number) {
+        // nothing to do
     }
 
     override fun summary(id: MonitoringService.Companion.MetricId, amount: Number) {
+        // nothing to do
     }
 
     override fun getRegistry(): MeterRegistry {

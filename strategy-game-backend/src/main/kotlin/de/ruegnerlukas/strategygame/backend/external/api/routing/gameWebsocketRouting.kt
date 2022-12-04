@@ -70,8 +70,10 @@ fun Route.gameWebsocketRoutes() {
                 onEach { connection, message ->
                     val userId = connection.getData<String>(USER_ID)!!
                     val gameId = connection.getData<String>(GAME_ID)!!
-                    buildMessage<Message<*>>(connection.getId(), userId, gameId, message).let {
-                        messageHandler.onMessage(it)
+                    withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
+                        buildMessage<Message<*>>(connection.getId(), userId, gameId, message).let {
+                            messageHandler.onMessage(it)
+                        }
                     }
                 }
             }

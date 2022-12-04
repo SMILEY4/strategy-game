@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateB
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
@@ -64,16 +65,20 @@ object TestActions {
     fun turnSubmitAction(database: ArangoDatabase) = TurnSubmitActionImpl(
         TurnEndActionImpl(
             ResolveCommandsActionImpl(
-                ResolvePlaceMarkerCommandImpl(),
+                ResolvePlaceMarkerCommandImpl(
+                    GameEventManager()
+                ),
                 ResolveCreateCityCommandImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
+                    GameConfig.default(),
+                    GameEventManager()
                 ),
                 ResolveCreateBuildingCommandImpl(
-                    GameConfig.default()
+                    GameConfig.default(),
+                    GameEventManager()
                 ),
                 ResolvePlaceScoutCommandImpl(
-                    GameConfig.default()
+                    GameConfig.default(),
+                    GameEventManager()
                 )
             ),
             SendGameStateActionImpl(
@@ -81,7 +86,7 @@ object TestActions {
                 GameExtendedQueryImpl(database),
                 GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
             ),
-            TurnUpdateActionImpl(GameConfig.default()),
+            TurnUpdateActionImpl(GameEventManager()),
             GameExtendedQueryImpl(database),
             GameExtendedUpdateImpl(database),
             CommandsByGameQueryImpl(database),
@@ -101,31 +106,35 @@ object TestActions {
     )
 
     fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
-        ResolvePlaceMarkerCommandImpl(),
+        ResolvePlaceMarkerCommandImpl(GameEventManager()),
         ResolveCreateCityCommandImpl(
-            ReservationInsertImpl(database),
-            GameConfig.default()
+            GameConfig.default(),
+                    GameEventManager()
         ),
         ResolveCreateBuildingCommandImpl(
-            GameConfig.default()
+            GameConfig.default(),
+            GameEventManager()
         ),
         ResolvePlaceScoutCommandImpl(
-            GameConfig.default()
+            GameConfig.default(),
+            GameEventManager()
         )
     )
 
     fun turnEndAction(database: ArangoDatabase) = TurnEndActionImpl(
         ResolveCommandsActionImpl(
-            ResolvePlaceMarkerCommandImpl(),
+            ResolvePlaceMarkerCommandImpl(GameEventManager()),
             ResolveCreateCityCommandImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
+                GameConfig.default(),
+                GameEventManager()
             ),
             ResolveCreateBuildingCommandImpl(
-                GameConfig.default()
+                GameConfig.default(),
+                GameEventManager()
             ),
             ResolvePlaceScoutCommandImpl(
-                GameConfig.default()
+                GameConfig.default(),
+                GameEventManager()
             )
         ),
         SendGameStateActionImpl(
@@ -133,7 +142,7 @@ object TestActions {
             GameExtendedQueryImpl(database),
             GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
         ),
-        TurnUpdateActionImpl(GameConfig.default()),
+        TurnUpdateActionImpl(GameEventManager()),
         GameExtendedQueryImpl(database),
         GameExtendedUpdateImpl(database),
         CommandsByGameQueryImpl(database),

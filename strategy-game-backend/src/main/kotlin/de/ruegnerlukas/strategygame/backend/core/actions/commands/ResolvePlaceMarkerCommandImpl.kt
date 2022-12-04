@@ -5,6 +5,8 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceMarkerValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandMarkerPlace
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
@@ -20,7 +22,9 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
-class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
+class ResolvePlaceMarkerCommandImpl(
+    private val gameEventManager: GameEventManager
+) : ResolvePlaceMarkerCommand, Logging {
 
     private val metricId = metricCoreAction(ResolvePlaceMarkerCommand::class)
 
@@ -35,12 +39,11 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
                 validateCommand(targetTile).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                addMarker(targetTile, command.countryId)
+                gameEventManager.send(GameEventCommandMarkerPlace::class.simpleName!!, GameEventCommandMarkerPlace(game, command))
                 emptyList()
             }
         }
     }
-
 
     private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
@@ -49,11 +52,6 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
         } else {
             return targetTile.right()
         }
-    }
-
-
-    private fun addMarker(tile: Tile, countryId: String) {
-        tile.content.add(MarkerTileContent(countryId))
     }
 
 }

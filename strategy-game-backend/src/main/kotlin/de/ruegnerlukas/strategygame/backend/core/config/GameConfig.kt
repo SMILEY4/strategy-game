@@ -90,6 +90,10 @@ data class GameConfig(
      */
     val cityInfluenceSpread: Float = 6.5f,
     /**
+     * the maximum range a city can affect a tile
+     */
+    val cityMaxRange: Int = 5,
+    /**
      * the total amount of influence a country must have on a tile to own it
      */
     val tileOwnerInfluenceThreshold: Float = 5f,

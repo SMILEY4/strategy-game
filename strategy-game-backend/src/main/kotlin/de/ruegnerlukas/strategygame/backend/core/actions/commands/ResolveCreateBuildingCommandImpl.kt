@@ -5,29 +5,26 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.CreateBuildingValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.ports.models.Building
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
 class ResolveCreateBuildingCommandImpl(
-    private val gameConfig: GameConfig
+    private val gameConfig: GameConfig,
+    private val gameEventManager: GameEventManager
 ) : ResolveCreateBuildingCommand, Logging {
 
     private val metricId = metricCoreAction(ResolveCreateBuildingCommand::class)
@@ -44,8 +41,7 @@ class ResolveCreateBuildingCommandImpl(
                 validateCommand(command.countryId, city, country, gameConfig).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                createBuilding(game, city, command.data.buildingType)
-                updateCountryResources(country)
+                gameEventManager.send(GameEventCommandBuildingCreate::class.simpleName!!, GameEventCommandBuildingCreate(game, command))
                 emptyList()
             }
         }
@@ -72,43 +68,6 @@ class ResolveCreateBuildingCommandImpl(
         } else {
             return country.right()
         }
-    }
-
-
-    private fun createBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
-        city.buildings.add(
-            Building(
-                type = buildingType,
-                tile = decideTargetTile(game, city, buildingType)
-            )
-        )
-    }
-
-
-    private fun decideTargetTile(game: GameExtended, city: City, buildingType: BuildingType): TileRef? {
-        return positionsCircle(city.tile, 1)
-            .asSequence()
-            .filter { it.q != city.tile.q && it.r != city.tile.r }
-            .mapNotNull { pos -> game.tiles.find { it.position.q == pos.q && it.position.r == pos.r } }
-            .filter { tile -> city.buildings.none { tile.tileId == it.tile?.tileId } }
-            .filter {
-                when (buildingType) {
-                    BuildingType.LUMBER_CAMP -> it.data.resourceType == TileResourceType.FOREST.name
-                    BuildingType.MINE -> it.data.resourceType == TileResourceType.METAL.name
-                    BuildingType.QUARRY -> it.data.resourceType == TileResourceType.STONE.name
-                    BuildingType.HARBOR -> it.data.resourceType == TileResourceType.FISH.name
-                    BuildingType.FARM -> it.data.terrainType == TileType.LAND.name
-                }
-            }
-            .toList()
-            .randomOrNull()
-            ?.let { TileRef(it.tileId, it.position.q, it.position.r) }
-    }
-
-
-    private fun updateCountryResources(country: Country) {
-        country.resources.wood -= gameConfig.buildingCostWood
-        country.resources.stone -= gameConfig.buildingCostStone
     }
 
 }
