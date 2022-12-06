@@ -50,6 +50,9 @@ vec3 calcResourceColor(float resourceId) {
     if (eqFloat(resourceId, 3.0)) { // 3 -> metal
         return vec3(150.0 / 255.0, 150.0 / 255.0, 150.0 / 255.0);
     }
+    if (eqFloat(resourceId, 4.0)) { // 4 -> plains
+        return vec3(109.0 / 255.0, 176.0 / 255.0, 81.0 / 255.0);
+    }
     return vec3(0.0);
 }
 

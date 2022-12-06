@@ -50,8 +50,8 @@ class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateActio
                 tileId = DbId.PLACEHOLDER,
                 position = TilePosition(it.q, it.r),
                 data = TileData(
-                    terrainType = it.type.name,
-                    resourceType = it.resource.name
+                    terrainType = it.type,
+                    resourceType = it.resource
                 ),
                 content = trackingListOf(),
                 influences = mutableListOf(),

@@ -118,11 +118,11 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                 <p>{"Country: " + city.countryId}</p>
                 <b>{"Buildings (" + city.buildings.length + "/" + (city.isProvinceCapital ? config.cityBuildingSlots : config.townBuildingSlots) + ")"}</b>
                 <AdvButton
-                    label={"Add Lumber Camp"}
+                    label={"Add Woodcutter"}
                     actionCosts={[]}
                     turnCosts={[{type: "wood", value: buildingProduction}]}
-                    disabled={!validateCreateBuilding(BuildingType.LUMBER_CAMP)}
-                    onClick={() => createBuilding(BuildingType.LUMBER_CAMP)}
+                    disabled={!validateCreateBuilding(BuildingType.WOODCUTTER)}
+                    onClick={() => createBuilding(BuildingType.WOODCUTTER)}
                 />
                 <AdvButton
                     label={"Add Quarry"}
@@ -139,11 +139,11 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                     onClick={() => createBuilding(BuildingType.MINE)}
                 />
                 <AdvButton
-                    label={"Add Harbour"}
+                    label={"Add Fishers Hut"}
                     actionCosts={[]}
                     turnCosts={[{type: "food", value: buildingProduction}]}
-                    disabled={!validateCreateBuilding(BuildingType.HARBOR)}
-                    onClick={() => createBuilding(BuildingType.HARBOR)}
+                    disabled={!validateCreateBuilding(BuildingType.FISHERS_HUT)}
+                    onClick={() => createBuilding(BuildingType.FISHERS_HUT)}
                 />
                 <AdvButton
                     label={"Add Farm"}
@@ -154,7 +154,7 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                 />
                 <ul>
                     {city.buildings.map(building => {
-                        if (building.type === BuildingType.LUMBER_CAMP) {
+                        if (building.type === BuildingType.WOODCUTTER) {
                             return <li><b>Lumber Camp</b><ResourceLabel type={"wood"} value={buildingProduction} showPlusSign={true}/></li>;
                         }
                         if (building.type === BuildingType.QUARRY) {
@@ -163,7 +163,7 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                         if (building.type === BuildingType.MINE) {
                             return <li><b>Mine</b><ResourceLabel type={"metal"} value={buildingProduction} showPlusSign={true}/></li>;
                         }
-                        if (building.type === BuildingType.HARBOR) {
+                        if (building.type === BuildingType.FISHERS_HUT) {
                             return <li><b>Harbor</b><ResourceLabel type={"food"} value={buildingProduction} showPlusSign={true}/></li>;
                         }
                         if (building.type === BuildingType.FARM) {

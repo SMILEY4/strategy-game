@@ -1,5 +1,6 @@
 export enum ResourceType {
     NONE = "NONE",
+    PLAINS = "PLAINS",
     FOREST = "FOREST",
     FISH = "FISH",
     STONE = "STONE",
@@ -11,6 +12,9 @@ export namespace ResourceType {
     export function fromString(strType: string): ResourceType {
         if (strType === "NONE") {
             return ResourceType.NONE;
+        }
+        if (strType === "PLAINS") {
+            return ResourceType.PLAINS;
         }
         if (strType === "FOREST") {
             return ResourceType.FOREST;

@@ -107,7 +107,7 @@ private object CreateCityValidations {
 
     fun ValidationContext.validTargetTileType(tile: Tile) {
         validate("CITY.TARGET_TILE_TYPE") {
-            tile.data.terrainType == TileType.LAND.name
+            tile.data.terrainType == TileType.LAND
         }
     }
 

@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
@@ -129,8 +130,8 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
     private fun buildTileDataTier1(tile: Tile): TileDTODataTier1 {
         return TileDTODataTier1(
-            terrainType = tile.data.terrainType,
-            resourceType = tile.data.resourceType,
+            terrainType = tile.data.terrainType.name,
+            resourceType = tile.data.resourceType.name,
             owner = tile.owner?.let { TileDTOOwner(it.countryId, it.provinceId, it.cityId) }
         )
     }
@@ -221,11 +222,11 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             cityIds = province.cityIds,
             provinceCapitalCityId = province.provinceCapitalCityId,
             dataTier3 = if (playerCountryId == province.countryId) ProvinceDataTier3(
-                balanceMoney = province.turnResourceBalance?.get("money") ?: 0f,
-                balanceFood = province.turnResourceBalance?.get("food") ?: 0f,
-                balanceWood = province.turnResourceBalance?.get("wood") ?: 0f,
-                balanceStone = province.turnResourceBalance?.get("stone") ?: 0f,
-                balanceIron = province.turnResourceBalance?.get("metal") ?: 0f,
+                balanceMoney = 0f,
+                balanceFood = province.turnResourceBalance?.get(ResourceType.FOOD) ?: 0f,
+                balanceWood = province.turnResourceBalance?.get(ResourceType.WOOD) ?: 0f,
+                balanceStone = province.turnResourceBalance?.get(ResourceType.STONE) ?: 0f,
+                balanceIron = province.turnResourceBalance?.get(ResourceType.METAL) ?: 0f,
             ) else null
         )
     }

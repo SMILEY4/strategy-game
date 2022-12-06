@@ -171,6 +171,9 @@ export namespace TileVertexBuilder {
         if (type === ResourceType.METAL) {
             return 3;
         }
+        if (type === ResourceType.PLAINS) {
+            return 4;
+        }
         return -1;
     }
 

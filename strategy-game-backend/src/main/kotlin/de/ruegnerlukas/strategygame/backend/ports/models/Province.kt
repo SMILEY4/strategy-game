@@ -5,5 +5,5 @@ data class Province(
     val countryId: String,
     val cityIds: MutableList<String>,
     val provinceCapitalCityId: String,
-    var turnResourceBalance: MutableMap<String, Float>? = null
+    var turnResourceBalance: MutableMap<ResourceType, Float>? = null
 )
