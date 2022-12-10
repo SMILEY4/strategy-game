@@ -66,22 +66,7 @@ export interface PayloadGameState {
         cityIds: string[],
         provinceCapitalCityId: string,
         dataTier3: {
-            resourceBalance: {
-                ARMOR: number,
-                BARRELS: number,
-                CLOTHES: number,
-                FOOD: number,
-                HIDE: number,
-                HORSE: number,
-                JEWELLERIES: number,
-                METAL: number,
-                PARCHMENT: number,
-                STONE: number,
-                TOOLS: number,
-                WEAPONS: number,
-                WINE: number,
-                WOOD: number,
-            }
+            resourceBalance: Record<ResourceType, number>
         } | null
     })[]
 }

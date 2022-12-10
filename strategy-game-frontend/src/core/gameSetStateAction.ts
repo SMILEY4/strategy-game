@@ -163,22 +163,9 @@ export class GameSetStateAction {
             countryId: province.countryId,
             cityIds: province.cityIds,
             provinceCapitalCityId: province.provinceCapitalCityId,
-            resources: province.dataTier3 ? {
-                armor: province.dataTier3.resourceBalance.ARMOR,
-                barrels: province.dataTier3.resourceBalance.BARRELS,
-                clothes: province.dataTier3.resourceBalance.CLOTHES,
-                food: province.dataTier3.resourceBalance.FOOD,
-                hide: province.dataTier3.resourceBalance.HIDE,
-                horse: province.dataTier3.resourceBalance.HORSE,
-                jewelleries: province.dataTier3.resourceBalance.JEWELLERIES,
-                metal: province.dataTier3.resourceBalance.METAL,
-                parchment: province.dataTier3.resourceBalance.PARCHMENT,
-                stone: province.dataTier3.resourceBalance.STONE,
-                tools: province.dataTier3.resourceBalance.TOOLS,
-                weapons: province.dataTier3.resourceBalance.WEAPONS,
-                wine: province.dataTier3.resourceBalance.WINE,
-                wood: province.dataTier3.resourceBalance.WOOD,
-            } : null,
+            resources: province.dataTier3
+                ? new Map<ResourceType, number>(Object.entries(game.provinces!![0].dataTier3!!.resourceBalance).map(e => [ResourceType.fromString(e[0]), e[1]]))
+                : null,
         }));
     }
 

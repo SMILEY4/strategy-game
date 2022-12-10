@@ -41,7 +41,11 @@ class GameActionCountryResources(
                     handleCityProduction(it, resourcesLastTurn, resourcesThisTurn, log)
                     handleCityFoodConsumption(it, resourcesLastTurn, log)
                 }
-            province.resourceBalance = resourcesThisTurn
+
+            province.resourceBalance.also {
+                it.clear()
+                it.putAll(resourcesThisTurn)
+            }
 
             log.nextTurn.putAll(resourcesThisTurn)
             log.print()
@@ -73,11 +77,7 @@ class GameActionCountryResources(
     }
 
 
-    private fun handleCityFoodConsumption(
-        city: City,
-        resourcesLastTurn: MutableMap<ResourceType, Float>,
-        log: ResourcesLog
-    ) {
+    private fun handleCityFoodConsumption(city: City, resourcesLastTurn: MutableMap<ResourceType, Float>, log: ResourcesLog) {
         val foodConsumption = if (city.isProvinceCapital) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
         addResourceBalance(ResourceType.FOOD, -foodConsumption, resourcesLastTurn)
         log.changes[ResourceType.FOOD]!!.add("consumption" to -foodConsumption)

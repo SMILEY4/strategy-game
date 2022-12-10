@@ -71,20 +71,13 @@ function SectionProvince(props: { tile: Tile }): ReactElement {
                 <p>{"Amount Cities: " + province.cityIds.length}</p>
                 <p>Resources</p>
                 <ul>
-                    <li><ResourceLabel type={ResourceType.FOOD} value={province.resources?.food || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.WOOD} value={province.resources?.wood || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.STONE} value={province.resources?.stone || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.METAL} value={province.resources?.metal || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.ARMOR} value={province.resources?.armor || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.BARRELS} value={province.resources?.barrels || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.CLOTHES} value={province.resources?.clothes || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.HIDE} value={province.resources?.hide || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.HORSE} value={province.resources?.horse || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.JEWELLERIES} value={province.resources?.jewelleries || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.PARCHMENT} value={province.resources?.parchment || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.TOOLS} value={province.resources?.tools || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.WEAPONS} value={province.resources?.weapons || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={ResourceType.WINE} value={province.resources?.wine || 0} showPlusSign={true}/></li>
+                    {ResourceType.ALL.map(resourceType => {
+                        console.log(province?.resources)
+                        const amount = province.resources?.get(resourceType) || 0;
+                        return (
+                            <li><ResourceLabel type={resourceType} value={amount} showPlusSign={true}/></li>
+                        );
+                    })}
                 </ul>
             </Section>
         );
@@ -142,7 +135,7 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                             disabled={!validateCreateBuilding(buildingType)}
                             onClick={() => createBuilding(buildingType)}
                         />
-                    )
+                    );
                 })}
                 <ul>
                     {city.buildings.map(building => {
