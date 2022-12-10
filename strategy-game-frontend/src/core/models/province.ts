@@ -4,10 +4,19 @@ export interface Province {
     cityIds: string[],
     provinceCapitalCityId: string,
     resources: {
-        money: number,
-        wood: number,
+        armor: number,
+        barrels: number,
+        clothes: number,
         food: number,
+        hide: number,
+        horse: number,
+        jewelleries: number,
+        metal: number,
+        parchment: number,
         stone: number,
-        metal: number
+        tools: number,
+        weapons: number,
+        wine: number,
+        wood: number,
     } | null
 }

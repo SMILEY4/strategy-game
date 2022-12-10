@@ -1,23 +1,26 @@
 package de.ruegnerlukas.strategygame.backend.ports.models
 
-enum class BuildingType(val templateData: BuildingTemplateData) {
-    ARMOR_SMITH(BuildingTemplateDataArmorSmith()),
-    CATTLE_FARM(BuildingTemplateDataCattleFarm()),
-    COOPER(BuildingTemplateDataCooper()),
-    FARM(BuildingTemplateDataFarm()),
-    FISHERS_HUT(BuildingTemplateDataFishersHut()),
-    JEWELLER(BuildingTemplateDataJeweller()),
-    MARKET(BuildingTemplateDataMarket()),
-    MINE(BuildingTemplateDataMine()),
-    PARCHMENTERS_WORKSHOP(BuildingTemplateDataParchmentersWorkshop()),
-    QUARRY(BuildingTemplateDataQuarry()),
-    SHEEP_FARM(BuildingTemplateDataSheepFarm()),
-    STABLES(BuildingTemplateDataStables()),
-    TAILORS_WORKSHOP(BuildingTemplateDataTailorsWorkshop()),
-    TOOLMAKER(BuildingTemplateDataToolMarker()),
-    WEAPON_SMITH(BuildingTemplateDataWeaponSmith()),
-    WINERY(BuildingTemplateDataWinery()),
-    WOODCUTTER(BuildingTemplateDataWoodcutter()),
+enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) {
+    FARM(10, BuildingTemplateDataFarm()),
+    FISHERS_HUT(10, BuildingTemplateDataFishersHut()),
+    MINE(10, BuildingTemplateDataMine()),
+    QUARRY(10, BuildingTemplateDataQuarry()),
+    WOODCUTTER(10, BuildingTemplateDataWoodcutter()),
+
+    CATTLE_FARM(15, BuildingTemplateDataCattleFarm()),
+
+    ARMOR_SMITH(20, BuildingTemplateDataArmorSmith()),
+    COOPER(20, BuildingTemplateDataCooper()),
+    JEWELLER(20, BuildingTemplateDataJeweller()),
+    SHEEP_FARM(20, BuildingTemplateDataSheepFarm()),
+    STABLES(20, BuildingTemplateDataStables()),
+    TOOLMAKER(20, BuildingTemplateDataToolMarker()),
+    WEAPON_SMITH(20, BuildingTemplateDataWeaponSmith()),
+
+    MARKET(30, BuildingTemplateDataMarket()),
+    PARCHMENTERS_WORKSHOP(30, BuildingTemplateDataParchmentersWorkshop()),
+    TAILORS_WORKSHOP(30, BuildingTemplateDataTailorsWorkshop()),
+    WINERY(30, BuildingTemplateDataWinery()),
 }
 
 

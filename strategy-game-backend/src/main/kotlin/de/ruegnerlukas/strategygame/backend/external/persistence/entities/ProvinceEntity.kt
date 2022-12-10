@@ -3,12 +3,14 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.entities
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 
 class ProvinceEntity(
     val gameId: String,
     val countryId: String,
     val cityIds: List<String>,
     val provinceCityId: String,
+    val resourceBalance: Map<ResourceType, Float>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -18,7 +20,8 @@ class ProvinceEntity(
             gameId = gameId,
             countryId = serviceModel.countryId,
             cityIds = serviceModel.cityIds.toList(),
-            provinceCityId = serviceModel.provinceCapitalCityId
+            provinceCityId = serviceModel.provinceCapitalCityId,
+            resourceBalance = serviceModel.resourceBalance
         )
     }
 
@@ -26,7 +29,8 @@ class ProvinceEntity(
         provinceId = this.getKeyOrThrow(),
         countryId = this.countryId,
         cityIds = this.cityIds.toMutableList(),
-        provinceCapitalCityId = this.provinceCityId
+        provinceCapitalCityId = this.provinceCityId,
+        resourceBalance = this.resourceBalance.toMutableMap()
     )
 
 }

@@ -14,6 +14,7 @@ import {useValidateCreateTown} from "../../../../core/hooks/useValidateCreateTow
 import {useValidatePlaceScout} from "../../../../core/hooks/useValidatePlaceScout";
 import {BuildingType} from "../../../../core/models/buildingType";
 import {CommandCreateBuilding, CommandCreateCity} from "../../../../core/models/command";
+import {ResourceType} from "../../../../core/models/resourceType";
 import {Tile} from "../../../../core/models/tile";
 import {AppConfig} from "../../../../main";
 import {AdvButton} from "../../../components/specific/AdvButton";
@@ -62,7 +63,7 @@ function SectionTile(props: { tile: Tile }): ReactElement {
 
 function SectionProvince(props: { tile: Tile }): ReactElement {
     const province = useProvinceAt(props.tile.position);
-    const city = useCityById(province?.provinceCapitalCityId)
+    const city = useCityById(province?.provinceCapitalCityId);
     if (province && city) {
         return (
             <Section title={"Province"}>
@@ -70,11 +71,20 @@ function SectionProvince(props: { tile: Tile }): ReactElement {
                 <p>{"Amount Cities: " + province.cityIds.length}</p>
                 <p>Resources</p>
                 <ul>
-                    <li><ResourceLabel type={"money"} value={province.resources?.money || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={"food"} value={province.resources?.food || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={"wood"} value={province.resources?.wood || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={"stone"} value={province.resources?.stone || 0} showPlusSign={true}/></li>
-                    <li><ResourceLabel type={"metal"} value={province.resources?.metal || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.FOOD} value={province.resources?.food || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.WOOD} value={province.resources?.wood || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.STONE} value={province.resources?.stone || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.METAL} value={province.resources?.metal || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.ARMOR} value={province.resources?.armor || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.BARRELS} value={province.resources?.barrels || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.CLOTHES} value={province.resources?.clothes || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.HIDE} value={province.resources?.hide || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.HORSE} value={province.resources?.horse || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.JEWELLERIES} value={province.resources?.jewelleries || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.PARCHMENT} value={province.resources?.parchment || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.TOOLS} value={province.resources?.tools || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.WEAPONS} value={province.resources?.weapons || 0} showPlusSign={true}/></li>
+                    <li><ResourceLabel type={ResourceType.WINE} value={province.resources?.wine || 0} showPlusSign={true}/></li>
                 </ul>
             </Section>
         );
@@ -89,7 +99,6 @@ function SectionCity(props: { tile: Tile }): ReactElement {
     const province = useProvinceByCity(city?.cityId);
     const provinceCapital = useCityById(province?.provinceCapitalCityId);
     const config = useGameConfig();
-    const buildingProduction = city?.isProvinceCapital ? config.cityBuildingProductionPerTurn : config.townBuildingProductionPerTurn;
     const canCreateCity = useValidateCreateCity(props.tile.position);
     const canCreateTown = useValidateCreateTown(props.tile.position);
     const validateCreateBuilding = useValidateCreateBuilding(city);
@@ -117,59 +126,36 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                 <p>{"Province: " + provinceCapital?.name}</p>
                 <p>{"Country: " + city.countryId}</p>
                 <b>{"Buildings (" + city.buildings.length + "/" + (city.isProvinceCapital ? config.cityBuildingSlots : config.townBuildingSlots) + ")"}</b>
-                <AdvButton
-                    label={"Add Woodcutter"}
-                    actionCosts={[]}
-                    turnCosts={[{type: "wood", value: buildingProduction}]}
-                    disabled={!validateCreateBuilding(BuildingType.WOODCUTTER)}
-                    onClick={() => createBuilding(BuildingType.WOODCUTTER)}
-                />
-                <AdvButton
-                    label={"Add Quarry"}
-                    actionCosts={[]}
-                    turnCosts={[{type: "stone", value: buildingProduction}]}
-                    disabled={!validateCreateBuilding(BuildingType.QUARRY)}
-                    onClick={() => createBuilding(BuildingType.QUARRY)}
-                />
-                <AdvButton
-                    label={"Add Mine"}
-                    actionCosts={[]}
-                    turnCosts={[{type: "metal", value: buildingProduction}]}
-                    disabled={!validateCreateBuilding(BuildingType.MINE)}
-                    onClick={() => createBuilding(BuildingType.MINE)}
-                />
-                <AdvButton
-                    label={"Add Fishers Hut"}
-                    actionCosts={[]}
-                    turnCosts={[{type: "food", value: buildingProduction}]}
-                    disabled={!validateCreateBuilding(BuildingType.FISHERS_HUT)}
-                    onClick={() => createBuilding(BuildingType.FISHERS_HUT)}
-                />
-                <AdvButton
-                    label={"Add Farm"}
-                    actionCosts={[]}
-                    turnCosts={[{type: "food", value: buildingProduction}]}
-                    disabled={!validateCreateBuilding(BuildingType.FARM)}
-                    onClick={() => createBuilding(BuildingType.FARM)}
-                />
+
+                {BuildingType.ALL.map(buildingType => {
+                    const displayName = BuildingType.toDisplayString(buildingType);
+                    const consumes = BuildingType.consumes(buildingType);
+                    const produces = BuildingType.produces(buildingType);
+                    return (
+                        <AdvButton
+                            label={"Add " + displayName}
+                            actionCosts={[]}
+                            turnCosts={[
+                                ...consumes.map(e => ({type: e.type, value: -e.amount})),
+                                ...produces.map(e => ({type: e.type, value: e.amount}))
+                            ]}
+                            disabled={!validateCreateBuilding(buildingType)}
+                            onClick={() => createBuilding(buildingType)}
+                        />
+                    )
+                })}
                 <ul>
                     {city.buildings.map(building => {
-                        if (building.type === BuildingType.WOODCUTTER) {
-                            return <li><b>Lumber Camp</b><ResourceLabel type={"wood"} value={buildingProduction} showPlusSign={true}/></li>;
-                        }
-                        if (building.type === BuildingType.QUARRY) {
-                            return <li><b>Quarry</b><ResourceLabel type={"stone"} value={buildingProduction} showPlusSign={true}/></li>;
-                        }
-                        if (building.type === BuildingType.MINE) {
-                            return <li><b>Mine</b><ResourceLabel type={"metal"} value={buildingProduction} showPlusSign={true}/></li>;
-                        }
-                        if (building.type === BuildingType.FISHERS_HUT) {
-                            return <li><b>Harbor</b><ResourceLabel type={"food"} value={buildingProduction} showPlusSign={true}/></li>;
-                        }
-                        if (building.type === BuildingType.FARM) {
-                            return <li><b>Farm</b><ResourceLabel type={"food"} value={buildingProduction} showPlusSign={true}/></li>;
-                        }
-                        return null;
+                        const displayName = BuildingType.toDisplayString(building.type);
+                        const consumes = BuildingType.consumes(building.type);
+                        const produces = BuildingType.produces(building.type);
+                        return (
+                            <li>
+                                <b>{displayName}</b>
+                                {consumes.map(e => <ResourceLabel type={e.type} value={-e.amount} showPlusSign={true}/>)}
+                                {produces.map(e => <ResourceLabel type={e.type} value={+e.amount} showPlusSign={true}/>)}
+                            </li>
+                        );
                     })}
                 </ul>
             </Section>
@@ -180,14 +166,14 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                 <AdvButton
                     label={"Create City"}
                     actionCosts={[]}
-                    turnCosts={[{type: "money", value: config.cityIncomePerTurn}, {type: "food", value: -config.cityFoodCostPerTurn}]}
+                    turnCosts={[{type: ResourceType.FOOD, value: -config.cityFoodCostPerTurn}]}
                     disabled={!canCreateCity}
                     onClick={createCity}
                 />
                 <AdvButton
                     label={"Create Town"}
                     actionCosts={[]}
-                    turnCosts={[{type: "food", value: -config.townFoodCostPerTurn}]}
+                    turnCosts={[{type: ResourceType.FOOD, value: -config.townFoodCostPerTurn}]}
                     disabled={!canCreateTown}
                     onClick={createTown}
                 />

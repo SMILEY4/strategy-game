@@ -221,13 +221,11 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             countryId = province.countryId,
             cityIds = province.cityIds,
             provinceCapitalCityId = province.provinceCapitalCityId,
-            dataTier3 = if (playerCountryId == province.countryId) ProvinceDataTier3(
-                balanceMoney = 0f,
-                balanceFood = province.turnResourceBalance?.get(ResourceType.FOOD) ?: 0f,
-                balanceWood = province.turnResourceBalance?.get(ResourceType.WOOD) ?: 0f,
-                balanceStone = province.turnResourceBalance?.get(ResourceType.STONE) ?: 0f,
-                balanceIron = province.turnResourceBalance?.get(ResourceType.METAL) ?: 0f,
-            ) else null
+            dataTier3 = if (playerCountryId == province.countryId) {
+                ProvinceDataTier3(resourceBalance = province.resourceBalance.toMap())
+            } else {
+                null
+            }
         )
     }
 

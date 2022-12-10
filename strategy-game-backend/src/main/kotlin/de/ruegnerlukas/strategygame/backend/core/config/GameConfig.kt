@@ -60,19 +60,11 @@ data class GameConfig(
     /**
      * the amount of food consumed by a city each turn
      */
-    val cityFoodCostPerTurn: Float = 10f,
+    val cityFoodCostPerTurn: Float = 2f,
     /**
      * the amount of food consumed by a town each turn
      */
-    val townFoodCostPerTurn: Float = 5f,
-    /**
-     * the amount of resources produced by buildings in a city each turn
-     */
-    val cityBuildingProductionPerTurn: Float = 10f,
-    /**
-     * the amount of resources produced by buildings in a town each turn
-     */
-    val townBuildingProductionPerTurn: Float = 5f,
+    val townFoodCostPerTurn: Float = 1f,
     /**
      * the max amount of influence a town generates
      */

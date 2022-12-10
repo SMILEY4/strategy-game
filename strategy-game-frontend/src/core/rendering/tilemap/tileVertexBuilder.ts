@@ -1,4 +1,4 @@
-import {ResourceType} from "../../models/resourceType";
+import {TileResourceType} from "../../models/tileResourceType";
 import {TerrainType} from "../../models/terrainType";
 import {Tile} from "../../models/tile";
 import {TileLayerMeta} from "../../models/tileLayerMeta";
@@ -158,20 +158,20 @@ export namespace TileVertexBuilder {
         return -1;
     }
 
-    function resourceTypeToId(type: ResourceType): number {
-        if (type === ResourceType.FOREST) {
+    function resourceTypeToId(type: TileResourceType): number {
+        if (type === TileResourceType.FOREST) {
             return 0;
         }
-        if (type === ResourceType.FISH) {
+        if (type === TileResourceType.FISH) {
             return 1;
         }
-        if (type === ResourceType.STONE) {
+        if (type === TileResourceType.STONE) {
             return 2;
         }
-        if (type === ResourceType.METAL) {
+        if (type === TileResourceType.METAL) {
             return 3;
         }
-        if (type === ResourceType.PLAINS) {
+        if (type === TileResourceType.PLAINS) {
             return 4;
         }
         return -1;

@@ -1,14 +1,24 @@
+import resourceIconBarrelImageUrl from "/resource_icon_barrel.png?url";
 import resourceIconFoodImageUrl from "/resource_icon_food.png?url";
+import resourceIconHideImageUrl from "/resource_icon_hide.png?url";
 import resourceIconMetalImageUrl from "/resource_icon_metal.png?url";
-import resourceIconMoneyImageUrl from "/resource_icon_money.png?url";
 import resourceIconStoneImageUrl from "/resource_icon_stone.png?url";
+import resourceIconWineImageUrl from "/resource_icon_wine.png?url";
 import resourceIconWoodImageUrl from "/resource_icon_wood.png?url";
+import resourceIconParchmentImageUrl from "/resource_icon_parchment.png?url";
+import resourceIconToolsImageUrl from "/resource_icon_tools.png?url";
+import resourceIconWeaponImageUrl from "/resource_icon_weapon.png?url";
+import resourceIconArmorImageUrl from "/resource_icon_armor.png?url";
+import resourceIconJewelleriesImageUrl from "/resource_icon_jewelleries.png?url";
+import resourceIconClothesImageUrl from "/resource_icon_clothes.png?url";
+import resourceIconHorseImageUrl from "/resource_icon_horse.png?url";
 import {ReactElement} from "react";
+import {ResourceType} from "../../../core/models/resourceType";
 import "./resourceLabel.css";
 
 
 export function ResourceLabel(props: {
-    type: "money" | "wood" | "stone" | "metal" | "food",
+    type: ResourceType,
     value: number,
     showPlusSign: boolean
 }): ReactElement {
@@ -55,22 +65,21 @@ export function ResourceLabel(props: {
         return "neutral";
     }
 
-    function getBackgroundImage(type: "money" | "food" | "wood" | "stone" | "metal"): string {
-        if (type === "money") {
-            return "url(" + resourceIconMoneyImageUrl + ")";
-        }
-        if (type === "food") {
-            return "url(" + resourceIconFoodImageUrl + ")";
-        }
-        if (type === "wood") {
-            return "url(" + resourceIconWoodImageUrl + ")";
-        }
-        if (type === "stone") {
-            return "url(" + resourceIconStoneImageUrl + ")";
-        }
-        if (type === "metal") {
-            return "url(" + resourceIconMetalImageUrl + ")";
-        }
+    function getBackgroundImage(type: ResourceType): string {
+        if (type === ResourceType.ARMOR) return "url(" + resourceIconArmorImageUrl + ")";
+        if (type === ResourceType.BARRELS) return "url(" + resourceIconBarrelImageUrl + ")";
+        if (type === ResourceType.CLOTHES) return "url(" + resourceIconClothesImageUrl + ")";
+        if (type === ResourceType.FOOD) return "url(" + resourceIconFoodImageUrl + ")";
+        if (type === ResourceType.HIDE) return "url(" + resourceIconHideImageUrl + ")";
+        if (type === ResourceType.HORSE) return "url(" + resourceIconHorseImageUrl + ")";
+        if (type === ResourceType.JEWELLERIES) return "url(" + resourceIconJewelleriesImageUrl + ")";
+        if (type === ResourceType.METAL) return "url(" + resourceIconMetalImageUrl + ")";
+        if (type === ResourceType.PARCHMENT) return "url(" + resourceIconParchmentImageUrl + ")";
+        if (type === ResourceType.STONE) return "url(" + resourceIconStoneImageUrl + ")";
+        if (type === ResourceType.TOOLS) return "url(" + resourceIconToolsImageUrl + ")";
+        if (type === ResourceType.WEAPONS) return "url(" + resourceIconWeaponImageUrl + ")";
+        if (type === ResourceType.WINE) return "url(" + resourceIconWineImageUrl + ")";
+        if (type === ResourceType.WOOD) return "url(" + resourceIconWoodImageUrl + ")";
         return "error";
     }
 

@@ -13,6 +13,7 @@ import {Scout} from "./models/scout";
 import {TerrainType} from "./models/terrainType";
 import {Tile} from "./models/tile";
 import {TileLayerMeta} from "./models/tileLayerMeta";
+import {TileResourceType} from "./models/tileResourceType";
 import {GameRepository} from "./required/gameRepository";
 import {WorldRepository} from "./required/worldRepository";
 import {TileBorderCalculator} from "./tileBorderCalculator";
@@ -68,7 +69,7 @@ export class GameSetStateAction {
             visibility: tile.dataTier0.visibility,
             dataTier1: tile.dataTier1 ? {
                 terrainType: TerrainType.fromString(tile.dataTier1.terrainType),
-                resourceType: ResourceType.fromString(tile.dataTier1.resourceType),
+                resourceType: TileResourceType.fromString(tile.dataTier1.resourceType),
                 owner: tile.dataTier1.owner ? {
                     countryId: tile.dataTier1.owner?.countryId,
                     provinceId: tile.dataTier1.owner?.provinceId,
@@ -163,11 +164,20 @@ export class GameSetStateAction {
             cityIds: province.cityIds,
             provinceCapitalCityId: province.provinceCapitalCityId,
             resources: province.dataTier3 ? {
-                money: province.dataTier3.balanceMoney,
-                wood: province.dataTier3.balanceWood,
-                food: province.dataTier3.balanceFood,
-                stone: province.dataTier3.balanceStone,
-                metal: province.dataTier3.balanceIron,
+                armor: province.dataTier3.resourceBalance.ARMOR,
+                barrels: province.dataTier3.resourceBalance.BARRELS,
+                clothes: province.dataTier3.resourceBalance.CLOTHES,
+                food: province.dataTier3.resourceBalance.FOOD,
+                hide: province.dataTier3.resourceBalance.HIDE,
+                horse: province.dataTier3.resourceBalance.HORSE,
+                jewelleries: province.dataTier3.resourceBalance.JEWELLERIES,
+                metal: province.dataTier3.resourceBalance.METAL,
+                parchment: province.dataTier3.resourceBalance.PARCHMENT,
+                stone: province.dataTier3.resourceBalance.STONE,
+                tools: province.dataTier3.resourceBalance.TOOLS,
+                weapons: province.dataTier3.resourceBalance.WEAPONS,
+                wine: province.dataTier3.resourceBalance.WINE,
+                wood: province.dataTier3.resourceBalance.WOOD,
             } : null,
         }));
     }

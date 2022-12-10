@@ -1,4 +1,5 @@
 import {Color} from "../../../core/models/Color";
+import {ResourceType} from "../../../core/models/resourceType";
 import {TileVisibility} from "../../../core/models/tileVisibility";
 import {MsgTileContent} from "./messagingTileContent";
 
@@ -65,11 +66,22 @@ export interface PayloadGameState {
         cityIds: string[],
         provinceCapitalCityId: string,
         dataTier3: {
-            balanceMoney: number,
-            balanceFood: number,
-            balanceWood: number,
-            balanceStone: number,
-            balanceIron: number,
+            resourceBalance: {
+                ARMOR: number,
+                BARRELS: number,
+                CLOTHES: number,
+                FOOD: number,
+                HIDE: number,
+                HORSE: number,
+                JEWELLERIES: number,
+                METAL: number,
+                PARCHMENT: number,
+                STONE: number,
+                TOOLS: number,
+                WEAPONS: number,
+                WINE: number,
+                WOOD: number,
+            }
         } | null
     })[]
 }

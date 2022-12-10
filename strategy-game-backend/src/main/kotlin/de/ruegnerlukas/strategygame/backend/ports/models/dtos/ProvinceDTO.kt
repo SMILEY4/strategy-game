@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.dtos
 
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
+
 data class ProvinceDTO(
     val provinceId: String,
     val countryId: String,
@@ -9,9 +11,5 @@ data class ProvinceDTO(
 )
 
 data class ProvinceDataTier3(
-    val balanceMoney: Float,
-    val balanceFood: Float,
-    val balanceWood: Float,
-    val balanceStone: Float,
-    val balanceIron: Float,
+    val resourceBalance: Map<ResourceType, Float>
 )
