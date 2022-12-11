@@ -32,7 +32,7 @@ export class InputClickAction {
 
     private clickOnTile(tile: Tile) {
         this.gameRepository.setSelectedTile(tile.position.q, tile.position.r);
-        this.uiService.openToolbarMenuSelectedTile();
+        this.uiService.openMenuSelectedTile();
     }
 
 }
