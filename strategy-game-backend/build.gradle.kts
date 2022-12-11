@@ -10,7 +10,7 @@ application {
 
 plugins {
     application
-    val versionKotlin = "1.7.20"
+    val versionKotlin = "1.7.21"
     kotlin("jvm") version versionKotlin
     kotlin("plugin.serialization").version(versionKotlin)
     id("com.github.johnrengelman.shadow") version "7.0.0"

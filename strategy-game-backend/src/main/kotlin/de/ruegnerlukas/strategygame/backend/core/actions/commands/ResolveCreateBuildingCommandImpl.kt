@@ -84,7 +84,7 @@ private object CreateBuildingValidations {
         return validations(false) {
             validCityOwner(city, countryId)
             validCitySpace(gameConfig, city)
-            validResources(gameConfig, country)
+//            validResources(gameConfig, country)
         }
     }
 
@@ -104,11 +104,11 @@ private object CreateBuildingValidations {
         }
     }
 
-    fun ValidationContext.validResources(gameConfig: GameConfig, country: Country) {
-        validate("BUILDING.RESOURCES") {
-            country.resources.wood >= gameConfig.buildingCostWood
-            country.resources.stone >= gameConfig.buildingCostStone
-        }
-    }
+//    fun ValidationContext.validResources(gameConfig: GameConfig, country: Country) {
+//        validate("BUILDING.RESOURCES") {
+//            country.resources.wood >= gameConfig.buildingCostWood
+//            country.resources.stone >= gameConfig.buildingCostStone
+//        }
+//    }
 
 }

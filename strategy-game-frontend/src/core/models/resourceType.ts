@@ -1,30 +1,45 @@
 export enum ResourceType {
-    NONE = "NONE",
-    FOREST = "FOREST",
-    FISH = "FISH",
-    STONE = "STONE",
+    ARMOR = "ARMOR",
+    BARRELS = "BARRELS",
+    CLOTHES = "CLOTHES",
+    FOOD = "FOOD",
+    HIDE = "HIDE",
+    HORSE = "HORSE",
+    JEWELLERIES = "JEWELLERIES",
     METAL = "METAL",
+    PARCHMENT = "PARCHMENT",
+    STONE = "STONE",
+    TOOLS = "TOOLS",
+    WEAPONS = "WEAPONS",
+    WINE = "WINE",
+    WOOD = "WOOD",
 }
 
 export namespace ResourceType {
 
-    export function fromString(strType: string): ResourceType {
-        if (strType === "NONE") {
-            return ResourceType.NONE;
+    export const ALL: ResourceType[] = [
+        ResourceType.ARMOR,
+        ResourceType.BARRELS,
+        ResourceType.CLOTHES,
+        ResourceType.FOOD,
+        ResourceType.HIDE,
+        ResourceType.HORSE,
+        ResourceType.JEWELLERIES,
+        ResourceType.METAL,
+        ResourceType.PARCHMENT,
+        ResourceType.STONE,
+        ResourceType.TOOLS,
+        ResourceType.WEAPONS,
+        ResourceType.WINE,
+        ResourceType.WOOD,
+    ]
+
+    export function fromString(str: string): ResourceType {
+        const resource = ResourceType.ALL.find(res => res.toString() === str)
+        if(!resource) {
+            throw Error("Unknown resource type: " + str)
         }
-        if (strType === "FOREST") {
-            return ResourceType.FOREST;
-        }
-        if (strType === "FISH") {
-            return ResourceType.FISH;
-        }
-        if (strType === "STONE") {
-            return ResourceType.STONE;
-        }
-        if (strType === "METAL") {
-            return ResourceType.METAL;
-        }
-        throw new Error("Unknown resource type: '" + strType + "'");
+        return resource
     }
 
 }

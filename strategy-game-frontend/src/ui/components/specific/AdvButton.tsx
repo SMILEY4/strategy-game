@@ -1,11 +1,12 @@
 import {ReactElement} from "react";
 import "./advButton.css";
+import {ResourceType} from "../../../core/models/resourceType";
 import {ResourceLabel} from "./ResourceLabel";
 
 export function AdvButton(props: {
     label: string,
-    actionCosts: ({ type: "money" | "wood" | "stone" | "metal" | "food", value: number })[],
-    turnCosts: ({ type: "money" | "wood" | "stone" | "metal" | "food", value: number })[],
+    actionCosts: ({ type: ResourceType, value: number })[],
+    turnCosts: ({ type: ResourceType, value: number })[],
     disabled: boolean,
     onClick: () => void
 }): ReactElement {

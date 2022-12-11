@@ -75,6 +75,7 @@ class GameActionCityCreation(
             countryId = country.countryId,
             cityIds = mutableListOf(city.cityId),
             provinceCapitalCityId = city.cityId,
+            resourceBalance = mutableMapOf()
         ).also { game.provinces.add(it) }
     }
 
@@ -87,6 +88,5 @@ class GameActionCityCreation(
     private fun getCountry(event: GameEventCommandCityCreate): Country {
         return event.game.countries.find { it.countryId == event.command.countryId }!!
     }
-
 
 }

@@ -1,5 +1,4 @@
 import React, {ReactElement, useState} from "react";
-import {useTileAt} from "../../../../core/hooks/useTileAt";
 import {AppConfig} from "../../../../main";
 import {TilePosition} from "../../../../core/models/tilePosition";
 import {TextField} from "../../../components/specific/TextField";

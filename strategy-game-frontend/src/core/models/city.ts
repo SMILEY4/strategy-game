@@ -9,6 +9,7 @@ export interface City {
     isProvinceCapital: boolean,
     buildings: ({
         type: BuildingType,
-        tile: TileRef | null
+        tile: TileRef | null,
+        active: boolean
     })[]
 }

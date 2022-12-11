@@ -12,8 +12,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 /**
@@ -33,29 +31,25 @@ class GameActionBuildingCreation : GameAction<GameEventCommandBuildingCreate>(Ga
 
     private fun addBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
         decideTargetTile(game, city, buildingType)
-            .let { Building(type = buildingType, tile = it) }
+            .let { Building(type = buildingType, tile = it, active = false) }
             .also { city.buildings.add(it) }
     }
 
 
     private fun decideTargetTile(game: GameExtended, city: City, buildingType: BuildingType): TileRef? {
-        return positionsCircle(city.tile, 1)
-            .asSequence()
-            .filter { !isSameTile(city, it) }
-            .mapNotNull { getTile(game, it) }
-            .filter { isTileFreeForBuilding(it, city) }
-            .filter {
-                when (buildingType) {
-                    BuildingType.LUMBER_CAMP -> it.data.resourceType == TileResourceType.FOREST.name
-                    BuildingType.MINE -> it.data.resourceType == TileResourceType.METAL.name
-                    BuildingType.QUARRY -> it.data.resourceType == TileResourceType.STONE.name
-                    BuildingType.HARBOR -> it.data.resourceType == TileResourceType.FISH.name
-                    BuildingType.FARM -> it.data.terrainType == TileType.LAND.name
-                }
-            }
-            .toList()
-            .randomOrNull()
-            ?.let { TileRef(it.tileId, it.position.q, it.position.r) }
+        if (buildingType.templateData.requiredTileResource == null) {
+            return null
+        } else {
+            return positionsCircle(city.tile, 1)
+                .asSequence()
+                .filter { !isSameTile(city, it) }
+                .mapNotNull { getTile(game, it) }
+                .filter { isTileFreeForBuilding(it, city) }
+                .filter { it.data.resourceType == buildingType.templateData.requiredTileResource }
+                .toList()
+                .randomOrNull()
+                ?.let { TileRef(it.tileId, it.position.q, it.position.r) }
+        }
     }
 
 

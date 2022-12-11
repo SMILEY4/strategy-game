@@ -6,17 +6,17 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier1
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier3
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTOResources
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDTO
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDataTier3
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ScoutTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier0
@@ -47,7 +47,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
             val countryDTOs = knownCountryIds
                 .map { countryId -> game.countries.first { it.countryId == countryId } }
-                .map { country -> buildCountry(playerCountry.countryId, country) }
+                .map { country -> buildCountry(country) }
 
             val cityDTOs = game.cities
                 .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
@@ -55,7 +55,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
             val provinceDTOs = game.provinces
                 .filter { province -> province.cityIds.any { provinceCityId -> cityDTOs.find { it.cityId == provinceCityId } != null } }
-                .map { buildProvince(it) }
+                .map { buildProvince(it, playerCountry.countryId) }
 
             GameExtendedDTO(
                 turn = game.game.turn,
@@ -130,8 +130,8 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
     private fun buildTileDataTier1(tile: Tile): TileDTODataTier1 {
         return TileDTODataTier1(
-            terrainType = tile.data.terrainType,
-            resourceType = tile.data.resourceType,
+            terrainType = tile.data.terrainType.name,
+            resourceType = tile.data.resourceType.name,
             owner = tile.owner?.let { TileDTOOwner(it.countryId, it.provinceId, it.cityId) }
         )
     }
@@ -190,27 +190,14 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
     }
 
 
-    private fun buildCountry(playerCountryId: String, country: Country): CountryDTO {
+    private fun buildCountry(country: Country): CountryDTO {
         val dataTier1 = CountryDTODataTier1(
             countryId = country.countryId,
             userId = country.userId,
             color = country.color
         )
-        var dataTier3: CountryDTODataTier3? = null
-        if (playerCountryId == country.countryId) {
-            dataTier3 = CountryDTODataTier3(
-                resources = CountryDTOResources(
-                    money = country.resources.money,
-                    wood = country.resources.wood,
-                    food = country.resources.food,
-                    stone = country.resources.stone,
-                    metal = country.resources.metal,
-                )
-            )
-        }
         return CountryDTO(
             dataTier1 = dataTier1,
-            dataTier3 = dataTier3
         )
     }
 
@@ -223,17 +210,22 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             name = city.name,
             color = city.color,
             isProvinceCapital = city.isProvinceCapital,
-            buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile) }
+            buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile, it.active) }
         )
     }
 
 
-    private fun buildProvince(province: Province): ProvinceDTO {
+    private fun buildProvince(province: Province, playerCountryId: String): ProvinceDTO {
         return ProvinceDTO(
             provinceId = province.provinceId,
             countryId = province.countryId,
             cityIds = province.cityIds,
             provinceCapitalCityId = province.provinceCapitalCityId,
+            dataTier3 = if (playerCountryId == province.countryId) {
+                ProvinceDataTier3(resourceBalance = province.resourceBalance.toMap())
+            } else {
+                null
+            }
         )
     }
 
