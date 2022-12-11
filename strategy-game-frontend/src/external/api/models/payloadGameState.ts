@@ -57,7 +57,8 @@ export interface PayloadGameState {
                 tileId: string,
                 q: number,
                 r: number
-            } | null
+            } | null,
+            active: boolean
         })[]
     })[],
     provinces: ({

@@ -20,6 +20,7 @@ import {AppConfig} from "../../../../main";
 import {AdvButton} from "../../../components/specific/AdvButton";
 import {ResourceLabel} from "../../../components/specific/ResourceLabel";
 import {Section} from "../../../components/specific/Section";
+import "./menuSelectedTile.css"
 
 export function CategorySelectedTile(): ReactElement {
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
@@ -72,7 +73,6 @@ function SectionProvince(props: { tile: Tile }): ReactElement {
                 <p>Resources</p>
                 <ul>
                     {ResourceType.ALL.map(resourceType => {
-                        console.log(province?.resources)
                         const amount = province.resources?.get(resourceType) || 0;
                         return (
                             <li><ResourceLabel type={resourceType} value={amount} showPlusSign={true}/></li>
@@ -139,11 +139,12 @@ function SectionCity(props: { tile: Tile }): ReactElement {
                 })}
                 <ul>
                     {city.buildings.map(building => {
+                        const active = building.active
                         const displayName = BuildingType.toDisplayString(building.type);
                         const consumes = BuildingType.consumes(building.type);
                         const produces = BuildingType.produces(building.type);
                         return (
-                            <li>
+                            <li className={active ? "" : "li-disabled"}>
                                 <b>{displayName}</b>
                                 {consumes.map(e => <ResourceLabel type={e.type} value={-e.amount} showPlusSign={true}/>)}
                                 {produces.map(e => <ResourceLabel type={e.type} value={+e.amount} showPlusSign={true}/>)}

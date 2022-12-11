@@ -31,7 +31,7 @@ class GameActionBuildingCreation : GameAction<GameEventCommandBuildingCreate>(Ga
 
     private fun addBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
         decideTargetTile(game, city, buildingType)
-            .let { Building(type = buildingType, tile = it) }
+            .let { Building(type = buildingType, tile = it, active = false) }
             .also { city.buildings.add(it) }
     }
 

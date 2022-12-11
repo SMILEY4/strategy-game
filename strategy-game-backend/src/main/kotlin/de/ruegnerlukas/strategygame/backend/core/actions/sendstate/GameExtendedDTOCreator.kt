@@ -210,7 +210,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             name = city.name,
             color = city.color,
             isProvinceCapital = city.isProvinceCapital,
-            buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile) }
+            buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile, it.active) }
         )
     }
 

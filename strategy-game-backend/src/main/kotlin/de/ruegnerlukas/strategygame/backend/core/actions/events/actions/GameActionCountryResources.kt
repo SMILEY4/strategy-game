@@ -61,10 +61,12 @@ class GameActionCountryResources(
         log: ResourcesLog
     ) {
         city.buildings
+            .onEach { it.active = false }
             .filter { it.type.templateData.requiredTileResource == null || it.tile != null }
             .filter { resourcesAvailable(it.type.templateData.requires, resourcesLastTurn) }
             .sortedBy { it.type.order }
             .forEach { building ->
+                building.active = true
                 building.type.templateData.requires.forEach { requiredResource ->
                     addResourceBalance(requiredResource.type, -requiredResource.amount, resourcesLastTurn)
                     log.changes[requiredResource.type]!!.add("building:" + building.type to -requiredResource.amount)

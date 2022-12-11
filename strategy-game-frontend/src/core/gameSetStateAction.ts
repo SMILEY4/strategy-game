@@ -151,7 +151,8 @@ export class GameSetStateAction {
                     tileId: b.tile.tileId,
                     q: b.tile.q,
                     r: b.tile.r
-                } : null
+                } : null,
+                active: b.active
             }))
         }));
     }
@@ -164,7 +165,7 @@ export class GameSetStateAction {
             cityIds: province.cityIds,
             provinceCapitalCityId: province.provinceCapitalCityId,
             resources: province.dataTier3
-                ? new Map<ResourceType, number>(Object.entries(game.provinces!![0].dataTier3!!.resourceBalance).map(e => [ResourceType.fromString(e[0]), e[1]]))
+                ? new Map<ResourceType, number>(Object.entries(province.dataTier3!!.resourceBalance).map(e => [ResourceType.fromString(e[0]), e[1]]))
                 : null,
         }));
     }
