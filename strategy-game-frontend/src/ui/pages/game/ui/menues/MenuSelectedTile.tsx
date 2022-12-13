@@ -15,7 +15,7 @@ import {AppConfig} from "../../../../../main";
 import {AdvButton} from "../../../../components/specific/AdvButton";
 import {Section} from "../../../../components/specific/Section";
 
-export function MenuSelectedTile(): ReactElement {
+export function MenuSelectedTile(props: {menuLevel: number}): ReactElement {
     const selectedTilePos = useSelectedTilePosition();
     const selectedTile = useTileAt(selectedTilePos);
     const city = useCityById(selectedTile?.dataTier1?.owner?.cityId);
@@ -152,12 +152,6 @@ export function MenuSelectedTile(): ReactElement {
         uiService.openDialogCreateTown(position);
     }
 
-    function createBuilding(type: BuildingType) {
-        if (city) {
-            actionAddCommand.addCreateBuilding(city.cityId, type);
-        }
-    }
-
     function placeScout(position: TilePosition) {
         actionAddCommand.addPlaceScout(position);
     }
@@ -169,21 +163,21 @@ export function MenuSelectedTile(): ReactElement {
     function openCountry(tile: Tile) {
         const countryId = tile.dataTier1?.owner?.countryId;
         if (countryId) {
-            uiService.openMenuCountry(countryId);
+            uiService.openMenuCountry(countryId, props.menuLevel+1);
         }
     }
 
     function openProvince(tile: Tile) {
         const provinceId = tile.dataTier1?.owner?.provinceId;
         if (provinceId) {
-            uiService.openMenuProvince(provinceId);
+            uiService.openMenuProvince(provinceId, props.menuLevel+1);
         }
     }
 
     function openCity(tile: Tile) {
         const cityId = tile.dataTier1?.owner?.cityId;
         if (cityId) {
-            uiService.openMenuCity(cityId);
+            uiService.openMenuCity(cityId, props.menuLevel+1);
         }
     }
 

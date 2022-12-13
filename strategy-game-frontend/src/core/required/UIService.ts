@@ -8,10 +8,10 @@ export interface UIService {
     openToolbarMenuDebug: () => void;
     openToolbarMenuMap: () => void;
 
-    openMenuSelectedTile: () => void;
-    openMenuCountry: (countryId: string) => void;
-    openMenuProvince: (provinceId: string) => void;
-    openMenuCity: (cityId: string) => void;
+    openMenuSelectedTile: (menuLevel: number) => void;
+    openMenuCountry: (countryId: string, menuLevel: number) => void;
+    openMenuProvince: (provinceId: string, menuLevel: number) => void;
+    openMenuCity: (cityId: string, menuLevel: number) => void;
 
     openDialogCreateCity: (pos: TilePosition | null) => void
     openDialogCreateTown: (pos: TilePosition | null) => void

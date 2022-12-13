@@ -7,7 +7,7 @@ import {AppConfig} from "../../../../../main";
 import {ResourceLabel} from "../../../../components/specific/ResourceLabel";
 import {Section} from "../../../../components/specific/Section";
 
-export function MenuProvince(props: { provinceId: string }): ReactElement {
+export function MenuProvince(props: { provinceId: string, menuLevel: number }): ReactElement {
 
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     const province = useProvinceById(props.provinceId);
@@ -51,11 +51,11 @@ export function MenuProvince(props: { provinceId: string }): ReactElement {
 
 
     function openCountry(countryId: string) {
-        uiService.openMenuCountry(countryId);
+        uiService.openMenuCountry(countryId, props.menuLevel+1);
     }
 
     function openCity(cityId: string) {
-        uiService.openMenuCity(cityId);
+        uiService.openMenuCity(cityId, props.menuLevel+1);
     }
 
 }

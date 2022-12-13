@@ -10,13 +10,13 @@ export function CategoryCountry(): ReactElement {
     const playerCountry = useCountryPlayer()
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     return (
-        <div onClick={() => uiService.openMenuCountry(playerCountry.countryId)}>
+        <div onClick={() => uiService.openMenuCountry(playerCountry.countryId, 0)}>
             <CgShapeHexagon/>
         </div>
     );
 }
 
-export function MenuCountry(props: { countryId: string }): ReactElement {
+export function MenuCountry(props: { countryId: string, menuLevel: number }): ReactElement {
 
     const country = useCountryById(props.countryId);
     const provinces = useCountryProvinces(props.countryId);
@@ -44,7 +44,7 @@ export function MenuCountry(props: { countryId: string }): ReactElement {
     );
 
     function openProvince(provinceId: string) {
-        uiService.openMenuProvince(provinceId);
+        uiService.openMenuProvince(provinceId, props.menuLevel+1);
     }
 
 

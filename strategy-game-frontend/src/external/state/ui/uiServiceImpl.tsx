@@ -87,63 +87,63 @@ export class UIServiceImpl implements UIService {
         }
     }
 
-    openMenuSelectedTile(): void {
+    openMenuSelectedTile(menuLevel: number): void {
         this.openFrame(
             "topbar.category.selected-tile",
             {
                 vertical: {
-                    x: 10,
+                    x: 10 + (menuLevel*20),
                     width: 320,
-                    top: 50,
+                    top: 50 + (menuLevel*20),
                     bottom: 10
                 }
             },
-            () => <MenuSelectedTile/>
+            () => <MenuSelectedTile menuLevel={menuLevel}/>
         );
     }
 
-    openMenuCountry(countryId: string): void {
+    openMenuCountry(countryId: string, menuLevel: number): void {
         this.openFrame(
             "topbar.category.country",
             {
                 vertical: {
-                    x: 10,
+                    x: 10 + (menuLevel*20),
                     width: 320,
-                    top: 50,
+                    top: 50 + (menuLevel*20),
                     bottom: 10
                 }
             },
-            () => <MenuCountry countryId={countryId}/>
+            () => <MenuCountry countryId={countryId} menuLevel={menuLevel}/>
         );
     }
 
-    openMenuProvince(provinceId: string): void {
+    openMenuProvince(provinceId: string, menuLevel: number): void {
         this.openFrame(
             "topbar.category.province",
             {
                 vertical: {
-                    x: 10,
+                    x: 10 + (menuLevel*20),
                     width: 320,
-                    top: 50,
+                    top: 50 + (menuLevel*20),
                     bottom: 10
                 }
             },
-            () => <MenuProvince provinceId={provinceId}/>
+            () => <MenuProvince provinceId={provinceId} menuLevel={menuLevel}/>
         );
     }
 
-    openMenuCity(cityId: string): void {
+    openMenuCity(cityId: string, menuLevel: number): void {
         this.openFrame(
             "topbar.category.city",
             {
                 vertical: {
-                    x: 10,
+                    x: 10 + (menuLevel*20),
                     width: 320,
-                    top: 50,
+                    top: 50 + (menuLevel*20),
                     bottom: 10
                 }
             },
-            () => <MenuCity cityId={cityId}/>
+            () => <MenuCity cityId={cityId} menuLevel={menuLevel}/>
         );
     }
 

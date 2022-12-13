@@ -11,7 +11,7 @@ import {ResourceLabel} from "../../../../components/specific/ResourceLabel";
 import {Section} from "../../../../components/specific/Section";
 import "./menuCity.css"
 
-export function MenuCity(props: { cityId: string }): ReactElement {
+export function MenuCity(props: { cityId: string, menuLevel: number }): ReactElement {
 
     const city = useCityById(props.cityId)
     const province = useProvinceByCity(city?.cityId)
@@ -95,15 +95,15 @@ export function MenuCity(props: { cityId: string }): ReactElement {
     }
 
     function openCountry(countryId: string) {
-        uiService.openMenuCountry(countryId);
+        uiService.openMenuCountry(countryId, props.menuLevel+1);
     }
 
     function openProvince(provinceId: string) {
-        uiService.openMenuProvince(provinceId);
+        uiService.openMenuProvince(provinceId, props.menuLevel+1);
     }
 
     function openCity(cityId: string) {
-        uiService.openMenuCity(cityId);
+        uiService.openMenuCity(cityId, props.menuLevel+1);
     }
 
 }
