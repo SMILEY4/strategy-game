@@ -19,3 +19,8 @@ code {
 	min-height: 100vh;
 	position:   relative;
 }
+
+.clickable {
+	cursor: pointer;
+	text-decoration: underline;
+}

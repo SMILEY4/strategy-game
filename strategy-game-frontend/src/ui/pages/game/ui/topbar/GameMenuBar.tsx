@@ -3,8 +3,8 @@ import {useCountryPlayerOrNull} from "../../../../../core/hooks/useCountryPlayer
 import {Color} from "../../../../../core/models/Color";
 import "./gameMenuBar.css";
 import {CategoryDebug} from "../MenuDebug";
+import {CategoryCountry} from "../menues/MenuCountry";
 import {CategoryMap} from "../MenuMap";
-import {CategorySelectedTile} from "../MenuSelectedTile";
 import {NextTurnAction} from "./NextTurnAction";
 
 export function GameMenuBar(): ReactElement {
@@ -18,7 +18,7 @@ export function GameMenuBar(): ReactElement {
                  style={{backgroundColor: `rgb(${countryColor.red},${countryColor.green},${countryColor.blue})`}}/>
             <div className="category-area">
                 <CategoryDebug/>
-                <CategorySelectedTile/>
+                <CategoryCountry/>
                 <CategoryMap/>
             </div>
             <div className="info-section"/>
