@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence
 
 import com.arangodb.ArangoDBException
-import de.ruegnerlukas.strategygame.backend.app.DbConfig
+import de.ruegnerlukas.strategygame.backend.app.DatabaseConfig
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 import kotlinx.coroutines.delay
@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.seconds
 
 object DatabaseProvider : Logging {
 
-    suspend fun create(config: DbConfig, retryCount: Int = 0): ArangoDatabase {
+    suspend fun create(config: DatabaseConfig, retryCount: Int = 0): ArangoDatabase {
         try {
             log().info("Trying to connect to database ${config.name} on ${config.host}:${config.port} (retryCount=$retryCount)")
             return ArangoDatabase.create(config.host, config.port, null, null, config.name)
