@@ -74,8 +74,6 @@ fun Application.module() {
             }
         })
     }
-    val parameterService by inject<ParameterService>()
-    Config.resolveParameters(parameterService)
     install(Routing)
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)

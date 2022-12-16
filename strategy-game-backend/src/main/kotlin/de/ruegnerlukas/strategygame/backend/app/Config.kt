@@ -3,8 +3,10 @@ package de.ruegnerlukas.strategygame.backend.app
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
+import com.typesafe.config.ConfigValueFactory
 import de.ruegnerlukas.strategygame.backend.APPLICATION_MODE
 import de.ruegnerlukas.strategygame.backend.ApplicationMode
+import de.ruegnerlukas.strategygame.backend.external.parameters.AWSParameterStore
 import de.ruegnerlukas.strategygame.backend.ports.required.ParameterService
 import de.ruegnerlukas.strategygame.backend.shared.Json
 
@@ -44,6 +46,8 @@ object Config {
         )
 
         set(Json.fromString(jsonConfig), typesafeConfig)
+
+        resolveParameters(AWSParameterStore.create(get()))
     }
 
     /**
@@ -65,24 +69,38 @@ object Config {
         }
     }
 
-    fun resolveParameters(parameterService: ParameterService) {
-        val prevConfig = get()
+    /**
+     * Replace all values/parameters starting with [ParameterService.PARAM_PREFIX] with their real values
+     */
+    private fun resolveParameters(paramService: ParameterService) {
+        val cfg = get()
         set(
-            prevConfig.copy(
-                admin = prevConfig.admin.copy(
-                    username = parameterService.resolveParameter(prevConfig.admin.username),
-                    password = parameterService.resolveParameter(prevConfig.admin.password)
+            cfg.copy(
+                admin = cfg.admin.copy(
+                    username = resolveParam(paramService, cfg.admin.username, "admin.username"),
+                    password = resolveParam(paramService, cfg.admin.password, "admin.password")
                 ),
-                aws = prevConfig.aws.copy(
-                    user = prevConfig.aws.user.copy(
-                        name = parameterService.resolveParameter(prevConfig.aws.user.name),
-                        accessKeyId = parameterService.resolveParameter(prevConfig.aws.user.accessKeyId),
-                        secretAccessKey = parameterService.resolveParameter(prevConfig.aws.user.secretAccessKey)
+                aws = cfg.aws.copy(
+                    user = cfg.aws.user.copy(
+                        name = resolveParam(paramService, cfg.aws.user.name, "aws.user.name"),
+                        accessKeyId = resolveParam(paramService, cfg.aws.user.accessKeyId, "aws.user.accessKeyId"),
+                        secretAccessKey = resolveParam(paramService, cfg.aws.user.secretAccessKey, "aws.user.secretAccessKey")
                     )
                 )
             ),
             getBaseTypesafeConfig()
         )
+    }
+
+    /**
+     * Returns the resolved value of the given value/parameter (also updates the value in [baseConfig] if necessary)
+     */
+    private fun resolveParam(parameterService: ParameterService, value: String, path: String): String {
+        val resolvedValue =  parameterService.resolveParameter(value)
+        if(resolvedValue != value) {
+            baseConfig = getBaseTypesafeConfig()?.withValue(path, ConfigValueFactory.fromAnyRef(resolvedValue))
+        }
+        return resolvedValue
     }
 
     /**

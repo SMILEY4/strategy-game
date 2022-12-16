@@ -29,11 +29,11 @@ class AWSParameterStore(private val client: AWSSimpleSystemsManagement) : Parame
 
     }
 
-    override fun resolveParameter(text: String): String {
-        return if (text.startsWith(ParameterService.PARAM_PREFIX)) {
-            getParameter(text.substring(ParameterService.PARAM_PREFIX.length)) ?: throw Exception("Could not find parameter $text")
+    override fun resolveParameter(name: String): String {
+        return if (name.startsWith(ParameterService.PARAM_PREFIX)) {
+            getParameter(name.substring(ParameterService.PARAM_PREFIX.length)) ?: throw Exception("Could not find parameter $name")
         } else {
-            text
+            name
         }
     }
 
