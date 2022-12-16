@@ -43,6 +43,7 @@ import de.ruegnerlukas.strategygame.backend.external.api.message.handler.Message
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.external.monitoring.MonitoringServiceImpl
+import de.ruegnerlukas.strategygame.backend.external.parameters.AWSParameterStore
 import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
@@ -82,6 +83,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.ParameterService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
@@ -110,6 +112,7 @@ import org.koin.dsl.module
 @Suppress("RemoveExplicitTypeArguments")
 val applicationDependencies = module {
 
+    single<ParameterService> { AWSParameterStore.create(Config.get()) } withOptions { createdAtStart() }
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.ParameterService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
@@ -73,6 +74,8 @@ fun Application.module() {
             }
         })
     }
+    val parameterService by inject<ParameterService>()
+    Config.resolveParameters(parameterService)
     install(Routing)
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)
