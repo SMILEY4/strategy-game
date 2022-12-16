@@ -17,7 +17,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActi
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResources
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutLifetime
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventBuildingCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandMarkerPlace
@@ -113,7 +112,7 @@ val applicationDependencies = module {
 
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
-    single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().db) } } withOptions { createdAtStart() }
+    single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
     single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
     single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
     single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }

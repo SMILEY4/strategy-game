@@ -78,15 +78,34 @@ object Config {
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ConfigData(
-	val identityProvider: String, // either "cognito" or "dummy"
-	val auth: AuthConfig,
+	val ktor: KtorConfig,
+	val admin: AdminConfig,
+	val database: DatabaseConfig,
 	val aws: AwsConfig,
-	val db: DbConfig,
+	val identityProvider: String = "cognito", // either "cognito" or "dummy"
 )
 
-data class AuthConfig(
-	val technicalUsername: String,
-	val technicalPassword: String
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class KtorConfig(
+	val security: KtorSecurityConfig
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class KtorSecurityConfig(
+	val ssl: KtorSLLConfig
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class KtorSLLConfig(
+	val keyStore: String,
+	val keyAlias: String,
+	val keyStorePassword: String,
+	val privateKeyPassword: String,
+)
+
+data class AdminConfig(
+	val username: String,
+	val password: String
 )
 
 data class AwsConfig(
@@ -97,8 +116,8 @@ data class AwsConfig(
 
 data class AwsUserConfig(
 	val name: String,
-	val accessKey: String,
-	val secretAccess: String
+	val accessKeyId: String,
+	val secretAccessKey: String
 )
 
 data class AwsCognitoConfig(
@@ -106,7 +125,7 @@ data class AwsCognitoConfig(
 	val poolId: String
 )
 
-data class DbConfig(
+data class DatabaseConfig(
 	val host: String,
 	val port: Int,
 	val name: String,

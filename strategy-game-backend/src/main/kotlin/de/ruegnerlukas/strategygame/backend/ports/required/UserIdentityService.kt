@@ -47,8 +47,8 @@ interface UserIdentityService {
                 "cognito" -> AwsCognitoService.create(
                     poolId = Config.get().aws.cognito.poolId,
                     clientId = Config.get().aws.cognito.clientId,
-                    accessKey = Config.get().aws.user.accessKey,
-                    secretKey = Config.get().aws.user.secretAccess,
+                    accessKey = Config.get().aws.user.accessKeyId,
+                    secretKey = Config.get().aws.user.secretAccessKey,
                     region = Config.get().aws.region
                 )
                 "dummy" -> DummyUserIdentityService()

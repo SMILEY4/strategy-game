@@ -127,8 +127,8 @@ fun Application.module() {
         basic("auth-technical-user") {
             realm = "strategy-game"
             validate { credentials ->
-                val username = Config.get().auth.technicalUsername
-                val password = Config.get().auth.technicalPassword
+                val username = Config.get().admin.username
+                val password = Config.get().admin.password
                 if (credentials.name == username && credentials.password == password) {
                     UserIdPrincipal(credentials.name)
                 } else {
