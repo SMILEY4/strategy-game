@@ -1,0 +1,8 @@
+
+- https://blog.scottlogic.com/2019/11/18/drawing-lines-with-webgl.html
+
+- https://mattdesl.svbtle.com/drawing-lines-is-hard
+
+- https://github.com/mattdesl/extrude-polyline/blob/master/index.js
+
+- https://wwwtyro.net/2019/11/18/instanced-lines.html
