@@ -100,6 +100,10 @@ export class Vec2d {
         return this;
     }
 
+    toArray(): number[] {
+        return [this.x, this.y]
+    }
+
     copy(): Vec2d {
         return Vec2d.fromVec(this);
     }
