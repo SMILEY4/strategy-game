@@ -2,9 +2,14 @@
 #line 2
 precision mediump float;
 
-uniform vec4 u_color;
+in vec3 v_color;
 out vec4 outColor;
 
+
 void main() {
-    outColor = vec4(u_color);
+    float f_thickness = 0.05;
+    float f_closest_edge = min(v_color.x, min(v_color.y, v_color.z));
+    float f_width = fwidth(f_closest_edge);
+    float f_alpha = smoothstep(f_thickness, f_thickness + f_width, f_closest_edge);
+    outColor = vec4(v_color, 1.0-f_alpha);
 }

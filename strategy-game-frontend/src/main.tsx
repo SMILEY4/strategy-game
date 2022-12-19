@@ -45,6 +45,8 @@ import {UIServiceImpl} from "./external/state/ui/uiServiceImpl";
 import {UserRepositoryImpl} from "./external/state/user/userRepositoryImpl";
 import {WorldRepositoryImpl} from "./external/state/world/worldRepositoryImpl";
 import {createDiContainer, qualifier} from "./shared/di";
+import SHADER_SRC_LINE_VERT from "./core/rendering/lines/lineShader.vsh?raw";
+import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 
 import {App} from "./ui/App";
 import "./ui/index.css";
@@ -112,6 +114,10 @@ export namespace AppConfig {
         .add(TilemapRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILEMAP_FRAG)
         .add(TileObjectRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILE_OBJECT_VERT)
         .add(TileObjectRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILE_OBJECT_FRAG)
+        .add("line.vert", SHADER_SRC_LINE_VERT)
+        .add("line.frag", SHADER_SRC_LINE_FRAG)
+
+
     );
     diContainer.bind(DIQ.TilePicker, ctx => new TilePicker(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.GameCanvasHandle)));
     diContainer.bind(DIQ.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameConfigRepository)));

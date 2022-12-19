@@ -1,0 +1,1149 @@
+2022-07-28 17:17:05.581 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-07-28 17:21:22.227 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-07-28 17:21:22.696 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-07-28 17:21:22.902 INFO  main Application - Application auto-reloaded in 0.206 seconds.
+2022-07-28 17:21:22.902 INFO  main Application - Application started: io.ktor.server.application.Application@4f453e63
+2022-07-28 17:21:23.015 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-07-28 17:23:48.011 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/user/login
+2022-07-28 17:23:48.072 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:23:51.867 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/create
+2022-07-28 17:23:51.883 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:23:51.939 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Created new game with id 7a8b1ab9-c3fc-47a6-b92a-6377b9248249
+2022-07-28 17:23:51.940 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 7a8b1ab9-c3fc-47a6-b92a-6377b9248249 as user sad)
+2022-07-28 17:23:51.962 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:24:47.401 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:25:13.895 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:25:23.548 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:25:23.582 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Created new game with id 89ac1c8f-237d-4133-b9ba-09f8905704ac
+2022-07-28 17:25:23.582 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 89ac1c8f-237d-4133-b9ba-09f8905704ac as user user)
+2022-07-28 17:25:23.597 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:26:35.314 INFO  main Application - Application stopping: io.ktor.server.application.Application@4f453e63
+2022-07-28 17:26:35.315 INFO  main Application - Application stopped: io.ktor.server.application.Application@4f453e63
+2022-07-28 17:26:56.782 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-07-28 17:26:57.217 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-07-28 17:26:57.358 INFO  main Application - Application auto-reloaded in 0.141 seconds.
+2022-07-28 17:26:57.359 INFO  main Application - Application started: io.ktor.server.application.Application@4f453e63
+2022-07-28 17:26:57.466 INFO  DefaultDispatcher-worker-2 Application - Responding at http://localhost:8080
+2022-07-28 17:27:19.430 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:27:19.477 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Created new game with id 29b3c7ce-9e20-4577-ab8a-c1f3f471e70e
+2022-07-28 17:27:19.479 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 29b3c7ce-9e20-4577-ab8a-c1f3f471e70e as user user)
+2022-07-28 17:27:19.506 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:27:23.353 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/29b3c7ce-9e20-4577-ab8a-c1f3f471e70e
+2022-07-28 17:27:23.357 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 29b3c7ce-9e20-4577-ab8a-c1f3f471e70e as user user)
+2022-07-28 17:27:23.370 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/join/29b3c7ce-9e20-4577-ab8a-c1f3f471e70e
+2022-07-28 17:27:23.378 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Requesting to connect to game 29b3c7ce-9e20-4577-ab8a-c1f3f471e70e as user user
+2022-07-28 17:27:23.399 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Added new websocket-connection with id 0
+2022-07-28 17:27:23.402 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Connect user user (0) to game 29b3c7ce-9e20-4577-ab8a-c1f3f471e70e
+2022-07-28 17:27:23.415 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending world-state of game 29b3c7ce-9e20-4577-ab8a-c1f3f471e70e to connected player(s)
+2022-07-28 17:27:23.432 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Sending message 'de.ruegnerlukas.kdbl.dsl.expression.Column@7f2541d7' to connection 0
+2022-07-28 17:29:15.248 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Remove websocket-connection with id 0
+2022-07-28 17:29:15.250 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 17:29:18.264 INFO  KtorShutdownHook Application - Application stopping: io.ktor.server.application.Application@4f453e63
+2022-07-28 17:29:18.265 INFO  KtorShutdownHook Application - Application stopped: io.ktor.server.application.Application@4f453e63
+2022-07-28 17:29:19.696 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-07-28 17:29:20.198 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-07-28 17:29:20.332 INFO  main Application - Application auto-reloaded in 0.134 seconds.
+2022-07-28 17:29:20.332 INFO  main Application - Application started: io.ktor.server.application.Application@6b00ad9
+2022-07-28 17:29:20.434 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-07-28 17:29:28.094 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:29:29.422 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:29:29.486 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Created new game with id 619763ab-b2f1-4da7-baf8-e9aacdc421a4
+2022-07-28 17:29:29.488 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 619763ab-b2f1-4da7-baf8-e9aacdc421a4 as user user)
+2022-07-28 17:29:29.510 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:29:33.112 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/619763ab-b2f1-4da7-baf8-e9aacdc421a4
+2022-07-28 17:29:33.120 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 619763ab-b2f1-4da7-baf8-e9aacdc421a4 as user user)
+2022-07-28 17:29:33.127 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/join/619763ab-b2f1-4da7-baf8-e9aacdc421a4
+2022-07-28 17:29:33.135 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Requesting to connect to game 619763ab-b2f1-4da7-baf8-e9aacdc421a4 as user user
+2022-07-28 17:29:33.155 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Added new websocket-connection with id 0
+2022-07-28 17:29:33.158 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Connect user user (0) to game 619763ab-b2f1-4da7-baf8-e9aacdc421a4
+2022-07-28 17:29:33.173 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending world-state of game 619763ab-b2f1-4da7-baf8-e9aacdc421a4 to connected player(s)
+2022-07-28 17:29:33.188 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 0
+2022-07-28 17:31:37.638 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Remove websocket-connection with id 0
+2022-07-28 17:31:37.639 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 17:31:37.651 INFO  eventLoopGroupProxy-4-2 Application - 101 Switching Protocols: GET - /api/game/619763ab-b2f1-4da7-baf8-e9aacdc421a4?token=SECRET
+2022-07-28 17:36:05.657 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/user/login
+2022-07-28 17:36:05.777 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:36:09.037 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/game/create
+2022-07-28 17:36:09.045 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:36:09.082 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Created new game with id c95c7137-334b-43ae-8fff-3efeec9312d0
+2022-07-28 17:36:09.082 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Joining game c95c7137-334b-43ae-8fff-3efeec9312d0 as user user)
+2022-07-28 17:36:09.092 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:36:19.645 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/game/join/c95c7137-334b-43ae-8fff-3efeec9312d0
+2022-07-28 17:36:19.653 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Joining game c95c7137-334b-43ae-8fff-3efeec9312d0 as user user)
+2022-07-28 17:36:19.655 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/game/join/c95c7137-334b-43ae-8fff-3efeec9312d0
+2022-07-28 17:36:19.664 INFO  eventLoopGroupProxy-4-4 d.r.s.backend.shared.Logging - Requesting to connect to game c95c7137-334b-43ae-8fff-3efeec9312d0 as user user
+2022-07-28 17:36:19.665 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Added new websocket-connection with id 1
+2022-07-28 17:36:19.666 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Connect user user (1) to game c95c7137-334b-43ae-8fff-3efeec9312d0
+2022-07-28 17:36:19.677 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Sending world-state of game c95c7137-334b-43ae-8fff-3efeec9312d0 to connected player(s)
+2022-07-28 17:36:19.684 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 1
+2022-07-28 17:36:35.414 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Remove websocket-connection with id 1
+2022-07-28 17:36:35.415 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 17:36:35.433 ERROR eventLoopGroupProxy-3-3 Application - Websocket handler failed
+com.fasterxml.jackson.databind.exc.InvalidTypeIdException: Could not resolve subtype of [simple type, class de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerCommand]: missing type id property 'type' (for POJO property 'commands')
+ at [Source: (String)"{
+   "type": "submit-turn",
+   "payload": {
+      "commands": [
+         {
+            "q": -13,
+            "r": 8,
+            "userId": "user"
+         },
+         {
+            "q": -17,
+            "r": 5,
+            "userId": "user"
+         }
+      ]
+   }
+}"; line: 9, column: 10] (through reference chain: de.ruegnerlukas.strategygame.backend.external.api.message.models.SubmitTurnMessage["payload"]->de.ruegnerlukas.strategygame.backend.external.api.message.models.SubmitTurnMessage$Companion$SubmitTurnPayload["commands"]->java.util.ArrayList[0])
+	at com.fasterxml.jackson.databind.exc.InvalidTypeIdException.from(InvalidTypeIdException.java:43)
+	at com.fasterxml.jackson.databind.DeserializationContext.missingTypeIdException(DeserializationContext.java:2083)
+	at com.fasterxml.jackson.databind.DeserializationContext.handleMissingTypeId(DeserializationContext.java:1596)
+	at com.fasterxml.jackson.databind.jsontype.impl.TypeDeserializerBase._handleMissingTypeId(TypeDeserializerBase.java:307)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer._deserializeTypedUsingDefaultImpl(AsPropertyTypeDeserializer.java:185)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer.deserializeTypedFromObject(AsPropertyTypeDeserializer.java:119)
+	at com.fasterxml.jackson.databind.deser.AbstractDeserializer.deserializeWithType(AbstractDeserializer.java:263)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer._deserializeFromArray(CollectionDeserializer.java:357)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:244)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:28)
+	at com.fasterxml.jackson.databind.deser.SettableBeanProperty.deserialize(SettableBeanProperty.java:542)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeWithErrorWrapping(BeanDeserializer.java:563)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeUsingPropertyBased(BeanDeserializer.java:438)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.deserializeFromObjectUsingNonDefault(BeanDeserializerBase.java:1405)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserializeFromObject(BeanDeserializer.java:351)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:184)
+	at com.fasterxml.jackson.databind.deser.SettableBeanProperty.deserialize(SettableBeanProperty.java:542)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeWithErrorWrapping(BeanDeserializer.java:563)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeUsingPropertyBased(BeanDeserializer.java:438)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.deserializeFromObjectUsingNonDefault(BeanDeserializerBase.java:1405)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserializeFromObject(BeanDeserializer.java:351)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeOther(BeanDeserializer.java:219)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:186)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer._deserializeTypedForId(AsPropertyTypeDeserializer.java:144)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer.deserializeTypedFromObject(AsPropertyTypeDeserializer.java:110)
+	at com.fasterxml.jackson.databind.deser.AbstractDeserializer.deserializeWithType(AbstractDeserializer.java:263)
+	at com.fasterxml.jackson.databind.deser.impl.TypeWrappedDeserializer.deserialize(TypeWrappedDeserializer.java:74)
+	at com.fasterxml.jackson.databind.deser.DefaultDeserializationContext.readRootValue(DefaultDeserializationContext.java:322)
+	at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:4674)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3629)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3612)
+	at de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.buildMessage(WebsocketUtils.kt:93)
+	at de.ruegnerlukas.strategygame.backend.external.api.routing.GameWebsocketRoutingKt$gameWebsocketRoutes$1$1$2$1.invokeSuspend(gameWebsocketRouting.kt:66)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:995)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:260)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-07-28 17:36:35.434 INFO  eventLoopGroupProxy-4-4 Application - 101 Switching Protocols: GET - /api/game/c95c7137-334b-43ae-8fff-3efeec9312d0?token=SECRET
+2022-07-28 17:42:22.652 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:42:24.008 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:42:24.042 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Created new game with id fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:24.042 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Joining game fa92e628-57ea-488f-acda-60e114b8d793 as user user)
+2022-07-28 17:42:24.052 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:42:26.839 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: OPTIONS - /api/game/join/fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:26.842 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Joining game fa92e628-57ea-488f-acda-60e114b8d793 as user user)
+2022-07-28 17:42:26.844 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/game/join/fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:26.856 INFO  eventLoopGroupProxy-4-6 d.r.s.backend.shared.Logging - Requesting to connect to game fa92e628-57ea-488f-acda-60e114b8d793 as user user
+2022-07-28 17:42:26.858 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Added new websocket-connection with id 2
+2022-07-28 17:42:26.859 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Connect user user (2) to game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:26.877 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending world-state of game fa92e628-57ea-488f-acda-60e114b8d793 to connected player(s)
+2022-07-28 17:42:26.882 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 2
+2022-07-28 17:42:41.554 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 2
+2022-07-28 17:42:41.554 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - user user submits 2 commands for game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:41.582 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - End turn of game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:41.602 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Resolving 2 commands for game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:41.632 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game fa92e628-57ea-488f-acda-60e114b8d793 to connected player(s)
+2022-07-28 17:42:41.638 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 2
+2022-07-28 17:42:53.176 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 2
+2022-07-28 17:42:53.176 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - user user submits 1 commands for game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:53.202 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - End turn of game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:53.220 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Resolving 1 commands for game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:42:53.236 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending world-state of game fa92e628-57ea-488f-acda-60e114b8d793 to connected player(s)
+2022-07-28 17:42:53.241 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 2
+2022-07-28 17:44:34.659 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 2
+2022-07-28 17:44:34.660 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - user user submits 2 commands for game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:44:34.683 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - End turn of game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:44:34.704 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Resolving 2 commands for game fa92e628-57ea-488f-acda-60e114b8d793
+2022-07-28 17:44:34.723 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game fa92e628-57ea-488f-acda-60e114b8d793 to connected player(s)
+2022-07-28 17:44:34.729 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 2
+2022-07-28 17:49:32.610 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Remove websocket-connection with id 2
+2022-07-28 17:49:32.613 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 17:49:32.622 INFO  eventLoopGroupProxy-4-6 Application - 101 Switching Protocols: GET - /api/game/fa92e628-57ea-488f-acda-60e114b8d793?token=SECRET
+2022-07-28 17:49:39.428 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: OPTIONS - /api/user/login
+2022-07-28 17:49:39.437 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:49:41.286 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: OPTIONS - /api/game/create
+2022-07-28 17:49:41.401 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:49:41.446 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Created new game with id 1edfcc8a-0825-4920-8817-232a196d00ae
+2022-07-28 17:49:41.447 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Joining game 1edfcc8a-0825-4920-8817-232a196d00ae as user user)
+2022-07-28 17:49:41.457 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:49:44.338 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: OPTIONS - /api/game/join/1edfcc8a-0825-4920-8817-232a196d00ae
+2022-07-28 17:49:44.461 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Joining game 1edfcc8a-0825-4920-8817-232a196d00ae as user user)
+2022-07-28 17:49:44.464 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/game/join/1edfcc8a-0825-4920-8817-232a196d00ae
+2022-07-28 17:49:44.481 INFO  eventLoopGroupProxy-4-8 d.r.s.backend.shared.Logging - Requesting to connect to game 1edfcc8a-0825-4920-8817-232a196d00ae as user user
+2022-07-28 17:49:44.484 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Added new websocket-connection with id 3
+2022-07-28 17:49:44.485 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Connect user user (3) to game 1edfcc8a-0825-4920-8817-232a196d00ae
+2022-07-28 17:49:44.495 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Sending world-state of game 1edfcc8a-0825-4920-8817-232a196d00ae to connected player(s)
+2022-07-28 17:49:44.499 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 3
+2022-07-28 17:49:59.694 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Remove websocket-connection with id 3
+2022-07-28 17:49:59.695 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 17:49:59.711 ERROR eventLoopGroupProxy-3-5 Application - Websocket handler failed
+com.fasterxml.jackson.databind.exc.InvalidTypeIdException: Could not resolve subtype of [simple type, class de.ruegnerlukas.strategygame.backend.ports.models.game.PlayerCommand]: missing type id property 'type' (for POJO property 'commands')
+ at [Source: (String)"{
+   "type": "submit-turn",
+   "payload": {
+      "commands": [
+         {
+            "q": -5,
+            "r": 10,
+            "userId": "user"
+         },
+         {
+            "q": -6,
+            "r": 1,
+            "userId": "user"
+         }
+      ]
+   }
+}"; line: 9, column: 10] (through reference chain: de.ruegnerlukas.strategygame.backend.external.api.message.models.SubmitTurnMessage["payload"]->de.ruegnerlukas.strategygame.backend.external.api.message.models.SubmitTurnMessage$Companion$SubmitTurnPayload["commands"]->java.util.ArrayList[0])
+	at com.fasterxml.jackson.databind.exc.InvalidTypeIdException.from(InvalidTypeIdException.java:43)
+	at com.fasterxml.jackson.databind.DeserializationContext.missingTypeIdException(DeserializationContext.java:2083)
+	at com.fasterxml.jackson.databind.DeserializationContext.handleMissingTypeId(DeserializationContext.java:1596)
+	at com.fasterxml.jackson.databind.jsontype.impl.TypeDeserializerBase._handleMissingTypeId(TypeDeserializerBase.java:307)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer._deserializeTypedUsingDefaultImpl(AsPropertyTypeDeserializer.java:185)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer.deserializeTypedFromObject(AsPropertyTypeDeserializer.java:119)
+	at com.fasterxml.jackson.databind.deser.AbstractDeserializer.deserializeWithType(AbstractDeserializer.java:263)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer._deserializeFromArray(CollectionDeserializer.java:357)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:244)
+	at com.fasterxml.jackson.databind.deser.std.CollectionDeserializer.deserialize(CollectionDeserializer.java:28)
+	at com.fasterxml.jackson.databind.deser.SettableBeanProperty.deserialize(SettableBeanProperty.java:542)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeWithErrorWrapping(BeanDeserializer.java:563)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeUsingPropertyBased(BeanDeserializer.java:438)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.deserializeFromObjectUsingNonDefault(BeanDeserializerBase.java:1405)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserializeFromObject(BeanDeserializer.java:351)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:184)
+	at com.fasterxml.jackson.databind.deser.SettableBeanProperty.deserialize(SettableBeanProperty.java:542)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeWithErrorWrapping(BeanDeserializer.java:563)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeUsingPropertyBased(BeanDeserializer.java:438)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializerBase.deserializeFromObjectUsingNonDefault(BeanDeserializerBase.java:1405)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserializeFromObject(BeanDeserializer.java:351)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer._deserializeOther(BeanDeserializer.java:219)
+	at com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:186)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer._deserializeTypedForId(AsPropertyTypeDeserializer.java:144)
+	at com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer.deserializeTypedFromObject(AsPropertyTypeDeserializer.java:110)
+	at com.fasterxml.jackson.databind.deser.AbstractDeserializer.deserializeWithType(AbstractDeserializer.java:263)
+	at com.fasterxml.jackson.databind.deser.impl.TypeWrappedDeserializer.deserialize(TypeWrappedDeserializer.java:74)
+	at com.fasterxml.jackson.databind.deser.DefaultDeserializationContext.readRootValue(DefaultDeserializationContext.java:322)
+	at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:4674)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3629)
+	at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3612)
+	at de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils.buildMessage(WebsocketUtils.kt:93)
+	at de.ruegnerlukas.strategygame.backend.external.api.routing.GameWebsocketRoutingKt$gameWebsocketRoutes$1$1$2$1.invokeSuspend(gameWebsocketRouting.kt:66)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:995)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:260)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-07-28 17:49:59.713 INFO  eventLoopGroupProxy-4-8 Application - 101 Switching Protocols: GET - /api/game/1edfcc8a-0825-4920-8817-232a196d00ae?token=SECRET
+2022-07-28 17:50:32.561 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:50:34.061 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:50:34.092 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Created new game with id 669b16af-031e-4afe-af11-cb929565de81
+2022-07-28 17:50:34.092 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Joining game 669b16af-031e-4afe-af11-cb929565de81 as user user)
+2022-07-28 17:50:34.103 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:50:36.950 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: OPTIONS - /api/game/join/669b16af-031e-4afe-af11-cb929565de81
+2022-07-28 17:50:36.952 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Joining game 669b16af-031e-4afe-af11-cb929565de81 as user user)
+2022-07-28 17:50:36.954 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/game/join/669b16af-031e-4afe-af11-cb929565de81
+2022-07-28 17:50:36.958 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Requesting to connect to game 669b16af-031e-4afe-af11-cb929565de81 as user user
+2022-07-28 17:50:36.959 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Added new websocket-connection with id 4
+2022-07-28 17:50:36.959 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Connect user user (4) to game 669b16af-031e-4afe-af11-cb929565de81
+2022-07-28 17:50:36.974 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 669b16af-031e-4afe-af11-cb929565de81 to connected player(s)
+2022-07-28 17:50:36.979 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 4
+2022-07-28 17:50:50.225 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 4
+2022-07-28 17:50:50.225 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - user user submits 2 commands for game 669b16af-031e-4afe-af11-cb929565de81
+2022-07-28 17:50:50.248 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - End turn of game 669b16af-031e-4afe-af11-cb929565de81
+2022-07-28 17:50:50.264 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Resolving 2 commands for game 669b16af-031e-4afe-af11-cb929565de81
+2022-07-28 17:50:50.278 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending world-state of game 669b16af-031e-4afe-af11-cb929565de81 to connected player(s)
+2022-07-28 17:50:50.283 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 4
+2022-07-28 17:57:38.840 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Remove websocket-connection with id 4
+2022-07-28 17:57:38.844 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 17:57:38.856 INFO  eventLoopGroupProxy-4-1 Application - 101 Switching Protocols: GET - /api/game/669b16af-031e-4afe-af11-cb929565de81?token=SECRET
+2022-07-28 17:58:21.160 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: OPTIONS - /api/user/login
+2022-07-28 17:58:21.164 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/user/login
+2022-07-28 17:58:22.541 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: OPTIONS - /api/game/create
+2022-07-28 17:58:22.655 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 17:58:22.702 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Created new game with id 9354a64e-7508-4ad6-9f59-1498fadfe9c4
+2022-07-28 17:58:22.702 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Joining game 9354a64e-7508-4ad6-9f59-1498fadfe9c4 as user user)
+2022-07-28 17:58:22.715 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/game/create
+2022-07-28 17:58:25.890 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: OPTIONS - /api/game/join/9354a64e-7508-4ad6-9f59-1498fadfe9c4
+2022-07-28 17:58:25.897 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Joining game 9354a64e-7508-4ad6-9f59-1498fadfe9c4 as user user)
+2022-07-28 17:58:25.899 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/game/join/9354a64e-7508-4ad6-9f59-1498fadfe9c4
+2022-07-28 17:58:25.913 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Requesting to connect to game 9354a64e-7508-4ad6-9f59-1498fadfe9c4 as user user
+2022-07-28 17:58:25.915 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Added new websocket-connection with id 5
+2022-07-28 17:58:25.916 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Connect user user (5) to game 9354a64e-7508-4ad6-9f59-1498fadfe9c4
+2022-07-28 17:58:25.923 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending world-state of game 9354a64e-7508-4ad6-9f59-1498fadfe9c4 to connected player(s)
+2022-07-28 17:58:25.928 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 5
+2022-07-28 18:07:25.700 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Remove websocket-connection with id 5
+2022-07-28 18:07:25.702 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:07:25.713 INFO  eventLoopGroupProxy-4-3 Application - 101 Switching Protocols: GET - /api/game/9354a64e-7508-4ad6-9f59-1498fadfe9c4?token=SECRET
+2022-07-28 18:07:27.667 INFO  eventLoopGroupProxy-4-4 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:07:29.098 INFO  eventLoopGroupProxy-4-4 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 18:07:29.121 INFO  eventLoopGroupProxy-4-4 d.r.s.backend.shared.Logging - Created new game with id d8fa672a-34dc-4239-950d-c0670e990c51
+2022-07-28 18:07:29.121 INFO  eventLoopGroupProxy-4-4 d.r.s.backend.shared.Logging - Joining game d8fa672a-34dc-4239-950d-c0670e990c51 as user user)
+2022-07-28 18:07:29.134 INFO  eventLoopGroupProxy-4-4 Application - 200 OK: POST - /api/game/create
+2022-07-28 18:26:28.617 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:26:29.931 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 18:26:29.986 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Created new game with id 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:26:29.987 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:26:29.997 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/game/create
+2022-07-28 18:26:37.685 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: OPTIONS - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:26:37.691 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:26:37.694 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:26:37.705 INFO  eventLoopGroupProxy-4-6 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:26:37.707 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Added new websocket-connection with id 6
+2022-07-28 18:26:37.708 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Connect user user (6) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:26:37.719 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:26:37.727 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 6
+2022-07-28 18:27:14.414 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Remove websocket-connection with id 6
+2022-07-28 18:27:14.415 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:27:14.427 INFO  eventLoopGroupProxy-4-6 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:27:15.972 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:27:20.979 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:27:20.981 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:27:20.986 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:27:20.987 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Added new websocket-connection with id 7
+2022-07-28 18:27:20.988 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Connect user user (7) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:27:21.001 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:27:21.005 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 7
+2022-07-28 18:27:40.888 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 7
+2022-07-28 18:27:40.888 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - user user submits 4 commands for game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:27:40.907 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - End turn of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:27:40.924 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Resolving 4 commands for game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:27:40.941 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:27:40.946 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 7
+2022-07-28 18:27:55.193 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Remove websocket-connection with id 7
+2022-07-28 18:27:55.194 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:27:55.204 INFO  eventLoopGroupProxy-4-7 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:27:56.851 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:28:24.152 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:28:24.155 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:28:24.160 INFO  eventLoopGroupProxy-4-8 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:28:24.161 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Added new websocket-connection with id 8
+2022-07-28 18:28:24.162 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Connect user user (8) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:28:24.170 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:28:24.175 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 8
+2022-07-28 18:28:49.504 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Remove websocket-connection with id 8
+2022-07-28 18:28:49.505 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:28:49.513 INFO  eventLoopGroupProxy-4-8 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:30:06.678 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:30:19.789 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:30:19.792 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:30:19.802 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:30:19.804 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Added new websocket-connection with id 9
+2022-07-28 18:30:19.805 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Connect user user (9) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:30:19.821 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:30:19.826 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 9
+2022-07-28 18:34:34.972 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Remove websocket-connection with id 9
+2022-07-28 18:34:34.973 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:34:34.980 INFO  eventLoopGroupProxy-4-1 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:34:36.949 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:34:42.228 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:34:42.231 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:34:42.241 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:34:42.243 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Added new websocket-connection with id 10
+2022-07-28 18:34:42.244 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Connect user user (10) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:34:42.254 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:34:42.262 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 10
+2022-07-28 18:36:17.250 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Remove websocket-connection with id 10
+2022-07-28 18:36:17.251 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:36:17.261 INFO  eventLoopGroupProxy-4-3 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:36:27.363 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:36:29.199 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:36:29.200 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:36:29.204 INFO  eventLoopGroupProxy-4-4 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:36:29.205 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Added new websocket-connection with id 11
+2022-07-28 18:36:29.206 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Connect user user (11) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:36:29.215 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:36:29.220 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 11
+2022-07-28 18:36:38.901 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 11
+2022-07-28 18:36:38.901 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - user user submits 1 commands for game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:36:38.926 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - End turn of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:36:38.944 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Resolving 1 commands for game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:36:38.956 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:36:38.962 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 11
+2022-07-28 18:37:04.531 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Remove websocket-connection with id 11
+2022-07-28 18:37:04.532 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:37:04.541 INFO  eventLoopGroupProxy-4-4 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:37:06.447 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:37:08.362 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:37:08.363 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:37:08.368 INFO  eventLoopGroupProxy-4-5 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:37:08.369 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Added new websocket-connection with id 12
+2022-07-28 18:37:08.369 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Connect user user (12) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:37:08.385 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:37:08.394 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 12
+2022-07-28 18:37:39.074 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Remove websocket-connection with id 12
+2022-07-28 18:37:39.075 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:37:39.084 INFO  eventLoopGroupProxy-4-5 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:37:40.976 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:37:42.784 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:37:42.785 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:37:42.789 INFO  eventLoopGroupProxy-4-6 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:37:42.790 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Added new websocket-connection with id 13
+2022-07-28 18:37:42.791 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Connect user user (13) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:37:42.799 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:37:42.803 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 13
+2022-07-28 18:44:34.591 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Remove websocket-connection with id 13
+2022-07-28 18:44:34.594 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:44:34.604 INFO  eventLoopGroupProxy-4-6 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:44:44.143 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: OPTIONS - /api/user/login
+2022-07-28 18:44:44.153 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:44:46.785 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: OPTIONS - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:44:46.828 INFO  eventLoopGroupProxy-4-7 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:44:46.829 INFO  eventLoopGroupProxy-4-7 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:44:46.834 INFO  eventLoopGroupProxy-4-8 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:44:46.836 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Added new websocket-connection with id 14
+2022-07-28 18:44:46.836 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Connect user user (14) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:44:46.845 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:44:46.849 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 14
+2022-07-28 18:57:25.597 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Remove websocket-connection with id 14
+2022-07-28 18:57:25.600 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 18:57:25.612 INFO  eventLoopGroupProxy-4-8 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 18:57:39.204 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/user/login
+2022-07-28 18:57:39.207 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-07-28 18:57:41.225 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:57:41.231 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user)
+2022-07-28 18:57:41.240 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/join/90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:57:41.254 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Requesting to connect to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 as user user
+2022-07-28 18:57:41.256 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Added new websocket-connection with id 15
+2022-07-28 18:57:41.257 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Connect user user (15) to game 90024b9b-2e29-426d-9cb1-823fbfd0ade3
+2022-07-28 18:57:41.276 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Sending world-state of game 90024b9b-2e29-426d-9cb1-823fbfd0ade3 to connected player(s)
+2022-07-28 18:57:41.281 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 15
+2022-07-28 19:04:43.702 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Remove websocket-connection with id 15
+2022-07-28 19:04:43.704 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 19:04:43.714 INFO  eventLoopGroupProxy-4-2 Application - 101 Switching Protocols: GET - /api/game/90024b9b-2e29-426d-9cb1-823fbfd0ade3?token=SECRET
+2022-07-28 19:43:07.591 INFO  main Application - Application stopping: io.ktor.server.application.Application@6b00ad9
+2022-07-28 19:43:07.594 INFO  main Application - Application stopped: io.ktor.server.application.Application@6b00ad9
+2022-07-28 19:48:06.786 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-07-28 19:48:07.198 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-07-28 19:48:07.343 INFO  main Application - Application auto-reloaded in 0.145 seconds.
+2022-07-28 19:48:07.344 INFO  main Application - Application started: io.ktor.server.application.Application@7afbf561
+2022-07-28 19:48:07.451 INFO  DefaultDispatcher-worker-2 Application - Responding at http://localhost:8080
+2022-07-28 19:48:29.340 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/user/login
+2022-07-28 19:48:29.402 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-07-28 19:48:30.870 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/create
+2022-07-28 19:48:30.891 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 19:48:30.967 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Created new game with id 3449781a-c0db-4078-a208-7482184b85e3
+2022-07-28 19:48:30.969 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 3449781a-c0db-4078-a208-7482184b85e3 as user user)
+2022-07-28 19:48:30.993 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-07-28 19:48:38.487 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/3449781a-c0db-4078-a208-7482184b85e3
+2022-07-28 19:48:38.500 INFO  eventLoopGroupProxy-4-1 d.r.s.backend.shared.Logging - Joining game 3449781a-c0db-4078-a208-7482184b85e3 as user user)
+2022-07-28 19:48:38.509 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/join/3449781a-c0db-4078-a208-7482184b85e3
+2022-07-28 19:48:38.518 INFO  eventLoopGroupProxy-4-2 d.r.s.backend.shared.Logging - Requesting to connect to game 3449781a-c0db-4078-a208-7482184b85e3 as user user
+2022-07-28 19:48:38.539 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Added new websocket-connection with id 0
+2022-07-28 19:48:38.543 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Connect user user (0) to game 3449781a-c0db-4078-a208-7482184b85e3
+2022-07-28 19:48:38.565 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending world-state of game 3449781a-c0db-4078-a208-7482184b85e3 to connected player(s)
+2022-07-28 19:48:38.586 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 0
+2022-07-28 19:48:53.954 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 0
+2022-07-28 19:48:53.954 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - user user submits 3 commands for game 3449781a-c0db-4078-a208-7482184b85e3
+2022-07-28 19:48:53.991 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - End turn of game 3449781a-c0db-4078-a208-7482184b85e3
+2022-07-28 19:48:54.016 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Resolving 3 commands for game 3449781a-c0db-4078-a208-7482184b85e3
+2022-07-28 19:48:54.042 INFO  eventLoopGroupProxy-3-5 d.r.s.backend.shared.Logging - Sending world-state of game 3449781a-c0db-4078-a208-7482184b85e3 to connected player(s)
+2022-07-28 19:48:54.049 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 0
+2022-07-28 19:55:50.965 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Remove websocket-connection with id 0
+2022-07-28 19:55:50.975 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 19:55:50.998 INFO  eventLoopGroupProxy-4-2 Application - 101 Switching Protocols: GET - /api/game/3449781a-c0db-4078-a208-7482184b85e3?token=SECRET
+2022-07-28 19:55:53.097 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/user/login
+2022-07-28 19:55:54.218 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Creating new game
+2022-07-28 19:55:54.264 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Created new game with id b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:55:54.265 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Joining game b2a237da-d699-44fd-83f0-93c03048dba6 as user user)
+2022-07-28 19:55:54.273 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/game/create
+2022-07-28 19:55:57.883 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/game/join/b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:55:57.890 INFO  eventLoopGroupProxy-4-3 d.r.s.backend.shared.Logging - Joining game b2a237da-d699-44fd-83f0-93c03048dba6 as user user)
+2022-07-28 19:55:57.891 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/game/join/b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:55:57.911 INFO  eventLoopGroupProxy-4-4 d.r.s.backend.shared.Logging - Requesting to connect to game b2a237da-d699-44fd-83f0-93c03048dba6 as user user
+2022-07-28 19:55:57.912 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Added new websocket-connection with id 1
+2022-07-28 19:55:57.913 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Connect user user (1) to game b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:55:57.922 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Sending world-state of game b2a237da-d699-44fd-83f0-93c03048dba6 to connected player(s)
+2022-07-28 19:55:57.932 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 1
+2022-07-28 19:56:15.424 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 1
+2022-07-28 19:56:15.424 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - user user submits 4 commands for game b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:56:15.443 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - End turn of game b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:56:15.461 INFO  eventLoopGroupProxy-3-1 d.r.s.backend.shared.Logging - Resolving 4 commands for game b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:56:15.478 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Sending world-state of game b2a237da-d699-44fd-83f0-93c03048dba6 to connected player(s)
+2022-07-28 19:56:15.485 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 1
+2022-07-28 19:56:31.486 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Received message 'submit-turn' from connection 1
+2022-07-28 19:56:31.487 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - user user submits 2 commands for game b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:56:31.513 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - End turn of game b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:56:31.531 INFO  eventLoopGroupProxy-3-2 d.r.s.backend.shared.Logging - Resolving 2 commands for game b2a237da-d699-44fd-83f0-93c03048dba6
+2022-07-28 19:56:31.548 INFO  eventLoopGroupProxy-3-3 d.r.s.backend.shared.Logging - Sending world-state of game b2a237da-d699-44fd-83f0-93c03048dba6 to connected player(s)
+2022-07-28 19:56:31.554 INFO  eventLoopGroupProxy-3-4 d.r.s.backend.shared.Logging - Sending message 'world-state' to connection 1
+2022-07-28 19:56:54.115 INFO  DefaultDispatcher-worker-4 d.r.s.backend.shared.Logging - Remove websocket-connection with id 1
+2022-07-28 19:56:54.116 INFO  DefaultDispatcher-worker-4 d.r.s.backend.shared.Logging - Disconnect user user from all currently connected games
+2022-07-28 19:56:57.020 INFO  KtorShutdownHook Application - Application stopping: io.ktor.server.application.Application@7afbf561
+2022-07-28 19:56:57.021 INFO  KtorShutdownHook Application - Application stopped: io.ktor.server.application.Application@7afbf561
+2022-09-08 16:56:38.261 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-08 16:56:38.605 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-08 16:56:38.969 INFO  main i.g.s.k.routing.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-08 16:56:38.990 INFO  main Application - Application started in 0.406 seconds.
+2022-09-08 16:56:38.990 INFO  main Application - Application started: io.ktor.server.application.Application@1acb74ad
+2022-09-08 16:56:39.638 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-08 16:56:44.294 INFO  eventLoopGroupProxy-4-1 Application - 302 Found: GET - /
+2022-09-08 16:56:44.307 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /swagger-ui/index.html
+2022-09-08 16:56:44.338 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /swagger-ui/swagger-ui.css
+2022-09-08 16:56:44.346 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: GET - /swagger-ui/index.css
+2022-09-08 16:56:44.348 INFO  eventLoopGroupProxy-4-4 Application - 200 OK: GET - /swagger-ui/swagger-ui-standalone-preset.js
+2022-09-08 16:56:44.356 INFO  eventLoopGroupProxy-4-5 Application - 200 OK: GET - /swagger-ui/swagger-initializer.js
+2022-09-08 16:56:44.355 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: GET - /swagger-ui/swagger-ui-bundle.js
+2022-09-08 16:56:44.475 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: GET - /swagger-ui/favicon-16x16.png
+2022-09-08 16:56:44.497 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: GET - /swagger-ui/api.json
+2022-09-08 16:56:48.454 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: GET - /api/health
+2022-09-08 16:56:55.302 INFO  eventLoopGroupProxy-4-6 Application - 200 OK: OPTIONS - /api/game/list
+2022-09-08 16:56:55.308 INFO  eventLoopGroupProxy-4-6 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-08 16:56:56.468 INFO  eventLoopGroupProxy-4-6 Application - 200 OK: OPTIONS - /api/user/login
+2022-09-08 16:56:56.844 INFO  eventLoopGroupProxy-4-6 d.r.s.b.e.users.AwsCognitoService - Failed to authenticate user user: Unable to unmarshall exception response with the unmarshallers provided (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code: UnrecognizedClientException; Request ID: 96dc3aae-5dab-4944-acfa-bf3843b70723; Proxy: null)
+com.amazonaws.AmazonServiceException: Unable to unmarshall exception response with the unmarshallers provided (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code: UnrecognizedClientException; Request ID: 96dc3aae-5dab-4944-acfa-bf3843b70723; Proxy: null)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleErrorResponse(AmazonHttpClient.java:1879)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleServiceErrorResponse(AmazonHttpClient.java:1418)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1387)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1157)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:814)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:781)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:755)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:715)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:697)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:561)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:541)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.doInvoke(AWSCognitoIdentityProviderClient.java:8391)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.invoke(AWSCognitoIdentityProviderClient.java:8358)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.invoke(AWSCognitoIdentityProviderClient.java:8347)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.executeAdminInitiateAuth(AWSCognitoIdentityProviderClient.java:1472)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.adminInitiateAuth(AWSCognitoIdentityProviderClient.java:1441)
+	at de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService.authenticate(AwsCognitoService.kt:171)
+	at de.ruegnerlukas.strategygame.backend.external.api.routing.UserRoutingKt$userRoutes$1$4.invokeSuspend(userRouting.kt:92)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at io.ktor.util.pipeline.SuspendFunctionGun.resumeRootWith(SuspendFunctionGun.kt:138)
+	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:112)
+	at io.ktor.util.pipeline.SuspendFunctionGun.access$loop(SuspendFunctionGun.kt:14)
+	at io.ktor.util.pipeline.SuspendFunctionGun$continuation$1.resumeWith(SuspendFunctionGun.kt:62)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:46)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:285)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-09-08 16:56:56.846 ERROR eventLoopGroupProxy-4-6 d.r.s.b.config.ApplicationConfig - Controller received error
+java.lang.Exception: Could not authenticate user. Cause: com.amazonaws.AmazonServiceException: Unable to unmarshall exception response with the unmarshallers provided (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code: UnrecognizedClientException; Request ID: 96dc3aae-5dab-4944-acfa-bf3843b70723; Proxy: null)
+	at de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService.authenticate(AwsCognitoService.kt:197)
+	at de.ruegnerlukas.strategygame.backend.external.api.routing.UserRoutingKt$userRoutes$1$4.invokeSuspend(userRouting.kt:92)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at io.ktor.util.pipeline.SuspendFunctionGun.resumeRootWith(SuspendFunctionGun.kt:138)
+	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:112)
+	at io.ktor.util.pipeline.SuspendFunctionGun.access$loop(SuspendFunctionGun.kt:14)
+	at io.ktor.util.pipeline.SuspendFunctionGun$continuation$1.resumeWith(SuspendFunctionGun.kt:62)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:46)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:285)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-09-08 16:56:56.846 INFO  eventLoopGroupProxy-4-6 Application - 500 Internal Server Error: POST - /api/user/login
+2022-09-08 16:57:24.501 INFO  main Application - Application stopping: io.ktor.server.application.Application@1acb74ad
+2022-09-08 16:57:24.502 INFO  main Application - Application stopped: io.ktor.server.application.Application@1acb74ad
+2022-09-08 17:02:05.600 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-08 17:02:05.932 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-08 17:02:06.269 INFO  main i.g.s.k.routing.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-08 17:02:06.289 INFO  main Application - Application started in 0.376 seconds.
+2022-09-08 17:02:06.290 INFO  main Application - Application started: io.ktor.server.application.Application@4b960b5b
+2022-09-08 17:02:06.984 INFO  DefaultDispatcher-worker-2 Application - Responding at http://localhost:8080
+2022-09-08 17:02:11.887 INFO  eventLoopGroupProxy-4-1 d.r.s.b.e.users.AwsCognitoService - Failed to authenticate user user: Incorrect username or password. (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code: NotAuthorizedException; Request ID: 31e3c8e8-5903-4cfb-a657-cf39adbcd3f6; Proxy: null)
+com.amazonaws.services.cognitoidp.model.NotAuthorizedException: Incorrect username or password. (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code: NotAuthorizedException; Request ID: 31e3c8e8-5903-4cfb-a657-cf39adbcd3f6; Proxy: null)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleErrorResponse(AmazonHttpClient.java:1879)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleServiceErrorResponse(AmazonHttpClient.java:1418)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1387)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1157)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:814)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:781)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:755)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:715)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:697)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:561)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:541)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.doInvoke(AWSCognitoIdentityProviderClient.java:8391)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.invoke(AWSCognitoIdentityProviderClient.java:8358)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.invoke(AWSCognitoIdentityProviderClient.java:8347)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.executeAdminInitiateAuth(AWSCognitoIdentityProviderClient.java:1472)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.adminInitiateAuth(AWSCognitoIdentityProviderClient.java:1441)
+	at de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService.authenticate(AwsCognitoService.kt:171)
+	at de.ruegnerlukas.strategygame.backend.external.api.routing.UserRoutingKt$userRoutes$1$4.invokeSuspend(userRouting.kt:92)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at io.ktor.util.pipeline.SuspendFunctionGun.resumeRootWith(SuspendFunctionGun.kt:138)
+	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:112)
+	at io.ktor.util.pipeline.SuspendFunctionGun.access$loop(SuspendFunctionGun.kt:14)
+	at io.ktor.util.pipeline.SuspendFunctionGun$continuation$1.resumeWith(SuspendFunctionGun.kt:62)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:46)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:285)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-09-08 17:02:11.909 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: POST - /api/user/login
+2022-09-08 17:02:11.961 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: OPTIONS - /api/game/config
+2022-09-08 17:02:11.962 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-08 17:02:11.963 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: GET - /api/game/config
+2022-09-08 17:02:13.232 INFO  eventLoopGroupProxy-4-1 d.r.s.b.e.users.AwsCognitoService - Failed to authenticate user user: Incorrect username or password. (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code: NotAuthorizedException; Request ID: 69dae5e5-f63e-4707-9eb6-ab51906b9ee8; Proxy: null)
+com.amazonaws.services.cognitoidp.model.NotAuthorizedException: Incorrect username or password. (Service: AWSCognitoIdentityProvider; Status Code: 400; Error Code: NotAuthorizedException; Request ID: 69dae5e5-f63e-4707-9eb6-ab51906b9ee8; Proxy: null)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleErrorResponse(AmazonHttpClient.java:1879)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleServiceErrorResponse(AmazonHttpClient.java:1418)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1387)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1157)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:814)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:781)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:755)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:715)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:697)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:561)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:541)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.doInvoke(AWSCognitoIdentityProviderClient.java:8391)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.invoke(AWSCognitoIdentityProviderClient.java:8358)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.invoke(AWSCognitoIdentityProviderClient.java:8347)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.executeAdminInitiateAuth(AWSCognitoIdentityProviderClient.java:1472)
+	at com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClient.adminInitiateAuth(AWSCognitoIdentityProviderClient.java:1441)
+	at de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService.authenticate(AwsCognitoService.kt:171)
+	at de.ruegnerlukas.strategygame.backend.external.api.routing.UserRoutingKt$userRoutes$1$4.invokeSuspend(userRouting.kt:92)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at io.ktor.util.pipeline.SuspendFunctionGun.resumeRootWith(SuspendFunctionGun.kt:138)
+	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:112)
+	at io.ktor.util.pipeline.SuspendFunctionGun.access$loop(SuspendFunctionGun.kt:14)
+	at io.ktor.util.pipeline.SuspendFunctionGun$continuation$1.resumeWith(SuspendFunctionGun.kt:62)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:46)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:285)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-09-08 17:02:13.235 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: POST - /api/user/login
+2022-09-08 17:02:13.285 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: GET - /api/game/config
+2022-09-08 17:02:13.285 INFO  eventLoopGroupProxy-4-2 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-08 17:02:30.136 INFO  eventLoopGroupProxy-4-1 d.r.s.b.e.users.AwsCognitoService - Successfully authenticated user smileyg4m3r@gmail.com
+2022-09-08 17:02:30.151 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-09-08 17:02:30.374 INFO  eventLoopGroupProxy-4-2 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-08 17:02:30.382 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/config
+2022-09-08 17:02:30.421 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: GET - /api/game/list
+2022-09-08 17:02:32.715 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/create
+2022-09-08 17:02:32.723 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-08 17:02:32.829 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 320
+2022-09-08 17:02:32.829 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 320 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-08 17:02:32.931 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-08 17:02:34.227 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/320
+2022-09-08 17:02:34.232 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 320 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-08 17:02:34.234 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/320
+2022-09-08 17:02:34.278 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 320 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-08 17:02:34.306 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-08 17:02:34.309 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 320
+2022-09-08 17:02:34.312 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 320 to connected player(s)
+2022-09-08 17:02:34.344 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-08 17:02:42.519 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-08 17:02:42.519 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 320
+2022-09-08 17:02:42.538 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 320
+2022-09-08 17:02:42.572 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 320
+2022-09-08 17:02:42.573 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 320 and country 1600
+2022-09-08 17:02:42.773 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 320 to connected player(s)
+2022-09-08 17:02:42.775 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-08 17:03:00.420 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-08 17:03:00.420 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 320
+2022-09-08 17:03:00.425 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 320
+2022-09-08 17:03:00.463 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 320
+2022-09-08 17:03:00.463 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 320 and country 1600
+2022-09-08 17:03:00.520 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 320 to connected player(s)
+2022-09-08 17:03:00.521 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-08 17:03:13.274 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-08 17:03:13.274 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 320
+2022-09-08 17:03:13.280 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 320
+2022-09-08 17:03:13.301 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 320
+2022-09-08 17:03:13.302 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 320 and country 1600
+2022-09-08 17:03:13.340 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 320 to connected player(s)
+2022-09-08 17:03:13.341 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-08 17:04:21.898 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.ConnectionHandler - Remove websocket-connection with id 0
+2022-09-08 17:04:21.899 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.GameDisconnectActionImpl - Disconnect user d81feb82-5f13-4c75-94c5-886dcee561f3 from all currently connected games
+2022-09-08 17:04:21.903 INFO  eventLoopGroupProxy-4-3 Application - 101 Switching Protocols: GET - /api/game/320?token=SECRET
+2022-09-08 17:05:00.030 INFO  KtorShutdownHook Application - Application stopping: io.ktor.server.application.Application@4b960b5b
+2022-09-08 17:05:00.030 INFO  KtorShutdownHook Application - Application stopped: io.ktor.server.application.Application@4b960b5b
+2022-09-25 17:53:33.101 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 17:53:33.497 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 17:53:33.791 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 17:53:33.966 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 17:53:33.987 INFO  main Application - Application started in 0.514 seconds.
+2022-09-25 17:53:33.987 INFO  main Application - Application started: io.ktor.server.application.Application@3850e90c
+2022-09-25 17:53:34.670 INFO  DefaultDispatcher-worker-2 Application - Responding at http://localhost:8080
+2022-09-25 17:54:02.304 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/list
+2022-09-25 17:54:02.304 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: OPTIONS - /api/game/list
+2022-09-25 17:54:02.320 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-25 17:54:02.320 INFO  eventLoopGroupProxy-4-2 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-25 17:54:05.520 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/game/list
+2022-09-25 17:54:05.530 INFO  eventLoopGroupProxy-4-3 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-25 17:54:12.023 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/user/login
+2022-09-25 17:54:12.670 INFO  eventLoopGroupProxy-4-3 d.r.s.b.e.users.AwsCognitoService - Successfully authenticated user smileyg4m3r@gmail.com
+2022-09-25 17:54:12.680 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/user/login
+2022-09-25 17:54:12.842 INFO  eventLoopGroupProxy-4-4 Application - 200 OK: OPTIONS - /api/game/config
+2022-09-25 17:54:12.985 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 17:54:13.008 INFO  eventLoopGroupProxy-4-4 Application - 200 OK: GET - /api/game/config
+2022-09-25 17:54:13.040 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: GET - /api/game/list
+2022-09-25 17:54:13.934 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/game/create
+2022-09-25 17:54:13.938 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-25 17:54:14.047 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 188
+2022-09-25 17:54:14.047 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 188 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 17:54:14.156 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: POST - /api/game/create
+2022-09-25 17:54:16.714 INFO  eventLoopGroupProxy-4-3 Application - 200 OK: OPTIONS - /api/game/join/188
+2022-09-25 17:54:16.724 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 188 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 17:54:16.740 INFO  eventLoopGroupProxy-4-3 Application - 409 Conflict: POST - /api/game/join/188
+2022-09-25 17:54:16.771 INFO  eventLoopGroupProxy-4-5 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 188 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 17:54:16.794 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 17:54:16.796 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 188
+2022-09-25 17:54:16.800 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 188 to connected player(s)
+2022-09-25 17:54:16.894 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 17:54:27.709 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 17:54:27.710 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 188
+2022-09-25 17:54:27.731 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 188
+2022-09-25 17:54:27.784 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 188
+2022-09-25 17:54:27.786 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 188 and country 1464
+2022-09-25 17:54:28.118 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 188 to connected player(s)
+2022-09-25 17:54:28.150 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 17:54:43.337 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 17:54:43.338 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 2 commands for game 188
+2022-09-25 17:54:43.344 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 188
+2022-09-25 17:54:43.379 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 2 commands for game 188
+2022-09-25 17:54:43.379 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 188 and country 1464
+2022-09-25 17:54:43.380 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 188 and country 1464
+2022-09-25 17:54:43.442 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 188 to connected player(s)
+2022-09-25 17:54:43.466 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:36:44.819 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 21:36:45.322 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 21:36:45.619 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 21:36:45.745 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 21:36:45.767 INFO  main Application - Application started in 0.486 seconds.
+2022-09-25 21:36:45.767 INFO  main Application - Application started: io.ktor.server.application.Application@3d9f5016
+2022-09-25 21:36:46.396 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-25 21:40:51.495 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/list
+2022-09-25 21:40:51.540 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-25 21:40:54.047 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/user/login
+2022-09-25 21:40:54.754 INFO  eventLoopGroupProxy-4-1 d.r.s.b.e.users.AwsCognitoService - Successfully authenticated user smileyg4m3r@gmail.com
+2022-09-25 21:40:54.766 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-09-25 21:40:54.790 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: OPTIONS - /api/game/config
+2022-09-25 21:40:54.917 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:40:54.940 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: GET - /api/game/config
+2022-09-25 21:40:54.963 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:40:57.247 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/188
+2022-09-25 21:40:57.261 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 188 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:40:57.278 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/188
+2022-09-25 21:40:57.312 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 188 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:40:57.319 INFO  eventLoopGroupProxy-4-3 Application - 409 Conflict: GET - /api/game/188?token=SECRET
+2022-09-25 21:40:59.663 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/create
+2022-09-25 21:40:59.667 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-25 21:40:59.761 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 6003
+2022-09-25 21:40:59.762 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:40:59.844 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-25 21:41:01.457 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/6003
+2022-09-25 21:41:01.467 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:41:01.470 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/6003
+2022-09-25 21:41:01.505 INFO  eventLoopGroupProxy-4-4 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:41:01.534 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 21:41:01.537 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 6003
+2022-09-25 21:41:01.540 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 6003 to connected player(s)
+2022-09-25 21:41:01.607 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:41:12.221 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:41:12.221 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 6003
+2022-09-25 21:41:12.227 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.ConnectionHandler - Remove websocket-connection with id 0
+2022-09-25 21:41:12.228 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.GameDisconnectActionImpl - Disconnect user d81feb82-5f13-4c75-94c5-886dcee561f3 from all currently connected games
+2022-09-25 21:41:12.230 ERROR eventLoopGroupProxy-3-1 Application - Websocket handler failed
+java.lang.NullPointerException: null
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.createCommandCreateTown(TurnSubmitActionImpl.kt:131)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.createCommands(TurnSubmitActionImpl.kt:94)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.saveCommands(TurnSubmitActionImpl.kt:81)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.access$saveCommands(TurnSubmitActionImpl.kt:27)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl$perform$2.invokeSuspend(TurnSubmitActionImpl.kt:41)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:288)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-09-25 21:41:12.247 INFO  eventLoopGroupProxy-4-4 Application - 101 Switching Protocols: GET - /api/game/6003?token=SECRET
+2022-09-25 21:42:48.931 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:42:48.935 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:42:48.947 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:42:48.951 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:42:51.738 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:42:51.743 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/6003
+2022-09-25 21:42:51.862 INFO  eventLoopGroupProxy-4-5 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:42:51.868 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 1
+2022-09-25 21:42:51.869 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (1) to game 6003
+2022-09-25 21:42:51.873 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 6003 to connected player(s)
+2022-09-25 21:42:51.922 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 1
+2022-09-25 21:42:59.794 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 1
+2022-09-25 21:42:59.795 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 6003
+2022-09-25 21:42:59.803 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.ConnectionHandler - Remove websocket-connection with id 1
+2022-09-25 21:42:59.805 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.GameDisconnectActionImpl - Disconnect user d81feb82-5f13-4c75-94c5-886dcee561f3 from all currently connected games
+2022-09-25 21:42:59.811 ERROR eventLoopGroupProxy-3-3 Application - Websocket handler failed
+java.lang.NullPointerException: null
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.createCommandCreateTown(TurnSubmitActionImpl.kt:131)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.createCommands(TurnSubmitActionImpl.kt:94)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.saveCommands(TurnSubmitActionImpl.kt:81)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl.access$saveCommands(TurnSubmitActionImpl.kt:27)
+	at de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl$perform$2.invokeSuspend(TurnSubmitActionImpl.kt:41)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+	at io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:174)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:167)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:470)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:503)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.ktor.server.netty.EventLoopGroupProxy$Companion.create$lambda-1$lambda-0(NettyApplicationEngine.kt:288)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-09-25 21:42:59.812 INFO  eventLoopGroupProxy-4-5 Application - 101 Switching Protocols: GET - /api/game/6003?token=SECRET
+2022-09-25 21:43:26.800 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 21:43:27.641 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 21:43:28.311 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 21:43:28.706 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 21:43:28.772 INFO  main Application - Application started in 1.187 seconds.
+2022-09-25 21:43:28.774 INFO  main Application - Application started: io.ktor.server.application.Application@40113163
+2022-09-25 21:43:29.671 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-25 21:43:35.437 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/list
+2022-09-25 21:43:35.474 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-25 21:43:38.074 INFO  eventLoopGroupProxy-4-1 d.r.s.b.e.users.AwsCognitoService - Successfully authenticated user smileyg4m3r@gmail.com
+2022-09-25 21:43:38.088 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-09-25 21:43:38.207 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:43:38.222 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: GET - /api/game/config
+2022-09-25 21:43:38.241 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:43:40.002 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:43:40.022 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/6003
+2022-09-25 21:43:40.055 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:43:40.084 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 21:43:40.089 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 6003
+2022-09-25 21:43:40.103 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 6003 to connected player(s)
+2022-09-25 21:43:40.235 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:43:44.847 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:43:44.847 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 6003
+2022-09-25 21:43:44.868 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 6003
+2022-09-25 21:43:44.909 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 6003
+2022-09-25 21:43:44.912 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 6003 and country 7269
+2022-09-25 21:43:45.240 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 6003 to connected player(s)
+2022-09-25 21:43:45.261 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:44:01.864 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:44:01.865 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 6003
+2022-09-25 21:44:01.872 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 6003
+2022-09-25 21:44:01.914 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 6003
+2022-09-25 21:44:01.915 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 6003 and country 7269
+2022-09-25 21:44:01.992 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 6003 to connected player(s)
+2022-09-25 21:44:02.027 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:47:19.701 INFO  DefaultDispatcher-worker-8 d.r.s.b.e.a.w.ConnectionHandler - Remove websocket-connection with id 0
+2022-09-25 21:47:19.702 INFO  DefaultDispatcher-worker-8 d.r.s.b.c.a.g.GameDisconnectActionImpl - Disconnect user d81feb82-5f13-4c75-94c5-886dcee561f3 from all currently connected games
+2022-09-25 21:47:22.806 INFO  main Application - Application stopping: io.ktor.server.application.Application@40113163
+2022-09-25 21:47:22.808 INFO  main Application - Application stopped: io.ktor.server.application.Application@40113163
+2022-09-25 21:47:24.388 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 21:47:24.896 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 21:47:25.204 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 21:47:25.379 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 21:47:25.414 INFO  main Application - Application started in 0.558 seconds.
+2022-09-25 21:47:25.415 INFO  main Application - Application started: io.ktor.server.application.Application@712ac7e6
+2022-09-25 21:47:26.079 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-25 21:47:33.712 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:47:33.783 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:47:36.082 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:47:36.105 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/6003
+2022-09-25 21:47:36.136 INFO  eventLoopGroupProxy-4-2 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:47:36.140 INFO  eventLoopGroupProxy-4-2 Application - 409 Conflict: GET - /api/game/6003?token=SECRET
+2022-09-25 21:47:38.407 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:47:38.413 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/6003
+2022-09-25 21:47:38.450 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 6003 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:47:38.455 INFO  eventLoopGroupProxy-4-3 Application - 409 Conflict: GET - /api/game/6003?token=SECRET
+2022-09-25 21:47:46.810 INFO  eventLoopGroupProxy-4-1 d.r.s.b.e.users.AwsCognitoService - Successfully authenticated user smileyg4m3r@gmail.com
+2022-09-25 21:47:46.815 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-09-25 21:47:46.829 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:47:46.832 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:47:46.842 INFO  eventLoopGroupProxy-4-4 Application - 200 OK: GET - /api/game/config
+2022-09-25 21:47:47.554 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-25 21:47:47.668 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 7603
+2022-09-25 21:47:47.668 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 7603 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:47:47.776 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-25 21:47:49.061 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/7603
+2022-09-25 21:47:49.115 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 7603 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:47:49.120 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/7603
+2022-09-25 21:47:49.192 INFO  eventLoopGroupProxy-4-5 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 7603 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:47:49.223 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 21:47:49.226 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 7603
+2022-09-25 21:47:49.230 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 7603 to connected player(s)
+2022-09-25 21:47:49.308 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:47:58.109 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:47:58.110 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 7603
+2022-09-25 21:47:58.139 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 7603
+2022-09-25 21:47:58.202 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 7603
+2022-09-25 21:47:58.204 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 7603 and country 8869
+2022-09-25 21:47:58.688 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 7603 to connected player(s)
+2022-09-25 21:47:58.719 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:48:16.409 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:48:16.410 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 7603
+2022-09-25 21:48:16.423 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 7603
+2022-09-25 21:48:16.479 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 7603
+2022-09-25 21:52:55.861 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 7603 and country 8869
+2022-09-25 21:52:55.941 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 7603 to connected player(s)
+2022-09-25 21:52:55.971 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:53:01.502 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 21:53:02.581 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 21:53:03.329 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 21:53:03.754 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 21:53:03.819 INFO  main Application - Application started in 1.333 seconds.
+2022-09-25 21:53:03.821 INFO  main Application - Application started: io.ktor.server.application.Application@1624775
+2022-09-25 21:53:05.228 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-25 21:53:09.370 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:53:09.483 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:53:10.784 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-25 21:53:10.883 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 9068
+2022-09-25 21:53:10.884 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 9068 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:53:10.976 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-25 21:53:13.120 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/9068
+2022-09-25 21:53:13.126 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 9068 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:53:13.138 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/9068
+2022-09-25 21:53:13.171 INFO  eventLoopGroupProxy-4-2 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 9068 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:53:13.200 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 21:53:13.203 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 9068
+2022-09-25 21:53:13.206 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 9068 to connected player(s)
+2022-09-25 21:53:13.281 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:53:21.774 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:53:21.775 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 9068
+2022-09-25 21:53:21.805 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 9068
+2022-09-25 21:53:21.852 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 9068
+2022-09-25 21:53:28.111 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolvePlaceScoutCommandImpl - Resolving 'place-scout'-command for game 9068 and country 10334
+2022-09-25 21:53:28.214 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 9068 to connected player(s)
+2022-09-25 21:53:28.231 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:53:51.630 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:53:51.631 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 9068
+2022-09-25 21:53:51.646 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 9068
+2022-09-25 21:53:51.684 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 9068
+2022-09-25 21:53:51.685 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 9068 and country 10334
+2022-09-25 21:53:52.109 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 9068 to connected player(s)
+2022-09-25 21:53:52.126 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:54:13.125 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:54:13.125 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 9068
+2022-09-25 21:55:24.333 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 9068
+2022-09-25 21:55:24.371 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 9068
+2022-09-25 21:55:24.371 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 9068 and country 10334
+2022-09-25 21:55:24.407 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 9068 to connected player(s)
+2022-09-25 21:55:24.427 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:55:57.030 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 21:55:57.587 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 21:55:57.901 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 21:55:58.023 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 21:55:58.045 INFO  main Application - Application started in 0.495 seconds.
+2022-09-25 21:55:58.045 INFO  main Application - Application started: io.ktor.server.application.Application@3610f277
+2022-09-25 21:55:58.916 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-25 21:56:02.747 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:56:02.808 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:56:02.829 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:56:02.834 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:56:05.287 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-25 21:56:05.389 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 10502
+2022-09-25 21:56:05.390 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 10502 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:56:05.504 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-25 21:56:07.197 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/10502
+2022-09-25 21:56:07.289 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 10502 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:56:07.309 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/10502
+2022-09-25 21:56:07.342 INFO  eventLoopGroupProxy-4-2 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 10502 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:56:07.369 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 21:56:07.372 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 10502
+2022-09-25 21:56:07.376 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 10502 to connected player(s)
+2022-09-25 21:56:07.442 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:56:13.141 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:56:13.142 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 10502
+2022-09-25 21:56:13.171 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 10502
+2022-09-25 21:56:13.214 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 10502
+2022-09-25 21:56:13.215 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 10502 and country 11768
+2022-09-25 21:56:13.683 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 10502 to connected player(s)
+2022-09-25 21:56:13.724 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:56:24.934 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:56:24.935 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 10502
+2022-09-25 21:56:24.951 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 10502
+2022-09-25 21:56:25.005 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 10502
+2022-09-25 21:56:25.006 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCreateTownCommandImpl - Resolving 'create-town'-command for game 10502 and country 11768
+2022-09-25 21:56:25.073 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 10502 to connected player(s)
+2022-09-25 21:56:25.099 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:58:42.009 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 21:58:42.455 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 21:58:42.695 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 21:58:42.822 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 21:58:42.842 INFO  main Application - Application started in 0.422 seconds.
+2022-09-25 21:58:42.842 INFO  main Application - Application started: io.ktor.server.application.Application@62c72501
+2022-09-25 21:58:43.422 INFO  DefaultDispatcher-worker-2 Application - Responding at http://localhost:8080
+2022-09-25 21:58:46.651 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:58:46.712 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 21:58:47.524 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-25 21:58:47.613 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 11923
+2022-09-25 21:58:47.614 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 11923 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:58:47.720 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-25 21:58:49.047 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/11923
+2022-09-25 21:58:49.058 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 11923 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 21:58:49.073 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/11923
+2022-09-25 21:58:49.103 INFO  eventLoopGroupProxy-4-2 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 11923 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 21:58:49.127 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 21:58:49.131 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 11923
+2022-09-25 21:58:49.134 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 11923 to connected player(s)
+2022-09-25 21:58:49.210 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:58:54.003 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:58:54.003 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 11923
+2022-09-25 21:58:54.042 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 11923
+2022-09-25 21:58:54.093 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 11923
+2022-09-25 21:58:54.097 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 11923 and country 13189
+2022-09-25 21:58:54.497 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 11923 to connected player(s)
+2022-09-25 21:58:54.535 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:58:59.254 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:58:59.255 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 11923
+2022-09-25 21:58:59.262 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 11923
+2022-09-25 21:58:59.301 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 11923
+2022-09-25 21:58:59.301 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 11923 and country 13189
+2022-09-25 21:58:59.383 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 11923 to connected player(s)
+2022-09-25 21:58:59.403 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 21:59:12.753 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 21:59:12.753 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 2 commands for game 11923
+2022-09-25 21:59:12.768 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 11923
+2022-09-25 21:59:12.804 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 2 commands for game 11923
+2022-09-25 21:59:12.805 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCreateTownCommandImpl - Resolving 'create-town'-command for game 11923 and country 13189
+2022-09-25 21:59:12.807 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCreateTownCommandImpl - Resolving 'create-town'-command for game 11923 and country 13189
+2022-09-25 21:59:12.867 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 11923 to connected player(s)
+2022-09-25 21:59:12.912 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 22:02:13.983 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-25 22:02:14.439 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-25 22:02:14.723 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-25 22:02:14.863 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-25 22:02:14.885 INFO  main Application - Application started in 0.473 seconds.
+2022-09-25 22:02:14.886 INFO  main Application - Application started: io.ktor.server.application.Application@62c72501
+2022-09-25 22:02:15.549 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-25 22:02:37.861 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:37.926 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 22:02:37.935 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:37.938 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 22:02:37.944 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:37.946 INFO  eventLoopGroupProxy-4-2 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:37.948 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 22:02:37.950 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: GET - /api/game/list
+2022-09-25 22:02:40.090 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 11923 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 22:02:40.113 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/11923
+2022-09-25 22:02:40.145 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 11923 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:40.151 INFO  eventLoopGroupProxy-4-3 Application - 409 Conflict: GET - /api/game/11923?token=SECRET
+2022-09-25 22:02:41.911 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 11923 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 22:02:41.912 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/11923
+2022-09-25 22:02:41.944 INFO  eventLoopGroupProxy-4-4 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 11923 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:41.949 INFO  eventLoopGroupProxy-4-4 Application - 409 Conflict: GET - /api/game/11923?token=SECRET
+2022-09-25 22:02:44.137 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:44.140 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-25 22:02:47.807 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-25 22:02:47.910 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 13394
+2022-09-25 22:02:47.910 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 13394 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 22:02:48.000 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-25 22:02:49.443 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/13394
+2022-09-25 22:02:49.585 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 13394 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-25 22:02:49.591 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/13394
+2022-09-25 22:02:49.667 INFO  eventLoopGroupProxy-4-5 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 13394 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-25 22:02:49.693 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-25 22:02:49.695 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 13394
+2022-09-25 22:02:49.697 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 13394 to connected player(s)
+2022-09-25 22:02:49.755 INFO  eventLoopGroupProxy-3-1 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 22:03:04.024 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 22:03:04.025 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 13394
+2022-09-25 22:03:04.052 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 13394
+2022-09-25 22:03:04.116 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 13394
+2022-09-25 22:03:04.118 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 13394 and country 14660
+2022-09-25 22:03:04.206 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 13394 to connected player(s)
+2022-09-25 22:03:04.229 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 22:03:12.138 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 22:03:12.138 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 2 commands for game 13394
+2022-09-25 22:03:12.150 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 13394
+2022-09-25 22:03:12.205 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 2 commands for game 13394
+2022-09-25 22:03:12.206 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 13394 and country 14660
+2022-09-25 22:03:12.224 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 13394 and country 14660
+2022-09-25 22:03:12.648 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 13394 to connected player(s)
+2022-09-25 22:03:12.677 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-25 22:03:32.482 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-25 22:03:32.483 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 2 commands for game 13394
+2022-09-25 22:03:32.494 INFO  eventLoopGroupProxy-3-1 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 13394
+2022-09-25 22:03:32.528 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 2 commands for game 13394
+2022-09-25 22:03:32.529 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.c.ResolveCreateTownCommandImpl - Resolving 'create-town'-command for game 13394 and country 14660
+2022-09-25 22:03:32.531 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.c.ResolveCreateTownCommandImpl - Resolving 'create-town'-command for game 13394 and country 14660
+2022-09-25 22:03:32.595 INFO  eventLoopGroupProxy-3-3 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 13394 to connected player(s)
+2022-09-25 22:03:32.622 INFO  eventLoopGroupProxy-3-3 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-30 11:40:47.482 INFO  main d.r.s.backend.shared.Logging - Starting application in dev mode.
+2022-09-30 11:40:48.016 INFO  main Application - Autoreload is disabled because the development mode is off.
+2022-09-30 11:40:48.353 INFO  main d.r.s.b.e.p.DatabaseProvider - Trying to connect to database strategy-game-dev on localhost:8529 (retryCount=0)
+2022-09-30 11:40:48.498 INFO  main i.g.s.ktorswaggerui.SwaggerRouting - Registering routes for swagger-ui: /swagger-ui (forwardRoot=true)
+2022-09-30 11:40:48.531 INFO  main Application - Application started in 0.556 seconds.
+2022-09-30 11:40:48.531 INFO  main Application - Application started: io.ktor.server.application.Application@62c72501
+2022-09-30 11:40:49.230 INFO  DefaultDispatcher-worker-1 Application - Responding at http://localhost:8080
+2022-09-30 11:41:04.797 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/list
+2022-09-30 11:41:04.836 INFO  eventLoopGroupProxy-4-1 Application - 401 Unauthorized: GET - /api/game/list
+2022-09-30 11:41:07.156 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/user/login
+2022-09-30 11:41:08.020 INFO  eventLoopGroupProxy-4-1 d.r.s.b.e.users.AwsCognitoService - Successfully authenticated user smileyg4m3r@gmail.com
+2022-09-30 11:41:08.037 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/user/login
+2022-09-30 11:41:08.070 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: OPTIONS - /api/game/config
+2022-09-30 11:41:08.193 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GamesListActionImpl - Listing all game-ids of user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-30 11:41:08.212 INFO  eventLoopGroupProxy-4-2 Application - 200 OK: GET - /api/game/config
+2022-09-30 11:41:08.230 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: GET - /api/game/list
+2022-09-30 11:41:09.712 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/create
+2022-09-30 11:41:09.732 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Creating new game
+2022-09-30 11:41:09.832 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.g.GameCreateActionImpl - Created new game with id 14893
+2022-09-30 11:41:09.833 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 14893 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-30 11:41:09.956 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: POST - /api/game/create
+2022-09-30 11:41:11.764 INFO  eventLoopGroupProxy-4-1 Application - 200 OK: OPTIONS - /api/game/join/14893
+2022-09-30 11:41:11.769 INFO  eventLoopGroupProxy-4-1 d.r.s.b.c.a.game.GameJoinActionImpl - Joining game 14893 as user d81feb82-5f13-4c75-94c5-886dcee561f3)
+2022-09-30 11:41:11.779 INFO  eventLoopGroupProxy-4-1 Application - 409 Conflict: POST - /api/game/join/14893
+2022-09-30 11:41:11.814 INFO  eventLoopGroupProxy-4-3 d.r.s.b.c.a.g.GameRequestConnectionActionImpl - Requesting to connect to game 14893 as user d81feb82-5f13-4c75-94c5-886dcee561f3
+2022-09-30 11:41:11.837 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.ConnectionHandler - Added new websocket-connection with id 0
+2022-09-30 11:41:11.840 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.GameConnectActionImpl - Connect user d81feb82-5f13-4c75-94c5-886dcee561f3 (0) to game 14893
+2022-09-30 11:41:11.844 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 14893 to connected player(s)
+2022-09-30 11:41:11.952 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-30 11:41:22.091 INFO  eventLoopGroupProxy-3-4 d.r.s.b.e.a.m.handler.MessageHandler - Received message 'submit-turn' from connection 0
+2022-09-30 11:41:22.093 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.t.TurnSubmitActionImpl - user d81feb82-5f13-4c75-94c5-886dcee561f3 submits 1 commands for game 14893
+2022-09-30 11:41:22.122 INFO  eventLoopGroupProxy-3-4 d.r.s.b.c.a.turn.TurnEndActionImpl - End turn of game 14893
+2022-09-30 11:41:22.181 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.c.ResolveCommandsActionImpl - Resolving 1 commands for game 14893
+2022-09-30 11:41:22.183 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.c.ResolveCreateCityCommandImpl - Resolving 'create-city'-command for game 14893 and country 16159
+2022-09-30 11:41:22.588 INFO  eventLoopGroupProxy-3-5 d.r.s.b.c.a.g.SendGameStateActionImpl - Sending game-state of game 14893 to connected player(s)
+2022-09-30 11:41:22.623 INFO  eventLoopGroupProxy-3-5 d.r.s.b.e.a.w.WebSocketMessageProducer - Sending message 'game-state' to connection 0
+2022-09-30 12:11:42.742 INFO  eventLoopGroupProxy-3-2 d.r.s.b.e.a.w.ConnectionHandler - Remove websocket-connection with id 0
+2022-09-30 12:11:42.754 INFO  eventLoopGroupProxy-3-2 d.r.s.b.c.a.g.GameDisconnectActionImpl - Disconnect user d81feb82-5f13-4c75-94c5-886dcee561f3 from all currently connected games
+2022-09-30 12:11:42.779 INFO  eventLoopGroupProxy-4-3 Application - 101 Switching Protocols: GET - /api/game/14893?token=SECRET
