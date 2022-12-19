@@ -1,7 +1,7 @@
 import {GameCanvasHandle} from "../gameCanvasHandle";
 import {GLBuffer, GLBufferType, GLBufferUsage} from "../utils/glBuffer";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
-import {LineMeshCreator} from "./lineMeshCreator";
+import {LineMeshCreator, LineSegmentBuilders} from "./lineMeshCreator";
 
 export class LineRenderer {
 
@@ -50,7 +50,13 @@ export class LineRenderer {
         if (this.bufferData) {
             this.bufferData.dispose();
         }
-        const lineMesh = new LineMeshCreator().create(line, thickness);
+        const lineMesh = new LineMeshCreator().create({
+            points: line,
+            thickness: thickness,
+            capStartFunction: LineSegmentBuilders.lineCapStartSquare,
+            capEndFunction: LineSegmentBuilders.lineCapEndPointy,
+            joinFunction: LineSegmentBuilders.lineJoinMiter
+        });
         const data = LineMeshCreator.flatten(lineMesh)
 
         this.bufferData = new GLBuffer(gl, GLBufferType.ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, "line.data").setData(data);

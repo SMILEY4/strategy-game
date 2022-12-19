@@ -1,17 +1,26 @@
 import {Vec2d} from "../../../shared/vec2d";
+import LineElementData = LineSegmentBuilders.LineElementData;
 
+
+export interface LineOptions {
+    points: number[][]
+    thickness: number,
+    capStartFunction: (currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number) => LineElementData,
+    capEndFunction: (prevPoint: number[], currPoint: number[], thickness: number, currentLength: number, totalLength: number) => LineElementData,
+    joinFunction: (prevPoint: number[], currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number) => LineElementData,
+}
 
 export interface LineMesh {
-    vertices: number[][], // list of points (x,y)
+    vertices: number[][], // list of points (x,y,u,v)
     triangles: number[][] // list of triangles (p0,p1,p2) -> index into points
     lastAttachmentPoints: number[] | null // two indices into vertices
 }
 
 export class LineMeshCreator {
 
-    public create(line: [number, number][], thickness: number): LineMesh {
-        const lineLength = line.length;
-        if (lineLength <= 1 || thickness <= 0) {
+    public create(line: LineOptions): LineMesh {
+        const linePointsAmount = line.points.length;
+        if (linePointsAmount <= 1 || line.thickness <= 0) {
             return {
                 vertices: [],
                 triangles: [],
@@ -23,44 +32,57 @@ export class LineMeshCreator {
                 triangles: [],
                 lastAttachmentPoints: null
             };
-
-            for (let i = 0; i < lineLength; i++) {
-                const prevPoint = (i - 1 < 0) ? null : line[i - 1];
-                const currPoint = line[i];
-                const nextPoint = (i + 1 >= lineLength) ? null : line[i + 1];
-                this.createSegment(mesh, prevPoint, currPoint, nextPoint, thickness);
+            const totalLength = this.totalLength(line, linePointsAmount-1)
+            const linePoints = line.points
+            for (let i = 0; i < linePointsAmount; i++) {
+                const currentLength = this.totalLength(line, i)
+                const prevPoint = (i - 1 < 0) ? null : linePoints[i - 1];
+                const currPoint = linePoints[i];
+                const nextPoint = (i + 1 >= linePointsAmount) ? null : linePoints[i + 1];
+                this.createSegment(mesh, prevPoint, currPoint, nextPoint, line, currentLength, totalLength);
             }
 
             return mesh;
         }
     }
 
+    private totalLength(options: LineOptions, upToIndex: number): number {
+        let total = 0
+        const points = options.points
+        for(let i=1; i<=upToIndex; i++) {
+            const p0 = Vec2d.fromArray(points[i-1])
+            const p1 = Vec2d.fromArray(points[i-0])
+            total = total + p0.distance(p1)
+        }
+        return total;
+    }
+
 
     /**
      * the last two added vertices must always be the attachment points for the next line segment (cw first, then ccw)
      */
-    private createSegment(mesh: LineMesh, prevPoint: number[] | null, currPoint: number[], nextPoint: number[] | null, thickness: number) {
+    private createSegment(mesh: LineMesh, prevPoint: number[] | null, currPoint: number[], nextPoint: number[] | null, options: LineOptions, currentLength: number, totalLength: number) {
         if (!prevPoint) {
-            this.buildStartSegment(mesh, currPoint, nextPoint!!, thickness);
+            this.buildStartSegment(mesh, currPoint, nextPoint!!, options, currentLength, totalLength);
         } else if (!nextPoint) {
-            this.createEndSegment(mesh, prevPoint, currPoint, thickness);
+            this.createEndSegment(mesh, prevPoint, currPoint, options, currentLength, totalLength);
         } else {
-            this.createMiddleSegment(mesh, prevPoint!!, currPoint, nextPoint!!, thickness);
+            this.createMiddleSegment(mesh, prevPoint!!, currPoint, nextPoint!!, options, currentLength, totalLength);
         }
     }
 
-    private buildStartSegment(mesh: LineMesh, currPoint: number[], nextPoint: number[], thickness: number) {
-        const elementData = LineSegmentBuilders.lineCapStartPointy(currPoint, nextPoint, thickness);
+    private buildStartSegment(mesh: LineMesh, currPoint: number[], nextPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
+        const elementData = options.capStartFunction(currPoint, nextPoint, options.thickness, currentLength, totalLength);
         mesh.vertices.push(...elementData.points);
         mesh.triangles.push(...elementData.triangles);
         mesh.lastAttachmentPoints = [elementData.attachmentIndices[2], elementData.attachmentIndices[3]]
     }
 
 
-    private createEndSegment(mesh: LineMesh, prevPoint: number[], currPoint: number[], thickness: number) {
+    private createEndSegment(mesh: LineMesh, prevPoint: number[], currPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
         const indexOffset = mesh.vertices.length
 
-        const elementData = LineSegmentBuilders.lineCapEndPointy(prevPoint, currPoint, thickness);
+        const elementData = options.capEndFunction(prevPoint, currPoint, options.thickness, currentLength, totalLength);
         mesh.vertices.push(...elementData.points);
         mesh.triangles.push(...elementData.triangles.map(t => t.map(i => i+indexOffset)));
 
@@ -77,10 +99,10 @@ export class LineMeshCreator {
     }
 
 
-    private createMiddleSegment(mesh: LineMesh, prevPoint: number[], currPoint: number[], nextPoint: number[], thickness: number) {
+    private createMiddleSegment(mesh: LineMesh, prevPoint: number[], currPoint: number[], nextPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
         const indexOffset = mesh.vertices.length
 
-        const elementData = LineSegmentBuilders.lineJoinMiter(prevPoint, currPoint, nextPoint, thickness)
+        const elementData = options.joinFunction(prevPoint, currPoint, nextPoint, options.thickness, currentLength, totalLength)
         mesh.vertices.push(...elementData.points);
         mesh.triangles.push(...elementData.triangles.map(t => t.map(i => i+indexOffset)));
 
@@ -102,9 +124,9 @@ export class LineMeshCreator {
         const data: number[] = [];
         mesh.triangles.forEach(triangle => {
             data.push(
-                ...mesh.vertices[triangle[0]], 1, 0, 0,
-                ...mesh.vertices[triangle[1]], 0, 1, 0,
-                ...mesh.vertices[triangle[2]], 0, 0, 1
+                ...mesh.vertices[triangle[0]], 0,
+                ...mesh.vertices[triangle[1]], 0,
+                ...mesh.vertices[triangle[2]], 0
             );
         });
         return data;
@@ -134,12 +156,12 @@ export namespace LineSegmentBuilders {
 
     }
 
-    export function lineCapStartButt(currPoint: number[], nextPoint: number[], thickness: number): LineElementData {
+    export function lineCapStartButt(currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number): LineElementData {
         const direction = Vec2d.fromTo(currPoint[0], currPoint[1], nextPoint[0], nextPoint[1]).normalize();
         const p0 = direction.copy().rotate90DegClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         const p1 = direction.copy().rotate90DegCounterClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         return {
-            points: [p0.toArray(), p1.toArray()],
+            points: [[p0.x, p0.y, 0, 0], [p1.x, p1.y, 0, 1]],
             attachmentIndices: [0,1,0,1],
             triangles: []
         };
@@ -147,25 +169,26 @@ export namespace LineSegmentBuilders {
     }
 
 
-    export function lineCapEndButt(prevPoint: number[], currPoint: number[], thickness: number): LineElementData {
+    export function lineCapEndButt(prevPoint: number[], currPoint: number[], thickness: number, currentLength: number, totalLength: number): LineElementData {
         const direction = Vec2d.fromTo(prevPoint[0], prevPoint[1], currPoint[0], currPoint[1]).normalize();
         const p0 = direction.copy().rotate90DegClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         const p1 = direction.copy().rotate90DegCounterClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         return {
-            points: [p0.toArray(), p1.toArray()],
+            points: [[p0.x, p0.y, 1, 0], [p1.x, p1.y, 1, 1]],
             attachmentIndices: [0,1,0,1],
             triangles: []
         };
     }
 
 
-    export function lineCapStartSquare(currPoint: number[], nextPoint: number[], thickness: number): LineElementData {
+    export function lineCapStartSquare(currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number): LineElementData {
         const direction = Vec2d.fromTo(currPoint[0], currPoint[1], nextPoint[0], nextPoint[1]).normalize();
         const startPoint = Vec2d.fromXY(currPoint[0], currPoint[1]).addXY(-direction.x * (thickness/2), -direction.y * (thickness/2))
         const p0 = direction.copy().rotate90DegClockwise().setLength(thickness / 2).add(startPoint);
         const p1 = direction.copy().rotate90DegCounterClockwise().setLength(thickness / 2).add(startPoint);
+        const progress = -(thickness/2) / totalLength
         return {
-            points: [p0.toArray(), p1.toArray()],
+            points: [[p0.x, p0.y, progress, 0], [p1.x, p1.y, progress, 1]],
             attachmentIndices: [0,1,0,1],
             triangles: []
         };
@@ -173,26 +196,28 @@ export namespace LineSegmentBuilders {
     }
 
 
-    export function lineCapEndSquare(prevPoint: number[], currPoint: number[], thickness: number): LineElementData {
+    export function lineCapEndSquare(prevPoint: number[], currPoint: number[], thickness: number, currentLength: number, totalLength: number): LineElementData {
         const direction = Vec2d.fromTo(prevPoint[0], prevPoint[1], currPoint[0], currPoint[1]).normalize();
         const endPoint = Vec2d.fromXY(currPoint[0], currPoint[1]).addXY(direction.x * (thickness/2), direction.y * (thickness/2))
         const p0 = direction.copy().rotate90DegClockwise().setLength(thickness / 2).add(endPoint);
         const p1 = direction.copy().rotate90DegCounterClockwise().setLength(thickness / 2).add(endPoint);
+        const progress = (currentLength+(thickness/2)) / totalLength
         return {
-            points: [p0.toArray(), p1.toArray()],
+            points: [[p0.x, p0.y, progress, 0], [p1.x, p1.y, progress, 1]],
             attachmentIndices: [0,1,0,1],
             triangles: []
         };
     }
 
 
-    export function lineCapStartPointy(currPoint: number[], nextPoint: number[], thickness: number): LineElementData {
+    export function lineCapStartPointy(currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number): LineElementData {
         const direction = Vec2d.fromTo(currPoint[0], currPoint[1], nextPoint[0], nextPoint[1]).normalize();
         const p0 = direction.copy().rotate90DegClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         const p1 = direction.copy().rotate90DegCounterClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         const p2 = Vec2d.fromXY(currPoint[0], currPoint[1]).addXY(-direction.x * (thickness/2), -direction.y * (thickness/2))
+        const progress = -(thickness/2) / totalLength
         return {
-            points: [p0.toArray(), p1.toArray(), p2.toArray()],
+            points: [[p0.x, p0.y, 0, 0], [p1.x, p1.y, 0, 1], [p2.x, p2.y, progress, 0.5]],
             attachmentIndices: [0,1,0,1],
             triangles: [[0,1,2]]
         };
@@ -200,20 +225,21 @@ export namespace LineSegmentBuilders {
     }
 
 
-    export function lineCapEndPointy(prevPoint: number[], currPoint: number[], thickness: number): LineElementData {
+    export function lineCapEndPointy(prevPoint: number[], currPoint: number[], thickness: number, currentLength: number, totalLength: number): LineElementData {
         const direction = Vec2d.fromTo(prevPoint[0], prevPoint[1], currPoint[0], currPoint[1]).normalize();
         const p0 = direction.copy().rotate90DegClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         const p1 = direction.copy().rotate90DegCounterClockwise().setLength(thickness / 2).addXY(currPoint[0], currPoint[1]);
         const p2 = Vec2d.fromXY(currPoint[0], currPoint[1]).addXY(direction.x * (thickness/2), direction.y * (thickness/2))
+        const progress = (currentLength+(thickness/2)) / totalLength
         return {
-            points: [p0.toArray(), p1.toArray(), p2.toArray()],
+            points: [[p0.x, p0.y, 1, 0], [p1.x, p1.y, 1, 1], [p2.x, p2.y, progress, 0.5]],
             attachmentIndices: [0,1,0,1],
             triangles: [[0,1,2]]
         };
     }
 
 
-    export function lineJoinMiter(prevPoint: number[], currPoint: number[], nextPoint: number[], thickness: number): LineElementData {
+    export function lineJoinMiter(prevPoint: number[], currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number): LineElementData {
 
         const directionIn = Vec2d.fromTo(prevPoint[0], prevPoint[1], currPoint[0], currPoint[1]).normalize();
         const directionOut = Vec2d.fromTo(currPoint[0], currPoint[1], nextPoint[0], nextPoint[1]).normalize();
@@ -227,8 +253,10 @@ export namespace LineSegmentBuilders {
         const p0 = miter0.setLength(miterHalfThickness).addXY(currPoint[0], currPoint[1]);
         const p1 = miter1.setLength(miterHalfThickness).addXY(currPoint[0], currPoint[1]);
 
+        const progress = currentLength / totalLength
+
         return {
-            points: [p0.toArray(), p1.toArray()],
+            points: [[p0.x, p0.y, progress, 0], [p1.x, p1.y, progress, 1]],
             attachmentIndices: [0,1,0,1],
             triangles: []
         }

@@ -43,6 +43,16 @@ export class Vec2d {
         return this.x * other.x + this.y * other.y
     }
 
+    distance2(other: Vec2d): number {
+        const dx = this.x - other.x;
+        const dy = this.y - other.y;
+        return dx * dx + dy * dy;
+    }
+
+    distance(other: Vec2d): number {
+        return Math.sqrt(this.distance2(other))
+    }
+
     normalize(): Vec2d {
         const length = this.length();
         this.x = this.x / length;
