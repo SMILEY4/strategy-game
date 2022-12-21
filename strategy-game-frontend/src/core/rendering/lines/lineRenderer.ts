@@ -31,9 +31,9 @@ export class LineRenderer {
                     amountComponents: 2,
                 },
                 {
-                    name: "in_color",
+                    name: "in_texcoords",
                     type: ShaderAttributeType.FLOAT,
-                    amountComponents: 3,
+                    amountComponents: 2,
                 }
             ],
             uniforms: [
@@ -53,9 +53,10 @@ export class LineRenderer {
         const lineMesh = new LineMeshCreator().create({
             points: line,
             thickness: thickness,
-            capStartFunction: LineSegmentBuilders.lineCapStartSquare,
-            capEndFunction: LineSegmentBuilders.lineCapEndPointy,
-            joinFunction: LineSegmentBuilders.lineJoinMiter
+            capStartFunction: LineSegmentBuilders.lineCapStartButt,
+            capEndFunction: LineSegmentBuilders.lineCapEndButt,
+            joinFunction: LineSegmentBuilders.lineJoinMiter,
+            vertexBuilder: LineSegmentBuilders.defaultVertexBuilder
         });
         const data = LineMeshCreator.flatten(lineMesh)
 
@@ -64,7 +65,7 @@ export class LineRenderer {
         this.shader!!.use({
             attributeBuffers: {
                 "in_position": this.bufferData!!,
-                "in_color": this.bufferData!!,
+                "in_texcoords": this.bufferData!!,
             },
             uniformValues: {
                 "u_viewProjection": viewMatrix,
@@ -74,7 +75,7 @@ export class LineRenderer {
         gl.drawArrays(
             gl.TRIANGLES,
             0,
-            data.length / 5
+            data.length / 4
         );
 
     }

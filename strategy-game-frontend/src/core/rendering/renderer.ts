@@ -2,6 +2,7 @@ import {CameraState} from "../models/cameraState";
 import {GameRepository} from "../required/gameRepository";
 import {UserRepository} from "../required/userRepository";
 import {WorldRepository} from "../required/worldRepository";
+import {TilemapUtils} from "../tilemap/tilemapUtils";
 import {GameCanvasHandle} from "./gameCanvasHandle";
 import {LineRenderer} from "./lines/lineRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
@@ -57,12 +58,15 @@ export class Renderer {
         this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
         this.tileObjectRenderer.render(camera, gameState, localGameState);
 
-        this.lineRenderer.render([
-                [0, 0],
-                [10, 20],
-                [20, -10],
-            ],
-            3,
+        const linePositions = [
+            [0, 0],
+            [5, 4],
+            [10, -3],
+            [7, 5]
+        ].map(p => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, p[0], p[1]))
+
+        this.lineRenderer.render(linePositions,
+            6,
             camera.getViewProjectionMatrixOrThrow()
         );
 

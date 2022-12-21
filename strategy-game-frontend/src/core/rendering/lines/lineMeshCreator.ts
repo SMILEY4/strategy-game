@@ -8,6 +8,7 @@ export interface LineOptions {
     capStartFunction: (currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number) => LineElementData,
     capEndFunction: (prevPoint: number[], currPoint: number[], thickness: number, currentLength: number, totalLength: number) => LineElementData,
     joinFunction: (prevPoint: number[], currPoint: number[], nextPoint: number[], thickness: number, currentLength: number, totalLength: number) => LineElementData,
+    vertexBuilder: (currentPoint: number[], currentIndex: number, vertexData: number[]) => number[] // vertex data = (x,y,u,v)
 }
 
 export interface LineMesh {
@@ -39,7 +40,7 @@ export class LineMeshCreator {
                 const prevPoint = (i - 1 < 0) ? null : linePoints[i - 1];
                 const currPoint = linePoints[i];
                 const nextPoint = (i + 1 >= linePointsAmount) ? null : linePoints[i + 1];
-                this.createSegment(mesh, prevPoint, currPoint, nextPoint, line, currentLength, totalLength);
+                this.createSegment(mesh, i, prevPoint, currPoint, nextPoint, line, currentLength, totalLength);
             }
 
             return mesh;
@@ -58,32 +59,30 @@ export class LineMeshCreator {
     }
 
 
-    /**
-     * the last two added vertices must always be the attachment points for the next line segment (cw first, then ccw)
-     */
-    private createSegment(mesh: LineMesh, prevPoint: number[] | null, currPoint: number[], nextPoint: number[] | null, options: LineOptions, currentLength: number, totalLength: number) {
+    private createSegment(mesh: LineMesh, index: number, prevPoint: number[] | null, currPoint: number[], nextPoint: number[] | null, options: LineOptions, currentLength: number, totalLength: number) {
         if (!prevPoint) {
-            this.buildStartSegment(mesh, currPoint, nextPoint!!, options, currentLength, totalLength);
+            this.buildStartSegment(mesh, index, currPoint, nextPoint!!, options, currentLength, totalLength);
         } else if (!nextPoint) {
-            this.createEndSegment(mesh, prevPoint, currPoint, options, currentLength, totalLength);
+            this.createEndSegment(mesh, index, prevPoint, currPoint, options, currentLength, totalLength);
         } else {
-            this.createMiddleSegment(mesh, prevPoint!!, currPoint, nextPoint!!, options, currentLength, totalLength);
+            this.createMiddleSegment(mesh, index, prevPoint!!, currPoint, nextPoint!!, options, currentLength, totalLength);
         }
     }
 
-    private buildStartSegment(mesh: LineMesh, currPoint: number[], nextPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
+
+    private buildStartSegment(mesh: LineMesh, index: number, currPoint: number[], nextPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
         const elementData = options.capStartFunction(currPoint, nextPoint, options.thickness, currentLength, totalLength);
-        mesh.vertices.push(...elementData.points);
+        mesh.vertices.push(...elementData.points.map(p => options.vertexBuilder(currPoint, -1, p)));
         mesh.triangles.push(...elementData.triangles);
         mesh.lastAttachmentPoints = [elementData.attachmentIndices[2], elementData.attachmentIndices[3]]
     }
 
 
-    private createEndSegment(mesh: LineMesh, prevPoint: number[], currPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
+    private createEndSegment(mesh: LineMesh, index: number, prevPoint: number[], currPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
         const indexOffset = mesh.vertices.length
 
         const elementData = options.capEndFunction(prevPoint, currPoint, options.thickness, currentLength, totalLength);
-        mesh.vertices.push(...elementData.points);
+        mesh.vertices.push(...elementData.points.map(p => options.vertexBuilder(currPoint, -1, p)));
         mesh.triangles.push(...elementData.triangles.map(t => t.map(i => i+indexOffset)));
 
         const ipp0 = mesh.lastAttachmentPoints!![0];
@@ -99,11 +98,11 @@ export class LineMeshCreator {
     }
 
 
-    private createMiddleSegment(mesh: LineMesh, prevPoint: number[], currPoint: number[], nextPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
+    private createMiddleSegment(mesh: LineMesh, index: number, prevPoint: number[], currPoint: number[], nextPoint: number[], options: LineOptions, currentLength: number, totalLength: number) {
         const indexOffset = mesh.vertices.length
 
         const elementData = options.joinFunction(prevPoint, currPoint, nextPoint, options.thickness, currentLength, totalLength)
-        mesh.vertices.push(...elementData.points);
+        mesh.vertices.push(...elementData.points.map(p => options.vertexBuilder(currPoint, -1, p)));
         mesh.triangles.push(...elementData.triangles.map(t => t.map(i => i+indexOffset)));
 
         const ipp0 = mesh.lastAttachmentPoints!![0];
@@ -124,9 +123,9 @@ export class LineMeshCreator {
         const data: number[] = [];
         mesh.triangles.forEach(triangle => {
             data.push(
-                ...mesh.vertices[triangle[0]], 0,
-                ...mesh.vertices[triangle[1]], 0,
-                ...mesh.vertices[triangle[2]], 0
+                ...mesh.vertices[triangle[0]],
+                ...mesh.vertices[triangle[1]],
+                ...mesh.vertices[triangle[2]],
             );
         });
         return data;
@@ -260,6 +259,10 @@ export namespace LineSegmentBuilders {
             attachmentIndices: [0,1,0,1],
             triangles: []
         }
+    }
+
+    export function defaultVertexBuilder(currentPoint: number[], currentIndex: number, vertexData: number[]): number[] {
+        return vertexData
     }
 
 
