@@ -100,7 +100,7 @@ export class Vec2d {
             throw Error("Unexpected amount of elements int array to add.")
         }
         this.x = this.x + point[0];
-        this.y = this.y + point[0];
+        this.y = this.y + point[1];
         return this;
     }
 

@@ -26,11 +26,7 @@ export class Renderer {
         this.worldRepository = worldRepository;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle, shaderSourceManager);
         this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, shaderSourceManager, userRepository);
-        this.lineRenderer = new LineRenderer(
-            canvasHandle,
-            shaderSourceManager.resolve("line.vert"),
-            shaderSourceManager.resolve("line.frag")
-        );
+        this.lineRenderer = new LineRenderer(canvasHandle, shaderSourceManager);
     }
 
 
@@ -64,12 +60,8 @@ export class Renderer {
             [10, -3],
             [7, 5]
         ].map(p => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, p[0], p[1]))
-
-        this.lineRenderer.render(linePositions,
-            6,
-            camera.getViewProjectionMatrixOrThrow()
-        );
-
+        this.lineRenderer.registerLine("test-line", linePositions, 6, [1, 0, 0])
+        this.lineRenderer.render(camera);
     }
 
 

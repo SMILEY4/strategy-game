@@ -1,31 +1,42 @@
 import {GameCanvasHandle} from "../gameCanvasHandle";
-import {GLBuffer, GLBufferType, GLBufferUsage} from "../utils/glBuffer";
+import {BatchRenderer} from "../utils/batchRenderer";
+import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
+import {ShaderSourceManager} from "../utils/shaderSourceManager";
 import {LineCapsButt} from "./lineCapsButt";
 import {LineJoinMiter} from "./lineJoinMiter";
 import {LineMeshCreator} from "./lineMeshCreator";
 
+interface RegisteredLine {
+    id: string,
+    mesh: number[][]
+}
+
 export class LineRenderer {
 
-    private readonly canvasHandle: GameCanvasHandle;
-    private readonly srcVert: string;
-    private readonly srcFrag: string;
-    private shader: ShaderProgram | null = null;
-    private bufferData: GLBuffer | null = null;
+    public static readonly SHADER_SRC_KEY_VERTEX = "line.vertex";
+    public static readonly SHADER_SRC_KEY_FRAGMENT = "line.fragment";
 
-    constructor(canvasHandle: GameCanvasHandle, srcShaderVertex: string, srcShaderFragment: string) {
-        this.canvasHandle = canvasHandle;
-        this.srcVert = srcShaderVertex;
-        this.srcFrag = srcShaderFragment;
+    private readonly gameCanvas: GameCanvasHandle;
+    private readonly shaderSourceManager: ShaderSourceManager;
+    private batchRenderer: BatchRenderer = null as any;
+    private shader: ShaderProgram = null as any;
+
+    private lines: RegisteredLine[] = [];
+
+
+    constructor(gameCanvas: GameCanvasHandle, shaderSourceManager: ShaderSourceManager) {
+        this.gameCanvas = gameCanvas;
+        this.shaderSourceManager = shaderSourceManager;
     }
 
 
     initialize() {
-        const gl = this.canvasHandle?.getGL()!!;
-        this.shader = new ShaderProgram(gl, {
+        this.batchRenderer = new BatchRenderer(this.gameCanvas.getGL(), 64000, false);
+        this.shader = new ShaderProgram(this.gameCanvas.getGL(), {
             debugName: "lineShader",
-            sourceVertex: this.srcVert,
-            sourceFragment: this.srcFrag,
+            sourceVertex: this.shaderSourceManager.resolve(LineRenderer.SHADER_SRC_KEY_VERTEX),
+            sourceFragment: this.shaderSourceManager.resolve(LineRenderer.SHADER_SRC_KEY_FRAGMENT),
             attributes: [
                 {
                     name: "in_position",
@@ -36,50 +47,55 @@ export class LineRenderer {
                     name: "in_texcoords",
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 2,
+                },
+                {
+                    name: "in_color",
+                    type: ShaderAttributeType.FLOAT,
+                    amountComponents: 3,
                 }
             ],
             uniforms: [
                 {
-                    name: "u_viewProjection",
+                    name: BatchRenderer.UNIFORM_VIEW_PROJECTION_MATRIX,
                     type: ShaderUniformType.MAT3
                 },
             ]
         });
     }
 
-    public render(line: [number, number][], thickness: number, viewMatrix: Float32Array) {
-        const gl = this.canvasHandle.getGL();
-        if (this.bufferData) {
-            this.bufferData.dispose();
-        }
-        const lineMesh = new LineMeshCreator().create({
-            points: line,
-            thickness: thickness,
-            capStartFunction: LineCapsButt.start,
-            capEndFunction: LineCapsButt.end,
-            joinFunction: LineJoinMiter.join,
-            vertexBuilder: LineMeshCreator.defaultVertexBuilder
+
+    public render(camera: Camera) {
+        this.batchRenderer.begin();
+        this.lines.forEach(line => {
+            this.batchRenderer.add(line.mesh);
         });
-        const data = LineMeshCreator.flatten(lineMesh);
+        this.batchRenderer.end(camera, this.shader, {uniforms: {}});
+    }
 
-        this.bufferData = new GLBuffer(gl, GLBufferType.ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, "line.data").setData(data);
 
-        this.shader!!.use({
-            attributeBuffers: {
-                "in_position": this.bufferData!!,
-                "in_texcoords": this.bufferData!!,
-            },
-            uniformValues: {
-                "u_viewProjection": viewMatrix,
-            }
+    public registerLine(id: string, line: [number, number][], thickness: number, color: number[]) {
+        this.removeLine(id);
+        this.lines.push({
+            id: id,
+            mesh: LineMeshCreator.flatten2d(new LineMeshCreator().create({
+                points: line,
+                thickness: thickness,
+                capStartFunction: LineCapsButt.start,
+                capEndFunction: LineCapsButt.end,
+                joinFunction: LineJoinMiter.join,
+                vertexBuilder: (currentPoint: number[], currentIndex: number, vertexData: number[]) => [...vertexData, ...color]
+            }))
         });
+    }
 
-        gl.drawArrays(
-            gl.TRIANGLES,
-            0,
-            data.length / 4
-        );
 
+    public removeLine(id: string) {
+        this.lines = this.lines.filter(l => l.id !== id);
+    }
+
+
+    public removeAllLines() {
+        this.lines = [];
     }
 
 }

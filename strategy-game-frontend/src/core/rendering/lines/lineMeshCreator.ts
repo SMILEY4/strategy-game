@@ -116,7 +116,18 @@ export class LineMeshCreator {
     }
 
 
-    static flatten(mesh: LineMesh): number[] {
+    static flatten2d(mesh: LineMesh): number[][] {
+        const data: number[][] = [];
+        mesh.triangles.forEach(triangle => {
+            data.push(mesh.vertices[triangle[0]]);
+            data.push(mesh.vertices[triangle[1]]);
+            data.push(mesh.vertices[triangle[2]]);
+        });
+        return data;
+    }
+
+
+    static flatten1d(mesh: LineMesh): number[] {
         const data: number[] = [];
         mesh.triangles.forEach(triangle => {
             data.push(

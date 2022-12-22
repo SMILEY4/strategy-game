@@ -13,6 +13,7 @@ import {InputMouseMoveAction} from "./core/inputMouseMoveAction";
 import {InputMouseScrollAction} from "./core/inputMouseScrollAction";
 import SHADER_SRC_COMMON from "./core/rendering/common/common.glsl?raw";
 import {GameCanvasHandle} from "./core/rendering/gameCanvasHandle";
+import {LineRenderer} from "./core/rendering/lines/lineRenderer";
 import {Renderer} from "./core/rendering/renderer";
 import SHADER_SRC_TILEMAP_FRAG from "./core/rendering/tilemap/mapShader.fsh?raw";
 import SHADER_SRC_TILEMAP_VERT from "./core/rendering/tilemap/mapShader.vsh?raw";
@@ -114,10 +115,8 @@ export namespace AppConfig {
         .add(TilemapRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILEMAP_FRAG)
         .add(TileObjectRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILE_OBJECT_VERT)
         .add(TileObjectRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILE_OBJECT_FRAG)
-        .add("line.vert", SHADER_SRC_LINE_VERT)
-        .add("line.frag", SHADER_SRC_LINE_FRAG)
-
-
+        .add(LineRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_LINE_VERT)
+        .add(LineRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_LINE_FRAG)
     );
     diContainer.bind(DIQ.TilePicker, ctx => new TilePicker(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.GameCanvasHandle)));
     diContainer.bind(DIQ.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameConfigRepository)));
