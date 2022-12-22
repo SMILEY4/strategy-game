@@ -2,6 +2,9 @@ import {Vec2d} from "../../../shared/vec2d";
 import {LineElementInputData} from "./lineElementInputData";
 import {LineElementOutputData} from "./lineElementOutputData";
 
+/**
+ * Functions for building line-join of the type "miter"
+ */
 export namespace LineJoinMiter {
 
     export function join(data: LineElementInputData): LineElementOutputData {

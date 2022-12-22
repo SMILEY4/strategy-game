@@ -116,6 +116,9 @@ export class LineMeshCreator {
     }
 
 
+    /**
+     * flatten the given mesh-object into a simple 2d-array - each vertex is a single entry/array
+     */
     static flatten2d(mesh: LineMesh): number[][] {
         const data: number[][] = [];
         mesh.triangles.forEach(triangle => {
@@ -127,6 +130,9 @@ export class LineMeshCreator {
     }
 
 
+    /**
+     * flatten the given mesh-object into a simple 1d-array - all vertices are packed together
+     */
     static flatten1d(mesh: LineMesh): number[] {
         const data: number[] = [];
         mesh.triangles.forEach(triangle => {

@@ -2,6 +2,10 @@ import {Vec2d} from "../../../shared/vec2d";
 import {LineElementInputData} from "./lineElementInputData";
 import {LineElementOutputData} from "./lineElementOutputData";
 
+/**
+ * Functions for building line-caps of the type "pointy"
+ * => triangle at the start/end extruding half the thickness of the line
+ */
 export namespace LineCapsButt {
 
     export function start(data: LineElementInputData): LineElementOutputData {

@@ -2,6 +2,10 @@ import {Vec2d} from "../../../shared/vec2d";
 import {LineElementInputData} from "./lineElementInputData";
 import {LineElementOutputData} from "./lineElementOutputData";
 
+/**
+ * Functions for building line-caps of the type "butt"
+ * => flat start/end, line starts/ends at the position of the first/last point
+ */
 export namespace LineCapsButt {
 
     export function start(data: LineElementInputData): LineElementOutputData {
