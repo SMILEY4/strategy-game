@@ -2,7 +2,9 @@ import {CameraState} from "../models/cameraState";
 import {GameRepository} from "../required/gameRepository";
 import {UserRepository} from "../required/userRepository";
 import {WorldRepository} from "../required/worldRepository";
+import {TilemapUtils} from "../tilemap/tilemapUtils";
 import {GameCanvasHandle} from "./gameCanvasHandle";
+import {LineRenderer} from "./lines/lineRenderer";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {TileObjectRenderer} from "./tileobject/tileObjectRenderer";
 import {Camera} from "./utils/camera";
@@ -16,18 +18,22 @@ export class Renderer {
     private readonly tilemapRenderer: TilemapRenderer;
     private readonly tileObjectRenderer: TileObjectRenderer;
 
+    private readonly lineRenderer: LineRenderer;
+
     constructor(canvasHandle: GameCanvasHandle, shaderSourceManager: ShaderSourceManager, gameRepository: GameRepository, worldRepository: WorldRepository, userRepository: UserRepository) {
         this.canvasHandle = canvasHandle;
         this.gameRepository = gameRepository;
         this.worldRepository = worldRepository;
         this.tilemapRenderer = new TilemapRenderer(canvasHandle, shaderSourceManager);
         this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, shaderSourceManager, userRepository);
+        this.lineRenderer = new LineRenderer(canvasHandle, shaderSourceManager);
     }
 
 
     public initialize(): void {
         this.tilemapRenderer.initialize();
         this.tileObjectRenderer.initialize();
+        this.lineRenderer.initialize();
     }
 
 
@@ -47,6 +53,15 @@ export class Renderer {
 
         this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
         this.tileObjectRenderer.render(camera, gameState, localGameState);
+
+        const linePositions = [
+            [0, 0],
+            [5, 4],
+            [10, -3],
+            [7, 5]
+        ].map(p => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, p[0], p[1]))
+        this.lineRenderer.registerLine("test-line", linePositions, 6, [1, 0, 0])
+        this.lineRenderer.render(camera);
     }
 
 
