@@ -5,7 +5,7 @@ export class Vec2d {
     }
 
     static fromArray(position: number[]): Vec2d {
-        if (position.length != 2) {
+        if (position.length !== 2) {
             throw Error("Unexpected amount of values for 2d-vector");
         } else {
             return new Vec2d(position[0], position[1]);
@@ -20,6 +20,13 @@ export class Vec2d {
         return new Vec2d(
             x1 - x0,
             y1 - y0
+        );
+    }
+
+    static fromToArray(p1: number[], p2: number[]) {
+        return new Vec2d(
+            p2[0] - p1[0],
+            p2[1] - p1[1]
         );
     }
 
@@ -85,6 +92,15 @@ export class Vec2d {
     addXY(x: number, y: number): Vec2d {
         this.x = this.x + x;
         this.y = this.y + y;
+        return this;
+    }
+
+    addArr(point: number[]): Vec2d {
+        if(point.length !== 2) {
+            throw Error("Unexpected amount of elements int array to add.")
+        }
+        this.x = this.x + point[0];
+        this.y = this.y + point[0];
         return this;
     }
 

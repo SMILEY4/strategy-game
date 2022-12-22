@@ -2,7 +2,7 @@
 #line 2
 precision mediump float;
 
-in vec3 v_texcoords;
+in vec2 v_texcoords;
 out vec4 outColor;
 
 void main() {

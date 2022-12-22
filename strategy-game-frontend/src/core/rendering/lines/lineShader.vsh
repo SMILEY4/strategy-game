@@ -3,8 +3,8 @@
 
 uniform mat3 u_viewProjection;
 in vec2 in_position;
-in vec3 in_texcoords;
-out vec3 v_texcoords;
+in vec2 in_texcoords;
+out vec2 v_texcoords;
 
 void main() {
     v_texcoords = in_texcoords;
