@@ -21,7 +21,7 @@ class GameActionMarkerPlace : GameAction<GameEventCommandMarkerPlace>(GameEventC
 
 
     private fun getTile(event: GameEventCommandMarkerPlace): Tile {
-        return event.game.tiles.find { it.position.q == event.command.data.q && it.position.r == event.command.data.r }!!
+        return event.game.tiles.get(event.command.data.q, event.command.data.r)!!
     }
 
 

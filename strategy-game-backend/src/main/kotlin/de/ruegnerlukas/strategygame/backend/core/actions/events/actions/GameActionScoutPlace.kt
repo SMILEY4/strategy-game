@@ -47,7 +47,7 @@ class GameActionScoutPlace(
 
 
     private fun findTile(game: GameExtended, pos: TilePosition): Tile? {
-        return game.tiles.find { it.position.q == pos.q && it.position.r == pos.r }
+        return game.tiles.get(pos)
     }
 
 

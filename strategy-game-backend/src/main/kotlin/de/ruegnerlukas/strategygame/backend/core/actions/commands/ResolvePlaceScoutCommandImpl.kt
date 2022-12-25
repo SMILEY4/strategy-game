@@ -81,7 +81,7 @@ private object PlaceScoutValidations {
         }
     }
 
-    fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: List<Tile>) {
+    fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: Collection<Tile>) {
         validate("SCOUT.AMOUNT") {
             tiles
                 .asSequence()

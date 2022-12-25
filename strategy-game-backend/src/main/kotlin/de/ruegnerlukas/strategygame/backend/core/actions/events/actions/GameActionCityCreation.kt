@@ -53,7 +53,7 @@ class GameActionCityCreation(
         return City(
             cityId = reservationInsert.reserveCity(),
             countryId = countryId,
-            tile = TileRef(tile.tileId, tile.position.q, tile.position.r),
+            tile = TileRef(tile),
             name = name,
             color = RGBColor.random(),
             isProvinceCapital = isProvinceCapital,
@@ -81,7 +81,7 @@ class GameActionCityCreation(
 
 
     private fun getTargetTile(event: GameEventCommandCityCreate): Tile {
-        return event.game.tiles.find { it.position.q == event.command.data.q && it.position.r == event.command.data.r }!!
+        return event.game.tiles.get(event.command.data.q, event.command.data.r)!!
     }
 
 

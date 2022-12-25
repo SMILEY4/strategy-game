@@ -83,7 +83,7 @@ class GameActionCityInfluence(
 
 
     private fun getTile(event: GameEventCityCreate, q: Int, r: Int): Tile? {
-        return event.game.tiles.find { it.position.q == q && it.position.r == r }
+        return event.game.tiles.get(q, r)
     }
 
 }

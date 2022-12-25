@@ -16,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
@@ -39,7 +40,7 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
                     GameExtended(
                         game = game,
                         countries = countries,
-                        tiles = tiles,
+                        tiles = TileContainer(tiles),
                         cities = cities.tracking(),
                         provinces = provinces.tracking()
                     )

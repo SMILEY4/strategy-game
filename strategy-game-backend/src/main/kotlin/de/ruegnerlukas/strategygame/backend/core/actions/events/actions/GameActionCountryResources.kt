@@ -48,7 +48,7 @@ class GameActionCountryResources(
             }
 
             log.nextTurn.putAll(resourcesThisTurn)
-            log.print()
+//            log.print()
         }
         return listOf()
     }

@@ -13,6 +13,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
+import kotlinx.coroutines.flow.combine
 
 /**
  * Adds the given building to the city
@@ -45,10 +46,10 @@ class GameActionBuildingCreation : GameAction<GameEventCommandBuildingCreate>(Ga
                 .filter { !isSameTile(city, it) }
                 .mapNotNull { getTile(game, it) }
                 .filter { isTileFreeForBuilding(it, city) }
-                .filter { it.data.resourceType == buildingType.templateData.requiredTileResource }
+                .filter { hasRequiredResource(it, buildingType) }
                 .toList()
                 .randomOrNull()
-                ?.let { TileRef(it.tileId, it.position.q, it.position.r) }
+                ?.let { TileRef(it) }
         }
     }
 
@@ -74,12 +75,17 @@ class GameActionBuildingCreation : GameAction<GameEventCommandBuildingCreate>(Ga
 
 
     private fun getTile(game: GameExtended, pos: TilePosition): Tile? {
-        return game.tiles.find { it.position.q == pos.q && it.position.r == pos.r }
+        return game.tiles.get(pos)
     }
 
 
     private fun isTileFreeForBuilding(tile: Tile, city: City): Boolean {
         return city.buildings.none { tile.tileId == it.tile?.tileId }
+    }
+
+
+    private fun hasRequiredResource(tile: Tile, buildingType: BuildingType): Boolean {
+        return tile.data.resourceType == buildingType.templateData.requiredTileResource
     }
 
 }

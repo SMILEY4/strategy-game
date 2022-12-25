@@ -53,7 +53,7 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
         database.insertOrReplaceDocuments(Collections.COUNTRIES, countries.map { CountryEntity.of(it, gameId) })
     }
 
-    private suspend fun updateTiles(tiles: List<Tile>, gameId: String) {
+    private suspend fun updateTiles(tiles: Collection<Tile>, gameId: String) {
         database.insertOrReplaceDocuments(Collections.TILES, tiles.map { TileEntity.of(it, gameId) })
     }
 
