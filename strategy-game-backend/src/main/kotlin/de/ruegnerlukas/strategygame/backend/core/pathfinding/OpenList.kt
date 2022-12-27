@@ -3,17 +3,17 @@ package de.ruegnerlukas.strategygame.backend.core.pathfinding
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import java.util.*
 
-class OpenList {
+class OpenList<T: Node> {
+    
+    private val queue = PriorityQueue<T>(Comparator.comparing { it.f })
+    private val nodes = mutableMapOf<String, T>()
 
-    private val queue = PriorityQueue<PathNode>(Comparator.comparing { it.f })
-    private val nodes = mutableMapOf<String, PathNode>()
-
-    fun add(node: PathNode) {
+    fun add(node: T) {
         queue.offer(node)
         nodes[node.tile.tileId] = node
     }
 
-    fun remove(node: PathNode) {
+    fun remove(node: T) {
         queue.remove(node)
         nodes.remove(node.tile.tileId)
     }
@@ -22,11 +22,11 @@ class OpenList {
         return queue.isNotEmpty()
     }
 
-    fun next(): PathNode {
+    fun next(): T {
         return queue.poll().also { nodes.remove(it.tile.tileId) }
     }
 
-    fun get(tile: Tile): PathNode? {
+    fun get(tile: Tile): T? {
         return nodes[tile.tileId]
     }
 

@@ -3,116 +3,80 @@ package de.ruegnerlukas.strategygame.backend.core.pathfinding
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
-import de.ruegnerlukas.strategygame.backend.shared.distance
-import de.ruegnerlukas.strategygame.backend.shared.positionsNeighbours
 
-class Pathfinder {
+class Pathfinder<T : Node>(
+    private val nodeBuilder: NodeBuilder<T>,
+    private val scoreCalculator: ScoreCalculator<T>,
+    private val neighbourProvider: NeighbourProvider<T>
+) {
 
-    fun find(from: TilePosition, to: TilePosition, tiles: TileContainer): Path {
+    fun find(from: TilePosition, to: TilePosition, tiles: TileContainer): Path<T> {
         val startTile = tiles.get(from)
         val endTile = tiles.get(to)
         if (startTile == null || endTile == null) {
-            return Path.EMPTY
+            return Path.empty()
         }
-        return find(
-            PathfindingContext(
-                tiles = tiles,
-                tileStart = startTile,
-                tileEnd = endTile,
-                open = OpenList(),
-                visited = VisitedList()
-            )
-        )
+        return find(startTile, endTile, tiles)
     }
 
 
-    fun find(ctx: PathfindingContext): Path {
+    fun find(tileStart: Tile, tileEnd: Tile, tiles: TileContainer): Path<T> {
 
-        PathNode(ctx.tileStart, 0f, 0f, 0f).also {
-            ctx.open.add(it)
-            ctx.visited.add(it)
-        }
+        val context = PathfindingContext<T>(OpenList(), VisitedList())
+        context.pushVisited(nodeBuilder.start(tileStart))
 
-        return iterateOpen(ctx) { currentNode ->
-
-            iterateNeighbours(ctx, currentNode) { neighbourTile ->
-
-                val g = g(currentNode, neighbourTile)
-                val h = h(neighbourTile, ctx)
-                val f = f(g, h)
-
-                val existing = ctx.visited.get(neighbourTile)
-                if (existing == null || g < existing.g) {
-                    existing?.also {
-                        ctx.open.remove(it)
-                        ctx.visited.remove(it)
-                    }
-                    PathNode(neighbourTile, f, g, h, currentNode).also {
-                        ctx.open.add(it)
-                        ctx.visited.add(it)
-                    }
-                }
-                
+        return iterateOpen(context.open, tileEnd) { currentNode ->
+            neighbourProvider.get(currentNode, tiles) { neighbourTile ->
+                val score = calculateScore(currentNode, neighbourTile, tileEnd)
+                visitTile(context, currentNode, neighbourTile, score)
             }
         }
     }
 
 
-    private fun iterateOpen(ctx: PathfindingContext, consumer: (node: PathNode) -> Unit): Path {
-        while (ctx.open.isNotEmpty()) {
-            val currentNode = ctx.open.next()
-            if (currentNode.tile.tileId == ctx.tileEnd.tileId) {
+    private fun iterateOpen(open: OpenList<T>, destination: Tile, consumer: (node: T) -> Unit): Path<T> {
+        while (open.isNotEmpty()) {
+            val currentNode = open.next()
+            if (currentNode.tile.tileId == destination.tileId) {
                 return reconstructPath(currentNode)
             } else {
                 consumer(currentNode)
             }
         }
-        return Path.EMPTY
+        return Path.empty()
     }
 
 
-    private fun iterateNeighbours(ctx: PathfindingContext, node: PathNode, consumer: (tile: Tile) -> Unit) {
-        positionsNeighbours(node.tile.position) { q, r ->
-            val tile = ctx.tiles.get(q, r)
-            if (tile != null) {
-                consumer(tile)
-            }
+    private fun calculateScore(prev: T, next: Tile, destination: Tile): NodeScore {
+        val g = scoreCalculator.g(prev, next)
+        val h = scoreCalculator.h(next, destination)
+        val f = scoreCalculator.f(g, h)
+        return NodeScore(f, g, h)
+    }
+
+
+    private fun visitTile(context: PathfindingContext<T>, prev: T, current: Tile, score: NodeScore) {
+        val existing = context.visited.get(current)
+        if (existing == null || score.g < existing.g) {
+            openTile(context, existing, prev, current, score)
         }
     }
 
 
-    private fun g(from: PathNode, to: Tile): Float {
-        return from.g + 1f
+    private fun openTile(context: PathfindingContext<T>, existing: T?, prev: T, current: Tile, score: NodeScore) {
+        context.pushVisited(nodeBuilder.next(prev, current, score), existing)
     }
 
 
-    private fun h(from: Tile, ctx: PathfindingContext): Float {
-        return from.position.distance(ctx.tileEnd.position).toFloat()
-    }
-
-
-    private fun f(g: Float, h: Float): Float {
-        return g + h
-    }
-
-
-    private fun reconstructPath(node: PathNode): Path {
-        val nodes = mutableListOf<PathNode>()
-        var current: PathNode? = node
+    private fun reconstructPath(node: T): Path<T> {
+        val nodes = mutableListOf<T>()
+        var current: T? = node
         while (current != null) {
             nodes.add(current)
-            current = current.prevNode
+            @Suppress("UNCHECKED_CAST")
+            current = current.prevNode as T
         }
-        return Path(nodes.map { it.tile })
+        return Path(nodes)
     }
 
-
 }
-
-
-
-
-
-
-
-
