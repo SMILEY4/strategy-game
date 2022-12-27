@@ -129,3 +129,24 @@ fun positionsCircle(centerQ: Int, centerR: Int, radius: Int, consumer: (q: Int, 
         }
     }
 }
+
+
+/**
+ * iterate over all tile positions that are neighbours of the given tile positions
+ */
+fun positionsNeighbours(pos: TilePosition, consumer: (q: Int, r: Int) -> Unit) {
+    positionsNeighbours(pos.q, pos.r, consumer)
+}
+
+
+/**
+ * iterate over all tile positions that are neighbours of the given tile positions
+ */
+fun positionsNeighbours(q: Int, r: Int, consumer: (q: Int, r: Int) -> Unit) {
+    consumer(q-1, r+0)
+    consumer(q+1, r+0)
+    consumer(q-1, r+1)
+    consumer(q+0, r+1)
+    consumer(q+0, r-1)
+    consumer(q+1, r-1)
+}
