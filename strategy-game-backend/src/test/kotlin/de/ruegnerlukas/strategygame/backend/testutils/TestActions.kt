@@ -15,7 +15,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActi
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
@@ -86,10 +85,10 @@ object TestActions {
                 GameExtendedQueryImpl(database),
                 GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
             ),
-            TurnUpdateActionImpl(GameEventManager()),
             GameExtendedQueryImpl(database),
             GameExtendedUpdateImpl(database),
             CommandsByGameQueryImpl(database),
+            GameEventManager()
         ),
         GameQueryImpl(database),
         CountryByGameAndUserQueryImpl(database),
@@ -142,10 +141,10 @@ object TestActions {
             GameExtendedQueryImpl(database),
             GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
         ),
-        TurnUpdateActionImpl(GameEventManager()),
         GameExtendedQueryImpl(database),
         GameExtendedUpdateImpl(database),
         CommandsByGameQueryImpl(database),
+        GameEventManager()
     )
 
 }

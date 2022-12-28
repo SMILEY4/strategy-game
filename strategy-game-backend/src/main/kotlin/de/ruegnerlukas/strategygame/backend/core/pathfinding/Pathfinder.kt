@@ -74,9 +74,9 @@ class Pathfinder<T : Node>(
         while (current != null) {
             nodes.add(current)
             @Suppress("UNCHECKED_CAST")
-            current = current.prevNode as T
+            current = current.prevNode?.let { it as T }
         }
-        return Path(nodes)
+        return Path(nodes.reversed())
     }
 
 }
