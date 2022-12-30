@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.core
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer

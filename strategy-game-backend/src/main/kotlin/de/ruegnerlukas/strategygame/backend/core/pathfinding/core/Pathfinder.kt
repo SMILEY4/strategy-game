@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.core
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
@@ -21,10 +21,8 @@ class Pathfinder<T : Node>(
 
 
     fun find(tileStart: Tile, tileEnd: Tile, tiles: TileContainer): Path<T> {
-
         val context = PathfindingContext<T>(OpenList(), VisitedList())
-        context.pushVisited(nodeBuilder.start(tileStart))
-
+        context.pushOpen(nodeBuilder.start(tileStart))
         return iterateOpen(context.open, tileEnd) { currentNode ->
             neighbourProvider.get(currentNode, tiles) { neighbourTile ->
                 val score = calculateScore(currentNode, neighbourTile, tileEnd)
@@ -64,7 +62,7 @@ class Pathfinder<T : Node>(
 
 
     private fun openTile(context: PathfindingContext<T>, existing: T?, prev: T, current: Tile, score: NodeScore) {
-        context.pushVisited(nodeBuilder.next(prev, current, score), existing)
+        context.pushOpen(nodeBuilder.next(prev, current, score), existing)
     }
 
 

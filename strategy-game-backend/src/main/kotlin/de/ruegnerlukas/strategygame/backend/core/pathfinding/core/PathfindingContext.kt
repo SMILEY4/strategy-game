@@ -1,11 +1,11 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.core
 
 class PathfindingContext<T : Node>(
     val open: OpenList<T>,
     val visited: VisitedList<T>
 ) {
 
-    fun pushVisited(node: T, replaces: T? = null) {
+    fun pushOpen(node: T, replaces: T? = null) {
         replaces?.also {
             open.remove(it)
             visited.remove(it)

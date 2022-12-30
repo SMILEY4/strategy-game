@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.core
 
 data class Path<T : Node>(
     val nodes: List<T>,

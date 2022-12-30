@@ -1,5 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicNodeBuilder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicScoreCalculator
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.NeighbourProvider
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Pathfinder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.ScoreCalculator
 import de.ruegnerlukas.strategygame.backend.ports.models.*
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.shared.distance
@@ -8,8 +14,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.floats.shouldBeWithinPercentageOf
-import io.kotest.matchers.should
-import io.kotest.matchers.shouldBe
 
 class PathfindingTest : StringSpec({
 
@@ -25,8 +29,8 @@ class PathfindingTest : StringSpec({
         )
 
         val pathfinder = Pathfinder(
-            DefaultNodeBuilder(),
-            DefaultScoreCalculator(),
+            BasicNodeBuilder(),
+            BasicScoreCalculator(),
             TerrainBasedNeighbourProvider()
         )
 
@@ -60,8 +64,8 @@ class PathfindingTest : StringSpec({
         )
 
         val pathfinder = Pathfinder(
-            DefaultNodeBuilder(),
-            DefaultScoreCalculator(),
+            BasicNodeBuilder(),
+            BasicScoreCalculator(),
             TerrainBasedNeighbourProvider()
         )
 
@@ -85,8 +89,8 @@ class PathfindingTest : StringSpec({
         )
 
         val pathfinder = Pathfinder(
-            DefaultNodeBuilder(),
-            DefaultScoreCalculator(),
+            BasicNodeBuilder(),
+            BasicScoreCalculator(),
             TerrainBasedNeighbourProvider()
         )
 
@@ -113,8 +117,8 @@ class PathfindingTest : StringSpec({
         )
 
         val pathfinder = Pathfinder(
-            DefaultNodeBuilder(),
-            DefaultScoreCalculator(),
+            BasicNodeBuilder(),
+            BasicScoreCalculator(),
             TerrainBasedNeighbourProvider()
         )
 
@@ -145,7 +149,7 @@ class PathfindingTest : StringSpec({
         )
 
         val pathfinder = Pathfinder(
-            DefaultNodeBuilder(),
+            BasicNodeBuilder(),
             TerrainBasedScoreCalculator(),
             TerrainBasedNeighbourProvider()
         )
