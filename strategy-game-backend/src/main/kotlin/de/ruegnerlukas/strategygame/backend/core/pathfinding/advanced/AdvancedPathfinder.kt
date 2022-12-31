@@ -2,9 +2,10 @@ package de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced
 
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules.NextNodeRule
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Path
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Pathfinder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.astar.AStarPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 
     /*
@@ -13,11 +14,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContaine
     - max crossing provinces
     - ...
      */
-class AdvancedPathfinder(rules: Collection<NextNodeRule>) {
+class AdvancedPathfinder(movementCosts: Map<TileType, Float>, rules: Collection<NextNodeRule>) {
 
-    private val pathfinder = Pathfinder(
+    private val pathfinder = AStarPathfinder(
         AdvancedNodeBuilder(),
-        AdvancedScoreCalculator(),
+        AdvancedScoreCalculator(movementCosts),
         AdvancedNeighbourProvider().withRules(rules)
     )
 

@@ -1,11 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicNodeBuilder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicScoreCalculator
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules.BlockingTilesRule
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.NeighbourProvider
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.astar.AStarPathfinder
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.ScoreCalculator
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.custom.CustomPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.*
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.shared.distance
@@ -15,7 +14,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.floats.shouldBeWithinPercentageOf
 
-class PathfindingTest : StringSpec({
+class CustomPathfindingTest : StringSpec({
 
     "basic path with blocking terrain" {
 
@@ -28,10 +27,11 @@ class PathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = AStarPathfinder(
-            BasicNodeBuilder(),
-            BasicScoreCalculator(),
-            TerrainBasedNeighbourProvider()
+        val pathfinder = CustomPathfinder(
+            movementCosts = mapOf(),
+            rules = listOf(
+                BlockingTilesRule(setOf(TileType.WATER))
+            )
         )
 
         val path = pathfinder.find(
@@ -63,10 +63,11 @@ class PathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = AStarPathfinder(
-            BasicNodeBuilder(),
-            BasicScoreCalculator(),
-            TerrainBasedNeighbourProvider()
+        val pathfinder = CustomPathfinder(
+            movementCosts = mapOf(),
+            rules = listOf(
+                BlockingTilesRule(setOf(TileType.WATER))
+            )
         )
 
         val path = pathfinder.find(
@@ -88,10 +89,11 @@ class PathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = AStarPathfinder(
-            BasicNodeBuilder(),
-            BasicScoreCalculator(),
-            TerrainBasedNeighbourProvider()
+        val pathfinder = CustomPathfinder(
+            movementCosts = mapOf(),
+            rules = listOf(
+                BlockingTilesRule(setOf(TileType.WATER))
+            )
         )
 
         val path = pathfinder.find(
@@ -116,10 +118,11 @@ class PathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = AStarPathfinder(
-            BasicNodeBuilder(),
-            BasicScoreCalculator(),
-            TerrainBasedNeighbourProvider()
+        val pathfinder = CustomPathfinder(
+            movementCosts = mapOf(),
+            rules = listOf(
+                BlockingTilesRule(setOf(TileType.WATER))
+            )
         )
 
         val path = pathfinder.find(
@@ -148,10 +151,15 @@ class PathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = AStarPathfinder(
-            BasicNodeBuilder(),
-            TerrainBasedScoreCalculator(),
-            TerrainBasedNeighbourProvider()
+        val pathfinder = CustomPathfinder(
+            movementCosts = mapOf(
+                TileType.WATER to 9999f,
+                TileType.MOUNTAIN to 2f,
+                TileType.LAND to 1f
+            ),
+            rules = listOf(
+                BlockingTilesRule(setOf(TileType.WATER))
+            )
         )
 
         val path = pathfinder.find(

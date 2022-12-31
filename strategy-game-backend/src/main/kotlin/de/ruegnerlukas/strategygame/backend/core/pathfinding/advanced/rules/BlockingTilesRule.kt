@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 class BlockingTilesRule(private val blockingTiles: Set<TileType>) : NextNodeRule {
 
     override fun evaluate(prev: AdvancedNode, next: Tile): Boolean {
-        return blockingTiles.contains(next.data.terrainType)
+        return !blockingTiles.contains(next.data.terrainType)
     }
 
 }

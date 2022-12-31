@@ -1,4 +1,8 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding.core
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.core.astar
+
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.OpenList
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.VisitedList
 
 class PathfindingContext<T : Node>(
     val open: OpenList<T>,
