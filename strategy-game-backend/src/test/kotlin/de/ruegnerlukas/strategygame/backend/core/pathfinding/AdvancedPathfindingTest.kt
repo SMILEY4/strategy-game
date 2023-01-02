@@ -425,13 +425,14 @@ class AdvancedPathfindingTest : StringSpec({
             TilePosition(1, 0),
             TilePosition(2, 0),
             TilePosition(2, 1),
-            TilePosition(3, 1),
+            TilePosition(2, 2),
             TilePosition(3, 2),
             TilePosition(3, 3),
             TilePosition(2, 3),
             TilePosition(1, 3),
             TilePosition(0, 3),
         )
+
     }
 
     "path allowed two switch between water/land, but no switching point" {

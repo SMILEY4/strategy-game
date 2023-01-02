@@ -12,18 +12,47 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
+import java.util.*
 
 
 /**
  * Custom recursive backtracking pathfinder.
  * Compares to [de.ruegnerlukas.strategygame.backend.core.pathfinding.core.astar.AStarPathfinder]:
- * - maybe slower
+ * - slower
  * - less limitations (support for e.g. max path cost, max provinces, ...)
  */
 class CustomPathfinder(
     movementCosts: Map<TileType, Float>,
     rules: Collection<NextNodeRule>
 ) : Pathfinder<AdvancedNode> {
+
+    companion object {
+
+        private data class ExtPath(
+            val nodes: List<AdvancedNode>,
+            val tileIds: Set<String>,
+            val f: Float,
+        ) {
+
+            companion object {
+                fun of(nodes: List<AdvancedNode>): ExtPath {
+                    return ExtPath(
+                        nodes,
+                        nodes.asSequence().map { it.tile.tileId }.toSet(),
+                        nodes.last().f
+                    )
+                }
+
+                fun of(path: ExtPath, node: AdvancedNode): ExtPath {
+                    return ExtPath(
+                        path.nodes + node,
+                        path.tileIds + node.tile.tileId,
+                        node.f
+                    )
+                }
+            }
+        }
+    }
 
     private val neighbourProvider = AdvancedNeighbourProvider().withRules(rules)
     private val nodeBuilder = AdvancedNodeBuilder()
@@ -41,31 +70,38 @@ class CustomPathfinder(
 
 
     override fun find(tileStart: Tile, tileEnd: Tile, tiles: TileContainer): Path<AdvancedNode> {
-        return find(Path(listOf(nodeBuilder.start(tileStart))), tileEnd, tiles) ?: Path.empty()
+        return Path(findPath(tileStart, tileEnd, tiles).nodes)
     }
 
 
-    private fun find(path: Path<AdvancedNode>, target: Tile, tiles: TileContainer): Path<AdvancedNode>? {
-        if (path.nodes.last().tile.tileId == target.tileId) {
-            return path // found target -> return path
+    private fun findPath(tileStart: Tile, tileEnd: Tile, tiles: TileContainer): ExtPath {
+        val openPaths = PriorityQueue<ExtPath>(Comparator.comparing { it.f })
+        openPaths.offer(ExtPath.of(listOf(nodeBuilder.start(tileStart))))
+        while (openPaths.isNotEmpty()) {
+            val current = openPaths.poll()
+            if (current.nodes.last().tile.tileId == tileEnd.tileId) {
+                return current
+            }
+            findPossibleNextTiles(current, tiles) {
+                openPaths.add(append(current, it, tileEnd))
+            }
         }
-        val nextTiles = findPossibleNextTiles(path, tiles)
-        if (nextTiles.isEmpty()) {
-            return null // dead end -> no path found
-        }
-        return nextTiles // recursively find possible paths
-            .asSequence()
-            .map { append(path, it, target) } // generate all paths with one more step
-            .map { find(it, target, tiles) } // find paths continuing generated paths
-            .filterNotNull() // discard all invalid paths / dead ends
-            .sortedBy { it.nodes.last().g } // sort paths by cost
-            .firstOrNull() // return best path
+        return ExtPath.of(listOf())
     }
 
-    private fun append(path: Path<AdvancedNode>, tile: Tile, target: Tile): Path<AdvancedNode> {
+
+    private fun findPossibleNextTiles(path: ExtPath, tiles: TileContainer, consumer: (tile: Tile) -> Unit) {
+        neighbourProvider.get(path.nodes.last(), tiles) { neighbour ->
+            if (!path.tileIds.contains(neighbour.tileId)) {
+                consumer(neighbour)
+            }
+        }
+    }
+
+    private fun append(path: ExtPath, tile: Tile, target: Tile): ExtPath {
         val score = calculateScore(path.nodes.last(), tile, target)
         val node = nodeBuilder.next(path.nodes.last(), tile, score)
-        return Path(path.nodes + listOf(node))
+        return ExtPath.of(path, node)
     }
 
     private fun calculateScore(prev: AdvancedNode, next: Tile, destination: Tile): NodeScore {
@@ -73,17 +109,6 @@ class CustomPathfinder(
         val h = scoreCalculator.h(next, destination)
         val f = scoreCalculator.f(g, h)
         return NodeScore(f, g, h)
-    }
-
-    private fun findPossibleNextTiles(path: Path<AdvancedNode>, tiles: TileContainer): List<Tile> {
-        val pathTiles = path.nodes.map { it.tile.tileId }.toSet()
-        val list = mutableListOf<Tile>()
-        neighbourProvider.get(path.nodes.last(), tiles) { neighbour ->
-            if (!pathTiles.contains(neighbour.tileId)) {
-                list.add(neighbour)
-            }
-        }
-        return list
     }
 
 }

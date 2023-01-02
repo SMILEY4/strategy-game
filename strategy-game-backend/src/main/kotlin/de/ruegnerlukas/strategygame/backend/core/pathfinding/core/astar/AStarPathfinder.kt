@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContaine
 /**
  * Basic A*-Pathfinder.
  * Compares to [de.ruegnerlukas.strategygame.backend.core.pathfinding.core.custom.CustomPathfinder]:
- * - maybe faster
+ * - faster
  * - more limitations (no support for e.g. max path cost, max provinces, ...)
  */
 class AStarPathfinder<T : Node>(
@@ -40,9 +40,13 @@ class AStarPathfinder<T : Node>(
 
 
     private fun iterateOpen(open: OpenList<T>, destination: Tile, consumer: (node: T) -> Unit): Path<T> {
+        var count = 0
+
         while (open.isNotEmpty()) {
+            count++
             val currentNode = open.next()
             if (currentNode.tile.tileId == destination.tileId) {
+                println("searched $count paths")
                 return reconstructPath(currentNode)
             } else {
                 consumer(currentNode)
