@@ -15,7 +15,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.floats.shouldBeWithinPercentageOf
 
-class PathfindingTest : StringSpec({
+class AStarPathfindingTest : StringSpec({
 
     "basic path with blocking terrain" {
 

@@ -54,6 +54,7 @@ class CustomPathfinder(
             return null // dead end -> no path found
         }
         return nextTiles // recursively find possible paths
+            .asSequence()
             .map { append(path, it, target) } // generate all paths with one more step
             .map { find(it, target, tiles) } // find paths continuing generated paths
             .filterNotNull() // discard all invalid paths / dead ends
