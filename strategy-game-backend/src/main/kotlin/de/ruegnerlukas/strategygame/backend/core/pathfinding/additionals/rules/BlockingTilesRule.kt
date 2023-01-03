@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.AdvancedNode
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNode
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 
@@ -9,7 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileType
  */
 class BlockingTilesRule(private val blockingTiles: Set<TileType>) : NextNodeRule {
 
-    override fun evaluate(prev: AdvancedNode, next: Tile): Boolean {
+    override fun evaluate(prev: ExtendedNode, next: Tile): Boolean {
         return !blockingTiles.contains(next.data.terrainType)
     }
 

@@ -1,14 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules.BlockingTilesRule
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicNodeBuilder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicScoreCalculator
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.NeighbourProvider
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Path
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Pathfinder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.astar.AStarPathfinder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.custom.CustomPathfinder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules.BlockingTilesRule
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.BasicNodeBuilder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.BasicScoreCalculator
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.astar.AStarPathfinder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
 import de.ruegnerlukas.strategygame.backend.core.world.TilemapPositionsBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.*
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
@@ -43,7 +39,7 @@ object PathfindingBenchmarkUtils {
 
     fun run(tiles: TileContainer, start: TilePosition, end: TilePosition, pathfinderType: KClass<*>): Pair<Path<*>, Long> {
         val pathfinder = when (pathfinderType) {
-            CustomPathfinder::class -> CustomPathfinder(
+            BacktrackingPathfinder::class -> BacktrackingPathfinder(
                 movementCosts = mapOf(),
                 rules = listOf(
                     BlockingTilesRule(setOf(TileType.WATER))

@@ -1,9 +1,9 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.Node
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 
-class AdvancedNode(
+class ExtendedNode(
     tile: Tile,
     f: Float,
     g: Float,

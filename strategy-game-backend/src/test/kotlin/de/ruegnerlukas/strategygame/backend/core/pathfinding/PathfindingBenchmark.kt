@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.custom.CustomPathfinder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 
 fun main() {
     val seed = 1L
-    val radius = 20
+    val radius = 60
     val start = TilePosition(0, -6)
     val end = TilePosition(0, 6)
 
@@ -17,7 +17,7 @@ fun main() {
     )
     println("tile-count = ${tiles.size}")
 
-    val result = PathfindingBenchmarkUtils.run(tiles, start, end, CustomPathfinder::class)
+    val result = PathfindingBenchmarkUtils.run(tiles, start, end, BacktrackingPathfinder::class)
 //    val result = PathfindingBenchmarkUtils.run(tiles, start, end, AStarPathfinder::class)
 
     println("found path of length: ${result.first.nodes.size} in ${result.second}ms")

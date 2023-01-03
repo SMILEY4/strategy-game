@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.AdvancedNode
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNode
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileType
  */
 class SwitchFromToWaterViaPointsRule(private val switchingPoints: Set<TilePosition>) : NextNodeRule {
 
-    override fun evaluate(prev: AdvancedNode, next: Tile): Boolean {
+    override fun evaluate(prev: ExtendedNode, next: Tile): Boolean {
         if(isLand(prev.tile) && isWater(next)) {
             return isSwitchingPoint(prev.tile)
         }

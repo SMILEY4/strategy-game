@@ -1,11 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicNodeBuilder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.basic.BasicScoreCalculator
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.NeighbourProvider
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.astar.AStarPathfinder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.ScoreCalculator
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.BasicNodeBuilder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.BasicScoreCalculator
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.astar.AStarPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.*
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.shared.distance
@@ -192,12 +189,12 @@ class AStarPathfindingTest : StringSpec({
                 return g + h
             }
 
-            override fun g(from: Node, to: Tile): Float {
-                return from.g + ((movementCost(from.tile) + movementCost(to)) / 2f)
+            override fun g(previousNode: Node, tile: Tile): Float {
+                return previousNode.g + ((movementCost(previousNode.tile) + movementCost(tile)) / 2f)
             }
 
-            override fun h(from: Tile, destination: Tile): Float {
-                return from.position.distance(destination.position).toFloat()
+            override fun h(tile: Tile, destination: Tile): Float {
+                return tile.position.distance(destination.position).toFloat()
             }
 
             private fun movementCost(tile: Tile): Float {

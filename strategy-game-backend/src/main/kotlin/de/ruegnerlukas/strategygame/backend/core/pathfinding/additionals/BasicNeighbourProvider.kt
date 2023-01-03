@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding.basic
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.NeighbourProvider
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.NeighbourProvider
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.Node
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.shared.positionsNeighbours

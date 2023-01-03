@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.AdvancedNode
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNode
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 
 /**
@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
  */
 class MaxProvincesRule(private val maxProvinces: Int) : NextNodeRule {
 
-    override fun evaluate(prev: AdvancedNode, next: Tile): Boolean {
+    override fun evaluate(prev: ExtendedNode, next: Tile): Boolean {
         val enterNewProvince = next.owner?.provinceId
             ?.let { !prev.visitedProvinces.contains(it) }
             ?: false

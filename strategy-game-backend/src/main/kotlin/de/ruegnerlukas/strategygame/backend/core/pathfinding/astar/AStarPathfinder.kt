@@ -1,5 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.pathfinding.core.astar
+package de.ruegnerlukas.strategygame.backend.core.pathfinding.astar
 
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.*
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.*
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
@@ -7,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContaine
 
 /**
  * Basic A*-Pathfinder.
- * Compares to [de.ruegnerlukas.strategygame.backend.core.pathfinding.core.custom.CustomPathfinder]:
+ * Compares to [de.ruegnerlukas.strategygame.backend.core.pathfinding.core.backtracking.BacktrackingPathfinder]:
  * - faster
  * - more limitations (no support for e.g. max path cost, max provinces, ...)
  */
@@ -17,9 +18,9 @@ class AStarPathfinder<T : Node>(
     private val neighbourProvider: NeighbourProvider<T>
 ) : Pathfinder<T> {
 
-    override fun find(from: TilePosition, to: TilePosition, tiles: TileContainer): Path<T> {
-        val startTile = tiles.get(from)
-        val endTile = tiles.get(to)
+    override fun find(start: TilePosition, destination: TilePosition, tiles: TileContainer): Path<T> {
+        val startTile = tiles.get(start)
+        val endTile = tiles.get(destination)
         if (startTile == null || endTile == null) {
             return Path.empty()
         }
@@ -27,12 +28,12 @@ class AStarPathfinder<T : Node>(
     }
 
 
-    override fun find(tileStart: Tile, tileEnd: Tile, tiles: TileContainer): Path<T> {
-        val context = PathfindingContext<T>(OpenList(), VisitedList())
+    override fun find(tileStart: Tile, tileDestination: Tile, tiles: TileContainer): Path<T> {
+        val context = AStarPathfindingContext<T>(OpenList(), VisitedList())
         context.pushOpen(nodeBuilder.start(tileStart))
-        return iterateOpen(context.open, tileEnd) { currentNode ->
+        return iterateOpen(context.open, tileDestination) { currentNode ->
             neighbourProvider.get(currentNode, tiles) { neighbourTile ->
-                val score = calculateScore(currentNode, neighbourTile, tileEnd)
+                val score = calculateScore(currentNode, neighbourTile, tileDestination)
                 visitTile(context, currentNode, neighbourTile, score)
             }
         }
@@ -40,13 +41,9 @@ class AStarPathfinder<T : Node>(
 
 
     private fun iterateOpen(open: OpenList<T>, destination: Tile, consumer: (node: T) -> Unit): Path<T> {
-        var count = 0
-
         while (open.isNotEmpty()) {
-            count++
             val currentNode = open.next()
             if (currentNode.tile.tileId == destination.tileId) {
-                println("searched $count paths")
                 return reconstructPath(currentNode)
             } else {
                 consumer(currentNode)
@@ -64,7 +61,7 @@ class AStarPathfinder<T : Node>(
     }
 
 
-    private fun visitTile(context: PathfindingContext<T>, prev: T, current: Tile, score: NodeScore) {
+    private fun visitTile(context: AStarPathfindingContext<T>, prev: T, current: Tile, score: NodeScore) {
         val existing = context.visited.get(current)
         if (existing == null || score.g < existing.g) {
             openTile(context, existing, prev, current, score)
@@ -72,7 +69,7 @@ class AStarPathfinder<T : Node>(
     }
 
 
-    private fun openTile(context: PathfindingContext<T>, existing: T?, prev: T, current: Tile, score: NodeScore) {
+    private fun openTile(context: AStarPathfindingContext<T>, existing: T?, prev: T, current: Tile, score: NodeScore) {
         context.pushOpen(nodeBuilder.next(prev, current, score), existing)
     }
 

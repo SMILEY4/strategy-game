@@ -1,10 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules.BlockingTilesRule
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.NeighbourProvider
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.Node
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.ScoreCalculator
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.custom.CustomPathfinder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules.BlockingTilesRule
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.*
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.shared.distance
@@ -27,7 +24,7 @@ class CustomPathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = CustomPathfinder(
+        val pathfinder = BacktrackingPathfinder(
             movementCosts = mapOf(),
             rules = listOf(
                 BlockingTilesRule(setOf(TileType.WATER))
@@ -63,7 +60,7 @@ class CustomPathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = CustomPathfinder(
+        val pathfinder = BacktrackingPathfinder(
             movementCosts = mapOf(),
             rules = listOf(
                 BlockingTilesRule(setOf(TileType.WATER))
@@ -89,7 +86,7 @@ class CustomPathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = CustomPathfinder(
+        val pathfinder = BacktrackingPathfinder(
             movementCosts = mapOf(),
             rules = listOf(
                 BlockingTilesRule(setOf(TileType.WATER))
@@ -118,7 +115,7 @@ class CustomPathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = CustomPathfinder(
+        val pathfinder = BacktrackingPathfinder(
             movementCosts = mapOf(),
             rules = listOf(
                 BlockingTilesRule(setOf(TileType.WATER))
@@ -151,7 +148,7 @@ class CustomPathfindingTest : StringSpec({
             )
         )
 
-        val pathfinder = CustomPathfinder(
+        val pathfinder = BacktrackingPathfinder(
             movementCosts = mapOf(
                 TileType.WATER to 9999f,
                 TileType.MOUNTAIN to 2f,
@@ -200,12 +197,12 @@ class CustomPathfindingTest : StringSpec({
                 return g + h
             }
 
-            override fun g(from: Node, to: Tile): Float {
-                return from.g + ((movementCost(from.tile) + movementCost(to)) / 2f)
+            override fun g(previousNode: Node, tile: Tile): Float {
+                return previousNode.g + ((movementCost(previousNode.tile) + movementCost(tile)) / 2f)
             }
 
-            override fun h(from: Tile, destination: Tile): Float {
-                return from.position.distance(destination.position).toFloat()
+            override fun h(tile: Tile, destination: Tile): Float {
+                return tile.position.distance(destination.position).toFloat()
             }
 
             private fun movementCost(tile: Tile): Float {
