@@ -20,7 +20,7 @@ data class BacktrackingPath<T : Node>(
             return BacktrackingPath(
                 nodes,
                 nodes.asSequence().map { it.tile.tileId }.toSet(),
-                nodes.last().f
+                nodes.lastOrNull()?.f ?: 0f
             )
         }
 

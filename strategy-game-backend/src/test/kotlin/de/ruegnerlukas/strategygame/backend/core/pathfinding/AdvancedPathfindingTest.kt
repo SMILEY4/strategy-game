@@ -1,8 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNeighbourProvider
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNodeBuilder
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules.*
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedScoreCalculator
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.advanced.rules.*
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.*
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
@@ -25,13 +26,16 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf(
                 TileType.WATER to 1f,
                 TileType.MOUNTAIN to 2f,
                 TileType.LAND to 1f
-            ),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER))
+            )),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER))
+                )
             )
         )
 
@@ -66,14 +70,17 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf(
                 TileType.WATER to 1f,
                 TileType.MOUNTAIN to 10f,
                 TileType.LAND to 1f
-            ),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxPathLengthRule(6)
+            )),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxPathLengthRule(6)
+                )
             )
         )
 
@@ -106,14 +113,17 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf(
                 TileType.WATER to 1f,
                 TileType.MOUNTAIN to 10f,
                 TileType.LAND to 1f
-            ),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxPathLengthRule(4)
+            )),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxPathLengthRule(4)
+                )
             )
         )
 
@@ -141,10 +151,13 @@ class AdvancedPathfindingTest : StringSpec({
             TileType.LAND to 1f
         )
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = movementCosts,
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxPathCostRule(10f, ExtendedScoreCalculator(movementCosts))
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(movementCosts),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxPathCostRule(10f, ExtendedScoreCalculator(movementCosts))
+                )
             )
         )
 
@@ -179,10 +192,13 @@ class AdvancedPathfindingTest : StringSpec({
             TileType.LAND to 1f
         )
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = movementCosts,
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxPathCostRule(10f, ExtendedScoreCalculator(movementCosts))
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(movementCosts),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxPathCostRule(10f, ExtendedScoreCalculator(movementCosts))
+                )
             )
         )
 
@@ -216,10 +232,13 @@ class AdvancedPathfindingTest : StringSpec({
             TileType.LAND to 1f
         )
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = movementCosts,
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxPathCostRule(10f, ExtendedScoreCalculator(movementCosts))
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(movementCosts),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxPathCostRule(10f, ExtendedScoreCalculator(movementCosts))
+                )
             )
         )
 
@@ -251,10 +270,13 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxProvincesRule(3)
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxProvincesRule(3)
+                )
             )
         )
 
@@ -293,10 +315,13 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxProvincesRule(10)
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxProvincesRule(10)
+                )
             )
         )
 
@@ -335,10 +360,13 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxProvincesRule(3)
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxProvincesRule(3)
+                )
             )
         )
 
@@ -377,10 +405,13 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER)),
-                MaxProvincesRule(3)
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER)),
+                    MaxProvincesRule(3)
+                )
             )
         )
 
@@ -404,12 +435,15 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                SwitchFromToWaterViaPointsRule(
-                    setOf(
-                        TilePosition(2, 0),
-                        TilePosition(3, 3)
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    SwitchFromToWaterViaPointsRule(
+                        setOf(
+                            TilePosition(2, 0),
+                            TilePosition(3, 3)
+                        )
                     )
                 )
             )
@@ -447,11 +481,14 @@ class AdvancedPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                SwitchFromToWaterViaPointsRule(
-                    setOf(
-                        TilePosition(2, 0),
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    SwitchFromToWaterViaPointsRule(
+                        setOf(
+                            TilePosition(2, 0),
+                        )
                     )
                 )
             )

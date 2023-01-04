@@ -6,6 +6,8 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateC
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.*
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.*
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
@@ -17,20 +19,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.*
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 
 object TestActions {
@@ -65,19 +54,19 @@ object TestActions {
         TurnEndActionImpl(
             ResolveCommandsActionImpl(
                 ResolvePlaceMarkerCommandImpl(
-                    GameEventManager()
+                    gameEventManager(database)
                 ),
                 ResolveCreateCityCommandImpl(
                     GameConfig.default(),
-                    GameEventManager()
+                    gameEventManager(database)
                 ),
                 ResolveCreateBuildingCommandImpl(
                     GameConfig.default(),
-                    GameEventManager()
+                    gameEventManager(database)
                 ),
                 ResolvePlaceScoutCommandImpl(
                     GameConfig.default(),
-                    GameEventManager()
+                    gameEventManager(database)
                 )
             ),
             SendGameStateActionImpl(
@@ -88,7 +77,7 @@ object TestActions {
             GameExtendedQueryImpl(database),
             GameExtendedUpdateImpl(database),
             CommandsByGameQueryImpl(database),
-            GameEventManager()
+            gameEventManager(database)
         ),
         GameQueryImpl(database),
         CountryByGameAndUserQueryImpl(database),
@@ -105,35 +94,35 @@ object TestActions {
     )
 
     fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
-        ResolvePlaceMarkerCommandImpl(GameEventManager()),
+        ResolvePlaceMarkerCommandImpl(gameEventManager(database)),
         ResolveCreateCityCommandImpl(
             GameConfig.default(),
-                    GameEventManager()
+                    gameEventManager(database)
         ),
         ResolveCreateBuildingCommandImpl(
             GameConfig.default(),
-            GameEventManager()
+            gameEventManager(database)
         ),
         ResolvePlaceScoutCommandImpl(
             GameConfig.default(),
-            GameEventManager()
+            gameEventManager(database)
         )
     )
 
     fun turnEndAction(database: ArangoDatabase) = TurnEndActionImpl(
         ResolveCommandsActionImpl(
-            ResolvePlaceMarkerCommandImpl(GameEventManager()),
+            ResolvePlaceMarkerCommandImpl(gameEventManager(database)),
             ResolveCreateCityCommandImpl(
                 GameConfig.default(),
-                GameEventManager()
+                gameEventManager(database)
             ),
             ResolveCreateBuildingCommandImpl(
                 GameConfig.default(),
-                GameEventManager()
+                gameEventManager(database)
             ),
             ResolvePlaceScoutCommandImpl(
                 GameConfig.default(),
-                GameEventManager()
+                gameEventManager(database)
             )
         ),
         SendGameStateActionImpl(
@@ -144,7 +133,22 @@ object TestActions {
         GameExtendedQueryImpl(database),
         GameExtendedUpdateImpl(database),
         CommandsByGameQueryImpl(database),
-        GameEventManager()
+        gameEventManager(database)
     )
+    
+    private fun gameEventManager(database: ArangoDatabase): GameEventManager {
+        return GameEventManager().also {
+            it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(GameConfig.default()))
+            it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
+            it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
+            it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(ReservationInsertImpl(database)))
+            it.register(GameEventCommandMarkerPlace.TYPE, GameActionMarkerPlace())
+            it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(GameConfig.default()))
+            it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(GameConfig.default()))
+            it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
+            it.register(GameEventWorldUpdate.TYPE, GameActionCountryResources(GameConfig.default()))
+            it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(GameConfig.default()))
+        }
+    }
 
 }

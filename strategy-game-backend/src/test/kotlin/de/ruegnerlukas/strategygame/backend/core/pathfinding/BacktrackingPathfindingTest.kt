@@ -1,5 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNeighbourProvider
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNodeBuilder
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedScoreCalculator
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules.BlockingTilesRule
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.*
@@ -11,7 +14,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.floats.shouldBeWithinPercentageOf
 
-class CustomPathfindingTest : StringSpec({
+class BacktrackingPathfindingTest : StringSpec({
 
     "basic path with blocking terrain" {
 
@@ -25,9 +28,12 @@ class CustomPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER))
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER))
+                )
             )
         )
 
@@ -61,9 +67,12 @@ class CustomPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER))
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER))
+                )
             )
         )
 
@@ -87,9 +96,12 @@ class CustomPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER))
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER))
+                )
             )
         )
 
@@ -116,9 +128,12 @@ class CustomPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER))
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf()),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER))
+                )
             )
         )
 
@@ -149,13 +164,16 @@ class CustomPathfindingTest : StringSpec({
         )
 
         val pathfinder = BacktrackingPathfinder(
-            movementCosts = mapOf(
+            ExtendedNodeBuilder(),
+            ExtendedScoreCalculator(mapOf(
                 TileType.WATER to 9999f,
                 TileType.MOUNTAIN to 2f,
                 TileType.LAND to 1f
-            ),
-            rules = listOf(
-                BlockingTilesRule(setOf(TileType.WATER))
+            )),
+            ExtendedNeighbourProvider().withRules(
+                listOf(
+                    BlockingTilesRule(setOf(TileType.WATER))
+                )
             )
         )
 
@@ -180,40 +198,6 @@ class CustomPathfindingTest : StringSpec({
 }) {
 
     private companion object {
-
-        class TerrainBasedNeighbourProvider : NeighbourProvider<Node> {
-            override fun get(node: Node, tiles: TileContainer, consumer: (neighbour: Tile) -> Unit) {
-                positionsNeighbours(node.tile.position) { q, r ->
-                    val neighbour = tiles.get(q, r)
-                    if (neighbour != null && neighbour.data.terrainType != TileType.WATER) {
-                        consumer(neighbour)
-                    }
-                }
-            }
-        }
-
-        class TerrainBasedScoreCalculator : ScoreCalculator<Node> {
-            override fun f(g: Float, h: Float): Float {
-                return g + h
-            }
-
-            override fun g(previousNode: Node, tile: Tile): Float {
-                return previousNode.g + ((movementCost(previousNode.tile) + movementCost(tile)) / 2f)
-            }
-
-            override fun h(tile: Tile, destination: Tile): Float {
-                return tile.position.distance(destination.position).toFloat()
-            }
-
-            private fun movementCost(tile: Tile): Float {
-                return when(tile.data.terrainType) {
-                    TileType.LAND -> 1f
-                    TileType.WATER -> 99999f
-                    TileType.MOUNTAIN -> 2f
-                }
-            }
-
-        }
 
         fun buildTiles(ids: List<List<Int>>): TileContainer {
             val tiles = mutableListOf<Tile>()
@@ -245,4 +229,3 @@ class CustomPathfindingTest : StringSpec({
     }
 
 }
-

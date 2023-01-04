@@ -1,8 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.*
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules.BlockingTilesRule
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.BasicNodeBuilder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.BasicScoreCalculator
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.astar.AStarPathfinder
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
 import de.ruegnerlukas.strategygame.backend.core.world.TilemapPositionsBuilder
@@ -37,12 +36,20 @@ object PathfindingBenchmarkUtils {
     }
 
 
-    fun run(tiles: TileContainer, start: TilePosition, end: TilePosition, pathfinderType: KClass<*>): Pair<Path<*>, Long> {
+    fun run(
+        tiles: TileContainer,
+        start: TilePosition,
+        end: TilePosition,
+        pathfinderType: KClass<*>
+    ): Pair<Path<*>, Long> {
         val pathfinder = when (pathfinderType) {
             BacktrackingPathfinder::class -> BacktrackingPathfinder(
-                movementCosts = mapOf(),
-                rules = listOf(
-                    BlockingTilesRule(setOf(TileType.WATER))
+                ExtendedNodeBuilder(),
+                ExtendedScoreCalculator(mapOf()),
+                ExtendedNeighbourProvider().withRules(
+                    listOf(
+                        BlockingTilesRule(setOf(TileType.WATER))
+                    )
                 )
             )
             AStarPathfinder::class -> AStarPathfinder(

@@ -114,8 +114,8 @@ val applicationDependencies = module {
 
     single<ParameterService> { AWSParameterStore.create(Config.get()) } withOptions { createdAtStart() }
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
-    single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
+    single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
     single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
     single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }

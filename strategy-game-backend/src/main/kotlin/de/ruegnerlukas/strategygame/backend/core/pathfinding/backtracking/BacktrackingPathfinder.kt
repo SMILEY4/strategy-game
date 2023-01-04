@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking
 
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.*
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.core.*
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
