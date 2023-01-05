@@ -10,10 +10,13 @@ import kotlin.time.Duration.Companion.seconds
 
 object DatabaseProvider : Logging {
 
+    var portOverwrite: Int? = null
+
     suspend fun create(config: DatabaseConfig, retryCount: Int = 0): ArangoDatabase {
+        val port = portOverwrite ?: config.port
         try {
-            log().info("Trying to connect to database ${config.name} on ${config.host}:${config.port} (retryCount=$retryCount)")
-            return ArangoDatabase.create(config.host, config.port, null, null, config.name)
+            log().info("Trying to connect to database ${config.name} on ${config.host}:${port} (retryCount=$retryCount)")
+            return ArangoDatabase.create(config.host, port, null, null, config.name)
         } catch (e: CompletionException) {
             if (e.cause is ArangoDBException) {
                 if (retryCount >= config.retryCount) {

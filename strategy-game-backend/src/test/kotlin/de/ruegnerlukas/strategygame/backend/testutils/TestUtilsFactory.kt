@@ -9,9 +9,11 @@ import kotlinx.coroutines.future.await
 
 object TestUtilsFactory {
 
+	var arangoDbDockerPort = 8529
+
 	suspend fun createTestDatabase(): ArangoDatabase {
-		ArangoDatabase.delete("localhost", 8529, null, null, "test-database")
-		return ArangoDatabase.create("localhost", 8529, null, null, "test-database")
+		ArangoDatabase.delete("localhost", arangoDbDockerPort, null, null, "test-database")
+		return ArangoDatabase.create("localhost", arangoDbDockerPort, null, null, "test-database")
 	}
 
 	class MockMessageProducer : MessageProducer {

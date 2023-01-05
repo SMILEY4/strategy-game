@@ -1,1 +1,0 @@
-docker compose -f ../infrastructure/backend/docker-compose-arangodb.yml up
