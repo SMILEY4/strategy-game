@@ -29,10 +29,6 @@ Parameters:
         Type: "String"
         Description: "The id of the source GithubRepository, i.e. <owner>/<repo-name>"
         Default: "SMILEY4/strategy-game"
-    GitBranch:
-        Type: "String"
-        Description: "Name of the git-branch to build and deploy"
-        Default: "deployment-marker"
     GithubCodeStarConnectionArn:
         Type: "String"
         Description: "Arn of the already created codestar connection to github"
@@ -651,14 +647,14 @@ Resources:
                                 Resource: "*"
                                 Effect: "Allow"
 
-    PipelineBackend:
+    PipelineBackendDeploymentMarker:
         Type: "AWS::CodePipeline::Pipeline"
         Properties:
             Name: !Join
                 - ""
                 -   - "strategy-game"
                     - !Ref EnvName
-                    - ".backend"
+                    - ".backend.deployment-marker"
             RoleArn: !GetAtt CodePipelineRole.Arn
             RestartExecutionOnUpdate: false
             ArtifactStore:
@@ -675,7 +671,7 @@ Resources:
                                 Provider: "CodeStarSourceConnection"
                             Configuration:
                                 ConnectionArn: !Ref GithubCodeStarConnectionArn
-                                BranchName: !Ref GitBranch
+                                BranchName: "deployment-marker"
                                 FullRepositoryId: !Ref GitHubRepositoryId
                                 OutputArtifactFormat: "CODE_ZIP"
                                 DetectChanges: false
@@ -712,14 +708,136 @@ Resources:
                                 -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
 
-    PipelineFrontend:
+    PipelineBackendDevelop:
         Type: "AWS::CodePipeline::Pipeline"
         Properties:
             Name: !Join
                 - ""
                 -   - "strategy-game"
                     - !Ref EnvName
-                    - ".frontend"
+                    - ".backend.develop"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref BackendArtifactBucketName
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: "develop"
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_backend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectBackend
+                            InputArtifacts:
+                                -   Name: "strategy-game_backend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_backend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeDeploy"
+                            Configuration:
+                                ApplicationName: !Ref CodeDeployApplicationBackend
+                                DeploymentGroupName: !Ref DeploymentGroupBackend
+                            InputArtifacts:
+                                -   Name: "strategy-game_backend_build-artifact"
+                            RunOrder: 1
+
+    PipelineBackendRelease:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".backend.release"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref BackendArtifactBucketName
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: "release"
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_backend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectBackend
+                            InputArtifacts:
+                                -   Name: "strategy-game_backend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_backend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeDeploy"
+                            Configuration:
+                                ApplicationName: !Ref CodeDeployApplicationBackend
+                                DeploymentGroupName: !Ref DeploymentGroupBackend
+                            InputArtifacts:
+                                -   Name: "strategy-game_backend_build-artifact"
+                            RunOrder: 1
+
+    PipelineFrontendDeploymentMarker:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".frontend.deployment-marker"
             RoleArn: !GetAtt CodePipelineRole.Arn
             RestartExecutionOnUpdate: false
             ArtifactStore:
@@ -736,7 +854,7 @@ Resources:
                                 Provider: "CodeStarSourceConnection"
                             Configuration:
                                 ConnectionArn: !Ref GithubCodeStarConnectionArn
-                                BranchName: !Ref GitBranch
+                                BranchName: "deployment-marker"
                                 FullRepositoryId: !Ref GitHubRepositoryId
                                 OutputArtifactFormat: "CODE_ZIP"
                                 DetectChanges: false
@@ -773,17 +891,132 @@ Resources:
                                 -   Name: "strategy-game_frontend_build-artifact"
                             RunOrder: 1
 
+    PipelineFrontendDevelop:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".frontend.develop"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref FrontendArtifactBucketName
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: "develop"
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectFrontend
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "S3"
+                            Configuration:
+                                BucketName: !Ref WebAppBucket
+                                Extract: Yes
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+
+    PipelineFrontendRelease:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: !Join
+                - ""
+                -   - "strategy-game"
+                    - !Ref EnvName
+                    - ".frontend.release"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref FrontendArtifactBucketName
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: "release"
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectFrontend
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "S3"
+                            Configuration:
+                                BucketName: !Ref WebAppBucket
+                                Extract: Yes
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
 
 Outputs:
     WebAppBucketName:
         Description: "Name of the s3 bucket holding the webapp"
         Value: !Ref WebAppBucket
-    BackendPipelineName:
-        Description: "The name of the build/deploy-pipeline for the backend"
-        Value: !Ref PipelineBackend
-    FrontendPipelineName:
-        Description: "The name of the build/deploy-pipeline for the frontend"
-        Value: !Ref PipelineFrontend
     ServerInstanceId:
         Description: "The id of the ec-instance"
         Value: !Ref ServerInstance
