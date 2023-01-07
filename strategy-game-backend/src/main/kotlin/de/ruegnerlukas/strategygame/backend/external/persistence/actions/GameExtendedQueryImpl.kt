@@ -9,12 +9,14 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CityEn
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.RouteEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
@@ -35,14 +37,16 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
                     { fetchCountries(gameId) },
                     { fetchTiles(gameId) },
                     { fetchCities(gameId) },
-                    { fetchProvinces(gameId) }
-                ) { countries, tiles, cities, provinces ->
+                    { fetchProvinces(gameId) },
+                    { fetchRoutes(gameId) }
+                ) { countries, tiles, cities, provinces, routes ->
                     GameExtended(
                         game = game,
                         countries = countries,
                         tiles = TileContainer(tiles),
                         cities = cities.tracking(),
-                        provinces = provinces.tracking()
+                        provinces = provinces.tracking(),
+                        routes = routes.tracking()
                     )
                 }
             }
@@ -109,5 +113,18 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
         ).map { it.asServiceModel() }
     }
 
+    private suspend fun fetchRoutes(gameId: String): List<Route> {
+        database.assertCollections(Collections.ROUTES)
+        return database.query(
+            """
+				FOR route IN ${Collections.ROUTES}
+					FILTER route._documentType != "reservation"
+					FILTER route.gameId == @gameId
+					RETURN route
+			""".trimIndent(),
+            mapOf("gameId" to gameId),
+            RouteEntity::class.java
+        ).map { it.asServiceModel() }
+    }
 
 }

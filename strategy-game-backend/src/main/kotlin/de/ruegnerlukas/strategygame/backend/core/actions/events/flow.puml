@@ -25,6 +25,7 @@ digraph G {
     PlaceScoutAction[style=filled,color=rosybrown1];
     UpdateScoutLifetimeAction[style=filled,color=rosybrown1];
     TickCountryResourcesAction[style=filled,color=rosybrown1];
+    CityNetworkUpdate[style=filled,color=rosybrown1];
 
     End_Turn -> Command_Resolution;
 
@@ -40,6 +41,7 @@ digraph G {
     createCityEvent -> CityCreationCostAction;
     createCityEvent -> CityInfluenceUpdateAction;
     createCityEvent -> CityTileOwnershipAction;
+    createCityEvent -> CityNetworkUpdate;
 
     CityInfluenceUpdateAction -> tileInfluenceUpdateEvent;
 

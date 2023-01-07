@@ -8,6 +8,7 @@ object Collections {
     const val CITIES = "cities"
     const val COMMANDS = "commands"
     const val PROVINCES = "provinces"
+    const val ROUTES = "routes"
 
     val ALL = listOf(
         GAMES,
@@ -15,7 +16,8 @@ object Collections {
         TILES,
         CITIES,
         COMMANDS,
-        PROVINCES
+        PROVINCES,
+        ROUTES
     )
 
 }

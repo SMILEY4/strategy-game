@@ -155,6 +155,20 @@ All messages follow the following format
               ],
               "provinceCapitalCityId": "String - the id of the province capital city"
           }
+      ],
+      "routes": [
+          {
+              "routeId": "String - the id of the route",
+              "cityIdA": "String - the id of one of the connected cities",
+              "cityIdB": "String - the id of the other connected city",
+              "path": [
+                  {
+                      "tileId": "String - the id of the tile",
+                      "q": "Int - the q-coordinate of the tile",
+                      "r": "Int - the r-coordinate of the tile",
+                  }
+              ]
+          }
       ]
   }
   ```

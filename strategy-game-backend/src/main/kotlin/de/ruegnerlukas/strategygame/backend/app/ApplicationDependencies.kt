@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionBuildingCreation
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityCreation
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityInfluence
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityNetworkUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityTileOwnership
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceOwnership
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceVisibility
@@ -163,6 +164,7 @@ val applicationDependencies = module {
     single<GameEventManager> {
         GameEventManager().also {
             it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(get()))
+            it.register(GameEventCityCreate.TYPE, GameActionCityNetworkUpdate(get(), get()))
             it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
             it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
             it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(get()))

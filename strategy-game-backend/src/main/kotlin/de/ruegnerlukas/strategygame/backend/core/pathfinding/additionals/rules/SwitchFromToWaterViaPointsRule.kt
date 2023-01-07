@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 /**
  * The path may only switch from water to land (or from land to water) at specified points
  */
-class SwitchFromToWaterViaPointsRule(private val switchingPoints: Set<TilePosition>) : NextNodeRule {
+class SwitchFromToWaterViaPointsRule(private val switchingPoints: Collection<TilePosition>) : NextNodeRule {
 
     override fun evaluate(prev: ExtendedNode, next: Tile): Boolean {
         if(isLand(prev.tile) && isWater(next)) {
