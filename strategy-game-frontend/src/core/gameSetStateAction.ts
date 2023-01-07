@@ -9,6 +9,7 @@ import {GameState} from "./models/gameState";
 import {Marker} from "./models/marker";
 import {Province} from "./models/province";
 import {ResourceType} from "./models/resourceType";
+import {Route} from "./models/route";
 import {Scout} from "./models/scout";
 import {TerrainType} from "./models/terrainType";
 import {Tile} from "./models/tile";
@@ -33,7 +34,7 @@ export class GameSetStateAction {
     }
 
     perform(game: PayloadGameState): void {
-        console.log("set game state");
+        console.log("set game/world state");
         const countries = this.getCountries(game);
         const tiles = this.getTiles(game);
         this.enrichTilesLayerData(tiles, game);
@@ -45,6 +46,7 @@ export class GameSetStateAction {
             this.getProvinces(game),
             this.getMarkers(game),
             this.getScouts(game),
+            this.getRoutes(game)
         );
         this.gameRepository.clearCommands();
         this.gameRepository.setGameState(GameState.PLAYING);
@@ -207,7 +209,7 @@ export class GameSetStateAction {
 
     private getTileProvinceLayerValue(tile: Tile, game: PayloadGameState): number[] {
         const province = game.provinces.find(province => province.provinceId === tile.dataTier1?.owner?.provinceId);
-        const capital = game.cities.find(city => city.cityId == province?.provinceCapitalCityId)
+        const capital = game.cities.find(city => city.cityId == province?.provinceCapitalCityId);
         return colorToRgbArray(orDefault(capital?.color, Color.INVALID));
     }
 
@@ -222,6 +224,10 @@ export class GameSetStateAction {
 
     private getTileCityLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.cityId);
+    }
+
+    private getRoutes(game: PayloadGameState): Route[] {
+        return game.routes;
     }
 
 }

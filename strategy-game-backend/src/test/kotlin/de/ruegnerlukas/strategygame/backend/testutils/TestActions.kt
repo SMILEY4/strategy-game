@@ -139,6 +139,7 @@ object TestActions {
     private fun gameEventManager(database: ArangoDatabase): GameEventManager {
         return GameEventManager().also {
             it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(GameConfig.default()))
+            it.register(GameEventCityCreate.TYPE, GameActionCityNetworkUpdate(GameConfig.default(), ReservationInsertImpl(database)))
             it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
             it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
             it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(ReservationInsertImpl(database)))

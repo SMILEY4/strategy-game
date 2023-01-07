@@ -100,7 +100,11 @@ data class GameConfig(
     /**
      * The max amount of active scouts a country can have
      */
-    val scoutsMaxAmount: Int = 4
+    val scoutsMaxAmount: Int = 4,
+    /**
+     * The max amount of tiles a route between to cities is allowed to have
+     */
+    val maxRouteLength: Int = 10
 ) {
     companion object {
         fun default() = GameConfig()

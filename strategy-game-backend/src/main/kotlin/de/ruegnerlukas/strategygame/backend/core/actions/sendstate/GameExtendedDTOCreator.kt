@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
+import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
@@ -18,6 +18,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDataTier3
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.RouteDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ScoutTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier0
@@ -58,12 +59,17 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
                 .filter { province -> province.cityIds.any { provinceCityId -> cityDTOs.find { it.cityId == provinceCityId } != null } }
                 .map { buildProvince(it, playerCountry.countryId) }
 
+            val routeDTOs = game.routes
+                .filter { knowsRoute(it, cityDTOs) }
+                .map { buildRoute(it) }
+
             GameExtendedDTO(
                 turn = game.game.turn,
                 tiles = tileDTOs,
                 countries = countryDTOs,
                 cities = cityDTOs,
-                provinces = provinceDTOs
+                provinces = provinceDTOs,
+                routes = routeDTOs
             )
         }
     }
@@ -227,6 +233,23 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             } else {
                 null
             }
+        )
+    }
+
+
+    private fun knowsRoute(route: Route, cityDTOs: List<CityDTO>): Boolean {
+        val cityA = cityDTOs.find { it.cityId == route.cityIdA }
+        val cityB = cityDTOs.find { it.cityId == route.cityIdA }
+        return cityA != null && cityB != null
+    }
+
+
+    private fun buildRoute(route: Route): RouteDTO {
+        return RouteDTO(
+            routeId = route.routeId,
+            cityIdA = route.cityIdA,
+            cityIdB = route.cityIdB,
+            path = route.path
         )
     }
 

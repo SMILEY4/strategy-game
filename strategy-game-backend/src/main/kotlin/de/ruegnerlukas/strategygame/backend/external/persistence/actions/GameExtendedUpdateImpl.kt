@@ -8,12 +8,14 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CityEn
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.RouteEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
@@ -37,6 +39,8 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
                     { deleteCities(game.cities.getRemovedElements(), gameId) },
                     { updateProvinces(game.provinces, gameId) },
                     { deleteProvinces(game.provinces.getRemovedElements(), gameId) },
+                    { updateRoutes(game.routes, gameId) },
+                    { deleteRoutes(game.routes.getRemovedElements(), gameId) }
                 )
             }
         }
@@ -71,6 +75,14 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
 
     private suspend fun deleteProvinces(provinces: Set<Province>, gameId: String) {
         database.deleteDocuments(Collections.PROVINCES, provinces.map { ProvinceEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+    }
+
+    private suspend fun updateRoutes(routes: List<Route>, gameId: String) {
+        database.insertOrReplaceDocuments(Collections.ROUTES, routes.map { RouteEntity.of(it, gameId) })
+    }
+
+    private suspend fun deleteRoutes(routes: Set<Route>, gameId: String) {
+        database.deleteDocuments(Collections.ROUTES, routes.map { RouteEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
 }

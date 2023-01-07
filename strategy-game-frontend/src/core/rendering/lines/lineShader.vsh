@@ -4,9 +4,9 @@
 uniform mat3 u_viewProjection;
 in vec2 in_position;
 in vec2 in_texcoords;
-in vec3 in_color;
+in vec4 in_color;
 out vec2 v_texcoords;
-out vec3 v_color;
+out vec4 v_color;
 
 void main() {
     v_texcoords = in_texcoords;
