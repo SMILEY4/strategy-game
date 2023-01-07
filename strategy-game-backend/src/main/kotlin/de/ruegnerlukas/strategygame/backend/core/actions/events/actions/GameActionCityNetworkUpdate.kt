@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.Path
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.Pathfinder
@@ -37,17 +36,24 @@ class GameActionCityNetworkUpdate(
 ) : GameAction<GameEventCityCreate>(GameEventCityCreate.TYPE) {
 
     override suspend fun perform(event: GameEventCityCreate): List<GameEvent> {
-        if (!event.city.isProvinceCapital) {
-            return emptyList()
+        if (event.city.isProvinceCapital) {
+            updateRoutes(event.city, event.game)
+        } else {
+            val province = event.game.provinces.find { it.cityIds.contains(event.city.cityId) } ?: throw Exception("No province for city")
+            val capitalCity = event.game.cities.find { it.cityId == province.provinceCapitalCityId } ?: throw Exception("City not found")
+            updateRoutes(capitalCity, event.game)
         }
-        val pathfinder = buildPathfinder(event.game)
-        event.game.cities
-            .asSequence()
-            .filter { canCreateRoute(event.city, it, gameConfig.maxRouteLength) }
-            .mapParallel { findPath(pathfinder, event.city, it, event.game) }
-            .filter { isValidPath(it) }
-            .forEach { (from, to, path) -> event.game.routes.add(createRoute(from, to, path)) }
         return emptyList()
+    }
+
+    private suspend fun updateRoutes(city: City, game: GameExtended) {
+        val pathfinder = buildPathfinder(game)
+        game.cities
+            .asSequence()
+            .filter { canCreateRoute(city, it, game.routes, gameConfig.maxRouteLength) }
+            .mapParallel { findPath(pathfinder, city, it, game) }
+            .filter { isValidPath(it) }
+            .forEach { (from, to, path) -> game.routes.add(createRoute(from, to, path)) }
     }
 
     private fun buildPathfinder(game: GameExtended): Pathfinder<ExtendedNode> {
@@ -65,11 +71,18 @@ class GameActionCityNetworkUpdate(
         )
     }
 
-    private fun canCreateRoute(from: City, to: City, maxSearchRadius: Int): Boolean {
-        return from.isProvinceCapital
-                && to.isProvinceCapital
-                && from.cityId != to.cityId
-                && from.tile.distance(to.tile) <= maxSearchRadius
+    private fun canCreateRoute(a: City, b: City, routes: List<Route>, maxSearchRadius: Int): Boolean {
+        return a.isProvinceCapital
+                && b.isProvinceCapital
+                && a.cityId != b.cityId
+                && a.tile.distance(b.tile) <= maxSearchRadius
+                && !routeAlreadyExists(a, b, routes)
+    }
+
+    private fun routeAlreadyExists(a: City, b: City, routes: List<Route>): Boolean {
+        return routes.any {
+            (it.cityIdA == a.cityId && it.cityIdB == b.cityId) || (it.cityIdA == b.cityId && it.cityIdB == a.cityId)
+        }
     }
 
     private fun findPath(pf: Pathfinder<ExtendedNode>, from: City, to: City, game: GameExtended): Triple<City, City, Path<ExtendedNode>> {
