@@ -69,5 +69,15 @@ export interface PayloadGameState {
         dataTier3: {
             resourceBalance: Record<ResourceType, number>
         } | null
+    })[],
+    routes: ({
+        routeId: string,
+        cityIdA: string,
+        cityIdB: string,
+        path: ({
+            tileId: string,
+            q: number,
+            r: number
+        })[]
     })[]
 }

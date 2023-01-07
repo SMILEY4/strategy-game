@@ -51,7 +51,7 @@ export class LineRenderer {
                 {
                     name: "in_color",
                     type: ShaderAttributeType.FLOAT,
-                    amountComponents: 3,
+                    amountComponents: 4,
                 }
             ],
             uniforms: [

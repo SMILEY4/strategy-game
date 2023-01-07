@@ -51,17 +51,14 @@ export class Renderer {
         const combinedRevId = this.worldRepository.getRevisionId() + "_" + this.gameRepository.getRevisionId();
         const camera = this.createCamera(localGameState.camera);
 
-        this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
-        this.tileObjectRenderer.render(camera, gameState, localGameState);
+        gameState.routes.forEach(route => {
+            const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r))
+            this.lineRenderer.registerLine(route.routeId, positions, 1, [1, 1, 1, 0.3])
+        })
 
-        const linePositions = [
-            [0, 0],
-            [5, 4],
-            [10, -3],
-            [7, 5]
-        ].map(p => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, p[0], p[1]))
-        this.lineRenderer.registerLine("test-line", linePositions, 6, [1, 0, 0])
+        this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
         this.lineRenderer.render(camera);
+        this.tileObjectRenderer.render(camera, gameState, localGameState);
     }
 
 
