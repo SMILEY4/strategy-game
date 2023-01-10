@@ -4,6 +4,7 @@ digraph G {
     End_Turn[style=filled,color=aquamarine];
     Command_Resolution[style=filled,color=aquamarine];
 
+    worldPrepareEvent[shape=box,style=filled,color=slategray1];
     worldUpdateEvent[shape=box,style=filled,color=slategray1];
     createCityCommandEvent[shape=box,style=filled,color=slategray1];
     createCityEvent[shape=box,style=filled,color=slategray1];
@@ -12,7 +13,9 @@ digraph G {
     tileInfluenceUpdateEvent[shape=box,style=filled,color=slategray1];
     placeMarkerCommandEvent[shape=box,style=filled,color=slategray1];
     placeScoutCommandEvent[shape=box,style=filled,color=slategray1];
+    resourceUpdateEvent[shape=box,style=filled,color=slategray1];
 
+    WorldPrepareAction[style=filled,color=rosybrown1];
     CityCreationAction[style=filled,color=rosybrown1];
     CityCreationCostAction[style=filled,color=rosybrown1];
     BuildingCreationAction[style=filled,color=rosybrown1];
@@ -26,6 +29,10 @@ digraph G {
     UpdateScoutLifetimeAction[style=filled,color=rosybrown1];
     TickCountryResourcesAction[style=filled,color=rosybrown1];
     CityNetworkUpdate[style=filled,color=rosybrown1];
+    MarketUpdateAction[style=filled,color=rosybrown1];
+
+    End_Turn -> worldPrepareEvent;
+    worldPrepareEvent -> WorldPrepareAction;
 
     End_Turn -> Command_Resolution;
 
@@ -62,6 +69,11 @@ digraph G {
 
     worldUpdateEvent -> UpdateScoutLifetimeAction;
     worldUpdateEvent -> TickCountryResourcesAction;
+
+    TickCountryResourcesAction -> resourceUpdateEvent;
+
+    resourceUpdateEvent -> MarketUpdateAction;
+
 }
 
 @enduml

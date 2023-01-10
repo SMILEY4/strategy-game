@@ -6,10 +6,10 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedgerEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
-import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 /**
  * Handles turn-income and turn-expenses
@@ -22,33 +22,16 @@ class GameActionCountryResources(
 
     override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
         event.game.provinces.forEach { province ->
-
-            val log = ResourcesLog(province)
-
-            val resourcesLastTurn = province.resourceBalance.toMutableMap()
-            val resourcesThisTurn = mutableMapOf<ResourceType, Float>().also {
-                ResourceType.values().forEach { resourceType ->
-                    it[resourceType] = 0f
-                }
-            }
-
-            log.previousTurn.putAll(resourcesLastTurn)
+            val previousLedger = province.resourceLedgerPrevTurn
+            val currentLedger = province.resourceLedgerCurrTurn
 
             province.cityIds
                 .map { getCity(event.game, it) }
                 .sortedBy { it.isProvinceCapital }
                 .forEach {
-                    handleCityProduction(it, resourcesLastTurn, resourcesThisTurn, log)
-                    handleCityFoodConsumption(it, resourcesLastTurn, log)
+                    handleCityProduction(it, previousLedger, currentLedger)
+                    handleCityFoodConsumption(it, currentLedger)
                 }
-
-            province.resourceBalance.also {
-                it.clear()
-                it.putAll(resourcesThisTurn)
-            }
-
-            log.nextTurn.putAll(resourcesThisTurn)
-//            log.print()
         }
         return listOf()
     }
@@ -56,33 +39,29 @@ class GameActionCountryResources(
 
     private fun handleCityProduction(
         city: City,
-        resourcesLastTurn: MutableMap<ResourceType, Float>,
-        resourcesThisTurn: MutableMap<ResourceType, Float>,
-        log: ResourcesLog
+        previousLedger: ResourceLedger,
+        currentLedger: ResourceLedger,
     ) {
         city.buildings
             .onEach { it.active = false }
             .filter { it.type.templateData.requiredTileResource == null || it.tile != null }
-            .filter { resourcesAvailable(it.type.templateData.requires, resourcesLastTurn) }
+            .filter { resourcesAvailable(it.type.templateData.requires, previousLedger, currentLedger) }
             .sortedBy { it.type.order }
             .forEach { building ->
                 building.active = true
                 building.type.templateData.requires.forEach { requiredResource ->
-                    addResourceBalance(requiredResource.type, -requiredResource.amount, resourcesLastTurn)
-                    log.changes[requiredResource.type]!!.add("building:" + building.type to -requiredResource.amount)
+                    currentLedger.addEntry(requiredResource.type, -requiredResource.amount, ResourceLedger.reasonBuilding(building.type))
                 }
                 building.type.templateData.produces.forEach { producedResource ->
-                    addResourceBalance(producedResource.type, +producedResource.amount, resourcesThisTurn)
-                    log.changes[producedResource.type]!!.add("building:" + building.type to +producedResource.amount)
+                    currentLedger.addEntry(producedResource.type, +producedResource.amount, ResourceLedger.reasonBuilding(building.type))
                 }
             }
     }
 
 
-    private fun handleCityFoodConsumption(city: City, resourcesLastTurn: MutableMap<ResourceType, Float>, log: ResourcesLog) {
+    private fun handleCityFoodConsumption(city: City, currentLedger: ResourceLedger) {
         val foodConsumption = if (city.isProvinceCapital) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
-        addResourceBalance(ResourceType.FOOD, -foodConsumption, resourcesLastTurn)
-        log.changes[ResourceType.FOOD]!!.add("consumption" to -foodConsumption)
+        currentLedger.addEntry(ResourceType.FOOD, -foodConsumption, ResourceLedger.reasonPopulationFoodConsumption())
     }
 
 
@@ -90,53 +69,12 @@ class GameActionCountryResources(
         return game.cities.find { it.cityId == cityId }!!
     }
 
-
-    private fun resourcesAvailable(requiredResources: List<ResourceStack>, values: Map<ResourceType, Float>): Boolean {
-        return requiredResources.all { getResourceBalance(it.type, values) >= it.amount }
+    private fun getAvailableResources(resourceType: ResourceType, previousLedger: ResourceLedger, currentLedger: ResourceLedger): Float {
+        return previousLedger.getChangeInput(resourceType) - currentLedger.getChangeOutput(resourceType)
     }
 
-
-    private fun getResourceBalance(type: ResourceType, values: Map<ResourceType, Float>): Float {
-        return values[type] ?: 0F
+    private fun resourcesAvailable(reqResources: List<ResourceStack>, prevLedger: ResourceLedger, currLedger: ResourceLedger): Boolean {
+        return reqResources.all { getAvailableResources(it.type, prevLedger, currLedger) >= it.amount }
     }
-
-
-    private fun addResourceBalance(type: ResourceType, addAmount: Float, values: MutableMap<ResourceType, Float>) {
-        values[type] = getResourceBalance(type, values) + addAmount
-    }
-
-
-    data class ResourcesLog(
-        val province: Province,
-        val previousTurn: MutableMap<ResourceType, Float> = mutableMapOf(),
-        val nextTurn: MutableMap<ResourceType, Float> = mutableMapOf(),
-        val changes: MutableMap<ResourceType, MutableList<Pair<String, Float>>> = mutableMapOf<ResourceType, MutableList<Pair<String, Float>>>().also {
-            ResourceType.values().forEach { resource -> it[resource] = mutableListOf<Pair<String, Float>>() }
-        }
-    ) {
-
-        fun print() {
-            val log = Logging.create("Resource Update")
-            log.debug("== ${this.province.provinceId} ============ ")
-            log.debug("----- LAST TURN -----")
-            this.previousTurn.forEach { (resource, amount) ->
-                log.debug("  - $resource: " + amount.toString().padStart(4))
-            }
-            log.debug("----- NEXT TURN -----")
-            this.nextTurn.forEach { (resource, amount) ->
-                log.debug("  - $resource: " + amount.toString().padStart(4))
-            }
-            log.debug("----- CHANGES -----")
-            this.changes.forEach { (resource, entries) ->
-                log.debug("  - $resource:")
-                entries.forEach { entry ->
-                    log.debug("     * ${entry.first}: ${entry.second}")
-                }
-            }
-            log.debug("===========================================")
-        }
-
-    }
-
 
 }

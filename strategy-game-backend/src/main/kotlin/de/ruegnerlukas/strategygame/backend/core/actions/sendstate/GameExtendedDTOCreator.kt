@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
@@ -229,7 +230,9 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             cityIds = province.cityIds,
             provinceCapitalCityId = province.provinceCapitalCityId,
             dataTier3 = if (playerCountryId == province.countryId) {
-                ProvinceDataTier3(resourceBalance = province.resourceBalance.toMap())
+                ProvinceDataTier3(
+                    resourceBalance = ResourceType.values().associateWith { province.resourceLedgerCurrTurn.getChangeTotal(it) }
+                )
             } else {
                 null
             }

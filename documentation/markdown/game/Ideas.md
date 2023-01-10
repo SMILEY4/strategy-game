@@ -1181,3 +1181,133 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
   - first effects generic, later ones more and more specific
   - player can adapt to random spawn position and generated world
   - the more the player knows about world, the more specific effects he can choose
+
+
+
+
+
+# Building Synergies
+
+- **Problem**
+  - what is the strategy behind buildings in certain cities
+  - why not just every buildings in every city ?
+  - why not just build a building in any city (no just specific cities) ?
+- **Possible Solutions**
+  - limit amount of buildings per city
+    - yes, but is just a simple limit, not strategic option
+
+  - bonus based on city location (e.g. resource availability,terrain)
+    - yes, but is just a "hidden limit" where building is effectively possible, no strategic option (why build at a factually worse place)
+- **Solution: Synergies**
+  - buildings in city have synergies with other buildings in same city
+  - still limit amount of buildings per city -> just having every synergy in every city not possible -> building-slot-limit now has a reason 
+  - "same-building-synergies": a building is more effective, if more of the same type of building exist in city, e.g.: "Academy", +10% bonus for each other academy in city -> more specialized (here "research-") cities
+  - "cross-building-synergies": a building is more effective, if another building of a different type exists in city, e.g. "Jewellers Workshop" receives bonus, if a mine exists in the city
+  - maybe extend some synergies to provinces
+    - some buildings require counterpart in same cities
+    - some buildings require counterpart in same province
+
+
+
+
+
+# Limit to City-Creation
+
+**Problem:**
+
+- currently, creating cities is too easy, simple and cheap (even with creation cost)
+- no trade-off between creating a new city and doing something else
+
+**Solution/Idea:**
+
+- CIV5/CIV6: build settler-unit in another city
+
+  - takes up production-queue of that city
+  - choose between building settler/city and improving city, building military, ...
+
+- here: (probably) no settler-unit on map
+
+  - maybe still produce settler in another city
+  - settler is a resource that can be used in country or in same province or in influence area of city or in certain radius or ...
+  - effect: no units on map that need managing, but action is still a choice between creating city and something else
+
+  
+
+# Combat City-Micromanagement
+
+**Problem:**
+
+- only cities harvest resources
+- country requires many cities (even a lot more than in civ, humankind, ...)
+
+**Solution/Idea:**
+
+- 3 tiers of cities
+
+  - city / province capitol - one per province, largest, most flexible and developed city
+  - town - smaller city, still has most functionalities of normal city -> still micromanagement
+  - camp - very limited features/control, only one building, choose starter building when constructing city  
+
+- effect
+  - build camps that dont need any micromanagement
+  - camps can still be upgraded to towns to get more features,flexibility later on in the game
+
+
+
+
+# Combat endless expansion
+
+https://www.reddit.com/r/4Xgaming/comments/1060uh0/are_there_any_4x_strategy_games_that_possess/
+
+- fields of glory: decadence system
+  - nation gains decadence
+    - slowly over time naturally
+    - by expanding too fast
+    - expanding into territories that are not "objectives"
+    - expanding into territories that are not of same ethnicity
+  - nation looses decadence
+    - building specific buildings, improvements
+    - population management
+    - taking territories that are "objectives"
+
+
+
+
+
+# Government Ideas - Traveling Crown
+
+- King/Ruler + Court (nobility, servants) can be stationed in any city
+- city/province receives bonuses during that time (building speed, efficiency, reduced, crime, administration, nobility happiness, ...)
+- city/province consumes more resources
+- traveling (i.e. when changing city) brings crown authority
+- if city with ruler gets captured -> possible hostages
+- centralization (= attribute/modifier of nation)
+  - more centralized nation -> less effects from traveling crown 
+  - less centralized nation -> more effects from traveling crown 
+
+
+
+Government Ideas - "Laws"
+
+- "laws "must be passed / voted on by nobility/royal courty
+
+  - different people have different opinions on different laws
+
+  - voters can be swayed/persuaded via various means
+    - also passing other laws in same package
+    - happiness/opinion
+    - promises
+    - bribes
+    - other actions
+    - having higher crown authority
+  - examples for "laws"
+    - policies
+    - reforms
+    - declaring war
+    - if ruler can declare war without voting
+    - how many levies
+    - taxes
+    - how council member are appointed
+    - https://steamcommunity.com/sharedfiles/filedetails/?id=2596442947
+    - ...
+- https://www.reddit.com/r/CrusaderKings/comments/md7vh9/ck3_legal_system_mod_concept/

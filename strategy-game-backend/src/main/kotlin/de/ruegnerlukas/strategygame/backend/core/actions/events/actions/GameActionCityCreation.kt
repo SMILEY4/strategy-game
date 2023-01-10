@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedger
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
@@ -75,7 +76,8 @@ class GameActionCityCreation(
             countryId = country.countryId,
             cityIds = mutableListOf(city.cityId),
             provinceCapitalCityId = city.cityId,
-            resourceBalance = mutableMapOf()
+            resourceLedgerPrevTurn = ResourceLedger(),
+            resourceLedgerCurrTurn = ResourceLedger(),
         ).also { game.provinces.add(it) }
     }
 

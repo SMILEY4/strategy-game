@@ -10,5 +10,5 @@ data class GameExtended(
     val countries: List<Country>,
     val cities: TrackingList<City>,
     val provinces: TrackingList<Province>,
-    val routes: TrackingList<Route> // TODO
+    val routes: TrackingList<Route>
 )
