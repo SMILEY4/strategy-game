@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
@@ -33,7 +34,7 @@ class GameActionCountryResources(
                     handleCityFoodConsumption(it, currentLedger)
                 }
         }
-        return listOf()
+        return listOf(GameEventResourcesUpdate(event.game))
     }
 
 

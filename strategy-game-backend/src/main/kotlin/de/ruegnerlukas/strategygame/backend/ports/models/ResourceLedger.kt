@@ -66,6 +66,18 @@ class ResourceLedger {
         return entries.filter { it.resourceType == resourceType }
     }
 
+    /**
+     * @returns a new [ResourceLedger] with merged entries. Entries of the same [ResourceType] and entry-type (i.e. input,output) are merged.
+     */
+    fun merge(): ResourceLedger {
+        val mergedLedger = ResourceLedger()
+        ResourceType.values().forEach { type ->
+            mergedLedger.addEntry(type, getChangeInput(type), "")
+            mergedLedger.addEntry(type, -getChangeOutput(type), "")
+        }
+        return mergedLedger
+    }
+
 }
 
 data class ResourceLedgerEntry(
