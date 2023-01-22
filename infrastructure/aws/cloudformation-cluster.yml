@@ -1,0 +1,171 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+    
+    ECSCluster:
+        Type: 'AWS::ECS::Cluster'
+        Properties:
+            ClusterName: 'strategy-game'
+
+    ServerInstanceRole:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Statement:
+                    -   Effect: Allow
+                        Principal:
+                            Service: [ ec2.amazonaws.com ]
+                        Action: [ 'sts:AssumeRole' ]
+            Path: /
+            Policies:
+                -   PolicyName: ecs-service
+                    PolicyDocument:
+                        Statement:
+                            -   Effect: Allow
+                                Action:
+                                    - 'ecs:CreateCluster'
+                                    - 'ecs:DeregisterContainerInstance'
+                                    - 'ecs:DiscoverPollEndpoint'
+                                    - 'ecs:Poll'
+                                    - 'ecs:RegisterContainerInstance'
+                                    - 'ecs:StartTelemetrySession'
+                                    - 'ecs:Submit*'
+                                    - 'logs:CreateLogStream'
+                                    - 'logs:PutLogEvents'
+                                    - 'ecr:GetAuthorizationToken'
+                                    - 'ecr:BatchGetImage'
+                                    - 'ecr:GetDownloadUrlForLayer'
+                                Resource: '*'
+            ManagedPolicyArns:
+                - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
+
+    ContainerServerSecurityGroup:
+        Type: "AWS::EC2::SecurityGroup"
+        Properties:
+            GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+            SecurityGroupIngress:
+                -   IpProtocol: tcp
+                    FromPort: 8080
+                    ToPort: 8080
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: tcp
+                    FromPort: 443
+                    ToPort: 443
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: tcp
+                    FromPort: 8443
+                    ToPort: 8443
+                    CidrIp: 0.0.0.0/0
+                -   IpProtocol: tcp
+                    FromPort: 22
+                    ToPort: 22
+                    CidrIp: 0.0.0.0/0
+
+    ContainerInstanceProfile:
+        Type: 'AWS::IAM::InstanceProfile'
+        Properties:
+            Path: '/'
+            Roles: [ !Ref 'ServerInstanceRole' ]
+
+    ContainerInstances:
+        Type: 'AWS::AutoScaling::LaunchConfiguration'
+        Properties:
+            ImageId: 'ami-07f04613f3950ffdd' # Ubuntu, 20.04 LTS, arm64
+            InstanceType: 't4g.small'
+            IamInstanceProfile: !Ref ContainerInstanceProfile
+            SecurityGroups: [ !Ref ContainerServerSecurityGroup ]
+            UserData:
+                Fn::Base64: !Sub |
+                    #!/bin/bash -xe
+                    
+                    # install aws-cli
+                    sudo apt-get install awscli -y
+                    
+                    # install docker
+                    sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+                    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+                    sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu focal stable"
+                    apt-cache policy docker-ce
+                    sudo apt install docker-ce -y
+                    
+                    # install ecs-agent
+                    curl -O https://s3.eu-central-1.amazonaws.com/amazon-ecs-agent-eu-central-1/amazon-ecs-init-latest.arm64.deb
+                    sudo dpkg -i amazon-ecs-init-latest.arm64.deb
+                    
+                    # config cluster
+                    mkdir /etc/ecs
+                    touch /etc/ecs/ecs.config
+                    echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+                    
+                    # start ecs-agent
+                    sudo systemctl start ecs
+    
+    ECSAutoScalingGroup:
+        Type: 'AWS::AutoScaling::AutoScalingGroup'
+        Properties:
+            AutoScalingGroupName: 'strategy-game-cluster-autoscaling-group'
+            AvailabilityZones:
+                -   Fn::Select:
+                        - 0
+                        -   Fn::GetAZs: { Ref: 'AWS::Region' }
+            LaunchConfigurationName: !Ref ContainerInstances
+            MinSize: '1'
+            MaxSize: '1'
+            DesiredCapacity: '1'
+        CreationPolicy:
+            ResourceSignal:
+                Timeout: PT15M
+
+
+
+
+    TaskDefinitionDatabase:
+        Type: 'AWS::ECS::TaskDefinition'
+        Properties:
+            Family: 'database'
+            Cpu: '1024'
+            Memory: '512'
+            ContainerDefinitions:
+                -   Name: 'database'
+                    Cpu: '512'
+                    Memory: '512'
+                    Image: 'arangodb:3.10.0'
+                    PortMappings:
+                        -   ContainerPort: 8529
+                    Environment:
+                        -   ARANGO_NO_AUTH: 1
+
+    ServiceDatabase:
+        Type: 'AWS::ECS::Service'
+        Properties:
+            ServiceName: 'database'
+            Cluster: !Ref ECSCluster
+            DesiredCount: 1
+            LaunchType: 'EC2'
+            TaskDefinition: !Ref TaskDefinitionDatabase
+
+
+    TaskDefinitionGameServer:
+        Type: 'AWS::ECS::TaskDefinition'
+        Properties:
+            Family: 'gameserver'
+            Cpu: '512'
+            Memory: '512'
+            ContainerDefinitions:
+                -   Name: 'gameserver'
+                    Cpu: '512'
+                    Memory: '512'
+                    Image: '627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:latest'
+                    PortMappings:
+                        -   ContainerPort: 8080
+                        -   ContainerPort: 8443
+
+    ServiceGameServer:
+        Type: 'AWS::ECS::Service'
+        Properties:
+            ServiceName: 'gameserver'
+            Cluster: !Ref ECSCluster
+            DesiredCount: 1
+            LaunchType: 'EC2'
+            TaskDefinition: !Ref TaskDefinitionGameServer

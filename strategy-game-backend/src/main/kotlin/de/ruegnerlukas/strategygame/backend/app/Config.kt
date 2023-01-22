@@ -76,6 +76,14 @@ object Config {
         val cfg = get()
         set(
             cfg.copy(
+                ktor = cfg.ktor.copy(
+                    security = cfg.ktor.security.copy(
+                        ssl = cfg.ktor.security.ssl.copy(
+                            keyStorePassword = resolveParam(paramService, cfg.ktor.security.ssl.keyStorePassword, "ktor.security.ssl.keyStorePassword"),
+                            privateKeyPassword = resolveParam(paramService, cfg.ktor.security.ssl.privateKeyPassword, "ktor.security.ssl.privateKeyPassword")
+                        )
+                    )
+                ),
                 admin = cfg.admin.copy(
                     username = resolveParam(paramService, cfg.admin.username, "admin.username"),
                     password = resolveParam(paramService, cfg.admin.password, "admin.password")
@@ -96,8 +104,8 @@ object Config {
      * Returns the resolved value of the given value/parameter (also updates the value in [baseConfig] if necessary)
      */
     private fun resolveParam(parameterService: ParameterService, value: String, path: String): String {
-        val resolvedValue =  parameterService.resolveParameter(value)
-        if(resolvedValue != value) {
+        val resolvedValue = parameterService.resolveParameter(value)
+        if (resolvedValue != value) {
             baseConfig = getBaseTypesafeConfig()?.withValue(path, ConfigValueFactory.fromAnyRef(resolvedValue))
         }
         return resolvedValue
