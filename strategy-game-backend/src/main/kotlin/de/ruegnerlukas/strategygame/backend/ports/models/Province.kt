@@ -7,7 +7,7 @@ data class Province(
     val provinceCapitalCityId: String,
     var resourceLedgerPrevTurn: ResourceLedger,
     var resourceLedgerCurrTurn: ResourceLedger,
-    val resourceAvailability: MutableMap<ResourceType, Float> = mutableMapOf(),
-    val resourceRequirement: MutableMap<ResourceType, Float> = mutableMapOf(),
+
+    val resourceBalance: MutableMap<ResourceType, Float> = mutableMapOf(),
     val resourceDemands: MutableMap<ResourceType, Float> = mutableMapOf(),
 )

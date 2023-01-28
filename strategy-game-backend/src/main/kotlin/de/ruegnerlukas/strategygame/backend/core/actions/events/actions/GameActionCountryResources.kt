@@ -8,7 +8,6 @@ import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedger
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedgerEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 
@@ -70,12 +69,12 @@ class GameActionCountryResources(
         return game.cities.find { it.cityId == cityId }!!
     }
 
-    private fun getAvailableResources(resourceType: ResourceType, previousLedger: ResourceLedger, currentLedger: ResourceLedger): Float {
-        return previousLedger.getChangeInput(resourceType) - currentLedger.getChangeOutput(resourceType)
-    }
-
     private fun resourcesAvailable(reqResources: List<ResourceStack>, prevLedger: ResourceLedger, currLedger: ResourceLedger): Boolean {
         return reqResources.all { getAvailableResources(it.type, prevLedger, currLedger) >= it.amount }
+    }
+
+    private fun getAvailableResources(resourceType: ResourceType, previousLedger: ResourceLedger, currentLedger: ResourceLedger): Float {
+        return previousLedger.getChangeInput(resourceType) - currentLedger.getChangeOutput(resourceType)
     }
 
 }

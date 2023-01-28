@@ -53,7 +53,7 @@ class ResourceLedger {
     }
 
     /**
-     * The input entries (i.e. entries removing some amount) for the given resource
+     * The output entries (i.e. entries removing some amount) for the given resource
      */
     fun getEntriesOutput(resourceType: ResourceType): List<ResourceLedgerEntry> {
         return entries.filter { it.resourceType == resourceType && it.change < 0 }
