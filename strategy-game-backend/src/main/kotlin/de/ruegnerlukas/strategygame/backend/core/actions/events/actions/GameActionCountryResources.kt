@@ -5,11 +5,13 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
+import kotlin.math.min
 
 /**
  * Handles turn-income and turn-expenses
@@ -17,64 +19,72 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
  * - triggers nothing
  */
 class GameActionCountryResources(
-    private val gameConfig: GameConfig
+	private val gameConfig: GameConfig
 ) : GameAction<GameEventWorldUpdate>(GameEventWorldUpdate.TYPE) {
 
-    override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
-        event.game.provinces.forEach { province ->
-            val previousLedger = province.resourceLedgerPrevTurn
-            val currentLedger = province.resourceLedgerCurrTurn
-
-            province.cityIds
-                .map { getCity(event.game, it) }
-                .sortedBy { it.isProvinceCapital }
-                .forEach {
-                    handleCityProduction(it, previousLedger, currentLedger)
-                    handleCityFoodConsumption(it, currentLedger)
-                }
-        }
-        return listOf(GameEventResourcesUpdate(event.game))
-    }
+	override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
+		event.game.provinces.forEach { province ->
+			province.cityIds
+				.map { getCity(event.game, it) }
+				.sortedBy { it.isProvinceCapital }
+				.forEach {
+					handleCityProduction(province, it)
+					handleCityFoodConsumption(province, it)
+				}
+		}
+		return listOf(GameEventResourcesUpdate(event.game))
+	}
 
 
-    private fun handleCityProduction(
-        city: City,
-        previousLedger: ResourceLedger,
-        currentLedger: ResourceLedger,
-    ) {
-        city.buildings
-            .onEach { it.active = false }
-            .filter { it.type.templateData.requiredTileResource == null || it.tile != null }
-            .filter { resourcesAvailable(it.type.templateData.requires, previousLedger, currentLedger) }
-            .sortedBy { it.type.order }
-            .forEach { building ->
-                building.active = true
-                building.type.templateData.requires.forEach { requiredResource ->
-                    currentLedger.addEntry(requiredResource.type, -requiredResource.amount, ResourceLedger.reasonBuilding(building.type))
-                }
-                building.type.templateData.produces.forEach { producedResource ->
-                    currentLedger.addEntry(producedResource.type, +producedResource.amount, ResourceLedger.reasonBuilding(building.type))
-                }
-            }
-    }
+	private fun handleCityProduction(province: Province, city: City) {
+		city.buildings
+			.sortedBy { it.type.order }
+			.forEach { building ->
+				building.active = handleBuildingProduction(province, building)
+			}
+	}
 
+	private fun handleBuildingProduction(province: Province, building: Building): Boolean {
+		if (building.type.templateData.requiredTileResource != null && building.tile == null) {
+			return false
+		}
+		if (!areResourcesAvailable(province, building.type.templateData.requires)) {
+			building.type.templateData.requires.forEach { province.resourcesMissing.add(it.type, it.amount) }
+			return false
+		}
+		building.type.templateData.requires.forEach { requiredResource ->
+			province.resourcesConsumedCurrTurn.add(requiredResource.type, requiredResource.amount)
+		}
+		building.type.templateData.produces.forEach { producedResource ->
+			province.resourcesProducedCurrTurn.add(producedResource.type, producedResource.amount)
+		}
+		return true
+	}
 
-    private fun handleCityFoodConsumption(city: City, currentLedger: ResourceLedger) {
-        val foodConsumption = if (city.isProvinceCapital) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
-        currentLedger.addEntry(ResourceType.FOOD, -foodConsumption, ResourceLedger.reasonPopulationFoodConsumption())
-    }
+	private fun handleCityFoodConsumption(province: Province, city: City) {
+		val requiredFoodAmount = if (city.isProvinceCapital) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
+		val possibleFoodAmount = min(requiredFoodAmount, availableResourceAmount(province, ResourceType.FOOD))
+		val missingFoodAmount = requiredFoodAmount - possibleFoodAmount
+		province.resourcesConsumedCurrTurn.add(ResourceType.FOOD, possibleFoodAmount)
+		if (missingFoodAmount > 0) {
+			province.resourcesMissing.add(ResourceType.FOOD, possibleFoodAmount)
+		}
+	}
 
+	private fun getCity(game: GameExtended, cityId: String): City {
+		return game.cities.find { it.cityId == cityId }!!
+	}
 
-    private fun getCity(game: GameExtended, cityId: String): City {
-        return game.cities.find { it.cityId == cityId }!!
-    }
+	private fun availableResourceAmount(province: Province, type: ResourceType): Float {
+		return province.resourcesProducedPrevTurn[type] - province.resourcesConsumedCurrTurn[type]
+	}
 
-    private fun resourcesAvailable(reqResources: List<ResourceStack>, prevLedger: ResourceLedger, currLedger: ResourceLedger): Boolean {
-        return reqResources.all { getAvailableResources(it.type, prevLedger, currLedger) >= it.amount }
-    }
+	private fun isResourceAvailable(province: Province, type: ResourceType, amount: Float): Boolean {
+		return availableResourceAmount(province, type) >= amount
+	}
 
-    private fun getAvailableResources(resourceType: ResourceType, previousLedger: ResourceLedger, currentLedger: ResourceLedger): Float {
-        return previousLedger.getChangeInput(resourceType) - currentLedger.getChangeOutput(resourceType)
-    }
+	private fun areResourcesAvailable(province: Province, resources: Collection<ResourceStack>): Boolean {
+		return resources.all { isResourceAvailable(province, it.type, it.amount) }
+	}
 
 }

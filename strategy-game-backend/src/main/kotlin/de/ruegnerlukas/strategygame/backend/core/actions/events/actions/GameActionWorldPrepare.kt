@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
 
 /**
  * Prepares the game/world for the next update-step
@@ -12,12 +12,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceLedger
  */
 class GameActionWorldPrepare : GameAction<GameEventWorldPrepare>(GameEventWorldPrepare.TYPE) {
 
-    override suspend fun perform(event: GameEventWorldPrepare): List<GameEvent> {
-        event.game.provinces.forEach { province ->
-            province.resourceLedgerPrevTurn = province.resourceLedgerCurrTurn
-            province.resourceLedgerCurrTurn = ResourceLedger()
-        }
-        return listOf()
-    }
+	override suspend fun perform(event: GameEventWorldPrepare): List<GameEvent> {
+		event.game.provinces.forEach { province ->
+			province.resourcesProducedPrevTurn = province.resourcesProducedCurrTurn
+			province.resourcesConsumedCurrTurn = ResourceStats()
+		}
+		return listOf()
+	}
 
 }

@@ -92,7 +92,9 @@ class GameActionMarketUpdate : GameAction<GameEventResourcesUpdate>(GameEventRes
 	}
 
 	private fun getResourceBalance(province: Province): Map<ResourceType, Float> {
-		return ResourceType.values().associateWith { province.resourceLedgerPrevTurn.getChangeTotal(it) }
+		return ResourceType.values().associateWith {
+			province.resourcesProducedPrevTurn[it] - province.resourcesConsumedCurrTurn[it] - province.resourcesMissing[it]
+		}
 	}
 
 	private fun calculateNetworks(routes: Collection<Route>): List<Set<String>> {
@@ -167,7 +169,7 @@ class GameActionMarketUpdate : GameAction<GameEventResourcesUpdate>(GameEventRes
 		return ResourceType.values().associateWith { resourceType ->
 			val demandSrc = demandsSrc[resourceType] ?: 0f
 			val demandDst = demandsDst[resourceType] ?: 0f
-			val balanceSrc = tradeRoute.src.resourceLedgerPrevTurn.getChangeTotal(resourceType)
+			val balanceSrc = tradeRoute.src.resourcesProducedPrevTurn[resourceType] - tradeRoute.src.resourcesConsumedCurrTurn[resourceType]
 			if (balanceSrc <= 0 || demandSrc > demandDst) {
 				-1f
 			} else {
