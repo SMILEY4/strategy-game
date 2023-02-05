@@ -66,6 +66,14 @@ export interface PayloadGameState {
         countryId: string,
         cityIds: string[],
         provinceCapitalCityId: string,
+        tradeRoutes: ({
+            srcProvinceId: string,
+            dstProvinceId: string,
+            routeIds: string[],
+            resourceType: ResourceType,
+            rating: number,
+            creationTurn: number,
+        })[]
         dataTier3: {
             resourceBalance: Record<ResourceType, number>
         } | null

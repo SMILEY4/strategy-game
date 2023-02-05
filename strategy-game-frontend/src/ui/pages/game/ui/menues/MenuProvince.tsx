@@ -6,6 +6,7 @@ import {ResourceType} from "../../../../../core/models/resourceType";
 import {AppConfig} from "../../../../../main";
 import {ResourceLabel} from "../../../../components/specific/ResourceLabel";
 import {Section} from "../../../../components/specific/Section";
+import {BuildingType} from "../../../../../core/models/buildingType";
 
 export function MenuProvince(props: { provinceId: string, menuLevel: number }): ReactElement {
 
@@ -31,6 +32,14 @@ export function MenuProvince(props: { provinceId: string, menuLevel: number }): 
                         {cities.map(city => {
                             return (
                                 <p className={"clickable"} onClick={() => openCity(city.cityId)}>{city.name}</p>
+                            );
+                        })}
+                    </Section>
+                    <Section title={"Trade Routes"}>
+                        <p>{province.tradeRoutes.length + "/" + cities.flatMap(city => city.buildings).filter(building => building.type === BuildingType.MARKET).length*2}</p>
+                        {province.tradeRoutes.map(tradeRoute => {
+                            return (
+                                <p>{tradeRoute.srcProvinceId+" -> " + tradeRoute.dstProvinceId + ": " + tradeRoute.resourceType + "(" + tradeRoute.rating + ")"}</p>
                             );
                         })}
                     </Section>

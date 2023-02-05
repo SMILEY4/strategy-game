@@ -55,6 +55,15 @@ export class Renderer {
             const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r))
             this.lineRenderer.registerLine(route.routeId, positions, 1, [1, 1, 1, 0.3])
         })
+        gameState.provinces.flatMap(province => province.tradeRoutes).forEach((tradeRoute, index) => {
+            tradeRoute.routeIds.forEach(routeId => {
+                const route = gameState.routes.find(r => r.routeId === routeId)
+                if (route) {
+                    const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r))
+                    this.lineRenderer.registerLine(route.routeId, positions, 1.25, [1.0, 0.1, 0.1, 0.4])
+                }
+            })
+        })
 
         this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
         this.lineRenderer.render(camera);
@@ -75,5 +84,6 @@ export class Renderer {
         this.tilemapRenderer.dispose();
         this.tileObjectRenderer.dispose();
     }
+
 
 }

@@ -7,7 +7,8 @@ data class ProvinceDTO(
     val countryId: String,
     val cityIds: List<String>,
     val provinceCapitalCityId: String,
-    val dataTier3: ProvinceDataTier3?
+    val tradeRoutes: List<TradeRouteDTO>,
+    val dataTier3: ProvinceDataTier3?,
 )
 
 data class ProvinceDataTier3(

@@ -4,20 +4,25 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.routebased.RouteBasedPathfinder
+import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
+import de.ruegnerlukas.strategygame.backend.ports.models.TradeRoute
 
 /**
  * Updates the market and trade
  * - triggered by [GameEventResourcesUpdate]
  * - triggers nothing
  */
-class GameActionMarketUpdate : GameAction<GameEventResourcesUpdate>(GameEventResourcesUpdate.TYPE) {
+class GameActionMarketUpdate() : GameAction<GameEventResourcesUpdate>(GameEventResourcesUpdate.TYPE) {
 
 	companion object {
+
+		private const val TRADE_ROUTES_PER_MARKED = 2
 
 		private data class BundledTradeRoute(
 			val src: Province,
@@ -26,139 +31,92 @@ class GameActionMarketUpdate : GameAction<GameEventResourcesUpdate>(GameEventRes
 			var rating: Map<ResourceType, Float> = mapOf()
 		)
 
-		private data class TradeRoute(
-			val src: Province,
-			val dst: Province,
-			val routes: List<Route>,
-			val resourceType: ResourceType,
-			val rating: Float
-		)
-
 	}
 
 	override suspend fun perform(event: GameEventResourcesUpdate): List<GameEvent> {
-		val cityNetworks = calculateNetworks(event.game.routes)
-		cityNetworks.forEach { network ->
-			println("==== NETWORK ===============")
-			val provinces = network.map { getProvinceByCity(event.game, it) }.toSet()
-			val networkAvgDemand = getAverageResourceBalance(provinces)
-			println("  NETWORK:")
-			networkAvgDemand.forEach { (type, avg) ->
-				println("    - $type: avg = $avg")
-			}
-			provinces.forEach { province ->
-				val balance = getResourceBalance(province)
-				val demand = ResourceType.values().map { it to calcDemand(it, networkAvgDemand, balance) }.associate { it }
-				province.resourceBalance.also {
-					it.clear()
-					it.putAll(balance)
-				}
-				province.resourceDemands.also {
-					it.clear()
-					it.putAll(demand)
-				}
-				println("  PROVINCE ${getCity(event.game, province.provinceCapitalCityId).name}")
-				networkAvgDemand.forEach { (type, avg) ->
-					println("    - $type: avg=${avg}, available = ${balance[type]}, demand = ${demand[type]}")
-				}
-			}
-			val allTradeRoutes = calculateAllTradeRoutes(event.game, network).sortedByDescending { it.rating }
-			println("ROUTES")
-			allTradeRoutes
-				.take(10)
-				.map { "${it.src.provinceId}-${it.dst.provinceId}: ${it.resourceType}=${it.rating}" }
-				.forEach { println(it) }
-
+		MarketNetwork.networksFrom(event.game).forEach {
+			updateBalanceAndDemand(it)
+			createPossibleTradeRoutes(event.game, it)
 		}
 		return listOf()
 	}
 
-	private fun calcDemand(type: ResourceType, avg: Map<ResourceType, Float>, balance: Map<ResourceType, Float>): Float {
-		return avg[type]!! - balance[type]!!
-	}
-
-	private fun getAverageResourceBalance(provinces: Collection<Province>): Map<ResourceType, Float> {
-		val avg = mutableMapOf<ResourceType, MutableList<Float>>()
-		provinces.forEach { province ->
-			getResourceBalance(province).forEach { balance ->
-				if (!avg.containsKey(balance.key)) {
-					avg[balance.key] = mutableListOf(balance.value)
-				} else {
-					avg[balance.key]!!.add(balance.value)
-				}
+	private fun updateBalanceAndDemand(network: MarketNetwork) {
+		val networkAvgBalance = network.getAverageResourceBalance()
+		network.getProvinces().forEach { province ->
+			val balance = MarketUtils.getResourceBalance(province)
+			val demand = MarketUtils.getDemand(networkAvgBalance, balance)
+			province.resourceBalance.also {
+				it.clear()
+				it.putAll(balance.toMap())
+			}
+			province.resourceDemands.also {
+				it.clear()
+				it.putAll(demand.toMap())
 			}
 		}
-		return avg.mapValues { it.value.average().toFloat() }
 	}
 
-	private fun getResourceBalance(province: Province): Map<ResourceType, Float> {
-		return ResourceType.values().associateWith {
-			province.resourcesProducedPrevTurn[it] - province.resourcesConsumedCurrTurn[it] - province.resourcesMissing[it]
+	private fun createPossibleTradeRoutes(game: GameExtended, network: MarketNetwork) {
+		network.getProvinces().forEach { province ->
+			val freeTradeRouteCount = getFreeTradeRouteCount(game, province)
+			if (freeTradeRouteCount > 0) {
+				val tradeRoutes = createTradeRoute(province, network, freeTradeRouteCount, game.game.turn)
+				province.tradeRoutes.addAll(tradeRoutes)
+			}
 		}
 	}
 
-	private fun calculateNetworks(routes: Collection<Route>): List<Set<String>> {
-		val networks = mutableListOf<MutableSet<String>>()
-		routes.forEach { route ->
-			val networkA = networks.find { network -> network.contains(route.cityIdA) }
-			val networkB = networks.find { network -> network.contains(route.cityIdB) }
-			// both cities do not exist an any network
-			if (networkA == null && networkB == null) {
-				networks.add(mutableSetOf(route.cityIdA, route.cityIdB))
-			}
-			// only city "a" already exists in some network
-			if (networkA != null && networkB == null) {
-				networkA.add(route.cityIdB)
-			}
-			// only city "b" already exists in some network
-			if (networkA == null && networkB != null) {
-				networkB.add(route.cityIdA)
-			}
-			// both cities already exist in different networks
-			if (networkA != null && networkB != null && networkA != networkB) {
-				val merged = mutableSetOf<String>().also {
-					it.addAll(networkA)
-					it.addAll(networkB)
-				}
-				networks.remove(networkA)
-				networks.remove(networkB)
-				networks.add(merged)
-			}
-		}
-		return networks
+	private fun getFreeTradeRouteCount(game: GameExtended, province: Province): Int {
+		val marketCount = province.cityIds
+			.asSequence()
+			.map { getCity(game, it) }
+			.flatMap { it.buildings }
+			.filter { it.type == BuildingType.MARKET }
+			.filter { it.active }
+			.count()
+		val tradeRouteCount = countTradeRoutes(province)
+		return (marketCount * TRADE_ROUTES_PER_MARKED) - tradeRouteCount
 	}
 
-
-	private fun calculateAllTradeRoutes(game: GameExtended, network: Collection<String>): List<TradeRoute> {
-		val provinces = network.map { getProvinceByCity(game, it) }.toSet()
-		val routes = game.routes.filter { network.contains(it.cityIdA) || network.contains(it.cityIdB) }
-		println("calculating all possible trade routes (provinces:${provinces.size},routes:${routes.size})...")
-		return provinces
-			.flatMap { provinceA ->
-				provinces
+	private fun createTradeRoute(provinceOwning: Province, network: MarketNetwork, amount: Int, turn: Int): List<TradeRoute> {
+		return network
+			.getProvinces()
+			.asSequence()
+			.filter { it != provinceOwning }
+			.flatMap { provincePartner ->
+				val pathAB = getRoutesPath(provinceOwning, provincePartner, network.getRoutes())
+				val pathBA = pathAB.reversed()
+				listOf(
+					BundledTradeRoute(provinceOwning, provincePartner, pathAB),
+					BundledTradeRoute(provincePartner, provinceOwning, pathBA)
+				)
+			}
+			.filter { it.routes.isNotEmpty() }
+			.onEach { bundledTradeRoute -> bundledTradeRoute.rating = getRating(bundledTradeRoute) }
+			.flatMap { bundledTradeRoute ->
+				bundledTradeRoute.rating.entries
 					.asSequence()
-					.filter { it != provinceA }
-					.flatMap { provinceB ->
-						val routesAB = getRoutesPath(provinceA, provinceB, routes)
-						val routesBA = routesAB.reversed()
-						listOf(
-							BundledTradeRoute(provinceA, provinceB, routesAB),
-							BundledTradeRoute(provinceB, provinceA, routesBA)
-						)
-					}
-					.filter { it.routes.isNotEmpty() }
-					.onEach { bundledTradeRoute -> bundledTradeRoute.rating = getRating(bundledTradeRoute) }
-					.flatMap { bundledTradeRoute ->
-						bundledTradeRoute.rating.entries
-							.asSequence()
-							.filter { it.value > 0 }
-							.map { TradeRoute(bundledTradeRoute.src, bundledTradeRoute.dst, bundledTradeRoute.routes, it.key, it.value) }
-					}
+					.filter { (_, rating) -> rating > 0 }
+					.map { (resourceType, _) -> buildTradeRoute(bundledTradeRoute, resourceType, turn) }
 			}
+			.sortedByDescending { it.rating }
+			.take(amount)
+			.toList()
 	}
 
+	private fun buildTradeRoute(bundledTradeRoute: BundledTradeRoute, type: ResourceType, turn: Int): TradeRoute {
+		return TradeRoute(
+			srcProvinceId = bundledTradeRoute.src.provinceId,
+			dstProvinceId = bundledTradeRoute.dst.provinceId,
+			routeIds = bundledTradeRoute.routes.map { it.routeId },
+			resourceType = type,
+			rating = bundledTradeRoute.rating[type] ?: -1f,
+			creationTurn = turn,
+		)
+	}
 
-	private fun getRoutesPath(a: Province, b: Province, routes: List<Route>): List<Route> {
+	private fun getRoutesPath(a: Province, b: Province, routes: Collection<Route>): List<Route> {
 		return RouteBasedPathfinder().find(a.provinceCapitalCityId, b.provinceCapitalCityId, routes)
 	}
 
@@ -182,8 +140,121 @@ class GameActionMarketUpdate : GameAction<GameEventResourcesUpdate>(GameEventRes
 		return game.cities.find { it.cityId == cityId }!!
 	}
 
-	private fun getProvinceByCity(game: GameExtended, cityId: String): Province {
-		return game.provinces.find { it.cityIds.contains(cityId) }!!
+	private fun countTradeRoutes(owner: Province): Int {
+		return owner.tradeRoutes.count()
+	}
+
+}
+
+
+internal class MarketNetwork {
+
+	companion object {
+
+		fun networksFrom(game: GameExtended): List<MarketNetwork> {
+			val networks = mutableListOf<MarketNetwork>()
+			game.routes.forEach { route ->
+				val provinceA = getProvince(game, route.cityIdA)
+				val provinceB = getProvince(game, route.cityIdB)
+				val networkA = findNetwork(networks, provinceA)
+				val networkB = findNetwork(networks, provinceB)
+				// both cities "a" and "b" do not exist an any network
+				if (networkA == null && networkB == null) {
+					networks.add(MarketNetwork().also {
+						it.add(provinceA, route)
+						it.add(provinceB, route)
+					})
+				}
+				// only city "a" already exists in some network
+				if (networkA != null && networkB == null) {
+					networkA.add(provinceB, route)
+				}
+				// only city "b" already exists in some network
+				if (networkA == null && networkB != null) {
+					networkB.add(provinceA, route)
+				}
+				// both cities already exist in different networks
+				if (networkA != null && networkB != null && networkA != networkB) {
+					val merged = MarketNetwork().also {
+						it.add(networkA)
+						it.add(networkB)
+					}
+					networks.remove(networkA)
+					networks.remove(networkB)
+					networks.add(merged)
+				}
+			}
+			return networks
+		}
+
+		private fun getProvince(game: GameExtended, cityId: String): Province {
+			return game.provinces.find { it.cityIds.contains(cityId) } ?: throw Exception("Could not find province by city")
+		}
+
+		private fun findNetwork(networks: Collection<MarketNetwork>, province: Province): MarketNetwork? {
+			return networks.find { it.contains(province) }
+		}
+
+	}
+
+	private val provinces = mutableSetOf<Province>()
+	private val routes = mutableSetOf<Route>()
+
+	fun add(province: Province, route: Route) {
+		provinces.add(province)
+		routes.add(route)
+	}
+
+	fun add(network: MarketNetwork) {
+		provinces.addAll(network.provinces)
+		routes.addAll(network.routes)
+	}
+
+	fun contains(province: Province) = provinces.contains(province)
+
+	fun getProvinces(): Set<Province> = provinces
+
+	fun getRoutes(): Set<Route> = routes
+
+	fun getAverageResourceBalance(): ResourceStats {
+		val values = ResourceType.values().associateWith { mutableListOf<Float>() }
+		provinces.forEach { province ->
+			MarketUtils.iterateResourceBalance(province) { type, balance ->
+				values[type]!!.add(balance)
+			}
+		}
+		return ResourceStats.from(values.mapValues { it.value.average() })
+	}
+
+}
+
+
+internal object MarketUtils {
+
+	fun getResourceBalance(province: Province): ResourceStats {
+		return ResourceStats.from(
+			ResourceType.values().associateWith { getResourceBalance(province, it) }
+		)
+	}
+
+	fun iterateResourceBalance(province: Province, consumer: (type: ResourceType, balance: Float) -> Unit) {
+		ResourceType.values().forEach { type ->
+			consumer(type, getResourceBalance(province, type))
+		}
+	}
+
+	fun getResourceBalance(province: Province, type: ResourceType): Float {
+		return province.resourcesProducedPrevTurn[type] - province.resourcesConsumedCurrTurn[type] - province.resourcesMissing[type]
+	}
+
+	fun getDemand(avg: ResourceStats, balance: ResourceStats): ResourceStats {
+		return ResourceStats.from(
+			ResourceType.values().associateWith { getDemand(it, avg, balance) }
+		)
+	}
+
+	fun getDemand(type: ResourceType, avg: ResourceStats, balance: ResourceStats): Float {
+		return avg[type] - balance[type]
 	}
 
 }

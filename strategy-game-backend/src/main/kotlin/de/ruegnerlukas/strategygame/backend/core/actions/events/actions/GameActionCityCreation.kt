@@ -76,6 +76,7 @@ class GameActionCityCreation(
 			countryId = country.countryId,
 			cityIds = mutableListOf(city.cityId),
 			provinceCapitalCityId = city.cityId,
+			tradeRoutes = mutableListOf()
 		).also { game.provinces.add(it) }
 	}
 

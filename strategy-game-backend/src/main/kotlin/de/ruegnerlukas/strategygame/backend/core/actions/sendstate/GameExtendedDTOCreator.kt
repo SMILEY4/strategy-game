@@ -28,6 +28,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier2
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOOwner
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOVisibility
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TradeRouteDTO
 import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
@@ -229,6 +230,16 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 			countryId = province.countryId,
 			cityIds = province.cityIds,
 			provinceCapitalCityId = province.provinceCapitalCityId,
+			tradeRoutes = province.tradeRoutes.map {
+				TradeRouteDTO(
+					srcProvinceId = it.srcProvinceId,
+					dstProvinceId = it.dstProvinceId,
+					routeIds = it.routeIds,
+					resourceType = it.resourceType,
+					rating = it.rating,
+					creationTurn = it.creationTurn,
+				)
+			},
 			dataTier3 = if (playerCountryId == province.countryId) {
 				ProvinceDataTier3(
 					resourceBalance = ResourceType.values().associateWith { type ->
@@ -240,7 +251,6 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 			}
 		)
 	}
-
 
 	private fun knowsRoute(route: Route, cityDTOs: List<CityDTO>): Boolean {
 		val cityA = cityDTOs.find { it.cityId == route.cityIdA }
