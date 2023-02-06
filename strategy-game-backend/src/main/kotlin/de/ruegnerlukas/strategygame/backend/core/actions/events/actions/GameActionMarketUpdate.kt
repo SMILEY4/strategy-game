@@ -22,6 +22,7 @@ class GameActionMarketUpdate() : GameAction<GameEventResourcesUpdate>(GameEventR
 
 	companion object {
 
+		private const val BASE_TRADE_ROUTES = 1
 		private const val TRADE_ROUTES_PER_MARKED = 2
 
 		private data class BundledTradeRoute(
@@ -76,7 +77,7 @@ class GameActionMarketUpdate() : GameAction<GameEventResourcesUpdate>(GameEventR
 			.filter { it.active }
 			.count()
 		val tradeRouteCount = countTradeRoutes(province)
-		return (marketCount * TRADE_ROUTES_PER_MARKED) - tradeRouteCount
+		return (BASE_TRADE_ROUTES + marketCount * TRADE_ROUTES_PER_MARKED) - tradeRouteCount
 	}
 
 	private fun createTradeRoute(provinceOwning: Province, network: MarketNetwork, amount: Int, turn: Int): List<TradeRoute> {

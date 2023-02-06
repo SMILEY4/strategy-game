@@ -14,8 +14,10 @@ class GameActionWorldPrepare : GameAction<GameEventWorldPrepare>(GameEventWorldP
 
 	override suspend fun perform(event: GameEventWorldPrepare): List<GameEvent> {
 		event.game.provinces.forEach { province ->
-			province.resourcesProducedPrevTurn = province.resourcesProducedCurrTurn
+			province.resourcesProducedPrevTurn = ResourceStats.from(province.resourcesProducedCurrTurn)
 			province.resourcesConsumedCurrTurn = ResourceStats()
+			province.resourcesProducedCurrTurn = ResourceStats()
+			province.resourcesMissing = ResourceStats()
 		}
 		return listOf()
 	}

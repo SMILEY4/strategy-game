@@ -12,6 +12,14 @@ class ResourceStats {
 			}
 		}
 
+		fun from(stats: ResourceStats): ResourceStats {
+			return ResourceStats().also {
+				stats.resources.forEach { (type, amount) ->
+					it.set(type, amount)
+				}
+			}
+		}
+
 	}
 
 	private val resources = mutableMapOf<ResourceType, Float>()
@@ -43,5 +51,10 @@ class ResourceStats {
 	fun toMap(): Map<ResourceType, Float> {
 		return resources.toMap()
 	}
+
+	fun toList(): List<Pair<ResourceType, Float>> {
+		return resources.entries.map { it.key to it.value }
+	}
+
 
 }
