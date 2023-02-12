@@ -13,7 +13,7 @@ data class Province(
 
 	val tradeRoutes: MutableList<TradeRoute>,
 
-	// non persistent data
+	// todo: non persistent data
 	val resourceBalance: MutableMap<ResourceType, Float> = mutableMapOf(),
 	val resourceDemands: MutableMap<ResourceType, Float> = mutableMapOf()
 

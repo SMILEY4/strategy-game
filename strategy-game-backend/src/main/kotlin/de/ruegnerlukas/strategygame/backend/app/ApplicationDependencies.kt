@@ -11,21 +11,23 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActi
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityInfluence
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityNetworkUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityTileOwnership
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResources
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceOwnership
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceVisibility
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarkerPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResources
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarketUpdate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionReporting
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutLifetime
+import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutPlace
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionWorldPrepare
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandMarkerPlace
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandScoutPlace
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPostUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
@@ -117,70 +119,71 @@ import org.koin.dsl.module
 @Suppress("RemoveExplicitTypeArguments")
 val applicationDependencies = module {
 
-    single<ParameterService> { AWSParameterStore.create(Config.get()) } withOptions { createdAtStart() }
-    single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
-    single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
-    single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
-    single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
-    single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
-    single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
+	single<ParameterService> { AWSParameterStore.create(Config.get()) } withOptions { createdAtStart() }
+	single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
+	single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
+	single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
+	single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
+	single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
+	single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
 
-    single<UserCreateAction> { UserCreateActionImpl(get()) }
-    single<UserDeleteAction> { UserDeleteActionImpl(get()) }
-    single<UserLoginAction> { UserLoginActionImpl(get()) }
-    single<UserRefreshTokenAction> { UserRefreshTokenActionImpl(get()) }
+	single<UserCreateAction> { UserCreateActionImpl(get()) }
+	single<UserDeleteAction> { UserDeleteActionImpl(get()) }
+	single<UserLoginAction> { UserLoginActionImpl(get()) }
+	single<UserRefreshTokenAction> { UserRefreshTokenActionImpl(get()) }
 
-    single<CommandsInsert> { CommandsInsertImpl(get()) }
-    single<GameInsert> { GameInsertImpl(get()) }
-    single<CommandsByGameQuery> { CommandsByGameQueryImpl(get()) }
-    single<GameQuery> { GameQueryImpl(get()) }
-    single<GamesByUserQuery> { GamesByUserQueryImpl(get()) }
-    single<GameExtendedQuery> { GameExtendedQueryImpl(get()) }
-    single<GameUpdate> { GameUpdateImpl(get()) }
-    single<GameDelete> { GameDeleteImpl(get()) }
-    single<CountryInsert> { CountryInsertImpl(get()) }
-    single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
-    single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get()) }
-    single<ReservationInsert> { ReservationInsertImpl(get()) }
-    single<TilesQueryByGame> { TilesQueryByGameImpl(get()) }
-    single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get()) }
-    single<TilesUpdate> { TilesUpdateImpl(get()) }
+	single<CommandsInsert> { CommandsInsertImpl(get()) }
+	single<GameInsert> { GameInsertImpl(get()) }
+	single<CommandsByGameQuery> { CommandsByGameQueryImpl(get()) }
+	single<GameQuery> { GameQueryImpl(get()) }
+	single<GamesByUserQuery> { GamesByUserQueryImpl(get()) }
+	single<GameExtendedQuery> { GameExtendedQueryImpl(get()) }
+	single<GameUpdate> { GameUpdateImpl(get()) }
+	single<GameDelete> { GameDeleteImpl(get()) }
+	single<CountryInsert> { CountryInsertImpl(get()) }
+	single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
+	single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get()) }
+	single<ReservationInsert> { ReservationInsertImpl(get()) }
+	single<TilesQueryByGame> { TilesQueryByGameImpl(get()) }
+	single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get()) }
+	single<TilesUpdate> { TilesUpdateImpl(get()) }
 
-    single<GameConfig> { GameConfig.default() }
-    single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl(get()) }
-    single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
-    single<ResolveCreateBuildingCommand> { ResolveCreateBuildingCommandImpl(get(), get()) }
-    single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get(), get()) }
-    single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
-    single<GamesListAction> { GamesListActionImpl(get()) }
-    single<GameDeleteAction> { GameDeleteActionImpl(get()) }
-    single<GameConnectAction> { GameConnectActionImpl(get(), get(), get()) }
-    single<GameCreateAction> { GameCreateActionImpl(get()) }
-    single<GameDisconnectAction> { GameDisconnectActionImpl(get(), get()) }
-    single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
-    single<GameJoinAction> { GameJoinActionImpl(get(), get(), get(), get(), get(), get()) }
-    single<GameRequestConnectionAction> { GameRequestConnectionActionImpl(get()) }
-    single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get()) }
-    single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
-    single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
-    single<MessageHandler> { MessageHandler(get()) }
+	single<GameConfig> { GameConfig.default() }
+	single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl(get()) }
+	single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
+	single<ResolveCreateBuildingCommand> { ResolveCreateBuildingCommandImpl(get(), get()) }
+	single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get(), get()) }
+	single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
+	single<GamesListAction> { GamesListActionImpl(get()) }
+	single<GameDeleteAction> { GameDeleteActionImpl(get()) }
+	single<GameConnectAction> { GameConnectActionImpl(get(), get(), get()) }
+	single<GameCreateAction> { GameCreateActionImpl(get()) }
+	single<GameDisconnectAction> { GameDisconnectActionImpl(get(), get()) }
+	single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
+	single<GameJoinAction> { GameJoinActionImpl(get(), get(), get(), get(), get(), get()) }
+	single<GameRequestConnectionAction> { GameRequestConnectionActionImpl(get()) }
+	single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get()) }
+	single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
+	single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
+	single<MessageHandler> { MessageHandler(get()) }
 
-    single<GameEventManager> {
-        GameEventManager().also {
-            it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(get()))
-            it.register(GameEventCityCreate.TYPE, GameActionCityNetworkUpdate(get(), get()))
-            it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
-            it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
-            it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(get()))
-            it.register(GameEventCommandMarkerPlace.TYPE, GameActionMarkerPlace())
-            it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(get()))
-            it.register(GameEventResourcesUpdate.TYPE, GameActionMarketUpdate())
-            it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(get()))
-            it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
-            it.register(GameEventWorldPrepare.TYPE, GameActionWorldPrepare())
-            it.register(GameEventWorldUpdate.TYPE, GameActionCountryResources(get()))
-            it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(get()))
-        }
-    }
+	single<GameEventManager> {
+		GameEventManager().also {
+			it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(get()))
+			it.register(GameEventCityCreate.TYPE, GameActionCityNetworkUpdate(get(), get()))
+			it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
+			it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
+			it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(get()))
+			it.register(GameEventCommandMarkerPlace.TYPE, GameActionMarkerPlace())
+			it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(get()))
+			it.register(GameEventResourcesUpdate.TYPE, GameActionMarketUpdate())
+			it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(get()))
+			it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
+			it.register(GameEventWorldPrepare.TYPE, GameActionWorldPrepare())
+			it.register(GameEventWorldUpdate.TYPE, GameActionCountryResources(get()))
+			it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(get()))
+			it.register(GameEventWorldPostUpdate.TYPE, GameActionReporting())
+		}
+	}
 
 }

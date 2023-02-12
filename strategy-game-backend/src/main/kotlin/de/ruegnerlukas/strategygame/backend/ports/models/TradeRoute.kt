@@ -7,4 +7,5 @@ data class TradeRoute(
 	val resourceType: ResourceType,
 	val rating: Float,
 	val creationTurn: Int,
+	var tradedAmount: Float = 0f
 )

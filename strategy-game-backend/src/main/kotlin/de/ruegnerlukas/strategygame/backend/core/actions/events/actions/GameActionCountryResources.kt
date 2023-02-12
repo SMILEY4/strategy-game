@@ -37,7 +37,7 @@ class GameActionCountryResources(
 		}
 
 		println("TRADE UPDATE")
-		handleTrade(event.game)
+//		handleTrade(event.game)
 
 		println("POPULATION UPDATE")
 		event.game.provinces.forEach { province ->
@@ -114,6 +114,7 @@ class GameActionCountryResources(
 		game.provinces
 			.asSequence()
 			.flatMap { it.tradeRoutes }
+			.onEach { it.tradedAmount = 0f }
 			.sortedByDescending { it.rating }
 			.forEach { handleTrade(game, it) }
 	}
@@ -124,6 +125,7 @@ class GameActionCountryResources(
 		val amount = calculateTradeAmount(srcProvince, dstProvince, tradeRoute.resourceType)
 		srcProvince.resourcesConsumedCurrTurn.add(tradeRoute.resourceType, amount)
 		dstProvince.resourcesProducedCurrTurn.add(tradeRoute.resourceType, amount)
+		tradeRoute.tradedAmount += amount
 		println("      trade route ${srcProvince.provinceId}->${dstProvince.provinceId} transferred ${tradeRoute.resourceType} ${amount}x")
 	}
 
