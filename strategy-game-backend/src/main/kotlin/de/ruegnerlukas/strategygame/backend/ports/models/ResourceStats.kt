@@ -56,5 +56,10 @@ class ResourceStats {
 		return resources.entries.map { it.key to it.value }
 	}
 
+	fun toDebugString(): String {
+		return "ResourceStats:" +
+				System.lineSeparator() +
+				resources.entries.joinToString(separator = System.lineSeparator()) { " - ${it.key} = ${it.value}" }
+	}
 
 }

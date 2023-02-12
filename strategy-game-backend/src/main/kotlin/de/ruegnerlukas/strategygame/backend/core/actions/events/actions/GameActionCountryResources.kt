@@ -24,43 +24,20 @@ class GameActionCountryResources(
 ) : GameAction<GameEventWorldUpdate>(GameEventWorldUpdate.TYPE) {
 
 	override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
-		println("LOCAL MARKET UPDATE")
 		event.game.provinces.forEach { province ->
-			println("..PROVINCE=${province.provinceId}")
 			province.cityIds
 				.map { getCity(event.game, it) }
 				.sortedBy { it.isProvinceCapital }
-				.forEach {
-					println("....CITY=${it.cityId}")
-					handleCityProduction(province, it)
-				}
+				.forEach { handleCityProduction(province, it) }
 		}
 
-		println("TRADE UPDATE")
-//		handleTrade(event.game)
+		handleTrade(event.game)
 
-		println("POPULATION UPDATE")
 		event.game.provinces.forEach { province ->
-			println("..PROVINCE=${province.provinceId}")
 			province.cityIds
 				.map { getCity(event.game, it) }
 				.sortedBy { it.isProvinceCapital }
-				.forEach {
-					println("....CITY=${it.cityId}")
-					handleCityFoodConsumption(province, it)
-				}
-		}
-
-		println("BALANCE REPORT")
-		event.game.provinces.forEach { province ->
-			println("..PROVINCE=${province.provinceId}")
-			MarketUtils.getResourceBalance(province).toList().forEach { (type, balance) ->
-				println("      $type: $balance")
-				println("                 producedPrev: ${province.resourcesProducedPrevTurn[type]}")
-				println("                 consumedCurr: ${province.resourcesConsumedCurrTurn[type]}")
-				println("                 producedCurr: ${province.resourcesProducedCurrTurn[type]}")
-				println("                 missing: ${province.resourcesMissing[type]}")
-			}
+				.forEach { handleCityFoodConsumption(province, it) }
 		}
 
 		return listOf(GameEventResourcesUpdate(event.game))
