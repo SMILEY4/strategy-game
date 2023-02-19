@@ -11,7 +11,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.TradeRoute
 import kotlin.math.min
 
 /**
@@ -28,10 +27,8 @@ class GameActionCountryResources(
 			province.cityIds
 				.map { getCity(event.game, it) }
 				.sortedBy { it.isProvinceCapital }
-				.forEach { handleCityProduction(province, it) }
+				.forEach { handleProduction(province, it) }
 		}
-
-		handleTrade(event.game)
 
 		event.game.provinces.forEach { province ->
 			province.cityIds
@@ -40,24 +37,34 @@ class GameActionCountryResources(
 				.forEach { handleCityFoodConsumption(province, it) }
 		}
 
+		// TODO
+		/*
+		- for each province:
+			- for each building that was missing resources in the last step
+				- while building is missing resources
+					- find a trade route that provides that resource
+					- "buy" required resource from that trade partner
+
+		 */
+
 		return listOf(GameEventResourcesUpdate(event.game))
 	}
 
 
-	private fun handleCityProduction(province: Province, city: City) {
+	private fun handleProduction(province: Province, city: City) {
 		city.buildings
 			.sortedBy { it.type.order }
 			.forEach { building ->
-				building.active = handleBuildingProduction(province, building)
+				building.active = handleProduction(province, building)
 			}
 	}
 
-	private fun handleBuildingProduction(province: Province, building: Building): Boolean {
+	private fun handleProduction(province: Province, building: Building): Boolean {
 		if (building.type.templateData.requiredTileResource != null && building.tile == null) {
 			println("      ${building.type} does not have a required tile resource")
 			return false
 		}
-		if (!areResourcesAvailable(province, building.type.templateData.requires)) {
+		if (!areResourcesAvailableLocally(province, building.type.templateData.requires)) {
 			building.type.templateData.requires.forEach {
 				province.resourcesMissing.add(it.type, it.amount)
 				println("      ${building.type} is missing required resource ${it.type} ${it.amount}x")
@@ -87,31 +94,6 @@ class GameActionCountryResources(
 		}
 	}
 
-	private fun handleTrade(game: GameExtended) {
-		game.provinces
-			.asSequence()
-			.flatMap { it.tradeRoutes }
-			.onEach { it.tradedAmount = 0f }
-			.sortedByDescending { it.rating }
-			.forEach { handleTrade(game, it) }
-	}
-
-	private fun handleTrade(game: GameExtended, tradeRoute: TradeRoute) {
-		val srcProvince = getProvince(game, tradeRoute.srcProvinceId)
-		val dstProvince = getProvince(game, tradeRoute.dstProvinceId)
-		val amount = calculateTradeAmount(srcProvince, dstProvince, tradeRoute.resourceType)
-		srcProvince.resourcesConsumedCurrTurn.add(tradeRoute.resourceType, amount)
-		dstProvince.resourcesProducedCurrTurn.add(tradeRoute.resourceType, amount)
-		tradeRoute.tradedAmount += amount
-		println("      trade route ${srcProvince.provinceId}->${dstProvince.provinceId} transferred ${tradeRoute.resourceType} ${amount}x")
-	}
-
-	private fun calculateTradeAmount(src: Province, dst: Province, type: ResourceType): Float {
-		val target = (MarketUtils.getResourceBalance(src, type) + MarketUtils.getResourceBalance(dst, type)) / 2f
-		val requiredAmount = -(MarketUtils.getResourceBalance(dst, type) - target)
-		return min(MarketUtils.getResourceBalance(src, type), requiredAmount)
-	}
-
 	private fun availableResourceAmount(province: Province, type: ResourceType): Float {
 		return province.resourcesProducedPrevTurn[type] - province.resourcesConsumedCurrTurn[type]
 	}
@@ -120,7 +102,7 @@ class GameActionCountryResources(
 		return availableResourceAmount(province, type) >= amount
 	}
 
-	private fun areResourcesAvailable(province: Province, resources: Collection<ResourceStack>): Boolean {
+	private fun areResourcesAvailableLocally(province: Province, resources: Collection<ResourceStack>): Boolean {
 		return resources.all { isResourceAvailable(province, it.type, it.amount) }
 	}
 
@@ -131,6 +113,5 @@ class GameActionCountryResources(
 	private fun getProvince(game: GameExtended, provinceId: String): Province {
 		return game.provinces.find { it.provinceId == provinceId }!!
 	}
-
 
 }
