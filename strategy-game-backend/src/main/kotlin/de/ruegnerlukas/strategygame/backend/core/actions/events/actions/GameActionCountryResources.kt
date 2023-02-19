@@ -37,16 +37,6 @@ class GameActionCountryResources(
 				.forEach { handleCityFoodConsumption(province, it) }
 		}
 
-		// TODO
-		/*
-		- for each province:
-			- for each building that was missing resources in the last step
-				- while building is missing resources
-					- find a trade route that provides that resource
-					- "buy" required resource from that trade partner
-
-		 */
-
 		return listOf(GameEventResourcesUpdate(event.game))
 	}
 
@@ -108,10 +98,6 @@ class GameActionCountryResources(
 
 	private fun getCity(game: GameExtended, cityId: String): City {
 		return game.cities.find { it.cityId == cityId }!!
-	}
-
-	private fun getProvince(game: GameExtended, provinceId: String): Province {
-		return game.provinces.find { it.provinceId == provinceId }!!
 	}
 
 }

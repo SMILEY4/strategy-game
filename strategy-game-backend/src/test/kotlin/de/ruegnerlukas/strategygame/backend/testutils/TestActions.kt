@@ -145,7 +145,6 @@ object TestActions {
             it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(ReservationInsertImpl(database)))
             it.register(GameEventCommandMarkerPlace.TYPE, GameActionMarkerPlace())
             it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(GameConfig.default()))
-            it.register(GameEventResourcesUpdate.TYPE, GameActionMarketUpdate())
             it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(GameConfig.default()))
             it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
             it.register(GameEventWorldPrepare.TYPE, GameActionWorldPrepare())

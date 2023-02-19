@@ -15,8 +15,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActi
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceOwnership
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceVisibility
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarkerPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarketUpdate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionReporting
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutLifetime
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutPlace
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionWorldPrepare
@@ -25,7 +23,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEvent
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandMarkerPlace
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandScoutPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPostUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
@@ -176,13 +173,11 @@ val applicationDependencies = module {
 			it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(get()))
 			it.register(GameEventCommandMarkerPlace.TYPE, GameActionMarkerPlace())
 			it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(get()))
-			it.register(GameEventResourcesUpdate.TYPE, GameActionMarketUpdate())
 			it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(get()))
 			it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
 			it.register(GameEventWorldPrepare.TYPE, GameActionWorldPrepare())
 			it.register(GameEventWorldUpdate.TYPE, GameActionCountryResources(get()))
 			it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(get()))
-			it.register(GameEventWorldPostUpdate.TYPE, GameActionReporting())
 		}
 	}
 

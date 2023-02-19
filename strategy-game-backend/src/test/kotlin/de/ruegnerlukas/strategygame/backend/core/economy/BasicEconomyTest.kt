@@ -43,7 +43,6 @@ class BasicEconomyTest : StringSpec({
 					countryId = "test-country",
 					cityIds = mutableListOf("test-city"),
 					provinceCapitalCityId = "test-city",
-					tradeRoutes = mutableListOf()
 				)
 			)
 		)
@@ -134,7 +133,6 @@ class BasicEconomyTest : StringSpec({
 					countryId = "test-country",
 					cityIds = mutableListOf("test-city"),
 					provinceCapitalCityId = "test-city",
-					tradeRoutes = mutableListOf()
 				)
 			)
 		)
@@ -324,7 +322,6 @@ class BasicEconomyTest : StringSpec({
 					countryId = "test-country",
 					cityIds = mutableListOf("test-city"),
 					provinceCapitalCityId = "test-city",
-					tradeRoutes = mutableListOf()
 				)
 			)
 		)
@@ -400,7 +397,7 @@ class BasicEconomyTest : StringSpec({
 				ResourceType.CLOTHES to 0f,
 			)
 			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 2f,
+				ResourceType.FOOD to 3f,
 				ResourceType.HIDE to 2f,
 				ResourceType.PARCHMENT to 1f,
 				ResourceType.CLOTHES to 1f,
@@ -513,7 +510,6 @@ class BasicEconomyTest : StringSpec({
 					countryId = "test-country",
 					cityIds = mutableListOf("test-city"),
 					provinceCapitalCityId = "test-city",
-					tradeRoutes = mutableListOf()
 				)
 			)
 		)

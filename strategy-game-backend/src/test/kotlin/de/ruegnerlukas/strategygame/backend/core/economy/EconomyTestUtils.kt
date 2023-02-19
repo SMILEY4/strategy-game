@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.economy
 
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResources
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarketUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionWorldPrepare
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
@@ -99,26 +98,6 @@ object EconomyTestUtils {
 	suspend fun performEconomyUpdate(game: GameExtended) {
 		GameActionWorldPrepare().perform(GameEventWorldPrepare(game))
 		GameActionCountryResources(GameConfig.default()).perform(GameEventWorldUpdate(game))
-		GameActionMarketUpdate().perform(GameEventResourcesUpdate(game))
-	}
-
-	suspend fun performEconomyUpdateWithoutTradeRoute(game: GameExtended) {
-		GameActionWorldPrepare().perform(GameEventWorldPrepare(game))
-		GameActionCountryResources(GameConfig.default()).perform(GameEventWorldUpdate(game))
-	}
-
-	infix fun Province.shouldHaveTradeRoute(tradeRoutes: Collection<TradeRoute>) {
-		this.tradeRoutes shouldHaveSize tradeRoutes.size
-		tradeRoutes.forEach { expected ->
-			this.tradeRoutes
-				.any { actual ->
-					actual.srcProvinceId == expected.srcProvinceId
-							&& actual.dstProvinceId == expected.dstProvinceId
-							&& actual.resourceType == expected.resourceType
-				}
-				.shouldBe(true)
-		}
-
 	}
 
 	infix fun Province.shouldHaveProducedLastTurn(resources: Collection<Pair<ResourceType, Float>>) {

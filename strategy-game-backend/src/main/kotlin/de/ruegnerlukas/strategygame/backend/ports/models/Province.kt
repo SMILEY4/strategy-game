@@ -11,10 +11,4 @@ data class Province(
 	var resourcesConsumedCurrTurn: ResourceStats = ResourceStats(),
 	var resourcesMissing: ResourceStats = ResourceStats(),
 
-	val tradeRoutes: MutableList<TradeRoute>,
-
-	// todo: non persistent data
-	val resourceBalance: MutableMap<ResourceType, Float> = mutableMapOf(),
-	val resourceDemands: MutableMap<ResourceType, Float> = mutableMapOf()
-
 )

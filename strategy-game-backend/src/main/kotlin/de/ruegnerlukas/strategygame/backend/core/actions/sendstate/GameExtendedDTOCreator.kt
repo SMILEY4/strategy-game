@@ -230,16 +230,6 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 			countryId = province.countryId,
 			cityIds = province.cityIds,
 			provinceCapitalCityId = province.provinceCapitalCityId,
-			tradeRoutes = province.tradeRoutes.map {
-				TradeRouteDTO(
-					srcProvinceId = it.srcProvinceId,
-					dstProvinceId = it.dstProvinceId,
-					routeIds = it.routeIds,
-					resourceType = it.resourceType,
-					rating = it.rating,
-					creationTurn = it.creationTurn,
-				)
-			},
 			dataTier3 = if (playerCountryId == province.countryId) {
 				ProvinceDataTier3(
 					resourceBalance = ResourceType.values().associateWith { type ->

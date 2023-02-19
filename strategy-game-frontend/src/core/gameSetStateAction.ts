@@ -169,7 +169,6 @@ export class GameSetStateAction {
             resources: province.dataTier3
                 ? new Map<ResourceType, number>(Object.entries(province.dataTier3!!.resourceBalance).map(e => [ResourceType.fromString(e[0]), e[1]]))
                 : null,
-            tradeRoutes: province.tradeRoutes
         }));
     }
 

@@ -14,7 +14,6 @@ class ProvinceEntity(
 	val provinceCityId: String,
 	val resourceLedgerPrevTurn: ResourceLedger,
 	val resourceLedgerCurrTurn: ResourceLedger,
-	val tradeRoutes: List<TradeRouteEntity>?, // todo: make non nullable
 	key: String? = null,
 ) : DbEntity(key) {
 
@@ -27,8 +26,7 @@ class ProvinceEntity(
 			provinceCityId = serviceModel.provinceCapitalCityId,
 			// todo: properly/manually migrate model from ledger to stats in db
 			resourceLedgerPrevTurn = serviceModel.resourcesProducedPrevTurn.toLedger(),
-			resourceLedgerCurrTurn = serviceModel.resourcesProducedCurrTurn.toLedger(),
-			tradeRoutes = serviceModel.tradeRoutes.map { TradeRouteEntity.of(it) }
+			resourceLedgerCurrTurn = serviceModel.resourcesProducedCurrTurn.toLedger()
 		)
 
 		private fun ResourceStats.toLedger(): ResourceLedger { // todo: temp
@@ -57,7 +55,6 @@ class ProvinceEntity(
 		resourcesProducedCurrTurn = this.resourceLedgerCurrTurn.toStats(),
 		resourcesConsumedCurrTurn = ResourceStats(),
 		resourcesMissing = ResourceStats(),
-		tradeRoutes = this.tradeRoutes?.map { it.asServiceModel() }?.toMutableList() ?: mutableListOf() // todo: make non-nullable
 	)
 
 
