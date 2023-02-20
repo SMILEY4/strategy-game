@@ -11,4 +11,20 @@ data class Province(
 	var resourcesConsumedCurrTurn: ResourceStats = ResourceStats(),
 	var resourcesMissing: ResourceStats = ResourceStats(),
 
-)
+) {
+	fun toDebugString(): String {
+		return """
+resourcesProducedPrevTurn:
+${resourcesProducedPrevTurn.toDebugString()}
+
+resourcesConsumedCurrTurn:
+${resourcesConsumedCurrTurn.toDebugString()}
+
+resourcesProducedCurrTurn:
+${resourcesProducedCurrTurn.toDebugString()}
+
+resourcesMissing:
+${resourcesMissing.toDebugString()}
+		""".trimIndent()
+	}
+}
