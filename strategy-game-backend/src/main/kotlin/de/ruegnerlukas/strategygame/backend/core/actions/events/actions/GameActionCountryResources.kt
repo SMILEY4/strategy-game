@@ -24,23 +24,30 @@ class GameActionCountryResources(
 
     override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
         val networks = MarketNetwork.networksFrom(event.game)
-        var ecoEntities = collectEcoEntities(event.game)
+        val ecoEntities = collectEcoEntities(event.game)
 
         // first pass: local resource access only
-        ecoEntities = ecoEntities
-            .map { it to handleLocal(it) }
-            .filter { !it.second }
-            .map { it.first }
+        val resultLocalPass = ecoEntities.map { it to handleLocal(it) }
 
         // second pass: use resources from network
-        ecoEntities = ecoEntities
-            .map { it to handleNetwork(it, MarketNetwork.findNetwork(networks, it.province)!!) }
-            .filter { !it.second }
-            .map { it.first }
+        val resultNetworkPass = resultLocalPass.map { (entity, resultLocal) ->
+            if (resultLocal.type == EcoEntityResultType.MISSING_RESOURCES) {
+                MarketNetwork.findNetwork(networks, entity.province)?.let { network ->
+                    entity to handleNetwork(entity, network, resultLocal)
+                } ?: (entity to resultLocal)
+            } else {
+                entity to resultLocal
+            }
+        }
 
         // entities that are missing resources
-        println("MISSING RESOURCES:")
-        ecoEntities.forEach { println(it.toString()) }
+        resultNetworkPass
+            .filter { it.second.type == EcoEntityResultType.MISSING_RESOURCES }
+            .forEach { (entity, result) ->
+                result.missingResources.forEach { resourceStack ->
+                    entity.province.resourcesMissing.add(resourceStack.type, resourceStack.amount)
+                }
+            }
 
         return listOf(GameEventResourcesUpdate(event.game))
     }
@@ -72,92 +79,78 @@ class GameActionCountryResources(
         return entities.sortedBy { it.power }
     }
 
-    private fun handleLocal(entity: EcoEntity): Boolean {
+    private fun handleLocal(entity: EcoEntity): EcoEntityResult {
         return when (entity) {
             is BuildingEcoEntity -> handleLocal(entity)
             is PopulationEcoEntity -> handleLocal(entity)
         }
     }
 
-    private fun handleLocal(entity: BuildingEcoEntity): Boolean {
+    private fun handleLocal(entity: BuildingEcoEntity): EcoEntityResult {
         val province = entity.province
         val building = entity.building
-        if (building.type.templateData.requiredTileResource != null && building.tile == null) {
-            return false
+        if (!fulfillsTileRequirement(building)) {
+            return EcoEntityResult.missingTileRequirement()
         }
-        if (!areResourcesAvailableLocally(province, building.type.templateData.requires)) {
-            building.type.templateData.requires.forEach { // TODO: fix bug: resources added to missing 2x
-                province.resourcesMissing.add(it.type, it.amount)
-            }
-            return false
+        if (areResourcesAvailableLocally(province, building)) {
+            building.type.templateData.requires.forEach { takeFromProvince(province, it) }
+            building.type.templateData.produces.forEach { giveToProvince(province, it) }
+            return EcoEntityResult.complete()
+        } else {
+            return EcoEntityResult.missingResources(building.type.templateData.requires)
         }
-        building.type.templateData.requires.forEach { requiredResource ->
-            province.resourcesConsumedCurrTurn.add(requiredResource.type, requiredResource.amount)
-        }
-        building.type.templateData.produces.forEach { producedResource ->
-            province.resourcesProducedCurrTurn.add(producedResource.type, producedResource.amount)
-        }
-        return true
     }
 
-    private fun handleLocal(entity: PopulationEcoEntity): Boolean {
-        val city = entity.city
-        val province = entity.province
-        val requiredFoodAmount = if (city.isProvinceCapital) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
-        val possibleFoodAmount = min(requiredFoodAmount, availableResourceAmount(province, ResourceType.FOOD))
+    private fun handleLocal(entity: PopulationEcoEntity): EcoEntityResult {
+        val requiredFoodAmount = calculateFoodConsumption(entity.city)
+        val possibleFoodAmount = min(requiredFoodAmount, availableResourceAmount(entity.province, ResourceType.FOOD))
         val missingFoodAmount = requiredFoodAmount - possibleFoodAmount
-        province.resourcesConsumedCurrTurn.add(ResourceType.FOOD, possibleFoodAmount)
+        entity.province.resourcesConsumedCurrTurn.add(ResourceType.FOOD, possibleFoodAmount)
         if (missingFoodAmount > 0) {
-            province.resourcesMissing.add(ResourceType.FOOD, missingFoodAmount) // TODO: fix bug: resources added to missing 2x
-            return false
+            return EcoEntityResult.missingResources(listOf(ResourceStack(type = ResourceType.FOOD, amount = missingFoodAmount)))
+        } else {
+            return EcoEntityResult.complete()
         }
-        return true
     }
 
-    private fun handleNetwork(entity: EcoEntity, network: MarketNetwork): Boolean {
+    private fun handleNetwork(entity: EcoEntity, network: MarketNetwork, resultLocal: EcoEntityResult): EcoEntityResult {
         return when (entity) {
             is BuildingEcoEntity -> handleNetwork(entity, network)
-            is PopulationEcoEntity -> handleNetwork(entity, network)
+            is PopulationEcoEntity -> handleNetwork(entity, network, resultLocal)
         }
     }
 
-    private fun handleNetwork(entity: BuildingEcoEntity, network: MarketNetwork): Boolean {
+    private fun handleNetwork(entity: BuildingEcoEntity, network: MarketNetwork): EcoEntityResult {
         network.calculateResourceStats()
         val province = entity.province
         val building = entity.building
         if (building.type.templateData.requiredTileResource != null) {
-            return false
+            return EcoEntityResult.missingTileRequirement()
         }
-        if (!areResourcesAvailableInNetwork(network, building.type.templateData.requires)) {
-            building.type.templateData.requires.forEach { // TODO: fix bug: resources added to missing 2x
-                province.resourcesMissing.add(it.type, it.amount)
-            }
-            return false
+        if (areResourcesAvailableInNetwork(network, building.type.templateData.requires)) {
+            building.type.templateData.requires.forEach { takeFromProvince(province, it) }
+            building.type.templateData.produces.forEach { giveToProvince(province, it) }
+            return EcoEntityResult.complete()
+        } else {
+            return EcoEntityResult.missingResources(building.type.templateData.requires)
         }
-        building.type.templateData.requires.forEach { requiredResource ->
-            province.resourcesConsumedCurrTurn.add(requiredResource.type, requiredResource.amount)
-        }
-        building.type.templateData.produces.forEach { producedResource ->
-            province.resourcesProducedCurrTurn.add(producedResource.type, producedResource.amount)
-        }
-        return true
     }
 
-    private fun handleNetwork(entity: PopulationEcoEntity, network: MarketNetwork): Boolean {
+    private fun handleNetwork(entity: PopulationEcoEntity, network: MarketNetwork, resultLocal: EcoEntityResult): EcoEntityResult {
         network.calculateResourceStats()
-        val city = entity.city
-        val province = entity.province
-        val requiredFoodAmount = if (city.isProvinceCapital) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
+        val requiredFoodAmount = resultLocal.missingResources.find { it.type == ResourceType.FOOD }?.amount ?: 0f
         val possibleFoodAmount = min(requiredFoodAmount, availableResourceAmount(network, ResourceType.FOOD))
         val missingFoodAmount = requiredFoodAmount - possibleFoodAmount
-        province.resourcesConsumedCurrTurn.add(ResourceType.FOOD, possibleFoodAmount)
-        println("      population consumed food ${possibleFoodAmount}x")
+        entity.province.resourcesConsumedCurrTurn.add(ResourceType.FOOD, possibleFoodAmount)
         if (missingFoodAmount > 0) {
-            province.resourcesMissing.add(ResourceType.FOOD, missingFoodAmount) // TODO: fix bug: resources added to missing 2x
-            println("      population is missing food ${missingFoodAmount}x")
-            return false
+            return EcoEntityResult.missingResources(listOf(ResourceStack(ResourceType.FOOD, missingFoodAmount)))
+        } else {
+            return EcoEntityResult.complete()
         }
-        return true
+    }
+
+    private fun fulfillsTileRequirement(building: Building): Boolean {
+        return building.type.templateData.requiredTileResource == null || building.tile != null
     }
 
     private fun availableResourceAmount(province: Province, type: ResourceType): Float {
@@ -172,8 +165,8 @@ class GameActionCountryResources(
         return availableResourceAmount(province, type) >= amount
     }
 
-    private fun areResourcesAvailableLocally(province: Province, requiredResources: Collection<ResourceStack>): Boolean {
-        return requiredResources.all { isResourceAvailable(province, it.type, it.amount) }
+    private fun areResourcesAvailableLocally(province: Province, building: Building): Boolean {
+        return building.type.templateData.requires.all { isResourceAvailable(province, it.type, it.amount) }
     }
 
     private fun isResourceAvailable(network: MarketNetwork, type: ResourceType, amount: Float): Boolean {
@@ -182,17 +175,23 @@ class GameActionCountryResources(
 
     private fun areResourcesAvailableInNetwork(network: MarketNetwork, requiredResources: Collection<ResourceStack>): Boolean {
         return requiredResources.all { isResourceAvailable(network, it.type, it.amount) }
-
     }
 
-    private fun getCity(game: GameExtended, cityId: String): City {
-        return game.cities.find { it.cityId == cityId }!!
+    private fun takeFromProvince(province: Province, resourceStack: ResourceStack) {
+        province.resourcesConsumedCurrTurn.add(resourceStack.type, resourceStack.amount)
+    }
+
+    private fun giveToProvince(province: Province, resourceStack: ResourceStack) {
+        province.resourcesProducedCurrTurn.add(resourceStack.type, resourceStack.amount)
+    }
+
+    private fun calculateFoodConsumption(city: City): Float {
+        return if (city.isProvinceCapital) gameConfig.cityFoodCostPerTurn else gameConfig.townFoodCostPerTurn
     }
 
     private fun getProvinceByCity(game: GameExtended, cityId: String): Province {
         return game.provinces.find { it.cityIds.contains(cityId) }!!
     }
-
 
 }
 
@@ -224,4 +223,34 @@ internal class PopulationEcoEntity(
     override fun toString(): String {
         return "PopulationEcoEntity(countryId='$countryId', province=${province.provinceId}, city=${city.cityId})"
     }
+}
+
+internal data class EcoEntityResult(
+    val type: EcoEntityResultType,
+    val missingResources: List<ResourceStack>
+) {
+    companion object {
+
+        fun complete() = EcoEntityResult(
+            type = EcoEntityResultType.COMPLETE,
+            missingResources = listOf()
+        )
+
+        fun missingTileRequirement() = EcoEntityResult(
+            type = EcoEntityResultType.MISSING_TILE_REQUIREMENT,
+            missingResources = listOf()
+        )
+
+        fun missingResources(resources: List<ResourceStack>) = EcoEntityResult(
+            type = EcoEntityResultType.MISSING_RESOURCES,
+            missingResources = resources.toList()
+        )
+
+    }
+}
+
+internal enum class EcoEntityResultType {
+    COMPLETE,
+    MISSING_TILE_REQUIREMENT,
+    MISSING_RESOURCES
 }
