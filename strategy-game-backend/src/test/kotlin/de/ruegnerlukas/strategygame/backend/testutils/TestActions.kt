@@ -147,6 +147,7 @@ object TestActions {
             it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(GameConfig.default()))
             it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(GameConfig.default()))
             it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
+            it.register(GameEventWorldPrepare.TYPE, GameActionWorldPrepare())
             it.register(GameEventWorldUpdate.TYPE, GameActionCountryResources(GameConfig.default()))
             it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(GameConfig.default()))
         }

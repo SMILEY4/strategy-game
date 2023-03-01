@@ -6,22 +6,6 @@ data class GameConfig(
      */
     val startingAmountMoney: Float = 200f,
     /**
-     * the amount of wood a country starts with
-     */
-    val startingAmountWood: Float = 300f,
-    /**
-     * the amount of food a country starts with
-     */
-    val startingAmountFood: Float = 300f,
-    /**
-     * the amount of stone a country starts with
-     */
-    val startingAmountStone: Float = 100f,
-    /**
-     * the amount of metal a country starts with
-     */
-    val startingAmountMetal: Float = 100f,
-    /**
      * the radius of the uncovered country starting area
      */
     val startingAreaRadius: Int = 3,

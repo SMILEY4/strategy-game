@@ -12,5 +12,4 @@ interface ReservationInsert {
 
 	suspend fun reserveRoute() = execute(Collections.ROUTES)
 
-
 }

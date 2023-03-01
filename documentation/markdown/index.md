@@ -16,6 +16,7 @@
   - [Fog-of-War and Visibility](./game/fogOfWar.md)
     - Scouting
     - Discovered Countries
+  - [Resource Handling](./game/ResourceHandling.md)
   
 - [Changelog](./changelog/changelog.md)
 - Milestone-Plans/Roadmap

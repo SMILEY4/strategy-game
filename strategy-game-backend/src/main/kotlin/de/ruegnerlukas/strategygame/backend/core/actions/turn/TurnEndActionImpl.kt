@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
+import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPostUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
 import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
@@ -80,6 +81,7 @@ class TurnEndActionImpl(
      */
     private suspend fun updateGameWorld(game: GameExtended) {
         gameEventManager.send(GameEventWorldUpdate::class.simpleName!!, GameEventWorldUpdate(game))
+        gameEventManager.send(GameEventWorldPostUpdate::class.simpleName!!, GameEventWorldPostUpdate(game))
     }
 
 
