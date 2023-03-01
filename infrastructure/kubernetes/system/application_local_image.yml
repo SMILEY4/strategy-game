@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: app-logs
+    name: app-logs-volume
     namespace: strategy-game
     labels:
-        name: app-logs
+        name: app-logs-volume
 spec:
     accessModes:
         - ReadWriteOnce
@@ -41,15 +41,14 @@ spec:
                     ports:
                         -   containerPort: 8080
                         -   containerPort: 8443
-                    resources: { }
                     volumeMounts:
                         -   mountPath: /log
-                            name: app-logs
+                            name: app-logs-volume
             restartPolicy: Always
             volumes:
-                -   name: app-logs
+                -   name: app-logs-volume
                     persistentVolumeClaim:
-                        claimName: app-logs
+                        claimName: app-logs-volume
 
 
 ---

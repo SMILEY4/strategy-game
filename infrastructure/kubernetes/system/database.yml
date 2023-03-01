@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: database-appdata-container
+    name: database-appdata-volume
     namespace: strategy-game
     labels:
-        name: database-appdata-container
+        name: database-appdata-volume
 spec:
     accessModes:
         - ReadWriteOnce
@@ -19,10 +19,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: database-data-container
+    name: database-data-volume
     namespace: strategy-game
     labels:
-        name: database-data-container
+        name: database-data-volume
 spec:
     accessModes:
         - ReadWriteOnce
@@ -64,17 +64,17 @@ spec:
                     resources: { }
                     volumeMounts:
                         -   mountPath: /var/lib/arangodb3
-                            name: arangodb-data-container
+                            name: arangodb-data-volume
                         -   mountPath: /var/lib/arangodb3-apps
-                            name: arangodb-appdata-container
+                            name: arangodb-appdata-volume
             restartPolicy: Always
             volumes:
-                -   name: arangodb-data-container
+                -   name: arangodb-data-volume
                     persistentVolumeClaim:
-                        claimName: database-data-container
-                -   name: arangodb-appdata-container
+                        claimName: database-data-volume
+                -   name: arangodb-appdata-volume
                     persistentVolumeClaim:
-                        claimName: database-appdata-container
+                        claimName: database-appdata-volume
 
 
 ---
