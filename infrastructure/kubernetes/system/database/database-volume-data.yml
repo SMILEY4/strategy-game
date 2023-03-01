@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: database-data-container
+    namespace: strategy-game
+    labels:
+        name: database-data-container
+spec:
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 100Mi
