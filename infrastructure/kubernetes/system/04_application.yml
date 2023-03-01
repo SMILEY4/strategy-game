@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: app-logs
+    namespace: strategy-game
+    labels:
+        name: app-logs
+spec:
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 100Mi
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: app
+    namespace: strategy-game
+    labels:
+        name: app
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            name: app
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                name: app
+        spec:
+            containers:
+                -   name: strategy-game-app
+                    image: 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:0.4.0
+                    imagePullPolicy: Always
+                    ports:
+                        -   containerPort: 8080
+                        -   containerPort: 8443
+                    resources: { }
+                    volumeMounts:
+                        -   mountPath: /log
+                            name: app-logs
+            imagePullSecrets:
+                -   name: regcred
+            restartPolicy: Always
+            volumes:
+                -   name: app-logs
+                    persistentVolumeClaim:
+                        claimName: app-logs
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: app
+    namespace: strategy-game
+    labels:
+        name: app
+spec:
+    type: NodePort
+    selector:
+        name: app
+    ports:
+        - name: "8080"
+          port: 8080
+          targetPort: 8080
+        - name: "8443"
+          port: 8443
+          targetPort: 8443
