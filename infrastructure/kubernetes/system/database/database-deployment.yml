@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: database
+    namespace: strategy-game
+    labels:
+        name: database
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            name: database
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                name: database
+        spec:
+            containers:
+                -   image: arangodb:3.10.0
+                    name: strategy-game-database
+                    ports:
+                        -   containerPort: 8529
+                    env:
+                        -   name: ARANGO_NO_AUTH
+                            value: "1"
+                    resources: { }
+                    volumeMounts:
+                        -   mountPath: /var/lib/arangodb3
+                            name: arangodb-data-container
+                        -   mountPath: /var/lib/arangodb3-apps
+                            name: arangodb-appdata-container
+            restartPolicy: Always
+            volumes:
+                -   name: arangodb-data-container
+                    persistentVolumeClaim:
+                        claimName: database-data-container
+                -   name: arangodb-appdata-container
+                    persistentVolumeClaim:
+                        claimName: database-appdata-container

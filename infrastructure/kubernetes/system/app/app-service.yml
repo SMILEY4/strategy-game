@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: app
+    namespace: strategy-game
+    labels:
+        name: app
+spec:
+    type: NodePort
+    selector:
+        name: app
+    ports:
+        - name: "8080"
+          port: 8080
+          targetPort: 8080
+        - name: "8443"
+          port: 8443
+          targetPort: 8443
