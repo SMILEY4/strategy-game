@@ -6,30 +6,49 @@
     <import class="ch.qos.logback.classic.filter.ThresholdFilter"/>
     <import class="net.logstash.logback.encoder.LogstashEncoder"/>
 
-    <appender name="STDOUT" class="ConsoleAppender">
-        <encoder>
-            <pattern>
-                %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) | %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
-            </pattern>
-        </encoder>
-        <filter class="LogSuppressor"/>
-    </appender>
+    <!--    <appender name="STDOUT_PRETTY" class="ConsoleAppender">-->
+    <!--        <filter class="LogSuppressor"/>-->
+    <!--        <encoder>-->
+    <!--            <pattern>-->
+    <!--                %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) |-->
+    <!--                %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n-->
+    <!--            </pattern>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
 
-    <appender name="FILE" class="FileAppender">
-        <file>log/strategy-game-backend.log</file>
-        <append>true</append>
-        <filter class="ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-        <encoder class="LogstashEncoder">
-            <customFields>{"application":"backend"}</customFields>
-        </encoder>
+    <!--    <appender name="STDOUT_JSON" class="ConsoleAppender">-->
+    <!--        <filter class="LogSuppressor"/>-->
+    <!--        <encoder class="LogstashEncoder">-->
+    <!--            <customFields>{"application":"backend"}</customFields>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
+
+    <appender name="STDOUT" class="ConsoleAppender">
         <filter class="LogSuppressor"/>
+        <if condition='isDefined("LOG_AS_JSON")'>
+            <then>
+                <encoder>
+                    <pattern>
+                        %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) |
+                        %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
+                    </pattern>
+                </encoder>
+            </then>
+            <else>
+                <encoder>
+                    <pattern>
+                        %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) |
+                        %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
+                    </pattern>
+                </encoder>
+            </else>
+        </if>
     </appender>
 
     <root level="debug">
-        <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
+        <!--        <appender-ref ref="STDOUT_PRETTY"/>-->
+        <!--        <appender-ref ref="STDOUT_JSON"/>-->
     </root>
 
     <logger name="io.netty" level="INFO"/>

@@ -195,6 +195,26 @@
 
 # Miscellaneous
 
+
+
+## Switch kubectl context
+
+- list known contexts
+
+  ```powershell
+  kubectl config get-contexts
+  ```
+
+- set context
+
+  ```powershell
+  kubectl config set current-context MY-CONTEXT
+  ```
+
+  
+
+
+
 ## Setup Basic Ingress
 
 1. create ingress controller (only/specific for docker desktop ?)
