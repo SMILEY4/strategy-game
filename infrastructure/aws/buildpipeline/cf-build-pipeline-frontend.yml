@@ -1,0 +1,391 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+    GitHubRepositoryId:
+        Type: "String"
+        Description: "The id of the source GithubRepository, i.e. <owner>/<repo-name>"
+        Default: "SMILEY4/strategy-game"
+    GithubCodeStarConnectionArn:
+        Type: "String"
+        Description: "Arn of the already created codestar connection to github"
+        Default: "arn:aws:codestar-connections:eu-central-1:627717213620:connection/16c629c9-0240-49a9-a2bf-93ea8ef91b10"
+    BuildLogBucketName:
+        Type: "String"
+        Description: "The name of the s3-bucket to use for build logs"
+        Default: "strategy-game.logs.build"
+    FrontendArtifactBucketName:
+        Type: "String"
+        Description: "The name of the s3-bucket to use for frontend build-artifacts"
+        Default: "strategy-game.artifacts.frontend"
+    WebsiteDeploymentBucketName:
+        Type: "String"
+        Description: "The name of the s3-bucket to deploy the frontend to."
+        Default: "strategy-game.webapp"
+
+Resources:
+
+
+    #=============================================================
+    #    ROLES
+    #=============================================================
+
+
+    CodeBuildRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: "strategy-game.code-build.frontend"
+            Path: "/"
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "codebuild.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            Policies:
+                -   PolicyName: "S3"
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -   Effect: "Allow"
+                                Action:
+                                    - "codebuild:BatchPutCodeCoverages"
+                                    - "codebuild:BatchPutTestCases"
+                                    - "codebuild:CreateReport"
+                                    - "codebuild:CreateReportGroup"
+                                    - "codebuild:UpdateReport"
+                                    - "ecr:BatchCheckLayerAvailability"
+                                    - "ecr:BatchDeleteImage"
+                                    - "ecr:BatchGetImage"
+                                    - "ecr:CompleteLayerUpload"
+                                    - "ecr:DescribeImages"
+                                    - "ecr:DescribePullThroughCacheRules"
+                                    - "ecr:GetAuthorizationToken"
+                                    - "ecr:GetDownloadUrlForLayer"
+                                    - "ecr:InitiateLayerUpload"
+                                    - "ecr:ListImages"
+                                    - "ecr:ListImages"
+                                    - "ecr:PutImage"
+                                    - "ecr:UploadLayerPart"
+                                    - "imagebuilder:GetComponent"
+                                    - "imagebuilder:GetContainerRecipe"
+                                    - "logs:CreateLogGroup"
+                                    - "logs:CreateLogStream"
+                                    - "logs:PutLogEvents"
+                                    - "s3:*"
+                                    - "s3:GetBucketAcl"
+                                    - "s3:GetBucketLocation"
+                                    - "s3:GetObject"
+                                    - "s3:GetObjectVersion"
+                                    - "s3:PutObject"
+                                Resource: "*"
+                            -   Effect: Allow
+                                Action:
+                                    - 'codecommit:GitPull'
+                                Resource:
+                                    - !Sub arn:aws:codecommit:*:*:${GitHubRepositoryId}
+
+    CodePipelineRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: "strategy-game.code-pipeline.frontend"
+            Path: "/"
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: "Allow"
+                        Principal:
+                            Service:
+                                - "codepipeline.amazonaws.com"
+                        Action:
+                            - "sts:AssumeRole"
+            Policies:
+                -   PolicyName: "root"
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                            -   Action:
+                                    - "iam:PassRole"
+                                Resource: "*"
+                                Effect: "Allow"
+                                Condition:
+                                    StringEqualsIfExists:
+                                        iam:PassedToService:
+                                            - "cloudformation.amazonaws.com"
+                                            - "elasticbeanstalk.amazonaws.com"
+                                            - "ec2.amazonaws.com"
+                                            - "ecs-tasks.amazonaws.com"
+                            -   Action:
+                                    - "appconfig:GetDeployment"
+                                    - "appconfig:StartDeployment"
+                                    - "appconfig:StopDeployment"
+                                    - "autoscaling:*"
+                                    - "cloudformation:*"
+                                    - "cloudformation:CreateChangeSet"
+                                    - "cloudformation:CreateStack"
+                                    - "cloudformation:DeleteChangeSet"
+                                    - "cloudformation:DeleteStack"
+                                    - "cloudformation:DescribeChangeSet"
+                                    - "cloudformation:DescribeStacks"
+                                    - "cloudformation:ExecuteChangeSet"
+                                    - "cloudformation:SetStackPolicy"
+                                    - "cloudformation:UpdateStack"
+                                    - "cloudformation:ValidateTemplate"
+                                    - "cloudformation:ValidateTemplate"
+                                    - "cloudwatch:*"
+                                    - "codebuild:BatchGetBuildBatches"
+                                    - "codebuild:BatchGetBuilds"
+                                    - "codebuild:StartBuild"
+                                    - "codebuild:StartBuildBatch"
+                                    - "codecommit:CancelUploadArchive"
+                                    - "codecommit:GetBranch"
+                                    - "codecommit:GetCommit"
+                                    - "codecommit:GetRepository"
+                                    - "codecommit:GetUploadArchiveStatus"
+                                    - "codecommit:UploadArchive"
+                                    - "codedeploy:CreateDeployment"
+                                    - "codedeploy:GetApplication"
+                                    - "codedeploy:GetApplicationRevision"
+                                    - "codedeploy:GetDeployment"
+                                    - "codedeploy:GetDeploymentConfig"
+                                    - "codedeploy:RegisterApplicationRevision"
+                                    - "codestar-connections:UseConnection"
+                                    - "devicefarm:CreateUpload"
+                                    - "devicefarm:GetRun"
+                                    - "devicefarm:GetUpload"
+                                    - "devicefarm:ListDevicePools"
+                                    - "devicefarm:ListProjects"
+                                    - "devicefarm:ScheduleRun"
+                                    - "ec2:*"
+                                    - "ecr:DescribeImages"
+                                    - "ecs:*"
+                                    - "elasticbeanstalk:*"
+                                    - "elasticloadbalancing:*"
+                                    - "lambda:InvokeFunction"
+                                    - "lambda:ListFunctions"
+                                    - "opsworks:CreateDeployment"
+                                    - "opsworks:DescribeApps"
+                                    - "opsworks:DescribeCommands"
+                                    - "opsworks:DescribeDeployments"
+                                    - "opsworks:DescribeInstances"
+                                    - "opsworks:DescribeStacks"
+                                    - "opsworks:UpdateApp"
+                                    - "opsworks:UpdateStack"
+                                    - "rds:*"
+                                    - "s3:*"
+                                    - "servicecatalog:CreateProvisioningArtifact"
+                                    - "servicecatalog:DeleteProvisioningArtifact"
+                                    - "servicecatalog:DescribeProvisioningArtifact"
+                                    - "servicecatalog:ListProvisioningArtifacts"
+                                    - "servicecatalog:UpdateProduct"
+                                    - "sns:*"
+                                    - "sqs:*"
+                                    - "states:DescribeExecution"
+                                    - "states:DescribeStateMachine"
+                                    - "states:StartExecution"
+                                Resource: "*"
+                                Effect: "Allow"
+
+    #=============================================================
+    #    CODE-BUILD
+    #=============================================================
+
+    CodeBuildProjectFrontend:
+        Type: "AWS::CodeBuild::Project"
+        Properties:
+            Name: "strategy-game-frontend"
+            ServiceRole: !Ref CodeBuildRole
+            Artifacts:
+                Type: "CODEPIPELINE"
+            Source:
+                Type: "CODEPIPELINE"
+                BuildSpec: "infrastructure/aws/buildpipeline/buildspec-frontend.yml"
+            Environment:
+                ComputeType: "BUILD_GENERAL1_SMALL"
+                Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+                Type: "LINUX_CONTAINER"
+            LogsConfig:
+                S3Logs:
+                    Location: !Join
+                        - ""
+                        -   - !Ref BuildLogBucketName
+                            - "/frontend"
+                    Status: "ENABLED"
+
+
+    #=============================================================
+    #    PIPELINE
+    #=============================================================
+
+    PipelineFrontendDeploymentMarker:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: "strategy-game.frontend.deployment-marker"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref FrontendArtifactBucketName
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: "deployment-marker"
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectFrontend
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "S3"
+                            Configuration:
+                                BucketName: !Ref WebsiteDeploymentBucketName
+                                Extract: Yes
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+
+    PipelineFrontendDevelop:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: "strategy-game.frontend.develop"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref FrontendArtifactBucketName
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: "develop"
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectFrontend
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "S3"
+                            Configuration:
+                                BucketName: !Ref WebsiteDeploymentBucketName
+                                Extract: Yes
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+
+    PipelineFrontendRelease:
+        Type: "AWS::CodePipeline::Pipeline"
+        Properties:
+            Name: "strategy-game.frontend.release"
+            RoleArn: !GetAtt CodePipelineRole.Arn
+            RestartExecutionOnUpdate: false
+            ArtifactStore:
+                Type: "S3"
+                Location: !Ref FrontendArtifactBucketName
+            Stages:
+                -   Name: "Source"
+                    Actions:
+                        -   Name: "Source"
+                            ActionTypeId:
+                                Category: "Source"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeStarSourceConnection"
+                            Configuration:
+                                ConnectionArn: !Ref GithubCodeStarConnectionArn
+                                BranchName: "release"
+                                FullRepositoryId: !Ref GitHubRepositoryId
+                                OutputArtifactFormat: "CODE_ZIP"
+                                DetectChanges: false
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            RunOrder: 1
+                -   Name: "Build"
+                    Actions:
+                        -   Name: "Build"
+                            ActionTypeId:
+                                Category: "Build"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "CodeBuild"
+                            Configuration:
+                                ProjectName: !Ref CodeBuildProjectFrontend
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_src-artifact"
+                            OutputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
+                -   Name: "Deploy"
+                    Actions:
+                        -   Name: "Deploy"
+                            ActionTypeId:
+                                Category: "Deploy"
+                                Owner: "AWS"
+                                Version: "1"
+                                Provider: "S3"
+                            Configuration:
+                                BucketName: !Ref WebsiteDeploymentBucketName
+                                Extract: Yes
+                            InputArtifacts:
+                                -   Name: "strategy-game_frontend_build-artifact"
+                            RunOrder: 1
