@@ -37,13 +37,19 @@ spec:
         spec:
             containers:
                 -   name: strategy-game-app
-                    image: strategy-game:0.4.0
+                    image: 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:0.4.0
+                    imagePullPolicy: Always
+                    env:
+                        -   name: LOG_AS_JSON
+                            value: "true"
                     ports:
                         -   containerPort: 8080
                         -   containerPort: 8443
                     volumeMounts:
                         -   mountPath: /log
                             name: app-logs-volume
+            imagePullSecrets:
+                -   name: regcred
             restartPolicy: Always
             volumes:
                 -   name: app-logs-volume
@@ -62,13 +68,12 @@ metadata:
     labels:
         name: app
 spec:
-    type: NodePort
     selector:
         name: app
     ports:
-        - name: "8080"
-          port: 8080
-          targetPort: 8080
-        - name: "8443"
-          port: 8443
-          targetPort: 8443
+        -   name: "8080"
+            port: 8080
+            targetPort: 8080
+        -   name: "8443"
+            port: 8443
+            targetPort: 8443

@@ -63,10 +63,12 @@ dependencies {
     val versionKotlinLogging: String by project
     val versionLogstashLogbackEncoder: String by project
     val versionSlf4jCoroutines: String by project
+    val versionJanino: String by project
     implementation("ch.qos.logback:logback-classic:$versionLogback")
     implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
     implementation("net.logstash.logback:logstash-logback-encoder:$versionLogstashLogbackEncoder")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$versionSlf4jCoroutines")
+    implementation("org.codehaus.janino:janino:$versionJanino")
 
     val versionArangoDb: String by project
     val versionJacksonDataformatVelocypack: String by project

@@ -10,12 +10,12 @@ data:
         scrape_configs:
             -   job_name: 'backend'
                 metrics_path: /api/internal/metrics
-                scrape_interval: 90s
+                scrape_interval: 60s
                 static_configs:
                     -   targets: [ 'app:8080' ]
             -   job_name: 'database'
                 metrics_path: /_admin/metrics/v2
-                scrape_interval: 90s
+                scrape_interval: 60s
                 static_configs:
                     -   targets: [ 'database:8529' ]
 
