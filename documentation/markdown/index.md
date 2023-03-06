@@ -3,7 +3,9 @@
 - Technical Documentation
 
   - [Infrastructure](./technical/infrastructure.md)
-  - [Backend](./technical/backend.md)
+  - Backend
+    - [Quickstart](./technical/backend-quickstart.md)
+    - [Architecture](./technical/backend-architecture.md)
     - [Endpoint/API Documentation](./technical/api.md)
     - [Player Command Resolution](./technical/commandresolution.md) 
   - [Frontend](./technical/frontend.md)
