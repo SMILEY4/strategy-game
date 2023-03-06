@@ -24,6 +24,15 @@ spec:
                     env:
                         -   name: LOG_AS_JSON
                             value: "true"
+                        -   name: AWS_SECRET_ACCESS_KEY
+                            valueFrom:
+                                secretKeyRef:
+                                    name: awsSecretAccessKey
+                                    key: password
+                        -   name: ADMIN_PASSWORD
+                            secretKeyRef:
+                                name: adminPassword
+                                key: password
                     ports:
                         -   containerPort: 8080
             imagePullSecrets:

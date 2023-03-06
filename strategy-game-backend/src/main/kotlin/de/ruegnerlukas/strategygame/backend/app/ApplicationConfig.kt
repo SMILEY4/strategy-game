@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
 import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
-import de.ruegnerlukas.strategygame.backend.ports.required.ParameterService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
@@ -60,6 +59,7 @@ import kotlin.time.Duration.Companion.seconds
  * The main-module for configuring Ktor. Referenced in "application.conf".
  */
 fun Application.module() {
+
     install(Koin) {
         modules(applicationDependencies)
         logger(object : Logger() {
@@ -193,5 +193,6 @@ fun Application.module() {
             }
         }
     }
+
     apiRoutes()
 }

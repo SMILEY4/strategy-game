@@ -3,11 +3,8 @@ package de.ruegnerlukas.strategygame.backend.app
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
-import com.typesafe.config.ConfigValueFactory
 import de.ruegnerlukas.strategygame.backend.APPLICATION_MODE
 import de.ruegnerlukas.strategygame.backend.ApplicationMode
-import de.ruegnerlukas.strategygame.backend.external.parameters.AWSParameterStore
-import de.ruegnerlukas.strategygame.backend.ports.required.ParameterService
 import de.ruegnerlukas.strategygame.backend.shared.Json
 
 object Config {
@@ -21,6 +18,7 @@ object Config {
 
     private var baseConfig: com.typesafe.config.Config? = null
     private var configData: ConfigData? = null
+
 
     /**
      * @param envName the name of the environment. Defines, which config file(s) to load in addition to the base file(s) ( application.<env>.conf, application.<env>.local.conf )
@@ -46,9 +44,8 @@ object Config {
         )
 
         set(Json.fromString(jsonConfig), typesafeConfig)
-
-        resolveParameters(AWSParameterStore.create(get()))
     }
+
 
     /**
      * Set/update the config-data
@@ -57,6 +54,7 @@ object Config {
         configData = data
         Config.baseConfig = baseConfig
     }
+
 
     /**
      * @return the config-data (throws an exception if no data is loaded)
@@ -70,45 +68,12 @@ object Config {
     }
 
     /**
-     * Replace all values/parameters starting with [ParameterService.PARAM_PREFIX] with their real values
-     */
-    private fun resolveParameters(paramService: ParameterService) {
-        val cfg = get()
-        set(
-            cfg.copy(
-                admin = cfg.admin.copy(
-                    username = resolveParam(paramService, cfg.admin.username, "admin.username"),
-                    password = resolveParam(paramService, cfg.admin.password, "admin.password")
-                ),
-                aws = cfg.aws.copy(
-                    user = cfg.aws.user.copy(
-                        name = resolveParam(paramService, cfg.aws.user.name, "aws.user.name"),
-                        accessKeyId = resolveParam(paramService, cfg.aws.user.accessKeyId, "aws.user.accessKeyId"),
-                        secretAccessKey = resolveParam(paramService, cfg.aws.user.secretAccessKey, "aws.user.secretAccessKey")
-                    )
-                )
-            ),
-            getBaseTypesafeConfig()
-        )
-    }
-
-    /**
-     * Returns the resolved value of the given value/parameter (also updates the value in [baseConfig] if necessary)
-     */
-    private fun resolveParam(parameterService: ParameterService, value: String, path: String): String {
-        val resolvedValue =  parameterService.resolveParameter(value)
-        if(resolvedValue != value) {
-            baseConfig = getBaseTypesafeConfig()?.withValue(path, ConfigValueFactory.fromAnyRef(resolvedValue))
-        }
-        return resolvedValue
-    }
-
-    /**
      * @return the base [com.typesafe.config.Config] or null
      */
     fun getBaseTypesafeConfig() = baseConfig
 
 }
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ConfigData(
