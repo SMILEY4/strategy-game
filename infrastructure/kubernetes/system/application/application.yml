@@ -21,22 +21,30 @@ spec:
                 -   name: strategy-game-app
                     image: 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:0.4.0
                     imagePullPolicy: Always
+                    env:
+                        -   name: LOG_AS_JSON
+                            value: "true"
                     ports:
                         -   containerPort: 8080
-                        -   containerPort: 8443
-                    resources: { }
-                    volumeMounts:
-                        -   mountPath: /log
-                            name: app-logs
-                        -   mountPath: /home/sslCert/keystore.jks
-                            name: app-cert
             imagePullSecrets:
                 -   name: regcred
             restartPolicy: Always
-            volumes:
-                -   name: app-logs
-                    persistentVolumeClaim:
-                        claimName: app-logs
-                -   name: app-cert
-                    persistentVolumeClaim:
-                        claimName: app-cert
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: app
+    namespace: strategy-game
+    labels:
+        name: app
+spec:
+    selector:
+        name: app
+    ports:
+        -   name: "8080"
+            port: 8080
+            targetPort: 8080

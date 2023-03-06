@@ -195,6 +195,26 @@
 
 # Miscellaneous
 
+
+
+## Switch kubectl context
+
+- list known contexts
+
+  ```powershell
+  kubectl config get-contexts
+  ```
+
+- set context
+
+  ```powershell
+  kubectl config set current-context MY-CONTEXT
+  ```
+
+  
+
+
+
 ## Setup Basic Ingress
 
 1. create ingress controller (only/specific for docker desktop ?)
@@ -316,3 +336,24 @@
 
   
 
+### Access Service via Port Forwarding
+
+- get service name and port
+
+  ```powershell
+  kubectl get svc --namespace=strategy-game
+  ```
+
+- port-forward local port to service port
+
+  ```powershell
+  kubectl port-forward service/SERVICENAME SERVICEPORT:LOCALPORT --namespace=strategy-game
+  ```
+
+- Note: can also port-forward to pods, etc ...
+
+  ```powershell
+  kubectl port-forward pod/PODNAME ...
+  ```
+
+  

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: app
+    namespace: strategy-game
+    labels:
+        name: app
+    annotations:
+        json_logs: "true"
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            name: app
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                name: app
+            annotations:
+                json_logs: "true"
+        spec:
+            containers:
+                -   name: strategy-game-app
+                    image: strategy-game:0.4.0
+                    env:
+                        -   name: LOG_AS_JSON
+                            value: "true"
+                    ports:
+                        -   containerPort: 8080
+            restartPolicy: Always
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: app
+    namespace: strategy-game
+    labels:
+        name: app
+spec:
+    selector:
+        name: app
+    ports:
+        -   name: "8080"
+            port: 8080
+            targetPort: 8080

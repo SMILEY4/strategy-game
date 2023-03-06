@@ -20,7 +20,6 @@ import io.ktor.server.routing.routing
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.koin.ktor.ext.inject
 
-
 /**
  * Main configuration for all routes
  */
@@ -34,7 +33,7 @@ fun Application.apiRoutes() {
             get("health") {
                 call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
             }
-            authenticate("auth-technical-user") {
+            route("internal") {
                 get("metrics") {
                     val metrics = meterRegistry.scrape()
                     call.respondText { metrics }
@@ -53,6 +52,7 @@ fun Application.apiRoutes() {
         }
     }
 }
+
 
 /**
  * Get the id of the user making an (authenticated) http-request

@@ -1311,3 +1311,41 @@ Government Ideas - "Laws"
     - https://steamcommunity.com/sharedfiles/filedetails/?id=2596442947
     - ...
 - https://www.reddit.com/r/CrusaderKings/comments/md7vh9/ck3_legal_system_mod_concept/
+
+
+
+
+
+
+
+# Internal/External Trade System
+
+(This example/description with only one resource type)
+
+**Internal Trade**
+
+"internal" = resources shared by connected cities/provinces
+
+- connection either due to "same country and nearby" or "different country, nearby and shared-market-contract "
+
+Process:
+
+1. all cities/provinces produce,consume local resources
+2.  all leftover resources are added to a shared resource pool
+   - also calculate the amount (in %) each city/province contributed to that resource pool
+3. all cities/provinces produce,consume resources from shared pool
+4. calculate internal trade income (in gold) for each city
+   - calculate total amount of resources consumed from shared pool = total trade value
+   - trade income of city = total trade value * total contribution to pool in %
+
+**External Trade**
+
+- after local and internal resource handling
+
+Process:
+
+0. Create trade route (manually) for specific resource(s) and between specific cities/provinces
+
+1. if resources left-over, transfer resources (up to max amount) to target province
+
+=> resources can then be consumed next turn; if not consumed by target city, resources get automatically added to shared resource pool and gets further "traded internally"
