@@ -8,3 +8,4 @@ log/strategy-game-backend.log
 test.db
 dev.db
 *.jks
+env
