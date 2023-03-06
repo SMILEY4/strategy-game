@@ -273,23 +273,7 @@ Resources:
                                 ProjectName: !Ref CodeBuildProjectBackend
                             InputArtifacts:
                                 -   Name: "strategy-game_backend_src-artifact"
-#                            OutputArtifacts:
-#                                -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
-#                -   Name: "Deploy"
-#                    Actions:
-#                        -   Name: "Deploy"
-#                            ActionTypeId:
-#                                Category: "Deploy"
-#                                Owner: "AWS"
-#                                Version: "1"
-#                                Provider: "CodeDeploy"
-#                            Configuration:
-#                                ApplicationName: !Ref CodeDeployApplicationBackend
-#                                DeploymentGroupName: !Ref DeploymentGroupBackend
-#                            InputArtifacts:
-#                                -   Name: "strategy-game_backend_build-artifact"
-#                            RunOrder: 1
 
     PipelineBackendDevelop:
         Type: "AWS::CodePipeline::Pipeline"
@@ -330,23 +314,7 @@ Resources:
                                 ProjectName: !Ref CodeBuildProjectBackend
                             InputArtifacts:
                                 -   Name: "strategy-game_backend_src-artifact"
-#                            OutputArtifacts:
-#                                -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
-#                -   Name: "Deploy"
-#                    Actions:
-#                        -   Name: "Deploy"
-#                            ActionTypeId:
-#                                Category: "Deploy"
-#                                Owner: "AWS"
-#                                Version: "1"
-#                                Provider: "CodeDeploy"
-#                            Configuration:
-#                                ApplicationName: !Ref CodeDeployApplicationBackend
-#                                DeploymentGroupName: !Ref DeploymentGroupBackend
-#                            InputArtifacts:
-#                                -   Name: "strategy-game_backend_build-artifact"
-#                            RunOrder: 1
 
     PipelineBackendRelease:
         Type: "AWS::CodePipeline::Pipeline"
@@ -387,20 +355,4 @@ Resources:
                                 ProjectName: !Ref CodeBuildProjectBackend
                             InputArtifacts:
                                 -   Name: "strategy-game_backend_src-artifact"
-#                            OutputArtifacts:
-#                                -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
-#                -   Name: "Deploy"
-#                    Actions:
-#                        -   Name: "Deploy"
-#                            ActionTypeId:
-#                                Category: "Deploy"
-#                                Owner: "AWS"
-#                                Version: "1"
-#                                Provider: "CodeDeploy"
-#                            Configuration:
-#                                ApplicationName: !Ref CodeDeployApplicationBackend
-#                                DeploymentGroupName: !Ref DeploymentGroupBackend
-#                            InputArtifacts:
-#                                -   Name: "strategy-game_backend_build-artifact"
-#                            RunOrder: 1

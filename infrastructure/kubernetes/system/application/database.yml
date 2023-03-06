@@ -61,7 +61,6 @@ spec:
                     env:
                         -   name: ARANGO_NO_AUTH
                             value: "1"
-                    resources: { }
                     volumeMounts:
                         -   mountPath: /var/lib/arangodb3
                             name: arangodb-data-volume
