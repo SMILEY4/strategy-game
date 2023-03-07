@@ -103,7 +103,7 @@ class GameActionCityNetworkUpdate(
 
     private suspend fun createRoute(from: City, to: City, path: Path<ExtendedNode>): Route {
         return Route(
-            routeId = reservationInsert.reserveCity(),
+            routeId = reservationInsert.reserveRoute(),
             cityIdA = from.cityId,
             cityIdB = to.cityId,
             path = path.nodes.map { TileRef(it.tile) }

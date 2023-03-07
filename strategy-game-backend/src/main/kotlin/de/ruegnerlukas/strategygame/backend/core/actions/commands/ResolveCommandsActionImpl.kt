@@ -16,8 +16,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreat
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 class ResolveCommandsActionImpl(

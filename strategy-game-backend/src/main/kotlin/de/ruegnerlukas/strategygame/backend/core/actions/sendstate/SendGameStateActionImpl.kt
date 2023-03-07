@@ -12,8 +12,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameSta
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction.SendGameStateActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction.UserNotConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 

@@ -23,8 +23,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.TurnSubmitActionError
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery

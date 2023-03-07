@@ -19,8 +19,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.tracking

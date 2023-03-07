@@ -28,9 +28,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTODataTier2
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOInfluence
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOOwner
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOVisibility
-import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TradeRouteDTO
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 class GameExtendedDTOCreator(private val gameConfig: GameConfig) {

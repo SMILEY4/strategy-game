@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
-import de.ruegnerlukas.strategygame.backend.external.api.routing.internal.routeStaticResources
 import de.ruegnerlukas.strategygame.backend.external.api.routing.routingApi
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.toDisplayString

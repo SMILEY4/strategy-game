@@ -84,7 +84,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
