@@ -1,9 +1,5 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
+package de.ruegnerlukas.strategygame.backend.core.actions.update
 
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
@@ -15,16 +11,12 @@ import kotlin.math.min
 
 /**
  * Handles turn-income and turn-expenses
- * - triggered by [GameEventWorldUpdate]
- * - triggers nothing
  */
-class GameActionCountryResources(
-    private val gameConfig: GameConfig
-) : GameAction<GameEventWorldUpdate>(GameEventWorldUpdate.TYPE) {
+class CountryResourcesAction(private val gameConfig: GameConfig) {
 
-    override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
-        val networks = MarketNetwork.networksFrom(event.game)
-        val ecoEntities = collectEcoEntities(event.game)
+    fun perform(game: GameExtended) {
+        val networks = MarketNetwork.networksFrom(game)
+        val ecoEntities = collectEcoEntities(game)
 
         // first pass: local resource access only
         val resultLocalPass = ecoEntities.map { it to handleLocal(it) }
@@ -48,8 +40,6 @@ class GameActionCountryResources(
                     entity.province.resourcesMissing.add(resourceStack.type, resourceStack.amount)
                 }
             }
-
-        return listOf(GameEventResourcesUpdate(event.game))
     }
 
     private fun collectEcoEntities(game: GameExtended): List<EcoEntity> {

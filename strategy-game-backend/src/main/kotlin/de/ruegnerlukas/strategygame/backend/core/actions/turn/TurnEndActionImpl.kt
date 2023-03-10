@@ -3,13 +3,10 @@ package de.ruegnerlukas.strategygame.backend.core.actions.turn
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPostUpdate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
@@ -29,11 +26,10 @@ class TurnEndActionImpl(
     private val gameExtendedQuery: GameExtendedQuery,
     private val gameExtendedUpdate: GameExtendedUpdate,
     private val commandsByGameQuery: CommandsByGameQuery,
-    private val gameEventManager: GameEventManager
+    private val turnUpdate: TurnUpdateAction
 ) : TurnEndAction, Logging {
 
     private val metricId = metricCoreAction(TurnEndAction::class)
-
 
     override suspend fun perform(gameId: String): Either<TurnEndActionError, Unit> {
         return Monitoring.coTime(metricId) {
@@ -63,7 +59,7 @@ class TurnEndActionImpl(
      * Prepare the game state (e.g. reset turn-based-values, ...)
      */
     private suspend fun prepareGameWorld(game: GameExtended) {
-        gameEventManager.send(GameEventWorldPrepare::class.simpleName!!, GameEventWorldPrepare(game))
+        turnUpdate.prepare(game)
     }
 
 
@@ -80,8 +76,7 @@ class TurnEndActionImpl(
      * Update the game state (e.g. player income/resources, timers, ...)
      */
     private suspend fun updateGameWorld(game: GameExtended) {
-        gameEventManager.send(GameEventWorldUpdate::class.simpleName!!, GameEventWorldUpdate(game))
-        gameEventManager.send(GameEventWorldPostUpdate::class.simpleName!!, GameEventWorldPostUpdate(game))
+        turnUpdate.globalUpdate(game)
     }
 
 

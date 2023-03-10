@@ -1,10 +1,9 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
+package de.ruegnerlukas.strategygame.backend.core.actions.update
 
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandScoutPlace
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
@@ -12,30 +11,22 @@ import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 /**
  * Adds the scout at the given location and discovers the surrounding tiles
- * - triggered by [GameEventCommandScoutPlace]
- * - triggers nothing
  */
-class GameActionScoutPlace(
-    private val gameConfig: GameConfig
-) : GameAction<GameEventCommandScoutPlace>(GameEventCommandScoutPlace.TYPE) {
+class ScoutPlaceAction(private val gameConfig: GameConfig) {
 
-    override suspend fun perform(event: GameEventCommandScoutPlace): List<GameEvent> {
-        val tile = getTile(event)
-        addScout(tile, event.command.countryId, event.game.game.turn)
-        discoverTiles(event.game, tile, event.command.countryId)
-        return listOf()
+    fun perform(game: GameExtended, command: Command<PlaceScoutCommandData>) {
+        val tile = getTile(game, command)
+        addScout(tile, command.countryId, game.game.turn)
+        discoverTiles(game, tile, command.countryId)
     }
 
-
-    private fun getTile(event: GameEventCommandScoutPlace): Tile {
-        return event.game.tiles.find { it.position.q == event.command.data.q && it.position.r == event.command.data.r }!!
+    private fun getTile(game: GameExtended, command: Command<PlaceScoutCommandData>): Tile {
+        return game.tiles.find { it.position.q == command.data.q && it.position.r == command.data.r }!!
     }
-
 
     private fun addScout(tile: Tile, countryId: String, turn: Int) {
         tile.content.add(ScoutTileContent(countryId, turn))
     }
-
 
     private fun discoverTiles(game: GameExtended, scoutTile: Tile, countryId: String) {
         positionsCircle(scoutTile.position, gameConfig.scoutVisibilityRange)
@@ -45,11 +36,9 @@ class GameActionScoutPlace(
             .forEach { it.discoveredByCountries.add(countryId) }
     }
 
-
     private fun findTile(game: GameExtended, pos: TilePosition): Tile? {
         return game.tiles.get(pos)
     }
-
 
     private fun hasDiscovered(countryId: String, tile: Tile): Boolean {
         return tile.discoveredByCountries.contains(countryId)

@@ -1,8 +1,5 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
+package de.ruegnerlukas.strategygame.backend.core.actions.update
 
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
@@ -10,28 +7,21 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 
 /**
  * Updates the lifetime of all scouts. If a scout's lifetime runs out, it is removed from the game
- * - triggered by [GameEventWorldUpdate]
- * - triggers nothing
  */
-class GameActionScoutLifetime(
-    private val gameConfig: GameConfig
-) : GameAction<GameEventWorldUpdate>(GameEventWorldUpdate.TYPE) {
+class ScoutLifetimeAction(private val gameConfig: GameConfig) {
 
-    override suspend fun perform(event: GameEventWorldUpdate): List<GameEvent> {
+    fun perform(game: GameExtended) {
         val scoutsToRemove = mutableMapOf<Tile, MutableList<ScoutTileContent>>()
-        event.game.tiles
+        game.tiles
             .asSequence()
             .mapNotNull { tile -> getScoutOrNull(tile) }
-            .forEach { (tile, scout) -> handleScout(event.game, tile, scout, scoutsToRemove) }
+            .forEach { (tile, scout) -> handleScout(game, tile, scout, scoutsToRemove) }
         removeScouts(scoutsToRemove)
-        return listOf()
     }
-
 
     private fun getScoutOrNull(tile: Tile): Pair<Tile, ScoutTileContent>? {
         return tile.content.find { it is ScoutTileContent }?.let { tile to it as ScoutTileContent }
     }
-
 
     private fun handleScout(game: GameExtended, tile: Tile, scout: ScoutTileContent, scoutsToRemove: ScoutsToRemove) {
         val lifetime = getTimeAlive(game, scout)
@@ -40,11 +30,9 @@ class GameActionScoutLifetime(
         }
     }
 
-
     private fun getTimeAlive(game: GameExtended, scout: ScoutTileContent): Int {
         return game.game.turn - scout.turn
     }
-
 
     private fun removeScouts(scoutsToRemove: ScoutsToRemove) {
         scoutsToRemove.forEach { (tile, scouts) ->

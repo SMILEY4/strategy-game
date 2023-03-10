@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
+package de.ruegnerlukas.strategygame.backend.core.actions.update
 
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province

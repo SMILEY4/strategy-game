@@ -1,8 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.events.actions
+package de.ruegnerlukas.strategygame.backend.core.actions.update
 
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameAction
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEvent
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
+import de.ruegnerlukas.strategygame.backend.core.actions.update.CityCreationAction.Companion.CityCreationResult
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.Path
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.Pathfinder
@@ -27,23 +25,17 @@ import de.ruegnerlukas.strategygame.backend.shared.mapParallel
 
 /**
  * Connects newly created cities with other cities
- * - triggered by [GameEventCityCreate]
- * - triggers nothing
  */
-class GameActionCityNetworkUpdate(
-    private val gameConfig: GameConfig,
-    private val reservationInsert: ReservationInsert
-) : GameAction<GameEventCityCreate>(GameEventCityCreate.TYPE) {
+class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val reservationInsert: ReservationInsert) {
 
-    override suspend fun perform(event: GameEventCityCreate): List<GameEvent> {
-        if (event.city.isProvinceCapital) {
-            updateRoutes(event.city, event.game)
+    suspend fun perform(game: GameExtended, creationResult: CityCreationResult) {
+        if (creationResult.city.isProvinceCapital) {
+            updateRoutes(creationResult.city, game)
         } else {
-            val province = event.game.provinces.find { it.cityIds.contains(event.city.cityId) } ?: throw Exception("No province for city")
-            val capitalCity = event.game.cities.find { it.cityId == province.provinceCapitalCityId } ?: throw Exception("City not found")
-            updateRoutes(capitalCity, event.game)
+            val province = creationResult.province
+            val capitalCity = game.cities.find { it.cityId == province.provinceCapitalCityId } ?: throw Exception("City not found")
+            updateRoutes(capitalCity, game)
         }
-        return emptyList()
     }
 
     private suspend fun updateRoutes(city: City, game: GameExtended) {

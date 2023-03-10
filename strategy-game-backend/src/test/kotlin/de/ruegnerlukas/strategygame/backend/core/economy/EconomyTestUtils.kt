@@ -1,16 +1,28 @@
 package de.ruegnerlukas.strategygame.backend.core.economy
 
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResources
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionWorldPrepare
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventResourcesUpdate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
+import de.ruegnerlukas.strategygame.backend.core.actions.update.BuildingCreationAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.CityCreationAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.CityInfluenceAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.CityNetworkUpdateAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.CityTileOwnershipAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.CountryResourcesAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.InfluenceOwnershipAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.InfluenceVisibilityAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.MarkerPlaceAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.ScoutLifetimeAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.ScoutPlaceAction
+import de.ruegnerlukas.strategygame.backend.core.actions.update.WorldPrepareAction
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.City
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
@@ -20,14 +32,14 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileData
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
-import de.ruegnerlukas.strategygame.backend.ports.models.TradeRoute
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
+import de.ruegnerlukas.strategygame.backend.shared.events.EventAction
+import de.ruegnerlukas.strategygame.backend.shared.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.shared.positionsNeighbours
 import de.ruegnerlukas.strategygame.backend.shared.tracking
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.floats.plusOrMinus
 import io.kotest.matchers.shouldBe
 
@@ -96,8 +108,24 @@ object EconomyTestUtils {
 		)
 
 	suspend fun performEconomyUpdate(game: GameExtended) {
-		GameActionWorldPrepare().perform(GameEventWorldPrepare(game))
-		GameActionCountryResources(GameConfig.default()).perform(GameEventWorldUpdate(game))
+		val eventSystem = createEconomyEventSystem()
+		eventSystem.trigger("preparation", game, Unit)
+		eventSystem.trigger("global-update", game, Unit)
+	}
+
+	private fun createEconomyEventSystem(): EventSystem<GameExtended> {
+		val eventSystem = EventSystem<GameExtended>()
+		val eventCountryResources = EventAction<GameExtended, Unit, Unit> { game, _ ->
+			CountryResourcesAction(GameConfig.default()).perform(game)
+		}
+		val eventWorldPrepare = EventAction<GameExtended, Unit, Unit> { game, _ ->
+			WorldPrepareAction().perform(game)
+		}
+		eventSystem.atTrigger<Unit>("preparation")
+			.thenRun(eventWorldPrepare)
+		eventSystem.atTrigger<Unit>("global-update")
+			.thenRun(eventCountryResources)
+		return eventSystem
 	}
 
 	infix fun Province.shouldHaveProducedLastTurn(resources: Collection<Pair<ResourceType, Float>>) {
