@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.ports.models
 
-data class Building(
+class Building(
     val type: BuildingType,
     val tile: TileRef?,
     var active: Boolean,
