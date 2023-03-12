@@ -61,6 +61,7 @@ class BasicEconomyV2Test : StringSpec({
 
 	}
 
+
 	"test basic production chain with all resources available" {
 		val tiles = tiles().also { tiles ->
 			generateResourcesForPosition(
@@ -442,6 +443,7 @@ class BasicEconomyV2Test : StringSpec({
 		}
 
 	}
+
 
 	"test basic production chain without enough resource production (middle of the chain)" {
 		val tiles = tiles().also { tiles ->
