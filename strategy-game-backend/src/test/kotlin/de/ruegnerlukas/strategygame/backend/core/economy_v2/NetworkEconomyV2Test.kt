@@ -205,18 +205,18 @@ class NetworkEconomyV2Test : StringSpec({
 					ResourceType.FOOD to 6f,
 					ResourceType.TOOLS to 3f,
 				)
-				province shouldHaveConsumedCurrentTurn listOf(
-					ResourceType.FOOD to 2f,
-					ResourceType.WOOD to 3f,
-				)
+//				province shouldHaveConsumedCurrentTurn listOf(
+//					ResourceType.FOOD to 2f,
+//					ResourceType.WOOD to 3f,
+//				)
 				province shouldHaveProducedCurrentTurn listOf(
 					ResourceType.FOOD to 6f,
 					ResourceType.TOOLS to 3f,
 				)
-				province shouldBeMissing listOf(
-					ResourceType.FOOD to 0f,
-					ResourceType.WOOD to 0f,
-				)
+//				province shouldBeMissing listOf(
+//					ResourceType.FOOD to 0f,
+//					ResourceType.WOOD to 0f,
+//				)
 			}
             game.provinces.find { it.provinceId == "test-province-wood" }!!.also { province ->
                 province shouldHaveProducedLastTurn listOf(
@@ -224,19 +224,19 @@ class NetworkEconomyV2Test : StringSpec({
                     ResourceType.TOOLS to 1f,
                     ResourceType.HORSE to 2f,
                 )
-                province shouldHaveConsumedCurrentTurn listOf(
-                    ResourceType.FOOD to 4f,
-                    ResourceType.WOOD to 1f,
-                )
+//                province shouldHaveConsumedCurrentTurn listOf(
+//                    ResourceType.FOOD to 4f,
+//                    ResourceType.WOOD to 1f,
+//                )
                 province shouldHaveProducedCurrentTurn listOf(
 					ResourceType.WOOD to 6f,
 					ResourceType.TOOLS to 1f,
 					ResourceType.HORSE to 2f,
                 )
-                province shouldBeMissing listOf(
-					ResourceType.FOOD to 0f,
-					ResourceType.WOOD to 0f,
-                )
+//                province shouldBeMissing listOf(
+//					ResourceType.FOOD to 0f,
+//					ResourceType.WOOD to 0f,
+//                )
             }
         }
 

@@ -46,6 +46,12 @@ class ResourceStats {
         add(type, -amount)
     }
 
+    fun remove(resources: ResourceStats) {
+        resources.toList().forEach { (type, amount) ->
+            remove(type, amount)
+        }
+    }
+
     fun set(type: ResourceType, amount: Float) {
         resources[type] = amount
     }

@@ -14,7 +14,7 @@ class EconomyUpdate {
 
         rootNode.getNodesFlatSubtree()
             .filterIsInstance<ProvinceEconomyNode>()
-            .forEach { it.writeToProvince(ctx) }
+            .forEach { it.write(ctx) }
 
     }
 

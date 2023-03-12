@@ -15,9 +15,13 @@ abstract class EconomyNode {
     fun getNodesFlatSubtree(): Collection<EconomyNode> = listOf(this) + getChildNodes().flatMap { it.getNodesFlatSubtree() }
     fun getEntitiesRecursive(): Collection<EconomyEntity> = getEntities() + getChildNodes().flatMap { it.getEntitiesRecursive() }
 
-    abstract fun getAvailableResources(type: ResourceType): Float
-    abstract fun addResources(type: ResourceType, amount: Float)
-    abstract fun removeResources(type: ResourceType, amount: Float)
+    abstract fun getStorage(): EconomyResourceStorage
+
+    private fun getAvailableResources(type: ResourceType): Float = getStorage().getAvailable(type)
+    private fun addResources(type: ResourceType, amount: Float, entity: EconomyEntity) = getStorage().add(type, amount, entity.node)
+    private fun removeResources(type: ResourceType, amount: Float, entity: EconomyEntity) = getStorage().remove(type, amount, entity.node)
+
+
 
     // =======================================
     //      CONSUMPTION
@@ -25,6 +29,7 @@ abstract class EconomyNode {
 
     fun updateConsumption(ctx: EconomyUpdateContext) {
         getChildNodes().forEach { it.updateConsumption(ctx) }
+        getStorage().update()
         getEntitiesRecursive()
             .filter { ctx.getEntityState(it).state.requiresConsumptionUpdate }
             .sortedBy { it.power }
@@ -52,7 +57,7 @@ abstract class EconomyNode {
     private fun updateFixedConsumption(entity: EconomyEntity, ctx: EconomyUpdateContext) {
         val requiredResources = getRequiredResources(entity, ctx)
         if (resourcesAvailable(requiredResources)) {
-            requiredResources.forEach { removeResources(it.type, it.amount) }
+            requiredResources.forEach { removeResources(it.type, it.amount, entity) }
             ctx.setEntityCompletedConsumption(entity)
         } else {
             ctx.setEntityMissingResources(entity, requiredResources)
@@ -70,7 +75,7 @@ abstract class EconomyNode {
                 val required = resource.amount
                 val possible = min(available, required)
                 val missing = required - possible
-                removeResources(resource.type, possible)
+                removeResources(resource.type, possible, entity)
                 if (missing > 0) {
                     missingResources.add(ResourceStack(resource.type, missing))
                 }
@@ -97,7 +102,7 @@ abstract class EconomyNode {
     }
 
     private fun updateProduction(entity: EconomyEntity, ctx: EconomyUpdateContext) {
-        entity.getProduces().forEach { addResources(it.type, it.amount) }
+        entity.getProduces().forEach { addResources(it.type, it.amount, entity) }
         ctx.setEntityCompletedProduction(entity)
     }
 

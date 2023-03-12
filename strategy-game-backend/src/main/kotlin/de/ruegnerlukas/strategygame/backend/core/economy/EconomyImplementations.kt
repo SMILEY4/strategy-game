@@ -12,14 +12,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 
 class WorldEconomyNode(game: GameExtended) : EconomyNode() {
 
-    val nodes = buildChildNodes(game)
+    private val nodes: Collection<EconomyNode> = buildChildNodes(game)
+    private val storage: EconomyResourceStorage = DistributedEconomyResourceStorage(this, nodes.map { it.getStorage() })
 
     override fun getChildNodes() = nodes
     override fun getEntities() = emptyList<EconomyEntity>()
-
-    override fun getAvailableResources(type: ResourceType): Float = 0f
-    override fun addResources(type: ResourceType, amount: Float) = Unit
-    override fun removeResources(type: ResourceType, amount: Float) = Unit
+    override fun getStorage() = storage
 
     private fun buildChildNodes(game: GameExtended): List<EconomyNode> {
         val networks = MarketNetwork.networksFrom(game)
@@ -34,12 +32,11 @@ class WorldEconomyNode(game: GameExtended) : EconomyNode() {
 }
 
 class MarketEconomyNode(private val game: GameExtended, provinces: Collection<Province>) : EconomyNode() {
-    private val nodes = provinces.map { province -> ProvinceEconomyNode(game, province) }
+    private val nodes: Collection<EconomyNode> = provinces.map { province -> ProvinceEconomyNode(game, province) }
+    private val storage = DistributedEconomyResourceStorage(this, nodes.map { it.getStorage() })
     override fun getChildNodes() = nodes
     override fun getEntities() = emptyList<EconomyEntity>()
-    override fun getAvailableResources(type: ResourceType): Float = 0f
-    override fun addResources(type: ResourceType, amount: Float) = Unit
-    override fun removeResources(type: ResourceType, amount: Float) = Unit
+    override fun getStorage() = storage
 }
 
 class ProvinceEconomyNode(
@@ -47,31 +44,25 @@ class ProvinceEconomyNode(
     val province: Province
 ) : EconomyNode() {
 
-    private val resourcesProducedPrevTurn: ResourceStats = province.resourcesProducedPrevTurn
-    private val resourcesProducedCurrTurn: ResourceStats = ResourceStats()
-    private val resourcesConsumedCurrTurn: ResourceStats = ResourceStats()
+    private val storage = LocalEconomyResourceStorage(this, province.resourcesProducedPrevTurn)
 
     private val entities = province.cityIds
         .map { id -> game.cities.find { it.cityId == id }!! }
         .flatMap { city ->
             mutableListOf<EconomyEntity>().also { entities ->
-                entities.addAll(city.buildings.map { BuildingEconomyEntity(it, if (city.isProvinceCapital) 1.5f else 1f) })
-                entities.add(PopulationEconomyEntity(city, if (city.isProvinceCapital) 2.5f else 2f))
+                entities.addAll(city.buildings.map { BuildingEconomyEntity(it, if (city.isProvinceCapital) 1.5f else 1f, this) })
+                entities.add(PopulationEconomyEntity(city, if (city.isProvinceCapital) 2.5f else 2f, this))
             }
         }
         .sortedBy { it.power }
 
     override fun getChildNodes() = emptyList<EconomyNode>()
     override fun getEntities() = entities
+    override fun getStorage() = storage
 
-    override fun getAvailableResources(type: ResourceType): Float = resourcesProducedPrevTurn[type] - resourcesConsumedCurrTurn[type]
-    override fun addResources(type: ResourceType, amount: Float) = resourcesProducedCurrTurn.add(type, amount)
-    override fun removeResources(type: ResourceType, amount: Float) = resourcesConsumedCurrTurn.add(type, amount)
-
-    fun writeToProvince(ctx: EconomyUpdateContext) {
-        province.resourcesProducedPrevTurn = resourcesProducedPrevTurn
-        province.resourcesProducedCurrTurn = resourcesProducedCurrTurn
-        province.resourcesConsumedCurrTurn = resourcesConsumedCurrTurn
+    fun write(ctx: EconomyUpdateContext) {
+        province.resourcesProducedCurrTurn = storage.getAddedResources()
+        province.resourcesConsumedCurrTurn = storage.getRemovedResources()
         province.resourcesMissing = ResourceStats()
         getEntitiesRecursive()
             .map { ctx.getEntityState(it) }
@@ -82,7 +73,7 @@ class ProvinceEconomyNode(
 
 }
 
-class BuildingEconomyEntity(private val building: Building, power: Float) : EconomyEntity(power) {
+class BuildingEconomyEntity(private val building: Building, power: Float, node: EconomyNode) : EconomyEntity(power, node) {
     override fun getConsumes(): Collection<ResourceStack> = building.type.templateData.requires
     override fun getProduces(): Collection<ResourceStack> = building.type.templateData.produces
     override fun allowPartialConsumption(): Boolean = false
@@ -90,7 +81,7 @@ class BuildingEconomyEntity(private val building: Building, power: Float) : Econ
     override fun toString() = "BuildingEconomyEntity#${building.type}"
 }
 
-class PopulationEconomyEntity(private val city: City, power: Float) : EconomyEntity(power) {
+class PopulationEconomyEntity(private val city: City, power: Float, node: EconomyNode) : EconomyEntity(power, node) {
     override fun getConsumes() = listOf(ResourceStack(ResourceType.FOOD, getAmount()))
     override fun getProduces() = emptyList<ResourceStack>()
     override fun allowPartialConsumption(): Boolean = true
