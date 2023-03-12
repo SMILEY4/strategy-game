@@ -56,7 +56,7 @@ class BasicEconomyV2Test : StringSpec({
 			province shouldHaveProducedLastTurn listOf(ResourceType.FOOD to 0f)
 			province shouldHaveConsumedCurrentTurn listOf(ResourceType.FOOD to 0f)
 			province shouldHaveProducedCurrentTurn listOf(ResourceType.FOOD to 0f)
-//			province shouldBeMissing listOf(ResourceType.FOOD to GameConfig.default().cityFoodCostPerTurn)
+			province shouldBeMissing listOf(ResourceType.FOOD to GameConfig.default().cityFoodCostPerTurn)
 		}
 
 	}
@@ -158,12 +158,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 0f,
 				ResourceType.CLOTHES to 0f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 4f,
-//				ResourceType.HIDE to 2f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 4f,
+				ResourceType.HIDE to 2f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		performEconomyUpdate(game)
@@ -186,12 +186,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 0f,
 				ResourceType.CLOTHES to 0f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 0f,
-//				ResourceType.HIDE to 2f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 0f,
+				ResourceType.HIDE to 2f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		performEconomyUpdate(game)
@@ -214,12 +214,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 1f,
 				ResourceType.CLOTHES to 1f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 0f,
-//				ResourceType.HIDE to 0f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 0f,
+				ResourceType.HIDE to 0f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		for (i in 1..5) {
@@ -243,12 +243,12 @@ class BasicEconomyV2Test : StringSpec({
 					ResourceType.PARCHMENT to 1f,
 					ResourceType.CLOTHES to 1f,
 				)
-//				province shouldBeMissing listOf(
-//					ResourceType.FOOD to 0f,
-//					ResourceType.HIDE to 0f,
-//					ResourceType.PARCHMENT to 0f,
-//					ResourceType.CLOTHES to 0f,
-//				)
+				province shouldBeMissing listOf(
+					ResourceType.FOOD to 0f,
+					ResourceType.HIDE to 0f,
+					ResourceType.PARCHMENT to 0f,
+					ResourceType.CLOTHES to 0f,
+				)
 			}
 		}
 
@@ -347,12 +347,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 0f,
 				ResourceType.CLOTHES to 0f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 4f,
-//				ResourceType.HIDE to 2f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 4f,
+				ResourceType.HIDE to 2f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		performEconomyUpdate(game)
@@ -364,7 +364,7 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.CLOTHES to 0f,
 			)
 			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 3f, // todo: currently "2" due to population-consumption handled as "yes" or "no" not "consume what is available"
+				ResourceType.FOOD to 3f,
 				ResourceType.HIDE to 0f,
 				ResourceType.PARCHMENT to 0f,
 				ResourceType.CLOTHES to 0f,
@@ -375,12 +375,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 0f,
 				ResourceType.CLOTHES to 0f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 1f,
-//				ResourceType.HIDE to 2f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 1f,
+				ResourceType.HIDE to 2f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		performEconomyUpdate(game)
@@ -403,12 +403,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 1f,
 				ResourceType.CLOTHES to 1f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 1f,
-//				ResourceType.HIDE to 0f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 1f,
+				ResourceType.HIDE to 0f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		for (i in 1..5) {
@@ -432,12 +432,12 @@ class BasicEconomyV2Test : StringSpec({
 					ResourceType.PARCHMENT to 1f,
 					ResourceType.CLOTHES to 1f,
 				)
-//				province shouldBeMissing listOf(
-//					ResourceType.FOOD to 1f,
-//					ResourceType.HIDE to 0f,
-//					ResourceType.PARCHMENT to 0f,
-//					ResourceType.CLOTHES to 0f,
-//				)
+				province shouldBeMissing listOf(
+					ResourceType.FOOD to 1f,
+					ResourceType.HIDE to 0f,
+					ResourceType.PARCHMENT to 0f,
+					ResourceType.CLOTHES to 0f,
+				)
 			}
 		}
 
@@ -535,12 +535,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 0f,
 				ResourceType.CLOTHES to 0f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 3f,
-//				ResourceType.HIDE to 2f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 3f,
+				ResourceType.HIDE to 2f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		performEconomyUpdate(game)
@@ -563,12 +563,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 0f,
 				ResourceType.CLOTHES to 0f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 0f,
-//				ResourceType.HIDE to 2f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 0f,
+				ResourceType.HIDE to 2f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		performEconomyUpdate(game)
@@ -591,12 +591,12 @@ class BasicEconomyV2Test : StringSpec({
 				ResourceType.PARCHMENT to 1f,
 				ResourceType.CLOTHES to 0f,
 			)
-//			province shouldBeMissing listOf(
-//				ResourceType.FOOD to 0f,
-//				ResourceType.HIDE to 1f,
-//				ResourceType.PARCHMENT to 0f,
-//				ResourceType.CLOTHES to 0f,
-//			)
+			province shouldBeMissing listOf(
+				ResourceType.FOOD to 0f,
+				ResourceType.HIDE to 1f,
+				ResourceType.PARCHMENT to 0f,
+				ResourceType.CLOTHES to 0f,
+			)
 		}
 
 		for (i in 1..5) {
@@ -620,12 +620,12 @@ class BasicEconomyV2Test : StringSpec({
 					ResourceType.PARCHMENT to 1f,
 					ResourceType.CLOTHES to 0f,
 				)
-//				province shouldBeMissing listOf(
-//					ResourceType.FOOD to 0f,
-//					ResourceType.HIDE to 1f,
-//					ResourceType.PARCHMENT to 0f,
-//					ResourceType.CLOTHES to 0f,
-//				)
+				province shouldBeMissing listOf(
+					ResourceType.FOOD to 0f,
+					ResourceType.HIDE to 1f,
+					ResourceType.PARCHMENT to 0f,
+					ResourceType.CLOTHES to 0f,
+				)
 			}
 		}
 

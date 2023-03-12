@@ -5,101 +5,101 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import java.lang.Float.min
 
 /**
- * Something that "owns" resources, e.g. a city, province, market, country
+ * Something that "owns" resources, e.g. a city, province, market, country, ...
  */
 abstract class EconomyNode {
 
     abstract fun getChildNodes(): Collection<EconomyNode>
-    abstract fun getNodesFlatSubtree(): Collection<EconomyNode>
     abstract fun getEntities(): Collection<EconomyEntity>
+
+    fun getNodesFlatSubtree(): Collection<EconomyNode> = listOf(this) + getChildNodes().flatMap { it.getNodesFlatSubtree() }
+    fun getEntitiesRecursive(): Collection<EconomyEntity> = getEntities() + getChildNodes().flatMap { it.getEntitiesRecursive() }
 
     abstract fun getAvailableResources(type: ResourceType): Float
     abstract fun addResources(type: ResourceType, amount: Float)
     abstract fun removeResources(type: ResourceType, amount: Float)
 
-    fun update(): Collection<EconomyEntityUpdateResult> {
+    // =======================================
+    //      CONSUMPTION
+    // =======================================
 
-        // update all child-nodes, collect entities that could not complete due to missing requirements in child-node
-        val failedChildEntities = getChildNodes().flatMap { it.update() }
-
-        // handle all entities of this node, collect all that could not complete due to missing requirements in this node
-        val failedLocalEntities = getEntities()
-            .map { handle(it, null) }
-            .filter { it.type != EconomyEntityUpdateResultType.COMPLETE }
-
-        // retry failed entities of child-nodes with resources of this node, collect all that could not complete due to missing requirements in this node
-        val failedRetriedEntities = failedChildEntities
-            .map { handle(it.entity, it.origin) }
-            .filter { it.type != EconomyEntityUpdateResultType.COMPLETE }
-
-        // return all entities (of this and node and those originating from child-nodes and retried) that could not complete
-        val failedEntities = mutableListOf<EconomyEntityUpdateResult>()
-        failedEntities.addAll(failedLocalEntities)
-        failedEntities.addAll(failedRetriedEntities)
-        return failedEntities
+    fun updateConsumption(ctx: EconomyUpdateContext) {
+        getChildNodes().forEach { it.updateConsumption(ctx) }
+        getEntitiesRecursive()
+            .filter { ctx.getEntityState(it).state.requiresConsumptionUpdate }
+            .sortedBy { it.power }
+            .forEach { updateConsumption(it, ctx) }
     }
 
-    private fun handle(entity: EconomyEntity, origin: EconomyNode?): EconomyEntityUpdateResult {
+    private fun updateConsumption(entity: EconomyEntity, ctx: EconomyUpdateContext) {
         if (entity.allowPartialConsumption()) {
-            return handlePartialConsumption(entity, origin)
+            updatePartialConsumption(entity, ctx)
         } else {
-            return handleFixedConsumption(entity, origin)
+            updateFixedConsumption(entity, ctx)
         }
     }
 
-    private fun handleFixedConsumption(entity: EconomyEntity, origin: EconomyNode?): EconomyEntityUpdateResult {
-        if (resourcesAvailable(entity)) {
-            entity.getConsumes().forEach { removeResources(it.type, it.amount) }
-            entity.getProduces().forEach { addResources(it.type, it.amount) }
-            return EconomyEntityUpdateResult.complete(entity, origin ?: this)
-        } else {
-            return EconomyEntityUpdateResult.missingResources(entity, origin ?: this, entity.getConsumes())
+    private fun getRequiredResources(entity: EconomyEntity, ctx: EconomyUpdateContext): Collection<ResourceStack> {
+        val state = ctx.getEntityState(entity)
+        return when (state.state) {
+            EntityStateType.NOT_PROCESSED -> entity.getConsumes()
+            EntityStateType.MISSING_RESOURCES -> state.remainingResources
+            EntityStateType.COMPLETED_CONSUMPTION -> emptyList()
+            EntityStateType.COMPLETED_PRODUCTION -> emptyList()
         }
     }
 
-    private fun handlePartialConsumption(entity: EconomyEntity, origin: EconomyNode?): EconomyEntityUpdateResult {
-        if (resourcesAvailable(entity)) {
-            return handleFixedConsumption(entity, origin)
+    private fun updateFixedConsumption(entity: EconomyEntity, ctx: EconomyUpdateContext) {
+        val requiredResources = getRequiredResources(entity, ctx)
+        if (resourcesAvailable(requiredResources)) {
+            requiredResources.forEach { removeResources(it.type, it.amount) }
+            ctx.setEntityCompletedConsumption(entity)
         } else {
-            val remaining = mutableListOf<ResourceStack>()
-            entity.getConsumes().forEach { resource ->
+            ctx.setEntityMissingResources(entity, requiredResources)
+        }
+    }
+
+    private fun updatePartialConsumption(entity: EconomyEntity, ctx: EconomyUpdateContext) {
+        val requiredResources = getRequiredResources(entity, ctx)
+        if (resourcesAvailable(requiredResources)) {
+            updateFixedConsumption(entity, ctx)
+        } else {
+            val missingResources = mutableListOf<ResourceStack>()
+            requiredResources.forEach { resource ->
                 val available = getAvailableResources(resource.type)
                 val required = resource.amount
                 val possible = min(available, required)
+                val missing = required - possible
                 removeResources(resource.type, possible)
-                remaining.add(ResourceStack(resource.type, required - possible))
+                if (missing > 0) {
+                    missingResources.add(ResourceStack(resource.type, missing))
+                }
             }
-            entity.getProduces().forEach { addResources(it.type, it.amount) }
-            return EconomyEntityUpdateResult.missingResources(entity, origin ?: this, remaining)
+            if (missingResources.isNotEmpty()) {
+                ctx.setEntityMissingResources(entity, missingResources)
+            }
         }
     }
 
-    private fun resourcesAvailable(entity: EconomyEntity): Boolean {
-        return entity.getConsumes().all { resources ->
-            getAvailableResources(resources.type) >= resources.amount
-        }
+    private fun resourcesAvailable(resources: Collection<ResourceStack>): Boolean {
+        return resources.all { getAvailableResources(it.type) >= it.amount }
+    }
+
+    // =======================================
+    //      PRODUCTION
+    // =======================================
+
+    fun updateProduction(ctx: EconomyUpdateContext) {
+        getChildNodes().forEach { it.updateProduction(ctx) }
+        getEntities()
+            .filter { ctx.getEntityState(it).state.requiresProductionUpdate }
+            .forEach { updateProduction(it, ctx) }
+    }
+
+    private fun updateProduction(entity: EconomyEntity, ctx: EconomyUpdateContext) {
+        entity.getProduces().forEach { addResources(it.type, it.amount) }
+        ctx.setEntityCompletedProduction(entity)
     }
 
 }
 
-class EconomyEntityUpdateResult(
-    val entity: EconomyEntity,
-    val origin: EconomyNode,
-    val type: EconomyEntityUpdateResultType,
-    val remainingResources: Collection<ResourceStack>
-) {
-    companion object {
-
-        fun complete(entity: EconomyEntity, origin: EconomyNode): EconomyEntityUpdateResult =
-            EconomyEntityUpdateResult(entity, origin, EconomyEntityUpdateResultType.COMPLETE, emptyList())
-
-        fun missingResources(entity: EconomyEntity, origin: EconomyNode, resources: Collection<ResourceStack>): EconomyEntityUpdateResult =
-            EconomyEntityUpdateResult(entity, origin, EconomyEntityUpdateResultType.MISSING_RESOURCES, resources)
-
-    }
-}
-
-enum class EconomyEntityUpdateResultType {
-    COMPLETE,
-    MISSING_RESOURCES
-}

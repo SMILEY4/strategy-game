@@ -38,6 +38,10 @@ class ResourceStats {
         }
     }
 
+    fun add(resources: ResourceStack) {
+        add(resources.type, resources.amount)
+    }
+
     fun remove(type: ResourceType, amount: Float) {
         add(type, -amount)
     }
