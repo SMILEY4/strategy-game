@@ -36,7 +36,10 @@ class EconomyUpdate {
 
     private fun writeBack(node: ProvinceEconomyNode) {
         node.province.resourcesProducedCurrTurn = node.getStorage().getAdded()
-        node.province.resourcesConsumedCurrTurn = node.getStorage().getRemoved()
+        node.province.resourcesConsumedCurrTurn = ResourceStats().also {
+            it.add(node.getStorage().getRemoved())
+            it.add(node.getStorage().getRemovedFromShared())
+        }
         node.province.resourcesMissing = ResourceStats().also { missing ->
             node.collectEntities().forEach { entity ->
                 entity.getRequires().forEach { missing.add(it) }

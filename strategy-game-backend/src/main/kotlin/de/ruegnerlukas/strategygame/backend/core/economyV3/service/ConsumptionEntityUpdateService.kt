@@ -7,10 +7,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 class ConsumptionEntityUpdateService {
 
     fun update(entity: EconomyEntity, currentNode: EconomyNode) {
-        println("entity ${entity}: ${entity.isReadyToConsume()}, ${entity.isReadyToProduce()}, ${entity.getRequires()}")
         if (allResourcesAvailable(currentNode, entity.getRequires())) {
             entity.getRequires().forEach {
                 currentNode.getStorage().remove(it.type, it.amount)
+                if (currentNode != entity.getNode()) {
+                    entity.getNode().getStorage().removedFromSharedStorage(it.type, it.amount)
+                }
                 entity.provideResources(listOf(ResourceStack(it.type, it.amount)))
             }
         }

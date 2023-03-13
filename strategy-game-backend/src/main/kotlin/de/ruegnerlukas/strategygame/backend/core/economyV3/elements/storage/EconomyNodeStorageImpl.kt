@@ -9,10 +9,12 @@ class EconomyNodeStorageImpl(private val initialResources: ResourceStats) : Econ
     private val available = ResourceStats()
     private val added = ResourceStats()
     private val removed = ResourceStats()
+    private val removedFromShared = ResourceStats()
 
     override fun revertToInitial() {
         added.clear()
         removed.clear()
+        removedFromShared.clear()
         available.clear()
         available.add(initialResources)
     }
@@ -31,6 +33,10 @@ class EconomyNodeStorageImpl(private val initialResources: ResourceStats) : Econ
         removed.add(type, amount)
     }
 
+    override fun removedFromSharedStorage(type: ResourceType, amount: Float) {
+        removedFromShared.add(type, amount)
+    }
+
     override fun add(type: ResourceType, amount: Float) {
         added.add(type, amount)
     }
@@ -38,4 +44,7 @@ class EconomyNodeStorageImpl(private val initialResources: ResourceStats) : Econ
     override fun getAdded(): ResourceStats = added
 
     override fun getRemoved(): ResourceStats = removed
+
+    override fun getRemovedFromShared(): ResourceStats = removedFromShared
+
 }

@@ -33,6 +33,11 @@ interface EconomyNodeStorage {
 
 
     /**
+     * Mark the given resource amount as removed/taken from another storage
+     */
+    fun removedFromSharedStorage(type: ResourceType, amount: Float)
+
+    /**
      * Add the given resources to this storage
      */
     fun add(type: ResourceType, amount: Float)
@@ -48,5 +53,10 @@ interface EconomyNodeStorage {
      * All resources removed from this storage (via [EconomyNodeStorage.remove])
      */
     fun getRemoved(): ResourceStats
+
+    /**
+     * All resources removed from another resource storage (via [EconomyNodeStorage.removedFromSharedStorage])
+     */
+    fun getRemovedFromShared(): ResourceStats
 
 }

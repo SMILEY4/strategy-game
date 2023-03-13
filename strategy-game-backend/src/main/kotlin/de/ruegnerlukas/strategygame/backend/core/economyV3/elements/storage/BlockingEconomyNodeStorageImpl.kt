@@ -14,9 +14,13 @@ class BlockingEconomyNodeStorageImpl : EconomyNodeStorage {
 
     override fun remove(type: ResourceType, amount: Float) = Unit
 
+    override fun removedFromSharedStorage(type: ResourceType, amount: Float) = Unit
+
     override fun add(type: ResourceType, amount: Float) = Unit
 
     override fun getAdded(): ResourceStats = ResourceStats()
 
     override fun getRemoved(): ResourceStats = ResourceStats()
+
+    override fun getRemovedFromShared(): ResourceStats = ResourceStats()
 }
