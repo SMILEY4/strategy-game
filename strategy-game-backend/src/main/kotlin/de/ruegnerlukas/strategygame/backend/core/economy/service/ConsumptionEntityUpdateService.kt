@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.service
+package de.ruegnerlukas.strategygame.backend.core.economy.service
 
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyEntity
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 import java.lang.Float.min
 

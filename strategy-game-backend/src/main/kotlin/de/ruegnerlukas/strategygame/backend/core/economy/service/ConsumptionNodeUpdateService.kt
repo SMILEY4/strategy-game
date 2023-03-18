@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.service
+package de.ruegnerlukas.strategygame.backend.core.economy.service
 
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNode.Companion.collectEntities
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectEntities
 
 class ConsumptionNodeUpdateService(private val consumptionEntityUpdateService: ConsumptionEntityUpdateService) {
 

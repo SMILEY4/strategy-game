@@ -1,10 +1,10 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.elements.nodes
+package de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes
 
 import de.ruegnerlukas.strategygame.backend.core.actions.update.MarketNetwork
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyEntity
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNodeStorage
-import de.ruegnerlukas.strategygame.backend.core.economyV3.elements.storage.BlockingEconomyNodeStorageImpl
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNodeStorage
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.storage.BlockingEconomyNodeStorageImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 
 class WorldEconomyNode(val game: GameExtended) : EconomyNode {

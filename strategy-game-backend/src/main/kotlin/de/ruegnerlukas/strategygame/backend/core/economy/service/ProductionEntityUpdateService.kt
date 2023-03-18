@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.service
+package de.ruegnerlukas.strategygame.backend.core.economy.service
 
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
 
 class ProductionEntityUpdateService {
 

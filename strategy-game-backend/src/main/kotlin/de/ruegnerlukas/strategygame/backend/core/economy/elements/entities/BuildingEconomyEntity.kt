@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.elements.entities
+package de.ruegnerlukas.strategygame.backend.core.economy.elements.entities
 
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyEntity
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack

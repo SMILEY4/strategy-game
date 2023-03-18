@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.elements.storage
+package de.ruegnerlukas.strategygame.backend.core.economy.elements.storage
 
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNodeStorage
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNodeStorage
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 

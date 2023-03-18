@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.data
+package de.ruegnerlukas.strategygame.backend.core.economy.data
 
 /**
  * Something that "owns" resources, e.g. a city, province, market, country, ...

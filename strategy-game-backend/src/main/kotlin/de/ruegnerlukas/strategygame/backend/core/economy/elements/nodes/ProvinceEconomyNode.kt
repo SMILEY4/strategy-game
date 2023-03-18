@@ -1,11 +1,11 @@
-package de.ruegnerlukas.strategygame.backend.core.economyV3.elements.nodes
+package de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes
 
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyEntity
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNodeStorage
-import de.ruegnerlukas.strategygame.backend.core.economyV3.elements.storage.EconomyNodeStorageImpl
-import de.ruegnerlukas.strategygame.backend.core.economyV3.elements.entities.BuildingEconomyEntity
-import de.ruegnerlukas.strategygame.backend.core.economyV3.elements.entities.PopulationEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNodeStorage
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.storage.EconomyNodeStorageImpl
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.PopulationEconomyEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 
