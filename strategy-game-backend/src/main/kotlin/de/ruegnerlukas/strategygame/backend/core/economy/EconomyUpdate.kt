@@ -1,8 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.economy
 
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectEntities
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectNodes
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.BuildingEconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.WorldEconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.service.ConsumptionEntityUpdateService
@@ -12,7 +14,7 @@ import de.ruegnerlukas.strategygame.backend.core.economy.service.ProductionNodeU
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
 
-class EconomyUpdate {
+class EconomyUpdate(private val config: GameConfig) {
 
     private val consumptionNodeUpdateService = ConsumptionNodeUpdateService(ConsumptionEntityUpdateService())
     private val productionNodeUpdateService = ProductionNodeUpdateService(ProductionEntityUpdateService())
@@ -25,7 +27,7 @@ class EconomyUpdate {
     }
 
     private fun buildEconomyTree(game: GameExtended): EconomyNode {
-        return WorldEconomyNode(game)
+        return WorldEconomyNode(game, config)
     }
 
     private fun writeBack(rootNode: EconomyNode) {
@@ -41,10 +43,15 @@ class EconomyUpdate {
             it.add(node.getStorage().getRemovedFromShared())
         }
         node.province.resourcesMissing = ResourceStats().also { missing ->
-            node.collectEntities().forEach { entity ->
-                entity.getRequires().forEach { missing.add(it) }
-            }
+            node.collectEntities()
+                .filter { !it.isInactive() }
+                .forEach { entity ->
+                    entity.getRequires().forEach { missing.add(it) }
+                }
         }
+        node.getEntities()
+            .filterIsInstance<BuildingEconomyEntity>()
+            .forEach { entity -> entity.building.active = entity.hasProduced() }
     }
 
 }

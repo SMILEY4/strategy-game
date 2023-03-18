@@ -42,8 +42,8 @@ class TurnUpdateActionImpl(
             CityTileOwnershipAction().perform(game, creationResult)
         }
 
-        val eventCountryResources = EventAction<GameExtended, Unit, Unit> { game, _ ->
-            CountryResourcesAction(gameConfig).perform(game)
+        val eventEconomyUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
+            EconomyUpdateAction(gameConfig).perform(game)
         }
 
         val eventInfluenceOwnership = EventAction<GameExtended, Collection<Tile>, Unit> { _, tiles ->
@@ -87,7 +87,7 @@ class TurnUpdateActionImpl(
 
         eventSystem.atTrigger<Unit>("global-update")
             .thenRun(eventScoutLifetime)
-            .thenRun(eventCountryResources)
+            .thenRun(eventEconomyUpdate)
 
         eventSystem.after(eventCityCreation)
             .thenRun(eventCityInfluence)

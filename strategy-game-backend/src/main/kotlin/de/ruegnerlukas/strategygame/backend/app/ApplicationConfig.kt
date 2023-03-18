@@ -165,6 +165,7 @@ fun Application.module() {
             bearerFormat = "jwt"
         }
         automaticTagGenerator = { url -> url.getOrNull(1) }
+        pathFilter = { _, url -> !(url.lastOrNull()?.let { it.endsWith(".js") || it.endsWith(".css") } ?: false) }
         defaultSecuritySchemeName = "Auth"
         defaultUnauthorizedResponse {
             description = "Authentication failed"

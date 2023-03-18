@@ -21,9 +21,13 @@ class BuildingEconomyEntity(private val owner: EconomyNode, val city: City, val 
 
     override fun allowPartialConsumption(): Boolean = false
 
+    override fun isInactive(): Boolean = !fulfillsTileRequirement(building)
+
     override fun isReadyToConsume(): Boolean = getRemainingRequiredResources().isNotEmpty()
 
     override fun isReadyToProduce(): Boolean = getRemainingRequiredResources().isEmpty() && !hasProduced
+
+    override fun hasProduced(): Boolean = hasProduced
 
     override fun provideResources(resources: Collection<ResourceStack>) {
         ownedResources.addAll(resources)
@@ -31,6 +35,10 @@ class BuildingEconomyEntity(private val owner: EconomyNode, val city: City, val 
 
     override fun flagProduced() {
         hasProduced = true
+    }
+
+    private fun fulfillsTileRequirement(building: Building): Boolean {
+        return building.type.templateData.requiredTileResource == null || building.tile != null
     }
 
     private fun getRemainingRequiredResources(): Collection<ResourceStack> {

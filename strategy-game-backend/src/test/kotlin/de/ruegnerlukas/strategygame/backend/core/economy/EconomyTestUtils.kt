@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.economy
 
 import de.ruegnerlukas.strategygame.backend.core.actions.update.WorldPrepareAction
+import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
@@ -92,7 +93,7 @@ object EconomyTestUtils {
 
     suspend fun performEconomyUpdate(game: GameExtended) {
         createEconomyEventSystem().trigger("preparation", game, Unit)
-        EconomyUpdate().update(game)
+        EconomyUpdate(GameConfig.default()).update(game)
     }
 
     private fun createEconomyEventSystem(): EventSystem<GameExtended> {

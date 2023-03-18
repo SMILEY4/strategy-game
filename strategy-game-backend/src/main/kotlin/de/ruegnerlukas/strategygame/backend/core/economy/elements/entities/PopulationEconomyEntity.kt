@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 
-class PopulationEconomyEntity(private val owner: EconomyNode, val city: City) : EconomyEntity {
+class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, private val config: GameConfig) : EconomyEntity {
 
     private val ownedResources = mutableListOf<ResourceStack>()
     private var hasProduced = false
@@ -22,9 +22,13 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City) : 
 
     override fun allowPartialConsumption(): Boolean = true
 
+    override fun isInactive(): Boolean = false
+
     override fun isReadyToConsume(): Boolean = getRemainingRequiredResources().isNotEmpty()
 
     override fun isReadyToProduce(): Boolean = !hasProduced
+
+    override fun hasProduced(): Boolean = hasProduced
 
     override fun provideResources(resources: Collection<ResourceStack>) {
         ownedResources.addAll(resources)
@@ -34,8 +38,7 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City) : 
         hasProduced = true
     }
 
-    private fun getAmountTotalRequiredFood() =
-        GameConfig.default().let { if (city.isProvinceCapital) it.cityFoodCostPerTurn else it.townFoodCostPerTurn }
+    private fun getAmountTotalRequiredFood() = if (city.isProvinceCapital) config.cityFoodCostPerTurn else config.townFoodCostPerTurn
 
     private fun getRemainingRequiredResources(): Collection<ResourceStack> {
         val requiredAmount = getAmountTotalRequiredFood()

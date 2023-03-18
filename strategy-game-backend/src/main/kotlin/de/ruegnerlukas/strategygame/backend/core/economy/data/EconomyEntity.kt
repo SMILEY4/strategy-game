@@ -39,6 +39,12 @@ interface EconomyEntity {
 
 
     /**
+     * Whether this entity is inactive and is not taking part in consumption or production
+     */
+    fun isInactive(): Boolean
+
+
+    /**
      * @return whether this entity is ready to consume resources
      */
     fun isReadyToConsume(): Boolean
@@ -48,6 +54,12 @@ interface EconomyEntity {
      * @return whether this entity is ready to produce resources
      */
     fun isReadyToProduce(): Boolean
+
+
+    /**
+     * @return whether this entity has produced resources / was handled during production phase
+     */
+    fun hasProduced(): Boolean
 
 
     /**
