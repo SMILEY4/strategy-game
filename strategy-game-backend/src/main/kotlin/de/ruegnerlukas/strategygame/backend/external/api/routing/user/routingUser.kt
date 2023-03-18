@@ -18,7 +18,7 @@ fun Route.routingUser() {
         routeLogin(userLogin)
         routeRefresh(userRefresh)
         routeSignup(userCreate)
-        authenticate {
+        authenticate("user") {
             routeDelete(userDelete)
         }
     }

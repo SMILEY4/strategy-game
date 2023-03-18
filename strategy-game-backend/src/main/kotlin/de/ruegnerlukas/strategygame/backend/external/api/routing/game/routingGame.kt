@@ -25,12 +25,12 @@ fun Route.routingGame() {
     val requestConnection by inject<GameRequestConnectionAction>()
     val connectAction by inject<GameConnectAction>()
     route("game") {
-        routeCreate(createGame, joinGame)
-        routeJoin(joinGame)
-        routeList(listGames)
-        routeDelete(deleteGame)
-        routeConfig(gameConfig)
-        authenticate {
+        authenticate("user") {
+            routeCreate(createGame, joinGame)
+            routeJoin(joinGame)
+            routeList(listGames)
+            routeDelete(deleteGame)
+            routeConfig(gameConfig)
             routeWebsocketTicket()
         }
         routeWebsocket(messageHandler, disconnectAction, requestConnection, connectAction)

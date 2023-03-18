@@ -124,7 +124,7 @@ fun Application.module() {
     }
     val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
-        jwt { userIdentityService.configureAuthentication(this) }
+        jwt("user") { userIdentityService.configureAuthentication(this) }
         basic("auth-technical-user") {
             realm = "strategy-game"
             validate { credentials ->
