@@ -107,6 +107,7 @@ class BasicEconomyTest : StringSpec({
 			performEconomyUpdate(game)
 		}
 
+		performEconomyUpdate(game)
 		game.provinces[0].also { province ->
 			province shouldHaveProducedLastTurn listOf(ResourceType.FOOD to 1f)
 			province shouldHaveConsumedCurrentTurn listOf(ResourceType.FOOD to 1f)
