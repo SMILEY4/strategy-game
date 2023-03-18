@@ -20,7 +20,7 @@ interface EconomyEntity {
 
 
     /**
-     * @return the resources this entity requires or wants to consume
+     * @return the resources this entity requires or wants to consume. Changes when this entity is provided resources.
      */
     fun getRequires(): Collection<ResourceStack>
 
