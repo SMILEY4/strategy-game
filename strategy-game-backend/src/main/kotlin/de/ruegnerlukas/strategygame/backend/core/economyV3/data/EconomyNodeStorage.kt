@@ -33,7 +33,8 @@ interface EconomyNodeStorage {
 
 
     /**
-     * Mark the given resource amount as removed/taken from another storage
+     * Mark the given resource amount as removed/taken from another storage,
+     * i.e. the entity local to the node with this storage has taken the given resources from another storage.
      */
     fun removedFromSharedStorage(type: ResourceType, amount: Float)
 

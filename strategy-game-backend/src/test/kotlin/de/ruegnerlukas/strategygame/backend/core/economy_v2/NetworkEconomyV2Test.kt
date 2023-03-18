@@ -23,6 +23,18 @@ import io.kotest.core.spec.style.StringSpec
 class NetworkEconomyV2Test : StringSpec({
 
     "test basic production chain with shared basic resources" {
+
+        /*
+        TEST_CITY_FOOD
+        - 6x Farms
+        - 3x Toolmaker
+
+        TEST_CITY_WOOD
+        - 6x Woodcutter
+        - 1x Toolmaker
+        - 2x Stables
+        */
+
         val tiles = tiles().also { tiles ->
             generateResourcesForPosition(
                 tiles, TilePosition(-5, 0), listOf(
@@ -86,21 +98,21 @@ class NetworkEconomyV2Test : StringSpec({
                             tile = TileRef(tiles.find { it.position.q == -5 - 1 && it.position.r == +1 }!!),
                             active = true
                         ),
-						Building(
-							type = BuildingType.TOOLMAKER,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.TOOLMAKER,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.TOOLMAKER,
-							tile = null,
-							active = true
-						),
+                        Building(
+                            type = BuildingType.TOOLMAKER,
+                            tile = null,
+                            active = true
+                        ),
+                        Building(
+                            type = BuildingType.TOOLMAKER,
+                            tile = null,
+                            active = true
+                        ),
+                        Building(
+                            type = BuildingType.TOOLMAKER,
+                            tile = null,
+                            active = true
+                        ),
                     )
                 ),
                 City(
@@ -131,31 +143,31 @@ class NetworkEconomyV2Test : StringSpec({
                             tile = TileRef(tiles.find { it.position.q == +5 - 1 && it.position.r == +1 }!!),
                             active = true
                         ),
-						Building(
-							type = BuildingType.WOODCUTTER,
-							tile = TileRef(tiles.find { it.position.q == +5 - 1 && it.position.r == +1 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.WOODCUTTER,
-							tile = TileRef(tiles.find { it.position.q == +5 - 1 && it.position.r == +1 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.TOOLMAKER,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.STABLES,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.STABLES,
-							tile = null,
-							active = true
-						),
+                        Building(
+                            type = BuildingType.WOODCUTTER,
+                            tile = TileRef(tiles.find { it.position.q == +5 - 1 && it.position.r == +1 }!!),
+                            active = true
+                        ),
+                        Building(
+                            type = BuildingType.WOODCUTTER,
+                            tile = TileRef(tiles.find { it.position.q == +5 - 1 && it.position.r == +1 }!!),
+                            active = true
+                        ),
+                        Building(
+                            type = BuildingType.TOOLMAKER,
+                            tile = null,
+                            active = true
+                        ),
+                        Building(
+                            type = BuildingType.STABLES,
+                            tile = null,
+                            active = true
+                        ),
+                        Building(
+                            type = BuildingType.STABLES,
+                            tile = null,
+                            active = true
+                        ),
                     )
                 ),
             ),
@@ -166,12 +178,12 @@ class NetworkEconomyV2Test : StringSpec({
                     cityIds = mutableListOf("test-city-food"),
                     provinceCapitalCityId = "test-city-food",
                 ),
-				Province(
-					provinceId = "test-province-wood",
-					countryId = "test-country",
-					cityIds = mutableListOf("test-city-wood"),
-					provinceCapitalCityId = "test-city-wood",
-				)
+                Province(
+                    provinceId = "test-province-wood",
+                    countryId = "test-country",
+                    cityIds = mutableListOf("test-city-wood"),
+                    provinceCapitalCityId = "test-city-wood",
+                )
             ),
             routes = listOf(
                 Route(
@@ -199,25 +211,26 @@ class NetworkEconomyV2Test : StringSpec({
             performEconomyUpdate(game)
         }
 
-		for (i in 1..10) {
-			game.provinces.find { it.provinceId == "test-province-food" }!!.also { province ->
-				province shouldHaveProducedLastTurn listOf(
-					ResourceType.FOOD to 6f,
-					ResourceType.TOOLS to 3f,
-				)
-				province shouldHaveConsumedCurrentTurn listOf(
-					ResourceType.FOOD to 2f,
-					ResourceType.WOOD to 3f,
-				)
-				province shouldHaveProducedCurrentTurn listOf(
-					ResourceType.FOOD to 6f,
-					ResourceType.TOOLS to 3f,
-				)
-				province shouldBeMissing listOf(
-					ResourceType.FOOD to 0f,
-					ResourceType.WOOD to 0f,
-				)
-			}
+        for(i in 1..10) {
+            performEconomyUpdate(game)
+            game.provinces.find { it.provinceId == "test-province-food" }!!.also { province ->
+                province shouldHaveProducedLastTurn listOf(
+                    ResourceType.FOOD to 6f,
+                    ResourceType.TOOLS to 3f,
+                )
+                province shouldHaveConsumedCurrentTurn listOf(
+                    ResourceType.FOOD to 2f,
+                    ResourceType.WOOD to 3f,
+                )
+                province shouldHaveProducedCurrentTurn listOf(
+                    ResourceType.FOOD to 6f,
+                    ResourceType.TOOLS to 3f,
+                )
+                province shouldBeMissing listOf(
+                    ResourceType.FOOD to 0f,
+                    ResourceType.WOOD to 0f,
+                )
+            }
             game.provinces.find { it.provinceId == "test-province-wood" }!!.also { province ->
                 province shouldHaveProducedLastTurn listOf(
                     ResourceType.WOOD to 6f,
@@ -229,13 +242,13 @@ class NetworkEconomyV2Test : StringSpec({
                     ResourceType.WOOD to 1f,
                 )
                 province shouldHaveProducedCurrentTurn listOf(
-					ResourceType.WOOD to 6f,
-					ResourceType.TOOLS to 1f,
-					ResourceType.HORSE to 2f,
+                    ResourceType.WOOD to 6f,
+                    ResourceType.TOOLS to 1f,
+                    ResourceType.HORSE to 2f,
                 )
                 province shouldBeMissing listOf(
-					ResourceType.FOOD to 0f,
-					ResourceType.WOOD to 0f,
+                    ResourceType.FOOD to 0f,
+                    ResourceType.WOOD to 0f,
                 )
             }
         }

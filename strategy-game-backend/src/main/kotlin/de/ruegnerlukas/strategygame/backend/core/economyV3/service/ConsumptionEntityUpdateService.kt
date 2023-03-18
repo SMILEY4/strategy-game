@@ -3,20 +3,41 @@ package de.ruegnerlukas.strategygame.backend.core.economyV3.service
 import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economyV3.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
+import java.lang.Float.min
 
 class ConsumptionEntityUpdateService {
 
     fun update(entity: EconomyEntity, currentNode: EconomyNode) {
+        if (entity.allowPartialConsumption()) {
+            updatePartial(entity, currentNode)
+        } else {
+            updateFixed(entity, currentNode)
+        }
+    }
+
+    private fun updatePartial(entity: EconomyEntity, currentNode: EconomyNode) {
         if (allResourcesAvailable(currentNode, entity.getRequires())) {
-            entity.getRequires().forEach {
-                currentNode.getStorage().remove(it.type, it.amount)
-                if (currentNode != entity.getNode()) {
-                    entity.getNode().getStorage().removedFromSharedStorage(it.type, it.amount)
-                }
-                entity.provideResources(listOf(ResourceStack(it.type, it.amount)))
+            updateFixed(entity, currentNode)
+        } else {
+            entity.getRequires().forEach { required ->
+                val amountRequired = required.amount
+                val amountAvailable = currentNode.getStorage().getAvailable(required.type)
+                val amountPossible = min(amountRequired, amountAvailable)
+                entity.provideResources(listOf(ResourceStack(required.type, amountPossible)))
             }
         }
-        // TODO: partial consumption
+    }
+
+    private fun updateFixed(entity: EconomyEntity, currentNode: EconomyNode) {
+        if (allResourcesAvailable(currentNode, entity.getRequires())) {
+            entity.getRequires().forEach { required ->
+                currentNode.getStorage().remove(required.type, required.amount)
+                if (currentNode != entity.getNode()) {
+                    entity.getNode().getStorage().removedFromSharedStorage(required.type, required.amount)
+                }
+                entity.provideResources(listOf(ResourceStack(required.type, required.amount)))
+            }
+        }
     }
 
     private fun allResourcesAvailable(node: EconomyNode, resources: Collection<ResourceStack>): Boolean {

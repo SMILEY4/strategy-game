@@ -40,15 +40,13 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City) : 
     private fun getRemainingRequiredResources(): Collection<ResourceStack> {
         val requiredAmount = getAmountTotalRequiredFood()
         return mutableListOf<ResourceStack>().also { remaining ->
-            ownedResources.find { it.type == ResourceType.FOOD }
-                ?.let { owned ->
-                    val amountAvailable = owned.amount
-                    val amountRemaining = requiredAmount - amountAvailable
-                    if (amountRemaining > 0.00001) {
-                        remaining.add(ResourceStack(ResourceType.FOOD, amountRemaining))
-                    }
-                }
-                ?: remaining.add(ResourceStack(ResourceType.FOOD, requiredAmount))
+            val ownedAmount = ownedResources
+                .filter { it.type == ResourceType.FOOD }
+                .fold(0f) { sum, e -> sum + e.amount }
+            val remainingAmount = requiredAmount - ownedAmount
+            if (remainingAmount > 0.00001) {
+                remaining.add(ResourceStack(ResourceType.FOOD, remainingAmount))
+            }
         }
     }
 

@@ -49,7 +49,7 @@ class BasicEconomyV2Test : StringSpec({
 		)
 
 		for (i in 1..10) {
-			EconomyUpdate().update(game)
+			performEconomyUpdate(game)
 		}
 
 		game.provinces[0].also { province ->
@@ -57,6 +57,62 @@ class BasicEconomyV2Test : StringSpec({
 			province shouldHaveConsumedCurrentTurn listOf(ResourceType.FOOD to 0f)
 			province shouldHaveProducedCurrentTurn listOf(ResourceType.FOOD to 0f)
 			province shouldBeMissing listOf(ResourceType.FOOD to GameConfig.default().cityFoodCostPerTurn)
+		}
+
+	}
+
+
+	"test basic city with some food available" {
+		val tiles = tiles().also { tiles ->
+			generateResourcesForPosition(
+				tiles, TilePosition(0, 0), listOf(
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS
+				)
+			)
+		}
+		val game = game(
+			tiles = tiles,
+			cities = listOf(
+				City(
+					cityId = "test-city",
+					countryId = "test-country",
+					tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == 0 }!!),
+					name = "Test",
+					color = RGBColor.random(),
+					isProvinceCapital = true,
+					buildings = mutableListOf(
+						Building(
+							type = BuildingType.FARM,
+							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == 0 }!!),
+							active = true
+						)
+					)
+				),
+			),
+			provinces = listOf(
+				Province(
+					provinceId = "test-province",
+					countryId = "test-country",
+					cityIds = mutableListOf("test-city"),
+					provinceCapitalCityId = "test-city",
+				)
+			)
+		)
+
+		for (i in 1..10) {
+			performEconomyUpdate(game)
+		}
+
+		game.provinces[0].also { province ->
+			province shouldHaveProducedLastTurn listOf(ResourceType.FOOD to 1f)
+			province shouldHaveConsumedCurrentTurn listOf(ResourceType.FOOD to 1f)
+			province shouldHaveProducedCurrentTurn listOf(ResourceType.FOOD to 1f)
+			province shouldBeMissing listOf(ResourceType.FOOD to GameConfig.default().cityFoodCostPerTurn-1)
 		}
 
 	}
