@@ -45,10 +45,10 @@ export class GameApiImpl implements GameApi {
     }
 
 
-    create(): Promise<string> {
+    create(seed: string | null): Promise<string> {
         return Promise.resolve()
             .then(() => this.httpClient.post({
-                url: "/api/game/create",
+                url: "/api/game/create" + (seed ? ("?seed=" + seed) : ""),
                 requireAuth: true,
                 token: this.userRepository.getAuthToken()
             }))

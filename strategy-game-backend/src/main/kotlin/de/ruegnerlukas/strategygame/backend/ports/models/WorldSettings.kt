@@ -8,9 +8,12 @@ data class WorldSettings(
     val singleTileType: TileType?, // if not null = all tiles will be of this type
 ) {
     companion object {
-        fun default() = WorldSettings(
+
+        fun default() = default(null)
+
+        fun default(seed: Int?) = WorldSettings(
             size = 20,
-            seed = Random().nextInt(),
+            seed = seed ?: Random().nextInt(),
             singleTileType = null
         )
 
