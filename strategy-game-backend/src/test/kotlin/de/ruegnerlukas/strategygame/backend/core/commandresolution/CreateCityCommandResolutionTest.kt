@@ -234,7 +234,7 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "Second City"
                 }
             }
-            expectCommandResolutionErrors(0, "CITY.TILE_SPACE")
+            expectCommandResolutionErrors(0, "CITY.TILE_SPACE", "CITY.TARGET_TILE_OWNER")
             expectCities {
                 city {
                     q = 0

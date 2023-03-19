@@ -154,11 +154,11 @@ class CreateTownCommandResolutionTest : StringSpec({
             resolveCommands {
                 createTown(getCountryId("user")) {
                     q = 0
-                    r = 0
+                    r = 1
                     name = "Test Town"
                 }
             }
-            expectCommandResolutionErrors(1, "CITY.TILE_SPACE")
+            expectCommandResolutionErrors(1, "CITY.TILE_SPACE", "CITY.TARGET_TILE_OWNER")
             expectCities {
                 city {
                     q = 0

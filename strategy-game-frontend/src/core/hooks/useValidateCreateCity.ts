@@ -22,7 +22,7 @@ export function useValidateCreateCity(pos: TilePosition | null): boolean {
                 return !cities.find(c => c.tile.tileId === tile.tileId);
             });
             ctx.validate("CITY.TARGET_TILE_OWNER", () => {
-                return tile.dataTier1?.owner == null || tile.dataTier1.owner.countryId == country.countryId;
+                return (tile.dataTier1?.owner == null || tile.dataTier1.owner.countryId == country.countryId) && tile.dataTier1?.owner?.cityId == null;
             });
             ctx.validate("CITY.COUNTRY_INFLUENCE", () => {
                 if (tile.dataTier2) {
