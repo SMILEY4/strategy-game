@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateB
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.game.DisconnectAllPlayersActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDeleteActionImpl
@@ -42,13 +43,14 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.Reserva
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.UsersConnectedToGamesQueryImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.DisconnectAllPlayersAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
@@ -60,13 +62,14 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAc
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserCreateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
@@ -82,6 +85,7 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.Reservati
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesUpdate
+import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UsersConnectedToGamesQuery
 import io.github.smiley4.ktorwebsocketsextended.WSExtended
 import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
 import io.micrometer.prometheus.PrometheusConfig
@@ -94,52 +98,54 @@ import org.koin.dsl.module
 @Suppress("RemoveExplicitTypeArguments")
 val applicationDependencies = module {
 
-	single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
-	single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
-	single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
-	single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
-	single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
-	single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
+    single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
+    single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
+    single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
+    single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
+    single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
+    single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
 
-	single<UserCreateAction> { UserCreateActionImpl(get()) }
-	single<UserDeleteAction> { UserDeleteActionImpl(get()) }
-	single<UserLoginAction> { UserLoginActionImpl(get()) }
-	single<UserRefreshTokenAction> { UserRefreshTokenActionImpl(get()) }
+    single<UserCreateAction> { UserCreateActionImpl(get()) }
+    single<UserDeleteAction> { UserDeleteActionImpl(get()) }
+    single<UserLoginAction> { UserLoginActionImpl(get()) }
+    single<UserRefreshTokenAction> { UserRefreshTokenActionImpl(get()) }
 
-	single<CommandsInsert> { CommandsInsertImpl(get()) }
-	single<GameInsert> { GameInsertImpl(get()) }
-	single<CommandsByGameQuery> { CommandsByGameQueryImpl(get()) }
-	single<GameQuery> { GameQueryImpl(get()) }
-	single<GamesByUserQuery> { GamesByUserQueryImpl(get()) }
-	single<GameExtendedQuery> { GameExtendedQueryImpl(get()) }
-	single<GameUpdate> { GameUpdateImpl(get()) }
-	single<GameDelete> { GameDeleteImpl(get()) }
-	single<CountryInsert> { CountryInsertImpl(get()) }
-	single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
-	single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get()) }
-	single<ReservationInsert> { ReservationInsertImpl(get()) }
-	single<TilesQueryByGame> { TilesQueryByGameImpl(get()) }
-	single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get()) }
-	single<TilesUpdate> { TilesUpdateImpl(get()) }
+    single<CommandsInsert> { CommandsInsertImpl(get()) }
+    single<GameInsert> { GameInsertImpl(get()) }
+    single<CommandsByGameQuery> { CommandsByGameQueryImpl(get()) }
+    single<GameQuery> { GameQueryImpl(get()) }
+    single<GamesByUserQuery> { GamesByUserQueryImpl(get()) }
+    single<GameExtendedQuery> { GameExtendedQueryImpl(get()) }
+    single<GameUpdate> { GameUpdateImpl(get()) }
+    single<GameDelete> { GameDeleteImpl(get()) }
+    single<CountryInsert> { CountryInsertImpl(get()) }
+    single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
+    single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get()) }
+    single<ReservationInsert> { ReservationInsertImpl(get()) }
+    single<TilesQueryByGame> { TilesQueryByGameImpl(get()) }
+    single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get()) }
+    single<TilesUpdate> { TilesUpdateImpl(get()) }
+    single<UsersConnectedToGamesQuery> { UsersConnectedToGamesQueryImpl(get()) }
 
-	single<GameConfig> { GameConfig.default() }
-	single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl(get()) }
-	single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
-	single<ResolveCreateBuildingCommand> { ResolveCreateBuildingCommandImpl(get(), get()) }
-	single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get(), get()) }
-	single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
-	single<GamesListAction> { GamesListActionImpl(get()) }
-	single<GameDeleteAction> { GameDeleteActionImpl(get()) }
-	single<GameConnectAction> { GameConnectActionImpl(get(), get(), get()) }
-	single<GameCreateAction> { GameCreateActionImpl(get()) }
-	single<GameDisconnectAction> { GameDisconnectActionImpl(get(), get()) }
-	single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
-	single<GameJoinAction> { GameJoinActionImpl(get(), get(), get(), get(), get(), get()) }
-	single<GameRequestConnectionAction> { GameRequestConnectionActionImpl(get()) }
-	single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get()) }
-	single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
-	single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
-	single<MessageHandler> { MessageHandler(get()) }
-	single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get()) }
+    single<GameConfig> { GameConfig.default() }
+    single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl(get()) }
+    single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
+    single<ResolveCreateBuildingCommand> { ResolveCreateBuildingCommandImpl(get(), get()) }
+    single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get(), get()) }
+    single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
+    single<GamesListAction> { GamesListActionImpl(get()) }
+    single<GameDeleteAction> { GameDeleteActionImpl(get()) }
+    single<GameConnectAction> { GameConnectActionImpl(get(), get(), get()) }
+    single<GameCreateAction> { GameCreateActionImpl(get()) }
+    single<GameDisconnectAction> { GameDisconnectActionImpl(get(), get(), get()) }
+    single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
+    single<GameJoinAction> { GameJoinActionImpl(get(), get(), get(), get(), get(), get()) }
+    single<GameRequestConnectionAction> { GameRequestConnectionActionImpl(get()) }
+    single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get()) }
+    single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
+    single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
+    single<MessageHandler> { MessageHandler(get()) }
+    single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get()) }
+    single<DisconnectAllPlayersAction> { DisconnectAllPlayersActionImpl(get(), get()) }
 
 }

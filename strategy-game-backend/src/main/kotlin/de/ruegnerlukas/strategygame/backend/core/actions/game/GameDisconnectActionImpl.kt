@@ -7,10 +7,15 @@ import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GamesByUserQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
+import io.ktor.websocket.CloseReason
+import io.ktor.websocket.close
+import kotlinx.coroutines.isActive
 
 class GameDisconnectActionImpl(
     private val gamesByUserQuery: GamesByUserQuery,
-    private val gameUpdate: GameUpdate
+    private val gameUpdate: GameUpdate,
+    private val websocketConnectionHandler: WebSocketConnectionHandler
 ) : GameDisconnectAction, Logging {
 
     private val metricId = metricCoreAction(GameDisconnectAction::class)
@@ -23,6 +28,7 @@ class GameDisconnectActionImpl(
         }
     }
 
+
     /**
      * find all games of the current user
      */
@@ -30,17 +36,27 @@ class GameDisconnectActionImpl(
         return gamesByUserQuery.execute(userId)
     }
 
+
     /**
      * Set all connections of the given user to "null"
      */
     private suspend fun clearConnections(userId: String, games: List<Game>) {
-        gamesWithConnectedUser(
-            games, userId
-        )
-            .forEach { game ->
-                game.players.findByUserId(userId)?.connectionId = null
-                gameUpdate.execute(game)
+        gamesWithConnectedUser(games, userId).forEach { game ->
+            game.players.findByUserId(userId)?.also { player ->
+                player.connectionId?.also { closeConnection(it) }
+                player.connectionId = null
             }
+            gameUpdate.execute(game)
+        }
+    }
+
+
+    /**
+     * Closes the websocket connection
+     */
+    private suspend fun closeConnection(connectionId: Long) {
+        val connection = websocketConnectionHandler.getConnection(connectionId)
+        connection?.getSession()?.close()
     }
 
     /**
