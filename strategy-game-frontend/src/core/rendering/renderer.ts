@@ -51,8 +51,8 @@ export class Renderer {
         const combinedRevId = this.worldRepository.getRevisionId() + "_" + this.gameRepository.getRevisionId();
         const camera = this.createCamera(localGameState.camera);
 
+        this.lineRenderer.removeAllLines();
         gameState.routes.forEach(route => {
-            this.lineRenderer.removeAllLines();
             const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r));
             this.lineRenderer.registerLine(route.routeId, positions, 1, [1, 1, 1, 0.3]);
         })
