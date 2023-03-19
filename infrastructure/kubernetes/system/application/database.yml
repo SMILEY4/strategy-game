@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: database-appdata-volume
+    namespace: strategy-game
+    labels:
+        name: database-appdata-volume
+spec:
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 100Mi
+
+
+---
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: database-data-volume
+    namespace: strategy-game
+    labels:
+        name: database-data-volume
+spec:
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 100Mi
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: database
+    namespace: strategy-game
+    labels:
+        name: database
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            name: database
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                name: database
+        spec:
+            containers:
+                -   image: arangodb:3.10.0
+                    name: strategy-game-database
+                    ports:
+                        -   containerPort: 8529
+                    env:
+                        -   name: ARANGO_NO_AUTH
+                            value: "1"
+                    volumeMounts:
+                        -   mountPath: /var/lib/arangodb3
+                            name: arangodb-data-volume
+                        -   mountPath: /var/lib/arangodb3-apps
+                            name: arangodb-appdata-volume
+            restartPolicy: Always
+            volumes:
+                -   name: arangodb-data-volume
+                    persistentVolumeClaim:
+                        claimName: database-data-volume
+                -   name: arangodb-appdata-volume
+                    persistentVolumeClaim:
+                        claimName: database-appdata-volume
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: database
+    namespace: strategy-game
+    labels:
+        name: database
+spec:
+    selector:
+        name: database
+    ports:
+        -   name: "8529"
+            port: 8529
+            targetPort: 8529

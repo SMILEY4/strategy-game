@@ -34,6 +34,21 @@ http://www.cheatbook.de/wfiles/knightsofhonor.htm
 
 - Knights of Honor - Manual/Guide/FAQ
 
+https://michaeltedin.com/worldbuilding-102-economics-in-fantasy-societies-part-1/
+
+https://forums.civfanatics.com/threads/citizens-in-civilization-vii.676009/
+
+https://github.com/Gedemon/Civ6-GCO/blob/master/Concepts.lua
+
+​	https://forums.civfanatics.com/threads/gedemons-civilization-development-thread.615222
+
+https://forums.civfanatics.com/forums/civ4col-medieval-conquests.483
+
+- civ4col -> civilisation game with basic production chains + basic automated trade
+- medieval conquest -> mod for middle ages
+
+https://download.kalypsomedia.com/manuals/Manual_GAM-EN.pdf
+
 
 
 # Turn-Based (WeGo) ❤
@@ -843,3 +858,494 @@ https://www.youtube.com/watch?v=ZQHfit8b6VA&t=180s
   - affected by: new trade opportunities, protection of trade, ...
   - effects: gold income, trade efficiency, cost of buying supplies
 - ...
+
+
+
+# Population Mechanics
+
+**Social classes**
+
+- structured into classes (~https://en.wikipedia.org/wiki/Estates_of_the_realm)
+  - freemen = free landed peasantry
+  - peasants/Serfs = unfree peasantry or peasantry without own land -> work on land of gentry
+  - gentry/nobility = landed elite, do not work, live off revenue taken from peasanty
+  - burghers = merchants, income directly from trade
+- determines, what the pop produces, consumes, its political weight, happiness modifiers, ...
+- each settlement has x amount of any class 
+- class structure approaches its optimal ratio over time through promotion and demotion
+
+
+
+**Jobs/occupations**
+
+- each pop can have different jobs based on social class and available buildings
+- peasants/Serfs (= "farmers and farm labourers")
+  - produce food on land of gentry
+- freemen
+  - by default: produce food -> subsistence farming 
+  - if buildings and enough food available -> work in those buildings instead
+- gentry
+  - dont work
+- burghers
+  - manage trade of goods between provinces
+
+
+
+**Peasant/Serfs**
+
+- children of peasants are also peasants
+- is subject to his lord
+- not allowed to migrate to other settlements
+- does not pay state tax
+- pays rent to his lord (in form of produced food, labor, taxes)
+  - ~20%
+  - as ratio gentry to peasants increases -> gentry will take larger and larger fraction of income
+  - rest goes to own consumption
+  - surplus sold on market as own income
+  - additional tax on income to lord ?
+- use their wealth to consume small amount of resources of varying types
+
+
+
+**Freemen**
+
+- represent free landed peasantry
+- can migrate to other cities with better opportunities
+- produce resources
+  - by default: produce food -> subsistence farming  (own consumption), sell surplus
+  - if buildings and enough food available -> work in those buildings instead
+    - craftsmen -> sell goods
+    - become merchant
+    - administrative jobs
+    - ...
+- are paid according to the amount+price of a resource they produce
+- use their wealth to consume moderate amount of resources of varying types
+- pay state tax from income
+
+
+
+**Gentry,Nobility**
+
+- represent landed elite
+- pay state tax
+- don't work / produce goods
+- take the resources from peasants
+  - money
+  - food, sell surplus
+- purchase large amounts of resources (luxury silks, ...)
+
+
+
+**Promotion/demotions**
+
+- freeman -> peasant/serf, when ...
+  - unable to care for his own
+    - low income
+    - not enough food
+    - war
+    - marauders, plundering
+- peasant/serf -> freemen, when ...
+  - good harvest -> enough surplus -> enough income -> purchase own freedom
+
+
+
+**Growth**
+
+- each turn, x new pop spawn for each type (based on class)
+- historic average pop growth per year (https://en.wikipedia.org/wiki/Medieval_demography)
+  - 0.10 % - 0.20%
+
+
+
+**founding new settlements**
+
+- comes with x pops of any class
+- each turn population grows/decreases based on available resources
+  - growth
+    - birth
+    - migration
+  - decrease
+    - death
+    - migration
+- each turn, population of a class can change class -> promotion/demotion
+  - restricted by rights (e.g. peasant has no rights, can not be come nobility by law)
+
+
+
+
+
+# Economic Actions
+
+As a ruler, one's economic action would have to be to pounder those  different advantages and problems, what I see as the key for an  economically successful era would be:
+https://historum.com/t/medieval-economy-simulator.21223/post-489892
+
+1.  Attracting merchants and ideally fairs by guaranteeing their safety and other stuff merchant need (everything from a good commercial law to  available brothels). Here avoiding civil strife and internal conflits is critical.
+2. Attracting artisans and guildsmen (and for the countryside freemen and monasteries).
+3. Guaranteeing a level of welfare among the population (distribute grains  in times of dearth, allow charity, open mounts of piety, etc.).
+4. Having a tax base as large as possible and access to good financers (allowing to borrow and invest).
+5. Crushing an economic rival militarily if need be.
+6. Avoiding rent-seeking behaviours by the nobility and the clergy. In the  same way smart taxation may foster growth and avoid revolts.
+7. Medieval men often experienced shortages of money, leading to standstill of the economy. Guaranteeing a reasonable level of liquidity could be a ruler's role. In Portugal, they adopted a simple system: they stole  gold from the Arabs. Elsewhere, not debasing the currency (usually to  pay for war) and supporting export trade was enough. You need to have a  mint.
+8. Diplomatic activity could help one's merchants to secure good positions  in foreign markets (see Venice and the Chrysobulla of 1084 if memory  serves).
+9. The court's consumption may favour the development of some luxury  productions which later can become important export items (see French  wines, Italian cloth, etc.).
+10. Some large investments may take place via or thank to the ruler (think polders in Holland or canals in ... China).
+
+
+
+
+
+# Sinews Of War - CK3 Mod
+
+https://steamcommunity.com/sharedfiles/filedetails/?id=2566883856
+
+https://www.youtube.com/watch?v=plk5a6qm1h8
+
+
+
+# Artisans
+
+https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
+
+-> often times formed guilds
+
+
+
+
+
+# City Upgrades
+
+- when a town is large enough -> can be upgraded to ...
+  - city  = same mechanics as town, but larger/more
+  - freetown = more independent, does not contribute as much to nation, less administration
+  - stronghold = less economy, more defense
+- maybe: every x pops, a city can be "upgraded" again, i.e. change its designation
+
+
+
+
+
+# Thread "Problemedicals Civ 7 Ideas/Wishlist"
+
+**Pops / Specialists**
+
+\- Reworking the Specialist mechanics. This idea would probably meet some hostility and dislike, but I would make Specialists permanent. Sure, it somewhat implies that your citizens are immortal, but, on the other  hand, it's not actually implied in previous games that your city has 20  people when you see a number "20" on the city screen: both are just  game's way of representation. A generic base citizen would be converted  to a Specialist after spending N turns working a specific tile  improvement or building slot (e.g. Farmer after working a Farm for 10  turns). After that you can either plug this Specialist in a  corresponding tile or slot for additional bonuses, or instead this  Specialist could be made working a different slot with much scarcer  results (Farmers wouldn't have an easy time working in a Mine or a  Library). A long and costly re-specialization process would naturally be available. Migration systems feels like a natural extension of this new mechanics - if you have an industrial city that pumps out more Worker  specialists that you have slots for in this city, unemployed Workers  might move in search for a job into the nearest city, and it wouldn't be necessary for this city to be yours. Refugees and war captives could  also be represented by this approach.
+
+
+
+# Resources, Production Chains, Buildings, Trade
+
+**buildings**
+
+- basics
+
+  - construction
+    - requires resources for x turns while being built -> determines build duration
+    - cost of resources determines gold-price of building -> what the player pays
+    - example:
+      - building requires 10 wood, 5 tools
+      - each turn, nation produces, 2 wood, 2 tools
+      - Wood currently costs 0.5 Gold, Tools cost 1 Gold
+      - building takes 5 turns to complete and costs 10 Gold
+
+  - require worker-pop of specific type to function
+    - consume
+      - some resource
+      - ...
+
+  - produce
+    - some resource
+      - some effect
+
+- building levels
+  - buildings can be leveld up or down
+    - each level up improves production
+      - more produced resources
+      - better output effects
+      - less required resource
+      - fewer negative effects 
+      - ...
+    - but requires more/more complex inputs
+      - more workers required
+      - different (harder to get) input resources
+      - more input resources of same type (-> "all or nothing")
+      - more negative side effects
+      - ...
+    - example: "Toolmakers Workshop"
+      - lvl 1: 1x Wood -> 1x Tool
+      - lvl 2: 2x Wood -> 2x Tool
+      - lvl 3: 1x Wood, 1x Metal -> 3x Tool
+    - example: "Mine"
+      - lvl 1: / -> 1x Metal
+      - lvl 2: 1x Tool -> 2x Metal
+- types of buildings
+  - simple-buildings: take resource x and produce resource y
+    - example: "Toolmakers Workshop": 1x Wood -> 1x Tool
+  -  augmenting buildings: take resource x and output more of resource x
+    - example: " Cattle farm" 2x Food -> 3x Food
+    - chance to produce more of resource without directly harvesting it, but risk: if not enough of resource to enable building -> even less of that resource
+  - sinks: buildings that take resources but, don't produce any goods (just effects?)
+    - example: "Administrative building": 1x Paper -> administation
+
+**Production Chains**
+
+- as simple as possible, as complex as necessary
+- any resource should have multiple uses (except "end products")
+- inspiration
+  - Civilisation 4: Colonisation: https://civilization.fandom.com/wiki/List_of_buildings_in_Civ4Col
+  - Anno 1404: https://www.anno1404-rechner.de/produktionsketten.php?lang=en
+  - Farthes Frontier: https://farthestfrontier.miraheze.org/wiki/Resources
+  - Foundation: https://foundation-game.fandom.com/wiki/Buildings
+  - Banished: https://banished-wiki.com/wiki/Main_Page
+  - Grand Ages Medieval: https://grandagesmedieval.fandom.com/wiki/Production_buildings
+
+**Locations, Trade**
+
+- structure
+
+  - Nation has multiple cities
+
+  - cities have multiple towns
+  - one city + its towns define one area/province inside a nation
+
+- functionality
+
+  - cities, towns produce,consume resources
+  - resources are shared by all cities,towns inside one province
+  - resource storage is shared by all cities,towns inside one province
+  - trade is only between cities in provinces
+
+
+
+# Trade Routes
+
+- city/province starts with one trade route -> player can choose where to connect to
+- when the city grows / when more trade develops, additional capacity for trade routes is unlocked
+  - player builds trade network over time
+  - influences structure of network
+  - influences major hubs (cities with many trade routes) by promoting trade in that city
+  - not all at once -> not too much micromanagement
+- possible to change target of trade route every x turns
+- max. amount of resources that can be transported via one trade route is limited by
+  - type of route (land, river, sea)
+  - tech, policies, buildings, amount of merchants, ...
+  - protection (less protected routes -> more plunderers/bandits -> less resources)
+
+
+
+
+# Monetary Income
+
+- trade
+  - internal trade
+    - always x% of traded value as taxes
+  - trade with other nations
+    - sell to other nation -> receive x% of trade value from other nation
+    - buy from other nation -> pay x% of trade value to other nation
+
+
+
+# Population Growth
+
+- based on multiple factors
+- growth-meter
+  - when at +100% -> new pop spawns
+  - when at -100% -> one pop dies
+- bonus points
+  - food security -> food available in region
+  - local food security -> food produced in city/town
+  - good sanitation
+  - freshwater
+  - happiness
+  - ...
+- negative points
+  - population density
+  - food shortage
+  - deseases
+  - happiness
+  - ...
+
+
+
+
+
+# "Custom Civilizations"
+
+- predefined civs
+  - problem: how to name civs historical ? fantasy "races" ?  > roleplay problems !!
+
+- coose civ bonuses before game
+  - problem: what if civs bonuses have no effect due to random spawn
+- solution:
+  - list of civ bonuses / effects
+  - choose 1 bonus after turn 2, 4, 8, 16 -> build your civ over time
+  - first effects generic, later ones more and more specific
+  - player can adapt to random spawn position and generated world
+  - the more the player knows about world, the more specific effects he can choose
+
+
+
+
+
+# Building Synergies
+
+- **Problem**
+  - what is the strategy behind buildings in certain cities
+  - why not just every buildings in every city ?
+  - why not just build a building in any city (no just specific cities) ?
+- **Possible Solutions**
+  - limit amount of buildings per city
+    - yes, but is just a simple limit, not strategic option
+
+  - bonus based on city location (e.g. resource availability,terrain)
+    - yes, but is just a "hidden limit" where building is effectively possible, no strategic option (why build at a factually worse place)
+- **Solution: Synergies**
+  - buildings in city have synergies with other buildings in same city
+  - still limit amount of buildings per city -> just having every synergy in every city not possible -> building-slot-limit now has a reason 
+  - "same-building-synergies": a building is more effective, if more of the same type of building exist in city, e.g.: "Academy", +10% bonus for each other academy in city -> more specialized (here "research-") cities
+  - "cross-building-synergies": a building is more effective, if another building of a different type exists in city, e.g. "Jewellers Workshop" receives bonus, if a mine exists in the city
+  - maybe extend some synergies to provinces
+    - some buildings require counterpart in same cities
+    - some buildings require counterpart in same province
+
+
+
+
+
+# Limit to City-Creation
+
+**Problem:**
+
+- currently, creating cities is too easy, simple and cheap (even with creation cost)
+- no trade-off between creating a new city and doing something else
+
+**Solution/Idea:**
+
+- CIV5/CIV6: build settler-unit in another city
+
+  - takes up production-queue of that city
+  - choose between building settler/city and improving city, building military, ...
+
+- here: (probably) no settler-unit on map
+
+  - maybe still produce settler in another city
+  - settler is a resource that can be used in country or in same province or in influence area of city or in certain radius or ...
+  - effect: no units on map that need managing, but action is still a choice between creating city and something else
+
+  
+
+# Combat City-Micromanagement
+
+**Problem:**
+
+- only cities harvest resources
+- country requires many cities (even a lot more than in civ, humankind, ...)
+
+**Solution/Idea:**
+
+- 3 tiers of cities
+
+  - city / province capitol - one per province, largest, most flexible and developed city
+  - town - smaller city, still has most functionalities of normal city -> still micromanagement
+  - camp - very limited features/control, only one building, choose starter building when constructing city  
+
+- effect
+  - build camps that dont need any micromanagement
+  - camps can still be upgraded to towns to get more features,flexibility later on in the game
+
+
+
+
+# Combat endless expansion
+
+https://www.reddit.com/r/4Xgaming/comments/1060uh0/are_there_any_4x_strategy_games_that_possess/
+
+- fields of glory: decadence system
+  - nation gains decadence
+    - slowly over time naturally
+    - by expanding too fast
+    - expanding into territories that are not "objectives"
+    - expanding into territories that are not of same ethnicity
+  - nation looses decadence
+    - building specific buildings, improvements
+    - population management
+    - taking territories that are "objectives"
+
+
+
+
+
+# Government Ideas - Traveling Crown
+
+- King/Ruler + Court (nobility, servants) can be stationed in any city
+- city/province receives bonuses during that time (building speed, efficiency, reduced, crime, administration, nobility happiness, ...)
+- city/province consumes more resources
+- traveling (i.e. when changing city) brings crown authority
+- if city with ruler gets captured -> possible hostages
+- centralization (= attribute/modifier of nation)
+  - more centralized nation -> less effects from traveling crown 
+  - less centralized nation -> more effects from traveling crown 
+
+
+
+Government Ideas - "Laws"
+
+- "laws "must be passed / voted on by nobility/royal courty
+
+  - different people have different opinions on different laws
+
+  - voters can be swayed/persuaded via various means
+    - also passing other laws in same package
+    - happiness/opinion
+    - promises
+    - bribes
+    - other actions
+    - having higher crown authority
+  - examples for "laws"
+    - policies
+    - reforms
+    - declaring war
+    - if ruler can declare war without voting
+    - how many levies
+    - taxes
+    - how council member are appointed
+    - https://steamcommunity.com/sharedfiles/filedetails/?id=2596442947
+    - ...
+- https://www.reddit.com/r/CrusaderKings/comments/md7vh9/ck3_legal_system_mod_concept/
+
+
+
+
+
+
+
+# Internal/External Trade System
+
+(This example/description with only one resource type)
+
+**Internal Trade**
+
+"internal" = resources shared by connected cities/provinces
+
+- connection either due to "same country and nearby" or "different country, nearby and shared-market-contract "
+
+Process:
+
+1. all cities/provinces produce,consume local resources
+2.  all leftover resources are added to a shared resource pool
+   - also calculate the amount (in %) each city/province contributed to that resource pool
+3. all cities/provinces produce,consume resources from shared pool
+4. calculate internal trade income (in gold) for each city
+   - calculate total amount of resources consumed from shared pool = total trade value
+   - trade income of city = total trade value * total contribution to pool in %
+
+**External Trade**
+
+- after local and internal resource handling
+
+Process:
+
+0. Create trade route (manually) for specific resource(s) and between specific cities/provinces
+
+1. if resources left-over, transfer resources (up to max amount) to target province
+
+=> resources can then be consumed next turn; if not consumed by target city, resources get automatically added to shared resource pool and gets further "traded internally"

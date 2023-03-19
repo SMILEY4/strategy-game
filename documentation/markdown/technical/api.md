@@ -39,6 +39,12 @@ All messages follow the following format
               "q": "Int - the q-coordinate of the new city",
               "r": "Int - the r-coordinate of the new city",
               "name": "String - the name of the new city",
+              "withNewProvince": "Bool - whether to add it to an existing province or create a new one with the city as its capital"
+          },
+          {
+              "type": "place-scout",
+              "q": "Int - the q-coordinate of the scout",
+              "r": "Int - the r-coordinate of the scout",
           }
       ]
   }
@@ -67,22 +73,18 @@ All messages follow the following format
                   "terrainType": "String - the type of the terrain",
                   "owner?": {
                       "countryId": "String - the id of the country owning this tile",
+                      "provinceId": "String - the id of the province owning this tile "
   
-                      "cityId": "String - the id of the city this tile belongs to",
+                      "cityId": "String|null - the id of the city this tile belongs to",
                   }
               },
               "dataTier2?": {
               	"influences": [
                       {
                           "countryId": "String - the id of the country or '?'",
-                          "value": "Double - the total amount of influence of the  country on the tile",
-                          "sources": [
-                              {
-                                  "cityId": "String - the id of the city",
-  
-                                  "value": "Double - the amount of influence of the  city on the tile",
-                              }
-                          ]
+                          "provinceId": "String - the id of the province or '?'",
+                          "cityId": "String - the id of the city or  '?'",
+                          "amount": "Double - the total amount of influence of the  country on the tile",
                       }
                   ],
                   "content": [
@@ -120,7 +122,8 @@ All messages follow the following format
       	{
           	"cityId": "String - the id of the city",
           	"countryId": "String - the id of the owner-country",
-          	"tile": {
+          	"isProvinceCapital": "Boolean - whether this city is the capital of the province",
+              "tile": {
               	"tileId": "String - the id of the tile",
               	"q": "Int - the q-coordinate of the tile",
               	"r": "Int - the r-coordinate of the tile",
@@ -130,7 +133,41 @@ All messages follow the following format
                   "red": "Int [0,255]",
                   "green": "Int [0,255]",
                   "blue": "Int [0,255]",
-              }
+              },
+              "buildings": [
+                  {
+                      "type": "String - the type of the building",
+                      "tile": {
+                          "tileId": "String - the id of the worked tile",
+                          "q": "Int - the q-coordinate of the worked tile",
+                          "r": "Int - the r-coordinate of the worked tile",
+                      }
+                  }
+              ]
+          }
+      ],
+      "provinces": [
+          {
+              "provinceId" : "String - the id of the province",
+              "countryId" : "String - the id of the owner country",
+              "cityIds": [
+                  "String - the ids of cities in this province (incl. capital)"
+              ],
+              "provinceCapitalCityId": "String - the id of the province capital city"
+          }
+      ],
+      "routes": [
+          {
+              "routeId": "String - the id of the route",
+              "cityIdA": "String - the id of one of the connected cities",
+              "cityIdB": "String - the id of the other connected city",
+              "path": [
+                  {
+                      "tileId": "String - the id of the tile",
+                      "q": "Int - the q-coordinate of the tile",
+                      "r": "Int - the r-coordinate of the tile",
+                  }
+              ]
           }
       ]
   }

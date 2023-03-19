@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models
 
 data class Player(
     val userId: String,
-    var connectionId: Int?,
+    var connectionId: Long?,
     var state: String
 ) {
     companion object {

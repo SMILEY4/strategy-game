@@ -8,4 +8,8 @@ interface ReservationInsert {
 
 	suspend fun reserveCity() = execute(Collections.CITIES)
 
+	suspend fun reserveProvince() = execute(Collections.PROVINCES)
+
+	suspend fun reserveRoute() = execute(Collections.ROUTES)
+
 }

@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateBuildingCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateTownCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
@@ -15,7 +14,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActi
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnUpdateActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
@@ -65,20 +64,32 @@ object TestActions {
     fun turnSubmitAction(database: ArangoDatabase) = TurnSubmitActionImpl(
         TurnEndActionImpl(
             ResolveCommandsActionImpl(
-                ResolvePlaceMarkerCommandImpl(),
+                ResolvePlaceMarkerCommandImpl(
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
+                ),
                 ResolveCreateCityCommandImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
+                    GameConfig.default(),
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
                 ),
                 ResolveCreateBuildingCommandImpl(
-                    GameConfig.default()
-                ),
-                ResolveCreateTownCommandImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
+                    GameConfig.default(),
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
                 ),
                 ResolvePlaceScoutCommandImpl(
-                    GameConfig.default()
+                    GameConfig.default(),
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
                 )
             ),
             SendGameStateActionImpl(
@@ -86,10 +97,13 @@ object TestActions {
                 GameExtendedQueryImpl(database),
                 GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
             ),
-            TurnUpdateActionImpl(GameConfig.default()),
             GameExtendedQueryImpl(database),
             GameExtendedUpdateImpl(database),
             CommandsByGameQueryImpl(database),
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            )
         ),
         GameQueryImpl(database),
         CountryByGameAndUserQueryImpl(database),
@@ -106,39 +120,63 @@ object TestActions {
     )
 
     fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
-        ResolvePlaceMarkerCommandImpl(),
+        ResolvePlaceMarkerCommandImpl(
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            )
+        ),
         ResolveCreateCityCommandImpl(
-            ReservationInsertImpl(database),
-            GameConfig.default()
+            GameConfig.default(),
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            )
         ),
         ResolveCreateBuildingCommandImpl(
-            GameConfig.default()
-        ),
-        ResolveCreateTownCommandImpl(
-            ReservationInsertImpl(database),
-            GameConfig.default()
+            GameConfig.default(),
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            )
         ),
         ResolvePlaceScoutCommandImpl(
-            GameConfig.default()
+            GameConfig.default(),
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            )
         )
     )
 
     fun turnEndAction(database: ArangoDatabase) = TurnEndActionImpl(
         ResolveCommandsActionImpl(
-            ResolvePlaceMarkerCommandImpl(),
+            ResolvePlaceMarkerCommandImpl(
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                )
+            ),
             ResolveCreateCityCommandImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
+                GameConfig.default(),
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                )
             ),
             ResolveCreateBuildingCommandImpl(
-                GameConfig.default()
-            ),
-            ResolveCreateTownCommandImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
+                GameConfig.default(),
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                )
             ),
             ResolvePlaceScoutCommandImpl(
-                GameConfig.default()
+                GameConfig.default(),
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                )
             )
         ),
         SendGameStateActionImpl(
@@ -146,10 +184,13 @@ object TestActions {
             GameExtendedQueryImpl(database),
             GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
         ),
-        TurnUpdateActionImpl(GameConfig.default()),
         GameExtendedQueryImpl(database),
         GameExtendedUpdateImpl(database),
         CommandsByGameQueryImpl(database),
+        TurnUpdateActionImpl(
+            ReservationInsertImpl(database),
+            GameConfig.default()
+        )
     )
 
 }

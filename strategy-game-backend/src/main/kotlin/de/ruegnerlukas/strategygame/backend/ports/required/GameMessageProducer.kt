@@ -4,6 +4,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 
 interface GameMessageProducer {
 
-	suspend fun sendGamedState(connectionId: Int, game: GameExtendedDTO)
+    /**
+     * Send the given game-state to the given websocket-connection
+     * @param connectionId the id of the websocket connection
+     * @param game the game-state to send
+     */
+    suspend fun sendGamedState(connectionId: Long, game: GameExtendedDTO)
 
 }

@@ -9,8 +9,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.trackingListOf
@@ -21,7 +21,7 @@ class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateActio
 
     override suspend fun perform(worldSettings: WorldSettings): String {
         return Monitoring.coTime(metricId) {
-            log().info("Creating new game")
+            log().info("Creating new game with seed ${worldSettings.seed}")
             val game = buildGame()
             val tiles = buildTiles(worldSettings)
             val gameId = save(game, tiles)
@@ -48,11 +48,10 @@ class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateActio
         return WorldBuilder().buildTiles(worldSettings).map {
             Tile(
                 tileId = DbId.PLACEHOLDER,
-                gameId = "",
                 position = TilePosition(it.q, it.r),
                 data = TileData(
-                    terrainType = it.type.name,
-                    resourceType = it.resource.name
+                    terrainType = it.type,
+                    resourceType = it.resource
                 ),
                 content = trackingListOf(),
                 influences = mutableListOf(),

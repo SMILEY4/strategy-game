@@ -4,12 +4,10 @@ import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
 class City(
     val cityId: String,
-    val gameId: String,
     val countryId: String,
     val tile: TileRef,
     val name: String,
     val color: RGBColor,
-    val isCity: Boolean,
-    var parentCity: String?,
+    val isProvinceCapital: Boolean,
     val buildings: MutableList<Building>,
 )

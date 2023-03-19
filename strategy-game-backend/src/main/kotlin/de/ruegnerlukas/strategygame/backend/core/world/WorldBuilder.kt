@@ -22,7 +22,7 @@ class WorldBuilder {
 
     private val resourceConfig = mapOf(
         TileType.LAND to WeightedCollection<TileResourceType>().apply {
-            add(0.6, TileResourceType.NONE)
+            add(0.6, TileResourceType.PLAINS)
             add(0.2, TileResourceType.FOREST)
             add(0.15, TileResourceType.STONE)
             add(0.05, TileResourceType.METAL)

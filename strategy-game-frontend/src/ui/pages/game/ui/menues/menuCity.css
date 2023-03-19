@@ -1,0 +1,4 @@
+.li-disabled * {
+	opacity: 70%;
+	color: #494949;
+}

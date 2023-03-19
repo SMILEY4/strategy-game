@@ -1,19 +1,16 @@
 import {ReactElement} from "react";
 import {useCountryPlayerOrNull} from "../../../../../core/hooks/useCountryPlayer";
-import {useCountryResources} from "../../../../../core/hooks/useCountryResources";
 import {Color} from "../../../../../core/models/Color";
 import "./gameMenuBar.css";
 import {CategoryDebug} from "../MenuDebug";
+import {CategoryCountry} from "../menues/MenuCountry";
 import {CategoryMap} from "../MenuMap";
-import {CategorySelectedTile} from "../MenuSelectedTile";
 import {NextTurnAction} from "./NextTurnAction";
-import {ResourceWidget} from "./ResourceWidget";
 
 export function GameMenuBar(): ReactElement {
 
     const country = useCountryPlayerOrNull();
     const countryColor = country ? country.color : Color.BLACK;
-    const countryResources = useCountryResources()
 
     return (
         <div className="game-menu-bar">
@@ -21,19 +18,14 @@ export function GameMenuBar(): ReactElement {
                  style={{backgroundColor: `rgb(${countryColor.red},${countryColor.green},${countryColor.blue})`}}/>
             <div className="category-area">
                 <CategoryDebug/>
-                <CategorySelectedTile/>
+                <CategoryCountry/>
                 <CategoryMap/>
             </div>
-            <div className="info-section">
-                <ResourceWidget resource={countryResources.money}/>
-                <ResourceWidget resource={countryResources.wood}/>
-                <ResourceWidget resource={countryResources.stone}/>
-                <ResourceWidget resource={countryResources.metal}/>
-                <ResourceWidget resource={countryResources.food}/>
-            </div>
+            <div className="info-section"/>
             <div className="action-section">
                 <NextTurnAction/>
             </div>
         </div>
     );
+
 }

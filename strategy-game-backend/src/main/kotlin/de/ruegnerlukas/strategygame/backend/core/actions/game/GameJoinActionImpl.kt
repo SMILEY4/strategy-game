@@ -9,7 +9,6 @@ import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.shared.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.ports.models.CountryResources
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
@@ -17,8 +16,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.G
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.UserAlreadyPlayerError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
@@ -88,17 +87,10 @@ class GameJoinActionImpl(
         return countryInsert.execute(
             Country(
                 countryId = DbId.PLACEHOLDER,
-                gameId = game.gameId,
                 userId = userId,
                 color = COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size],
-                resources = CountryResources(
-                    money = gameConfig.startingAmountMoney,
-                    wood = gameConfig.startingAmountWood,
-                    food = gameConfig.startingAmountFood,
-                    stone = gameConfig.startingAmountStone,
-                    metal = gameConfig.startingAmountMetal
-                )
-            )
+            ),
+            game.gameId
         ).getOrElse { throw Exception("Could not insert country of user $userId in game ${game.gameId}") }
     }
 

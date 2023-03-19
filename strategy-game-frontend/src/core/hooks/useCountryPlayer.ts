@@ -1,6 +1,6 @@
 import {Country} from "../models/country";
 import {optional} from "../../shared/optional";
-import {useCountry} from "./useCountry";
+import {useCountryByUser} from "./useCountryByUser";
 import {useUserIdOrNull} from "./useUserId";
 
 export function useCountryPlayer(): Country {
@@ -8,5 +8,5 @@ export function useCountryPlayer(): Country {
 }
 
 export function useCountryPlayerOrNull(): Country | null {
-    return useCountry(useUserIdOrNull());
+    return useCountryByUser(useUserIdOrNull());
 }

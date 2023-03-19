@@ -4,11 +4,9 @@ import {CommandCreateBuilding} from "../models/command";
 import {validations} from "../../shared/validation";
 import {useCommands} from "./useCommands";
 import {useCountryPlayer} from "./useCountryPlayer";
-import {useCountryResources} from "./useCountryResources";
 import {useGameConfig} from "./useGameConfig";
 
 export function useValidateCreateBuilding(city: City | null): (type: BuildingType) => boolean {
-    const resources = useCountryResources();
     const country = useCountryPlayer();
     const commands = useCommands();
     const config = useGameConfig();
@@ -25,14 +23,11 @@ export function useValidateCreateBuilding(city: City | null): (type: BuildingTyp
                         .map(cmd => cmd as CommandCreateBuilding)
                         .filter(cmd => cmd.cityId === city.cityId)
                         .length;
-                    if (city.isCity) {
+                    if (city.isProvinceCapital) {
                         return config.cityBuildingSlots - (city.buildings.length + amountBuildingCommands) > 0;
                     } else {
                         return config.townBuildingSlots - (city.buildings.length + amountBuildingCommands) > 0;
                     }
-                });
-                ctx.validate("BUILDING.RESOURCES", () => {
-                    return resources.wood.value >= config.buildingCostWood && resources.stone.value >= config.buildingCostStone;
                 });
             }).isValid();
         };

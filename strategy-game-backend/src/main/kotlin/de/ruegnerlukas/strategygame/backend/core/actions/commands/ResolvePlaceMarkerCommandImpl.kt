@@ -5,22 +5,25 @@ import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceMarkerValidations.validateCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
-class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
+class ResolvePlaceMarkerCommandImpl(
+    private val turnUpdate: TurnUpdateAction,
+) : ResolvePlaceMarkerCommand, Logging {
 
     private val metricId = metricCoreAction(ResolvePlaceMarkerCommand::class)
 
@@ -35,12 +38,11 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
                 validateCommand(targetTile).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                addMarker(targetTile, command.countryId)
+                turnUpdate.commandPlaceMarker(game, command)
                 emptyList()
             }
         }
     }
-
 
     private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
@@ -51,13 +53,7 @@ class ResolvePlaceMarkerCommandImpl : ResolvePlaceMarkerCommand, Logging {
         }
     }
 
-
-    private fun addMarker(tile: Tile, countryId: String) {
-        tile.content.add(MarkerTileContent(countryId))
-    }
-
 }
-
 
 private object PlaceMarkerValidations {
 

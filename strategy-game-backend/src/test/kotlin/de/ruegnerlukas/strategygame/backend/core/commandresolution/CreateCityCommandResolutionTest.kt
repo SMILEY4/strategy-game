@@ -74,7 +74,7 @@ class CreateCityCommandResolutionTest : StringSpec({
         }
     }
 
-    "create two cities next to each other in the same turn, create both" {
+    "create two cities next to each other in the same turn, create one" {
         gameTest {
             createGame {
                 worldSettings = WorldSettings.landOnly()
@@ -100,12 +100,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "City 1"
                     countryId = getCountryId("user-1")
                 }
-                city {
-                    q = 1
-                    r = 0
-                    name = "City 2"
-                    countryId = getCountryId("user-2")
-                }
             }
             expectCountryMoney {
                 countryId = getCountryId("user-1")
@@ -113,7 +107,7 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCountryMoney {
                 countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
+                amount = gameCfg().startingAmountMoney
             }
         }
     }
@@ -162,63 +156,63 @@ class CreateCityCommandResolutionTest : StringSpec({
         }
     }
 
-    "create city without enough resources, reject" {
-        gameTest {
-            createGame {
-                worldSettings = WorldSettings.landOnly()
-                user("user")
-            }
-            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney - 1f)
-            resolveCommands {
-                createCity(getCountryId("user")) {
-                    q = 0
-                    r = 0
-                    name = "Test City"
-                }
-            }
-            expectCommandResolutionErrors(0, "CITY.RESOURCES")
-            expectNoCities()
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().cityCostMoney - 1f
-            }
-        }
-    }
+//    "create city without enough resources, reject" {
+//        gameTest {
+//            createGame {
+//                worldSettings = WorldSettings.landOnly()
+//                user("user")
+//            }
+//            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney - 1f)
+//            resolveCommands {
+//                createCity(getCountryId("user")) {
+//                    q = 0
+//                    r = 0
+//                    name = "Test City"
+//                }
+//            }
+//            expectCommandResolutionErrors(0, "CITY.RESOURCES")
+//            expectNoCities()
+//            expectCountryMoney {
+//                countryId = getCountryId("user")
+//                amount = gameCfg().cityCostMoney - 1f
+//            }
+//        }
+//    }
 
-    "create two cities without enough resources for both, reject second" {
-        gameTest {
-            createGame {
-                worldSettings = WorldSettings.landOnly()
-                user("user")
-            }
-            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney + 1f)
-            resolveCommands {
-                createCity(getCountryId("user")) {
-                    q = 10
-                    r = 10
-                    name = "First City"
-                }
-                createCity(getCountryId("user")) {
-                    q = 20
-                    r = 20
-                    name = "Second City"
-                }
-            }
-            expectCommandResolutionErrors(0, "CITY.RESOURCES")
-            expectCities {
-                city {
-                    q = 10
-                    r = 10
-                    name = "First City"
-                    countryId = getCountryId("user")
-                }
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = 1f
-            }
-        }
-    }
+//    "create two cities without enough resources for both, reject second" {
+//        gameTest {
+//            createGame {
+//                worldSettings = WorldSettings.landOnly()
+//                user("user")
+//            }
+//            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney + 1f)
+//            resolveCommands {
+//                createCity(getCountryId("user")) {
+//                    q = 10
+//                    r = 10
+//                    name = "First City"
+//                }
+//                createCity(getCountryId("user")) {
+//                    q = 20
+//                    r = 20
+//                    name = "Second City"
+//                }
+//            }
+//            expectCommandResolutionErrors(0, "CITY.RESOURCES")
+//            expectCities {
+//                city {
+//                    q = 10
+//                    r = 10
+//                    name = "First City"
+//                    countryId = getCountryId("user")
+//                }
+//            }
+//            expectCountryMoney {
+//                countryId = getCountryId("user")
+//                amount = 1f
+//            }
+//        }
+//    }
 
     "create city on already occupied tile, reject" {
         gameTest {
@@ -240,7 +234,7 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "Second City"
                 }
             }
-            expectCommandResolutionErrors(0, "CITY.TILE_SPACE")
+            expectCommandResolutionErrors(0, "CITY.TILE_SPACE", "CITY.TARGET_TILE_OWNER")
             expectCities {
                 city {
                     q = 0

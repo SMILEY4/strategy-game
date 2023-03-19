@@ -6,10 +6,10 @@ export interface City {
     name: string,
     countryId: string,
     tile: TileRef,
-    isCity: boolean,
-    parentCity: string | null,
+    isProvinceCapital: boolean,
     buildings: ({
         type: BuildingType,
-        tile: TileRef | null
+        tile: TileRef | null,
+        active: boolean
     })[]
 }

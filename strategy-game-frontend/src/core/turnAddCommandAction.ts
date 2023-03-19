@@ -55,7 +55,7 @@ export class TurnAddCommandAction {
         } as CommandPlaceScout);
     }
 
-    addCreateCity(tilePos: TilePosition, name: string, parentCity: string | null) {
+    addCreateCity(tilePos: TilePosition, name: string, withNewProvince: boolean) {
         this.perform({
             commandType: "create-city",
             cost: {
@@ -68,7 +68,7 @@ export class TurnAddCommandAction {
             q: tilePos.q,
             r: tilePos.r,
             name: name,
-            parentCity: parentCity
+            withNewProvince: withNewProvince
         } as CommandCreateCity);
     }
 

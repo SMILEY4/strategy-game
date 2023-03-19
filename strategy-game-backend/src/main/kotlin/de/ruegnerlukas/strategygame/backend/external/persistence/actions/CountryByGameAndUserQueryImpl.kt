@@ -5,8 +5,8 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 

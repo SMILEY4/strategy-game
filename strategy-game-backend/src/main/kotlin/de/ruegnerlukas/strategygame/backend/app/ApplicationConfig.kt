@@ -4,14 +4,15 @@ import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
-import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.external.api.routing.routingApi
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
 import io.github.smiley4.ktorswaggerui.dsl.AuthType
+import io.github.smiley4.ktorwebsocketsextended.WebsocketsExtended
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -34,9 +35,11 @@ import io.ktor.server.request.userAgent
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.RoutingApplicationCall
+import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
+import io.ktor.util.toMap
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -51,12 +54,13 @@ import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.slf4j.event.Level
 import java.time.Duration
-
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * The main-module for configuring Ktor. Referenced in "application.conf".
  */
 fun Application.module() {
+
     install(Koin) {
         modules(applicationDependencies)
         logger(object : Logger() {
@@ -78,17 +82,22 @@ fun Application.module() {
         maxFrameSize = Long.MAX_VALUE
         masking = false
     }
+    install(WebsocketsExtended) {
+        ticketTTL = 30.seconds
+    }
     install(CallLogging) {
         level = Level.INFO
         format { call ->
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
-            val route = call.request.uri.replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
+            val route = call.request.uri
+                .replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
+                .replace(Regex("ticket=.*?(?=(&|\$))"), "ticket=SECRET")
             val userAgent = call.request.userAgent() ?: "?"
-            "${status.toString()}: $httpMethod - $route      (userAgent=$userAgent)"
+            "${status.toString()}: $httpMethod - $route     (userAgent=$userAgent)"
         }
         filter { call ->
-            listOf("api/metrics", "api/health").none {
+            listOf("internal/metrics", "api/health").none {
                 call.request.path().contains(it)
             }
         }
@@ -116,11 +125,12 @@ fun Application.module() {
     }
     val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
-        jwt { userIdentityService.configureAuthentication(this) }
+        jwt("user") { userIdentityService.configureAuthentication(this) }
         basic("auth-technical-user") {
+            realm = "strategy-game"
             validate { credentials ->
-                val username = Config.get().auth.technicalUsername
-                val password = Config.get().auth.technicalPassword
+                val username = Config.get().admin.username
+                val password = Config.get().admin.password
                 if (credentials.name == username && credentials.password == password) {
                     UserIdPrincipal(credentials.name)
                 } else {
@@ -156,6 +166,7 @@ fun Application.module() {
             bearerFormat = "jwt"
         }
         automaticTagGenerator = { url -> url.getOrNull(1) }
+        pathFilter = { _, url -> !(url.lastOrNull()?.let { it.endsWith(".js") || it.endsWith(".css") } ?: false) }
         defaultSecuritySchemeName = "Auth"
         defaultUnauthorizedResponse {
             description = "Authentication failed"
@@ -184,5 +195,8 @@ fun Application.module() {
             }
         }
     }
-    apiRoutes()
+
+    routing {
+        routingApi()
+    }
 }

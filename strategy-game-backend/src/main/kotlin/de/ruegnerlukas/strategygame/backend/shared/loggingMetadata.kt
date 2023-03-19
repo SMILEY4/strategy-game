@@ -6,4 +6,4 @@ fun mdcGameId(gameId: String?) = "gameId" to (gameId ?: "?")
 
 fun mdcUserId(userId: String?) = "userId" to (userId ?: "?")
 
-fun mdcConnectionId(connectionId: Int?) = "connectionId" to (connectionId?.toString() ?: "?")
+fun mdcConnectionId(connectionId: Long?) = "connectionId" to (connectionId?.toString() ?: "?")

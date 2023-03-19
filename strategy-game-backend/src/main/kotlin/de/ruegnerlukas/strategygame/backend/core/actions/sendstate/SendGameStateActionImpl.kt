@@ -12,8 +12,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameSta
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction.SendGameStateActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction.UserNotConnectedError
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
@@ -56,7 +56,7 @@ class SendGameStateActionImpl(
     /**
      * get connection id of player or null
      */
-    private fun getConnectionId(game: GameExtended, userId: String): Either<UserNotConnectedError, Int> {
+    private fun getConnectionId(game: GameExtended, userId: String): Either<UserNotConnectedError, Long> {
         return game.game.players.findByUserId(userId)?.connectionId?.right() ?: UserNotConnectedError.left()
     }
 
@@ -70,7 +70,7 @@ class SendGameStateActionImpl(
     /**
      * Send the new game-state to the connected player
      */
-    private suspend fun sendGameStateMessage(connectionId: Int, game: GameExtendedDTO) {
+    private suspend fun sendGameStateMessage(connectionId: Long, game: GameExtendedDTO) {
         messageProducer.sendGamedState(connectionId, game)
     }
 

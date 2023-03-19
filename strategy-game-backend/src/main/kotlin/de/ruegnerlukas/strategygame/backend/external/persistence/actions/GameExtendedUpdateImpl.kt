@@ -7,14 +7,18 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDa
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.external.persistence.entities.RouteEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.shared.parallelIO
@@ -26,12 +30,17 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
     override suspend fun execute(game: GameExtended): Either<EntityNotFoundError, Unit> {
         return Monitoring.coTime(metricId) {
             either {
+                val gameId = game.game.gameId
                 updateGame(game.game).bind()
                 parallelIO(
-                    { updateCountries(game.countries) },
-                    { updateTiles(game.tiles) },
-                    { updateCities(game.cities) },
-                    { deleteCities(game.cities.getRemovedElements()) },
+                    { updateCountries(game.countries, gameId) },
+                    { updateTiles(game.tiles, gameId) },
+                    { updateCities(game.cities, gameId) },
+                    { deleteCities(game.cities.getRemovedElements(), gameId) },
+                    { updateProvinces(game.provinces, gameId) },
+                    { deleteProvinces(game.provinces.getRemovedElements(), gameId) },
+                    { updateRoutes(game.routes, gameId) },
+                    { deleteRoutes(game.routes.getRemovedElements(), gameId) }
                 )
             }
         }
@@ -44,20 +53,36 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
             .void()
     }
 
-    private suspend fun updateCountries(countries: List<Country>) {
-        database.insertOrReplaceDocuments(Collections.COUNTRIES, countries.map { CountryEntity.of(it) })
+    private suspend fun updateCountries(countries: List<Country>, gameId: String) {
+        database.insertOrReplaceDocuments(Collections.COUNTRIES, countries.map { CountryEntity.of(it, gameId) })
     }
 
-    private suspend fun updateTiles(tiles: List<Tile>) {
-        database.insertOrReplaceDocuments(Collections.TILES, tiles.map { TileEntity.of(it) })
+    private suspend fun updateTiles(tiles: Collection<Tile>, gameId: String) {
+        database.insertOrReplaceDocuments(Collections.TILES, tiles.map { TileEntity.of(it, gameId) })
     }
 
-    private suspend fun updateCities(cities: List<City>) {
-        database.insertOrReplaceDocuments(Collections.CITIES, cities.map { CityEntity.of(it) })
+    private suspend fun updateCities(cities: List<City>, gameId: String) {
+        database.insertOrReplaceDocuments(Collections.CITIES, cities.map { CityEntity.of(it, gameId) })
     }
 
-    private suspend fun deleteCities(cities: Set<City>) {
-        database.deleteDocuments(Collections.CITIES, cities.map { CityEntity.of(it) }.map { it.getKeyOrThrow() })
+    private suspend fun deleteCities(cities: Set<City>, gameId: String) {
+        database.deleteDocuments(Collections.CITIES, cities.map { CityEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+    }
+
+    private suspend fun updateProvinces(provinces: List<Province>, gameId: String) {
+        database.insertOrReplaceDocuments(Collections.PROVINCES, provinces.map { ProvinceEntity.of(it, gameId) })
+    }
+
+    private suspend fun deleteProvinces(provinces: Set<Province>, gameId: String) {
+        database.deleteDocuments(Collections.PROVINCES, provinces.map { ProvinceEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+    }
+
+    private suspend fun updateRoutes(routes: List<Route>, gameId: String) {
+        database.insertOrReplaceDocuments(Collections.ROUTES, routes.map { RouteEntity.of(it, gameId) })
+    }
+
+    private suspend fun deleteRoutes(routes: Set<Route>, gameId: String) {
+        database.deleteDocuments(Collections.ROUTES, routes.map { RouteEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
 }

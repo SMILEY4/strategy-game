@@ -2,6 +2,8 @@ import create from "zustand";
 import {City} from "../../../core/models/city";
 import {Country} from "../../../core/models/country";
 import {Marker} from "../../../core/models/marker";
+import {Province} from "../../../core/models/province";
+import {Route} from "../../../core/models/route";
 import {Scout} from "../../../core/models/scout";
 import {Tile} from "../../../core/models/tile";
 import {generateId} from "../../../shared/utils";
@@ -17,7 +19,9 @@ export namespace WorldStore {
         tiles: Tile[],
         markers: Marker[],
         scouts: Scout[],
-        cities: City[]
+        cities: City[],
+        provinces: Province[],
+        routes: Route[]
     }
 
     const initialStateValues: StateValues = {
@@ -27,7 +31,9 @@ export namespace WorldStore {
         tiles: [],
         markers: [],
         scouts: [],
-        cities: []
+        cities: [],
+        provinces: [],
+        routes: []
     };
 
     interface StateActions {
@@ -36,8 +42,10 @@ export namespace WorldStore {
             tiles: Tile[],
             countries: Country[],
             cities: City[],
+            provinces: Province[],
             markers: Marker[],
-            scouts: Scout[]
+            scouts: Scout[],
+            routes: Route[]
         ) => void;
     }
 
@@ -48,8 +56,10 @@ export namespace WorldStore {
                 tiles: Tile[],
                 countries: Country[],
                 cities: City[],
+                provinces: Province[],
                 markers: Marker[],
-                scouts: Scout[]
+                scouts: Scout[],
+                routes: Route[]
             ) => set(() => ({
                 currentTurn: currentTurn,
                 tiles: tiles,
@@ -57,7 +67,9 @@ export namespace WorldStore {
                 cities: cities,
                 markers: markers,
                 scouts: scouts,
-                revisionId: generateId()
+                provinces: provinces,
+                routes: routes,
+                revisionId: generateId(),
             })),
         };
     }

@@ -91,7 +91,7 @@ export class TileObjectRenderer {
 
         // CITIES
         gameState.cities.forEach(e => {
-            this.addCitySprite(e.tile.q, e.tile.r, e.isCity, this.getColor(countries, e.countryId, false));
+            this.addCitySprite(e.tile.q, e.tile.r, e.isProvinceCapital, this.getColor(countries, e.countryId, false));
             this.addCityLabel(camera.getZoom(), e.tile.q, e.tile.r, this.textRenderer.getRegion(e.name));
         });
 
@@ -99,7 +99,7 @@ export class TileObjectRenderer {
             .filter(e => e.commandType === "create-city")
             .map(e => e as CommandCreateCity)
             .forEach(e => {
-                this.addCitySprite(e.q, e.r, e.parentCity === null, this.getColor(countries, (userCountryId ? userCountryId : "?"), true));
+                this.addCitySprite(e.q, e.r, e.withNewProvince, this.getColor(countries, (userCountryId ? userCountryId : "?"), true));
                 this.addCityLabel(camera.getZoom(), e.q, e.r, this.textRenderer.getRegion(e.name + " (P)"));
             });
 

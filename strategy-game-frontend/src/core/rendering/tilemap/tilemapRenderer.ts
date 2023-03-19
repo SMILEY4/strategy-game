@@ -3,7 +3,6 @@ import {GameStore} from "../../../external/state/game/gameStore";
 import {MapMode} from "../../models/mapMode";
 import {TileLayerMeta} from "../../models/tileLayerMeta";
 import {GameCanvasHandle} from "../gameCanvasHandle";
-import {BaseRenderer} from "../utils/baseRenderer";
 import {BatchRenderer} from "../utils/batchRenderer";
 import {Camera} from "../utils/camera";
 import {ShaderAttributeType, ShaderProgram, ShaderUniformType} from "../utils/shaderProgram";
@@ -19,7 +18,6 @@ export class TilemapRenderer {
     private readonly shaderSourceManager: ShaderSourceManager;
     private batchRenderer: BatchRenderer = null as any;
     private shader: ShaderProgram = null as any;
-    private baseRenderer: BaseRenderer = null as any;
     private lastRevisionId: String = "";
 
 
@@ -30,7 +28,6 @@ export class TilemapRenderer {
 
 
     public initialize() {
-        this.baseRenderer = new BaseRenderer(this.gameCanvas.getGL());
         this.batchRenderer = new BatchRenderer(this.gameCanvas.getGL(), 64000, true);
         this.shader = new ShaderProgram(this.gameCanvas.getGL(), {
             debugName: "tilemap",
@@ -131,9 +128,10 @@ export class TilemapRenderer {
     private mapModeId(mode: MapMode): number {
         if (mode === MapMode.DEFAULT) return 0;
         if (mode === MapMode.COUNTRIES) return 1;
-        if (mode === MapMode.CITIES) return 2;
-        if (mode === MapMode.TERRAIN) return 3;
-        if (mode === MapMode.RESOURCES) return 4;
+        if (mode === MapMode.PROVINCES) return 2;
+        if (mode === MapMode.CITIES) return 3;
+        if (mode === MapMode.TERRAIN) return 4;
+        if (mode === MapMode.RESOURCES) return 5;
         return 0;
     }
 

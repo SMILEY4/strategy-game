@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: prometheus-config
+    namespace: strategy-game
+    labels:
+        name: prometheus-config
+data:
+    prometheus.yml: |-
+        scrape_configs:
+            -   job_name: 'backend'
+                metrics_path: /api/internal/metrics
+                scrape_interval: 60s
+                static_configs:
+                    -   targets: [ 'app:8080' ]
+            -   job_name: 'database'
+                metrics_path: /_admin/metrics/v2
+                scrape_interval: 60s
+                static_configs:
+                    -   targets: [ 'database:8529' ]
+
+
+---
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: prometheus-data-volume
+    namespace: strategy-game
+    labels:
+        name: prometheus-data-volume
+spec:
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 100Mi
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: prometheus
+    namespace: strategy-game
+    labels:
+        name: prometheus
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            name: prometheus
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                name: prometheus
+        spec:
+            containers:
+                -   args:
+                        - --config.file=/etc/prometheus/prometheus.yml
+                    image: prom/prometheus:v2.39.1
+                    name: strategy-game-prometheus
+                    ports:
+                        -   containerPort: 9090
+                    volumeMounts:
+                        -   mountPath: /etc/prometheus/
+                            name: prometheus-config-volume
+                        -   mountPath: /prometheus
+                            name: prometheus-data-volume
+            restartPolicy: Always
+            volumes:
+                -   name: prometheus-config-volume
+                    configMap:
+                        defaultMode: 420
+                        name: prometheus-config
+                -   name: prometheus-data-volume
+                    persistentVolumeClaim:
+                        claimName: prometheus-data-volume
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: prometheus
+    namespace: strategy-game
+    labels:
+        name: prometheus
+spec:
+    selector:
+        name: prometheus
+    ports:
+        -   name: "9090"
+            port: 9090
+            targetPort: 9090

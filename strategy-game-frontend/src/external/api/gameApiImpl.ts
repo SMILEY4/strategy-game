@@ -45,10 +45,10 @@ export class GameApiImpl implements GameApi {
     }
 
 
-    create(): Promise<string> {
+    create(seed: string | null): Promise<string> {
         return Promise.resolve()
             .then(() => this.httpClient.post({
-                url: "/api/game/create",
+                url: "/api/game/create" + (seed ? ("?seed=" + seed) : ""),
                 requireAuth: true,
                 token: this.userRepository.getAuthToken()
             }))
@@ -68,9 +68,9 @@ export class GameApiImpl implements GameApi {
 
 
     connect(gameId: string): Promise<void> {
-        const url = `/api/game/${gameId}?token=${this.userRepository.getAuthToken()}`;
+        const url = `/api/game/${gameId}`;
         console.log("open websocket-connection:", url);
-        return this.websocketClient.open(url, message => {
+        return this.websocketClient.open(url, this.userRepository.getAuthToken(), message => {
             this.messageHandler.onMessage(message.type, message.payload);
         });
     }

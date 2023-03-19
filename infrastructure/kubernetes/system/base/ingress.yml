@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: ingress
+    namespace: strategy-game
+    labels:
+        name: ingress
+spec:
+    ingressClassName: nginx
+    tls:
+        -   hosts:
+                - ingress.local
+            secretName: ingress-local-tls
+    rules:
+        -   http:
+                paths:
+                    -   path: /api/internal
+                        pathType: Prefix
+                        backend:
+                            service:
+                                name: void
+                                port:
+                                    number: 8080
+                    -   path: /
+                        pathType: Prefix
+                        backend:
+                            service:
+                                name: app
+                                port:
+                                    number: 8080

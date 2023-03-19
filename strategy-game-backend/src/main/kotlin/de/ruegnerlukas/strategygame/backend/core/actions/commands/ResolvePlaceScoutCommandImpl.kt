@@ -6,23 +6,25 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.PlaceScoutValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
 import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
 class ResolvePlaceScoutCommandImpl(
-    private val gameConfig: GameConfig
+    private val gameConfig: GameConfig,
+    private val turnUpdate: TurnUpdateAction,
 ) : ResolvePlaceScoutCommand, Logging {
 
     private val metricId = metricCoreAction(ResolvePlaceScoutCommand::class)
@@ -38,25 +40,18 @@ class ResolvePlaceScoutCommandImpl(
                 validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                addScout(targetTile, command.countryId, command.turn)
+                turnUpdate.commandPlaceScout(game, command)
                 emptyList()
             }
         }
     }
-
 
     private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
         return targetTile?.right() ?: ResolveCommandsAction.TileNotFoundError.left()
     }
 
-
-    private fun addScout(tile: Tile, countryId: String, turn: Int) {
-        tile.content.add(ScoutTileContent(countryId, turn))
-    }
-
 }
-
 
 private object PlaceScoutValidations {
 
@@ -67,7 +62,6 @@ private object PlaceScoutValidations {
             validScoutAmount(gameConfig, countryId, game.tiles)
         }
     }
-
 
     fun ValidationContext.validTileVisibility(countryId: String, tile: Tile) {
         validate("SCOUT.TILE_VISIBILITY") {
@@ -83,7 +77,7 @@ private object PlaceScoutValidations {
         }
     }
 
-    fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: List<Tile>) {
+    fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: Collection<Tile>) {
         validate("SCOUT.AMOUNT") {
             tiles
                 .asSequence()

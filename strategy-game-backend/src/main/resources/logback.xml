@@ -7,28 +7,24 @@
     <import class="net.logstash.logback.encoder.LogstashEncoder"/>
 
     <appender name="STDOUT" class="ConsoleAppender">
-        <encoder>
-            <pattern>
-                %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) | %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
-            </pattern>
-        </encoder>
         <filter class="LogSuppressor"/>
-    </appender>
-
-    <appender name="FILE" class="FileAppender">
-        <file>log/strategy-game-backend.log</file>
-        <append>true</append>
-        <filter class="ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-        <encoder class="LogstashEncoder">
-            <customFields>{"application":"backend"}</customFields>
-        </encoder>
-        <filter class="LogSuppressor"/>
+        <if condition='p("LOG_AS_JSON").contains("true")'>
+            <then>
+                <encoder class="LogstashEncoder">
+                    <customFields>{"application":"backend"}</customFields>
+                </encoder>
+            </then>
+            <else>
+                <encoder>
+                    <pattern>
+                        %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) | %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
+                    </pattern>
+                </encoder>
+            </else>
+        </if>
     </appender>
 
     <root level="debug">
-        <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>
 

@@ -1,5 +1,7 @@
+import {ResourceType} from "./resourceType";
+
 export interface ResourceValue {
-    type: "money" | "wood" | "stone" | "metal" | "food",
+    type: ResourceType,
     value: number,
     change: number
 }

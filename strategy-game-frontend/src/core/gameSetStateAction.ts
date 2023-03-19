@@ -7,11 +7,14 @@ import {Color} from "./models/Color";
 import {Country} from "./models/country";
 import {GameState} from "./models/gameState";
 import {Marker} from "./models/marker";
+import {Province} from "./models/province";
 import {ResourceType} from "./models/resourceType";
+import {Route} from "./models/route";
 import {Scout} from "./models/scout";
 import {TerrainType} from "./models/terrainType";
 import {Tile} from "./models/tile";
 import {TileLayerMeta} from "./models/tileLayerMeta";
+import {TileResourceType} from "./models/tileResourceType";
 import {GameRepository} from "./required/gameRepository";
 import {WorldRepository} from "./required/worldRepository";
 import {TileBorderCalculator} from "./tileBorderCalculator";
@@ -31,7 +34,7 @@ export class GameSetStateAction {
     }
 
     perform(game: PayloadGameState): void {
-        console.log("set game state");
+        console.log("set game/world state");
         const countries = this.getCountries(game);
         const tiles = this.getTiles(game);
         this.enrichTilesLayerData(tiles, game);
@@ -40,8 +43,10 @@ export class GameSetStateAction {
             tiles,
             countries,
             this.getCities(game),
+            this.getProvinces(game),
             this.getMarkers(game),
-            this.getScouts(game)
+            this.getScouts(game),
+            this.getRoutes(game)
         );
         this.gameRepository.clearCommands();
         this.gameRepository.setGameState(GameState.PLAYING);
@@ -53,31 +58,7 @@ export class GameSetStateAction {
             countryId: country.dataTier1.countryId,
             userId: country.dataTier1.userId,
             color: country.dataTier1.color,
-            dataTier3: country.dataTier3 ? this.getCountryResources(country) : null
         }));
-    }
-
-    private getCountryResources(country: any): any {
-        const countryPrev = this.worldRepository.getCompleteState().countries.byCountryId(country.dataTier1.countryId);
-        const nextMoney = country.dataTier3.resources.money
-        const nextWood = country.dataTier3.resources.wood
-        const nextFood = country.dataTier3.resources.food
-        const nextStone = country.dataTier3.resources.stone
-        const nextMetal = country.dataTier3.resources.metal
-        const prevMoney = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.money.value : nextMoney;
-        const prevWood = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.wood.value : nextWood;
-        const prevFood = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.food.value : nextFood;
-        const prevStone = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.stone.value : nextStone;
-        const prevMetal = countryPrev && countryPrev.dataTier3 ? countryPrev.dataTier3.resources.metal.value : nextMetal;
-        return {
-            resources: {
-                money: {type: "money", value: nextMoney, change: nextMoney - prevMoney},
-                wood: {type: "wood", value: nextWood, change: nextWood- prevWood},
-                food: {type: "food", value: nextFood, change: nextFood- prevFood},
-                stone: {type: "stone", value: nextStone, change: nextStone - prevStone},
-                metal: {type: "metal", value: nextMetal, change: nextMetal - prevMetal}
-            }
-        };
     }
 
     private getTiles(game: PayloadGameState): Tile[] {
@@ -90,9 +71,10 @@ export class GameSetStateAction {
             visibility: tile.dataTier0.visibility,
             dataTier1: tile.dataTier1 ? {
                 terrainType: TerrainType.fromString(tile.dataTier1.terrainType),
-                resourceType: ResourceType.fromString(tile.dataTier1.resourceType),
+                resourceType: TileResourceType.fromString(tile.dataTier1.resourceType),
                 owner: tile.dataTier1.owner ? {
                     countryId: tile.dataTier1.owner?.countryId,
+                    provinceId: tile.dataTier1.owner?.provinceId,
                     countryColor: game.countries.find(c => c.dataTier1.countryId === tile.dataTier1?.owner?.countryId)?.dataTier1.color,
                     cityId: tile.dataTier1.owner.cityId,
                 } : null,
@@ -100,6 +82,7 @@ export class GameSetStateAction {
             dataTier2: tile.dataTier2 ? {
                 influences: tile.dataTier2.influences.map(influence => ({
                     countryId: influence.countryId,
+                    provinceId: influence.provinceId,
                     cityId: influence.cityId,
                     amount: influence.amount
                 })),
@@ -163,16 +146,29 @@ export class GameSetStateAction {
                 q: city.tile.q,
                 r: city.tile.r
             },
-            isCity: city.city,
-            parentCity: city.parentCity,
+            isProvinceCapital: city.isProvinceCapital,
             buildings: city.buildings.map(b => ({
                 type: BuildingType.fromString(b.type),
                 tile: b.tile ? {
                     tileId: b.tile.tileId,
                     q: b.tile.q,
                     r: b.tile.r
-                } : null
+                } : null,
+                active: b.active
             }))
+        }));
+    }
+
+
+    private getProvinces(game: PayloadGameState): Province[] {
+        return game.provinces.map(province => ({
+            provinceId: province.provinceId,
+            countryId: province.countryId,
+            cityIds: province.cityIds,
+            provinceCapitalCityId: province.provinceCapitalCityId,
+            resources: province.dataTier3
+                ? new Map<ResourceType, number>(Object.entries(province.dataTier3!!.resourceBalance).map(e => [ResourceType.fromString(e[0]), e[1]]))
+                : null,
         }));
     }
 
@@ -188,6 +184,11 @@ export class GameSetStateAction {
                 layerId: TileLayerMeta.ID_COUNTRY,
                 value: this.getTileCountryLayerValue(tile, game),
                 borderDirections: this.getTileCountryLayerBorders(tile, borderCalculator)
+            },
+            {
+                layerId: TileLayerMeta.ID_PROVINCE,
+                value: this.getTileProvinceLayerValue(tile, game),
+                borderDirections: this.getTileProvinceLayerBorders(tile, borderCalculator)
             },
             {
                 layerId: TileLayerMeta.ID_CITY,
@@ -206,6 +207,16 @@ export class GameSetStateAction {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.countryId);
     }
 
+    private getTileProvinceLayerValue(tile: Tile, game: PayloadGameState): number[] {
+        const province = game.provinces.find(province => province.provinceId === tile.dataTier1?.owner?.provinceId);
+        const capital = game.cities.find(city => city.cityId == province?.provinceCapitalCityId);
+        return colorToRgbArray(orDefault(capital?.color, Color.INVALID));
+    }
+
+    private getTileProvinceLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
+        return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.provinceId);
+    }
+
     private getTileCityLayerValue(tile: Tile, game: PayloadGameState): number[] {
         const city = game.cities.find(city => city.cityId === tile.dataTier1?.owner?.cityId);
         return colorToRgbArray(orDefault(city?.color, Color.INVALID));
@@ -213,6 +224,10 @@ export class GameSetStateAction {
 
     private getTileCityLayerBorders(tile: Tile, borderCalculator: TileBorderCalculator): boolean[] {
         return borderCalculator.getBorderDirections(tile.position.q, tile.position.r, tile => tile.dataTier1?.owner?.cityId);
+    }
+
+    private getRoutes(game: PayloadGameState): Route[] {
+        return game.routes;
     }
 
 }

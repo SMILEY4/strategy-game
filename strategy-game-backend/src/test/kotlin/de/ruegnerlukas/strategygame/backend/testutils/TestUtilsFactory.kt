@@ -9,9 +9,11 @@ import kotlinx.coroutines.future.await
 
 object TestUtilsFactory {
 
+	var arangoDbDockerPort = 8529
+
 	suspend fun createTestDatabase(): ArangoDatabase {
-		ArangoDatabase.delete("localhost", 8529, null, null, "test-database")
-		return ArangoDatabase.create("localhost", 8529, null, null, "test-database")
+		ArangoDatabase.delete("localhost", arangoDbDockerPort, null, null, "test-database")
+		return ArangoDatabase.create("localhost", arangoDbDockerPort, null, null, "test-database")
 	}
 
 	class MockMessageProducer : MessageProducer {
@@ -32,21 +34,21 @@ object TestUtilsFactory {
 			return list
 		}
 
-		override suspend fun <T> sendToSingle(connectionId: Int, message: Message<T>) {
+		override suspend fun <T> sendToAll(message: Message<T>) {
+			messages.add(Triple("all", message.type, Json.asString(message.payload as Any)))
+		}
+
+		override suspend fun <T> sendToSingle(connectionId: Long, message: Message<T>) {
 			messages.add(Triple(connectionId.toString(), message.type, Json.asString(message.payload as Any)))
 		}
 
-		override suspend fun <T> sendToMultiple(connectionIds: Collection<Int>, message: Message<T>) {
+		override suspend fun <T> sendToMultiple(connectionIds: Collection<Long>, message: Message<T>) {
 			connectionIds.forEach {
 				messages.add(Triple(it.toString(), message.type, Json.asString(message.payload as Any)))
 			}
 		}
 
-		override suspend fun <T> sendToAll(message: Message<T>) {
-			messages.add(Triple("all", message.type, Json.asString(message.payload as Any)))
-		}
-
-		override suspend fun <T> sendToAllExcept(excludedConnectionId: Int, message: Message<T>) {
+		override suspend fun <T> sendToAllExcept(excludedConnectionId: Long, message: Message<T>) {
 			throw UnsupportedOperationException()
 		}
 

@@ -1,5 +1,5 @@
 import {UserRepository} from "../../../core/required/userRepository";
-import {Optional, optional} from "../../../shared/optional";
+import {optional} from "../../../shared/optional";
 import {UserStore} from "./userStore";
 
 export class UserRepositoryImpl implements UserRepository {

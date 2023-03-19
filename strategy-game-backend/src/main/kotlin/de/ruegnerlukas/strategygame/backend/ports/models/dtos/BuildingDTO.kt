@@ -4,5 +4,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 
 data class BuildingDTO(
     val type: String,
-    val tile: TileRef?
+    val tile: TileRef?,
+    val active: Boolean
 )

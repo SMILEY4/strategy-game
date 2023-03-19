@@ -11,44 +11,82 @@ import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {
 
+    /**
+     * Error when creating a new user
+     */
     sealed interface CreateUserError
+
+    /**
+     * Error when deleting a user
+     */
     sealed interface DeleteUserError
+
+    /**
+     * Error when authenticating a user
+     */
     sealed interface AuthUserError
+
+    /**
+     * Error when refreshing a token
+     */
     sealed interface RefreshAuthError
 
+    /**
+     * The user already exists
+     */
     object UserAlreadyExistsError : CreateUserError {
         override fun toString(): String = this.javaClass.simpleName
     }
 
+    /**
+     * The email or password is not valid
+     */
     object InvalidEmailOrPasswordError : CreateUserError {
         override fun toString(): String = this.javaClass.simpleName
     }
 
+    /**
+     * the confirmation code could not be delivered (e.g. via email)
+     */
     object CodeDeliveryError : CreateUserError {
         override fun toString(): String = this.javaClass.simpleName
     }
 
+    /**
+     * The given credentials are not valid, i.e. the user is not authorized
+     */
     object NotAuthorizedError : AuthUserError, RefreshAuthError, DeleteUserError {
         override fun toString(): String = this.javaClass.simpleName
     }
 
+    /**
+     * The user has not confirmed the account yet
+     */
     object UserNotConfirmedError : AuthUserError, RefreshAuthError {
         override fun toString(): String = this.javaClass.simpleName
     }
 
+    /**
+     * No user with the given data exists
+     */
     object UserNotFoundError : AuthUserError, RefreshAuthError {
         override fun toString(): String = this.javaClass.simpleName
     }
 
+
     companion object {
 
+        /**
+         * Create a new identity-service from the given config
+         * @return the created [UserIdentityService]
+         */
         fun create(config: ConfigData): UserIdentityService {
             return when (config.identityProvider) {
                 "cognito" -> AwsCognitoService.create(
                     poolId = Config.get().aws.cognito.poolId,
                     clientId = Config.get().aws.cognito.clientId,
-                    accessKey = Config.get().aws.user.accessKey,
-                    secretKey = Config.get().aws.user.secretAccess,
+                    accessKey = Config.get().aws.user.accessKeyId,
+                    secretKey = Config.get().aws.user.secretAccessKey,
                     region = Config.get().aws.region
                 )
                 "dummy" -> DummyUserIdentityService()

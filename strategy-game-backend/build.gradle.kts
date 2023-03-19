@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "de.ruegnerlukas"
-version = "0.3.0"
+version = "0.4.0"
 
 application {
     mainClass.set("de.ruegnerlukas.strategygame.backend.ApplicationKt")
@@ -10,7 +10,7 @@ application {
 
 plugins {
     application
-    val versionKotlin = "1.7.20"
+    val versionKotlin = "1.7.21"
     kotlin("jvm") version versionKotlin
     kotlin("plugin.serialization").version(versionKotlin)
     id("com.github.johnrengelman.shadow") version "7.0.0"
@@ -39,16 +39,19 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:$versionKtor")
     implementation("io.ktor:ktor-server-metrics:$versionKtor")
     implementation("io.ktor:ktor-server-metrics-micrometer:$versionKtor")
-    implementation("io.ktor:ktor-network-tls-certificates:$versionKtor")
     implementation("io.ktor:ktor-server-html-builder:$versionKtor")
     testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
     testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
 
+    val versionKtorSwaggerUi: String by project
+    implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
+
+    val versionKtorWebsocketsExtended: String by project
+    implementation("io.github.smiley4:ktor-websockets-extended:$versionKtorWebsocketsExtended")
+
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
 
-    val versionKtorSwaggerUi: String by project
-    implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
@@ -59,10 +62,12 @@ dependencies {
     val versionKotlinLogging: String by project
     val versionLogstashLogbackEncoder: String by project
     val versionSlf4jCoroutines: String by project
+    val versionJanino: String by project
     implementation("ch.qos.logback:logback-classic:$versionLogback")
     implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
     implementation("net.logstash.logback:logstash-logback-encoder:$versionLogstashLogbackEncoder")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$versionSlf4jCoroutines")
+    implementation("org.codehaus.janino:janino:$versionJanino")
 
     val versionArangoDb: String by project
     val versionJacksonDataformatVelocypack: String by project
@@ -85,14 +90,18 @@ dependencies {
     }
 
     val versionKotest: String by project
-    val versionKotestExtensions: String by project
+    val versionKotestExtensionKtor: String by project
+    val versionKotestExtensionTestContainers: String by project
     testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
     testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
     testImplementation("io.kotest:kotest-property:$versionKotest")
-    testImplementation("io.kotest.extensions:kotest-assertions-ktor:$versionKotestExtensions")
+    testImplementation("io.kotest.extensions:kotest-assertions-ktor:$versionKotestExtensionKtor")
+    testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:$versionKotestExtensionTestContainers")
 
     val versionKotlinTest: String by project
     testImplementation("org.jetbrains.kotlin:kotlin-test:$versionKotlinTest")
+
+
 }
 
 tasks.withType<Test>().configureEach {

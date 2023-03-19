@@ -1,0 +1,19 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+    labels:
+        kops.k8s.io/cluster: strategy-game.k8s.local
+    name: nodes-eu-central-1a
+spec:
+    role: Node
+    instanceMetadata:
+        httpPutResponseHopLimit: 1
+        httpTokens: required
+    image: 099720109477/ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20230112
+    machineType: t3.small
+    rootVolumeType: gp3
+    rootVolumeSize: 20
+    maxSize: 1
+    minSize: 1
+    subnets:
+        - eu-central-1a

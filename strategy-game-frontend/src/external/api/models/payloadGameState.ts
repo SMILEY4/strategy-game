@@ -1,4 +1,5 @@
 import {Color} from "../../../core/models/Color";
+import {ResourceType} from "../../../core/models/resourceType";
 import {TileVisibility} from "../../../core/models/tileVisibility";
 import {MsgTileContent} from "./messagingTileContent";
 
@@ -18,12 +19,14 @@ export interface PayloadGameState {
             resourceType: string,
             owner: ({
                 countryId: string,
-                cityId: string
+                provinceId: string
+                cityId: string | null
             }) | null,
         } | null,
         dataTier2: {
             influences: ({
                 countryId: string,
+                provinceId: string,
                 cityId: string,
                 amount: number
             })[],
@@ -35,16 +38,7 @@ export interface PayloadGameState {
             countryId: string,
             userId: string,
             color: Color
-        },
-        dataTier3: {
-            resources: {
-                money: number,
-                wood: number,
-                food: number,
-                stone: number,
-                metal: number
-            }
-        } | null
+        }
     })[],
     cities: ({
         cityId: string,
@@ -54,17 +48,36 @@ export interface PayloadGameState {
             q: number,
             r: number
         },
+        isProvinceCapital: boolean,
         name: string,
         color: Color,
-        city: boolean,
-        parentCity: string | null,
         buildings: ({
             type: string,
             tile: {
                 tileId: string,
                 q: number,
                 r: number
-            } | null
+            } | null,
+            active: boolean
+        })[]
+    })[],
+    provinces: ({
+        provinceId: string,
+        countryId: string,
+        cityIds: string[],
+        provinceCapitalCityId: string,
+        dataTier3: {
+            resourceBalance: Record<ResourceType, number>
+        } | null
+    })[],
+    routes: ({
+        routeId: string,
+        cityIdA: string,
+        cityIdB: string,
+        path: ({
+            tileId: string,
+            q: number,
+            r: number
         })[]
     })[]
 }

@@ -1,4 +1,4 @@
-import {ResourceType} from "./resourceType";
+import {TileResourceType} from "./tileResourceType";
 import {TerrainType} from "./terrainType";
 import {TilePosition} from "./tilePosition";
 import {TileVisibility} from "./tileVisibility";
@@ -14,16 +14,18 @@ export interface Tile {
 
 export interface TileDataTier1 {
     terrainType: TerrainType,
-    resourceType: ResourceType,
+    resourceType: TileResourceType,
     owner: ({
         countryId: string,
-        cityId: string
+        provinceId: string,
+        cityId: string | null
     }) | null,
 }
 
 export interface TileDataTier2 {
     influences: ({
         countryId: string,
+        provinceId: string,
         cityId: string,
         amount: number,
     })[],
