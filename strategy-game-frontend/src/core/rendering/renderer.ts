@@ -52,8 +52,9 @@ export class Renderer {
         const camera = this.createCamera(localGameState.camera);
 
         gameState.routes.forEach(route => {
-            const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r))
-            this.lineRenderer.registerLine(route.routeId, positions, 1, [1, 1, 1, 0.3])
+            this.lineRenderer.removeAllLines();
+            const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r));
+            this.lineRenderer.registerLine(route.routeId, positions, 1, [1, 1, 1, 0.3]);
         })
 
         this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);

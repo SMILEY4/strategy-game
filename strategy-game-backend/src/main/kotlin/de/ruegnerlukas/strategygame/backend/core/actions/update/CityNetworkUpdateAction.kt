@@ -30,22 +30,34 @@ class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val re
 
     suspend fun perform(game: GameExtended, creationResult: CityCreationResult) {
         if (creationResult.city.isProvinceCapital) {
-            updateRoutes(creationResult.city, game)
+            createOrUpdateRoutes(creationResult.city, game)
         } else {
             val province = creationResult.province
             val capitalCity = game.cities.find { it.cityId == province.provinceCapitalCityId } ?: throw Exception("City not found")
-            updateRoutes(capitalCity, game)
+            createOrUpdateRoutes(capitalCity, game)
         }
     }
 
-    private suspend fun updateRoutes(city: City, game: GameExtended) {
+    private suspend fun createOrUpdateRoutes(city: City, game: GameExtended) {
         val pathfinder = buildPathfinder(game)
         game.cities
             .asSequence()
             .filter { canCreateRoute(city, it, game.routes, gameConfig.maxRouteLength) }
             .mapParallel { findPath(pathfinder, city, it, game) }
             .filter { isValidPath(it) }
-            .forEach { (from, to, path) -> game.routes.add(createRoute(from, to, path)) }
+            .forEach { (from, to, path) -> createOrUpdateRoute(from, to, path, game) }
+    }
+
+    private suspend fun createOrUpdateRoute(from: City, to: City, path: Path<ExtendedNode>, game: GameExtended) {
+        val existingRoute = existingRoute(from, to, game.routes)
+        if (existingRoute == null) {
+            game.routes.add(createRoute(from, to, path))
+        } else {
+            if (existingRoute.path.size > path.nodes.size) {
+                game.routes.remove(existingRoute)
+                game.routes.add(createRoute(from, to, path))
+            }
+        }
     }
 
     private fun buildPathfinder(game: GameExtended): Pathfinder<ExtendedNode> {
@@ -68,13 +80,17 @@ class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val re
                 && b.isProvinceCapital
                 && a.cityId != b.cityId
                 && a.tile.distance(b.tile) <= maxSearchRadius
-                && !routeAlreadyExists(a, b, routes)
+//                && !routeAlreadyExists(a, b, routes)
     }
 
     private fun routeAlreadyExists(a: City, b: City, routes: List<Route>): Boolean {
         return routes.any {
             (it.cityIdA == a.cityId && it.cityIdB == b.cityId) || (it.cityIdA == b.cityId && it.cityIdB == a.cityId)
         }
+    }
+
+    private fun existingRoute(a: City, b: City, routes: List<Route>): Route? {
+        return routes.find { (it.cityIdA == a.cityId && it.cityIdB == b.cityId) || (it.cityIdA == b.cityId && it.cityIdB == a.cityId) }
     }
 
     private fun findPath(pf: Pathfinder<ExtendedNode>, from: City, to: City, game: GameExtended): Triple<City, City, Path<ExtendedNode>> {
