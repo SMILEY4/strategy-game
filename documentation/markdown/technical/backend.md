@@ -2,10 +2,6 @@
 title: Backend Documentation
 ---
 
-
-
-
-
 # Running the Application
 
 **Intellij**
@@ -56,15 +52,19 @@ The created jar can be found in `./build/libs/strategy-game-backend-x.y-all.jar`
 
 **Kotlin**
 
-Programming language build on the JVM. [Link to documentation](https://kotlinlang.org/docs/home.html)
+Programming language build on the JVM. [Link](https://kotlinlang.org/docs/home.html)
 
 **Gradle**
 
-Build automation tool. Manages dependencies and build-tasks. [Link to documentation](https://docs.gradle.org/current/userguide/userguide.html)
+Build automation tool. Manages dependencies and build-tasks. [Link](https://docs.gradle.org/current/userguide/userguide.html)
 
 **Ktor**
 
-Framework for building web applications. [Link to documentation](https://ktor.io/docs/welcome.html)
+Framework for building web applications. [Link](https://ktor.io/docs/welcome.html)
+
+**Ktor Swagger UI**
+
+Own library build to document routes, automatically generate an OpenAPI Specification and serve a Swagger UI. [Link](https://github.com/SMILEY4/ktor-swagger-ui)
 
 **AWS-Cognito**
 
@@ -74,6 +74,14 @@ Simple and Secure User Sign-Up, Sign-In, and Access Control
 - https://medium.com/@warrenferns/integrate-java-with-aws-cognito-developer-tutorial-679e6e608951
 - https://gist.github.com/saggie/38e5979cb813224666af4b3d90e6120f
 - https://stackoverflow.com/questions/48356287/is-there-any-java-example-of-verification-of-jwt-for-aws-cognito-api
+
+**ArangoDb**
+
+A native multi-model database with flexible data models for  documents, graphs, and key-values. [Link](https://www.arangodb.com/docs/stable/)
+
+**Arrow**
+
+Arrow is a library for Typed Functional Programming in Kotlin. [Link](https://arrow-kt.io/docs/core/)
 
 
 
@@ -92,6 +100,21 @@ The backend-architecture is based on the "[Hexagonal Architecture](https://en.wi
 - */core* - the core business logic
 - */external* - external services, e.g. databases, clients, controllers, ...
 - */shared* - code used by all/most other packages, contains utility functions and common logic
+
+## Error Handling
+
+- e.g.: when calling a function, three different things can happen -> need to be handled differently
+  - **success** / everything is fine
+    - continue as normal
+  - expected **error** (e.g. cant find user by name)
+    - all errors MUST be handled
+    - handle via "[Either](https://arrow-kt.io/docs/apidocs/arrow-core/arrow.core/-either/)" + strictly defined error-objects
+    - every interface (in "ports") returns its own strictly defined errors 
+  - unexpected **exception** (e.g. no connection to db)
+    - throw exception 
+    - exceptions normally caught by rest-controller
+
+
 
 
 
@@ -129,300 +152,21 @@ The backend uses JSON-Web Tokens (RS256) managed by "AWS Cognito" as authenticat
 
 2. the response contains the jwt-token (idToken)
 
-3. to access restricted routes, send the token in the "Authentication"-header
+3. to access restricted routes, send the token in the "Authorization"-header
 
    ```
    Bearer <idToken>
+   ```
+   
+   For protected WebSocket-Connections, the jwt-token (idToken) is send as a query parameter
+   
+   ```
+   ...?token=<idToken>
    ```
 
 
 
 ## Endpoints
 
-### User
-
-**Sign-Up**
-
-Creates a new user. The email must be unique.
-
-```
-POST /api/user/signup
-```
-
-- Request
-
-  ```json
-  {
-  	"email": "example@email.com",
-  	"password": "password123",
-      "username": "example"
-  }
-  ```
-
-- Responses
-
-  - 200 OK
-
-  - 400 Bad Request
-
-    ```
-    INVALID_EMAIL_OR_PASSWORD
-    ```
-
-    The email or password is invalid, e.g. too short
-
-  - 400 Bad Request
-
-    ```
-    CODE_DELIVERY_FAILURE
-    ```
-
-    The confirmation code could not be sent to the given email
-
-  - 409 Conflict
-
-    ```
-    USER_EXISTS
-    ```
-
-    A user with the given email already exists
-
-**Login**
-
-Login with username and password to receive a JWT (JSON Web Token) for further authentications
-
-```
-POST /api/user/login
-```
-
-- Request
-
-  ```json
-  {
-  	"email": "example@email.com",
-  	"password": "password123",
-  }
-  ```
-
-- Responses
-
-  - 200 OK
-
-    ```json
-    {
-    	"idToken": "the (jwt) token used for authentication (short lifetime)",
-        "refreshToken": "the token used to get a new idToken without manual login"
-    }
-    ```
-
-  - 401 Unauthorized
-
-    ```
-    NOT_AUTHORIZED
-    ```
-
-    The given email and password do not match any existing user 
-
-  - 404 Not Found
-
-    ```
-    USER_NOT_FOUND
-    ```
-
-    The user with the given email does not exist
-
-  - 409 Conflict
-
-    ```
-    USER_NOT_CONFIRMED
-    ```
-
-    The user has not yet confirmed the email
-
-**Refresh**
-
-Get a new (jwt) idToken without sending email and password again.
-
-```
-POST /api/user/refresh
-```
-
-- Request
-
-  ```
-  "the refresh-token as plain-text"
-  ```
-
-- Responses
-
-  - 200 OK
-
-    ```json
-    {
-    	"idToken": "the (jwt) token used for authentication (short lifetime)",
-        "refreshToken": null
-    }
-    ```
-
-  - 401 Unauthorized
-
-    ```
-    NOT_AUTHORIZED
-    ```
-
-    The given refresh token is invalid
-
-  - 404 Not Found
-
-    ```
-    USER_NOT_FOUND
-    ```
-
-    The user does not exist
-
-  - 409 Conflict
-
-    ```
-    USER_NOT_CONFIRMED
-    ```
-
-    The user has not yet confirmed the email
-
-**Delete (protected)**
-
-Delete the given user. The email and password must be send again, even though the user is already "logged in".
-
-```
-DELETE /api/user/delete
-```
-
-- Request
-
-  ```json
-  {
-  	"email": "example@email.com",
-  	"password": "password123",
-  }
-  ```
-
-- Responses
-
-  - 200 OK
-  - 401 Unauthorized (token, email or password incorrect)
-
-### World
-
-**Create World**
-
-```
-POST /api/world/create
-```
-
-- Request
-
-  *empty*
-
-- Responses
-
-  - 200 OK
-
-    ```json
-    {
-    	"worldId": "String"
-    }
-    ```
-
-  - 500 Internal Server Error
-
-    ```
-    // the error message
-    ```
-
-**World WebSocket-Connection**
-
-```
-WS /api/messages?token=<jwtToken>
-```
-
-
-
-## WebSocket-Messages
-
-All messages follow the following format
-
-```json
-{
-    "type": "String - the identifying type of this websocket-message",
-    "payload": "String - the payload of the message as a json-string"
-}
-```
-
-- "[IN]" = messages sent by the client(s) and handled by the server/backend
-- "[OUT]" = messages sent by the server/backend and handled by the client(s)
-
-**[IN] Join World**
-
-- Type: `join-world`
-
-- Payload
-
-  ```json
-  {
-      "worldId": "String - the id of the world to join",
-  }
-  ```
-
-**[IN] Submit Turn**
-
-- Type: `submit-turn`
-
-- Payload
-
-  ```json
-  {
-      "worldId": "String - the id of the world to submit the turns for",
-      "commands": [
-          {
-              "q": "Int - the q-coordinate of the marker",
-              "r": "Int - the r-coordinate of the marker"
-          }
-      ]
-  }
-  ```
-
-**[OUT] Initial World State**
-
-- Type: `world-state`
-
-- Payload
-
-  ```json
-  {
-      "map": {
-          "tiles": [
-              "q": "Int - the q-coordinate of the tile",
-              "r": "Int - the r-coordinate of the tile",
-              "tileId": "Int - the id specifying the type of the tile"
-          ]
-      }
-  }
-  ```
-
-**[OUT] New Turn**
-
-- Type: `new-turn`
-
-- Payload
-
-  ```json
-  {
-      "addedMarkers": [
-          {
-              "q": "Int - the q-coordinate of the added marker",
-              "r": "Int - the r-coordinate of the added marker",
-              "playerId": "Int - the current (arbitrary) id of the player owning the marker"
-          }
-      ]
-  }
-  ```
+[Endpoint/API Documentation](./api.md)
 

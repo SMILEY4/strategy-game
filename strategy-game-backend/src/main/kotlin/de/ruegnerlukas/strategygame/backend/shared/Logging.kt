@@ -12,7 +12,7 @@ interface Logging {
 	 * @return the logger-object for this class
 	 */
 	fun <T : Logging> T.log(): Logger {
-		return KotlinLogging.logger {}
+		return KotlinLogging.logger(this::class.java.name)
 	}
 
 	companion object {

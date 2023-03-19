@@ -1,22 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.ports.models
 
-import kotlinx.serialization.Serializable
 
-/**
- * Represents a single tile
- */
-@Serializable
+enum class TileType {
+	LAND,
+	WATER,
+}
+
+
 data class Tile(
-	/**
-	 * the q-coordinate
-	 */
 	val q: Int,
-	/**
-	 * the r-coordinate
-	 */
 	val r: Int,
-	/**
-	 * the id/type of this tile
-	 */
-	val tileId: Int
+	val type: TileType
 )

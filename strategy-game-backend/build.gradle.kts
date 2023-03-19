@@ -4,12 +4,17 @@ val versionKtor: String by project
 val versionKotlin: String by project
 val versionLogback: String by project
 val versionKotlinLogging: String by project
+val versionAwsSdk: String by project
 val versionKotest: String by project
 val versionKotestExtensions: String by project
 val versionKotlinTest: String by project
+val versionArrow: String by project
+val versionArangoDb: String by project
+val versionJacksonDataformatVelocypack: String by project
+val versionKtorSwaggerUi: String by project
 
 group = "de.ruegnerlukas"
-version = "0.1"
+version = "0.2.0"
 
 application {
 	mainClass.set("de.ruegnerlukas.strategygame.backend.ApplicationKt")
@@ -18,13 +23,17 @@ application {
 
 plugins {
 	application
-	kotlin("jvm") version "1.5.31"
+	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.serialization").version("1.6.20")
 	id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
+	maven {
+		url = uri("https://jitpack.io")
+	}
 }
 
 dependencies {
@@ -32,25 +41,34 @@ dependencies {
 	implementation("io.ktor:ktor-server-netty-jvm:$versionKtor")
 	implementation("io.ktor:ktor-server-websockets:$versionKtor")
 	implementation("io.ktor:ktor-server-call-logging:$versionKtor")
-	implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
 	implementation("io.ktor:ktor-server-cors:$versionKtor")
-	implementation("io.ktor:ktor-serialization-kotlinx-json:$versionKtor")
+	implementation("io.ktor:ktor-server-content-negotiation:$versionKtor")
+	implementation("io.ktor:ktor-serialization-jackson:$versionKtor")
 	implementation("io.ktor:ktor-server-auth:$versionKtor")
 	implementation("io.ktor:ktor-server-auth-jwt:$versionKtor")
+	implementation("io.ktor:ktor-server-status-pages:$versionKtor")
+	implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
+
+	implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
+	implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")
+	implementation("com.amazonaws:aws-java-sdk-cognitoidp:$versionAwsSdk")
 
 	implementation("ch.qos.logback:logback-classic:$versionLogback")
 	implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
 
-	implementation("com.amazonaws:aws-java-sdk:1.12.208")
-	implementation("com.amazonaws:aws-java-sdk-core:1.12.208")
-	implementation("com.amazonaws:aws-java-sdk-cognitoidp:1.12.208")
+	implementation("com.arangodb:arangodb-java-driver:$versionArangoDb")
+	implementation("com.arangodb:jackson-dataformat-velocypack:$versionJacksonDataformatVelocypack")
 
+	implementation("io.arrow-kt:arrow-core:$versionArrow")
+	implementation("io.arrow-kt:arrow-fx-coroutines:$versionArrow")
+	implementation("io.arrow-kt:arrow-fx-stm:$versionArrow")
 
 	testImplementation("io.kotest:kotest-runner-junit5:$versionKotest")
 	testImplementation("io.kotest:kotest-assertions-core:$versionKotest")
 	testImplementation("io.kotest:kotest-property:$versionKotest")
 	testImplementation("io.kotest.extensions:kotest-assertions-ktor:$versionKotestExtensions")
 	testImplementation("io.ktor:ktor-server-test-host:$versionKtor")
+	testImplementation("io.ktor:ktor-client-content-negotiation:$versionKtor")
 	testImplementation("org.jetbrains.kotlin:kotlin-test:$versionKotlinTest")
 }
 
@@ -59,7 +77,12 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.withType<KotlinCompile> {
-	kotlinOptions.jvmTarget = "11"
+	kotlinOptions.jvmTarget = "17"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.shadowJar {

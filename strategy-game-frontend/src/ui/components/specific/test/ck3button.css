@@ -1,0 +1,96 @@
+.ck3button {
+	font-family:    garamond-premier-pro, serif;
+	position:       relative;
+	font-weight:    500;
+	letter-spacing: 0.0625rem;
+	color:          #d39053;
+	text-transform: uppercase;
+	text-shadow:    0 0 4px rgb(0, 0, 0, 0.8);
+	text-align:     center;
+	display:        inline-block;
+	vertical-align: top;
+	transition:     color .2s ease, background .2s ease, box-shadow .6s ease;
+	overflow:       hidden;
+
+	/*button__primary*/
+	background:     #39b8cb;
+	font-size:      1.625rem;
+	padding:        0.875rem 2.5rem;
+}
+
+
+.ck3button__content {
+
+	position:        relative;
+	z-index:         2;
+	white-space:     nowrap;
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+
+	/*button__primary .ck3button__content*/
+	font-weight:     400;
+	color:           #fefaea
+}
+
+.ck3button__background {
+	background: transparent;
+	position:   absolute;
+	top:        0;
+	bottom:     0;
+	left:       0;
+	right:      0;
+}
+
+.ck3button__background::after {
+	content:          "";
+	position:         absolute;
+	top:              50%;
+	left:             50%;
+	width:            200%;
+	height:           200%;
+	background-image: url("../../../../../public/background.bmp");
+	background-size:  cover;
+	mix-blend-mode:   multiply;
+	transform:        translate(-60%, -40%);
+	transition:       transform .8s ease-out, opacity .4s ease-out;
+}
+
+.ck3button__border {
+	position:       absolute;
+	top:            0;
+	left:           0;
+	width:          100%;
+	height:         100%;
+	overflow:       hidden;
+	pointer-events: none;
+	z-index:        2;
+}
+
+.ck3button__border__top,
+.ck3button__border__bottom,
+.ck3button__border__left,
+.ck3button__border__right {
+	position:         absolute;
+	background-image: url("../../../../../public/border.bmp");
+	background-size:  87.5625rem;
+	width:            100vw;
+	height:           4px;
+}
+
+.ck3button__border__bottom {
+	bottom: 0;
+	transform: scaleY(-1);
+}
+
+
+.ck3button__border__left {
+	transform: rotate(90deg) scaleY(-1);
+	transform-origin: top left;
+}
+
+.ck3button__border__right {
+	right: 0;
+	transform: rotate(-90deg) scaleY(-1);
+	transform-origin: top right;
+}

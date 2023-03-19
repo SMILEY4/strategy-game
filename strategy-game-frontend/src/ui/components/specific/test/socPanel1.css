@@ -1,0 +1,45 @@
+.soc-panel1 {
+	position:        relative;
+	overflow:        hidden;
+	padding:         50px;
+
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+
+	background:      radial-gradient(#782027 10%, #251121 80%);
+}
+
+
+.soc-panel1__background {
+	position:         absolute;
+	top:              0;
+	left:             0;
+	width:            600%;
+	height:           600%;
+	background-image: url("../../../../../public/grundge.jpg");
+	background-size:  cover;
+	mix-blend-mode:   multiply;
+	opacity:          80%;
+	pointer-events:   none;
+}
+
+
+.soc-panel1__border {
+	position: absolute;
+	border:   2px solid rgba(255, 255, 255, 40%);
+	top:      3px;
+	bottom:   3px;
+	left:     3px;
+	right:    3px;
+}
+
+.soc-panel1__border:after {
+	content: "";
+	position: absolute;
+	border:   1px solid rgba(255, 255, 255, 60%);
+	top:      2px;
+	bottom:   2px;
+	left:     2px;
+	right:    2px;
+}

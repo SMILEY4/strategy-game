@@ -1,0 +1,83 @@
+.dialog {
+	background-color: #9c9c9d;
+	border:           1px solid black;
+	position:         absolute;
+	z-index:          10;
+
+	min-width:        100px;
+	min-height:       100px;
+
+	display:          flex;
+	flex-direction:   column;
+}
+
+
+.dialog > * {
+	cursor: default;
+}
+
+
+.dialog-resizer {
+	position:         absolute;
+	bottom:           0;
+	right:            0;
+	cursor:           se-resize;
+	background-color: #767677;
+}
+
+
+.dialog > .dialog-header {
+	height:        40px;
+	display:       flex;
+	align-items:   center;
+	gap:           4px;
+	padding-right: 4px;
+	padding-left:  4px;
+}
+
+
+
+.dialog > .dialog-header > .dialog-title {
+	flex-grow: 1;
+	overflow:  hidden;
+}
+
+
+.dialog > .dialog-header,
+.dialog > .dialog-header > .dialog-title {
+	cursor: move;
+}
+
+
+.dialog > .dialog-header > .dialog-close,
+.dialog > .dialog-header > .dialog-pin {
+	width:            32px;
+	height:           32px;
+	min-width:        32px;
+	min-height:       32px;
+	max-width:        32px;
+	max-height:       32px;
+	background-color: #767677;
+	cursor:           pointer;
+	display:          flex;
+	align-items:      center;
+	justify-content:  center;
+}
+
+
+.dialog > .dialog-header > .dialog-close:hover,
+.dialog > .dialog-header > .dialog-pin:hover {
+	background-color: #6e6e6e;
+}
+
+
+.dialog > .dialog-header > .dialog-close:active,
+.dialog > .dialog-header > .dialog-pin:active {
+	background-color: #646464;
+}
+
+
+.dialog > .dialog-body {
+	background-color: #8d8d8d;
+	flex-grow:        1;
+}

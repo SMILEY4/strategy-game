@@ -61,7 +61,7 @@ export namespace TilemapUtils {
 
 	export const DEFAULT_HEX_LAYOUT = HexLayout.build("pointy-top", [10, 10], 0, 0);
 
-	export function hexToPixel(layout: TilemapUtils.HexLayout, q: number, r: number): number[] {
+	export function hexToPixel(layout: TilemapUtils.HexLayout, q: number, r: number): [number, number] {
 		const M = layout.orientation;
 		const x = (M.f0 * q + M.f1 * r) * (layout.size[0]);
 		const y = (M.f2 * q + M.f3 * r) * (layout.size[1]);

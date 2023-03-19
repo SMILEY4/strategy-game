@@ -1,22 +1,27 @@
 import React, {ReactElement} from "react";
+import {AppConfig} from "../../../main";
 import {CreateWorld} from "./createworld/CreateWorld";
+import {JoinedGames} from "./joinedgames/JoinedGames";
 import {JoinWorld} from "./joinworld/JoinWorld";
 import "./pageHome.css";
-import {UserHooks} from "../../../core/hooks/userHooks";
 
 export function PageHome(): ReactElement {
 
-	const logOut = UserHooks.useLogOut("/login");
+    return (
+        <div className="home">
+            <div className="home-content">
+                <CreateWorld/>
+                <JoinWorld/>
+                <JoinedGames/>
+                <div>
+                    <button onClick={onLogOut}>Log Out</button>
+                </div>
+            </div>
+        </div>
+    );
 
-	return (
-		<div className="home">
-			<div className="home-content">
-				<CreateWorld/>
-				<JoinWorld/>
-				<div>
-					<button onClick={logOut}>Log Out</button>
-				</div>
-			</div>
-		</div>
-	);
+    function onLogOut() {
+        AppConfig.userLogOut.perform();
+    }
+
 }

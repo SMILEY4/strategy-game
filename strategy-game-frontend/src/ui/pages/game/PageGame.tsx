@@ -1,33 +1,49 @@
 import {ReactElement, useEffect} from "react";
-import "./pageGame.css";
-import {GlobalState} from "../../../state/globalState";
 import {useNavigate} from "react-router-dom";
-import {Canvas} from "./Canvas";
-import {GameUI} from "./GameUI";
+import {LocalGameStateHooks} from "../../../external/state/localgame/localGameStateHooks";
+import {GameState} from "../../../models/state/gameState";
+import {MenuFrameStack} from "../../components/specific/dialog/MenuFrameStack";
+import {Canvas} from "./canvas/Canvas";
+import "./pageGame.css";
+import {GameMenuBar} from "./ui/GameMenuBar";
 
 export function PageGame(): ReactElement {
 
-	const currentState = GlobalState.useState(state => state.currentState);
-	const navigate = useNavigate();
+    const currentState = LocalGameStateHooks.useCurrentGameState();
+    const navigate = useNavigate();
 
-	useEffect(() => {
-		if (currentState === "idle") {
-			navigate("/home");
-		}
-	});
 
-	return (
-		<div className="game">
-			{(currentState === "loading") && (
-				<div>Loading...</div>
-			)}
-			{(currentState === "active") && (
-				<div className="game-container">
-					<Canvas/>
-					<GameUI/>
-				</div>
+    useEffect(() => {
+        if (currentState === GameState.OUT_OF_GAME) {
+            navigate("/home");
+        }
+    });
 
-			)}
-		</div>
-	);
+    function renderLoadingScreen(): ReactElement {
+        return (
+            <div className="game">
+                <div>Loading...</div>
+            </div>
+        );
+    }
+
+    function renderGameScreen(): ReactElement {
+        return (
+            <div className="game">
+                <div className="game-container">
+                    <Canvas/>
+                    <div className="game-ui">
+                        <GameMenuBar/>
+                    </div>
+                    <MenuFrameStack/>
+                </div>
+            </div>
+        );
+    }
+
+    if(currentState === GameState.LOADING) {
+        return renderLoadingScreen()
+    } else {
+        return renderGameScreen()
+    }
 }
