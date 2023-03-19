@@ -11,8 +11,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectActio
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.InvalidPlayerState
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.shared.Logging

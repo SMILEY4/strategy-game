@@ -38,8 +38,18 @@ class ResourceStats {
         }
     }
 
+    fun add(resources: ResourceStack) {
+        add(resources.type, resources.amount)
+    }
+
     fun remove(type: ResourceType, amount: Float) {
         add(type, -amount)
+    }
+
+    fun remove(resources: ResourceStats) {
+        resources.toList().forEach { (type, amount) ->
+            remove(type, amount)
+        }
     }
 
     fun set(type: ResourceType, amount: Float) {

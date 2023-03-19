@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameDelete
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 

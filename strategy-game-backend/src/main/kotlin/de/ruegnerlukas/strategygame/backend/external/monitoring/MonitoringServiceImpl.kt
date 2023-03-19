@@ -2,8 +2,8 @@ package de.ruegnerlukas.strategygame.backend.external.monitoring
 
 import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.MetricId
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.MetricId
 import io.micrometer.core.instrument.Clock
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.DistributionSummary

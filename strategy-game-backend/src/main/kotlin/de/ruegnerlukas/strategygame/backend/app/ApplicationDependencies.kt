@@ -5,27 +5,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateB
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionBuildingCreation
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityCreation
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityInfluence
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityNetworkUpdate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCityTileOwnership
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionCountryResources
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceOwnership
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionInfluenceVisibility
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionMarkerPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutLifetime
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionScoutPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.actions.GameActionWorldPrepare
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCityCreate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandBuildingCreate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandMarkerPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandScoutPlace
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventTileInfluenceUpdate
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldPrepare
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventWorldUpdate
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameDeleteActionImpl
@@ -37,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActi
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserDeleteActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserLoginActionImpl
@@ -63,6 +43,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQu
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
@@ -84,7 +65,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
@@ -159,22 +140,6 @@ val applicationDependencies = module {
 	single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
 	single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
 	single<MessageHandler> { MessageHandler(get()) }
-
-	single<GameEventManager> {
-		GameEventManager().also {
-			it.register(GameEventCityCreate.TYPE, GameActionCityInfluence(get()))
-			it.register(GameEventCityCreate.TYPE, GameActionCityNetworkUpdate(get(), get()))
-			it.register(GameEventCityCreate.TYPE, GameActionCityTileOwnership())
-			it.register(GameEventCommandBuildingCreate.TYPE, GameActionBuildingCreation())
-			it.register(GameEventCommandCityCreate.TYPE, GameActionCityCreation(get()))
-			it.register(GameEventCommandMarkerPlace.TYPE, GameActionMarkerPlace())
-			it.register(GameEventCommandScoutPlace.TYPE, GameActionScoutPlace(get()))
-			it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceOwnership(get()))
-			it.register(GameEventTileInfluenceUpdate.TYPE, GameActionInfluenceVisibility())
-			it.register(GameEventWorldPrepare.TYPE, GameActionWorldPrepare())
-			it.register(GameEventWorldUpdate.TYPE, GameActionCountryResources(get()))
-			it.register(GameEventWorldUpdate.TYPE, GameActionScoutLifetime(get()))
-		}
-	}
+	single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get()) }
 
 }

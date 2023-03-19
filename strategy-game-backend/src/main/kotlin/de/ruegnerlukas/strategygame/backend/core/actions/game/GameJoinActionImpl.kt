@@ -16,8 +16,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.G
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.UserAlreadyPlayerError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CountryInsert
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate

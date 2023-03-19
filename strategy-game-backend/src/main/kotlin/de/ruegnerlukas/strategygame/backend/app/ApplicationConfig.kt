@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
-import de.ruegnerlukas.strategygame.backend.external.api.routing.apiRoutes
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.external.api.routing.routingApi
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
@@ -35,6 +35,7 @@ import io.ktor.server.request.userAgent
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.RoutingApplicationCall
+import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
@@ -53,7 +54,6 @@ import org.koin.ktor.plugin.Koin
 import org.slf4j.event.Level
 import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
-
 
 /**
  * The main-module for configuring Ktor. Referenced in "application.conf".
@@ -96,7 +96,7 @@ fun Application.module() {
             "${status.toString()}: $httpMethod - $route      (userAgent=$userAgent)"
         }
         filter { call ->
-            listOf("api/metrics", "api/health").none {
+            listOf("internal/metrics", "api/health").none {
                 call.request.path().contains(it)
             }
         }
@@ -124,7 +124,7 @@ fun Application.module() {
     }
     val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
-        jwt { userIdentityService.configureAuthentication(this) }
+        jwt("user") { userIdentityService.configureAuthentication(this) }
         basic("auth-technical-user") {
             realm = "strategy-game"
             validate { credentials ->
@@ -165,6 +165,7 @@ fun Application.module() {
             bearerFormat = "jwt"
         }
         automaticTagGenerator = { url -> url.getOrNull(1) }
+        pathFilter = { _, url -> !(url.lastOrNull()?.let { it.endsWith(".js") || it.endsWith(".css") } ?: false) }
         defaultSecuritySchemeName = "Auth"
         defaultUnauthorizedResponse {
             description = "Authentication failed"
@@ -194,5 +195,7 @@ fun Application.module() {
         }
     }
 
-    apiRoutes()
+    routing {
+        routingApi()
+    }
 }

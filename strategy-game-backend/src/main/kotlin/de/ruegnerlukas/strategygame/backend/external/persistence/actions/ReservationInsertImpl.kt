@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.actions
 import arrow.core.getOrElse
 import com.fasterxml.jackson.annotation.JsonAlias
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricDbQuery
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 
 class ReservationInsertImpl(private val database: ArangoDatabase) : ReservationInsert {

@@ -4,8 +4,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.core.actions.events.GameEventManager
-import de.ruegnerlukas.strategygame.backend.core.actions.events.events.GameEventCommandCityCreate
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
@@ -15,10 +13,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
+import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.max
 import de.ruegnerlukas.strategygame.backend.shared.validation.ValidationContext
@@ -26,11 +25,10 @@ import de.ruegnerlukas.strategygame.backend.shared.validation.validations
 
 class ResolveCreateCityCommandImpl(
     private val gameConfig: GameConfig,
-    private val gameEventManager: GameEventManager
+    private val turnUpdate: TurnUpdateAction,
 ) : ResolveCreateCityCommand, Logging {
 
     private val metricId = MonitoringService.metricCoreAction(ResolveCreateCityCommand::class)
-
 
     override suspend fun perform(
         command: Command<CreateCityCommandData>,
@@ -46,12 +44,11 @@ class ResolveCreateCityCommandImpl(
                     .ifInvalid<Unit> { reasons ->
                         return@either reasons.map { CommandResolutionError(command, it) }
                     }
-                gameEventManager.send(GameEventCommandCityCreate::class.simpleName!!, GameEventCommandCityCreate(game, command))
+                turnUpdate.commandCreateCity(game, command)
                 emptyList()
             }
         }
     }
-
 
     private fun findCountry(countryId: String, state: GameExtended): Either<ResolveCommandsAction.ResolveCommandsActionError, Country> {
         val country = state.countries.find { it.countryId == countryId }
@@ -61,7 +58,6 @@ class ResolveCreateCityCommandImpl(
             return country.right()
         }
     }
-
 
     private fun findTile(q: Int, r: Int, state: GameExtended): Either<ResolveCommandsAction.ResolveCommandsActionError, Tile> {
         val targetTile = state.tiles.find { it.position.q == q && it.position.r == r }
@@ -73,7 +69,6 @@ class ResolveCreateCityCommandImpl(
     }
 
 }
-
 
 private object CreateCityValidations {
 

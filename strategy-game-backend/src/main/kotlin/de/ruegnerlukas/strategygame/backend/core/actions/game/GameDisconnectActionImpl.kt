@@ -2,8 +2,8 @@ package de.ruegnerlukas.strategygame.backend.core.actions.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GamesByUserQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging

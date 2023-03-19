@@ -10,8 +10,8 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConne
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameRequestConnectionActionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.required.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 

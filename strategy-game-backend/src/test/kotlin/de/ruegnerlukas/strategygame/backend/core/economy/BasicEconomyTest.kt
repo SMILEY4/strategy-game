@@ -60,6 +60,64 @@ class BasicEconomyTest : StringSpec({
 
 	}
 
+
+	"test basic city with some food available" {
+		val tiles = tiles().also { tiles ->
+			generateResourcesForPosition(
+				tiles, TilePosition(0, 0), listOf(
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS,
+					TileResourceType.PLAINS
+				)
+			)
+		}
+		val game = game(
+			tiles = tiles,
+			cities = listOf(
+				City(
+					cityId = "test-city",
+					countryId = "test-country",
+					tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == 0 }!!),
+					name = "Test",
+					color = RGBColor.random(),
+					isProvinceCapital = true,
+					buildings = mutableListOf(
+						Building(
+							type = BuildingType.FARM,
+							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == 0 }!!),
+							active = true
+						)
+					)
+				),
+			),
+			provinces = listOf(
+				Province(
+					provinceId = "test-province",
+					countryId = "test-country",
+					cityIds = mutableListOf("test-city"),
+					provinceCapitalCityId = "test-city",
+				)
+			)
+		)
+
+		for (i in 1..10) {
+			performEconomyUpdate(game)
+		}
+
+		performEconomyUpdate(game)
+		game.provinces[0].also { province ->
+			province shouldHaveProducedLastTurn listOf(ResourceType.FOOD to 1f)
+			province shouldHaveConsumedCurrentTurn listOf(ResourceType.FOOD to 1f)
+			province shouldHaveProducedCurrentTurn listOf(ResourceType.FOOD to 1f)
+			province shouldBeMissing listOf(ResourceType.FOOD to GameConfig.default().cityFoodCostPerTurn-1)
+		}
+
+	}
+
+
 	"test basic production chain with all resources available" {
 		val tiles = tiles().also { tiles ->
 			generateResourcesForPosition(
@@ -441,6 +499,7 @@ class BasicEconomyTest : StringSpec({
 		}
 
 	}
+
 
 	"test basic production chain without enough resource production (middle of the chain)" {
 		val tiles = tiles().also { tiles ->
