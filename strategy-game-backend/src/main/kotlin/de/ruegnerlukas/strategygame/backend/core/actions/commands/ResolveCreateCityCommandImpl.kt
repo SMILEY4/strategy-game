@@ -120,13 +120,13 @@ private object CreateCityValidations {
 
     fun ValidationContext.validTileOwnerInExistingProvince(country: Country, target: Tile) {
         validate("CITY.TARGET_TILE_OWNER") {
-            target.owner?.countryId == country.countryId
+            target.owner?.countryId == country.countryId && target.owner?.cityId == null
         }
     }
 
     fun ValidationContext.validTileOwnerWithNewProvince(country: Country, target: Tile) {
         validate("CITY.TARGET_TILE_OWNER") {
-            target.owner == null || target.owner?.countryId == country.countryId
+            (target.owner == null || target.owner?.countryId == country.countryId) && target.owner?.cityId == null
         }
     }
 

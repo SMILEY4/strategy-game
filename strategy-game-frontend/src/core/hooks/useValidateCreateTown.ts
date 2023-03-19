@@ -22,7 +22,7 @@ export function useValidateCreateTown(pos: TilePosition | null): boolean {
                 return !cities.find(c => c.tile.tileId === tile.tileId);
             });
             ctx.validate("TOWN.TARGET_TILE_OWNER", () => {
-                return tile.dataTier1?.owner?.countryId == country.countryId;
+                return tile.dataTier1?.owner?.countryId == country.countryId && tile.dataTier1?.owner?.cityId == null;
             });
         }).isValid();
     } else {
