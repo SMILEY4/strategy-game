@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.ports.provided.commands
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CommandEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.GameExtendedEntity
+import de.ruegnerlukas.strategygame.backend.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 
 interface ResolveCommandsAction {
@@ -11,7 +11,8 @@ interface ResolveCommandsAction {
 	object GameNotFoundError : ResolveCommandsActionError()
 	object CountryNotFoundError : ResolveCommandsActionError()
 	object TileNotFoundError : ResolveCommandsActionError()
+	object CityNotFoundError : ResolveCommandsActionError()
 
 
-	suspend fun perform(game: GameExtendedEntity, commands: List<CommandEntity<*>>): Either<ResolveCommandsActionError, List<CommandResolutionError>>
+	suspend fun perform(game: GameExtended, commands: List<Command<*>>): Either<ResolveCommandsActionError, List<CommandResolutionError>>
 }

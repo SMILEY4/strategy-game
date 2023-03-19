@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.ports.models.dtos
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 
 data class CommandResolutionErrorDTO(
-	val errorMessage: String
+    val errorMessage: String
 ) {
-	constructor(error: CommandResolutionError) : this(error.errorMessage)
+    constructor(error: CommandResolutionError) : this(error.errorMessage)
 }

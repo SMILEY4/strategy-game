@@ -7,6 +7,8 @@ import "./pageHome.css";
 
 export function PageHome(): ReactElement {
 
+    const actionLogOut = AppConfig.di.get(AppConfig.DIQ.UserLogOutAction);
+
     return (
         <div className="home">
             <div className="home-content">
@@ -21,7 +23,7 @@ export function PageHome(): ReactElement {
     );
 
     function onLogOut() {
-        AppConfig.userLogOut.perform();
+        actionLogOut.perform();
     }
 
 }

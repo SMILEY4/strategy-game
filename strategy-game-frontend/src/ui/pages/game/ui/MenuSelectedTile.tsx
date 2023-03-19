@@ -1,208 +1,223 @@
-import React, {ReactElement, useState} from "react";
-import {GameHooks} from "../../../../core/actions/GameHooks";
-import {GameStateHooks} from "../../../../external/state/game/gameStateHooks";
-import {LocalGameStateHooks} from "../../../../external/state/localgame/localGameStateHooks";
-import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
+import React, {ReactElement} from "react";
+import {CgShapeHexagon} from "react-icons/cg";
+import {useCityAt} from "../../../../core/hooks/useCityAt";
+import {useCityById} from "../../../../core/hooks/useCityById";
+import {useCommandsAt} from "../../../../core/hooks/useCommandsAt";
+import {useGameConfig} from "../../../../core/hooks/useGameConfig";
+import {useSelectedTilePosition} from "../../../../core/hooks/useSelectedTilePosition";
+import {useTileAt} from "../../../../core/hooks/useTileAt";
+import {useValidateCreateBuilding} from "../../../../core/hooks/useValidateCreateBuilding";
+import {useValidateCreateCity} from "../../../../core/hooks/useValidateCreateCity";
+import {useValidateCreateTown} from "../../../../core/hooks/useValidateCreateTown";
+import {useValidatePlaceScout} from "../../../../core/hooks/useValidatePlaceScout";
+import {BuildingType} from "../../../../core/models/buildingType";
+import {CommandCreateBuilding, CommandCreateCity} from "../../../../core/models/command";
+import {Tile} from "../../../../core/models/tile";
 import {AppConfig} from "../../../../main";
-import {CommandCreateCity} from "../../../../models/state/command";
-import {TilePosition} from "../../../../models/state/tilePosition";
-import {TextField} from "../../../components/specific/TextField";
+import {AdvButton} from "../../../components/specific/AdvButton";
+import {ResourceLabel} from "../../../components/specific/ResourceLabel";
+import {Section} from "../../../components/specific/Section";
 
+export function CategorySelectedTile(): ReactElement {
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService)
+    return (
+        <div onClick={() => uiService.openToolbarMenuSelectedTile()}>
+            <CgShapeHexagon/>
+        </div>
+    );
+}
 
 export function MenuSelectedTile(): ReactElement {
-    const selectedTile = LocalGameStateHooks.useSelectedTilePosition();
+    const selectedTilePos = useSelectedTilePosition();
+    const selectedTile = useTileAt(selectedTilePos);
     return (
         <div>
-            <h3>Selected Tile</h3>
-            <SectionTile selectedTile={selectedTile}/>
-            <SectionInfluences selectedTile={selectedTile}/>
-            <SectionOwner selectedTile={selectedTile}/>
-            <SectionCity selectedTile={selectedTile}/>
-            <SectionMarkers selectedTile={selectedTile}/>
-            <SectionCommands selectedTile={selectedTile}/>
+            {selectedTile && (
+                <>
+                    <SectionTile tile={selectedTile}/>
+                    <SectionCity tile={selectedTile}/>
+                    <SectionCommands tile={selectedTile}/>
+                    <SectionActions tile={selectedTile}/>
+                </>
+            )}
+
         </div>
     );
 }
 
 
-function SectionTile(props: { selectedTile: TilePosition | null }): ReactElement {
+function SectionTile(props: { tile: Tile }): ReactElement {
     return (
-        <ul>
-            {props.selectedTile && <li>{"q: " + props.selectedTile.q}</li>}
-            {props.selectedTile && <li>{"r: " + props.selectedTile.r}</li>}
-            {!props.selectedTile && <li>no tile selected</li>}
-        </ul>
+        <Section title={"Tile"}>
+            {props.tile && <p>{"Position: " + props.tile.position.q + ", " + props.tile.position.r}</p>}
+            {props.tile && <p>{"Terrain: " + (props.tile.dataTier1 ? props.tile.dataTier1.terrainType : "?")}</p>}
+            {props.tile && <p>{"Resource: " + (props.tile.dataTier1 ? props.tile.dataTier1.resourceType : "?")}</p>}
+        </Section>
     );
 }
 
-
-function SectionInfluences(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const tile = GameStateHooks.useTileAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    if (props.selectedTile && tile) {
-        return (
-            <>
-                <h3>Influences</h3>
-                <ul>
-                    {
-                        tile.influences.map(influence => (
-                            <>
-                                <li>{influence.countryId + " = " + influence.value}</li>
-                                <ul>
-                                    {influence.sources.map(source => (
-                                        <li>{source.cityId + "/" + source.provinceId + " = " + source.value}</li>
-                                    ))}
-                                </ul>
-                            </>
-                        ))
-                    }
-                </ul>
-            </>
-        );
-    } else {
-        return null;
-    }
-}
-
-
-function SectionOwner(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const tile = GameStateHooks.useTileAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    if (tile && tile.owner) {
-        return (
-            <>
-                <h3>Owner</h3>
-                <ul>
-                    <li>{"Country = " + tile.owner?.countryId}</li>
-                    <li>{"Province = " + tile.owner?.provinceId}</li>
-                    <li>{"City = " + tile.owner?.cityId}</li>
-                </ul>
-            </>
-        );
-    } else {
-        return null;
-    }
-}
-
-
-function SectionCity(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const city = GameStateHooks.useCityAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    const canCreateCity = GameHooks.useValidateCreateCity(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    const openFrame = UiStateHooks.useOpenFrame();
+function SectionCity(props: { tile: Tile }): ReactElement {
+    const city = useCityAt(props.tile.position);
+    const parentCity = useCityById(city?.parentCity);
+    const config = useGameConfig();
+    const buildingProduction = city?.isCity ? config.cityBuildingProductionPerTurn : config.townBuildingProductionPerTurn;
+    const canCreateCity = useValidateCreateCity(props.tile.position);
+    const canCreateTown = useValidateCreateTown(props.tile.position);
+    const validateCreateBuilding = useValidateCreateBuilding(city);
+    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
 
     function createCity() {
-        if (props.selectedTile) {
-            openFrame(
-                "dialog.create-city",
-                {
-                    centered: {
-                        width: 320,
-                        height: 200
-                    }
-                },
-                frameId => <CreateCityDialog frameId={frameId} tile={props.selectedTile!!}/>
-            );
+        uiService.openDialogCreateCity(props.tile.position);
+    }
+
+    function createTown() {
+        uiService.openDialogCreateTown(props.tile.position);
+    }
+
+    function createBuilding(type: BuildingType) {
+        if (city) {
+            actionAddCommand.addCreateBuilding(city.cityId, type);
         }
     }
 
-    if (props.selectedTile) {
+    if (city) {
         return (
-            <>
-                <h3>City</h3>
-                {city && (
-                    <ul>
-                        <li>{"name: " + city.name}</li>
-                        <li>{"country: " + city.countryId}</li>
-                        <li>{"province: " + city.provinceId}</li>
-                    </ul>
-                )}
-                {!city && (
-                    <button onClick={createCity} disabled={!canCreateCity}>Create City</button>
-                )}
-            </>
-        );
-    } else {
-        return null;
-    }
-}
-
-
-function SectionMarkers(props: { selectedTile: TilePosition | null }): ReactElement | null {
-
-    function placeMarker() {
-        if (props.selectedTile) {
-            AppConfig.turnAddCommand.addPlaceMarker(props.selectedTile);
-        }
-    }
-
-    if (props.selectedTile) {
-        return (
-            <>
-                <h3>Marker</h3>
-                <button onClick={placeMarker}>Place Marker</button>
-            </>
-        );
-    } else {
-        return null;
-    }
-}
-
-
-function SectionCommands(props: { selectedTile: TilePosition | null }): ReactElement | null {
-    const commands = LocalGameStateHooks.useCommandsAt(props.selectedTile ? props.selectedTile.q : 9999999, props.selectedTile ? props.selectedTile.r : 999999);
-    if (props.selectedTile) {
-        return (
-            <>
-                <h3>Commands</h3>
+            <Section title="City">
+                <p>{"Name: " + city.name}</p>
+                <p>{"Region: " + (city.parentCity ? parentCity?.name : city.name)}</p>
+                <p>{"Country: " + city.countryId}</p>
+                <b>{"Buildings (" + city.buildings.length + "/" + (city.isCity ? config.cityBuildingSlots : config.townBuildingSlots) + ")"}</b>
+                <AdvButton
+                    label={"Add Lumber Camp"}
+                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    turnCosts={[{type: "wood", value: buildingProduction}]}
+                    disabled={!validateCreateBuilding(BuildingType.LUMBER_CAMP)}
+                    onClick={() => createBuilding(BuildingType.LUMBER_CAMP)}
+                />
+                <AdvButton
+                    label={"Add Quarry"}
+                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    turnCosts={[{type: "stone", value: buildingProduction}]}
+                    disabled={!validateCreateBuilding(BuildingType.QUARRY)}
+                    onClick={() => createBuilding(BuildingType.QUARRY)}
+                />
+                <AdvButton
+                    label={"Add Mine"}
+                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    turnCosts={[{type: "metal", value: buildingProduction}]}
+                    disabled={!validateCreateBuilding(BuildingType.MINE)}
+                    onClick={() => createBuilding(BuildingType.MINE)}
+                />
+                <AdvButton
+                    label={"Add Harbour"}
+                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    turnCosts={[{type: "food", value: buildingProduction}]}
+                    disabled={!validateCreateBuilding(BuildingType.HARBOR)}
+                    onClick={() => createBuilding(BuildingType.HARBOR)}
+                />
+                <AdvButton
+                    label={"Add Farm"}
+                    actionCosts={[{type: "wood", value: -config.buildingCostWood}, {type: "stone", value: -config.buildingCostStone}]}
+                    turnCosts={[{type: "food", value: buildingProduction}]}
+                    disabled={!validateCreateBuilding(BuildingType.FARM)}
+                    onClick={() => createBuilding(BuildingType.FARM)}
+                />
                 <ul>
-                    {commands.map(cmd => {
-                        if (cmd.commandType === "place-marker") {
-                            return <li>Place Marker</li>;
+                    {city.buildings.map(building => {
+                        if (building.type === BuildingType.LUMBER_CAMP) {
+                            return <li><b>Lumber Camp</b><ResourceLabel type={"wood"} value={buildingProduction} showPlusSign={true}/></li>;
                         }
-                        if (cmd.commandType === "create-city") {
-                            return <li>{"Create City '" + (cmd as CommandCreateCity).name + "'"}</li>;
+                        if (building.type === BuildingType.QUARRY) {
+                            return <li><b>Quarry</b><ResourceLabel type={"stone"} value={buildingProduction} showPlusSign={true}/></li>;
                         }
-                        return <li>?</li>;
+                        if (building.type === BuildingType.MINE) {
+                            return <li><b>Mine</b><ResourceLabel type={"metal"} value={buildingProduction} showPlusSign={true}/></li>;
+                        }
+                        if (building.type === BuildingType.HARBOR) {
+                            return <li><b>Harbor</b><ResourceLabel type={"food"} value={buildingProduction} showPlusSign={true}/></li>;
+                        }
+                        if (building.type === BuildingType.FARM) {
+                            return <li><b>Farm</b><ResourceLabel type={"food"} value={buildingProduction} showPlusSign={true}/></li>;
+                        }
+                        return null;
                     })}
                 </ul>
-            </>
+            </Section>
         );
     } else {
-        return null;
+        return (
+            <Section title="City">
+                <AdvButton
+                    label={"Create City"}
+                    actionCosts={[{type: "money", value: -config.cityCostMoney}]}
+                    turnCosts={[{type: "money", value: config.cityIncomePerTurn}, {type: "food", value: -config.cityFoodCostPerTurn}]}
+                    disabled={!canCreateCity}
+                    onClick={createCity}
+                />
+                <AdvButton
+                    label={"Create Town"}
+                    actionCosts={[{type: "money", value: -config.townCostMoney}]}
+                    turnCosts={[{type: "food", value: -config.townFoodCostPerTurn}]}
+                    disabled={!canCreateTown}
+                    onClick={createTown}
+                />
+            </Section>
+        );
     }
 }
 
+function SectionCommands(props: { tile: Tile }): ReactElement {
+    const commands = useCommandsAt(props.tile.position);
+    return (
+        <Section title={"Local Commands"}>
+            {commands.map(cmd => {
+                if (cmd.commandType === "place-marker") {
+                    return <div>Place Marker</div>;
+                }
+                if (cmd.commandType === "place-scout") {
+                    return <div>Place Scout</div>;
+                }
+                if (cmd.commandType === "create-city") {
+                    return <div>{"Create City '" + (cmd as CommandCreateCity).name + "'"}</div>;
+                }
+                if (cmd.commandType === "create-building") {
+                    return <div>{"Create Building '" + (cmd as CommandCreateBuilding).buildingType + "'"}</div>;
+                }
+            })}
+        </Section>
+    );
+}
 
-function CreateCityDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
-    const country = GameStateHooks.usePlayerCountry();
-    const provinces = GameStateHooks.useProvinces(country?.countryId!!)
-    const tile = GameStateHooks.useTileAt(props.tile.q, props.tile.r)!!;
-    const close = UiStateHooks.useCloseFrame(props.frameId);
-    const [name, setName] = useState("");
+function SectionActions(props: { tile: Tile }): ReactElement {
 
-    const availableProvinces = tile.influences
-        .filter(i => i.countryId === country?.countryId)
-        .flatMap(i => i.sources)
-        .map(i => provinces.find(p => p.provinceId === i.provinceId)!!)
-        .filter((element, index, self) => self.indexOf(element) === index);
+    const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
+    const canPlaceScout = useValidatePlaceScout(props.tile.position);
+
+    function placeScout() {
+        actionAddCommand.addPlaceScout(props.tile.position);
+    }
+
+    function placeMarker() {
+        actionAddCommand.addPlaceMarker(props.tile.position);
+    }
 
     return (
-        <div>
-            Order creation of new city?
-            <TextField value={name} onAccept={setName}/>
-            <button onClick={onCancel}>Cancel</button>
-            <button onClick={() => onAccept(null)}>Create with new Province</button>
-            {
-                availableProvinces.map(p => <button onClick={() => onAccept(p.provinceId)}>{"Create in " + p.provinceId}</button>)
-            }
-        </div>
+        <Section title={"Actions"}>
+            <AdvButton
+                label={"Send Scout"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={!canPlaceScout}
+                onClick={() => placeScout()}
+            />
+            <AdvButton
+                label={"Place Marker"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={false}
+                onClick={() => placeMarker()}
+            />
+        </Section>
     );
-
-    function onCancel() {
-        close();
-    }
-
-    function onAccept(provinceId: string | null) {
-        close();
-        AppConfig.turnAddCommand.addCreateCity(props.tile, name, provinceId)
-    }
-
 }

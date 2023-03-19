@@ -5,6 +5,7 @@ import "./pageSignUp.css";
 
 export function PageSignUp(): ReactElement {
 
+    const actionSignUp = AppConfig.di.get(AppConfig.DIQ.UserSignUpAction);
     const [signUpEmail, setSignUpEmail] = useState("");
     const [signUpPassword, setSignUpPassword] = useState("");
     const [signUpUsername, setSignUpUsername] = useState("");
@@ -29,7 +30,7 @@ export function PageSignUp(): ReactElement {
     );
 
     function onSignUp() {
-        AppConfig.userSignUp.perform(signUpEmail, signUpPassword, signUpUsername)
+        actionSignUp.perform(signUpEmail, signUpPassword, signUpUsername)
             .then(() => setSignUpStatus("Confirmation code sent"))
             .then(() => navigate("/login"))
             .catch(e => {

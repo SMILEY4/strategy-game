@@ -80,4 +80,5 @@
 .dialog > .dialog-body {
 	background-color: #8d8d8d;
 	flex-grow:        1;
+	overflow-y:       auto;
 }

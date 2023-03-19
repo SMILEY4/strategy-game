@@ -1,93 +1,137 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {BordersCalculateAction} from "./core/actions/border/bordersCalculateAction";
-import {GameDisposeAction} from "./core/actions/game/gameDisposeAction";
-import {GameInitAction} from "./core/actions/game/gameInitAction";
-import {GameInputClickAction} from "./core/actions/game/gameInputClickAction";
-import {GameInputMouseMoveAction} from "./core/actions/game/gameInputMouseMoveAction";
-import {GameInputMouseScrollAction} from "./core/actions/game/gameInputMouseScrollAction";
-import {GameUpdateAction} from "./core/actions/game/gameUpdateAction";
-import {GameLobbyConnectAction} from "./core/actions/gamelobby/gameLobbyConnectAction";
-import {GameLobbyCreateAction} from "./core/actions/gamelobby/gameLobbyCreateAction";
-import {GameLobbyJoinAction} from "./core/actions/gamelobby/gameLobbyJoinAction";
-import {SetGameStateAction} from "./core/actions/gamelobby/setGameStateAction";
-import {TurnAddCommandAction} from "./core/actions/turn/turnAddCommandAction";
-import {TurnSubmitAction} from "./core/actions/turn/turnSubmitAction";
-import {UserLoginAction} from "./core/actions/user/userLoginAction";
-import {UserLogOutAction} from "./core/actions/user/userLogOutAction";
-import {UserSignUpAction} from "./core/actions/user/userSignUpAction";
-import {GameCanvasHandle} from "./core/service/gameCanvasHandle";
-import {Renderer} from "./core/service/rendering/renderer";
-import {TilePicker} from "./core/service/tilemap/tilePicker";
-import {GameApi} from "./external/api/http/gameApi";
+import {GameConnectAction} from "./core/gameConnectAction";
+import {GameCreateAction} from "./core/gameCreateAction";
+import {GameDisposeAction} from "./core/gameDisposeAction";
+import {GameInitAction} from "./core/gameInitAction";
+import {GameJoinAction} from "./core/gameJoinAction";
+import {GameListAction} from "./core/gameListAction";
+import {GameSetStateAction} from "./core/gameSetStateAction";
+import {GameUpdateAction} from "./core/gameUpdateAction";
+import {InputClickAction} from "./core/inputClickAction";
+import {InputMouseMoveAction} from "./core/inputMouseMoveAction";
+import {InputMouseScrollAction} from "./core/inputMouseScrollAction";
+import SHADER_SRC_COMMON from "./core/rendering/common/common.glsl?raw";
+import {GameCanvasHandle} from "./core/rendering/gameCanvasHandle";
+import {Renderer} from "./core/rendering/renderer";
+import SHADER_SRC_TILEMAP_FRAG from "./core/rendering/tilemap/mapShader.fsh?raw";
+import SHADER_SRC_TILEMAP_VERT from "./core/rendering/tilemap/mapShader.vsh?raw";
+import {TilemapRenderer} from "./core/rendering/tilemap/tilemapRenderer";
+import {TileObjectRenderer} from "./core/rendering/tileobject/tileObjectRenderer";
+import SHADER_SRC_TILE_OBJECT_FRAG from "./core/rendering/tileobject/tileObjectShader.fsh?raw";
+import SHADER_SRC_TILE_OBJECT_VERT from "./core/rendering/tileobject/tileObjectShader.vsh?raw";
+import {ShaderSourceManager} from "./core/rendering/utils/shaderSourceManager";
+import {GameApi} from "./core/required/gameApi";
+import {GameConfigRepository} from "./core/required/gameConfigRepository";
+import {GameRepository} from "./core/required/gameRepository";
+import {UIService} from "./core/required/UIService";
+import {UserApi} from "./core/required/userApi";
+import {UserRepository} from "./core/required/userRepository";
+import {WorldRepository} from "./core/required/worldRepository";
+import {TilePicker} from "./core/tilemap/tilePicker";
+import {TurnAddCommandAction} from "./core/turnAddCommandAction";
+import {TurnSubmitAction} from "./core/turnSubmitAction";
+import {UserLoginAction} from "./core/userLoginAction";
+import {UserLogOutAction} from "./core/userLogOutAction";
+import {UserSignUpAction} from "./core/userSignUpAction";
+import {GameApiImpl} from "./external/api/gameApiImpl";
 import {HttpClient} from "./external/api/http/httpClient";
-import {UserApi} from "./external/api/http/userApi";
-import {GameMessagingApi} from "./external/api/messaging/gameMessagingApi";
-import {MessageHandler} from "./external/api/messaging/messageHandler";
+import {MessageHandler} from "./external/api/messageHandler";
 import {WebsocketClient} from "./external/api/messaging/websocketClient";
-import {GameStateAccess} from "./external/state/game/gameStateAccess";
-import {GameConfigStateAccess} from "./external/state/gameconfig/gameConfigStateAccess";
-import {LocalGameStateAccess} from "./external/state/localgame/localGameStateAccess";
-import {UIStateAccess} from "./external/state/ui/uiStateAccess";
-import {UserStateAccess} from "./external/state/user/userStateAccess";
+import {UserApiImpl} from "./external/api/userApiImpl";
+import {GameRepositoryImpl} from "./external/state/game/gameRepositoryImpl";
+import {GameConfigRepositoryImpl} from "./external/state/gameconfig/gameConfigRepositoryImpl";
+import {UIServiceImpl} from "./external/state/ui/uiServiceImpl";
+import {UserRepositoryImpl} from "./external/state/user/userRepositoryImpl";
+import {WorldRepositoryImpl} from "./external/state/world/worldRepositoryImpl";
+import {createDiContainer, qualifier} from "./shared/di";
+
 import {App} from "./ui/App";
 import "./ui/index.css";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-    <App/>
-);
-// !! Strict-Mode tells react to re-render components twice (calls useEffect 2x) in dev-mode !!
-// ==> handle communication with logic outside react-lifecycle with care (or move strict-mode to "page"-level)
-// ==> https://reactjs.org/docs/strict-mode.html
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 
 export namespace AppConfig {
 
-    const localGameStateAccess: LocalGameStateAccess = new LocalGameStateAccess();
-    const userStateAccess: UserStateAccess = new UserStateAccess();
-    const gameStateAccess: GameStateAccess = new GameStateAccess();
-    const gameConfigStateAccess: GameConfigStateAccess = new GameConfigStateAccess();
-    const uiStateAccess: UIStateAccess = new UIStateAccess();
+    export const DIQ = {
+        GameApi: qualifier<GameApi>("GameApi"),
+        GameCanvasHandle: qualifier<GameCanvasHandle>("GameCanvasHandle"),
+        GameConfigRepository: qualifier<GameConfigRepository>("GameConfigRepository"),
+        GameConnectAction: qualifier<GameConnectAction>("GameConnectAction"),
+        GameCreateAction: qualifier<GameCreateAction>("GameCreateAction"),
+        GameDisposeAction: qualifier<GameDisposeAction>("GameDisposeAction"),
+        GameInitAction: qualifier<GameInitAction>("GameInitAction"),
+        GameJoinAction: qualifier<GameJoinAction>("GameJoinAction"),
+        GameListAction: qualifier<GameListAction>("GameListAction"),
+        GameRepository: qualifier<GameRepository>("GameRepository"),
+        GameSetStateAction: qualifier<GameSetStateAction>("GameSetStateAction"),
+        GameUpdateAction: qualifier<GameUpdateAction>("GameUpdateAction"),
+        HttpClient: qualifier<HttpClient>("HttpClient"),
+        InputClickAction: qualifier<InputClickAction>("InputClickAction"),
+        InputMouseMoveAction: qualifier<InputMouseMoveAction>("InputMouseMoveAction"),
+        InputMouseScrollAction: qualifier<InputMouseScrollAction>("InputMouseScrollAction"),
+        MessageHandler: qualifier<MessageHandler>("MessageHandler"),
+        Renderer: qualifier<Renderer>("Renderer"),
+        ShaderSourceManager: qualifier<ShaderSourceManager>("ShaderSourceManager"),
+        TilePicker: qualifier<TilePicker>("TilePicker"),
+        TurnAddCommandAction: qualifier<TurnAddCommandAction>("TurnAddCommandAction"),
+        TurnSubmitAction: qualifier<TurnSubmitAction>("TurnSubmitAction"),
+        UIService: qualifier<UIService>("UIService"),
+        UserApi: qualifier<UserApi>("UserApi"),
+        UserLoginAction: qualifier<UserLoginAction>("UserLoginAction"),
+        UserLogOutAction: qualifier<UserLogOutAction>("UserLogOutAction"),
+        UserRepository: qualifier<UserRepository>("UserRepository"),
+        UserSignUpAction: qualifier<UserSignUpAction>("UserSignUpAction"),
+        WebsocketClient: qualifier<WebsocketClient>("WebsocketClient"),
+        WorldRepository: qualifier<WorldRepository>("WorldRepository"),
+    };
 
-    const canvasHandle: GameCanvasHandle = new GameCanvasHandle();
-    const renderer: Renderer = new Renderer(canvasHandle, localGameStateAccess, gameStateAccess, userStateAccess);
-    const tilePicker: TilePicker = new TilePicker(localGameStateAccess, gameStateAccess, canvasHandle);
+    const diContainer = createDiContainer();
+    diContainer.bind(DIQ.GameApi, ctx => new GameApiImpl(ctx.get(DIQ.HttpClient), ctx.get(DIQ.WebsocketClient), ctx.get(DIQ.MessageHandler), ctx.get(DIQ.UserRepository)));
+    diContainer.bind(DIQ.GameCanvasHandle, ctx => new GameCanvasHandle());
+    diContainer.bind(DIQ.GameConfigRepository, ctx => new GameConfigRepositoryImpl());
+    diContainer.bind(DIQ.GameConnectAction, ctx => new GameConnectAction(ctx.get(DIQ.GameApi), ctx.get(DIQ.GameRepository)));
+    diContainer.bind(DIQ.GameCreateAction, ctx => new GameCreateAction(ctx.get(DIQ.GameApi)));
+    diContainer.bind(DIQ.GameDisposeAction, ctx => new GameDisposeAction(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.Renderer)));
+    diContainer.bind(DIQ.GameInitAction, ctx => new GameInitAction(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.Renderer)));
+    diContainer.bind(DIQ.GameJoinAction, ctx => new GameJoinAction(ctx.get(DIQ.GameApi)));
+    diContainer.bind(DIQ.GameListAction, ctx => new GameListAction(ctx.get(DIQ.GameApi)));
+    diContainer.bind(DIQ.GameRepository, ctx => new GameRepositoryImpl());
+    diContainer.bind(DIQ.GameSetStateAction, ctx => new GameSetStateAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository)));
+    diContainer.bind(DIQ.GameUpdateAction, ctx => new GameUpdateAction(ctx.get(DIQ.Renderer)));
+    diContainer.bind(DIQ.HttpClient, ctx => new HttpClient(API_BASE_URL));
+    diContainer.bind(DIQ.InputClickAction, ctx => new InputClickAction(ctx.get(DIQ.TilePicker), ctx.get(DIQ.GameRepository), ctx.get(DIQ.UIService)));
+    diContainer.bind(DIQ.InputMouseMoveAction, ctx => new InputMouseMoveAction(ctx.get(DIQ.TilePicker), ctx.get(DIQ.GameRepository)));
+    diContainer.bind(DIQ.InputMouseScrollAction, ctx => new InputMouseScrollAction(ctx.get(DIQ.GameRepository)));
+    diContainer.bind(DIQ.MessageHandler, ctx => new MessageHandler(ctx.get(DIQ.GameSetStateAction)));
+    diContainer.bind(DIQ.Renderer, ctx => new Renderer(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.ShaderSourceManager), ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.UserRepository)));
+    diContainer.bind(DIQ.ShaderSourceManager, ctx => new ShaderSourceManager()
+        .add("common", SHADER_SRC_COMMON)
+        .add(TilemapRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILEMAP_VERT)
+        .add(TilemapRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILEMAP_FRAG)
+        .add(TileObjectRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILE_OBJECT_VERT)
+        .add(TileObjectRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILE_OBJECT_FRAG)
+    );
+    diContainer.bind(DIQ.TilePicker, ctx => new TilePicker(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.GameCanvasHandle)));
+    diContainer.bind(DIQ.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameConfigRepository)));
+    diContainer.bind(DIQ.TurnSubmitAction, ctx => new TurnSubmitAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameApi)));
+    diContainer.bind(DIQ.UIService, ctx => new UIServiceImpl());
+    diContainer.bind(DIQ.UserApi, ctx => new UserApiImpl(ctx.get(DIQ.HttpClient), ctx.get(DIQ.UserRepository)));
+    diContainer.bind(DIQ.UserLoginAction, ctx => new UserLoginAction(ctx.get(DIQ.UserApi), ctx.get(DIQ.GameApi), ctx.get(DIQ.UserRepository), ctx.get(DIQ.GameConfigRepository)));
+    diContainer.bind(DIQ.UserLogOutAction, ctx => new UserLogOutAction(ctx.get(DIQ.UserRepository)));
+    diContainer.bind(DIQ.UserRepository, ctx => new UserRepositoryImpl());
+    diContainer.bind(DIQ.UserSignUpAction, ctx => new UserSignUpAction(ctx.get(DIQ.UserApi)));
+    diContainer.bind(DIQ.WebsocketClient, ctx => new WebsocketClient(API_WS_BASE_URL));
+    diContainer.bind(DIQ.WorldRepository, ctx => new WorldRepositoryImpl());
+    diContainer.createEager();
 
-    export const borderCalculateAction: BordersCalculateAction = new BordersCalculateAction();
-    export const gameSetState: SetGameStateAction = new SetGameStateAction(localGameStateAccess, gameStateAccess, borderCalculateAction);
-
-    const httpClient = new HttpClient(API_BASE_URL);
-    const wsClient = new WebsocketClient(API_WS_BASE_URL);
-    const msgHandler = new MessageHandler(gameSetState);
-
-
-    export const apiGame: GameApi = new GameApi(httpClient, userStateAccess);
-    export const apiUser: UserApi = new UserApi(httpClient, userStateAccess);
-    export const msgApiGame: GameMessagingApi = new GameMessagingApi(wsClient, userStateAccess, msgHandler);
-
-    export const userSignUp: UserSignUpAction = new UserSignUpAction(apiUser);
-    export const userLogin: UserLoginAction = new UserLoginAction(apiUser, apiGame, userStateAccess, gameConfigStateAccess);
-    export const userLogOut: UserLogOutAction = new UserLogOutAction(userStateAccess);
-
-    export const gameLobbyCreate: GameLobbyCreateAction = new GameLobbyCreateAction(apiGame);
-    export const gameLobbyJoin: GameLobbyJoinAction = new GameLobbyJoinAction(apiGame);
-    export const gameLobbyConnect: GameLobbyConnectAction = new GameLobbyConnectAction(msgApiGame, localGameStateAccess);
-
-    export const turnSubmit: TurnSubmitAction = new TurnSubmitAction(localGameStateAccess, msgApiGame);
-    export const turnAddCommand: TurnAddCommandAction = new TurnAddCommandAction(localGameStateAccess, gameConfigStateAccess);
-
-    export const gameInit: GameInitAction = new GameInitAction(canvasHandle, renderer);
-    export const gameUpdate: GameUpdateAction = new GameUpdateAction(renderer);
-    export const gameDispose: GameDisposeAction = new GameDisposeAction(canvasHandle, renderer);
-    export const gameInputClick: GameInputClickAction = new GameInputClickAction(tilePicker, localGameStateAccess, uiStateAccess);
-    export const gameInputMouseMove: GameInputMouseMoveAction = new GameInputMouseMoveAction(tilePicker, localGameStateAccess);
-    export const gameInputMouseScroll: GameInputMouseScrollAction = new GameInputMouseScrollAction(localGameStateAccess);
+    export const di = diContainer.getContext();
 
     let extContext: any = null;
 
     export function debugLooseWebglContext() {
+        const canvasHandle: GameCanvasHandle = AppConfig.di.get(DIQ.GameCanvasHandle);
         if (canvasHandle.getGL()) {
             extContext = canvasHandle.getGL().getExtension("WEBGL_lose_context");
             if (extContext) {
@@ -103,5 +147,10 @@ export namespace AppConfig {
             extContext.restoreContext();
         }
     }
+
+    ReactDOM.createRoot(document.getElementById("root")!).render(<App/>);
+// !! Strict-Mode tells react to re-render components twice (calls useEffect 2x) in dev-mode !!
+// ==> Problems with canvas/rendering
+// ==> https://reactjs.org/docs/strict-mode.html
 
 }

@@ -1,0 +1,51 @@
+version: 0.2
+
+env:
+    git-credential-helper: yes
+
+phases:
+    pre_build:
+        commands:
+            - ECR_REGION=eu-central-1
+            - ECR_URI=627717213620.dkr.ecr.$ECR_REGION.amazonaws.com
+            - ECR_REPO=strategy-game
+            - REPOSITORY_URI=$ECR_URI/$ECR_REPO
+            - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+            - echo Find git-tag...
+            - chmod +x infrastructure/aws/codebuild-git-wrapper.sh
+            - infrastructure/aws/codebuild-git-wrapper.sh https://github.com/SMILEY4/strategy-game.git deployment-marker
+            - GIT_TAG=$(git tag --points-at HEAD)
+            - IMAGE_TAG=${GIT_TAG:-$COMMIT_HASH}
+            - echo Logging in to Amazon ECR...
+            - aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin $ECR_URI
+    build:
+        commands:
+            - echo Build started on `date`
+            - echo repository-uri = $$REPOSITORY_URI
+            - echo image-tag = $IMAGE_TAG
+            - echo Copying secret configs...
+            - aws s3 cp s3://strategy-game.config/backend/application.prod.local.conf strategy-game-backend/src/main/resources/application.prod.local.conf
+            - aws s3 cp s3://strategy-game.config/backend/metrics_endpoint.password.local.txt infrastructure/monitoring/prometheus/metrics_endpoint.password.local.txt
+            - cd strategy-game-backend
+            - echo Building the Docker image...
+            - docker build --platform linux/arm64 -t $REPOSITORY_URI:latest .
+            - cd ..
+            - cp ./infrastructure/aws/backend/appspec.yml ./appspec.yml 
+
+    post_build:
+        commands:
+            - echo Build completed on `date`
+            - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+            - echo Pushing the Docker image...
+            - docker push $REPOSITORY_URI:latest
+            - docker push $REPOSITORY_URI:$IMAGE_TAG
+            - echo Deleting untagged Images...
+            - IMAGES_TO_DELETE=$( aws ecr list-images --region $ECR_REGION --repository-name $ECR_REPO --filter "tagStatus=UNTAGGED" --query 'imageIds[*]' --output json )
+            - aws ecr batch-delete-image --region $ECR_REGION --repository-name $ECR_REPO --image-ids "$IMAGES_TO_DELETE" || true
+            
+artifacts:
+    files:
+        - appspec.yml
+        - infrastructure/aws/backend/*
+        - infrastructure/docker-compose.yml
+        - infrastructure/monitoring/**/*

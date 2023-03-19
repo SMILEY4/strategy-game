@@ -1,12 +1,14 @@
 import {ReactElement} from "react";
 import {CgDebug} from "react-icons/cg";
-import {UiStateHooks} from "../../../../external/state/ui/uiStateHooks";
+import {MapMode} from "../../../../core/models/mapMode";
 import {AppConfig} from "../../../../main";
+import {AdvButton} from "../../../components/specific/AdvButton";
+import {Section} from "../../../components/specific/Section";
 
 export function CategoryDebug(): ReactElement {
-    const open = UiStateHooks.useOpenPrimaryMenuDialog(<MenuDebug/>);
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService)
     return (
-        <div onClick={open}>
+        <div onClick={() => uiService.openToolbarMenuDebug()}>
             <CgDebug/>
         </div>
     );
@@ -14,8 +16,7 @@ export function CategoryDebug(): ReactElement {
 
 
 export function MenuDebug(): ReactElement {
-
-    const repositionDialogs = UiStateHooks.useRepositionFrames();
+    const uiService = AppConfig.di.get(AppConfig.DIQ.UIService)
 
     function debugLooseContext() {
         AppConfig.debugLooseWebglContext();
@@ -26,12 +27,29 @@ export function MenuDebug(): ReactElement {
     }
 
     return (
-        <div>
-            <h3>Debug-Menu</h3>
-            <button onClick={repositionDialogs}>Center Dialogs</button>
-            <button onClick={debugLooseContext}>Loose WebGL context</button>
-            <button onClick={debugRestoreContext}>Restore WebGL context</button>
-        </div>
+        <Section title={"Debug Actions"}>
+            <AdvButton
+                label={"Center Dialogs"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={false}
+                onClick={uiService.repositionAll}
+            />
+            <AdvButton
+                label={"Loose WebGL-Context"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={false}
+                onClick={debugLooseContext}
+            />
+            <AdvButton
+                label={"Restore WebGL-Context"}
+                actionCosts={[]}
+                turnCosts={[]}
+                disabled={false}
+                onClick={debugRestoreContext}
+            />
+        </Section>
     );
 
 }

@@ -1,27 +1,33 @@
 <configuration>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <import class="de.ruegnerlukas.strategygame.backend.shared.LogSuppressor"/>
+    <import class="ch.qos.logback.core.ConsoleAppender"/>
+    <import class="ch.qos.logback.core.FileAppender"/>
+    <import class="ch.qos.logback.classic.filter.ThresholdFilter"/>
+    <import class="net.logstash.logback.encoder.LogstashEncoder"/>
+
+    <appender name="STDOUT" class="ConsoleAppender">
         <encoder>
             <pattern>
                 %cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %highlight(%.-1level) | %green(%-16.16(%X{traceId})) | %gray(%-16.16thread{16}) | %magenta(%-25.25logger{25}) | %m%n
             </pattern>
         </encoder>
+        <filter class="LogSuppressor"/>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>strategy-game-backend.log</file>
+    <appender name="FILE" class="FileAppender">
+        <file>log/strategy-game-backend.log</file>
         <append>true</append>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <filter class="ThresholdFilter">
             <level>INFO</level>
         </filter>
-        <encoder>
-            <pattern>
-                %d{YYYY-MM-dd HH:mm:ss.SSS} %-5level %thread %logger{36} - %msg%n
-            </pattern>
+        <encoder class="LogstashEncoder">
+            <customFields>{"application":"backend"}</customFields>
         </encoder>
+        <filter class="LogSuppressor"/>
     </appender>
 
-    <root level="trace">
+    <root level="debug">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>

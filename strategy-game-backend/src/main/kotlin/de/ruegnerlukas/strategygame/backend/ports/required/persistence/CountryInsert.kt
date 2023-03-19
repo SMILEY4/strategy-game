@@ -1,7 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.ports.required.persistence
 
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
+import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDbError
 
 interface CountryInsert {
-	suspend fun execute(country: CountryEntity)
+	suspend fun execute(country: Country): Either<ArangoDbError, String>
 }

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 @JsonSubTypes(
 	JsonSubTypes.Type(value = SubmitTurnMessage::class),
-	JsonSubTypes.Type(value = WorldStateMessage::class),
+	JsonSubTypes.Type(value = GameStateMessage::class),
 )
 sealed class Message<T>(
 	val type: String,

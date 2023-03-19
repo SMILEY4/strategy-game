@@ -5,6 +5,7 @@ import "./pageLogin.css";
 
 export function PageLogin(): ReactElement {
 
+    const actionLogIn = AppConfig.di.get(AppConfig.DIQ.UserLoginAction);
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [loginStatus, setLoginStatus] = useState("");
@@ -30,7 +31,7 @@ export function PageLogin(): ReactElement {
     );
 
     function onLogin() {
-        AppConfig.userLogin.perform(loginEmail, loginPassword)
+        actionLogIn.perform(loginEmail, loginPassword)
             .then(() => navigate("/home"))
             .catch(e => {
                 console.error("Error during login", e);

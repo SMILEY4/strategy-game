@@ -4,31 +4,38 @@ import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
-import de.ruegnerlukas.strategygame.backend.shared.traceId
-import io.github.smiley4.ktorswaggerui.documentation.get
-import io.github.smiley4.ktorswaggerui.documentation.post
+import de.ruegnerlukas.strategygame.backend.shared.mdcGameId
+import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
+import de.ruegnerlukas.strategygame.backend.shared.mdcUserId
+import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
+import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
-import mu.withLoggingContext
+import org.koin.ktor.ext.inject
 
 
 /**
  * Configuration for game routes
  */
-fun Route.gameRoutes(
-    createLobby: GameCreateAction,
-    joinLobby: GameJoinAction,
-    listLobbies: GamesListAction,
-    gameConfig: GameConfig
-) {
+fun Route.gameRoutes() {
+
+    val createGame by inject<GameCreateAction>()
+    val joinGame by inject<GameJoinAction>()
+    val listGames by inject<GamesListAction>()
+    val deleteGame by inject<GameDeleteAction>()
+    val gameConfig by inject<GameConfig>()
+
     authenticate {
         route("game") {
+
             post("create", {
                 description = "Create and join a new game. Other players can join this game via the returned game-id"
                 response {
@@ -51,10 +58,10 @@ fun Route.gameRoutes(
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
-                    val userId = getUserIdOrThrow(call)
-                    val gameId = createLobby.perform(WorldSettings.default())
-                    when (val joinResult = joinLobby.perform(userId, gameId)) {
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
+                    val gameId = createGame.perform(WorldSettings.default())
+                    when (val joinResult = joinGame.perform(userId, gameId)) {
                         is Either.Right -> ApiResponse.respondSuccess(call, gameId)
                         is Either.Left -> when (joinResult.value) {
                             GameJoinAction.GameNotFoundError -> ApiResponse.respondFailure(call, joinResult.value)
@@ -63,6 +70,8 @@ fun Route.gameRoutes(
                     }
                 }
             }
+
+
             post("join/{gameId}", {
                 description = "Join a game as a participant."
                 request {
@@ -87,8 +96,10 @@ fun Route.gameRoutes(
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
-                    when (val result = joinLobby.perform(getUserIdOrThrow(call), call.parameters["gameId"]!!)) {
+                val gameId = call.parameters["gameId"]!!
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
+                    when (val result = joinGame.perform(userId, gameId)) {
                         is Either.Right -> ApiResponse.respondSuccess(call)
                         is Either.Left -> when (result.value) {
                             GameJoinAction.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
@@ -97,6 +108,8 @@ fun Route.gameRoutes(
                     }
                 }
             }
+
+
             get("list", {
                 description = "List all games with the user as a participant."
                 response {
@@ -108,11 +121,36 @@ fun Route.gameRoutes(
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
-                    val gameIds = listLobbies.perform(getUserIdOrThrow(call))
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
+                    val gameIds = listGames.perform(userId)
                     ApiResponse.respondSuccess(call, gameIds)
                 }
             }
+
+
+            delete("delete/{gameId}", {
+                description = "Delete the given game and all associated data."
+                request {
+                    pathParameter<String>("gameId") {
+                        description = "The id of the game to delete"
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Game was successfully deleted."
+                    }
+                }
+            }) {
+                val gameId = call.parameters["gameId"]!!
+                val userId = getUserIdOrThrow(call)
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
+                    deleteGame.perform(gameId)
+                    ApiResponse.respondSuccess(call)
+                }
+            }
+
+
             get("config", {
                 description = "Fetch the configuration and values for games."
                 response {
@@ -124,10 +162,11 @@ fun Route.gameRoutes(
                     }
                 }
             }) {
-                withLoggingContext(traceId()) {
+                withLoggingContextAsync(mdcTraceId(), mdcUserId(getUserIdOrThrow(call))) {
                     ApiResponse.respondSuccess(call, gameConfig)
                 }
             }
+
         }
     }
 }

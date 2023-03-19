@@ -1,1 +1,4 @@
 **/.idea
+# hide secret configs
+*.local.conf
+*.local.txt

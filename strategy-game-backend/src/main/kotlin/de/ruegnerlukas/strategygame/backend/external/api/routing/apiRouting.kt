@@ -1,62 +1,60 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.ConnectionHandler
-import de.ruegnerlukas.strategygame.backend.external.api.websocket.WebsocketUtils
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
+import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.WebsocketUtils
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.shared.logviewer.LogViewer
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
+import io.ktor.server.html.respondHtml
+import io.ktor.server.http.content.resource
+import io.ktor.server.http.content.static
+import io.ktor.server.http.content.staticBasePackage
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import io.micrometer.prometheus.PrometheusMeterRegistry
+import org.koin.ktor.ext.inject
 
 
 /**
  * Main configuration for all routes
  */
-fun Application.apiRoutes(
-	connectionHandler: ConnectionHandler,
-	messageHandler: MessageHandler,
-	userIdentityService: UserIdentityService,
-	gameCreateAction: GameCreateAction,
-	gameJoinAction: GameJoinAction,
-	gamesListAction: GamesListAction,
-	gameDisconnectAction: GameDisconnectAction,
-	gameRequestConnectionAction: GameRequestConnectionAction,
-	gameConnectAction: GameConnectAction,
-	gameConfig: GameConfig
-) {
-	routing {
-		route("api") {
-			userRoutes(userIdentityService)
-			gameRoutes(gameCreateAction, gameJoinAction, gamesListAction, gameConfig)
-			gameWebsocketRoutes(
-				connectionHandler,
-				userIdentityService,
-				messageHandler,
-				gameDisconnectAction,
-				gameRequestConnectionAction,
-				gameConnectAction
-			)
-			get("/health") {
-				call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
-			}
-		}
-	}
+fun Application.apiRoutes() {
+    val meterRegistry by inject<PrometheusMeterRegistry>()
+    routing {
+        route("api") {
+            userRoutes()
+            gameRoutes()
+            gameWebsocketRoutes()
+            get("health") {
+                call.respond(HttpStatusCode.OK, "Healthy ${System.currentTimeMillis()}")
+            }
+            authenticate("auth-technical-user") {
+                get("metrics") {
+                    val metrics = meterRegistry.scrape()
+                    call.respondText { metrics }
+                }
+                get("logs") {
+                    call.respondHtml(HttpStatusCode.OK) {
+                        LogViewer().build(this)
+                    }
+                }
+            }
+        }
+        static("/") {
+            staticBasePackage = "logviewer"
+            resource("jstable.css")
+            resource("jstable.min.js")
+        }
+    }
 }
-
 
 /**
  * Get the id of the user making an (authenticated) http-request
@@ -64,10 +62,9 @@ fun Application.apiRoutes(
  * @return the user id
  * */
 fun getUserIdOrThrow(call: ApplicationCall): String {
-	val principal = call.principal<JWTPrincipal>() ?: throw Exception("No JWT-Principal attached to call")
-	return principal.payload.subject ?: throw Exception("No subject found in JWT-Principal")
+    val principal = call.principal<JWTPrincipal>() ?: throw Exception("No JWT-Principal attached to call")
+    return principal.payload.subject ?: throw Exception("No subject found in JWT-Principal")
 }
-
 
 /**
  * Get the id of the user opening an (authenticated) websocket-connection
@@ -75,5 +72,5 @@ fun getUserIdOrThrow(call: ApplicationCall): String {
  * @return the user id
  * */
 fun getWebsocketUserIdOrThrow(userService: UserIdentityService, call: ApplicationCall): String {
-	return userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!)
+    return userService.extractUserId(call.request.queryParameters[WebsocketUtils.QUERY_PARAM_TOKEN]!!)
 }

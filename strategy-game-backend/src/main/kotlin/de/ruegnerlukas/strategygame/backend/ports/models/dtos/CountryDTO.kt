@@ -1,19 +1,24 @@
 package de.ruegnerlukas.strategygame.backend.ports.models.dtos
 
-import de.ruegnerlukas.strategygame.backend.ports.models.entities.CountryEntity
+import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
 class CountryDTO(
-	val countryId: String,
-	val userId: String,
-	val resources: CountryDTOResources
-) {
-	constructor(country: CountryEntity) : this(
-		countryId = country.key!!,
-		userId = country.userId,
-		resources = CountryDTOResources(country.resources.money)
-	)
-}
+    val dataTier1: CountryDTODataTier1,
+    val dataTier3: CountryDTODataTier3?
+)
 
-data class CountryDTOResources(
-	val money: Float
+/**
+ * Data available to everyone who has discovered the country
+ */
+data class CountryDTODataTier1(
+    val countryId: String,
+    val userId: String,
+    val color: RGBColor
+)
+
+/**
+ * only available to player playing the country
+ */
+data class CountryDTODataTier3(
+    val resources: CountryDTOResources
 )

@@ -6,6 +6,26 @@
 
 ## Running the Application
 
+**Reprequisites**
+
+Running Arangodb
+
+Option 1: Manually
+```
+docker run -d -p 8529:8529 -e ARANGO_NO_AUTH=1 arangodb/arangodb:latest or via `arangodb.ps1`
+```
+
+Option 2: Via PS-Script
+```
+arangodb.ps1
+```
+
+Option 3: Docker-Compose
+```
+cd infrastructure/backend/db
+docker compose up
+```
+
 **Intellij**
 
 To run the application in the Intellij-IDE, click the "Run Button" or the "Run Button" next to the "main"-Funktion in "de.ruegnerlukas.strategygame.backend.Application.kt"

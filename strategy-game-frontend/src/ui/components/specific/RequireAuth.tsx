@@ -1,11 +1,10 @@
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {Hooks} from "../../../core/hooks";
-import {UserStateHooks} from "../../../external/state/user/userStateHooks";
+import {useIsAuthenticated} from "../../../core/hooks/useIsAuthenticated";
 
 export function RequireAuth(props: { loginUrl: string, children: any }) {
 
-    const isAuthenticated = UserStateHooks.useIsAuthenticated();
+    const isAuthenticated = useIsAuthenticated();
     const navigate = useNavigate();
 
     useEffect(() => {

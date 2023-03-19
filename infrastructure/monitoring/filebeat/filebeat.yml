@@ -1,0 +1,19 @@
+logging.metrics.enabled: false
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
+
+
+filebeat.inputs:
+- type: filestream
+  id: backend
+  enabled: true
+  paths: 
+    - '/etc/filebeat/datasources/backend/*.log'
+  parsers:
+    - ndjson:
+        keys_under_root: true
+        add_error_key: false
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"

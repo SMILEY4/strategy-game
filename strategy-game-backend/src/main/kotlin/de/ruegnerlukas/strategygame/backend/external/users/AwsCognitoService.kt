@@ -25,9 +25,9 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
-import de.ruegnerlukas.strategygame.backend.config.Config
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.models.auth.ExtendedAuthData
+import de.ruegnerlukas.strategygame.backend.app.Config
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.ports.models.AuthDataExtended
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.AuthUserError
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.CodeDeliveryError
@@ -166,7 +166,7 @@ class AwsCognitoService(
 	}
 
 
-	override fun authenticate(email: String, password: String): Either<AuthUserError, ExtendedAuthData> {
+	override fun authenticate(email: String, password: String): Either<AuthUserError, AuthDataExtended> {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -182,7 +182,7 @@ class AwsCognitoService(
 			)
 			log().info("Successfully authenticated user $email")
 			return Either.Right(
-				ExtendedAuthData(
+				AuthDataExtended(
 					idToken = result.authenticationResult.idToken,
 					refreshToken = result.authenticationResult.refreshToken,
 					accessToken = result.authenticationResult.accessToken

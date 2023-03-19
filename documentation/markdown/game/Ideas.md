@@ -22,6 +22,31 @@ https://forums.civfanatics.com/threads/problemedicals-civilization-vii-ideas-wis
 
 https://forums.civfanatics.com/threads/ideas-for-the-perfect-4x-historical-game.654805/
 
+https://axiomsofdominion.substack.com/archive?sort=new ⚠
+
+- turn based fantasy game -> seems to have similar ideas
+
+https://community.knightsofhonor.com/index/dev-diaries/
+
+- Knights of Honor II - Dev Diary (Blog)
+
+http://www.cheatbook.de/wfiles/knightsofhonor.htm
+
+- Knights of Honor - Manual/Guide/FAQ
+
+
+
+# Turn-Based (WeGo) ❤
+
+- each player inputs their moves; after every player is done, the commands play out, then next turn
+- Phases
+  1. Command/Planning Phase
+     - each player creates commands -> what should be done this turn
+  2. Resolution Phase
+     - resolve commands of all players + apply effects to game
+  3. Update Phase
+     - update the game, execute triggers (e.g. apply income, update turn-timers, ...)
+
 
 
 # Raising Armies and Population
@@ -441,14 +466,12 @@ Add. Ideas https://fallfromheaven.fandom.com/wiki/Spells
 - your territory = all the land around your cities, settlements, etc
   - settlements claim tiles in fixed distance around itself = your territory
   - if claimed tile != free => get claim on that land => "casus beli"
-
 - cities, settlements, etc have a sphere of influence (greater than claimed area)
   - you can only settle within tiles where you have the greatest influence or nobody else influences that tile enough
   - influence spreads based on some factors
     - more: rivers (even better downstream), flat land, ...
     - less: hills, mountains, ocean, ...
   - if you have the greatest influence on a tile that is owned by another country, you get a (unpressed) claim on that tile
-  
 - more ideas on border/territory:
   - https://forums.civfanatics.com/threads/ideas-for-the-perfect-4x-historical-game.654805/post-15933691
 
@@ -503,11 +526,11 @@ https://tvtropes.org/pmwiki/pmwiki.php/Main/FictionalCultureAndNationTropes
   - have the most valuable trade city (hold for x years)
   - ...
 
-##### Pro:
+**Pro:**
 
 - one singular goal 
 
-##### Con
+**Con:**
 
 - maybe harder to balance
 - hard to come up with interesting ideas
@@ -526,6 +549,83 @@ https://tvtropes.org/pmwiki/pmwiki.php/Main/FictionalCultureAndNationTropes
   - hold region/tile x for y turns (multiple players can have this quest for additional conflict)
 
 
+
+# Creating Cities, Settlements
+
+- CK3 Holdings
+
+  - https://www.youtube.com/watch?v=Df9P7B9GfFk
+
+  - https://ck3.paradoxwikis.com/Barony#Holdings
+
+- Settlements can be built
+
+  - inside own territory
+    - development of tile reduces cost of city + starts with more population ?
+  - in unclaimed tile
+    - more expensive, less starting population ?
+    - more expensive the further away the settlement is built (to avoid holes in nation)
+  - in both situations
+    - claim unclaimed neighboring tiles for new city
+    - auto transfers neighboring tiles to new city
+
+- settlement grows over time -> claims more tiles, but does not add already claimed tiles to its area
+
+  - can transfer tiles between own cities
+
+- cities also cost some resource -> balance so that players cant build 1mio cities when enough money
+
+  - city requires constant administrative power -> if nation goes over limit -> instabilities due to administrative chaos / too many cities
+
+
+
+# Resource Production
+
+**Raw Resource Gathering (metal, stone, wood, food, ...)**
+
+- cities/settlements automatically harvest resources in tiles owned by city, depending on buildings
+- city starts with very limited amount (only one?) of building-slots -> very specialized -> "raw resource gathering city"
+- as city grows -> unlock more slots -> more diverse buildings -> "city for production/administration/trade/..." 
+- city can set focus -> e.g. "focus on fishing" -> "Fishing Village" -> bonus to fish/food production, malus on all other production unrelated to fish
+- *Example: "Player needs more wood"*
+  1. build new settlement near forest
+  2. build "woodcutter"-building in settlement
+     - 1 woodcutter produces +1 wood for each forest reachable forest-tile
+     - 1 woodcutter can harvest max. 3 forest tiles (if more forest available and player needs more wood -> build more "woodcutters" in city)
+     - 1 forest tile can only be worked by one building
+  3. Profit -> settlements harvests nearby forest
+
+**Production**
+
+- cities produce resources based on available resources and production buildings in city 
+
+**Gameplay and target Player Strategy**
+
+- no specific "tile improvements" like e.g. in civilization games, only cities
+- country structured in provinces with large province capitol (= civilization city) and small settlements for specialized resource gathering (=civilization tile improvements)
+
+
+
+# Cities vs Towns (vs Provinces)
+
+- no provinces
+- cities
+  - country has cities
+  - cities define/own larger areas of country
+  - allow more advanced buildings (administration, research, adv. production)
+  - no max (population) size
+- towns
+  - a town belongs to a city
+  - specialized basic production buildings (farm, mine, quarry, ...)
+  - claims only limited amount of surrounding tiles
+  - max (population) size (after that it can be upgraded to city with own area)
+
+- switch town -> city
+
+  - should be deliberate decision
+  - unlocks buildings with different focuses and bonuses, but maybe not many additional building slots at first -> player decision: keep basic production or replace with new buildings ?
+
+  
 
 # Tile Level
 
@@ -622,3 +722,124 @@ What if defender does not find out about pending war ? (suprised by declaration 
 
 - has to start preparation later
 - has to rely on castles/fortifications/standing armies until preparation is done
+
+
+
+# Terrain Generation
+
+- https://www.procjam.com/tutorials/en/ooze/
+  - continents, biomes
+  - more on non-realistic side
+  - created by placing "blobs" that modify "terrain" each time
+  - <img src="https://www.procjam.com/tutorials/en/ooze/images/image5.png" style="zoom: 33%;float:left" />
+- http://www.jgallant.com/procedurally-generating-wrapping-world-maps-in-unity-csharp-part-1/
+  - continents, biomes
+  - generate heightmaps, heatmaps, moisture, ...
+  - more realistic looking
+  - <img src="http://www.jgallant.com/wp-content/uploads/2016/01/biomesrender2.png" style="zoom:67%;float:left" />
+  - my (rough) Shadertoy "implementation": https://www.shadertoy.com/view/NtjXDt
+
+- Procedural Generation Blog
+  - https://heredragonsabound.blogspot.com/
+  - Hex Wind Simulation: https://heredragonsabound.blogspot.com/2018/11/continent-maps-part-4-wind-model.html
+- Blog (Realistic World gen)
+  - https://undiscoveredworlds.blogspot.com/
+  - Rain Simulation: https://undiscoveredworlds.blogspot.com/2019/02/hey-ho-wind-and-rain.html
+  - Climate: https://undiscoveredworlds.blogspot.com/2019/02/getting-climactic.html
+
+
+
+# Combat, War, Army Movement and Commands
+
+## Idea 1
+
+- army control based on areas (e.g. cities)
+- army can be in an area (not in a specific tile)
+- all commands based on areas, examples:
+  - defend current area
+  - move into area
+  - attack area
+  - retreat into area
+  - avoid enemy armies in current area
+  - ...
+- how to handle multiple different types of terrain in an area (-> e.g. for combat bonuses) ?
+  - set preferred terrain for army, choose from available terrain in area
+  - when 2 armies meet -> commanders make a maneuverer roll -> result decides in whose preferred terrain the battle takes place
+
+**Goal/Results**
+
+- less micromanagement of armies
+- solves problem of two armies chasing each other and not meeting
+
+**Open Problems**
+
+- how to handle unclaimed terrain ?
+
+## Idea 2
+
+- each army has a area of control ("aoc")
+  - size of aoc maybe depending on army composition, commander, tech, ...  
+- army positioned on tiles, movement based on tiles
+- army commands
+  - defend here
+  - attack into tile xy
+  - move to xy and avoid enemies
+  - ...
+- if army enters aoc of other army, they "meet" (-> battle)
+- position/tile of battle one of the positions of meeting armies
+  - depends on armies commands -> e.g. "A" defends and "B" moves into aoc of "A", then battle takes place in tile of "A"
+
+**Goals/Result**
+
+- less micromanagement than without aoc
+- reduces problem of two armies chasing each other and not meeting
+- can handle unclaimed terrain (-> Idea 1)
+
+**Open Problems**
+
+- Situation: two moving armies with aoc smaller than movement distance -> how to handle them crossing each other ?
+  - maybe resolve complete movement of all armies in order -> only end-positions are checked for "meetings" ?
+
+
+
+# [Video] Raising a Medieval Army
+
+https://www.youtube.com/watch?v=ZQHfit8b6VA&t=180s
+
+
+
+# Royal Court/Council
+
+- Royal Court consists of King (i.e. Player) and up to x other characters
+
+- each character has certain abilities and a class
+- player can freely choose who, which classes and how many to have at the court
+- characters class defines what special actions he/she can perform
+  - Marshal - command armies
+  - Merchant
+  - Diplomat
+  - Spy
+  - Administrator
+  - ...
+- characters in the court can also govern cities, giving the city/area additional effects
+
+
+
+# Society / Opinion
+
+- people separated into different classes with different goals, things that influence their opinion and its effects
+-  Peasantry (unskilled labour)
+  - want: safety and protection
+  - affected by: provide basic goods, protect from invasions, no unnecessary wars
+  - effects: basic goods production, rebellion risk, morale of militia units in army 
+- craftsmen (skilled labour, guilds)
+  - ...
+- Nobility
+  - want: personal influence
+  - affected by: financial stability, winning wars, politics, diplomatic decisions
+  - effects: crown authority, loyalty of knights
+- Merchants
+  - want: 
+  - affected by: new trade opportunities, protection of trade, ...
+  - effects: gold income, trade efficiency, cost of buying supplies
+- ...

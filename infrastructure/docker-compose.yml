@@ -1,0 +1,95 @@
+version: "2.1"
+
+services:
+
+    app:
+        image: strategy-game:latest
+        container_name: strategy-game-backend
+        links:
+            - database
+        ports:
+            - "8080:8080"
+            - "8443:8443"
+        volumes:
+            - app_logs:/log
+            - ./sslCert/keystore.jks:/home/sslCert/keystore.jks
+
+    database:
+        image: arangodb:3.10.0
+        container_name: strategy-game-database
+        environment:
+            ARANGO_NO_AUTH: 1
+        ports:
+            - "8529:8529"
+        volumes:
+            - arangodb_data_container:/var/lib/arangodb3
+            - arangodb_apps_data_container:/var/lib/arangodb3-apps
+
+    prometheus:
+        image: prom/prometheus:v2.39.1
+        container_name: strategy-game-prometheus
+        restart: always
+        ports:
+            - "9090:9090"
+        volumes:
+            - ./monitoring/prometheus:/etc/prometheus/
+            - prometheus-data:/prometheus
+        links:
+            - database
+            - app
+        command: --config.file=/etc/prometheus/prometheus.yml
+
+    grafana:
+        image: grafana/grafana:9.2.1
+        container_name: strategy-game-grafana
+        ports:
+            - "3001:3000"
+        user: "104"
+        volumes:
+            - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+            - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+            - grafana-data:/var/lib/grafana
+        links:
+            - prometheus
+
+# run without log-management for now. Current ec2-instance has not enough memory. Elasicsearch alone req. min 2G (-> switch to t4g.medium with 4G ?)
+#    filebeat:
+#        image: docker.elastic.co/beats/filebeat:8.4.3
+#        container_name: strategy-game-filebeat
+#        user: root
+#        volumes:
+#            - ./monitoring/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+#            - app_logs:/etc/filebeat/datasources/backend
+#        command: filebeat -e -strict.perms=false
+#
+#    elasticsearch:
+#        image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+#        container_name: strategy-game-elasticsearch
+#        environment:
+#            - xpack.security.enabled=false
+#            - discovery.type=single-node
+#        cap_add:
+#            - IPC_LOCK
+#        volumes:
+#            - elasticsearch-data:/usr/share/elasticsearch/data
+#        ports:
+#            - 9200:9200
+#            - 9300:9300
+#
+#    kibana:
+#        image: docker.elastic.co/kibana/kibana:8.4.3
+#        container_name: strategy-game-kibana
+#        ports:
+#            - 5601:5601
+#        links:
+#            - elasticsearch
+#        environment:
+#            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+volumes:
+    app_logs:
+    arangodb_data_container:
+    arangodb_apps_data_container:
+    prometheus-data:
+    grafana-data:
+    elasticsearch-data:
