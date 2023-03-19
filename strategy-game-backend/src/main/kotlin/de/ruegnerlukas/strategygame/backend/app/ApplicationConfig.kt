@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.routingApi
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
 import io.github.smiley4.ktorswaggerui.SwaggerUI
@@ -39,6 +39,7 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
+import io.ktor.util.toMap
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -93,7 +94,7 @@ fun Application.module() {
                 .replace(Regex("token=.*?(?=(&|\$))"), "token=SECRET")
                 .replace(Regex("ticket=.*?(?=(&|\$))"), "ticket=SECRET")
             val userAgent = call.request.userAgent() ?: "?"
-            "${status.toString()}: $httpMethod - $route      (userAgent=$userAgent)"
+            "${status.toString()}: $httpMethod - $route     (userAgent=$userAgent)"
         }
         filter { call ->
             listOf("internal/metrics", "api/health").none {

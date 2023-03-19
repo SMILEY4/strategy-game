@@ -21,7 +21,7 @@ class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateActio
 
     override suspend fun perform(worldSettings: WorldSettings): String {
         return Monitoring.coTime(metricId) {
-            log().info("Creating new game")
+            log().info("Creating new game with seed ${worldSettings.seed}")
             val game = buildGame()
             val tiles = buildTiles(worldSettings)
             val gameId = save(game, tiles)

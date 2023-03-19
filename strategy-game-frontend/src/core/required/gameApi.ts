@@ -4,7 +4,7 @@ import {GameConfig} from "../models/gameConfig";
 export interface GameApi {
     config: () => Promise<GameConfig>;
     list: () => Promise<string[]>;
-    create: () => Promise<string>;
+    create: (seed: string | null) => Promise<string>;
     join: (gameId: string) => Promise<void>;
     connect: (gameId: string) => Promise<void>;
     disconnect: () => void;

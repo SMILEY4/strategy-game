@@ -11,9 +11,9 @@ export class GameCreateAction {
         this.gameApi = gameApi;
     }
 
-    perform(): Promise<string> {
-        console.log("create new game");
-        return this.gameApi.create();
+    perform(seed: string | null): Promise<string> {
+        console.log("create new game (seed=" + seed + ")");
+        return this.gameApi.create(seed);
     }
 
 }
