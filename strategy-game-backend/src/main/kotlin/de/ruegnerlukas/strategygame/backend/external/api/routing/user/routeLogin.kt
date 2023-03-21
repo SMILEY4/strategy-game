@@ -36,7 +36,7 @@ fun Route.routeLogin(userLogin: UserLoginAction) = post("login", {
             description = "Error during authentication."
             body(ApiResponse::class) {
                 example("UserNotConfirmedError", ApiResponse.failure(UserIdentityService.UserNotConfirmedError)) {
-                    description = " The user has not confirmed the code"
+                    description = "The user has not confirmed the code"
                 }
                 example("UserNotFoundError", ApiResponse.failure(UserIdentityService.UserNotFoundError)) {
                     description = "The user does not exist."

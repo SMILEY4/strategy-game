@@ -21,7 +21,7 @@ export class UserApiImpl implements UserApi {
                 body: {
                     email: email,
                     password: password,
-                    username: username
+                    username: username,
                 },
             })
             .then(() => undefined);
@@ -37,6 +37,16 @@ export class UserApiImpl implements UserApi {
                     password: password,
                 },
             })
+            .catch(() => {
+                throw new UserLoginException("Network error");
+            })
+            .then(async response => {
+                if (this.isSuccessful(response)) {
+                    return response;
+                } else {
+                    throw new UserLoginException(await this.getErrorCode(response));
+                }
+            })
             .then(response => response.json())
             .then(data => data.idToken);
     }
@@ -51,9 +61,23 @@ export class UserApiImpl implements UserApi {
                     password: password,
                 },
                 requireAuth: true,
-                token: this.userRepository.getAuthToken()
+                token: this.userRepository.getAuthToken(),
             })
             .then(() => undefined);
     }
 
+    private isSuccessful(response: Response): boolean {
+        return 200 <= response.status && response.status < 400;
+    }
+
+    private async getErrorCode(response: Response): Promise<string> {
+        return (await response.json()).status;
+    }
+
+}
+
+export class UserLoginException extends Error {
+    constructor(error: string) {
+        super("Login failed: " + error);
+    }
 }

@@ -51,12 +51,9 @@ import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 
 import {App} from "./ui/App";
 import "./ui/index.css";
-import ModernError from "modern-errors";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
-
-export const BaseError = ModernError.subclass("BaseError");
 
 export namespace AppConfig {
 
