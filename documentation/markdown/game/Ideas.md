@@ -1,5 +1,6 @@
 ---
 title: Ideas/Brainstorming
+
 ---
 
 [TOC]
@@ -48,6 +49,8 @@ https://forums.civfanatics.com/forums/civ4col-medieval-conquests.483
 - medieval conquest -> mod for middle ages
 
 https://download.kalypsomedia.com/manuals/Manual_GAM-EN.pdf
+
+https://forums.civfanatics.com/forums/gedemons-civilization-a-total-overhaul-project.576/
 
 
 
@@ -253,9 +256,11 @@ https://civilization.fandom.com/wiki/Combat_(Civ4) -> simple army combat calcula
     - e.g.: missile inf weaker vs charge due to less time to launch missile
 
 - idea 1: set a basic strategy for army each round
+
   - strategy applies to whole army
-  
+
 - idea 2: set a basic strategy for each unit
+
   - would prop. require limited amount of different units in each army -> reduce amount of req. commands
   - e.g.:
     - only two units in my army: "light cav", and "spearmen"
@@ -338,12 +343,12 @@ Add. Ideas https://fallfromheaven.fandom.com/wiki/Spells
 
 - magic comes from special crystals
 - crystals can be mined
-	-> handle like any other resource
-	-> use crystals as luxury resource (or other stuff) if not used for magic
-	-> use crystals to build magic armor, weapons, ... 
+  -> handle like any other resource
+  -> use crystals as luxury resource (or other stuff) if not used for magic
+  -> use crystals to build magic armor, weapons, ... 
 - crystals are natural and grow more where less people/civilisation are
-	-> balance magic with civilisation
-	-> e.g.: tile has base +5 crystals; build mining tonw next to it -> +4; build large city nearby -> +1
+  -> balance magic with civilisation
+  -> e.g.: tile has base +5 crystals; build mining tonw next to it -> +4; build large city nearby -> +1
 - spells use (the magic stored in) crystals
 - magic schools / research uses x crystals per turn
 
@@ -367,17 +372,17 @@ Add. Ideas https://fallfromheaven.fandom.com/wiki/Spells
 ## Spells
 
 - illusory army
-	* makes an enemy see an army that is not there
-	* make one of your armies appear at a (random?) location
-	* army can be visible twice -> the real and the fake one
-	* only if player spies on your armies ?
+  * makes an enemy see an army that is not there
+  * make one of your armies appear at a (random?) location
+  * army can be visible twice -> the real and the fake one
+  * only if player spies on your armies ?
 - hidden army
-	* temporary increases stealth of one army  
+  * temporary increases stealth of one army  
 - farsight
-	* unhance visibility range of any/all units
+  * unhance visibility range of any/all units
 - hidden spy
-	* conjure one spy that has a 100% success chance
-	* spy can only be "used" once
+  * conjure one spy that has a 100% success chance
+  * spy can only be "used" once
 - Mid Combat Support Spells 
   - improve all allied units in a single area (e.g. front left flank,  back center, ...): defense, attack, morale, ...
   - hinder all enemy units in a single area (e.g. front left flank,  back center, ...): defense, attack, morale, ...
@@ -441,7 +446,7 @@ Add. Ideas https://fallfromheaven.fandom.com/wiki/Spells
    - 1.5x -> morale boost
    - 1x -> normal
    - 0.5x -> slighly lower morale (maybe not as bad as starving)
-   
+
     
 
 
@@ -621,15 +626,19 @@ https://tvtropes.org/pmwiki/pmwiki.php/Main/FictionalCultureAndNationTropes
 
 
 
-# Cities vs Towns (vs Provinces)
+# Cities vs Towns (vs Provinces) ❤
 
 - no provinces
+
 - cities
+
   - country has cities
   - cities define/own larger areas of country
   - allow more advanced buildings (administration, research, adv. production)
   - no max (population) size
+
 - towns
+
   - a town belongs to a city
   - specialized basic production buildings (farm, mine, quarry, ...)
   - claims only limited amount of surrounding tiles
@@ -671,7 +680,7 @@ https://tvtropes.org/pmwiki/pmwiki.php/Main/FictionalCultureAndNationTropes
   - why would the enemy need to reclaim tiles ?
 
  - role of forts/cities ?
-    - maybe tiles surrounding def. structure are protected -> can only be taken by taking defending structure ?
+   - maybe tiles surrounding def. structure are protected -> can only be taken by taking defending structure ?
 
 
 
@@ -843,7 +852,7 @@ https://www.youtube.com/watch?v=ZQHfit8b6VA&t=180s
 # Society / Opinion
 
 - people separated into different classes with different goals, things that influence their opinion and its effects
--  Peasantry (unskilled labour)
+- Peasantry (unskilled labour)
   - want: safety and protection
   - affected by: provide basic goods, protect from invasions, no unnecessary wars
   - effects: basic goods production, rebellion risk, morale of militia units in army 
@@ -980,15 +989,15 @@ As a ruler, one's economic action would have to be to pounder those  different a
 https://historum.com/t/medieval-economy-simulator.21223/post-489892
 
 1.  Attracting merchants and ideally fairs by guaranteeing their safety and other stuff merchant need (everything from a good commercial law to  available brothels). Here avoiding civil strife and internal conflits is critical.
-2. Attracting artisans and guildsmen (and for the countryside freemen and monasteries).
-3. Guaranteeing a level of welfare among the population (distribute grains  in times of dearth, allow charity, open mounts of piety, etc.).
-4. Having a tax base as large as possible and access to good financers (allowing to borrow and invest).
-5. Crushing an economic rival militarily if need be.
-6. Avoiding rent-seeking behaviours by the nobility and the clergy. In the  same way smart taxation may foster growth and avoid revolts.
-7. Medieval men often experienced shortages of money, leading to standstill of the economy. Guaranteeing a reasonable level of liquidity could be a ruler's role. In Portugal, they adopted a simple system: they stole  gold from the Arabs. Elsewhere, not debasing the currency (usually to  pay for war) and supporting export trade was enough. You need to have a  mint.
-8. Diplomatic activity could help one's merchants to secure good positions  in foreign markets (see Venice and the Chrysobulla of 1084 if memory  serves).
-9. The court's consumption may favour the development of some luxury  productions which later can become important export items (see French  wines, Italian cloth, etc.).
-10. Some large investments may take place via or thank to the ruler (think polders in Holland or canals in ... China).
+2.  Attracting artisans and guildsmen (and for the countryside freemen and monasteries).
+3.  Guaranteeing a level of welfare among the population (distribute grains  in times of dearth, allow charity, open mounts of piety, etc.).
+4.  Having a tax base as large as possible and access to good financers (allowing to borrow and invest).
+5.  Crushing an economic rival militarily if need be.
+6.  Avoiding rent-seeking behaviours by the nobility and the clergy. In the  same way smart taxation may foster growth and avoid revolts.
+7.  Medieval men often experienced shortages of money, leading to standstill of the economy. Guaranteeing a reasonable level of liquidity could be a ruler's role. In Portugal, they adopted a simple system: they stole  gold from the Arabs. Elsewhere, not debasing the currency (usually to  pay for war) and supporting export trade was enough. You need to have a  mint.
+8.  Diplomatic activity could help one's merchants to secure good positions  in foreign markets (see Venice and the Chrysobulla of 1084 if memory  serves).
+9.  The court's consumption may favour the development of some luxury  productions which later can become important export items (see French  wines, Italian cloth, etc.).
+10.  Some large investments may take place via or thank to the ruler (think polders in Holland or canals in ... China).
 
 
 
@@ -1080,7 +1089,7 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
 - types of buildings
   - simple-buildings: take resource x and produce resource y
     - example: "Toolmakers Workshop": 1x Wood -> 1x Tool
-  -  augmenting buildings: take resource x and output more of resource x
+  - augmenting buildings: take resource x and output more of resource x
     - example: " Cattle farm" 2x Food -> 3x Food
     - chance to produce more of resource without directly harvesting it, but risk: if not enough of resource to enable building -> even less of that resource
   - sinks: buildings that take resources but, don't produce any goods (just effects?)
@@ -1144,7 +1153,9 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
 
 
 
-# Population Growth
+
+
+# Population Growth ❤
 
 - based on multiple factors
 - growth-meter
@@ -1180,7 +1191,7 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
   - choose 1 bonus after turn 2, 4, 8, 16 -> build your civ over time
   - first effects generic, later ones more and more specific
   - player can adapt to random spawn position and generated world
-  - the more the player knows about world, the more specific effects he can choose
+  - the more the player knows about the world and his situation, the more specific effects he can choose
 
 
 
@@ -1331,7 +1342,7 @@ Government Ideas - "Laws"
 Process:
 
 1. all cities/provinces produce,consume local resources
-2.  all leftover resources are added to a shared resource pool
+2. all leftover resources are added to a shared resource pool
    - also calculate the amount (in %) each city/province contributed to that resource pool
 3. all cities/provinces produce,consume resources from shared pool
 4. calculate internal trade income (in gold) for each city
