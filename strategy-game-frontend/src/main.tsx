@@ -51,9 +51,12 @@ import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 
 import {App} from "./ui/App";
 import "./ui/index.css";
+import ModernError from "modern-errors";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
+
+export const BaseError = ModernError.subclass("BaseError");
 
 export namespace AppConfig {
 
@@ -116,7 +119,7 @@ export namespace AppConfig {
         .add(TileObjectRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILE_OBJECT_VERT)
         .add(TileObjectRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILE_OBJECT_FRAG)
         .add(LineRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_LINE_VERT)
-        .add(LineRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_LINE_FRAG)
+        .add(LineRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_LINE_FRAG),
     );
     diContainer.bind(DIQ.TilePicker, ctx => new TilePicker(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.GameCanvasHandle)));
     diContainer.bind(DIQ.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameConfigRepository)));
