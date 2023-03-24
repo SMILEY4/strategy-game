@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateB
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
@@ -32,6 +33,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQu
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveProductionQueueAddEntryCommand
 
 object TestActions {
 
@@ -86,6 +88,12 @@ object TestActions {
                 ),
                 ResolvePlaceScoutCommandImpl(
                     GameConfig.default(),
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
+                ),
+                ResolveProductionQueueAddEntryCommandImpl(
                     TurnUpdateActionImpl(
                         ReservationInsertImpl(database),
                         GameConfig.default()
@@ -146,6 +154,12 @@ object TestActions {
                 ReservationInsertImpl(database),
                 GameConfig.default()
             )
+        ),
+        ResolveProductionQueueAddEntryCommandImpl(
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            )
         )
     )
 
@@ -173,6 +187,12 @@ object TestActions {
             ),
             ResolvePlaceScoutCommandImpl(
                 GameConfig.default(),
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                )
+            ),
+            ResolveProductionQueueAddEntryCommandImpl(
                 TurnUpdateActionImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()

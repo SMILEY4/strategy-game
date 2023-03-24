@@ -3,6 +3,7 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
+import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
@@ -13,6 +14,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
@@ -31,7 +34,6 @@ suspend fun gameTest(block: suspend GameTestContext.() -> Unit) {
     GameTestContext().coApply(block)
 }
 
-
 class GameTestContext {
 
     private val database = runBlocking { TestUtilsFactory.createTestDatabase() }
@@ -40,13 +42,11 @@ class GameTestContext {
 
     fun gameCfg() = gameConfig
 
-
     private var gameId: String? = null
 
     private val countryIds = mutableMapOf<String, String>()
 
     fun getCountryId(userId: String) = countryIds[userId]!!
-
 
     private val commandResolutionErrors = mutableMapOf<Int, MutableList<CommandResolutionError>>()
 
@@ -98,7 +98,6 @@ class GameTestContext {
             }
         }
     }
-
 
     class JoinGameConfig {
         var gameId: String? = null
@@ -235,6 +234,29 @@ class GameTestContext {
             var r: Int? = null
         }
 
+        suspend fun productionQueueAddBuilding(
+            countryId: String,
+            turn: Int = 0,
+            block: suspend CommandProductionQueueAddBuildingConfig.() -> Unit
+        ) {
+            val config = CommandProductionQueueAddBuildingConfig().coApply(block)
+            commands.add(
+                Command(
+                    commandId = DbId.PLACEHOLDER,
+                    countryId = countryId,
+                    turn = turn,
+                    data = ProductionQueueAddEntryCommandData(
+                        cityId = config.cityId!!,
+                        buildingType = config.buildingType!!,
+                    )
+                )
+            )
+        }
+
+        class CommandProductionQueueAddBuildingConfig {
+            var cityId: String? = null
+            var buildingType: BuildingType? = null
+        }
 
     }
 
@@ -263,6 +285,10 @@ class GameTestContext {
                 is CreateBuildingCommandData -> CreateBuildingCommand(
                     cityId = (cmd.data as CreateBuildingCommandData).cityId,
                     buildingType = (cmd.data as CreateBuildingCommandData).buildingType,
+                )
+                is ProductionQueueAddEntryCommandData -> ProductionQueueAddEntryCommand(
+                    cityId = (cmd.data as ProductionQueueAddEntryCommandData).cityId,
+                    buildingType = (cmd.data as ProductionQueueAddEntryCommandData).buildingType,
                 )
             }
         })
@@ -334,7 +360,6 @@ class GameTestContext {
         var parentCity: String? = null
     }
 
-
     suspend fun expectCountryMoney(block: CountryMoneyAssertion.() -> Unit) {
 //        val config = CountryMoneyAssertion().apply(block)
 //        TestUtils.getCountry(database, config.countryId!!).resources.money.shouldBeWithinPercentageOf(config.amount!!, 0.01)
@@ -344,7 +369,6 @@ class GameTestContext {
         var countryId: String? = null
         var amount: Float? = null
     }
-
 
     fun expectCommandResolutionErrors(turn: Int, vararg errors: String) {
         commandResolutionErrors
@@ -386,7 +410,6 @@ class GameTestContext {
         var countryId: String? = null
     }
 
-
     suspend fun expectNoPlayers() {
         expectPlayers { }
     }
@@ -424,10 +447,39 @@ class GameTestContext {
         var state: String? = null
     }
 
-
     suspend fun expectTurn(turn: Int) {
         TestUtils.getGame(database, gameId!!).turn shouldBe turn
     }
+
+    suspend fun expectProductionQueue(cityId: String, block: suspend ExpectProductionQueueAssertion.() -> Unit) {
+        val expectedEntries = ExpectProductionQueueAssertion().coApply(block).getEntries()
+
+        TestUtils.getCities(database, gameId!!).find { it.cityId == cityId }!!.let { it.productionQueue }.let { actualEntries ->
+            actualEntries shouldHaveSize expectedEntries.size
+            actualEntries.forEachIndexed { index, actual ->
+                val expected = expectedEntries[index]
+                actual.buildingType shouldBe expected.buildingType
+            }
+        }
+
+    }
+
+    class ExpectProductionQueueAssertion {
+
+        private val entries = mutableListOf<ProductionQueueEntryAssertion>()
+
+        fun getEntries() = entries
+
+        suspend fun entry(block: suspend ProductionQueueEntryAssertion.() -> Unit) {
+            entries.add(ProductionQueueEntryAssertion().coApply(block))
+        }
+
+    }
+
+    class ProductionQueueEntryAssertion {
+        var buildingType: BuildingType? = null
+    }
+
 
 }
 

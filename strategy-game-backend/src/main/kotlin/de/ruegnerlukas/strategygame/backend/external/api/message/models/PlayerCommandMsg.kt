@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -20,13 +21,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
     JsonSubTypes.Type(value = CreateCityCommandMsg::class),
     JsonSubTypes.Type(value = CreateBuildingCommandMsg::class),
     JsonSubTypes.Type(value = PlaceScoutCommandMsg::class),
+    JsonSubTypes.Type(value = ProductionQueueAddEntryCommandMsg::class),
 )
-sealed class PlayerCommandMsg(
-    val type: String,
-) {
+sealed class PlayerCommandMsg(val type: String) {
 
     fun asServiceModel(): PlayerCommand {
-        return when(this) {
+        return when (this) {
             is CreateBuildingCommandMsg -> CreateBuildingCommand(
                 cityId = this.cityId,
                 buildingType = this.buildingType
@@ -44,6 +44,10 @@ sealed class PlayerCommandMsg(
             is PlaceScoutCommandMsg -> PlaceScoutCommand(
                 q = this.q,
                 r = this.r
+            )
+            is ProductionQueueAddEntryCommandMsg -> ProductionQueueAddEntryCommand(
+                cityId = this.cityId,
+                buildingType = this.buildingType
             )
         }
     }
@@ -93,5 +97,16 @@ class PlaceScoutCommandMsg(
 ) : PlayerCommandMsg(TYPE) {
     companion object {
         internal const val TYPE = "place-scout"
+    }
+}
+
+
+@JsonTypeName(ProductionQueueAddEntryCommandMsg.TYPE)
+class ProductionQueueAddEntryCommandMsg(
+    val cityId: String,
+    val buildingType: BuildingType
+) : PlayerCommandMsg(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue-add-entry"
     }
 }

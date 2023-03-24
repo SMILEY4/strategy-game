@@ -156,64 +156,6 @@ class CreateCityCommandResolutionTest : StringSpec({
         }
     }
 
-//    "create city without enough resources, reject" {
-//        gameTest {
-//            createGame {
-//                worldSettings = WorldSettings.landOnly()
-//                user("user")
-//            }
-//            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney - 1f)
-//            resolveCommands {
-//                createCity(getCountryId("user")) {
-//                    q = 0
-//                    r = 0
-//                    name = "Test City"
-//                }
-//            }
-//            expectCommandResolutionErrors(0, "CITY.RESOURCES")
-//            expectNoCities()
-//            expectCountryMoney {
-//                countryId = getCountryId("user")
-//                amount = gameCfg().cityCostMoney - 1f
-//            }
-//        }
-//    }
-
-//    "create two cities without enough resources for both, reject second" {
-//        gameTest {
-//            createGame {
-//                worldSettings = WorldSettings.landOnly()
-//                user("user")
-//            }
-//            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney + 1f)
-//            resolveCommands {
-//                createCity(getCountryId("user")) {
-//                    q = 10
-//                    r = 10
-//                    name = "First City"
-//                }
-//                createCity(getCountryId("user")) {
-//                    q = 20
-//                    r = 20
-//                    name = "Second City"
-//                }
-//            }
-//            expectCommandResolutionErrors(0, "CITY.RESOURCES")
-//            expectCities {
-//                city {
-//                    q = 10
-//                    r = 10
-//                    name = "First City"
-//                    countryId = getCountryId("user")
-//                }
-//            }
-//            expectCountryMoney {
-//                countryId = getCountryId("user")
-//                amount = 1f
-//            }
-//        }
-//    }
-
     "create city on already occupied tile, reject" {
         gameTest {
             createGame {

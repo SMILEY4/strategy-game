@@ -8,6 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
@@ -24,6 +25,10 @@ class TurnUpdateActionImpl(
     init {
         val eventBuildingCreation = EventAction<GameExtended, Command<CreateBuildingCommandData>, Unit> { game, command ->
             BuildingCreationAction().perform(game, command)
+        }
+
+        val eventAddProductionQueueEntry = EventAction<GameExtended, Command<ProductionQueueAddEntryCommandData>, Unit> { game, command ->
+            ProductionQueueAddAction().perform(game, command)
         }
 
         val eventCityCreation = EventAction<GameExtended, Command<CreateCityCommandData>, CityCreationResult> { game, command ->
@@ -79,6 +84,9 @@ class TurnUpdateActionImpl(
         eventSystem.atTrigger<Command<CreateBuildingCommandData>>("command.create-building")
             .thenRun(eventBuildingCreation)
 
+        eventSystem.atTrigger<Command<ProductionQueueAddEntryCommandData>>("command.add-production-queue-entry")
+            .thenRun(eventAddProductionQueueEntry)
+
         eventSystem.atTrigger<Command<PlaceMarkerCommandData>>("command.place-marker")
             .thenRun(eventMarkerPlace)
 
@@ -121,6 +129,10 @@ class TurnUpdateActionImpl(
 
     override suspend fun commandPlaceScout(game: GameExtended, command: Command<PlaceScoutCommandData>) {
         eventSystem.trigger("command.place-scout", game, command)
+    }
+
+    override suspend fun commandProductionQueueAdd(game: GameExtended, command: Command<ProductionQueueAddEntryCommandData>) {
+        eventSystem.trigger("command.add-production-queue-entry", game, command)
     }
 
 }

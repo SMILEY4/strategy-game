@@ -19,6 +19,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
@@ -54,6 +56,7 @@ class TurnSubmitActionImpl(
         }
     }
 
+
     /**
      * Fetch the game with the given id. Since we already found a player, we can assume the game exists
      */
@@ -62,6 +65,7 @@ class TurnSubmitActionImpl(
             .getOrElse { throw Exception("Could not get game $gameId") }
     }
 
+
     /**
      * Fetch the country for the given user and game
      */
@@ -69,6 +73,7 @@ class TurnSubmitActionImpl(
         return countryByGameAndUserQuery.execute(game.gameId, userId)
             .getOrElse { throw Exception("Country for user $userId in game ${game.gameId} not found.") }
     }
+
 
     /**
      * Set the state of the given player to "submitted"
@@ -84,12 +89,14 @@ class TurnSubmitActionImpl(
         }
     }
 
+
     /**
      * save the given commands at the given game
      */
     private suspend fun saveCommands(game: Game, country: Country, commands: List<PlayerCommand>) {
         commandsInsert.execute(createCommands(game, country, commands))
     }
+
 
     /**
      * create the command-entities from the given [PlayerCommand]s
@@ -101,9 +108,11 @@ class TurnSubmitActionImpl(
                 is CreateCityCommand -> createCommandCreateCity(game, country, command)
                 is CreateBuildingCommand -> createCommandCreateBuilding(game, country, command)
                 is PlaceScoutCommand -> createCommandPlaceScout(game, country, command)
+                is ProductionQueueAddEntryCommand -> createCommandProductionQueueAddEntry(game, country, command)
             }
         }
     }
+
 
     /**
      * create a command-entity from the given [PlaceMarkerCommand]
@@ -119,6 +128,7 @@ class TurnSubmitActionImpl(
             )
         )
     }
+
 
     /**
      * create a command-entity from the given [CreateCityCommand]
@@ -137,6 +147,7 @@ class TurnSubmitActionImpl(
         )
     }
 
+
     /**
      * create a command-entity from the given [CreateBuildingCommand]
      */
@@ -152,6 +163,7 @@ class TurnSubmitActionImpl(
         )
     }
 
+
     /**
      * create a command-entity from the given [PlaceScoutCommand]
      */
@@ -166,6 +178,23 @@ class TurnSubmitActionImpl(
             )
         )
     }
+
+
+    /**
+     * create a command-entity from the given [ProductionQueueAddEntryCommand]
+     */
+    private fun createCommandProductionQueueAddEntry(game: Game, country: Country, cmd: ProductionQueueAddEntryCommand): Command<*> {
+        return Command(
+            commandId = DbId.PLACEHOLDER,
+            turn = game.turn,
+            countryId = country.countryId,
+            data = ProductionQueueAddEntryCommandData(
+                cityId = cmd.cityId,
+                buildingType = cmd.buildingType
+            )
+        )
+    }
+
 
     /**
      * End turn if all players submitted their commands (none in state "playing")

@@ -113,7 +113,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = null,
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
                 City(
                     cityId = "test-city-wood",
@@ -168,7 +169,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = null,
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
             ),
             provinces = listOf(
@@ -338,7 +340,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = null,
                             active = true
                         )
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
                 City(
                     cityId = "test-city-wood",
@@ -353,7 +356,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = TileRef(tiles.find { it.position.q == +5 - 1 && it.position.r == 0 }!!),
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
                 City(
                     cityId = "test-city-disconnected",
@@ -393,7 +397,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = TileRef(tiles.find { it.position.q == -5 + 1 && it.position.r == -1 }!!),
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
             ),
             provinces = listOf(

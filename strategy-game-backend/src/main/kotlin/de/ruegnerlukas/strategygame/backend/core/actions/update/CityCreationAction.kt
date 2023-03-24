@@ -56,6 +56,7 @@ class CityCreationAction(private val reservationInsert: ReservationInsert) {
             color = RGBColor.random(),
             isProvinceCapital = isProvinceCapital,
             buildings = mutableListOf(),
+            productionQueue = mutableListOf()
         ).also { game.cities.add(it) }
     }
 

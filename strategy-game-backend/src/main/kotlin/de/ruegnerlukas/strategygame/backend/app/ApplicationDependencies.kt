@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateB
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.DisconnectAllPlayersActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
@@ -50,6 +51,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreat
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolvePlaceScoutCommand
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveProductionQueueAddEntryCommand
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.DisconnectAllPlayersAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
@@ -132,6 +134,7 @@ val applicationDependencies = module {
     single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
     single<ResolveCreateBuildingCommand> { ResolveCreateBuildingCommandImpl(get(), get()) }
     single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get(), get()) }
+    single<ResolveProductionQueueAddEntryCommand> { ResolveProductionQueueAddEntryCommandImpl(get()) }
     single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
     single<GamesListAction> { GamesListActionImpl(get()) }
     single<GameDeleteAction> { GameDeleteActionImpl(get()) }
@@ -141,7 +144,7 @@ val applicationDependencies = module {
     single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
     single<GameJoinAction> { GameJoinActionImpl(get(), get(), get(), get(), get(), get()) }
     single<GameRequestConnectionAction> { GameRequestConnectionActionImpl(get()) }
-    single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get()) }
+    single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get(), get()) }
     single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }

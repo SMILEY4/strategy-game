@@ -98,45 +98,6 @@ class CreateTownCommandResolutionTest : StringSpec({
         }
     }
 
-//    "create town without enough resources, reject" {
-//        gameTest {
-//            createGame {
-//                worldSettings = WorldSettings.landOnly()
-//                user("user")
-//            }
-//            resolveCommands {
-//                createCity(getCountryId("user")) {
-//                    q = 0
-//                    r = 0
-//                    name = "Test City"
-//                }
-//            }
-//            endTurn()
-//            setCountryMoney(getCountryId("user"), gameCfg().townCostMoney - 1f)
-//            resolveCommands {
-//                createTown(getCountryId("user")) {
-//                    q = 2
-//                    r = 0
-//                    name = "Test City"
-//                }
-//            }
-//            expectCommandResolutionErrors(1, "CITY.RESOURCES")
-//            expectCities {
-//                city {
-//                    q = 0
-//                    r = 0
-//                    name = "Test City"
-//                    countryId = getCountryId("user")
-//                }
-//            }
-//            expectCountryMoney {
-//                countryId = getCountryId("user")
-//                amount = gameCfg().townCostMoney - 1f
-//            }
-//        }
-//    }
-
-
     "create town on already occupied tile, reject" {
         gameTest {
             createGame {

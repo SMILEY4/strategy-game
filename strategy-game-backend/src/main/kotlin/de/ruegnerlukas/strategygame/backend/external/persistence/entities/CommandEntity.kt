@@ -12,7 +12,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandDa
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
-
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
 
 class CommandEntity<T : CommandEntityData>(
     val countryId: String,
@@ -50,6 +50,10 @@ class CommandEntity<T : CommandEntityData>(
                     q = serviceModel.q,
                     r = serviceModel.r,
                 )
+                is ProductionQueueAddEntryCommandData -> ProductionQueueAddEntryCommandEntityData(
+                    cityId = serviceModel.cityId,
+                    buildingType =  serviceModel.buildingType
+                )
             }
         }
 
@@ -82,6 +86,10 @@ class CommandEntity<T : CommandEntityData>(
                 q = entity.q,
                 r = entity.r,
             )
+            is ProductionQueueAddEntryCommandEntityData -> ProductionQueueAddEntryCommandData(
+                cityId = entity.cityId,
+                buildingType =  entity.buildingType
+            )
         }
     }
 
@@ -97,6 +105,7 @@ class CommandEntity<T : CommandEntityData>(
     JsonSubTypes.Type(value = CreateBuildingCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceMarkerCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceScoutCommandEntityData::class),
+    JsonSubTypes.Type(value = ProductionQueueAddEntryCommandEntityData::class),
 )
 sealed class CommandEntityData(
     val type: String
@@ -141,5 +150,15 @@ class PlaceScoutCommandEntityData(
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "place-scout"
+    }
+}
+
+@JsonTypeName(ProductionQueueAddEntryCommandEntityData.TYPE)
+class ProductionQueueAddEntryCommandEntityData(
+    val cityId: String,
+    val buildingType: BuildingType
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue-add-entry"
     }
 }
