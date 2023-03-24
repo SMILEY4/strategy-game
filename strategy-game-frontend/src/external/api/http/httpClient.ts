@@ -6,7 +6,6 @@ export class HttpClient {
         this.baseUrl = baseUrl;
     }
 
-
     get(data: GetData): Promise<Response> {
         return this.makeRequest(this.baseUrl + data.url, {
             method: "GET",
