@@ -1,11 +1,14 @@
 import {Command} from "../../core/models/command";
 import {GameConfig} from "../../core/models/gameConfig";
-import {GameApi} from "../../core/required/gameApi";
+import {GameApi, GameNotFoundError, UserAlreadyPlayerError} from "../../core/required/gameApi";
 import {UserRepository} from "../../core/required/userRepository";
 import {HttpClient} from "./http/httpClient";
 import {MessageHandler} from "./messageHandler";
 import {WebsocketClient} from "./messaging/websocketClient";
 import {PayloadSubmitTurn} from "./models/payloadSubmitTurn";
+import {UnauthorizedError, UnexpectedError} from "../../shared/error";
+import {ResponseUtils} from "./http/responseUtils";
+import handleErrorResponses = ResponseUtils.handleErrorResponses;
 
 export class GameApiImpl implements GameApi {
 
@@ -28,7 +31,11 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.get({
                 url: "/api/game/config",
                 requireAuth: true,
-                token: this.userRepository.getAuthToken()
+                token: this.userRepository.getAuthToken(),
+            }))
+            .then(response => handleErrorResponses(response, error => {
+                if (error.status === "Unauthorized") return new UnauthorizedError();
+                return new UnexpectedError(error.status);
             }))
             .then(response => response.json());
     }
@@ -39,7 +46,11 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.get({
                 url: "/api/game/list",
                 requireAuth: true,
-                token: this.userRepository.getAuthToken()
+                token: this.userRepository.getAuthToken(),
+            }))
+            .then(response => handleErrorResponses(response, error => {
+                if (error.status === "Unauthorized") return new UnauthorizedError();
+                return new UnexpectedError(error.status);
             }))
             .then(response => response.json());
     }
@@ -50,7 +61,13 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.post({
                 url: "/api/game/create" + (seed ? ("?seed=" + seed) : ""),
                 requireAuth: true,
-                token: this.userRepository.getAuthToken()
+                token: this.userRepository.getAuthToken(),
+            }))
+            .then(response => handleErrorResponses(response, error => {
+                if (error.status === "Unauthorized") return new UnauthorizedError();
+                if (error.status === "GameNotFoundError") return new GameNotFoundError();
+                if (error.status === "UserAlreadyPlayerError") return new UserAlreadyPlayerError();
+                return new UnexpectedError(error.status);
             }))
             .then(response => response.text());
     }
@@ -61,7 +78,13 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.post({
                 url: `/api/game/join/${gameId}`,
                 requireAuth: true,
-                token: this.userRepository.getAuthToken()
+                token: this.userRepository.getAuthToken(),
+            }))
+            .then(response => handleErrorResponses(response, error => {
+                if (error.status === "Unauthorized") return new UnauthorizedError();
+                if (error.status === "GameNotFoundError") return new GameNotFoundError();
+                if (error.status === "UserAlreadyPlayerError") return new UserAlreadyPlayerError();
+                return new UnexpectedError(error.status);
             }))
             .then(() => undefined);
     }

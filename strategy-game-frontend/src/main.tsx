@@ -116,7 +116,7 @@ export namespace AppConfig {
         .add(TileObjectRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_TILE_OBJECT_VERT)
         .add(TileObjectRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_TILE_OBJECT_FRAG)
         .add(LineRenderer.SHADER_SRC_KEY_VERTEX, SHADER_SRC_LINE_VERT)
-        .add(LineRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_LINE_FRAG)
+        .add(LineRenderer.SHADER_SRC_KEY_FRAGMENT, SHADER_SRC_LINE_FRAG),
     );
     diContainer.bind(DIQ.TilePicker, ctx => new TilePicker(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository), ctx.get(DIQ.GameCanvasHandle)));
     diContainer.bind(DIQ.TurnAddCommandAction, ctx => new TurnAddCommandAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameConfigRepository)));
