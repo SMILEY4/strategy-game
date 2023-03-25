@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.external.persistence.entities
 
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
 
 data class ProductionQueueEntryEntity(
     val entryId: String,
     val buildingType: BuildingType,
-    val collectedResources: ResourceStats,
+    val collectedResources: List<ResourceStack>,
 )

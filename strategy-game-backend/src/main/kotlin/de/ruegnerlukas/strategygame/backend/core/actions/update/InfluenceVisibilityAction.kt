@@ -3,13 +3,15 @@ package de.ruegnerlukas.strategygame.backend.core.actions.update
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 /**
  * Uncovers/Discovers tiles after a change in influence
  */
-class InfluenceVisibilityAction {
+class InfluenceVisibilityAction: Logging {
 
     fun perform(game: GameExtended, tiles: Collection<Tile>) {
+        log().debug("Update visibility of ${tiles.size} tiles after changed influence")
         tiles.forEach { tile ->
             updateTile(game, tile)
         }

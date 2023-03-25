@@ -9,12 +9,13 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
 /**
  * Creates the new city at the given location and creates new province (if required)
  */
-class CityCreationAction(private val reservationInsert: ReservationInsert) {
+class CityCreationAction(private val reservationInsert: ReservationInsert): Logging {
 
     companion object {
         data class CityCreationResult(
@@ -27,6 +28,7 @@ class CityCreationAction(private val reservationInsert: ReservationInsert) {
     suspend fun perform(game: GameExtended, command: Command<CreateCityCommandData>): CityCreationResult {
         val country = getCountry(game, command)
         val targetTile = getTargetTile(game, command)
+        log().debug("Create city at ${targetTile.position} for country ${country.countryId}")
         val (city, province) = createCity(game, country, targetTile, command.data)
         return CityCreationResult(country, province, city)
     }

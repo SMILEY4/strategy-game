@@ -5,9 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
 class ProductionEntityUpdateService {
 
     fun update(entity: EconomyEntity) {
-        entity.getProduces().forEach {
-            entity.getNode().getStorage().add(it.type, it.amount)
-        }
+        entity.getNode().getStorage().add(entity.getProduces())
         entity.flagProduced()
     }
 

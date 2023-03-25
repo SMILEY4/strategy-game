@@ -23,167 +23,217 @@ enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) 
     WINERY(30, BuildingTemplateDataWinery()),
 }
 
-data class ResourceStack(
-    val type: ResourceType,
-    val amount: Float
-)
-
-fun ResourceType.amount(amount: Float) = ResourceStack(this, amount)
-
 abstract class BuildingTemplateData(
-    val constructionCost: List<ResourceStack> = listOf(),
-    val requires: List<ResourceStack> = listOf(),
-    val produces: List<ResourceStack> = listOf(),
+    val constructionCost: ResourceCollection = ResourceCollection.basic(),
+    val requires: ResourceCollection = ResourceCollection.basic(),
+    val produces: ResourceCollection = ResourceCollection.basic(),
     val requiredTileResource: TileResourceType? = null
 )
 
 class BuildingTemplateDataFarm : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    produces = listOf(ResourceType.FOOD.amount(1f)),
+    produces = ResourceCollection.basic(
+        ResourceType.FOOD.amount(1f)
+    ),
     requiredTileResource = TileResourceType.PLAINS,
 )
 
 class BuildingTemplateDataFishersHut : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    produces = listOf(ResourceType.FOOD.amount(1f)),
+    produces = ResourceCollection.basic(
+        ResourceType.FOOD.amount(1f)
+    ),
     requiredTileResource = TileResourceType.FISH,
 )
 
 class BuildingTemplateDataWoodcutter : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    produces = listOf(ResourceType.WOOD.amount(1f)),
+    produces = ResourceCollection.basic(
+        ResourceType.WOOD.amount(1f)
+    ),
     requiredTileResource = TileResourceType.FOREST,
 )
 
 class BuildingTemplateDataQuarry : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    produces = listOf(ResourceType.STONE.amount(1f)),
+    produces = ResourceCollection.basic(
+        ResourceType.STONE.amount(1f)
+    ),
     requiredTileResource = TileResourceType.STONE,
 )
 
 class BuildingTemplateDataMine : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    produces = listOf(ResourceType.METAL.amount(1f)),
+    produces = ResourceCollection.basic(
+        ResourceType.METAL.amount(1f)
+    ),
     requiredTileResource = TileResourceType.METAL,
 )
+
 class BuildingTemplateDataArmorSmith : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.METAL.amount(1f)),
-    produces = listOf(ResourceType.ARMOR.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.METAL.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.ARMOR.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataWeaponSmith : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.METAL.amount(1f)),
-    produces = listOf(ResourceType.WEAPONS.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.METAL.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.WEAPONS.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataToolMarker : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.WOOD.amount(1f)),
-    produces = listOf(ResourceType.TOOLS.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.WOOD.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.TOOLS.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataJeweller : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.METAL.amount(1f)),
-    produces = listOf(ResourceType.JEWELLERIES.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.METAL.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.JEWELLERIES.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataCooper : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.WOOD.amount(1f)),
-    produces = listOf(ResourceType.BARRELS.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.WOOD.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.BARRELS.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataCattleFarm : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.FOOD.amount(1f)),
-    produces = listOf(ResourceType.FOOD.amount(2f))
+    requires = ResourceCollection.basic(
+        ResourceType.FOOD.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.FOOD.amount(2f)
+    ),
 )
 
 class BuildingTemplateDataWinery : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.BARRELS.amount(1f)),
-    produces = listOf(ResourceType.WINE.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.BARRELS.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.WINE.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataMarket : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.BARRELS.amount(1f)),
+    requires = ResourceCollection.basic(
+        ResourceType.BARRELS.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataStables : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.FOOD.amount(1f)),
-    produces = listOf(ResourceType.HORSE.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.FOOD.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.HORSE.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataSheepFarm : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.FOOD.amount(1f)),
-    produces = listOf(ResourceType.HIDE.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.FOOD.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.HIDE.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataTailorsWorkshop : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.HIDE.amount(1f)),
-    produces = listOf(ResourceType.CLOTHES.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.HIDE.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.CLOTHES.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataParchmentersWorkshop : BuildingTemplateData(
-    constructionCost = listOf(
-        ResourceStack(ResourceType.WOOD, 10f),
-        ResourceStack(ResourceType.STONE, 5f)
+    constructionCost = ResourceCollection.basic(
+        ResourceType.WOOD.amount(10f),
+        ResourceType.STONE.amount(5f)
     ),
-    requires = listOf(ResourceType.HIDE.amount(1f)),
-    produces = listOf(ResourceType.PARCHMENT.amount(1f))
+    requires = ResourceCollection.basic(
+        ResourceType.HIDE.amount(1f)
+    ),
+    produces = ResourceCollection.basic(
+        ResourceType.PARCHMENT.amount(1f)
+    ),
 )

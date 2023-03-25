@@ -17,6 +17,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
+import de.ruegnerlukas.strategygame.backend.ports.models.amount
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import io.kotest.core.spec.style.StringSpec
 
@@ -217,40 +218,40 @@ class ResourceSharingTest : StringSpec({
             performEconomyUpdate(game)
             game.provinces.find { it.provinceId == "test-province-food" }!!.also { province ->
                 province shouldHaveProducedLastTurn listOf(
-                    ResourceType.FOOD to 6f,
-                    ResourceType.TOOLS to 3f,
+                    ResourceType.FOOD.amount(6f),
+                    ResourceType.TOOLS.amount(3f),
                 )
                 province shouldHaveConsumedCurrentTurn listOf(
-                    ResourceType.FOOD to 2f,
-                    ResourceType.WOOD to 3f,
+                    ResourceType.FOOD.amount(2f),
+                    ResourceType.WOOD.amount(3f),
                 )
                 province shouldHaveProducedCurrentTurn listOf(
-                    ResourceType.FOOD to 6f,
-                    ResourceType.TOOLS to 3f,
+                    ResourceType.FOOD.amount(6f),
+                    ResourceType.TOOLS.amount(3f),
                 )
                 province shouldBeMissing listOf(
-                    ResourceType.FOOD to 0f,
-                    ResourceType.WOOD to 0f,
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.WOOD.amount(0f),
                 )
             }
             game.provinces.find { it.provinceId == "test-province-wood" }!!.also { province ->
                 province shouldHaveProducedLastTurn listOf(
-                    ResourceType.WOOD to 6f,
-                    ResourceType.TOOLS to 1f,
-                    ResourceType.HORSE to 2f,
+                    ResourceType.WOOD.amount(6f),
+                    ResourceType.TOOLS.amount(1f),
+                    ResourceType.HORSE.amount(2f),
                 )
                 province shouldHaveConsumedCurrentTurn listOf(
-                    ResourceType.FOOD to 4f,
-                    ResourceType.WOOD to 1f,
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.WOOD.amount(1f),
                 )
                 province shouldHaveProducedCurrentTurn listOf(
-                    ResourceType.WOOD to 6f,
-                    ResourceType.TOOLS to 1f,
-                    ResourceType.HORSE to 2f,
+                    ResourceType.WOOD.amount(6f),
+                    ResourceType.TOOLS.amount(1f),
+                    ResourceType.HORSE.amount(2f),
                 )
                 province shouldBeMissing listOf(
-                    ResourceType.FOOD to 0f,
-                    ResourceType.WOOD to 0f,
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.WOOD.amount(0f),
                 )
             }
         }
@@ -451,42 +452,42 @@ class ResourceSharingTest : StringSpec({
             performEconomyUpdate(game)
             game.provinces.find { it.provinceId == "test-province-food" }!!.also { province ->
                 province shouldHaveProducedLastTurn listOf(
-                    ResourceType.FOOD to 3f,
-                    ResourceType.WOOD to 0f,
-                    ResourceType.TOOLS to 1f,
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.WOOD.amount(0f),
+                    ResourceType.TOOLS.amount(1f),
                 )
                 province shouldHaveConsumedCurrentTurn listOf(
-                    ResourceType.FOOD to 2f,
-                    ResourceType.WOOD to 1f,
-                    ResourceType.TOOLS to 0f,
+                    ResourceType.FOOD.amount(2f),
+                    ResourceType.WOOD.amount(1f),
+                    ResourceType.TOOLS.amount(0f),
                 )
                 province shouldHaveProducedCurrentTurn listOf(
-                    ResourceType.FOOD to 3f,
-                    ResourceType.WOOD to 0f,
-                    ResourceType.TOOLS to 1f,
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.WOOD.amount(0f),
+                    ResourceType.TOOLS.amount(1f),
                 )
                 province shouldBeMissing listOf(
-                    ResourceType.FOOD to 0f,
-                    ResourceType.WOOD to 1f,
-                    ResourceType.TOOLS to 0f,
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.WOOD.amount(1f),
+                    ResourceType.TOOLS.amount(0f),
                 )
             }
             game.provinces.find { it.provinceId == "test-province-wood" }!!.also { province ->
                 province shouldHaveProducedLastTurn listOf(
-                    ResourceType.FOOD to 0f,
-                    ResourceType.WOOD to 1f,
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.WOOD.amount(1f),
                 )
                 province shouldHaveConsumedCurrentTurn listOf(
-                    ResourceType.FOOD to 1f,
-                    ResourceType.WOOD to 0f,
+                    ResourceType.FOOD.amount(1f),
+                    ResourceType.WOOD.amount(0f),
                 )
                 province shouldHaveProducedCurrentTurn listOf(
-                    ResourceType.FOOD to 0f,
-                    ResourceType.WOOD to 1f,
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.WOOD.amount(1f),
                 )
                 province shouldBeMissing listOf(
-                    ResourceType.FOOD to 1f,
-                    ResourceType.WOOD to 0f,
+                    ResourceType.FOOD.amount(1f),
+                    ResourceType.WOOD.amount(0f),
                 )
             }
         }

@@ -2,6 +2,8 @@ package de.ruegnerlukas.strategygame.backend.core.economy
 
 import de.ruegnerlukas.strategygame.backend.core.actions.update.WorldPrepareAction
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.shouldHaveConsumedCurrentTurn
+import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.shouldHaveProducedLastTurn
 import de.ruegnerlukas.strategygame.backend.core.world.WorldBuilder
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
@@ -9,7 +11,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
@@ -25,7 +28,6 @@ import de.ruegnerlukas.strategygame.backend.shared.events.EventAction
 import de.ruegnerlukas.strategygame.backend.shared.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.shared.positionsNeighbours
 import de.ruegnerlukas.strategygame.backend.shared.tracking
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.floats.plusOrMinus
 import io.kotest.matchers.shouldBe
 
@@ -108,34 +110,33 @@ object EconomyTestUtils {
         return eventSystem
     }
 
-    infix fun Province.shouldHaveProducedLastTurn(resources: Collection<Pair<ResourceType, Float>>) {
-        resources.forEach { (type, amount) ->
+    infix fun Province.shouldHaveProducedLastTurn(resources: Collection<ResourceStack>) {
+        ResourceCollection.basic(resources).forEach(true) { type, amount ->
             this.resourcesProducedPrevTurn[type] shouldBe amount.plusOrMinus(0.0001f)
         }
     }
 
-    infix fun Province.shouldHaveProducedCurrentTurn(resources: Collection<Pair<ResourceType, Float>>) {
-        resources.forEach { (type, amount) ->
+    infix fun Province.shouldHaveProducedCurrentTurn(resources: Collection<ResourceStack>) {
+        ResourceCollection.basic(resources).forEach(true) { type, amount ->
             this.resourcesProducedCurrTurn[type] shouldBe amount.plusOrMinus(0.0001f)
         }
     }
 
-    infix fun Province.shouldHaveConsumedCurrentTurn(resources: Collection<Pair<ResourceType, Float>>) {
-        resources.forEach { (type, amount) ->
+    infix fun Province.shouldHaveConsumedCurrentTurn(resources: Collection<ResourceStack>) {
+        ResourceCollection.basic(resources).forEach(true) { type, amount ->
             this.resourcesConsumedCurrTurn[type] shouldBe amount.plusOrMinus(0.0001f)
         }
     }
 
-    infix fun Province.shouldBeMissing(resources: Collection<Pair<ResourceType, Float>>) {
-        resources.forEach { (type, amount) ->
+    infix fun Province.shouldBeMissing(resources: Collection<ResourceStack>) {
+        ResourceCollection.basic(resources).forEach(true) { type, amount ->
             this.resourcesMissing[type] shouldBe amount.plusOrMinus(0.0001f)
         }
     }
 
-    infix fun ResourceStats.shouldBeExactly(resources: Collection<Pair<ResourceType, Float>>) {
-        this.toList() shouldHaveSize resources.size
-        resources.forEach { expected ->
-            this[expected.first] shouldBe expected.second.plusOrMinus(0.0001f)
+    infix fun ResourceCollection.shouldBeExactly(resources: Collection<ResourceStack>) {
+        ResourceCollection.basic(resources).forEach(true) { type, amount ->
+            this[type] shouldBe amount.plusOrMinus(0.0001f)
         }
     }
 

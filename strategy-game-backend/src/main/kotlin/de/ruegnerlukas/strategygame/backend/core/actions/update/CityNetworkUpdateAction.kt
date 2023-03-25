@@ -20,15 +20,17 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileType
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.distance
 import de.ruegnerlukas.strategygame.backend.shared.mapParallel
 
 /**
  * Connects newly created cities with other cities
  */
-class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val reservationInsert: ReservationInsert) {
+class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val reservationInsert: ReservationInsert): Logging {
 
     suspend fun perform(game: GameExtended, creationResult: CityCreationResult) {
+        log().debug("Update city network after creation of city ${creationResult.city.cityId}")
         if (creationResult.city.isProvinceCapital) {
             createOrUpdateRoutes(creationResult.city, game)
         } else {

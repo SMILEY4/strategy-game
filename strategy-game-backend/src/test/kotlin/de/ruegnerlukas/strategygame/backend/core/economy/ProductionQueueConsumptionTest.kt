@@ -10,11 +10,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
+import de.ruegnerlukas.strategygame.backend.ports.models.amount
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import io.kotest.core.spec.style.StringSpec
 
@@ -79,7 +80,7 @@ class ProductionQueueConsumptionTest : StringSpec({
                         ProductionQueueEntry(
                             entryId = "entry-1",
                             buildingType = BuildingType.ARMOR_SMITH,
-                            collectedResources = ResourceStats()
+                            collectedResources = ResourceCollection.basic()
                         )
                     )
                 ),
@@ -98,48 +99,48 @@ class ProductionQueueConsumptionTest : StringSpec({
         performEconomyUpdate(game)
         game.cities.find { it.cityId == "test-city" }!!.productionQueue[0].also { queueEntry ->
             queueEntry.collectedResources shouldBeExactly listOf(
-                ResourceType.WOOD to 0f,
-                ResourceType.STONE to 0f,
+                ResourceType.WOOD.amount(0f),
+                ResourceType.STONE.amount(0f),
             )
         }
 
         performEconomyUpdate(game)
         game.cities.find { it.cityId == "test-city" }!!.productionQueue[0].also { queueEntry ->
             queueEntry.collectedResources shouldBeExactly listOf(
-                ResourceType.WOOD to 3f,
-                ResourceType.STONE to 3f,
+                ResourceType.WOOD.amount(3f),
+                ResourceType.STONE.amount(3f),
             )
         }
 
         performEconomyUpdate(game)
         game.cities.find { it.cityId == "test-city" }!!.productionQueue[0].also { queueEntry ->
             queueEntry.collectedResources shouldBeExactly listOf(
-                ResourceType.WOOD to 6f,
-                ResourceType.STONE to 5f,
+                ResourceType.WOOD.amount(6f),
+                ResourceType.STONE.amount(5f),
             )
         }
 
         performEconomyUpdate(game)
         game.cities.find { it.cityId == "test-city" }!!.productionQueue[0].also { queueEntry ->
             queueEntry.collectedResources shouldBeExactly listOf(
-                ResourceType.WOOD to 9f,
-                ResourceType.STONE to 5f,
+                ResourceType.WOOD.amount(9f),
+                ResourceType.STONE.amount(5f),
             )
         }
 
         performEconomyUpdate(game)
         game.cities.find { it.cityId == "test-city" }!!.productionQueue[0].also { queueEntry ->
             queueEntry.collectedResources shouldBeExactly listOf(
-                ResourceType.WOOD to 10f,
-                ResourceType.STONE to 5f,
+                ResourceType.WOOD.amount(10f),
+                ResourceType.STONE.amount(5f),
             )
         }
 
         performEconomyUpdate(game)
         game.cities.find { it.cityId == "test-city" }!!.productionQueue[0].also { queueEntry ->
             queueEntry.collectedResources shouldBeExactly listOf(
-                ResourceType.WOOD to 10f,
-                ResourceType.STONE to 5f,
+                ResourceType.WOOD.amount(10f),
+                ResourceType.STONE.amount(5f),
             )
         }
 

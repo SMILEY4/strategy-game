@@ -7,15 +7,15 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 /**
  * Cancels the given production queue entry
  */
-class ProductionQueueRemoveAction(
-    private val gameConfig: GameConfig
-) {
+class ProductionQueueRemoveAction(private val gameConfig: GameConfig): Logging {
 
     fun perform(game: GameExtended, command: Command<ProductionQueueRemoveEntryCommandData>) {
+        log().debug("Remove production-queue-entry (${command.data.queueEntryId}) from city ${command.data.cityId}")
         val city = getCity(game, command)
         val province = getProvince(game, city)
         val entry = getEntry(city, command)
@@ -23,10 +23,9 @@ class ProductionQueueRemoveAction(
     }
 
     private fun removeEntry(city: City, province: Province, entry: ProductionQueueEntry) {
-        entry.collectedResources.toList().forEach { resource ->
-            val amountRefund = resource.second * gameConfig.productionQueueRefundPercentage
-            province.resourcesProducedCurrTurn.add(resource.first, amountRefund)
-        }
+        province.resourcesProducedCurrTurn.add(
+            entry.collectedResources.copy().scale(gameConfig.productionQueueRefundPercentage)
+        )
         city.productionQueue.remove(entry)
     }
 

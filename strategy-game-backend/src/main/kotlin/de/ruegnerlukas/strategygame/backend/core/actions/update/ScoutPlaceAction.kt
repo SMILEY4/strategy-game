@@ -7,15 +7,17 @@ import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 /**
  * Adds the scout at the given location and discovers the surrounding tiles
  */
-class ScoutPlaceAction(private val gameConfig: GameConfig) {
+class ScoutPlaceAction(private val gameConfig: GameConfig): Logging {
 
     fun perform(game: GameExtended, command: Command<PlaceScoutCommandData>) {
         val tile = getTile(game, command)
+        log().debug("Place scout at ${tile.position} for country ${command.countryId}")
         addScout(tile, command.countryId, game.game.turn)
         discoverTiles(game, tile, command.countryId)
     }

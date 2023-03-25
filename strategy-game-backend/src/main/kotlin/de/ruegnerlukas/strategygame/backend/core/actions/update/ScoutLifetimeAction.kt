@@ -4,18 +4,21 @@ import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 
 /**
  * Updates the lifetime of all scouts. If a scout's lifetime runs out, it is removed from the game
  */
-class ScoutLifetimeAction(private val gameConfig: GameConfig) {
+class ScoutLifetimeAction(private val gameConfig: GameConfig): Logging {
 
     fun perform(game: GameExtended) {
+        log().debug("Update lifetimes of scouts")
         val scoutsToRemove = mutableMapOf<Tile, MutableList<ScoutTileContent>>()
         game.tiles
             .asSequence()
             .mapNotNull { tile -> getScoutOrNull(tile) }
             .forEach { (tile, scout) -> handleScout(game, tile, scout, scoutsToRemove) }
+        log().debug("Removing ${scoutsToRemove.size} at end of lifetime.")
         removeScouts(scoutsToRemove)
     }
 

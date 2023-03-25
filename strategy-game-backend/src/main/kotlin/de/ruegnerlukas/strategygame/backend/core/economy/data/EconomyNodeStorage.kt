@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.economy.data
 
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 
 /**
@@ -27,9 +27,21 @@ interface EconomyNodeStorage {
 
 
     /**
+     * @return the amount of available resources in this storage
+     */
+    fun getAvailable(): ResourceCollection
+
+
+    /**
      * Remove/Consume the given resources from this storage
      */
     fun remove(type: ResourceType, amount: Float)
+
+
+    /**
+     * Remove/Consume the given resources from this storage
+     */
+    fun remove(resources: ResourceCollection)
 
 
     /**
@@ -38,6 +50,14 @@ interface EconomyNodeStorage {
      */
     fun removedFromSharedStorage(type: ResourceType, amount: Float)
 
+
+    /**
+     * Mark the given resource amount as removed/taken from another storage,
+     * i.e. the entity local to the node with this storage has taken the given resources from another storage.
+     */
+    fun removedFromSharedStorage(resources: ResourceCollection)
+
+
     /**
      * Add the given resources to this storage
      */
@@ -45,19 +65,26 @@ interface EconomyNodeStorage {
 
 
     /**
+     * Add the given resources to this storage
+     */
+    fun add(resources: ResourceCollection)
+
+
+    /**
      * All resources added to this storage (via [EconomyNodeStorage.add])
      */
-    fun getAdded(): ResourceStats
+    fun getAdded(): ResourceCollection
 
 
     /**
      * All resources removed from this storage (via [EconomyNodeStorage.remove])
      */
-    fun getRemoved(): ResourceStats
+    fun getRemoved(): ResourceCollection
+
 
     /**
      * All resources removed from another resource storage (via [EconomyNodeStorage.removedFromSharedStorage])
      */
-    fun getRemovedFromShared(): ResourceStats
+    fun getRemovedFromShared(): ResourceCollection
 
 }

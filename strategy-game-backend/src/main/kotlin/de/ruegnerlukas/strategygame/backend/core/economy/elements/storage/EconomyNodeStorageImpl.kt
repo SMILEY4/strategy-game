@@ -1,15 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.core.economy.elements.storage
 
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNodeStorage
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 
-class EconomyNodeStorageImpl(private val initialResources: ResourceStats) : EconomyNodeStorage {
+class EconomyNodeStorageImpl(private val initialResources: ResourceCollection) : EconomyNodeStorage {
 
-    private val available = ResourceStats()
-    private val added = ResourceStats()
-    private val removed = ResourceStats()
-    private val removedFromShared = ResourceStats()
+    private val available = ResourceCollection.basic()
+    private val added = ResourceCollection.basic()
+    private val removed = ResourceCollection.basic()
+    private val removedFromShared = ResourceCollection.basic()
 
     override fun revertToInitial() {
         added.clear()
@@ -29,22 +29,36 @@ class EconomyNodeStorageImpl(private val initialResources: ResourceStats) : Econ
         return available[type] - removed[type]
     }
 
+    override fun getAvailable(): ResourceCollection = available.copy()
+
     override fun remove(type: ResourceType, amount: Float) {
         removed.add(type, amount)
+    }
+
+    override fun remove(resources: ResourceCollection) {
+        removed.add(resources)
     }
 
     override fun removedFromSharedStorage(type: ResourceType, amount: Float) {
         removedFromShared.add(type, amount)
     }
 
+    override fun removedFromSharedStorage(resources: ResourceCollection) {
+        removedFromShared.add(resources)
+    }
+
     override fun add(type: ResourceType, amount: Float) {
         added.add(type, amount)
     }
 
-    override fun getAdded(): ResourceStats = added
+    override fun add(resources: ResourceCollection) {
+        added.add(resources)
+    }
 
-    override fun getRemoved(): ResourceStats = removed
+    override fun getAdded(): ResourceCollection = added.copy()
 
-    override fun getRemovedFromShared(): ResourceStats = removedFromShared
+    override fun getRemoved(): ResourceCollection = removed.copy()
+
+    override fun getRemovedFromShared(): ResourceCollection = removedFromShared.copy()
 
 }

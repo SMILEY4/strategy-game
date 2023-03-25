@@ -13,7 +13,7 @@ import de.ruegnerlukas.strategygame.backend.core.economy.service.ConsumptionNode
 import de.ruegnerlukas.strategygame.backend.core.economy.service.ProductionEntityUpdateService
 import de.ruegnerlukas.strategygame.backend.core.economy.service.ProductionNodeUpdateService
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 
 class EconomyUpdate(private val config: GameConfig) {
 
@@ -39,16 +39,14 @@ class EconomyUpdate(private val config: GameConfig) {
 
     private fun writeBack(node: ProvinceEconomyNode) {
         node.province.resourcesProducedCurrTurn = node.getStorage().getAdded()
-        node.province.resourcesConsumedCurrTurn = ResourceStats().also {
+        node.province.resourcesConsumedCurrTurn = ResourceCollection.basic().also {
             it.add(node.getStorage().getRemoved())
             it.add(node.getStorage().getRemovedFromShared())
         }
-        node.province.resourcesMissing = ResourceStats().also { missing ->
+        node.province.resourcesMissing = ResourceCollection.basic().also { missing ->
             node.collectEntities()
                 .filter { !it.isInactive() }
-                .forEach { entity ->
-                    entity.getRequires().forEach { missing.add(it) }
-                }
+                .forEach { entity -> missing.add(entity.getRequires()) }
         }
         node.getEntities()
             .filterIsInstance<BuildingEconomyEntity>()

@@ -7,12 +7,13 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 /**
  * Adds the given building to the city
  */
-class BuildingCreationAction {
+class BuildingCreationAction: Logging {
 
     companion object {
         data class BuildingCreationData(
@@ -22,6 +23,7 @@ class BuildingCreationAction {
     }
 
     fun perform(game: GameExtended, data: BuildingCreationData) {
+        log().debug("Create building ${data.type} in city ${data.city} ")
         addBuilding(game, data.city, data.type)
     }
 
