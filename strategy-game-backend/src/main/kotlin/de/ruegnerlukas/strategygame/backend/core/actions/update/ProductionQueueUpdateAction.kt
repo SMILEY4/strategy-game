@@ -29,6 +29,20 @@ class ProductionQueueUpdateAction(private val turnUpdateAction: TurnUpdateAction
                     type = queueEntry.buildingType
                 )
             )
+        } else {
+            addMagicResources(queueEntry)
+        }
+    }
+
+    private fun addMagicResources(queueEntry: ProductionQueueEntry) {
+        /*
+        TODO: temporary
+         -> add some "free" resources to queue to be able to construct in first city with no production buildings yet
+         */
+        queueEntry.collectedResources.also { collected ->
+            queueEntry.getTotalRequiredResources().forEach { required ->
+                collected.add(required.type, 1f)
+            }
         }
     }
 
