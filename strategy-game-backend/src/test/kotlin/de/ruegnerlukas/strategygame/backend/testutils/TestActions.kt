@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateC
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueRemoveEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
@@ -32,7 +33,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQu
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveProductionQueueAddEntryCommand
 
 object TestActions {
 
@@ -91,6 +91,12 @@ object TestActions {
                         GameConfig.default()
                     ),
                     GameConfig.default()
+                ),
+                ResolveProductionQueueRemoveEntryCommandImpl(
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    ),
                 )
             ),
             SendGameStateActionImpl(
@@ -147,6 +153,12 @@ object TestActions {
                 GameConfig.default()
             ),
             GameConfig.default()
+        ),
+        ResolveProductionQueueRemoveEntryCommandImpl(
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            ),
         )
     )
 
@@ -178,6 +190,12 @@ object TestActions {
                     GameConfig.default()
                 ),
                 GameConfig.default()
+            ),
+            ResolveProductionQueueRemoveEntryCommandImpl(
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                ),
             )
         ),
         SendGameStateActionImpl(

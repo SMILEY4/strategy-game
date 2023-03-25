@@ -77,6 +77,7 @@ class ProductionQueueConsumptionTest : StringSpec({
                     ),
                     productionQueue = mutableListOf(
                         ProductionQueueEntry(
+                            entryId = "entry-1",
                             buildingType = BuildingType.ARMOR_SMITH,
                             collectedResources = ResourceStats()
                         )

@@ -23,3 +23,8 @@ class ProductionQueueAddEntryCommand(
     val cityId: String,
     val buildingType: BuildingType
 ): PlayerCommand()
+
+class ProductionQueueRemoveEntryCommand(
+    val cityId: String,
+    val queueEntryId: String
+): PlayerCommand()

@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.shared.UUID
 
 /**
  * Adds the given entry to the city's production queue
@@ -19,6 +20,7 @@ class ProductionQueueAddAction {
 
     private fun buildEntry(command: Command<ProductionQueueAddEntryCommandData>): ProductionQueueEntry {
         return ProductionQueueEntry(
+            entryId = UUID.gen(),
             buildingType = command.data.buildingType,
             collectedResources = ResourceStats()
         )

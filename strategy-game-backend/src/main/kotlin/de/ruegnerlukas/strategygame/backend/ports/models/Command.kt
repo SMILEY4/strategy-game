@@ -32,3 +32,8 @@ class ProductionQueueAddEntryCommandData(
     val cityId: String,
     val buildingType: BuildingType
 ) : CommandData()
+
+class ProductionQueueRemoveEntryCommandData(
+    val cityId: String,
+    val queueEntryId: String
+) : CommandData()

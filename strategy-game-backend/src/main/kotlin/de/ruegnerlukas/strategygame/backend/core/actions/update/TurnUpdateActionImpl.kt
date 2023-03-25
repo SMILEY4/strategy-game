@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
@@ -30,6 +31,11 @@ class TurnUpdateActionImpl(
         val eventAddProductionQueueEntry = EventAction<GameExtended, Command<ProductionQueueAddEntryCommandData>, Unit> { game, command ->
             ProductionQueueAddAction().perform(game, command)
         }
+
+        val eventRemoveProductionQueueEntry =
+            EventAction<GameExtended, Command<ProductionQueueRemoveEntryCommandData>, Unit> { game, command ->
+                ProductionQueueRemoveAction().perform(game, command)
+            }
 
         val eventProductionQueueUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
             ProductionQueueUpdateAction(this).perform(game)
@@ -91,6 +97,9 @@ class TurnUpdateActionImpl(
         eventSystem.atTrigger<Command<ProductionQueueAddEntryCommandData>>("command.add-production-queue-entry")
             .thenRun(eventAddProductionQueueEntry)
 
+        eventSystem.atTrigger<Command<ProductionQueueRemoveEntryCommandData>>("command.remove-production-queue-entry")
+            .thenRun(eventRemoveProductionQueueEntry)
+
         eventSystem.atTrigger<Command<PlaceMarkerCommandData>>("command.place-marker")
             .thenRun(eventMarkerPlace)
 
@@ -140,6 +149,10 @@ class TurnUpdateActionImpl(
 
     override suspend fun commandProductionQueueAdd(game: GameExtended, command: Command<ProductionQueueAddEntryCommandData>) {
         eventSystem.trigger("command.add-production-queue-entry", game, command)
+    }
+
+    override suspend fun commandProductionQueueRemove(game: GameExtended, command: Command<ProductionQueueRemoveEntryCommandData>) {
+        eventSystem.trigger("command.remove-production-queue-entry", game, command)
     }
 
 }

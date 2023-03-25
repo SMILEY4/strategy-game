@@ -19,6 +19,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction.NotParticipantError
@@ -106,6 +108,7 @@ class TurnSubmitActionImpl(
                 is CreateCityCommand -> createCommandCreateCity(game, country, command)
                 is PlaceScoutCommand -> createCommandPlaceScout(game, country, command)
                 is ProductionQueueAddEntryCommand -> createCommandProductionQueueAddEntry(game, country, command)
+                is ProductionQueueRemoveEntryCommand -> createCommandProductionQueueRemoveEntry(game, country, command)
             }
         }
     }
@@ -172,6 +175,22 @@ class TurnSubmitActionImpl(
             data = ProductionQueueAddEntryCommandData(
                 cityId = cmd.cityId,
                 buildingType = cmd.buildingType
+            )
+        )
+    }
+
+
+    /**
+     * create a command-entity from the given [ProductionQueueRemoveEntryCommand]
+     */
+    private fun createCommandProductionQueueRemoveEntry(game: Game, country: Country, cmd: ProductionQueueRemoveEntryCommand): Command<*> {
+        return Command(
+            commandId = DbId.PLACEHOLDER,
+            turn = game.turn,
+            countryId = country.countryId,
+            data = ProductionQueueRemoveEntryCommandData(
+                cityId = cmd.cityId,
+                queueEntryId = cmd.queueEntryId
             )
         )
     }

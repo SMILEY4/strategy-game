@@ -7,6 +7,6 @@ object UUID {
 
     fun gen() = java.util.UUID.randomUUID().toString()
 
-    fun gen(characters: Int) = Base64.toUrlBase64(Random.nextBytes(characters))
+    fun gen(characters: Int): String = Base64.toUrlBase64(Random.nextBytes(characters))
 
 }

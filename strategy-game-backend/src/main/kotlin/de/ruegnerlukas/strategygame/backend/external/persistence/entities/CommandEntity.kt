@@ -12,6 +12,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 
 class CommandEntity<T : CommandEntityData>(
     val countryId: String,
@@ -49,6 +50,10 @@ class CommandEntity<T : CommandEntityData>(
                     cityId = serviceModel.cityId,
                     buildingType = serviceModel.buildingType
                 )
+                is ProductionQueueRemoveEntryCommandData -> ProductionQueueRemoveEntryCommandEntityData(
+                    cityId = serviceModel.cityId,
+                    queueEntryId = serviceModel.queueEntryId
+                )
             }
         }
 
@@ -81,6 +86,10 @@ class CommandEntity<T : CommandEntityData>(
                 cityId = entity.cityId,
                 buildingType = entity.buildingType
             )
+            is ProductionQueueRemoveEntryCommandEntityData -> ProductionQueueRemoveEntryCommandData(
+                cityId = entity.cityId,
+                queueEntryId = entity.queueEntryId
+            )
         }
     }
 
@@ -97,6 +106,7 @@ class CommandEntity<T : CommandEntityData>(
     JsonSubTypes.Type(value = PlaceMarkerCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceScoutCommandEntityData::class),
     JsonSubTypes.Type(value = ProductionQueueAddEntryCommandEntityData::class),
+    JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandEntityData::class),
 )
 sealed class CommandEntityData(
     val type: String
@@ -145,5 +155,16 @@ class ProductionQueueAddEntryCommandEntityData(
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "production-queue-add-entry"
+    }
+}
+
+
+@JsonTypeName(ProductionQueueRemoveEntryCommandEntityData.TYPE)
+class ProductionQueueRemoveEntryCommandEntityData(
+    val cityId: String,
+    val queueEntryId: String
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue-remove-entry"
     }
 }

@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommand
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -20,6 +21,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntry
     JsonSubTypes.Type(value = CreateCityCommandMsg::class),
     JsonSubTypes.Type(value = PlaceScoutCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueAddEntryCommandMsg::class),
+    JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandMsg::class),
 )
 sealed class PlayerCommandMsg(val type: String) {
 
@@ -42,6 +44,10 @@ sealed class PlayerCommandMsg(val type: String) {
             is ProductionQueueAddEntryCommandMsg -> ProductionQueueAddEntryCommand(
                 cityId = this.cityId,
                 buildingType = this.buildingType
+            )
+            is ProductionQueueRemoveEntryCommandMsg -> ProductionQueueRemoveEntryCommand(
+                cityId = this.cityId,
+                queueEntryId = this.queueEntryId
             )
         }
     }
@@ -91,5 +97,15 @@ class ProductionQueueAddEntryCommandMsg(
 ) : PlayerCommandMsg(TYPE) {
     companion object {
         internal const val TYPE = "production-queue-add-entry"
+    }
+}
+
+@JsonTypeName(ProductionQueueRemoveEntryCommandMsg.TYPE)
+class ProductionQueueRemoveEntryCommandMsg(
+    val cityId: String,
+    val queueEntryId: String
+) : PlayerCommandMsg(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue-remove-entry"
     }
 }

@@ -30,7 +30,13 @@ class CityEntity(
             color = serviceModel.color,
             isProvinceCapital = serviceModel.isProvinceCapital,
             buildings = serviceModel.buildings,
-            productionQueue = serviceModel.productionQueue.map { ProductionQueueEntryEntity(it.buildingType, it.collectedResources) }
+            productionQueue = serviceModel.productionQueue.map {
+                ProductionQueueEntryEntity(
+                    entryId = it.entryId,
+                    buildingType = it.buildingType,
+                    collectedResources = it.collectedResources
+                )
+            }
         )
     }
 
@@ -42,7 +48,13 @@ class CityEntity(
         color = this.color,
         isProvinceCapital = this.isProvinceCapital,
         buildings = this.buildings.toMutableList(),
-        productionQueue = this.productionQueue.map { ProductionQueueEntry(it.buildingType, it.collectedResources) }.toMutableList()
+        productionQueue = this.productionQueue.map {
+            ProductionQueueEntry(
+                entryId = it.entryId,
+                buildingType = it.buildingType,
+                collectedResources = it.collectedResources
+            )
+        }.toMutableList()
     )
 
 }

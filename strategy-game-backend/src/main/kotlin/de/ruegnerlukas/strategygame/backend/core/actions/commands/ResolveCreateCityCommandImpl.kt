@@ -84,7 +84,6 @@ private object CreateCityValidations {
             validName(name)
             validTargetTileType(targetTile)
             validTileSpace(targetTile, game.cities)
-//            validResources(gameConfig, country)
             if (withNewProvince) {
                 validTileOwnerWithNewProvince(country, targetTile)
                 validTileInfluence(gameConfig, country, targetTile)
@@ -111,12 +110,6 @@ private object CreateCityValidations {
             cities.find { it.tile.tileId == target.tileId } == null
         }
     }
-
-//    fun ValidationContext.validResources(gameConfig: GameConfig, country: Country) {
-//        validate("CITY.RESOURCES") {
-//            country.resources.money >= gameConfig.cityCostMoney
-//        }
-//    }
 
     fun ValidationContext.validTileOwnerInExistingProvince(country: Country, target: Tile) {
         validate("CITY.TARGET_TILE_OWNER") {

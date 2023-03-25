@@ -14,6 +14,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
@@ -283,6 +285,10 @@ class GameTestContext {
                 is ProductionQueueAddEntryCommandData -> ProductionQueueAddEntryCommand(
                     cityId = (cmd.data as ProductionQueueAddEntryCommandData).cityId,
                     buildingType = (cmd.data as ProductionQueueAddEntryCommandData).buildingType,
+                )
+                is ProductionQueueRemoveEntryCommandData -> ProductionQueueRemoveEntryCommand(
+                    cityId = (cmd.data as ProductionQueueRemoveEntryCommand).cityId,
+                    queueEntryId = (cmd.data as ProductionQueueRemoveEntryCommand).queueEntryId
                 )
             }
         })
