@@ -132,7 +132,7 @@ fun positionsCircle(centerQ: Int, centerR: Int, radius: Int, consumer: (q: Int, 
 
 
 /**
- * iterate over all tile positions that are neighbours of the given tile positions
+ * iterate over all tile positions that are neighbours of the given tile position
  */
 fun positionsNeighbours(pos: TilePosition, consumer: (q: Int, r: Int) -> Unit) {
     positionsNeighbours(pos.q, pos.r, consumer)
@@ -140,13 +140,23 @@ fun positionsNeighbours(pos: TilePosition, consumer: (q: Int, r: Int) -> Unit) {
 
 
 /**
- * iterate over all tile positions that are neighbours of the given tile positions
+ * iterate over all tile positions that are neighbours of the given tile position
  */
 fun positionsNeighbours(q: Int, r: Int, consumer: (q: Int, r: Int) -> Unit) {
-    consumer(q-1, r+0)
-    consumer(q+1, r+0)
-    consumer(q-1, r+1)
-    consumer(q+0, r+1)
-    consumer(q+0, r-1)
-    consumer(q+1, r-1)
+    consumer(q - 1, r + 0)
+    consumer(q + 1, r + 0)
+    consumer(q - 1, r + 1)
+    consumer(q + 0, r + 1)
+    consumer(q + 0, r - 1)
+    consumer(q + 1, r - 1)
+}
+
+
+/**
+ * @return all tile positions that are neighbours of the given tile position
+ */
+fun getNeighbourPositions(q: Int, r: Int): List<Pair<Int, Int>> {
+    return mutableListOf<Pair<Int, Int>>().also { positions ->
+        positionsNeighbours(q, r) { nq, nr -> positions.add(nq to nr) }
+    }
 }

@@ -20,7 +20,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import io.kotest.core.spec.style.StringSpec
 
-class BasicEconomyTest : StringSpec({
+class BasicProductionConsumptionTest : StringSpec({
 
 	"test basic city without any production,consumption" {
 		val tiles = tiles()

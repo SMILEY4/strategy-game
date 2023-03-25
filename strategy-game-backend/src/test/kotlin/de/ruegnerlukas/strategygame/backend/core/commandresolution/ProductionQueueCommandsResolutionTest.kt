@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.testutils.gameTest
 import io.kotest.core.spec.style.StringSpec
 
-class ProductionQueueAddEntryCommandResolutionTest : StringSpec({
+class ProductionQueueCommandsResolutionTest : StringSpec({
 
     "add buildings to production queue" {
         gameTest {

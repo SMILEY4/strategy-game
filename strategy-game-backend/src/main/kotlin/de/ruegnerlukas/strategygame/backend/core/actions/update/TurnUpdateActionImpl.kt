@@ -31,6 +31,10 @@ class TurnUpdateActionImpl(
             ProductionQueueAddAction().perform(game, command)
         }
 
+        val eventProductionQueueUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
+            ProductionQueueUpdateAction(this).perform(game)
+        }
+
         val eventCityCreation = EventAction<GameExtended, Command<CreateCityCommandData>, CityCreationResult> { game, command ->
             CityCreationAction(reservationInsert).perform(game, command)
         }
@@ -96,6 +100,9 @@ class TurnUpdateActionImpl(
         eventSystem.atTrigger<Unit>("global-update")
             .thenRun(eventScoutLifetime)
             .thenRun(eventEconomyUpdate)
+
+        eventSystem.after(eventEconomyUpdate)
+            .thenRun(eventProductionQueueUpdate)
 
         eventSystem.after(eventCityCreation)
             .thenRun(eventCityInfluence)

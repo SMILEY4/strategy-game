@@ -20,7 +20,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import io.kotest.core.spec.style.StringSpec
 
-class NetworkEconomyTest : StringSpec({
+class ResourceSharingTest : StringSpec({
 
     "test basic production chain with shared basic resources" {
 

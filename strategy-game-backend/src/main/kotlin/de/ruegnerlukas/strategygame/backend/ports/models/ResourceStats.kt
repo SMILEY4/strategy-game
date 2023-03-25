@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.ports.models
 
+import kotlin.math.abs
+
 class ResourceStats {
 
     companion object {
@@ -42,6 +44,10 @@ class ResourceStats {
         add(resources.type, resources.amount)
     }
 
+    fun add(resources: Collection<ResourceStack>) {
+        resources.forEach { add(it) }
+    }
+
     fun remove(type: ResourceType, amount: Float) {
         add(type, -amount)
     }
@@ -62,6 +68,14 @@ class ResourceStats {
 
     fun clear() {
         resources.clear()
+    }
+
+    fun hasAtLeast(type: ResourceType, amount: Float): Boolean {
+        return this[type] >= amount
+    }
+
+    fun hasExactly(type: ResourceType, amount: Float, plusMinus: Float = 0.0001f): Boolean {
+        return abs(this[type] - amount) <= plusMinus
     }
 
     fun toMap(): Map<ResourceType, Float> {

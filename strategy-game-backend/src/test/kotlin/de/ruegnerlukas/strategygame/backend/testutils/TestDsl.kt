@@ -480,7 +480,4 @@ class GameTestContext {
         var buildingType: BuildingType? = null
     }
 
-
 }
-
-

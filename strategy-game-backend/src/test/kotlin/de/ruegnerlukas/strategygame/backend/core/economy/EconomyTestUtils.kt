@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
@@ -24,6 +25,7 @@ import de.ruegnerlukas.strategygame.backend.shared.events.EventAction
 import de.ruegnerlukas.strategygame.backend.shared.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.shared.positionsNeighbours
 import de.ruegnerlukas.strategygame.backend.shared.tracking
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.floats.plusOrMinus
 import io.kotest.matchers.shouldBe
 
@@ -127,6 +129,13 @@ object EconomyTestUtils {
     infix fun Province.shouldBeMissing(resources: Collection<Pair<ResourceType, Float>>) {
         resources.forEach { (type, amount) ->
             this.resourcesMissing[type] shouldBe amount.plusOrMinus(0.0001f)
+        }
+    }
+
+    infix fun ResourceStats.shouldBeExactly(resources: Collection<Pair<ResourceType, Float>>) {
+        this.toList() shouldHaveSize resources.size
+        resources.forEach { expected ->
+            this[expected.first] shouldBe expected.second.plusOrMinus(0.0001f)
         }
     }
 
