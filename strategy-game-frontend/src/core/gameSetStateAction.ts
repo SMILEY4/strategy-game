@@ -155,7 +155,8 @@ export class GameSetStateAction {
                     r: b.tile.r
                 } : null,
                 active: b.active
-            }))
+            })),
+            productionQueue: city.productionQueue
         }));
     }
 

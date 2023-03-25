@@ -20,7 +20,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import io.kotest.core.spec.style.StringSpec
 
-class NetworkEconomyTest : StringSpec({
+class ResourceSharingTest : StringSpec({
 
     "test basic production chain with shared basic resources" {
 
@@ -113,7 +113,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = null,
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
                 City(
                     cityId = "test-city-wood",
@@ -168,7 +169,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = null,
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
             ),
             provinces = listOf(
@@ -338,7 +340,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = null,
                             active = true
                         )
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
                 City(
                     cityId = "test-city-wood",
@@ -353,7 +356,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = TileRef(tiles.find { it.position.q == +5 - 1 && it.position.r == 0 }!!),
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
                 City(
                     cityId = "test-city-disconnected",
@@ -393,7 +397,8 @@ class NetworkEconomyTest : StringSpec({
                             tile = TileRef(tiles.find { it.position.q == -5 + 1 && it.position.r == -1 }!!),
                             active = true
                         ),
-                    )
+                    ),
+                    productionQueue = mutableListOf()
                 ),
             ),
             provinces = listOf(

@@ -3,8 +3,6 @@ package de.ruegnerlukas.strategygame.backend.core.actions.update
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
@@ -16,10 +14,15 @@ import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
  */
 class BuildingCreationAction {
 
-    fun perform(game: GameExtended, command: Command<CreateBuildingCommandData>) {
-        val city = getCity(game, command)
-        val buildingType = getBuildingType(command)
-        addBuilding(game, city, buildingType)
+    companion object {
+        data class BuildingCreationData(
+            val city: City,
+            val type: BuildingType
+        )
+    }
+
+    fun perform(game: GameExtended, data: BuildingCreationData) {
+        addBuilding(game, data.city, data.type)
     }
 
     private fun addBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
@@ -42,14 +45,6 @@ class BuildingCreationAction {
                 .randomOrNull()
                 ?.let { TileRef(it) }
         }
-    }
-
-    private fun getCity(game: GameExtended, command: Command<CreateBuildingCommandData>): City {
-        return game.cities.find { it.cityId == command.data.cityId }!!
-    }
-
-    private fun getBuildingType(command: Command<CreateBuildingCommandData>): BuildingType {
-        return command.data.buildingType
     }
 
     private fun isSameTile(city: City, pos: TilePosition): Boolean {

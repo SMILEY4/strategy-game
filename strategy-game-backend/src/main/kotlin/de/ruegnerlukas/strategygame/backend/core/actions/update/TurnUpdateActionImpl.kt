@@ -1,13 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.update
 
+import de.ruegnerlukas.strategygame.backend.core.actions.update.BuildingCreationAction.Companion.BuildingCreationData
 import de.ruegnerlukas.strategygame.backend.core.actions.update.CityCreationAction.Companion.CityCreationResult
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
@@ -22,8 +24,21 @@ class TurnUpdateActionImpl(
     private val eventSystem = EventSystem<GameExtended>()
 
     init {
-        val eventBuildingCreation = EventAction<GameExtended, Command<CreateBuildingCommandData>, Unit> { game, command ->
-            BuildingCreationAction().perform(game, command)
+        val eventBuildingCreation = EventAction<GameExtended, BuildingCreationData, Unit> { game, data ->
+            BuildingCreationAction().perform(game, data)
+        }
+
+        val eventAddProductionQueueEntry = EventAction<GameExtended, Command<ProductionQueueAddEntryCommandData>, Unit> { game, command ->
+            ProductionQueueAddAction().perform(game, command)
+        }
+
+        val eventRemoveProductionQueueEntry =
+            EventAction<GameExtended, Command<ProductionQueueRemoveEntryCommandData>, Unit> { game, command ->
+                ProductionQueueRemoveAction(gameConfig).perform(game, command)
+            }
+
+        val eventProductionQueueUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
+            ProductionQueueUpdateAction(this).perform(game)
         }
 
         val eventCityCreation = EventAction<GameExtended, Command<CreateCityCommandData>, CityCreationResult> { game, command ->
@@ -76,8 +91,14 @@ class TurnUpdateActionImpl(
         eventSystem.atTrigger<Command<CreateCityCommandData>>("command.create-city")
             .thenRun(eventCityCreation)
 
-        eventSystem.atTrigger<Command<CreateBuildingCommandData>>("command.create-building")
+        eventSystem.atTrigger<BuildingCreationData>("event.create-building")
             .thenRun(eventBuildingCreation)
+
+        eventSystem.atTrigger<Command<ProductionQueueAddEntryCommandData>>("command.add-production-queue-entry")
+            .thenRun(eventAddProductionQueueEntry)
+
+        eventSystem.atTrigger<Command<ProductionQueueRemoveEntryCommandData>>("command.remove-production-queue-entry")
+            .thenRun(eventRemoveProductionQueueEntry)
 
         eventSystem.atTrigger<Command<PlaceMarkerCommandData>>("command.place-marker")
             .thenRun(eventMarkerPlace)
@@ -88,6 +109,9 @@ class TurnUpdateActionImpl(
         eventSystem.atTrigger<Unit>("global-update")
             .thenRun(eventScoutLifetime)
             .thenRun(eventEconomyUpdate)
+
+        eventSystem.after(eventEconomyUpdate)
+            .thenRun(eventProductionQueueUpdate)
 
         eventSystem.after(eventCityCreation)
             .thenRun(eventCityInfluence)
@@ -111,8 +135,8 @@ class TurnUpdateActionImpl(
         eventSystem.trigger("command.create-city", game, command)
     }
 
-    override suspend fun commandCreateBuilding(game: GameExtended, command: Command<CreateBuildingCommandData>) {
-        eventSystem.trigger("command.create-building", game, command)
+    override suspend fun eventCreateBuilding(game: GameExtended, data: BuildingCreationData) {
+        eventSystem.trigger("event.create-building", game, data)
     }
 
     override suspend fun commandPlaceMarker(game: GameExtended, command: Command<PlaceMarkerCommandData>) {
@@ -121,6 +145,14 @@ class TurnUpdateActionImpl(
 
     override suspend fun commandPlaceScout(game: GameExtended, command: Command<PlaceScoutCommandData>) {
         eventSystem.trigger("command.place-scout", game, command)
+    }
+
+    override suspend fun commandProductionQueueAdd(game: GameExtended, command: Command<ProductionQueueAddEntryCommandData>) {
+        eventSystem.trigger("command.add-production-queue-entry", game, command)
+    }
+
+    override suspend fun commandProductionQueueRemove(game: GameExtended, command: Command<ProductionQueueRemoveEntryCommandData>) {
+        eventSystem.trigger("command.remove-production-queue-entry", game, command)
     }
 
 }

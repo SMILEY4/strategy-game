@@ -1,6 +1,7 @@
 import {
     CodeDeliveryError,
     InvalidEmailOrPasswordError,
+    UnauthorizedError,
     UserAlreadyExistsError,
     UserApi,
     UserNotConfirmedError,
@@ -9,7 +10,7 @@ import {
 import {UserRepository} from "../../core/required/userRepository";
 import {HttpClient} from "./http/httpClient";
 import {ResponseUtils} from "./http/responseUtils";
-import {UnauthorizedError, UnexpectedError} from "../../shared/error";
+import {UnexpectedError} from "../../shared/error";
 import handleErrorResponses = ResponseUtils.handleErrorResponses;
 
 export class UserApiImpl implements UserApi {

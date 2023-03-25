@@ -1,10 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateBuildingCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueRemoveEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
@@ -77,19 +78,25 @@ object TestActions {
                         GameConfig.default()
                     )
                 ),
-                ResolveCreateBuildingCommandImpl(
-                    GameConfig.default(),
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
                 ResolvePlaceScoutCommandImpl(
                     GameConfig.default(),
                     TurnUpdateActionImpl(
                         ReservationInsertImpl(database),
                         GameConfig.default()
                     )
+                ),
+                ResolveProductionQueueAddEntryCommandImpl(
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    ),
+                    GameConfig.default()
+                ),
+                ResolveProductionQueueRemoveEntryCommandImpl(
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    ),
                 )
             ),
             SendGameStateActionImpl(
@@ -133,19 +140,25 @@ object TestActions {
                 GameConfig.default()
             )
         ),
-        ResolveCreateBuildingCommandImpl(
-            GameConfig.default(),
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            )
-        ),
         ResolvePlaceScoutCommandImpl(
             GameConfig.default(),
             TurnUpdateActionImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()
             )
+        ),
+        ResolveProductionQueueAddEntryCommandImpl(
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            ),
+            GameConfig.default()
+        ),
+        ResolveProductionQueueRemoveEntryCommandImpl(
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            ),
         )
     )
 
@@ -164,19 +177,25 @@ object TestActions {
                     GameConfig.default()
                 )
             ),
-            ResolveCreateBuildingCommandImpl(
-                GameConfig.default(),
-                TurnUpdateActionImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
-                )
-            ),
             ResolvePlaceScoutCommandImpl(
                 GameConfig.default(),
                 TurnUpdateActionImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()
                 )
+            ),
+            ResolveProductionQueueAddEntryCommandImpl(
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                ),
+                GameConfig.default()
+            ),
+            ResolveProductionQueueRemoveEntryCommandImpl(
+                TurnUpdateActionImpl(
+                    ReservationInsertImpl(database),
+                    GameConfig.default()
+                ),
             )
         ),
         SendGameStateActionImpl(

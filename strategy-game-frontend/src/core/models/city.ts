@@ -11,5 +11,10 @@ export interface City {
         type: BuildingType,
         tile: TileRef | null,
         active: boolean
+    })[],
+    productionQueue: ({
+        entryId: string,
+        buildingType: string,
+        progress: number
     })[]
 }

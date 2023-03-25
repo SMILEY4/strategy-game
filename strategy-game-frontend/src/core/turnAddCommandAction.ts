@@ -1,5 +1,11 @@
 import {BuildingType} from "./models/buildingType";
-import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "./models/command";
+import {
+    Command,
+    CommandCreateCity,
+    CommandPlaceMarker,
+    CommandPlaceScout,
+    CommandProductionQueueAddEntry,
+} from "./models/command";
 import {GameState} from "./models/gameState";
 import {TilePosition} from "./models/tilePosition";
 import {GameConfigRepository} from "./required/gameConfigRepository";
@@ -33,10 +39,10 @@ export class TurnAddCommandAction {
                 wood: 0,
                 food: 0,
                 stone: 0,
-                metal: 0
+                metal: 0,
             },
             q: tilePos.q,
-            r: tilePos.r
+            r: tilePos.r,
         } as CommandPlaceMarker);
     }
 
@@ -48,10 +54,10 @@ export class TurnAddCommandAction {
                 wood: 0,
                 food: 0,
                 stone: 0,
-                metal: 0
+                metal: 0,
             },
             q: tilePos.q,
-            r: tilePos.r
+            r: tilePos.r,
         } as CommandPlaceScout);
     }
 
@@ -63,28 +69,28 @@ export class TurnAddCommandAction {
                 wood: 0,
                 food: 0,
                 stone: 0,
-                metal: 0
+                metal: 0,
             },
             q: tilePos.q,
             r: tilePos.r,
             name: name,
-            withNewProvince: withNewProvince
+            withNewProvince: withNewProvince,
         } as CommandCreateCity);
     }
 
     addCreateBuilding(cityId: string, buildingType: BuildingType) {
         this.perform({
-            commandType: "create-building",
+            commandType: "production-queue-add-entry",
             cost: {
                 money: 0,
                 wood: this.gameConfigRepository.getConfig().buildingCostWood,
                 food: 0,
                 stone: this.gameConfigRepository.getConfig().buildingCostStone,
-                metal: 0
+                metal: 0,
             },
             cityId: cityId,
-            buildingType: buildingType
-        } as CommandCreateBuilding);
+            buildingType: buildingType,
+        } as CommandProductionQueueAddEntry);
     }
 
 }

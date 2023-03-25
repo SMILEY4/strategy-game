@@ -54,10 +54,6 @@ class CreateTownCommandResolutionTest : StringSpec({
                     parentCity = getCityId("Test City")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn - gameCfg().townCostMoney * 2
-            }
         }
     }
 
@@ -91,51 +87,8 @@ class CreateTownCommandResolutionTest : StringSpec({
                     countryId = getCountryId("user")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
-            }
         }
     }
-
-//    "create town without enough resources, reject" {
-//        gameTest {
-//            createGame {
-//                worldSettings = WorldSettings.landOnly()
-//                user("user")
-//            }
-//            resolveCommands {
-//                createCity(getCountryId("user")) {
-//                    q = 0
-//                    r = 0
-//                    name = "Test City"
-//                }
-//            }
-//            endTurn()
-//            setCountryMoney(getCountryId("user"), gameCfg().townCostMoney - 1f)
-//            resolveCommands {
-//                createTown(getCountryId("user")) {
-//                    q = 2
-//                    r = 0
-//                    name = "Test City"
-//                }
-//            }
-//            expectCommandResolutionErrors(1, "CITY.RESOURCES")
-//            expectCities {
-//                city {
-//                    q = 0
-//                    r = 0
-//                    name = "Test City"
-//                    countryId = getCountryId("user")
-//                }
-//            }
-//            expectCountryMoney {
-//                countryId = getCountryId("user")
-//                amount = gameCfg().townCostMoney - 1f
-//            }
-//        }
-//    }
-
 
     "create town on already occupied tile, reject" {
         gameTest {
@@ -158,7 +111,7 @@ class CreateTownCommandResolutionTest : StringSpec({
                     name = "Test Town"
                 }
             }
-            expectCommandResolutionErrors(1, "CITY.TILE_SPACE", "CITY.TARGET_TILE_OWNER")
+            expectCommandResolutionErrors(1, "CITY.TARGET_TILE_OWNER")
             expectCities {
                 city {
                     q = 0
@@ -166,10 +119,6 @@ class CreateTownCommandResolutionTest : StringSpec({
                     name = "Test City"
                     countryId = getCountryId("user")
                 }
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
             }
         }
     }
@@ -203,10 +152,6 @@ class CreateTownCommandResolutionTest : StringSpec({
                     name = "Test City 1"
                     countryId = getCountryId("user")
                 }
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
             }
         }
     }

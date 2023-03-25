@@ -1,5 +1,11 @@
 import {BuildingType} from "../../../core/models/buildingType";
-import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker, CommandPlaceScout} from "../../../core/models/command";
+import {
+    Command,
+    CommandCreateCity,
+    CommandPlaceMarker,
+    CommandPlaceScout,
+    CommandProductionQueueAddEntry,
+} from "../../../core/models/command";
 import {when, whenCase} from "../../../shared/when";
 
 export interface PayloadSubmitTurn {
@@ -7,7 +13,7 @@ export interface PayloadSubmitTurn {
 }
 
 export interface SubmitCommand {
-    type: "place-marker" | "place-scout" | "create-city" | "create-building";
+    type: "place-marker" | "place-scout" | "create-city" | "production-queue-add-entry";
 }
 
 export interface SubmitCommandPlaceMarker extends SubmitCommand {
@@ -30,8 +36,8 @@ export interface SubmitCommandCreateCity extends SubmitCommand {
     withNewProvince: boolean
 }
 
-export interface SubmitCommandCreateBuilding extends SubmitCommand {
-    type: "create-building"
+export interface SubmitCommandProductionQueueAddEntry extends SubmitCommand {
+    type: "production-queue-add-entry"
     cityId: string,
     buildingType: BuildingType
 }
@@ -41,7 +47,7 @@ export namespace PayloadSubmitTurn {
 
     export function buildSubmitTurnPayload(commands: Command[]): PayloadSubmitTurn {
         return {
-            commands: commands.map(cmd => buildSubmitCommand(cmd))
+            commands: commands.map(cmd => buildSubmitCommand(cmd)),
         };
     }
 
@@ -70,17 +76,17 @@ export namespace PayloadSubmitTurn {
                     name: cmdCreateCity.name,
                     q: cmdCreateCity.q,
                     r: cmdCreateCity.r,
-                    withNewProvince: cmdCreateCity.withNewProvince
+                    withNewProvince: cmdCreateCity.withNewProvince,
                 };
             }),
-            whenCase<string, SubmitCommandCreateBuilding>("create-building", () => {
-                const cmdCreateBuilding = cmd as CommandCreateBuilding;
+            whenCase<string, SubmitCommandProductionQueueAddEntry>("production-queue-add-entry", () => {
+                const cmdCreateBuilding = cmd as CommandProductionQueueAddEntry;
                 return {
-                    type: "create-building",
+                    type: "production-queue-add-entry",
                     cityId: cmdCreateBuilding.cityId,
-                    buildingType: cmdCreateBuilding.buildingType
+                    buildingType: cmdCreateBuilding.buildingType,
                 };
-            })
+            }),
         );
     }
 }

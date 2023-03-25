@@ -4,9 +4,10 @@ import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNodeStorage
-import de.ruegnerlukas.strategygame.backend.core.economy.elements.storage.EconomyNodeStorageImpl
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.BuildingEconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.PopulationEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.ProductionQueueEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.storage.EconomyNodeStorageImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 
@@ -19,6 +20,9 @@ class ProvinceEconomyNode(val province: Province, val game: GameExtended, config
             entities.add(PopulationEconomyEntity(this, city, config))
             city.buildings.forEach { building ->
                 entities.add(BuildingEconomyEntity(this, city, building))
+            }
+            city.productionQueue.firstOrNull()?.also { queueEntry ->
+                entities.add(ProductionQueueEconomyEntity(this, queueEntry))
             }
         }
     }

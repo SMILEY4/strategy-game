@@ -4,8 +4,9 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.shared.RGBColor
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
 class CityEntity(
     val gameId: String,
@@ -15,6 +16,7 @@ class CityEntity(
     val color: RGBColor,
     val isProvinceCapital: Boolean,
     val buildings: List<Building>,
+    val productionQueue: List<ProductionQueueEntryEntity>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -28,6 +30,13 @@ class CityEntity(
             color = serviceModel.color,
             isProvinceCapital = serviceModel.isProvinceCapital,
             buildings = serviceModel.buildings,
+            productionQueue = serviceModel.productionQueue.map {
+                ProductionQueueEntryEntity(
+                    entryId = it.entryId,
+                    buildingType = it.buildingType,
+                    collectedResources = it.collectedResources
+                )
+            }
         )
     }
 
@@ -39,6 +48,13 @@ class CityEntity(
         color = this.color,
         isProvinceCapital = this.isProvinceCapital,
         buildings = this.buildings.toMutableList(),
+        productionQueue = this.productionQueue.map {
+            ProductionQueueEntry(
+                entryId = it.entryId,
+                buildingType = it.buildingType,
+                collectedResources = it.collectedResources
+            )
+        }.toMutableList()
     )
 
 }

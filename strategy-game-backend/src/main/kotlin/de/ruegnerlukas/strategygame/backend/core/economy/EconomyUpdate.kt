@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectEntities
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectNodes
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.ProductionQueueEconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.WorldEconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.service.ConsumptionEntityUpdateService
@@ -52,6 +53,9 @@ class EconomyUpdate(private val config: GameConfig) {
         node.getEntities()
             .filterIsInstance<BuildingEconomyEntity>()
             .forEach { entity -> entity.building.active = entity.hasProduced() }
+        node.getEntities()
+            .filterIsInstance<ProductionQueueEconomyEntity>()
+            .forEach { entity -> entity.queueEntry.collectedResources.add(entity.getProvidedResources()) }
     }
 
 }

@@ -25,10 +25,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                 name = "Test City"
                 countryId = getCountryId("user")
             }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
-            }
         }
     }
 
@@ -67,10 +63,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     countryId = getCountryId("user")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney * 2 + gameCfg().cityIncomePerTurn
-            }
         }
     }
 
@@ -101,14 +93,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     countryId = getCountryId("user-1")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
 
@@ -127,10 +111,6 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCommandResolutionErrors(0, "CITY.NAME")
             expectNoCities()
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
 
@@ -149,70 +129,8 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCommandResolutionErrors(0, "CITY.TARGET_TILE_TYPE")
             expectNoCities()
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
-
-//    "create city without enough resources, reject" {
-//        gameTest {
-//            createGame {
-//                worldSettings = WorldSettings.landOnly()
-//                user("user")
-//            }
-//            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney - 1f)
-//            resolveCommands {
-//                createCity(getCountryId("user")) {
-//                    q = 0
-//                    r = 0
-//                    name = "Test City"
-//                }
-//            }
-//            expectCommandResolutionErrors(0, "CITY.RESOURCES")
-//            expectNoCities()
-//            expectCountryMoney {
-//                countryId = getCountryId("user")
-//                amount = gameCfg().cityCostMoney - 1f
-//            }
-//        }
-//    }
-
-//    "create two cities without enough resources for both, reject second" {
-//        gameTest {
-//            createGame {
-//                worldSettings = WorldSettings.landOnly()
-//                user("user")
-//            }
-//            setCountryMoney(getCountryId("user"), gameCfg().cityCostMoney + 1f)
-//            resolveCommands {
-//                createCity(getCountryId("user")) {
-//                    q = 10
-//                    r = 10
-//                    name = "First City"
-//                }
-//                createCity(getCountryId("user")) {
-//                    q = 20
-//                    r = 20
-//                    name = "Second City"
-//                }
-//            }
-//            expectCommandResolutionErrors(0, "CITY.RESOURCES")
-//            expectCities {
-//                city {
-//                    q = 10
-//                    r = 10
-//                    name = "First City"
-//                    countryId = getCountryId("user")
-//                }
-//            }
-//            expectCountryMoney {
-//                countryId = getCountryId("user")
-//                amount = 1f
-//            }
-//        }
-//    }
 
     "create city on already occupied tile, reject" {
         gameTest {
@@ -242,10 +160,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "First City"
                     countryId = getCountryId("user")
                 }
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
             }
         }
     }
@@ -281,14 +195,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     countryId = getCountryId("user-1")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
 
@@ -322,14 +228,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "First City"
                     countryId = getCountryId("user-1")
                 }
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney
             }
         }
     }

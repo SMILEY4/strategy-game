@@ -1,13 +1,13 @@
 import {Command} from "../../core/models/command";
 import {GameConfig} from "../../core/models/gameConfig";
-import {GameApi, GameNotFoundError, UserAlreadyPlayerError} from "../../core/required/gameApi";
+import {GameApi, GameNotFoundError, UnauthorizedError, UserAlreadyPlayerError} from "../../core/required/gameApi";
 import {UserRepository} from "../../core/required/userRepository";
 import {HttpClient} from "./http/httpClient";
 import {MessageHandler} from "./messageHandler";
 import {WebsocketClient} from "./messaging/websocketClient";
 import {PayloadSubmitTurn} from "./models/payloadSubmitTurn";
-import {UnauthorizedError, UnexpectedError} from "../../shared/error";
 import {ResponseUtils} from "./http/responseUtils";
+import {UnexpectedError} from "../../shared/error";
 import handleErrorResponses = ResponseUtils.handleErrorResponses;
 
 export class GameApiImpl implements GameApi {

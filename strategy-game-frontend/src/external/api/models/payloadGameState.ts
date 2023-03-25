@@ -59,6 +59,11 @@ export interface PayloadGameState {
                 r: number
             } | null,
             active: boolean
+        })[],
+        productionQueue: ({
+            entryId: string,
+            buildingType: string
+            progress: number
         })[]
     })[],
     provinces: ({

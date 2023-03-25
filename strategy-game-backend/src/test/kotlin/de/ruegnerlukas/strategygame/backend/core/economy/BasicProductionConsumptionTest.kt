@@ -20,7 +20,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import io.kotest.core.spec.style.StringSpec
 
-class BasicEconomyTest : StringSpec({
+class BasicProductionConsumptionTest : StringSpec({
 
 	"test basic city without any production,consumption" {
 		val tiles = tiles()
@@ -34,7 +34,8 @@ class BasicEconomyTest : StringSpec({
 					name = "Test",
 					color = RGBColor.random(),
 					isProvinceCapital = true,
-					buildings = mutableListOf()
+					buildings = mutableListOf(),
+					productionQueue = mutableListOf()
 				),
 			),
 			provinces = listOf(
@@ -90,7 +91,8 @@ class BasicEconomyTest : StringSpec({
 							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == 0 }!!),
 							active = true
 						)
-					)
+					),
+					productionQueue = mutableListOf()
 				),
 			),
 			provinces = listOf(
@@ -182,7 +184,8 @@ class BasicEconomyTest : StringSpec({
 							tile = null,
 							active = true
 						)
-					)
+					),
+					productionQueue = mutableListOf()
 				),
 			),
 			provinces = listOf(
@@ -371,7 +374,8 @@ class BasicEconomyTest : StringSpec({
 							tile = null,
 							active = true
 						)
-					)
+					),
+					productionQueue = mutableListOf()
 				),
 			),
 			provinces = listOf(
@@ -560,7 +564,8 @@ class BasicEconomyTest : StringSpec({
 							tile = null,
 							active = true
 						)
-					)
+					),
+					productionQueue = mutableListOf()
 				),
 			),
 			provinces = listOf(

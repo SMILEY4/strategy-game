@@ -10,5 +10,6 @@ data class CityDTO(
     val name: String,
     val color: RGBColor,
     val isProvinceCapital: Boolean,
-    val buildings: List<BuildingDTO>
+    val buildings: List<BuildingDTO>,
+    val productionQueue: List<ProductionQueueEntryDTO>
 )
