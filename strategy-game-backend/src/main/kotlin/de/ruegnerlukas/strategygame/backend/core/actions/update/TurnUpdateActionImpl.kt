@@ -34,7 +34,7 @@ class TurnUpdateActionImpl(
 
         val eventRemoveProductionQueueEntry =
             EventAction<GameExtended, Command<ProductionQueueRemoveEntryCommandData>, Unit> { game, command ->
-                ProductionQueueRemoveAction().perform(game, command)
+                ProductionQueueRemoveAction(gameConfig).perform(game, command)
             }
 
         val eventProductionQueueUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->

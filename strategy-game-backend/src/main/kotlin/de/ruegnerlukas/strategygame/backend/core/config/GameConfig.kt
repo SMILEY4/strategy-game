@@ -88,7 +88,11 @@ data class GameConfig(
     /**
      * The max amount of tiles a route between to cities is allowed to have
      */
-    val maxRouteLength: Int = 10
+    val maxRouteLength: Int = 10,
+    /**
+     * The percentage of resources already consumed by an entry in a production queue that is refunded when cancelling the construction
+     */
+    val productionQueueRefundPercentage: Float = 0.5f
 ) {
     companion object {
         fun default() = GameConfig()
