@@ -1,5 +1,5 @@
 import {GameStore} from "../../external/state/game/gameStore";
-import {Command, CommandCreateBuilding, CommandCreateCity, CommandPlaceMarker} from "../models/command";
+import {Command, CommandCreateCity, CommandPlaceMarker, CommandProductionQueueAddEntry} from "../models/command";
 import {TilePosition} from "../models/tilePosition";
 import {useCities} from "./useCities";
 
@@ -15,9 +15,9 @@ export function useCommandsAt(pos: TilePosition | null): Command[] {
                 const cmdCity = cmd as CommandCreateCity;
                 return cmdCity.q === pos.q && cmdCity.r === pos.r;
             }
-            if (cmd.commandType === "create-building") {
-                const cmdBuilding = cmd as CommandCreateBuilding;
-                const city = cities.find(c => c.cityId === cmdBuilding.cityId)
+            if (cmd.commandType === "production-queue-add-entry") {
+                const cmdBuilding = cmd as CommandProductionQueueAddEntry;
+                const city = cities.find(c => c.cityId === cmdBuilding.cityId);
                 return city?.tile?.q === pos.q && city?.tile?.r === pos.r;
             }
         }

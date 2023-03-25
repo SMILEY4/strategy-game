@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateBuildingCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
@@ -79,13 +78,6 @@ object TestActions {
                         GameConfig.default()
                     )
                 ),
-                ResolveCreateBuildingCommandImpl(
-                    GameConfig.default(),
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
                 ResolvePlaceScoutCommandImpl(
                     GameConfig.default(),
                     TurnUpdateActionImpl(
@@ -97,7 +89,8 @@ object TestActions {
                     TurnUpdateActionImpl(
                         ReservationInsertImpl(database),
                         GameConfig.default()
-                    )
+                    ),
+                    GameConfig.default()
                 )
             ),
             SendGameStateActionImpl(
@@ -141,13 +134,6 @@ object TestActions {
                 GameConfig.default()
             )
         ),
-        ResolveCreateBuildingCommandImpl(
-            GameConfig.default(),
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            )
-        ),
         ResolvePlaceScoutCommandImpl(
             GameConfig.default(),
             TurnUpdateActionImpl(
@@ -159,7 +145,8 @@ object TestActions {
             TurnUpdateActionImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()
-            )
+            ),
+            GameConfig.default()
         )
     )
 
@@ -178,13 +165,6 @@ object TestActions {
                     GameConfig.default()
                 )
             ),
-            ResolveCreateBuildingCommandImpl(
-                GameConfig.default(),
-                TurnUpdateActionImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
-                )
-            ),
             ResolvePlaceScoutCommandImpl(
                 GameConfig.default(),
                 TurnUpdateActionImpl(
@@ -196,7 +176,8 @@ object TestActions {
                 TurnUpdateActionImpl(
                     ReservationInsertImpl(database),
                     GameConfig.default()
-                )
+                ),
+                GameConfig.default()
             )
         ),
         SendGameStateActionImpl(

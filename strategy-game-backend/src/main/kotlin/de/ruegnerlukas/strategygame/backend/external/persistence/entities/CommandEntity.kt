@@ -8,7 +8,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
@@ -32,10 +31,6 @@ class CommandEntity<T : CommandEntityData>(
 
         private fun of(serviceModel: CommandData): CommandEntityData {
             return when (serviceModel) {
-                is CreateBuildingCommandData -> CreateBuildingCommandEntityData(
-                    cityId = serviceModel.cityId,
-                    buildingType = serviceModel.buildingType
-                )
                 is CreateCityCommandData -> CreateCityCommandEntityData(
                     q = serviceModel.q,
                     r = serviceModel.r,
@@ -52,7 +47,7 @@ class CommandEntity<T : CommandEntityData>(
                 )
                 is ProductionQueueAddEntryCommandData -> ProductionQueueAddEntryCommandEntityData(
                     cityId = serviceModel.cityId,
-                    buildingType =  serviceModel.buildingType
+                    buildingType = serviceModel.buildingType
                 )
             }
         }
@@ -68,10 +63,6 @@ class CommandEntity<T : CommandEntityData>(
 
     private fun asServiceModel(entity: CommandEntityData): CommandData {
         return when (entity) {
-            is CreateBuildingCommandEntityData -> CreateBuildingCommandData(
-                cityId = entity.cityId,
-                buildingType = entity.buildingType
-            )
             is CreateCityCommandEntityData -> CreateCityCommandData(
                 q = entity.q,
                 r = entity.r,
@@ -88,12 +79,13 @@ class CommandEntity<T : CommandEntityData>(
             )
             is ProductionQueueAddEntryCommandEntityData -> ProductionQueueAddEntryCommandData(
                 cityId = entity.cityId,
-                buildingType =  entity.buildingType
+                buildingType = entity.buildingType
             )
         }
     }
 
 }
+
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -102,7 +94,6 @@ class CommandEntity<T : CommandEntityData>(
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = CreateCityCommandEntityData::class),
-    JsonSubTypes.Type(value = CreateBuildingCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceMarkerCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceScoutCommandEntityData::class),
     JsonSubTypes.Type(value = ProductionQueueAddEntryCommandEntityData::class),
@@ -110,6 +101,7 @@ class CommandEntity<T : CommandEntityData>(
 sealed class CommandEntityData(
     val type: String
 )
+
 
 @JsonTypeName(CreateCityCommandEntityData.TYPE)
 class CreateCityCommandEntityData(
@@ -123,15 +115,6 @@ class CreateCityCommandEntityData(
     }
 }
 
-@JsonTypeName(CreateBuildingCommandEntityData.TYPE)
-class CreateBuildingCommandEntityData(
-    val cityId: String,
-    val buildingType: BuildingType,
-) : CommandEntityData(TYPE) {
-    companion object {
-        internal const val TYPE = "create-building"
-    }
-}
 
 @JsonTypeName(PlaceMarkerCommandEntityData.TYPE)
 class PlaceMarkerCommandEntityData(
@@ -143,6 +126,7 @@ class PlaceMarkerCommandEntityData(
     }
 }
 
+
 @JsonTypeName(PlaceScoutCommandEntityData.TYPE)
 class PlaceScoutCommandEntityData(
     val q: Int,
@@ -152,6 +136,7 @@ class PlaceScoutCommandEntityData(
         internal const val TYPE = "place-scout"
     }
 }
+
 
 @JsonTypeName(ProductionQueueAddEntryCommandEntityData.TYPE)
 class ProductionQueueAddEntryCommandEntityData(

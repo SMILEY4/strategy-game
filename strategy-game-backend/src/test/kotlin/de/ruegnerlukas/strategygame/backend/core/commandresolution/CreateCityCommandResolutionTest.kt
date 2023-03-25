@@ -25,10 +25,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                 name = "Test City"
                 countryId = getCountryId("user")
             }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
-            }
         }
     }
 
@@ -67,10 +63,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     countryId = getCountryId("user")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney * 2 + gameCfg().cityIncomePerTurn
-            }
         }
     }
 
@@ -101,14 +93,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     countryId = getCountryId("user-1")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
 
@@ -127,10 +111,6 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCommandResolutionErrors(0, "CITY.NAME")
             expectNoCities()
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
 
@@ -149,10 +129,6 @@ class CreateCityCommandResolutionTest : StringSpec({
             }
             expectCommandResolutionErrors(0, "CITY.TARGET_TILE_TYPE")
             expectNoCities()
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
 
@@ -184,10 +160,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "First City"
                     countryId = getCountryId("user")
                 }
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney
             }
         }
     }
@@ -223,14 +195,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     countryId = getCountryId("user-1")
                 }
             }
-            expectCountryMoney {
-                countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney
-            }
         }
     }
 
@@ -264,14 +228,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "First City"
                     countryId = getCountryId("user-1")
                 }
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-1")
-                amount = gameCfg().startingAmountMoney - gameCfg().cityCostMoney + gameCfg().cityIncomePerTurn
-            }
-            expectCountryMoney {
-                countryId = getCountryId("user-2")
-                amount = gameCfg().startingAmountMoney
             }
         }
     }

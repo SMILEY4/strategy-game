@@ -6,8 +6,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
@@ -282,10 +280,6 @@ class GameTestContext {
                     q = (cmd.data as PlaceScoutCommandData).q,
                     r = (cmd.data as PlaceScoutCommandData).r,
                 )
-                is CreateBuildingCommandData -> CreateBuildingCommand(
-                    cityId = (cmd.data as CreateBuildingCommandData).cityId,
-                    buildingType = (cmd.data as CreateBuildingCommandData).buildingType,
-                )
                 is ProductionQueueAddEntryCommandData -> ProductionQueueAddEntryCommand(
                     cityId = (cmd.data as ProductionQueueAddEntryCommandData).cityId,
                     buildingType = (cmd.data as ProductionQueueAddEntryCommandData).buildingType,
@@ -300,17 +294,6 @@ class GameTestContext {
 
     suspend fun endTurn() {
         TestActions.turnEndAction(database).perform(gameId!!) shouldBeOk true
-    }
-
-    //=======================//
-    //       UTILITIES       //
-    //=======================//
-
-    suspend fun setCountryMoney(countryId: String, amount: Float) {
-        TestUtils.getCountry(database, countryId).let { country ->
-//            country.resources.money = amount
-//            TestUtils.updateCountry(database, gameId!!, country)
-        }
     }
 
     //=======================//
@@ -358,16 +341,6 @@ class GameTestContext {
         var name: String? = null
         var countryId: String? = null
         var parentCity: String? = null
-    }
-
-    suspend fun expectCountryMoney(block: CountryMoneyAssertion.() -> Unit) {
-//        val config = CountryMoneyAssertion().apply(block)
-//        TestUtils.getCountry(database, config.countryId!!).resources.money.shouldBeWithinPercentageOf(config.amount!!, 0.01)
-    }
-
-    class CountryMoneyAssertion {
-        var countryId: String? = null
-        var amount: Float? = null
     }
 
     fun expectCommandResolutionErrors(turn: Int, vararg errors: String) {

@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.update
 
+import de.ruegnerlukas.strategygame.backend.core.actions.update.BuildingCreationAction.Companion.BuildingCreationData
 import de.ruegnerlukas.strategygame.backend.core.actions.update.CityCreationAction.Companion.CityCreationResult
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
@@ -23,8 +23,8 @@ class TurnUpdateActionImpl(
     private val eventSystem = EventSystem<GameExtended>()
 
     init {
-        val eventBuildingCreation = EventAction<GameExtended, Command<CreateBuildingCommandData>, Unit> { game, command ->
-            BuildingCreationAction().perform(game, command)
+        val eventBuildingCreation = EventAction<GameExtended, BuildingCreationData, Unit> { game, data ->
+            BuildingCreationAction().perform(game, data)
         }
 
         val eventAddProductionQueueEntry = EventAction<GameExtended, Command<ProductionQueueAddEntryCommandData>, Unit> { game, command ->
@@ -85,7 +85,7 @@ class TurnUpdateActionImpl(
         eventSystem.atTrigger<Command<CreateCityCommandData>>("command.create-city")
             .thenRun(eventCityCreation)
 
-        eventSystem.atTrigger<Command<CreateBuildingCommandData>>("command.create-building")
+        eventSystem.atTrigger<BuildingCreationData>("event.create-building")
             .thenRun(eventBuildingCreation)
 
         eventSystem.atTrigger<Command<ProductionQueueAddEntryCommandData>>("command.add-production-queue-entry")
@@ -126,8 +126,8 @@ class TurnUpdateActionImpl(
         eventSystem.trigger("command.create-city", game, command)
     }
 
-    override suspend fun commandCreateBuilding(game: GameExtended, command: Command<CreateBuildingCommandData>) {
-        eventSystem.trigger("command.create-building", game, command)
+    override suspend fun eventCreateBuilding(game: GameExtended, data: BuildingCreationData) {
+        eventSystem.trigger("event.create-building", game, data)
     }
 
     override suspend fun commandPlaceMarker(game: GameExtended, command: Command<PlaceMarkerCommandData>) {

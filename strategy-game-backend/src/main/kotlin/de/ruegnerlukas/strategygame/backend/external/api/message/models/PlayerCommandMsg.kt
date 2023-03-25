@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
@@ -19,7 +18,6 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntry
 @JsonSubTypes(
     JsonSubTypes.Type(value = PlaceMarkerCommandMsg::class),
     JsonSubTypes.Type(value = CreateCityCommandMsg::class),
-    JsonSubTypes.Type(value = CreateBuildingCommandMsg::class),
     JsonSubTypes.Type(value = PlaceScoutCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueAddEntryCommandMsg::class),
 )
@@ -27,10 +25,6 @@ sealed class PlayerCommandMsg(val type: String) {
 
     fun asServiceModel(): PlayerCommand {
         return when (this) {
-            is CreateBuildingCommandMsg -> CreateBuildingCommand(
-                cityId = this.cityId,
-                buildingType = this.buildingType
-            )
             is CreateCityCommandMsg -> CreateCityCommand(
                 q = this.q,
                 r = this.r,
@@ -75,17 +69,6 @@ class CreateCityCommandMsg(
 ) : PlayerCommandMsg(TYPE) {
     companion object {
         internal const val TYPE = "create-city"
-    }
-}
-
-
-@JsonTypeName(CreateBuildingCommandMsg.TYPE)
-class CreateBuildingCommandMsg(
-    val cityId: String,
-    val buildingType: BuildingType,
-) : PlayerCommandMsg(TYPE) {
-    companion object {
-        internal const val TYPE = "create-building"
     }
 }
 

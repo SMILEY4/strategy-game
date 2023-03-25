@@ -14,11 +14,6 @@ class CreateCityCommand(
     val withNewProvince: Boolean
 ) : PlayerCommand()
 
-class CreateBuildingCommand(
-    val cityId: String,
-    val buildingType: BuildingType,
-) : PlayerCommand()
-
 class PlaceScoutCommand(
     val q: Int,
     val r: Int,

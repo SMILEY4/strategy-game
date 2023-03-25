@@ -18,11 +18,6 @@ class CreateCityCommandData(
     val withNewProvince: Boolean
 ) : CommandData()
 
-class CreateBuildingCommandData(
-    val cityId: String,
-    val buildingType: BuildingType,
-) : CommandData()
-
 class PlaceMarkerCommandData(
     val q: Int,
     val r: Int

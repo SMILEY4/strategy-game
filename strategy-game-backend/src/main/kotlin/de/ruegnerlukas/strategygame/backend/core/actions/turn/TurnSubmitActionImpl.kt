@@ -8,8 +8,6 @@ import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateBuildingCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
@@ -106,7 +104,6 @@ class TurnSubmitActionImpl(
             when (command) {
                 is PlaceMarkerCommand -> createCommandPlaceMarker(game, country, command)
                 is CreateCityCommand -> createCommandCreateCity(game, country, command)
-                is CreateBuildingCommand -> createCommandCreateBuilding(game, country, command)
                 is PlaceScoutCommand -> createCommandPlaceScout(game, country, command)
                 is ProductionQueueAddEntryCommand -> createCommandProductionQueueAddEntry(game, country, command)
             }
@@ -143,22 +140,6 @@ class TurnSubmitActionImpl(
                 r = cmd.r,
                 name = cmd.name.trim(),
                 withNewProvince = cmd.withNewProvince
-            )
-        )
-    }
-
-
-    /**
-     * create a command-entity from the given [CreateBuildingCommand]
-     */
-    private fun createCommandCreateBuilding(game: Game, country: Country, cmd: CreateBuildingCommand): Command<*> {
-        return Command(
-            commandId = DbId.PLACEHOLDER,
-            turn = game.turn,
-            countryId = country.countryId,
-            data = CreateBuildingCommandData(
-                cityId = cmd.cityId,
-                buildingType = cmd.buildingType
             )
         )
     }
