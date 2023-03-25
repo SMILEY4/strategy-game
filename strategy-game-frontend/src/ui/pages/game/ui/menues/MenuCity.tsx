@@ -48,6 +48,19 @@ export function MenuCity(props: { cityId: string, menuLevel: number }): ReactEle
                         </ul>
                     </Section>
 
+                    <Section title={"Production Queue"}>
+                        <ul>
+                            {city.productionQueue.map(entry => {
+                                return (
+                                    <li>
+                                        <b>{entry.buildingType + ":"}</b>
+                                        {(entry.progress * 100) + "%"}
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </Section>
+
                     <Section title={"Buildings"}>
                         <ul>
                             {city.buildings.map(building => {

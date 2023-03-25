@@ -12,6 +12,12 @@ export class UserApiError extends BaseError {
     }
 }
 
+export class UnauthorizedError extends UserApiError {
+    constructor() {
+        super("Unauthorized", "The provided email or password is invalid");
+    }
+}
+
 export class UserNotConfirmedError extends UserApiError {
     constructor() {
         super("UserNotConfirmed", "The user has not confirmed the code.");

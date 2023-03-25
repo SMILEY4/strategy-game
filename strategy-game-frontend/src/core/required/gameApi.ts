@@ -18,6 +18,13 @@ export class GameApiError extends BaseError {
     }
 }
 
+export class UnauthorizedError extends GameApiError {
+    constructor() {
+        super("Unauthorized", "The provided email or password is invalid");
+    }
+}
+
+
 export class UserAlreadyPlayerError extends GameApiError {
     constructor() {
         super("UserAlreadyPlayerError", "The user has already joined the game.");

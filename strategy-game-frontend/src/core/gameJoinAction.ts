@@ -12,8 +12,13 @@ export class GameJoinAction {
     }
 
     perform(gameId: string): Promise<void> {
-        console.debug("Joining game", gameId)
-        return this.gameApi.join(gameId);
+        console.debug("Joining game", gameId);
+        return this.gameApi.join(gameId)
+            .catch(error => {
+                if (error.errorCode !== "UserAlreadyPlayerError") {
+                    throw error;
+                }
+            });
     }
 
 }
