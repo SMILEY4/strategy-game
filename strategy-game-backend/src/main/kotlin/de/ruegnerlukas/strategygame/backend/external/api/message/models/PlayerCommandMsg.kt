@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlayerCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommand
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -25,27 +25,27 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEn
 )
 sealed class PlayerCommandMsg(val type: String) {
 
-    fun asServiceModel(): PlayerCommand {
+    fun asCommandData(): CommandData {
         return when (this) {
-            is CreateCityCommandMsg -> CreateCityCommand(
+            is CreateCityCommandMsg -> CreateCityCommandData(
                 q = this.q,
                 r = this.r,
                 name = this.name,
-                withNewProvince = this.withNewProvince
+                withNewProvince = this.withNewProvince,
             )
-            is PlaceMarkerCommandMsg -> PlaceMarkerCommand(
+            is PlaceMarkerCommandMsg -> PlaceMarkerCommandData(
                 q = this.q,
                 r = this.r
             )
-            is PlaceScoutCommandMsg -> PlaceScoutCommand(
+            is PlaceScoutCommandMsg -> PlaceScoutCommandData(
                 q = this.q,
                 r = this.r
             )
-            is ProductionQueueAddEntryCommandMsg -> ProductionQueueAddEntryCommand(
+            is ProductionQueueAddEntryCommandMsg -> ProductionQueueAddEntryCommandData(
                 cityId = this.cityId,
                 buildingType = this.buildingType
             )
-            is ProductionQueueRemoveEntryCommandMsg -> ProductionQueueRemoveEntryCommand(
+            is ProductionQueueRemoveEntryCommandMsg -> ProductionQueueRemoveEntryCommandData(
                 cityId = this.cityId,
                 queueEntryId = this.queueEntryId
             )
@@ -99,6 +99,7 @@ class ProductionQueueAddEntryCommandMsg(
         internal const val TYPE = "production-queue-add-entry"
     }
 }
+
 
 @JsonTypeName(ProductionQueueRemoveEntryCommandMsg.TYPE)
 class ProductionQueueRemoveEntryCommandMsg(

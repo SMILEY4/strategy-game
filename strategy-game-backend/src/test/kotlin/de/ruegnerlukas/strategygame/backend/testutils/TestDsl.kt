@@ -6,16 +6,9 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommand
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommand
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
@@ -266,32 +259,7 @@ class GameTestContext {
 
     suspend fun submitTurn(userId: String, block: suspend ResolveCommandsConfig.() -> Unit) {
         val config = ResolveCommandsConfig().coApply(block)
-        TestActions.turnSubmitAction(database).perform(userId, gameId!!, config.getCommands().map { cmd ->
-            when (cmd.data) {
-                is CreateCityCommandData -> CreateCityCommand(
-                    q = (cmd.data as CreateCityCommandData).q,
-                    r = (cmd.data as CreateCityCommandData).r,
-                    name = (cmd.data as CreateCityCommandData).name,
-                    withNewProvince = true,
-                )
-                is PlaceMarkerCommandData -> PlaceMarkerCommand(
-                    q = (cmd.data as PlaceMarkerCommandData).q,
-                    r = (cmd.data as PlaceMarkerCommandData).r,
-                )
-                is PlaceScoutCommandData -> PlaceScoutCommand(
-                    q = (cmd.data as PlaceScoutCommandData).q,
-                    r = (cmd.data as PlaceScoutCommandData).r,
-                )
-                is ProductionQueueAddEntryCommandData -> ProductionQueueAddEntryCommand(
-                    cityId = (cmd.data as ProductionQueueAddEntryCommandData).cityId,
-                    buildingType = (cmd.data as ProductionQueueAddEntryCommandData).buildingType,
-                )
-                is ProductionQueueRemoveEntryCommandData -> ProductionQueueRemoveEntryCommand(
-                    cityId = (cmd.data as ProductionQueueRemoveEntryCommand).cityId,
-                    queueEntryId = (cmd.data as ProductionQueueRemoveEntryCommand).queueEntryId
-                )
-            }
-        })
+        TestActions.turnSubmitAction(database).perform(userId, gameId!!, config.getCommands().map { cmd -> cmd.data })
     }
 
     //=======================//

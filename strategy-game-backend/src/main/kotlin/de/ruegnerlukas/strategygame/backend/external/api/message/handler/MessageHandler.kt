@@ -25,7 +25,7 @@ class MessageHandler(
     }
 
     private suspend fun handleSubmitTurn(message: SubmitTurnMessage) {
-        turnSubmitAction.perform(message.meta!!.userId, message.meta!!.gameId, message.payload.commands.map { it.asServiceModel() })
+        turnSubmitAction.perform(message.meta!!.userId, message.meta!!.gameId, message.payload.commands.map { it.asCommandData() })
     }
 
 }
