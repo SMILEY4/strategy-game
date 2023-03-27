@@ -2,17 +2,20 @@ package de.ruegnerlukas.strategygame.backend.core.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.testutils.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.connectGame
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectPlayers
+import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.joinGame
 import io.kotest.core.spec.style.StringSpec
 
 class GameConnectTest : StringSpec({
 
     "request to connect to a game as a player, expect success" {
         gameTest {
-            createGame { }
+            createGame()
             joinGame("user")
-            connectGame {
-                userId = "user"
+            connectGame("user") {
                 connectionId = 0
             }
             expectPlayers {
@@ -27,26 +30,22 @@ class GameConnectTest : StringSpec({
 
     "request to connect to a game without being a player, expect 'NotParticipantError'" {
         gameTest {
-            createGame { }
-            connectGame {
-                userId = "user"
+            createGame()
+            connectGame("user") {
                 connectionId = 0
                 expectedRequestError = GameRequestConnectionAction.NotParticipantError
             }
-            expectNoMarkers()
         }
     }
 
     "request to connect to an already connected game, expect 'AlreadyConnectedError'" {
         gameTest {
-            createGame { }
+            createGame()
             joinGame("user")
-            connectGame {
-                userId = "user"
+            connectGame("user") {
                 connectionId = 0
             }
-            connectGame {
-                userId = "user"
+            connectGame("user") {
                 connectionId = 1
                 expectedRequestError = GameRequestConnectionAction.AlreadyConnectedError
             }
@@ -62,10 +61,9 @@ class GameConnectTest : StringSpec({
 
     "request to connect to a game that does not exist, expect 'GameNotFoundError'" {
         gameTest {
-            createGame { }
-            connectGame {
+            createGame()
+            connectGame("user") {
                 gameId = "unknown-game-id"
-                userId = "user"
                 connectionId = 0
                 expectedRequestError = GameRequestConnectionAction.GameNotFoundError
             }

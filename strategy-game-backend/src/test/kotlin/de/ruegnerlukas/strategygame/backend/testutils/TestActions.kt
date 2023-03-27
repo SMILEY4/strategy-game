@@ -126,43 +126,7 @@ object TestActions {
         GameQueryImpl(database),
     )
 
-    fun resolveCommandsAction(database: ArangoDatabase) = ResolveCommandsActionImpl(
-        ResolvePlaceMarkerCommandImpl(
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            )
-        ),
-        ResolveCreateCityCommandImpl(
-            GameConfig.default(),
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            )
-        ),
-        ResolvePlaceScoutCommandImpl(
-            GameConfig.default(),
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            )
-        ),
-        ResolveProductionQueueAddEntryCommandImpl(
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            ),
-            GameConfig.default()
-        ),
-        ResolveProductionQueueRemoveEntryCommandImpl(
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            ),
-        )
-    )
-
-    fun turnEndAction(database: ArangoDatabase) = TurnEndActionImpl(
+    fun resolveCommandsAction(database: ArangoDatabase) =
         ResolveCommandsActionImpl(
             ResolvePlaceMarkerCommandImpl(
                 TurnUpdateActionImpl(
@@ -197,19 +161,57 @@ object TestActions {
                     GameConfig.default()
                 ),
             )
-        ),
-        SendGameStateActionImpl(
-            GameConfig.default(),
-            GameExtendedQueryImpl(database),
-            GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
-        ),
-        GameExtendedQueryImpl(database),
-        GameExtendedUpdateImpl(database),
-        CommandsByGameQueryImpl(database),
-        TurnUpdateActionImpl(
-            ReservationInsertImpl(database),
-            GameConfig.default()
         )
-    )
+
+    fun turnEndAction(database: ArangoDatabase) =
+        TurnEndActionImpl(
+            ResolveCommandsActionImpl(
+                ResolvePlaceMarkerCommandImpl(
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
+                ),
+                ResolveCreateCityCommandImpl(
+                    GameConfig.default(),
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
+                ),
+                ResolvePlaceScoutCommandImpl(
+                    GameConfig.default(),
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    )
+                ),
+                ResolveProductionQueueAddEntryCommandImpl(
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    ),
+                    GameConfig.default()
+                ),
+                ResolveProductionQueueRemoveEntryCommandImpl(
+                    TurnUpdateActionImpl(
+                        ReservationInsertImpl(database),
+                        GameConfig.default()
+                    ),
+                )
+            ),
+            SendGameStateActionImpl(
+                GameConfig.default(),
+                GameExtendedQueryImpl(database),
+                GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
+            ),
+            GameExtendedQueryImpl(database),
+            GameExtendedUpdateImpl(database),
+            CommandsByGameQueryImpl(database),
+            TurnUpdateActionImpl(
+                ReservationInsertImpl(database),
+                GameConfig.default()
+            )
+        )
 
 }

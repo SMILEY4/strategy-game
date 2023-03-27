@@ -2,7 +2,11 @@ package de.ruegnerlukas.strategygame.backend.core.commandresolution
 
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.testutils.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectProductionQueue
+import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCityId
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.submitTurn
 import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueCommandsResolutionTest : StringSpec({
@@ -13,39 +17,37 @@ class ProductionQueueCommandsResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            submitTurn("user") {
+                createCity {
                     q = 0
                     r = 0
                     name = "Test City"
                 }
             }
-            endTurn()
-            resolveCommands {
-                productionQueueAddBuilding(getCountryId("user")) {
+            submitTurn("user") {
+                constructBuilding {
                     cityId = getCityId("Test City")
-                    buildingType = BuildingType.FARM
+                    building = BuildingType.FARM
                 }
-                productionQueueAddBuilding(getCountryId("user")) {
+                constructBuilding {
                     cityId = getCityId("Test City")
-                    buildingType = BuildingType.MARKET
-                }
-            }
-            expectProductionQueue(getCityId("Test City")) {
-                entry { buildingType = BuildingType.FARM }
-                entry { buildingType = BuildingType.MARKET }
-            }
-            endTurn()
-            resolveCommands {
-                productionQueueAddBuilding(getCountryId("user")) {
-                    cityId = getCityId("Test City")
-                    buildingType = BuildingType.QUARRY
+                    building = BuildingType.MARKET
                 }
             }
             expectProductionQueue(getCityId("Test City")) {
-                entry { buildingType = BuildingType.FARM }
-                entry { buildingType = BuildingType.MARKET }
-                entry { buildingType = BuildingType.QUARRY }
+                entry { building = BuildingType.FARM }
+                entry { building = BuildingType.MARKET }
+            }
+            submitTurn("user") {
+                constructBuilding {
+                    cityId = getCityId("Test City")
+                    building = BuildingType.QUARRY
+                }
+            }
+            expectProductionQueue(getCityId("Test City")) {
+                entry { building = BuildingType.FARM }
+                entry { building = BuildingType.MARKET }
+                entry { building = BuildingType.QUARRY }
             }
         }
     }

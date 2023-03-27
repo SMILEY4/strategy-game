@@ -1,7 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.core.commandresolution
 
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.testutils.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectCities
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectCity
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectCommandResolutionErrors
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectNoCities
+import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.submitTurn
 import io.kotest.core.spec.style.StringSpec
 
 class CreateCityCommandResolutionTest : StringSpec({
@@ -12,8 +19,8 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            submitTurn("user") {
+                createCity {
                     q = 4
                     r = 2
                     name = "Test City"
@@ -34,16 +41,21 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            submitTurn("user") {
+                createCity {
                     q = 10
                     r = 10
                     name = "First City"
                 }
             }
-            endTurn()
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            expectCity {
+                q = 10
+                r = 10
+                name = "First City"
+                countryId = getCountryId("user")
+            }
+            submitTurn("user") {
+                createCity {
                     q = 20
                     r = 20
                     name = "Second City"
@@ -66,20 +78,22 @@ class CreateCityCommandResolutionTest : StringSpec({
         }
     }
 
-    "create two cities next to each other in the same turn, create one" {
+    "create two cities next to each other in the same turn, expect only created one" {
         gameTest {
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user-1")
                 user("user-2")
             }
-            resolveCommands {
-                createCity(getCountryId("user-1")) {
+            submitTurn("user-1") {
+                createCity {
                     q = 0
                     r = 0
                     name = "City 1"
                 }
-                createCity(getCountryId("user-2")) {
+            }
+            submitTurn("user-2") {
+                createCity {
                     q = 1
                     r = 0
                     name = "City 2"
@@ -102,14 +116,17 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            submitTurn("user") {
+                createCity {
                     q = 0
                     r = 0
-                    name = "   "
+                    name = "    "
                 }
             }
-            expectCommandResolutionErrors(0, "CITY.NAME")
+            expectCommandResolutionErrors {
+                turn = 0
+                errors = listOf("CITY.NAME")
+            }
             expectNoCities()
         }
     }
@@ -120,14 +137,17 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.waterOnly()
                 user("user")
             }
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            submitTurn("user") {
+                createCity {
                     q = 0
                     r = 0
                     name = "Test City"
                 }
             }
-            expectCommandResolutionErrors(0, "CITY.TARGET_TILE_TYPE")
+            expectCommandResolutionErrors {
+                turn = 0
+                errors = listOf("CITY.TARGET_TILE_TYPE")
+            }
             expectNoCities()
         }
     }
@@ -138,21 +158,24 @@ class CreateCityCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            submitTurn("user") {
+                createCity {
                     q = 0
                     r = 0
                     name = "First City"
                 }
             }
-            resolveCommands {
-                createCity(getCountryId("user")) {
+            submitTurn("user") {
+                createCity {
                     q = 0
                     r = 0
                     name = "Second City"
                 }
             }
-            expectCommandResolutionErrors(0, "CITY.TILE_SPACE", "CITY.TARGET_TILE_OWNER")
+            expectCommandResolutionErrors {
+                turn = 1
+                errors = listOf("CITY.TILE_SPACE", "CITY.TARGET_TILE_OWNER")
+            }
             expectCities {
                 city {
                     q = 0
@@ -171,22 +194,29 @@ class CreateCityCommandResolutionTest : StringSpec({
                 user("user-1")
                 user("user-2")
             }
-            resolveCommands {
-                createCity(getCountryId("user-1")) {
+
+            submitTurn("user-1") {
+                createCity {
                     q = 0
                     r = 0
                     name = "First City"
                 }
             }
-            endTurn()
-            resolveCommands {
-                createCity(getCountryId("user-2")) {
+            submitTurn("user-2")
+
+            submitTurn("user-1")
+            submitTurn("user-2") {
+                createCity {
                     q = 1
                     r = 1
                     name = "Second City"
                 }
             }
-            expectCommandResolutionErrors(1, "CITY.TARGET_TILE_OWNER", "CITY.COUNTRY_INFLUENCE")
+
+            expectCommandResolutionErrors {
+                turn = 1
+                errors = listOf("CITY.TARGET_TILE_OWNER", "CITY.COUNTRY_INFLUENCE")
+            }
             expectCities {
                 city {
                     q = 0
@@ -205,22 +235,28 @@ class CreateCityCommandResolutionTest : StringSpec({
                 user("user-1")
                 user("user-2")
             }
-            resolveCommands {
-                createCity(getCountryId("user-1")) {
+
+            submitTurn("user-1") {
+                createCity {
                     q = 0
                     r = 0
                     name = "First City"
                 }
             }
-            endTurn()
-            resolveCommands {
-                createCity(getCountryId("user-2")) {
+            submitTurn("user-2")
+
+            submitTurn("user-1")
+            submitTurn("user-2") {
+                createCity {
                     q = 0
                     r = 4
                     name = "Second City"
                 }
             }
-            expectCommandResolutionErrors(1, "CITY.COUNTRY_INFLUENCE")
+            expectCommandResolutionErrors {
+                turn = 1
+                errors = listOf("CITY.COUNTRY_INFLUENCE")
+            }
             expectCities {
                 city {
                     q = 0
