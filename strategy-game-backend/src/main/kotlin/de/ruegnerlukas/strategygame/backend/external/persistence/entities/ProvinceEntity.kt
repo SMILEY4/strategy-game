@@ -3,15 +3,15 @@ package de.ruegnerlukas.strategygame.backend.external.persistence.entities
 import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 
 class ProvinceEntity(
     val gameId: String,
     val countryId: String,
     val cityIds: List<String>,
     val provinceCityId: String,
-    val resourceLedgerPrevTurn: ResourceStats,
-    val resourceLedgerCurrTurn: ResourceStats,
+    val resources: List<ResourceStack>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -22,8 +22,7 @@ class ProvinceEntity(
             countryId = serviceModel.countryId,
             cityIds = serviceModel.cityIds.toList(),
             provinceCityId = serviceModel.provinceCapitalCityId,
-            resourceLedgerPrevTurn = serviceModel.resourcesProducedPrevTurn,
-            resourceLedgerCurrTurn = serviceModel.resourcesProducedCurrTurn
+            resources = serviceModel.resourcesProducedPrevTurn.toStacks(),
         )
 
     }
@@ -33,10 +32,10 @@ class ProvinceEntity(
         countryId = this.countryId,
         cityIds = this.cityIds.toMutableList(),
         provinceCapitalCityId = this.provinceCityId,
-        resourcesProducedPrevTurn = this.resourceLedgerPrevTurn,
-        resourcesProducedCurrTurn = this.resourceLedgerCurrTurn,
-        resourcesConsumedCurrTurn = ResourceStats(),
-        resourcesMissing = ResourceStats(),
+        resourcesProducedPrevTurn = ResourceCollection.basic(this.resources),
+        resourcesProducedCurrTurn = ResourceCollection.basic(),
+        resourcesConsumedCurrTurn = ResourceCollection.basic(),
+        resourcesMissing = ResourceCollection.basic(),
     )
 
 }

@@ -7,6 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TileInfluence
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.distance
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 import kotlin.math.max
@@ -14,9 +15,10 @@ import kotlin.math.max
 /**
  * Re-calculates the influence on tiles near the created city
  */
-class CityInfluenceAction(private val gameConfig: GameConfig) {
+class CityInfluenceAction(private val gameConfig: GameConfig): Logging {
 
     fun perform(game: GameExtended, creationResult: CityCreationResult): List<Tile> {
+        log().debug("Updating influence after creation of city ${creationResult.city.cityId}")
         val city = getCity(creationResult)
         val modifiedTiles = mutableListOf<Tile>()
         positionsCircle(city.tile, gameConfig.cityMaxRange) { q, r ->

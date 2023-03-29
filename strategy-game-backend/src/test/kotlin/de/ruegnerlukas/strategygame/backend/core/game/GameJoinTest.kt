@@ -2,14 +2,17 @@ package de.ruegnerlukas.strategygame.backend.core.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.testutils.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectPlayers
+import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.joinGame
 import io.kotest.core.spec.style.StringSpec
 
 class GameJoinTest : StringSpec({
 
     "create and join a new game, expect success and new game with one player" {
         gameTest {
-            createGame { }
+            createGame()
             joinGame("user")
             expectPlayers {
                 player {
@@ -23,7 +26,7 @@ class GameJoinTest : StringSpec({
 
     "joining a game, expect success and game with two players" {
         gameTest {
-            createGame { }
+            createGame()
             joinGame("user-1")
             joinGame("user-2")
             expectPlayers {
@@ -46,8 +49,7 @@ class GameJoinTest : StringSpec({
             createGame { }
             joinGame("user-1")
             joinGame("user-2")
-            joinGame {
-                userId = "user-1"
+            joinGame("user-1") {
                 expectedError = GameJoinAction.UserAlreadyPlayerError
             }
             expectPlayers {
@@ -68,8 +70,7 @@ class GameJoinTest : StringSpec({
     "join a game that does not exist, expect 'GameNotFoundError'" {
         gameTest {
             createGame { }
-            joinGame {
-                userId = "user"
+            joinGame("user") {
                 gameId = "unknown-game-id"
                 expectedError = GameJoinAction.GameNotFoundError
             }

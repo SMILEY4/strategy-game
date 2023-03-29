@@ -1,697 +1,490 @@
 package de.ruegnerlukas.strategygame.backend.core.economy
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.game
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.generateResourcesForPosition
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.performEconomyUpdate
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.shouldBeMissing
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.shouldHaveConsumedCurrentTurn
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.shouldHaveProducedCurrentTurn
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.shouldHaveProducedLastTurn
-import de.ruegnerlukas.strategygame.backend.core.economy.EconomyTestUtils.tiles
-import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.shared.RGBColor
+import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.ports.models.amount
+import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.runEconomyUpdate
+import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectProvinceResources
+import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
+import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addCity
+import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addTileResources
+import de.ruegnerlukas.strategygame.backend.testutils.TestUtils.TileDirection
 import io.kotest.core.spec.style.StringSpec
 
 class BasicProductionConsumptionTest : StringSpec({
 
-	"test basic city without any production,consumption" {
-		val tiles = tiles()
-		val game = game(
-			tiles = tiles,
-			cities = listOf(
-				City(
-					cityId = "test-city",
-					countryId = "test-country",
-					tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == 0 }!!),
-					name = "Test",
-					color = RGBColor.random(),
-					isProvinceCapital = true,
-					buildings = mutableListOf(),
-					productionQueue = mutableListOf()
-				),
-			),
-			provinces = listOf(
-				Province(
-					provinceId = "test-province",
-					countryId = "test-country",
-					cityIds = mutableListOf("test-city"),
-					provinceCapitalCityId = "test-city",
-				)
-			)
-		)
-
-		for (i in 1..10) {
-			performEconomyUpdate(game)
-		}
-
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(ResourceType.FOOD to 0f)
-			province shouldHaveConsumedCurrentTurn listOf(ResourceType.FOOD to 0f)
-			province shouldHaveProducedCurrentTurn listOf(ResourceType.FOOD to 0f)
-			province shouldBeMissing listOf(ResourceType.FOOD to GameConfig.default().cityFoodCostPerTurn)
-		}
-
-	}
+    "test basic city without any production,consumption" {
+        gameTest {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user")
+            }
+            addCity {
+                name = "Test City"
+                tile = TilePosition(0, 0)
+                countryId = getCountryId("user")
+            }
+            repeat(10) {
+                runEconomyUpdate()
+            }
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(ResourceType.FOOD.amount(0f))
+                consumedThisTurn = listOf(ResourceType.FOOD.amount(0f))
+                producedThisTurn = listOf(ResourceType.FOOD.amount(0f))
+                missing = listOf(ResourceType.FOOD.amount(GameConfig.default().cityFoodCostPerTurn))
+            }
+        }
+    }
 
 
-	"test basic city with some food available" {
-		val tiles = tiles().also { tiles ->
-			generateResourcesForPosition(
-				tiles, TilePosition(0, 0), listOf(
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS
-				)
-			)
-		}
-		val game = game(
-			tiles = tiles,
-			cities = listOf(
-				City(
-					cityId = "test-city",
-					countryId = "test-country",
-					tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == 0 }!!),
-					name = "Test",
-					color = RGBColor.random(),
-					isProvinceCapital = true,
-					buildings = mutableListOf(
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == 0 }!!),
-							active = true
-						)
-					),
-					productionQueue = mutableListOf()
-				),
-			),
-			provinces = listOf(
-				Province(
-					provinceId = "test-province",
-					countryId = "test-country",
-					cityIds = mutableListOf("test-city"),
-					provinceCapitalCityId = "test-city",
-				)
-			)
-		)
+    "test basic city with some food available" {
+        gameTest {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user")
+            }
+            addTileResources(0, 0) {
+                allNeighbours(TileResourceType.PLAINS)
+            }
+            addCity {
+                name = "Test City"
+                tile = TilePosition(0, 0)
+                countryId = getCountryId("user")
+                building(BuildingType.FARM, TileDirection.RIGHT)
+            }
+            repeat(10) {
+                runEconomyUpdate()
+            }
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(ResourceType.FOOD.amount(1f))
+                consumedThisTurn = listOf(ResourceType.FOOD.amount(1f))
+                producedThisTurn = listOf(ResourceType.FOOD.amount(1f))
+                missing = listOf(ResourceType.FOOD.amount(GameConfig.default().cityFoodCostPerTurn - 1))
+            }
+        }
+    }
 
-		for (i in 1..10) {
-			performEconomyUpdate(game)
-		}
+    "test basic production chain with all resources available" {
+        gameTest {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user")
+            }
+            addTileResources(0, 0) {
+                allNeighbours(TileResourceType.PLAINS)
+            }
+            addCity {
+                name = "Test City"
+                tile = TilePosition(0, 0)
+                countryId = getCountryId("user")
+                building(BuildingType.FARM, TileDirection.TOP_LEFT)
+                building(BuildingType.FARM, TileDirection.TOP_RIGHT)
+                building(BuildingType.FARM, TileDirection.LEFT)
+                building(BuildingType.FARM, TileDirection.RIGHT)
+                building(BuildingType.SHEEP_FARM)
+                building(BuildingType.SHEEP_FARM)
+                building(BuildingType.PARCHMENTERS_WORKSHOP)
+                building(BuildingType.TAILORS_WORKSHOP)
+            }
 
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(ResourceType.FOOD to 1f)
-			province shouldHaveConsumedCurrentTurn listOf(ResourceType.FOOD to 1f)
-			province shouldHaveProducedCurrentTurn listOf(ResourceType.FOOD to 1f)
-			province shouldBeMissing listOf(ResourceType.FOOD to GameConfig.default().cityFoodCostPerTurn-1)
-		}
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-	}
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(1f),
+                    ResourceType.CLOTHES.amount(1f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-	"test basic production chain with all resources available" {
-		val tiles = tiles().also { tiles ->
-			generateResourcesForPosition(
-				tiles, TilePosition(0, 0), listOf(
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS
-				)
-			)
-		}
-		val game = game(
-			tiles = tiles,
-			cities = listOf(
-				City(
-					cityId = "test-city",
-					countryId = "test-country",
-					tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == 0 }!!),
-					name = "Test",
-					color = RGBColor.random(),
-					isProvinceCapital = true,
-					buildings = mutableListOf(
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == 0 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == +1 && it.position.r == 0 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == +1 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == +1 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.SHEEP_FARM,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.SHEEP_FARM,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.PARCHMENTERS_WORKSHOP,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.TAILORS_WORKSHOP,
-							tile = null,
-							active = true
-						)
-					),
-					productionQueue = mutableListOf()
-				),
-			),
-			provinces = listOf(
-				Province(
-					provinceId = "test-province",
-					countryId = "test-country",
-					cityIds = mutableListOf("test-city"),
-					provinceCapitalCityId = "test-city",
-				)
-			)
-		)
-
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
-
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
-
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 1f,
-				ResourceType.CLOTHES to 1f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
-
-		for (i in 1..5) {
-			performEconomyUpdate(game)
-			game.provinces[0].also { province ->
-				province shouldHaveProducedLastTurn listOf(
-					ResourceType.FOOD to 4f,
-					ResourceType.HIDE to 2f,
-					ResourceType.PARCHMENT to 1f,
-					ResourceType.CLOTHES to 1f,
-				)
-				province shouldHaveConsumedCurrentTurn listOf(
-					ResourceType.FOOD to 4f,
-					ResourceType.HIDE to 2f,
-					ResourceType.PARCHMENT to 0f,
-					ResourceType.CLOTHES to 0f,
-				)
-				province shouldHaveProducedCurrentTurn listOf(
-					ResourceType.FOOD to 4f,
-					ResourceType.HIDE to 2f,
-					ResourceType.PARCHMENT to 1f,
-					ResourceType.CLOTHES to 1f,
-				)
-				province shouldBeMissing listOf(
-					ResourceType.FOOD to 0f,
-					ResourceType.HIDE to 0f,
-					ResourceType.PARCHMENT to 0f,
-					ResourceType.CLOTHES to 0f,
-				)
-			}
-		}
-
-	}
+            repeat(10) {
+                runEconomyUpdate()
+                expectProvinceResources("Test City") {
+                    producedLastTurn = listOf(
+                        ResourceType.FOOD.amount(4f),
+                        ResourceType.HIDE.amount(2f),
+                        ResourceType.PARCHMENT.amount(1f),
+                        ResourceType.CLOTHES.amount(1f),
+                    )
+                    consumedThisTurn = listOf(
+                        ResourceType.FOOD.amount(4f),
+                        ResourceType.HIDE.amount(2f),
+                        ResourceType.PARCHMENT.amount(0f),
+                        ResourceType.CLOTHES.amount(0f),
+                    )
+                    producedThisTurn = listOf(
+                        ResourceType.FOOD.amount(4f),
+                        ResourceType.HIDE.amount(2f),
+                        ResourceType.PARCHMENT.amount(1f),
+                        ResourceType.CLOTHES.amount(1f),
+                    )
+                    missing = listOf(
+                        ResourceType.FOOD.amount(0f),
+                        ResourceType.HIDE.amount(0f),
+                        ResourceType.PARCHMENT.amount(0f),
+                        ResourceType.CLOTHES.amount(0f)
+                    )
+                }
+            }
+        }
+    }
 
 
-	"test basic production chain without enough food (for population)" {
-		val tiles = tiles().also { tiles ->
-			generateResourcesForPosition(
-				tiles, TilePosition(0, 0), listOf(
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS
-				)
-			)
-		}
-		val game = game(
-			tiles = tiles,
-			cities = listOf(
-				City(
-					cityId = "test-city",
-					countryId = "test-country",
-					tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == 0 }!!),
-					name = "Test",
-					color = RGBColor.random(),
-					isProvinceCapital = true,
-					buildings = mutableListOf(
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == 0 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == +1 && it.position.r == 0 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == +1 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.SHEEP_FARM,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.SHEEP_FARM,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.PARCHMENTERS_WORKSHOP,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.TAILORS_WORKSHOP,
-							tile = null,
-							active = true
-						)
-					),
-					productionQueue = mutableListOf()
-				),
-			),
-			provinces = listOf(
-				Province(
-					provinceId = "test-province",
-					countryId = "test-country",
-					cityIds = mutableListOf("test-city"),
-					provinceCapitalCityId = "test-city",
-				)
-			)
-		)
 
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
+    "test basic production chain without enough food for population" {
+        gameTest {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user")
+            }
+            addTileResources(0, 0) {
+                allNeighbours(TileResourceType.PLAINS)
+            }
+            addCity {
+                name = "Test City"
+                tile = TilePosition(0, 0)
+                countryId = getCountryId("user")
+                building(BuildingType.FARM, TileDirection.TOP_LEFT)
+                building(BuildingType.FARM, TileDirection.TOP_RIGHT)
+                building(BuildingType.FARM, TileDirection.LEFT)
+                building(BuildingType.SHEEP_FARM)
+                building(BuildingType.SHEEP_FARM)
+                building(BuildingType.PARCHMENTERS_WORKSHOP)
+                building(BuildingType.TAILORS_WORKSHOP)
+            }
 
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 1f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 1f,
-				ResourceType.CLOTHES to 1f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 1f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(1f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-		for (i in 1..5) {
-			performEconomyUpdate(game)
-			game.provinces[0].also { province ->
-				province shouldHaveProducedLastTurn listOf(
-					ResourceType.FOOD to 3f,
-					ResourceType.HIDE to 2f,
-					ResourceType.PARCHMENT to 1f,
-					ResourceType.CLOTHES to 1f,
-				)
-				province shouldHaveConsumedCurrentTurn listOf(
-					ResourceType.FOOD to 3f,
-					ResourceType.HIDE to 2f,
-					ResourceType.PARCHMENT to 0f,
-					ResourceType.CLOTHES to 0f,
-				)
-				province shouldHaveProducedCurrentTurn listOf(
-					ResourceType.FOOD to 3f,
-					ResourceType.HIDE to 2f,
-					ResourceType.PARCHMENT to 1f,
-					ResourceType.CLOTHES to 1f,
-				)
-				province shouldBeMissing listOf(
-					ResourceType.FOOD to 1f,
-					ResourceType.HIDE to 0f,
-					ResourceType.PARCHMENT to 0f,
-					ResourceType.CLOTHES to 0f,
-				)
-			}
-		}
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(1f),
+                    ResourceType.CLOTHES.amount(1f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(1f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-	}
+            repeat(10) {
+                runEconomyUpdate()
+                expectProvinceResources("Test City") {
+                    producedLastTurn = listOf(
+                        ResourceType.FOOD.amount(3f),
+                        ResourceType.HIDE.amount(2f),
+                        ResourceType.PARCHMENT.amount(1f),
+                        ResourceType.CLOTHES.amount(1f),
+                    )
+                    consumedThisTurn = listOf(
+                        ResourceType.FOOD.amount(3f),
+                        ResourceType.HIDE.amount(2f),
+                        ResourceType.PARCHMENT.amount(0f),
+                        ResourceType.CLOTHES.amount(0f),
+                    )
+                    producedThisTurn = listOf(
+                        ResourceType.FOOD.amount(3f),
+                        ResourceType.HIDE.amount(2f),
+                        ResourceType.PARCHMENT.amount(1f),
+                        ResourceType.CLOTHES.amount(1f),
+                    )
+                    missing = listOf(
+                        ResourceType.FOOD.amount(1f),
+                        ResourceType.HIDE.amount(0f),
+                        ResourceType.PARCHMENT.amount(0f),
+                        ResourceType.CLOTHES.amount(0f),
+                    )
+                }
+            }
+        }
+    }
 
+    "test basic production chain without enough resource production (middle of the chain)" {
+        gameTest {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user")
+            }
+            addTileResources(0, 0) {
+                allNeighbours(TileResourceType.PLAINS)
+            }
+            addCity {
+                name = "Test City"
+                tile = TilePosition(0, 0)
+                countryId = getCountryId("user")
+                building(BuildingType.FARM, TileDirection.TOP_LEFT)
+                building(BuildingType.FARM, TileDirection.TOP_RIGHT)
+                building(BuildingType.FARM, TileDirection.LEFT)
+                building(BuildingType.FARM, TileDirection.RIGHT)
+                building(BuildingType.SHEEP_FARM)
+                building(BuildingType.PARCHMENTERS_WORKSHOP)
+                building(BuildingType.TAILORS_WORKSHOP)
+            }
 
-	"test basic production chain without enough resource production (middle of the chain)" {
-		val tiles = tiles().also { tiles ->
-			generateResourcesForPosition(
-				tiles, TilePosition(0, 0), listOf(
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS,
-					TileResourceType.PLAINS
-				)
-			)
-		}
-		val game = game(
-			tiles = tiles,
-			cities = listOf(
-				City(
-					cityId = "test-city",
-					countryId = "test-country",
-					tile = TileRef(tiles.find { it.position.q == 0 && it.position.r == 0 }!!),
-					name = "Test",
-					color = RGBColor.random(),
-					isProvinceCapital = true,
-					buildings = mutableListOf(
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == 0 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == +1 && it.position.r == 0 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == +1 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.FARM,
-							tile = TileRef(tiles.find { it.position.q == -1 && it.position.r == +1 }!!),
-							active = true
-						),
-						Building(
-							type = BuildingType.SHEEP_FARM,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.PARCHMENTERS_WORKSHOP,
-							tile = null,
-							active = true
-						),
-						Building(
-							type = BuildingType.TAILORS_WORKSHOP,
-							tile = null,
-							active = true
-						)
-					),
-					productionQueue = mutableListOf()
-				),
-			),
-			provinces = listOf(
-				Province(
-					provinceId = "test-province",
-					countryId = "test-country",
-					cityIds = mutableListOf("test-city"),
-					provinceCapitalCityId = "test-city",
-				)
-			)
-		)
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(0f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(1f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(2f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 0f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 1f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 2f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
+            runEconomyUpdate()
+            expectProvinceResources("Test City") {
+                producedLastTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(1f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                consumedThisTurn = listOf(
+                    ResourceType.FOOD.amount(3f),
+                    ResourceType.HIDE.amount(1f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                producedThisTurn = listOf(
+                    ResourceType.FOOD.amount(4f),
+                    ResourceType.HIDE.amount(1f),
+                    ResourceType.PARCHMENT.amount(1f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+                missing = listOf(
+                    ResourceType.FOOD.amount(0f),
+                    ResourceType.HIDE.amount(1f),
+                    ResourceType.PARCHMENT.amount(0f),
+                    ResourceType.CLOTHES.amount(0f),
+                )
+            }
 
-		performEconomyUpdate(game)
-		game.provinces[0].also { province ->
-			province shouldHaveProducedLastTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 1f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveConsumedCurrentTurn listOf(
-				ResourceType.FOOD to 3f,
-				ResourceType.HIDE to 1f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldHaveProducedCurrentTurn listOf(
-				ResourceType.FOOD to 4f,
-				ResourceType.HIDE to 1f,
-				ResourceType.PARCHMENT to 1f,
-				ResourceType.CLOTHES to 0f,
-			)
-			province shouldBeMissing listOf(
-				ResourceType.FOOD to 0f,
-				ResourceType.HIDE to 1f,
-				ResourceType.PARCHMENT to 0f,
-				ResourceType.CLOTHES to 0f,
-			)
-		}
-
-		for (i in 1..5) {
-			performEconomyUpdate(game)
-			game.provinces[0].also { province ->
-				province shouldHaveProducedLastTurn listOf(
-					ResourceType.FOOD to 4f,
-					ResourceType.HIDE to 1f,
-					ResourceType.PARCHMENT to 1f,
-					ResourceType.CLOTHES to 0f,
-				)
-				province shouldHaveConsumedCurrentTurn listOf(
-					ResourceType.FOOD to 3f,
-					ResourceType.HIDE to 1f,
-					ResourceType.PARCHMENT to 0f,
-					ResourceType.CLOTHES to 0f,
-				)
-				province shouldHaveProducedCurrentTurn listOf(
-					ResourceType.FOOD to 4f,
-					ResourceType.HIDE to 1f,
-					ResourceType.PARCHMENT to 1f,
-					ResourceType.CLOTHES to 0f,
-				)
-				province shouldBeMissing listOf(
-					ResourceType.FOOD to 0f,
-					ResourceType.HIDE to 1f,
-					ResourceType.PARCHMENT to 0f,
-					ResourceType.CLOTHES to 0f,
-				)
-			}
-		}
-
-	}
+            repeat(10) {
+                runEconomyUpdate()
+                expectProvinceResources("Test City") {
+                    producedLastTurn = listOf(
+                        ResourceType.FOOD.amount(4f),
+                        ResourceType.HIDE.amount(1f),
+                        ResourceType.PARCHMENT.amount(1f),
+                        ResourceType.CLOTHES.amount(0f),
+                    )
+                    consumedThisTurn = listOf(
+                        ResourceType.FOOD.amount(3f),
+                        ResourceType.HIDE.amount(1f),
+                        ResourceType.PARCHMENT.amount(0f),
+                        ResourceType.CLOTHES.amount(0f),
+                    )
+                    producedThisTurn = listOf(
+                        ResourceType.FOOD.amount(4f),
+                        ResourceType.HIDE.amount(1f),
+                        ResourceType.PARCHMENT.amount(1f),
+                        ResourceType.CLOTHES.amount(0f),
+                    )
+                    missing = listOf(
+                        ResourceType.FOOD.amount(0f),
+                        ResourceType.HIDE.amount(1f),
+                        ResourceType.PARCHMENT.amount(0f),
+                        ResourceType.CLOTHES.amount(0f),
+                    )
+                }
+            }
+        }
+    }
 
 })

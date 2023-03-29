@@ -7,11 +7,11 @@ import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNodeStorage
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.storage.EconomyNodeStorageImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 
 class MarketEconomyNode(val provinces: Collection<Province>, val game: GameExtended, config: GameConfig) : EconomyNode {
 
-    private val storage = EconomyNodeStorageImpl(ResourceStats())
+    private val storage = EconomyNodeStorageImpl(ResourceCollection.basic())
 
     private val nodes = mutableListOf<EconomyNode>().also { nodes ->
         provinces.forEach { province ->

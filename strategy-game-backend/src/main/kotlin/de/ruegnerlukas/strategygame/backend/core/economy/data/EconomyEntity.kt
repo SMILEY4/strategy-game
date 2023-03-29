@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.economy.data
 
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 
 /**
  * Something that takes part in the economy by consuming and/or producing resources. Can be located in a specific city,province or country.
@@ -22,13 +22,13 @@ interface EconomyEntity {
     /**
      * @return the resources this entity requires or wants to consume. Changes when this entity is provided resources.
      */
-    fun getRequires(): Collection<ResourceStack>
+    fun getRequires(): ResourceCollection
 
 
     /**
      * @return the resources this entity produces
      */
-    fun getProduces(): Collection<ResourceStack>
+    fun getProduces(): ResourceCollection
 
 
     /**
@@ -65,7 +65,7 @@ interface EconomyEntity {
     /**
      * provide this entity with the given required resources
      */
-    fun provideResources(resources: Collection<ResourceStack>)
+    fun provideResources(resources: ResourceCollection)
 
 
     /**

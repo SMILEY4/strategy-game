@@ -2,15 +2,14 @@ package de.ruegnerlukas.strategygame.backend.core.actions.update
 
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStats
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
 
-class MarketNetwork {
+class ProvinceNetwork {
 
     companion object {
 
-        fun networksFrom(game: GameExtended): List<MarketNetwork> {
-            val networks = mutableListOf<MarketNetwork>()
+        fun networksFrom(game: GameExtended): List<ProvinceNetwork> {
+            val networks = mutableListOf<ProvinceNetwork>()
             game.routes.forEach { route ->
                 val provinceA = getProvince(game, route.cityIdA)
                 val provinceB = getProvince(game, route.cityIdB)
@@ -18,7 +17,7 @@ class MarketNetwork {
                 val networkB = findNetwork(networks, provinceB)
                 // both cities "a" and "b" do not exist an any network
                 if (networkA == null && networkB == null) {
-                    networks.add(MarketNetwork().also {
+                    networks.add(ProvinceNetwork().also {
                         it.add(provinceA, route)
                         it.add(provinceB, route)
                     })
@@ -33,7 +32,7 @@ class MarketNetwork {
                 }
                 // both cities already exist in different networks
                 if (networkA != null && networkB != null && networkA != networkB) {
-                    val merged = MarketNetwork().also {
+                    val merged = ProvinceNetwork().also {
                         it.add(networkA)
                         it.add(networkB)
                     }
@@ -49,7 +48,7 @@ class MarketNetwork {
             return game.provinces.find { it.cityIds.contains(cityId) } ?: throw Exception("Could not find province by city")
         }
 
-        fun findNetwork(networks: Collection<MarketNetwork>, province: Province): MarketNetwork? {
+        private fun findNetwork(networks: Collection<ProvinceNetwork>, province: Province): ProvinceNetwork? {
             return networks.find { it.contains(province) }
         }
 
@@ -58,24 +57,12 @@ class MarketNetwork {
     private val provinces = mutableSetOf<Province>()
     private val routes = mutableSetOf<Route>()
 
-    var resourcesProducedPrevTurn: ResourceStats = ResourceStats()
-    var resourcesProducedCurrTurn: ResourceStats = ResourceStats()
-    var resourcesConsumedCurrTurn: ResourceStats = ResourceStats()
-    var resourcesMissing: ResourceStats = ResourceStats()
-
-    fun calculateResourceStats() {
-        provinces.forEach { resourcesProducedPrevTurn.add(it.resourcesProducedPrevTurn) }
-        provinces.forEach { resourcesProducedCurrTurn.add(it.resourcesProducedCurrTurn) }
-        provinces.forEach { resourcesConsumedCurrTurn.add(it.resourcesConsumedCurrTurn) }
-        provinces.forEach { resourcesMissing.add(it.resourcesMissing) }
-    }
-
     fun add(province: Province, route: Route) {
         provinces.add(province)
         routes.add(route)
     }
 
-    fun add(network: MarketNetwork) {
+    fun add(network: ProvinceNetwork) {
         provinces.addAll(network.provinces)
         routes.addAll(network.routes)
     }
@@ -83,7 +70,5 @@ class MarketNetwork {
     fun contains(province: Province) = provinces.contains(province)
 
     fun getProvinces(): Set<Province> = provinces
-
-    fun getRoutes(): Set<Route> = routes
 
 }

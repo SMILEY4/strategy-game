@@ -4,20 +4,20 @@ import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 
 class BuildingEconomyEntity(private val owner: EconomyNode, val city: City, val building: Building) : EconomyEntity {
 
-    private val ownedResources = mutableListOf<ResourceStack>()
+    private val providedResources = ResourceCollection.basic()
     private var hasProduced = false
 
     override fun getNode(): EconomyNode = owner
 
     override fun getPriority(): Float = if (city.isProvinceCapital) 1.5f else 1f
 
-    override fun getRequires(): Collection<ResourceStack> = getRemainingRequiredResources()
+    override fun getRequires(): ResourceCollection = getRemainingRequiredResources()
 
-    override fun getProduces(): Collection<ResourceStack> = building.type.templateData.produces
+    override fun getProduces(): ResourceCollection = ResourceCollection.basic(building.type.templateData.produces)
 
     override fun allowPartialConsumption(): Boolean = false
 
@@ -29,8 +29,8 @@ class BuildingEconomyEntity(private val owner: EconomyNode, val city: City, val 
 
     override fun hasProduced(): Boolean = hasProduced
 
-    override fun provideResources(resources: Collection<ResourceStack>) {
-        ownedResources.addAll(resources)
+    override fun provideResources(resources: ResourceCollection) {
+        providedResources.add(resources)
     }
 
     override fun flagProduced() {
@@ -41,21 +41,10 @@ class BuildingEconomyEntity(private val owner: EconomyNode, val city: City, val 
         return building.type.templateData.requiredTileResource == null || building.tile != null
     }
 
-    private fun getRemainingRequiredResources(): Collection<ResourceStack> {
-        return mutableListOf<ResourceStack>().also { remaining ->
-            building.type.templateData.requires.forEach { required ->
-                ownedResources.find { it.type == required.type }
-                    ?.let { owned ->
-                        val amountAvailable = owned.amount
-                        val amountRemaining = required.amount - amountAvailable
-                        if (amountRemaining > 0.00001) {
-                            remaining.add(ResourceStack(required.type, amountRemaining))
-                        }
-                    }
-                    ?: remaining.add(ResourceStack(required.type, required.amount))
-
-            }
-        }
+    private fun getRemainingRequiredResources(): ResourceCollection {
+        return ResourceCollection.basic(building.type.templateData.requires)
+            .sub(providedResources)
+            .trim()
     }
 
 }

@@ -227,7 +227,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
     }
 
     private fun calculateProductionQueueEntryProgress(entry: ProductionQueueEntry): Float {
-        val totalRequired = entry.getTotalRequiredResources().fold(0f) { a, b -> a + b.amount }
+        val totalRequired = entry.getTotalRequiredResources().toStacks().fold(0f) { a, b -> a + b.amount }
         val totalCollected = entry.collectedResources.toList().fold(0f) { a, b -> a + b.second }
         if (totalRequired < 0.0001) {
             return 1f

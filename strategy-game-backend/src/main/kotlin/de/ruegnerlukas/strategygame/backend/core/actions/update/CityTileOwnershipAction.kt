@@ -7,15 +7,17 @@ import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TileOwner
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
 
 /**
  * Re-calculates the owner of the tiles near the created city.
  * This only handles the tiles that will be owned directly by the city, not tiles added to the province via influence
  */
-class CityTileOwnershipAction {
+class CityTileOwnershipAction: Logging {
 
     fun perform(game: GameExtended, creationResult: CityCreationResult) {
+        log().debug("Update tile owners after creation of city ${creationResult.city.cityId}")
         val country = creationResult.country
         val province = creationResult.province
         val city = creationResult.city

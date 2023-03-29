@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
@@ -34,7 +35,7 @@ class CityEntity(
                 ProductionQueueEntryEntity(
                     entryId = it.entryId,
                     buildingType = it.buildingType,
-                    collectedResources = it.collectedResources
+                    collectedResources = it.collectedResources.toStacks()
                 )
             }
         )
@@ -52,7 +53,7 @@ class CityEntity(
             ProductionQueueEntry(
                 entryId = it.entryId,
                 buildingType = it.buildingType,
-                collectedResources = it.collectedResources
+                collectedResources = ResourceCollection.basic(it.collectedResources)
             )
         }.toMutableList()
     )

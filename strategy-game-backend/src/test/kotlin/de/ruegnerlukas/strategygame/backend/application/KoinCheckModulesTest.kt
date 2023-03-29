@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.integration
+package de.ruegnerlukas.strategygame.backend.application
 
 import de.ruegnerlukas.strategygame.backend.app.applicationDependencies
 import org.junit.jupiter.api.Test
