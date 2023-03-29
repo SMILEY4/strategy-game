@@ -33,185 +33,164 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQu
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
 
-object TestActions {
+data class TestActions(
+    val context: TestActionContext,
+    val gameCreate: GameCreateActionImpl,
+    val gameJoin: GameJoinActionImpl,
+    val gameRequestConnect: GameRequestConnectionActionImpl,
+    val gameConnect: GameConnectActionImpl,
+    val gamesList: GamesListActionImpl,
+    val turnSubmit: TurnSubmitActionImpl,
+    val resolveCommands: ReportingResolveCommandsActionImpl,
+    val turnEnd: TurnEndActionImpl,
+    val turnUpdate: TurnUpdateActionImpl
+) {
 
-    fun gameCreateAction(database: ArangoDatabase) = GameCreateActionImpl(
-        GameInsertImpl(database)
-    )
+    companion object {
 
-    fun gameJoinAction(database: ArangoDatabase) = GameJoinActionImpl(
-        GameQueryImpl(database),
-        GameUpdateImpl(database),
-        CountryInsertImpl(database),
-        TilesQueryByGameImpl(database),
-        GameConfig(),
-        UncoverMapAreaActionImpl(
-            TilesQueryByGameAndPositionImpl(database),
-            TilesUpdateImpl(database)
-        )
-    )
+        class TestActionContext {
+            val commandResolutionErrors = mutableMapOf<Int, List<CommandResolutionError>>()
+        }
 
-    fun gameConnectAction(database: ArangoDatabase) = GameConnectActionImpl(
-        GameQueryImpl(database),
-        GameUpdateImpl(database),
-        SendGameStateActionImpl(
-            GameConfig.default(),
-            GameExtendedQueryImpl(database),
-            GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
-        ),
-    )
+        fun create(database: ArangoDatabase): TestActions {
+            val context = TestActionContext()
+            val gameCreate = gameCreateAction(database)
+            val gameJoin = gameJoinAction(database)
+            val gameRequestConnect = gameRequestConnectionAction(database)
+            val gameConnect = gameConnectAction(database)
+            val gamesList = gamesListAction(database)
+            val turnUpdate = turnUpdateAction(database)
+            val resolveCommands = resolveCommandsAction(context, turnUpdate)
+            val turnSubmit = turnSubmitAction(database, resolveCommands, turnUpdate)
+            val turnEnd = turnEndAction(database, resolveCommands, turnUpdate)
+            return TestActions(
+                context = context,
+                gameCreate = gameCreate,
+                gameJoin = gameJoin,
+                gameRequestConnect = gameRequestConnect,
+                gameConnect = gameConnect,
+                gamesList = gamesList,
+                turnSubmit = turnSubmit,
+                resolveCommands = resolveCommands,
+                turnEnd = turnEnd,
+                turnUpdate = turnUpdate
+            )
+        }
 
-    fun turnSubmitAction(database: ArangoDatabase) = TurnSubmitActionImpl(
-        TurnEndActionImpl(
-            ResolveCommandsActionImpl(
-                ResolvePlaceMarkerCommandImpl(
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
-                ResolveCreateCityCommandImpl(
-                    GameConfig.default(),
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
-                ResolvePlaceScoutCommandImpl(
-                    GameConfig.default(),
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
-                ResolveProductionQueueAddEntryCommandImpl(
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    ),
-                    GameConfig.default()
-                ),
-                ResolveProductionQueueRemoveEntryCommandImpl(
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    ),
+        private fun gameCreateAction(database: ArangoDatabase) =
+            GameCreateActionImpl(
+                GameInsertImpl(database)
+            )
+
+        private fun gameJoinAction(database: ArangoDatabase) =
+            GameJoinActionImpl(
+                GameQueryImpl(database),
+                GameUpdateImpl(database),
+                CountryInsertImpl(database),
+                TilesQueryByGameImpl(database),
+                GameConfig(),
+                UncoverMapAreaActionImpl(
+                    TilesQueryByGameAndPositionImpl(database),
+                    TilesUpdateImpl(database)
                 )
-            ),
-            SendGameStateActionImpl(
-                GameConfig.default(),
+            )
+
+        private fun gameConnectAction(database: ArangoDatabase) =
+            GameConnectActionImpl(
+                GameQueryImpl(database),
+                GameUpdateImpl(database),
+                SendGameStateActionImpl(
+                    GameConfig.default(),
+                    GameExtendedQueryImpl(database),
+                    GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
+                ),
+            )
+
+        private fun turnSubmitAction(
+            database: ArangoDatabase,
+            resolveCommandsAction: ResolveCommandsAction,
+            turnUpdate: TurnUpdateActionImpl
+        ) =
+            TurnSubmitActionImpl(
+                TurnEndActionImpl(
+                    resolveCommandsAction,
+                    SendGameStateActionImpl(
+                        GameConfig.default(),
+                        GameExtendedQueryImpl(database),
+                        GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
+                    ),
+                    GameExtendedQueryImpl(database),
+                    GameExtendedUpdateImpl(database),
+                    CommandsByGameQueryImpl(database),
+                    turnUpdate
+                ),
+                GameQueryImpl(database),
+                CountryByGameAndUserQueryImpl(database),
+                GameUpdateImpl(database),
+                CommandsInsertImpl(database),
+            )
+
+        private fun gamesListAction(database: ArangoDatabase) =
+            GamesListActionImpl(
+                GamesByUserQueryImpl(database)
+            )
+
+        private fun gameRequestConnectionAction(database: ArangoDatabase) =
+            GameRequestConnectionActionImpl(
+                GameQueryImpl(database),
+            )
+
+        private fun resolveCommandsAction(context: TestActionContext, turnUpdate: TurnUpdateActionImpl) =
+            ReportingResolveCommandsActionImpl(
+                context,
+                ResolveCommandsActionImpl(
+                    ResolvePlaceMarkerCommandImpl(
+                        turnUpdate
+                    ),
+                    ResolveCreateCityCommandImpl(
+                        GameConfig.default(),
+                        turnUpdate
+                    ),
+                    ResolvePlaceScoutCommandImpl(
+                        GameConfig.default(),
+                        turnUpdate
+                    ),
+                    ResolveProductionQueueAddEntryCommandImpl(
+                        turnUpdate,
+                        GameConfig.default()
+                    ),
+                    ResolveProductionQueueRemoveEntryCommandImpl(
+                        turnUpdate
+                    )
+                )
+            )
+
+        private fun turnEndAction(
+            database: ArangoDatabase,
+            resolveCommandsAction: ResolveCommandsAction,
+            turnUpdate: TurnUpdateActionImpl
+        ) =
+            TurnEndActionImpl(
+                resolveCommandsAction,
+                SendGameStateActionImpl(
+                    GameConfig.default(),
+                    GameExtendedQueryImpl(database),
+                    GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
+                ),
                 GameExtendedQueryImpl(database),
-                GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
-            ),
-            GameExtendedQueryImpl(database),
-            GameExtendedUpdateImpl(database),
-            CommandsByGameQueryImpl(database),
+                GameExtendedUpdateImpl(database),
+                CommandsByGameQueryImpl(database),
+                turnUpdate
+            )
+
+        private fun turnUpdateAction(database: ArangoDatabase) =
             TurnUpdateActionImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default()
             )
-        ),
-        GameQueryImpl(database),
-        CountryByGameAndUserQueryImpl(database),
-        GameUpdateImpl(database),
-        CommandsInsertImpl(database),
-    )
-
-    fun gamesListAction(database: ArangoDatabase) = GamesListActionImpl(
-        GamesByUserQueryImpl(database)
-    )
-
-    fun gameRequestConnectionAction(database: ArangoDatabase) = GameRequestConnectionActionImpl(
-        GameQueryImpl(database),
-    )
-
-    fun resolveCommandsAction(database: ArangoDatabase) =
-        ResolveCommandsActionImpl(
-            ResolvePlaceMarkerCommandImpl(
-                TurnUpdateActionImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
-                )
-            ),
-            ResolveCreateCityCommandImpl(
-                GameConfig.default(),
-                TurnUpdateActionImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
-                )
-            ),
-            ResolvePlaceScoutCommandImpl(
-                GameConfig.default(),
-                TurnUpdateActionImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
-                )
-            ),
-            ResolveProductionQueueAddEntryCommandImpl(
-                TurnUpdateActionImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
-                ),
-                GameConfig.default()
-            ),
-            ResolveProductionQueueRemoveEntryCommandImpl(
-                TurnUpdateActionImpl(
-                    ReservationInsertImpl(database),
-                    GameConfig.default()
-                ),
-            )
-        )
-
-    fun turnEndAction(database: ArangoDatabase) =
-        TurnEndActionImpl(
-            ResolveCommandsActionImpl(
-                ResolvePlaceMarkerCommandImpl(
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
-                ResolveCreateCityCommandImpl(
-                    GameConfig.default(),
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
-                ResolvePlaceScoutCommandImpl(
-                    GameConfig.default(),
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    )
-                ),
-                ResolveProductionQueueAddEntryCommandImpl(
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    ),
-                    GameConfig.default()
-                ),
-                ResolveProductionQueueRemoveEntryCommandImpl(
-                    TurnUpdateActionImpl(
-                        ReservationInsertImpl(database),
-                        GameConfig.default()
-                    ),
-                )
-            ),
-            SendGameStateActionImpl(
-                GameConfig.default(),
-                GameExtendedQueryImpl(database),
-                GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
-            ),
-            GameExtendedQueryImpl(database),
-            GameExtendedUpdateImpl(database),
-            CommandsByGameQueryImpl(database),
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default()
-            )
-        )
+    }
 
 }

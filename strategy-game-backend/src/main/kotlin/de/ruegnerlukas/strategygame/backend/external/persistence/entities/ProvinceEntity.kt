@@ -11,8 +11,7 @@ class ProvinceEntity(
     val countryId: String,
     val cityIds: List<String>,
     val provinceCityId: String,
-    val resourceLedgerPrevTurn: List<ResourceStack>,
-    val resourceLedgerCurrTurn: List<ResourceStack>,
+    val resources: List<ResourceStack>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -23,8 +22,7 @@ class ProvinceEntity(
             countryId = serviceModel.countryId,
             cityIds = serviceModel.cityIds.toList(),
             provinceCityId = serviceModel.provinceCapitalCityId,
-            resourceLedgerPrevTurn = serviceModel.resourcesProducedPrevTurn.toStacks(),
-            resourceLedgerCurrTurn = serviceModel.resourcesProducedCurrTurn.toStacks()
+            resources = serviceModel.resourcesProducedPrevTurn.toStacks(),
         )
 
     }
@@ -34,8 +32,8 @@ class ProvinceEntity(
         countryId = this.countryId,
         cityIds = this.cityIds.toMutableList(),
         provinceCapitalCityId = this.provinceCityId,
-        resourcesProducedPrevTurn = ResourceCollection.basic(this.resourceLedgerPrevTurn),
-        resourcesProducedCurrTurn = ResourceCollection.basic(this.resourceLedgerCurrTurn),
+        resourcesProducedPrevTurn = ResourceCollection.basic(this.resources),
+        resourcesProducedCurrTurn = ResourceCollection.basic(),
         resourcesConsumedCurrTurn = ResourceCollection.basic(),
         resourcesMissing = ResourceCollection.basic(),
     )

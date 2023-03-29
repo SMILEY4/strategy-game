@@ -22,8 +22,29 @@ import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 
 object TestUtils {
+
+    enum class TileDirection(val q: Int, val r: Int) {
+        TOP_LEFT(-1, +1),
+        TOP_RIGHT(+0, +1),
+        LEFT(-1, +0),
+        RIGHT(+0, +0),
+        BOTTOM_LEFT(+1, +0),
+        BOTTOM_RIGHT(+0, -1),
+        CENTER(+1, -1),
+    }
+
+    fun TilePosition.topLeft() = this.direction(TileDirection.TOP_LEFT)
+    fun TilePosition.topRight() = this.direction(TileDirection.TOP_RIGHT)
+    fun TilePosition.left() = this.direction(TileDirection.LEFT)
+    fun TilePosition.right() = this.direction(TileDirection.RIGHT)
+    fun TilePosition.bottomLeft() = this.direction(TileDirection.BOTTOM_LEFT)
+    fun TilePosition.bottomRight() = this.direction(TileDirection.BOTTOM_RIGHT)
+    fun TilePosition.center() = this.direction(TileDirection.CENTER)
+    fun TilePosition.direction(dir: TileDirection) = TilePosition(this.q + dir.q, this.r - dir.r)
+
 
     suspend fun getPlayer(database: ArangoDatabase, userId: String, gameId: String): Player {
         return getPlayers(database, gameId).first { it.userId == userId }

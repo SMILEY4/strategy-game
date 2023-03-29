@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 /**
  * Updates the entries in production queues
  */
-class ProductionQueueUpdateAction(private val turnUpdateAction: TurnUpdateAction): Logging {
+class ProductionQueueUpdateAction(private val turnUpdateAction: TurnUpdateAction) : Logging {
 
     suspend fun perform(game: GameExtended) {
         log().debug("Update production queue entries")
@@ -43,9 +43,11 @@ class ProductionQueueUpdateAction(private val turnUpdateAction: TurnUpdateAction
          -> add some "free" resources to queue to be able to construct in first city with no production buildings yet
          */
         queueEntry.collectedResources.also { collected ->
-            queueEntry.getTotalRequiredResources().forEach { requiredType, _ ->
-                collected.add(requiredType, 1f)
-            }
+            queueEntry.getTotalRequiredResources().copy()
+                .sub(queueEntry.collectedResources)
+                .forEach { requiredType, _ ->
+                    collected.add(requiredType, 1f)
+                }
         }
     }
 

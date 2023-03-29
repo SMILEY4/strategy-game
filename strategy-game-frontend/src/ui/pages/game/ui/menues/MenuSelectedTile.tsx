@@ -14,6 +14,7 @@ import {TilePosition} from "../../../../../core/models/tilePosition";
 import {AppConfig} from "../../../../../main";
 import {AdvButton} from "../../../../components/specific/AdvButton";
 import {Section} from "../../../../components/specific/Section";
+import {TilemapUtils} from "../../../../../core/tilemap/tilemapUtils";
 
 export function MenuSelectedTile(props: {menuLevel: number}): ReactElement {
     const selectedTilePos = useSelectedTilePosition();
@@ -104,7 +105,7 @@ export function MenuSelectedTile(props: {menuLevel: number}): ReactElement {
     }
 
     function getPosition(tile: Tile): string {
-        return tile.position.q + "," + tile.position.r;
+        return tile.position.q + ", " + tile.position.r + " (" + TilemapUtils.hexCoordinateS(tile.position) + ")   'q,r,(s)'";
     }
 
     function getCountry(tile: Tile): string {

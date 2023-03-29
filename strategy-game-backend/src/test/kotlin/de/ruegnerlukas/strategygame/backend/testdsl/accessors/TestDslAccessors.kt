@@ -1,9 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.accessors
 
 import de.ruegnerlukas.strategygame.backend.ports.models.City
+import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
+
+
+suspend fun GameTestContext.getGameExtended(): GameExtended {
+    return (getSnapshot() ?: TestUtils.getGameExtended(getDb(), getActiveGame()))
+}
 
 suspend fun GameTestContext.getPlayers(): List<Player> {
     return TestUtils.getPlayers(getDb(), getActiveGame())
