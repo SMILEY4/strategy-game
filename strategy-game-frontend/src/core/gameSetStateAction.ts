@@ -18,6 +18,11 @@ import {TileResourceType} from "./models/tileResourceType";
 import {GameRepository} from "./required/gameRepository";
 import {WorldRepository} from "./required/worldRepository";
 import {TileBorderCalculator} from "./tileBorderCalculator";
+import {
+    BuildingProductionQueueEntryDTO,
+    SettlerProductionQueueEntryDTO,
+} from "../external/api/models/productionQueueEntryDTO";
+import {BuildingProductionQueueEntry, SettlerProductionQueueEntry} from "./models/productionQueueEntry";
 import colorToRgbArray = Color.colorToRgbArray;
 
 /**
@@ -46,7 +51,7 @@ export class GameSetStateAction {
             this.getProvinces(game),
             this.getMarkers(game),
             this.getScouts(game),
-            this.getRoutes(game)
+            this.getRoutes(game),
         );
         this.gameRepository.clearCommands();
         this.gameRepository.setGameState(GameState.PLAYING);
@@ -66,7 +71,7 @@ export class GameSetStateAction {
             tileId: tile.dataTier0.tileId,
             position: {
                 q: tile.dataTier0.position.q,
-                r: tile.dataTier0.position.r
+                r: tile.dataTier0.position.r,
             },
             visibility: tile.dataTier0.visibility,
             dataTier1: tile.dataTier1 ? {
@@ -84,10 +89,10 @@ export class GameSetStateAction {
                     countryId: influence.countryId,
                     provinceId: influence.provinceId,
                     cityId: influence.cityId,
-                    amount: influence.amount
+                    amount: influence.amount,
                 })),
             } : null,
-            layers: []
+            layers: [],
         }));
     }
 
@@ -101,9 +106,9 @@ export class GameSetStateAction {
                             tile: {
                                 tileId: tile.dataTier0.tileId,
                                 q: tile.dataTier0.position.q,
-                                r: tile.dataTier0.position.r
+                                r: tile.dataTier0.position.r,
                             },
-                            countryId: (content as MsgMarkerTileContent).countryId
+                            countryId: (content as MsgMarkerTileContent).countryId,
                         });
                     }
                 });
@@ -123,10 +128,10 @@ export class GameSetStateAction {
                             tile: {
                                 tileId: tile.dataTier0.tileId,
                                 q: tile.dataTier0.position.q,
-                                r: tile.dataTier0.position.r
+                                r: tile.dataTier0.position.r,
                             },
                             turn: (content as MsgScoutTileContent).turn,
-                            countryId: (content as MsgScoutTileContent).countryId
+                            countryId: (content as MsgScoutTileContent).countryId,
                         });
                     }
                 });
@@ -144,7 +149,7 @@ export class GameSetStateAction {
             tile: {
                 tileId: city.tile.tileId,
                 q: city.tile.q,
-                r: city.tile.r
+                r: city.tile.r,
             },
             isProvinceCapital: city.isProvinceCapital,
             buildings: city.buildings.map(b => ({
@@ -152,11 +157,30 @@ export class GameSetStateAction {
                 tile: b.tile ? {
                     tileId: b.tile.tileId,
                     q: b.tile.q,
-                    r: b.tile.r
+                    r: b.tile.r,
                 } : null,
-                active: b.active
+                active: b.active,
             })),
-            productionQueue: city.productionQueue
+            productionQueue: city.productionQueue.map(entry => {
+                if (entry.type === "building") {
+                    const buildingEntry = entry as BuildingProductionQueueEntryDTO;
+                    return {
+                        type: "building",
+                        entryId: buildingEntry.entryId,
+                        progress: buildingEntry.progress,
+                        buildingType: BuildingType.fromString(buildingEntry.buildingType),
+                    } as BuildingProductionQueueEntry;
+                } else if (entry.type === "settler") {
+                    const settlerEntry = entry as SettlerProductionQueueEntryDTO;
+                    return {
+                        type: "settler",
+                        entryId: settlerEntry.entryId,
+                        progress: settlerEntry.progress,
+                    } as SettlerProductionQueueEntry;
+                } else {
+                    throw new Error("Unknown production queue entry type: " + entry.type);
+                }
+            }),
         }));
     }
 
@@ -184,17 +208,17 @@ export class GameSetStateAction {
             {
                 layerId: TileLayerMeta.ID_COUNTRY,
                 value: this.getTileCountryLayerValue(tile, game),
-                borderDirections: this.getTileCountryLayerBorders(tile, borderCalculator)
+                borderDirections: this.getTileCountryLayerBorders(tile, borderCalculator),
             },
             {
                 layerId: TileLayerMeta.ID_PROVINCE,
                 value: this.getTileProvinceLayerValue(tile, game),
-                borderDirections: this.getTileProvinceLayerBorders(tile, borderCalculator)
+                borderDirections: this.getTileProvinceLayerBorders(tile, borderCalculator),
             },
             {
                 layerId: TileLayerMeta.ID_CITY,
                 value: this.getTileCityLayerValue(tile, game),
-                borderDirections: this.getTileCityLayerBorders(tile, borderCalculator)
+                borderDirections: this.getTileCityLayerBorders(tile, borderCalculator),
             },
         ];
     }

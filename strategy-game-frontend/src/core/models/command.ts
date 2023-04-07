@@ -1,7 +1,11 @@
 import {BuildingType} from "./buildingType";
 
 export interface Command {
-    commandType: "place-marker" | "place-scout" | "create-city" | "production-queue-add-entry";
+    commandType: "place-marker"
+        | "place-scout"
+        | "create-city"
+        | "production-queue-add-entry.building"
+        | "production-queue-add-entry.settler";
     cost: {
         money: number,
         wood: number,
@@ -31,8 +35,13 @@ export interface CommandCreateCity extends Command {
     withNewProvince: boolean
 }
 
-export interface CommandProductionQueueAddEntry extends Command {
-    commandType: "production-queue-add-entry"
+export interface CommandProductionQueueAddBuildingEntry extends Command {
+    commandType: "production-queue-add-entry.building"
     cityId: string,
     buildingType: BuildingType
+}
+
+export interface CommandProductionQueueAddSettlerEntry extends Command {
+    commandType: "production-queue-add-entry.settler"
+    cityId: string,
 }

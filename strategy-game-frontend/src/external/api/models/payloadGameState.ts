@@ -2,6 +2,7 @@ import {Color} from "../../../core/models/Color";
 import {ResourceType} from "../../../core/models/resourceType";
 import {TileVisibility} from "../../../core/models/tileVisibility";
 import {MsgTileContent} from "./messagingTileContent";
+import {ProductionQueueEntryDTO} from "./productionQueueEntryDTO";
 
 export interface PayloadGameState {
     turn: number,
@@ -60,11 +61,7 @@ export interface PayloadGameState {
             } | null,
             active: boolean
         })[],
-        productionQueue: ({
-            entryId: string,
-            buildingType: string
-            progress: number
-        })[]
+        productionQueue: ProductionQueueEntryDTO[]
     })[],
     provinces: ({
         provinceId: string,

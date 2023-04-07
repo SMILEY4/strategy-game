@@ -4,7 +4,8 @@ import {
     CommandCreateCity,
     CommandPlaceMarker,
     CommandPlaceScout,
-    CommandProductionQueueAddEntry,
+    CommandProductionQueueAddBuildingEntry,
+    CommandProductionQueueAddSettlerEntry,
 } from "./models/command";
 import {GameState} from "./models/gameState";
 import {TilePosition} from "./models/tilePosition";
@@ -80,7 +81,7 @@ export class TurnAddCommandAction {
 
     addCreateBuilding(cityId: string, buildingType: BuildingType) {
         this.perform({
-            commandType: "production-queue-add-entry",
+            commandType: "production-queue-add-entry.building",
             cost: {
                 money: 0,
                 wood: this.gameConfigRepository.getConfig().buildingCostWood,
@@ -90,7 +91,21 @@ export class TurnAddCommandAction {
             },
             cityId: cityId,
             buildingType: buildingType,
-        } as CommandProductionQueueAddEntry);
+        } as CommandProductionQueueAddBuildingEntry);
+    }
+
+    addCreateSettler(cityId: string) {
+        this.perform({
+            commandType: "production-queue-add-entry.settler",
+            cost: {
+                money: 0,
+                wood: this.gameConfigRepository.getConfig().buildingCostWood,
+                food: 0,
+                stone: this.gameConfigRepository.getConfig().buildingCostStone,
+                metal: 0,
+            },
+            cityId: cityId,
+        } as CommandProductionQueueAddSettlerEntry);
     }
 
 }

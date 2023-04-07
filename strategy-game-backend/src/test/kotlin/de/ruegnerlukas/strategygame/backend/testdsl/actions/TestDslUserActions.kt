@@ -5,7 +5,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
@@ -185,12 +186,22 @@ class SubmitTurnUserActionDsl(val userId: String) {
         }
     }
 
-    suspend fun constructBuilding(block: suspend ProductionQueueAddEntryCommandDsl.() -> Unit) {
-        ProductionQueueAddEntryCommandDsl().coApply(block).also {
+    suspend fun constructBuilding(block: suspend ProductionQueueAddBuildingEntryCommandDsl.() -> Unit) {
+        ProductionQueueAddBuildingEntryCommandDsl().coApply(block).also {
             commands.add(
-                ProductionQueueAddEntryCommandData(
+                ProductionQueueAddBuildingEntryCommandData(
                     cityId = it.cityId!!,
                     buildingType = it.building!!,
+                )
+            )
+        }
+    }
+
+    suspend fun constructSettler(block: suspend ProductionQueueAddSettlerEntryCommandDsl.() -> Unit) {
+        ProductionQueueAddSettlerEntryCommandDsl().coApply(block).also {
+            commands.add(
+                ProductionQueueAddSettlerEntryCommandData(
+                    cityId = it.cityId!!,
                 )
             )
         }
@@ -231,9 +242,13 @@ class PlaceScoutCommandDsl {
     var r: Int? = null
 }
 
-class ProductionQueueAddEntryCommandDsl {
+class ProductionQueueAddBuildingEntryCommandDsl {
     var cityId: String? = null
     var building: BuildingType? = null
+}
+
+class ProductionQueueAddSettlerEntryCommandDsl {
+    var cityId: String? = null
 }
 
 class ProductionQueueRemoveEntryCommandDsl {

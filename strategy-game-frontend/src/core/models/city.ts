@@ -1,5 +1,6 @@
 import {BuildingType} from "./buildingType";
 import {TileRef} from "./tileRef";
+import {ProductionQueueEntry} from "./productionQueueEntry";
 
 export interface City {
     cityId: string,
@@ -12,9 +13,5 @@ export interface City {
         tile: TileRef | null,
         active: boolean
     })[],
-    productionQueue: ({
-        entryId: string,
-        buildingType: string,
-        progress: number
-    })[]
+    productionQueue: ProductionQueueEntry[]
 }

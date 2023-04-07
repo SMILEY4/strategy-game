@@ -11,7 +11,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 
 class CommandEntity<T : CommandEntityData>(
@@ -46,9 +47,12 @@ class CommandEntity<T : CommandEntityData>(
                     q = serviceModel.q,
                     r = serviceModel.r,
                 )
-                is ProductionQueueAddEntryCommandData -> ProductionQueueAddEntryCommandEntityData(
+                is ProductionQueueAddBuildingEntryCommandData -> ProductionQueueAddBuildingEntryCommandEntityData(
                     cityId = serviceModel.cityId,
                     buildingType = serviceModel.buildingType
+                )
+                is ProductionQueueAddSettlerEntryCommandData -> ProductionQueueAddSettlerEntryCommandEntityData(
+                    cityId = serviceModel.cityId,
                 )
                 is ProductionQueueRemoveEntryCommandData -> ProductionQueueRemoveEntryCommandEntityData(
                     cityId = serviceModel.cityId,
@@ -82,9 +86,12 @@ class CommandEntity<T : CommandEntityData>(
                 q = entity.q,
                 r = entity.r,
             )
-            is ProductionQueueAddEntryCommandEntityData -> ProductionQueueAddEntryCommandData(
+            is ProductionQueueAddBuildingEntryCommandEntityData -> ProductionQueueAddBuildingEntryCommandData(
                 cityId = entity.cityId,
                 buildingType = entity.buildingType
+            )
+            is ProductionQueueAddSettlerEntryCommandEntityData -> ProductionQueueAddSettlerEntryCommandData(
+                cityId = entity.cityId,
             )
             is ProductionQueueRemoveEntryCommandEntityData -> ProductionQueueRemoveEntryCommandData(
                 cityId = entity.cityId,
@@ -105,7 +112,8 @@ class CommandEntity<T : CommandEntityData>(
     JsonSubTypes.Type(value = CreateCityCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceMarkerCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceScoutCommandEntityData::class),
-    JsonSubTypes.Type(value = ProductionQueueAddEntryCommandEntityData::class),
+    JsonSubTypes.Type(value = ProductionQueueAddBuildingEntryCommandEntityData::class),
+    JsonSubTypes.Type(value = ProductionQueueAddSettlerEntryCommandEntityData::class),
     JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandEntityData::class),
 )
 sealed class CommandEntityData(
@@ -148,13 +156,23 @@ class PlaceScoutCommandEntityData(
 }
 
 
-@JsonTypeName(ProductionQueueAddEntryCommandEntityData.TYPE)
-class ProductionQueueAddEntryCommandEntityData(
+@JsonTypeName(ProductionQueueAddBuildingEntryCommandEntityData.TYPE)
+class ProductionQueueAddBuildingEntryCommandEntityData(
     val cityId: String,
     val buildingType: BuildingType
 ) : CommandEntityData(TYPE) {
     companion object {
-        internal const val TYPE = "production-queue-add-entry"
+        internal const val TYPE = "production-queue-add-entry.building"
+    }
+}
+
+
+@JsonTypeName(ProductionQueueAddSettlerEntryCommandEntityData.TYPE)
+class ProductionQueueAddSettlerEntryCommandEntityData(
+    val cityId: String,
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue-add-entry.settler"
     }
 }
 
