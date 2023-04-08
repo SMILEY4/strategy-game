@@ -6,13 +6,6 @@ export interface Command {
         | "create-city"
         | "production-queue-add-entry.building"
         | "production-queue-add-entry.settler";
-    cost: {
-        money: number,
-        wood: number,
-        food: number,
-        stone: number,
-        metal: number
-    };
 }
 
 export interface CommandPlaceMarker extends Command {
