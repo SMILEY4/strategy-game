@@ -97,10 +97,10 @@ export function MenuCity(props: { cityId: string, menuLevel: number }): ReactEle
                                 return (
                                     <li className={active ? "" : "li-disabled"}>
                                         <b>{displayName}</b>
-                                        {consumes.map(e => <ResourceLabel type={e.type} value={-e.amount}
-                                                                          showPlusSign={true}/>)}
-                                        {produces.map(e => <ResourceLabel type={e.type} value={+e.amount}
-                                                                          showPlusSign={true}/>)}
+                                        {consumes.map(e =>
+                                            <ResourceLabel type={e.type} value={-e.amount} showPlusSign={true}/>)}
+                                        {produces.map(e =>
+                                            <ResourceLabel type={e.type} value={+e.amount} showPlusSign={true}/>)}
                                     </li>
                                 );
                             })}

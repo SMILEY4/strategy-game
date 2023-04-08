@@ -35,13 +35,6 @@ export class TurnAddCommandAction {
     addPlaceMarker(tilePos: TilePosition) {
         this.perform({
             commandType: "place-marker",
-            cost: {
-                money: 0,
-                wood: 0,
-                food: 0,
-                stone: 0,
-                metal: 0,
-            },
             q: tilePos.q,
             r: tilePos.r,
         } as CommandPlaceMarker);
@@ -50,13 +43,6 @@ export class TurnAddCommandAction {
     addPlaceScout(tilePos: TilePosition) {
         this.perform({
             commandType: "place-scout",
-            cost: {
-                money: 0,
-                wood: 0,
-                food: 0,
-                stone: 0,
-                metal: 0,
-            },
             q: tilePos.q,
             r: tilePos.r,
         } as CommandPlaceScout);
@@ -65,13 +51,6 @@ export class TurnAddCommandAction {
     addCreateCity(tilePos: TilePosition, name: string, withNewProvince: boolean) {
         this.perform({
             commandType: "create-city",
-            cost: {
-                money: this.gameConfigRepository.getConfig().cityCostMoney,
-                wood: 0,
-                food: 0,
-                stone: 0,
-                metal: 0,
-            },
             q: tilePos.q,
             r: tilePos.r,
             name: name,
@@ -82,13 +61,6 @@ export class TurnAddCommandAction {
     addCreateBuilding(cityId: string, buildingType: BuildingType) {
         this.perform({
             commandType: "production-queue-add-entry.building",
-            cost: {
-                money: 0,
-                wood: this.gameConfigRepository.getConfig().buildingCostWood,
-                food: 0,
-                stone: this.gameConfigRepository.getConfig().buildingCostStone,
-                metal: 0,
-            },
             cityId: cityId,
             buildingType: buildingType,
         } as CommandProductionQueueAddBuildingEntry);
@@ -97,13 +69,6 @@ export class TurnAddCommandAction {
     addCreateSettler(cityId: string) {
         this.perform({
             commandType: "production-queue-add-entry.settler",
-            cost: {
-                money: 0,
-                wood: this.gameConfigRepository.getConfig().buildingCostWood,
-                food: 0,
-                stone: this.gameConfigRepository.getConfig().buildingCostStone,
-                metal: 0,
-            },
             cityId: cityId,
         } as CommandProductionQueueAddSettlerEntry);
     }
