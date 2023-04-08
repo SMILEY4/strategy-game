@@ -39,7 +39,10 @@ export interface PayloadGameState {
             countryId: string,
             userId: string,
             color: Color
-        }
+        },
+        dataTier3: {
+            availableSettlers: number
+        } | null
     })[],
     cities: ({
         cityId: string,

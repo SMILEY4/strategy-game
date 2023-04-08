@@ -63,6 +63,7 @@ export class GameSetStateAction {
             countryId: country.dataTier1.countryId,
             userId: country.dataTier1.userId,
             color: country.dataTier1.color,
+            availableSettlers: country.dataTier3 ? country.dataTier3.availableSettlers : null
         }));
     }
 

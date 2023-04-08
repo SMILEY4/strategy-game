@@ -18,6 +18,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier1
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier3
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProductionQueueBuildingEntryDTO
@@ -57,7 +58,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
             val countryDTOs = knownCountryIds
                 .map { countryId -> game.countries.first { it.countryId == countryId } }
-                .map { country -> buildCountry(country) }
+                .map { country -> buildCountry(country, playerCountry.countryId) }
 
             val cityDTOs = game.cities
                 .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
@@ -201,14 +202,22 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
         return influences
     }
 
-    private fun buildCountry(country: Country): CountryDTO {
+    private fun buildCountry(country: Country, playerCountryId: String): CountryDTO {
         val dataTier1 = CountryDTODataTier1(
             countryId = country.countryId,
             userId = country.userId,
             color = country.color
         )
+        val dataTier3 = if (playerCountryId == country.countryId) {
+            CountryDTODataTier3(
+                availableSettlers = country.availableSettlers
+            )
+        } else {
+            null
+        }
         return CountryDTO(
             dataTier1 = dataTier1,
+            dataTier3 = dataTier3
         )
     }
 

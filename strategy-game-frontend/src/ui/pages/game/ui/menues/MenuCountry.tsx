@@ -5,9 +5,10 @@ import {useCountryPlayer} from "../../../../../core/hooks/useCountryPlayer";
 import {useCountryProvinces} from "../../../../../core/hooks/useCountryProvinces";
 import {AppConfig} from "../../../../../main";
 import {Section} from "../../../../components/specific/Section";
+import {useAvailableSettlers} from "../../../../../core/hooks/useAvailableSettlers";
 
 export function CategoryCountry(): ReactElement {
-    const playerCountry = useCountryPlayer()
+    const playerCountry = useCountryPlayer();
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     return (
         <div onClick={() => uiService.openMenuCountry(playerCountry.countryId, 0)}>
@@ -20,6 +21,7 @@ export function MenuCountry(props: { countryId: string, menuLevel: number }): Re
 
     const country = useCountryById(props.countryId);
     const provinces = useCountryProvinces(props.countryId);
+    const availableSettlers = useAvailableSettlers(country ? country.countryId : "");
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
 
     return (
@@ -34,17 +36,22 @@ export function MenuCountry(props: { countryId: string, menuLevel: number }): Re
                     <Section title={"Provinces"}>
                         {provinces.map(province => {
                             return (
-                                <p className={"clickable"} onClick={() => openProvince(province.provinceId)}>{province.provinceId}</p>
+                                <p className={"clickable"} onClick={() => openProvince(province.provinceId)}>
+                                    {province.provinceId}
+                                </p>
                             );
                         })}
                     </Section>
+                    {country.availableSettlers && (
+                        <p>{"Available Settlers: " + availableSettlers}</p>
+                    )}
                 </>
             )}
         </div>
     );
 
     function openProvince(provinceId: string) {
-        uiService.openMenuProvince(provinceId, props.menuLevel+1);
+        uiService.openMenuProvince(provinceId, props.menuLevel + 1);
     }
 
 

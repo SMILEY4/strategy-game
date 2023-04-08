@@ -1,5 +1,11 @@
 import {GameStore} from "../../external/state/game/gameStore";
-import {Command, CommandCreateCity, CommandPlaceMarker, CommandProductionQueueAddEntry} from "../models/command";
+import {
+    Command,
+    CommandCreateCity,
+    CommandPlaceMarker,
+    CommandProductionQueueAddBuildingEntry,
+    CommandProductionQueueAddSettlerEntry,
+} from "../models/command";
 import {TilePosition} from "../models/tilePosition";
 import {useCities} from "./useCities";
 
@@ -15,12 +21,18 @@ export function useCommandsAt(pos: TilePosition | null): Command[] {
                 const cmdCity = cmd as CommandCreateCity;
                 return cmdCity.q === pos.q && cmdCity.r === pos.r;
             }
-            if (cmd.commandType === "production-queue-add-entry") {
-                const cmdBuilding = cmd as CommandProductionQueueAddEntry;
+            if (cmd.commandType === "production-queue-add-entry.building") {
+                const cmdBuilding = cmd as CommandProductionQueueAddBuildingEntry;
                 const city = cities.find(c => c.cityId === cmdBuilding.cityId);
                 return city?.tile?.q === pos.q && city?.tile?.r === pos.r;
             }
+            if (cmd.commandType === "production-queue-add-entry.settler") {
+                const cmdSettler = cmd as CommandProductionQueueAddSettlerEntry;
+                const city = cities.find(c => c.cityId === cmdSettler.cityId);
+                return city?.tile?.q === pos.q && city?.tile?.r === pos.r;
+            }
+        } else {
+            return false;
         }
-        return false;
     }));
 }

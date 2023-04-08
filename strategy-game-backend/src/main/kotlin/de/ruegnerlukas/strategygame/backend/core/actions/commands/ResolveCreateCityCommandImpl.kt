@@ -84,6 +84,7 @@ private object CreateCityValidations {
             validName(name)
             validTargetTileType(targetTile)
             validTileSpace(targetTile, game.cities)
+            validAvailableSettlers(country)
             if (withNewProvince) {
                 validTileOwnerWithNewProvince(country, targetTile)
                 validTileInfluence(gameConfig, country, targetTile)
@@ -140,6 +141,12 @@ private object CreateCityValidations {
                 return@validate true
             }
             return@validate false
+        }
+    }
+
+    fun ValidationContext.validAvailableSettlers(country: Country) {
+        validate("CITY.AVAILABLE_SETTLERS") {
+            country.availableSettlers > 0
         }
     }
 

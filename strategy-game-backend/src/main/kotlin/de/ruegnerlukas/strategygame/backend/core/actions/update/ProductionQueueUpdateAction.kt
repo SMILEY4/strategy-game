@@ -47,7 +47,9 @@ class ProductionQueueUpdateAction(private val turnUpdateAction: TurnUpdateAction
     }
 
     private fun apply(game: GameExtended, city: City, entry: SettlerProductionQueueEntry) {
-        log().info("ADDING SETTLER TO: game=${game.game.gameId} city=${city.cityId} ") // TODO
+        game.countries.find { it.countryId == city.countryId }?.also { country ->
+            country.availableSettlers++
+        }
     }
 
     private fun addMagicResources(queueEntry: ProductionQueueEntry) {
