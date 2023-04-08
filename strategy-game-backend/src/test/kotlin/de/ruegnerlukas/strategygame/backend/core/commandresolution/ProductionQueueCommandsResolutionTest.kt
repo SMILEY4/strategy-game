@@ -2,16 +2,16 @@ package de.ruegnerlukas.strategygame.backend.core.commandresolution
 
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCityId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
+import de.ruegnerlukas.strategygame.backend.testdsl.actions.submitTurn
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectProductionQueue
 import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
-import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCityId
-import de.ruegnerlukas.strategygame.backend.testdsl.actions.submitTurn
 import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueCommandsResolutionTest : StringSpec({
 
-    "add buildings to production queue" {
+    "add entries to production queue" {
         gameTest {
             createGame {
                 worldSettings = WorldSettings.landOnly()
@@ -33,10 +33,14 @@ class ProductionQueueCommandsResolutionTest : StringSpec({
                     cityId = getCityId("Test City")
                     building = BuildingType.MARKET
                 }
+                constructSettler {
+                    cityId = getCityId("Test City")
+                }
             }
             expectProductionQueue(getCityId("Test City")) {
-                entry { building = BuildingType.FARM }
-                entry { building = BuildingType.MARKET }
+                entry("building.${BuildingType.FARM}")
+                entry("building.${BuildingType.MARKET}")
+                entry("settler")
             }
             submitTurn("user") {
                 constructBuilding {
@@ -45,11 +49,11 @@ class ProductionQueueCommandsResolutionTest : StringSpec({
                 }
             }
             expectProductionQueue(getCityId("Test City")) {
-                entry { building = BuildingType.FARM }
-                entry { building = BuildingType.MARKET }
-                entry { building = BuildingType.QUARRY }
+                entry("building.${BuildingType.FARM}")
+                entry("building.${BuildingType.MARKET}")
+                entry("settler")
+                entry("building.${BuildingType.QUARRY}")
             }
         }
     }
-
 })

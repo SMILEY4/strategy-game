@@ -4,4 +4,5 @@ export interface Country {
     countryId: string,
     userId: string,
     color: Color,
+    availableSettlers: number | null
 }

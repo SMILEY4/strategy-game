@@ -28,10 +28,18 @@ class PlaceScoutCommandData(
     val r: Int
 ) : CommandData()
 
-class ProductionQueueAddEntryCommandData(
+sealed class ProductionQueueAddEntryCommandData(
     val cityId: String,
-    val buildingType: BuildingType
 ) : CommandData()
+
+class ProductionQueueAddBuildingEntryCommandData(
+    cityId: String,
+    val buildingType: BuildingType
+) : ProductionQueueAddEntryCommandData(cityId)
+
+class ProductionQueueAddSettlerEntryCommandData(
+    cityId: String,
+) : ProductionQueueAddEntryCommandData(cityId)
 
 class ProductionQueueRemoveEntryCommandData(
     val cityId: String,

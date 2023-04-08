@@ -9,6 +9,7 @@ class CountryEntity(
     val gameId: String,
     val userId: String,
     val color: RGBColor,
+    val availableSettlers: Int,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -18,6 +19,7 @@ class CountryEntity(
             gameId = gameId,
             userId = serviceModel.userId,
             color = serviceModel.color,
+            availableSettlers = serviceModel.availableSettlers
         )
     }
 
@@ -25,6 +27,7 @@ class CountryEntity(
         countryId = this.getKeyOrThrow(),
         userId = this.userId,
         color = this.color,
+        availableSettlers = this.availableSettlers
     )
 
 }

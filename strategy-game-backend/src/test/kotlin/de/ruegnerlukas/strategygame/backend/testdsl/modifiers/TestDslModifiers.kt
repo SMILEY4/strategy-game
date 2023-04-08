@@ -7,9 +7,9 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.entities.Provin
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.RouteEntity
 import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
+import de.ruegnerlukas.strategygame.backend.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
@@ -105,7 +105,7 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
             )
         }.toMutableList(),
         productionQueue = dslConfig.queue.map { buildingType ->
-            ProductionQueueEntry(
+            BuildingProductionQueueEntry(
                 entryId = UUID.gen(),
                 buildingType = buildingType,
                 collectedResources = ResourceCollection.basic()
@@ -144,7 +144,7 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
             )
         }.toMutableList(),
         productionQueue = dslConfig.queue.map { buildingType ->
-            ProductionQueueEntry(
+            BuildingProductionQueueEntry(
                 entryId = UUID.gen(),
                 buildingType = buildingType,
                 collectedResources = ResourceCollection.basic()
@@ -194,3 +194,8 @@ suspend fun GameTestContext.addRoute(nameCityA: String, nameCityB: String) {
     }
 }
 
+suspend fun GameTestContext.addSettlers(countryId: String, amount: Int) {
+    val country = TestUtils.getCountry(getDb(), countryId)
+    country.availableSettlers += amount
+    getDb().updateDocument(Collections.COUNTRIES, countryId, country)
+}

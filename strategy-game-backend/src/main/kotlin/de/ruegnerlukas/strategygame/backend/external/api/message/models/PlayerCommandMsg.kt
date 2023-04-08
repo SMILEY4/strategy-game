@@ -8,7 +8,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 
 @JsonTypeInfo(
@@ -20,7 +21,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEn
     JsonSubTypes.Type(value = PlaceMarkerCommandMsg::class),
     JsonSubTypes.Type(value = CreateCityCommandMsg::class),
     JsonSubTypes.Type(value = PlaceScoutCommandMsg::class),
-    JsonSubTypes.Type(value = ProductionQueueAddEntryCommandMsg::class),
+    JsonSubTypes.Type(value = ProductionQueueAddBuildingEntryCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandMsg::class),
 )
 sealed class PlayerCommandMsg(val type: String) {
@@ -41,9 +42,12 @@ sealed class PlayerCommandMsg(val type: String) {
                 q = this.q,
                 r = this.r
             )
-            is ProductionQueueAddEntryCommandMsg -> ProductionQueueAddEntryCommandData(
+            is ProductionQueueAddBuildingEntryCommandMsg -> ProductionQueueAddBuildingEntryCommandData(
                 cityId = this.cityId,
                 buildingType = this.buildingType
+            )
+            is ProductionQueueAddSettlerEntryCommandMsg -> ProductionQueueAddSettlerEntryCommandData(
+                cityId = this.cityId
             )
             is ProductionQueueRemoveEntryCommandMsg -> ProductionQueueRemoveEntryCommandData(
                 cityId = this.cityId,
@@ -90,13 +94,23 @@ class PlaceScoutCommandMsg(
 }
 
 
-@JsonTypeName(ProductionQueueAddEntryCommandMsg.TYPE)
-class ProductionQueueAddEntryCommandMsg(
+@JsonTypeName(ProductionQueueAddBuildingEntryCommandMsg.TYPE)
+class ProductionQueueAddBuildingEntryCommandMsg(
     val cityId: String,
     val buildingType: BuildingType
 ) : PlayerCommandMsg(TYPE) {
     companion object {
-        internal const val TYPE = "production-queue-add-entry"
+        internal const val TYPE = "production-queue-add-entry.building"
+    }
+}
+
+
+@JsonTypeName(ProductionQueueAddSettlerEntryCommandMsg.TYPE)
+class ProductionQueueAddSettlerEntryCommandMsg(
+    val cityId: String,
+) : PlayerCommandMsg(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue-add-entry.settler"
     }
 }
 

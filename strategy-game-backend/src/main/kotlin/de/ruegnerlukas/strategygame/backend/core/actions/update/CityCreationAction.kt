@@ -11,11 +11,12 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
+import kotlin.math.max
 
 /**
  * Creates the new city at the given location and creates new province (if required)
  */
-class CityCreationAction(private val reservationInsert: ReservationInsert): Logging {
+class CityCreationAction(private val reservationInsert: ReservationInsert) : Logging {
 
     companion object {
         data class CityCreationResult(
@@ -29,6 +30,7 @@ class CityCreationAction(private val reservationInsert: ReservationInsert): Logg
         val country = getCountry(game, command)
         val targetTile = getTargetTile(game, command)
         log().debug("Create city at ${targetTile.position} for country ${country.countryId}")
+        consumeSettler(country)
         val (city, province) = createCity(game, country, targetTile, command.data)
         return CityCreationResult(country, province, city)
     }
@@ -43,6 +45,10 @@ class CityCreationAction(private val reservationInsert: ReservationInsert): Logg
             val province = addToExistingProvince(game, city, tile)
             city to province
         }
+    }
+
+    private fun consumeSettler(country: Country) {
+        country.availableSettlers = max(0, country.availableSettlers - 1)
     }
 
     private fun shouldCreateNewProvince(withNewProvince: Boolean, targetTile: Tile): Boolean {

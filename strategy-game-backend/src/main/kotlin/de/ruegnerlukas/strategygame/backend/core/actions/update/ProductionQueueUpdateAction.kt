@@ -1,9 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.update
 
 import de.ruegnerlukas.strategygame.backend.core.actions.update.BuildingCreationAction.Companion.BuildingCreationData
+import de.ruegnerlukas.strategygame.backend.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.ports.models.SettlerProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 
@@ -23,17 +25,30 @@ class ProductionQueueUpdateAction(private val turnUpdateAction: TurnUpdateAction
 
     private suspend fun update(game: GameExtended, city: City, queueEntry: ProductionQueueEntry) {
         if (isCompleted(queueEntry)) {
-            log().debug("Complete production-queue-entry ${queueEntry.entryId} (${queueEntry.buildingType})")
+            log().debug("Complete production-queue-entry ${queueEntry.entryId}")
             city.productionQueue.remove(queueEntry)
-            turnUpdateAction.eventCreateBuilding(
-                game,
-                BuildingCreationData(
-                    city = city,
-                    type = queueEntry.buildingType
-                )
-            )
+            when (queueEntry) {
+                is BuildingProductionQueueEntry -> apply(game, city, queueEntry)
+                is SettlerProductionQueueEntry -> apply(game, city, queueEntry)
+            }
         } else {
             addMagicResources(queueEntry)
+        }
+    }
+
+    private suspend fun apply(game: GameExtended, city: City, entry: BuildingProductionQueueEntry) {
+        turnUpdateAction.eventCreateBuilding(
+            game,
+            BuildingCreationData(
+                city = city,
+                type = entry.buildingType
+            )
+        )
+    }
+
+    private fun apply(game: GameExtended, city: City, entry: SettlerProductionQueueEntry) {
+        game.countries.find { it.countryId == city.countryId }?.also { country ->
+            country.availableSettlers++
         }
     }
 

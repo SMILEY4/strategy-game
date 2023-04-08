@@ -4,8 +4,6 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 
@@ -31,13 +29,7 @@ class CityEntity(
             color = serviceModel.color,
             isProvinceCapital = serviceModel.isProvinceCapital,
             buildings = serviceModel.buildings,
-            productionQueue = serviceModel.productionQueue.map {
-                ProductionQueueEntryEntity(
-                    entryId = it.entryId,
-                    buildingType = it.buildingType,
-                    collectedResources = it.collectedResources.toStacks()
-                )
-            }
+            productionQueue = serviceModel.productionQueue.map { ProductionQueueEntryEntity.of(it) }
         )
     }
 
@@ -49,13 +41,7 @@ class CityEntity(
         color = this.color,
         isProvinceCapital = this.isProvinceCapital,
         buildings = this.buildings.toMutableList(),
-        productionQueue = this.productionQueue.map {
-            ProductionQueueEntry(
-                entryId = it.entryId,
-                buildingType = it.buildingType,
-                collectedResources = ResourceCollection.basic(it.collectedResources)
-            )
-        }.toMutableList()
+        productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList()
     )
 
 }

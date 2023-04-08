@@ -4,7 +4,8 @@ import {
     CommandCreateCity,
     CommandPlaceMarker,
     CommandPlaceScout,
-    CommandProductionQueueAddEntry,
+    CommandProductionQueueAddBuildingEntry,
+    CommandProductionQueueAddSettlerEntry,
 } from "../../../core/models/command";
 import {when, whenCase} from "../../../shared/when";
 
@@ -13,7 +14,11 @@ export interface PayloadSubmitTurn {
 }
 
 export interface SubmitCommand {
-    type: "place-marker" | "place-scout" | "create-city" | "production-queue-add-entry";
+    type: "place-marker"
+        | "place-scout"
+        | "create-city"
+        | "production-queue-add-entry.building"
+        | "production-queue-add-entry.settler";
 }
 
 export interface SubmitCommandPlaceMarker extends SubmitCommand {
@@ -36,10 +41,15 @@ export interface SubmitCommandCreateCity extends SubmitCommand {
     withNewProvince: boolean
 }
 
-export interface SubmitCommandProductionQueueAddEntry extends SubmitCommand {
-    type: "production-queue-add-entry"
+export interface SubmitCommandProductionQueueAddBuildingEntry extends SubmitCommand {
+    type: "production-queue-add-entry.building"
     cityId: string,
     buildingType: BuildingType
+}
+
+export interface SubmitCommandProductionQueueAddSettlerEntry extends SubmitCommand {
+    type: "production-queue-add-entry.settler"
+    cityId: string,
 }
 
 
@@ -79,12 +89,19 @@ export namespace PayloadSubmitTurn {
                     withNewProvince: cmdCreateCity.withNewProvince,
                 };
             }),
-            whenCase<string, SubmitCommandProductionQueueAddEntry>("production-queue-add-entry", () => {
-                const cmdCreateBuilding = cmd as CommandProductionQueueAddEntry;
+            whenCase<string, SubmitCommandProductionQueueAddBuildingEntry>("production-queue-add-entry.building", () => {
+                const cmdCreateBuilding = cmd as CommandProductionQueueAddBuildingEntry;
                 return {
-                    type: "production-queue-add-entry",
+                    type: "production-queue-add-entry.building",
                     cityId: cmdCreateBuilding.cityId,
                     buildingType: cmdCreateBuilding.buildingType,
+                };
+            }),
+            whenCase<string, SubmitCommandProductionQueueAddSettlerEntry>("production-queue-add-entry.settler", () => {
+                const cmdCreateBuilding = cmd as CommandProductionQueueAddSettlerEntry;
+                return {
+                    type: "production-queue-add-entry.settler",
+                    cityId: cmdCreateBuilding.cityId,
                 };
             }),
         );

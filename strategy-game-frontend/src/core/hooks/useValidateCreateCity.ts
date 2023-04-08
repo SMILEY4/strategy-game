@@ -5,6 +5,7 @@ import {useCities} from "./useCities";
 import {useCountryPlayer} from "./useCountryPlayer";
 import {useGameConfig} from "./useGameConfig";
 import {useTileAt} from "./useTileAt";
+import {useAvailableSettlers} from "./useAvailableSettlers";
 
 export function useValidateCreateCity(pos: TilePosition | null): boolean {
 
@@ -12,9 +13,13 @@ export function useValidateCreateCity(pos: TilePosition | null): boolean {
     const country = useCountryPlayer();
     const cities = useCities();
     const tile = useTileAt(pos);
+    const availableSettlers = useAvailableSettlers(country.countryId);
 
     if (tile) {
         return validations(ctx => {
+            ctx.validate("CITY.AVAILABLE_SETTLER", () => {
+                return availableSettlers > 0;
+            });
             ctx.validate("CITY.TARGET_TILE_TYPE", () => {
                 return tile.dataTier1?.terrainType === TerrainType.LAND;
             });

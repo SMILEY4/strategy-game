@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCityId
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getProvinceId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.submitTurn
+import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addSettlers
 import io.kotest.core.spec.style.StringSpec
 
 class CreateTownCommandResolutionTest : StringSpec({
@@ -19,6 +20,7 @@ class CreateTownCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
+            addSettlers(getCountryId("user"), 10)
             submitTurn("user") {
                 createCity {
                     q = 0
@@ -69,6 +71,7 @@ class CreateTownCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
+            addSettlers(getCountryId("user"), 10)
             submitTurn("user") {
                 createCity {
                     q = 0
@@ -104,6 +107,7 @@ class CreateTownCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
+            addSettlers(getCountryId("user"), 10)
             submitTurn("user") {
                 createCity {
                     q = 0
@@ -139,6 +143,7 @@ class CreateTownCommandResolutionTest : StringSpec({
                 worldSettings = WorldSettings.landOnly()
                 user("user")
             }
+            addSettlers(getCountryId("user"), 10)
             submitTurn("user") {
                 createCity {
                     q = 0

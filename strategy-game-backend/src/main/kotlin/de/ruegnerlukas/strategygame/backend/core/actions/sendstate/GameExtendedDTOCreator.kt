@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.actions.sendstate
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
@@ -10,15 +11,19 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.ports.models.SettlerProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.BuildingDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier1
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.CountryDTODataTier3
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.MarkerTileDTOContent
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProductionQueueBuildingEntryDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProductionQueueEntryDTO
+import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProductionQueueSettlerEntryDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDTO
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.ProvinceDataTier3
 import de.ruegnerlukas.strategygame.backend.ports.models.dtos.RouteDTO
@@ -33,6 +38,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.dtos.TileDTOVisibility
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.shared.positionsCircle
+
 
 class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
@@ -52,7 +58,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
             val countryDTOs = knownCountryIds
                 .map { countryId -> game.countries.first { it.countryId == countryId } }
-                .map { country -> buildCountry(country) }
+                .map { country -> buildCountry(country, playerCountry.countryId) }
 
             val cityDTOs = game.cities
                 .filter { city -> tileDTOs.first { it.dataTier0.tileId == city.tile.tileId }.dataTier0.visibility != TileDTOVisibility.UNKNOWN }
@@ -196,14 +202,22 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
         return influences
     }
 
-    private fun buildCountry(country: Country): CountryDTO {
+    private fun buildCountry(country: Country, playerCountryId: String): CountryDTO {
         val dataTier1 = CountryDTODataTier1(
             countryId = country.countryId,
             userId = country.userId,
             color = country.color
         )
+        val dataTier3 = if (playerCountryId == country.countryId) {
+            CountryDTODataTier3(
+                availableSettlers = country.availableSettlers
+            )
+        } else {
+            null
+        }
         return CountryDTO(
             dataTier1 = dataTier1,
+            dataTier3 = dataTier3
         )
     }
 
@@ -216,14 +230,22 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             color = city.color,
             isProvinceCapital = city.isProvinceCapital,
             buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile, it.active) },
-            productionQueue = city.productionQueue.map {
-                ProductionQueueEntryDTO(
-                    entryId = it.entryId,
-                    buildingType = it.buildingType,
-                    progress = calculateProductionQueueEntryProgress(it)
-                )
-            }
+            productionQueue = city.productionQueue.map { buildProductionQueueEntry(it) }
         )
+    }
+
+    private fun buildProductionQueueEntry(entry: ProductionQueueEntry): ProductionQueueEntryDTO {
+        return when (entry) {
+            is BuildingProductionQueueEntry -> ProductionQueueBuildingEntryDTO(
+                entryId = entry.entryId,
+                progress = calculateProductionQueueEntryProgress(entry),
+                buildingType = entry.buildingType
+            )
+            is SettlerProductionQueueEntry -> ProductionQueueSettlerEntryDTO(
+                entryId = entry.entryId,
+                progress = calculateProductionQueueEntryProgress(entry),
+            )
+        }
     }
 
     private fun calculateProductionQueueEntryProgress(entry: ProductionQueueEntry): Float {
