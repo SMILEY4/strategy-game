@@ -98,6 +98,9 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-assertions-ktor:$versionKotestExtensionKtor")
     testImplementation("io.kotest.extensions:kotest-extensions-testcontainers:$versionKotestExtensionTestContainers")
 
+    val versionMockk: String by project
+    testImplementation("io.mockk:mockk:${versionMockk}")
+
     val versionKotlinTest: String by project
     testImplementation("org.jetbrains.kotlin:kotlin-test:$versionKotlinTest")
 

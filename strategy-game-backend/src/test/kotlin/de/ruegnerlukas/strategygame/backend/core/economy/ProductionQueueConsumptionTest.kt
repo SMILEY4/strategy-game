@@ -48,8 +48,7 @@ class ProductionQueueConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProductionQueue(getCityId("Test City")) {
-                entry {
-                    building = BuildingType.ARMOR_SMITH
+                entry("building.${BuildingType.ARMOR_SMITH}") {
                     collected = listOf(
                         ResourceType.WOOD.amount(0f + 1f),
                         ResourceType.STONE.amount(0f + 1f),
@@ -59,8 +58,7 @@ class ProductionQueueConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProductionQueue(getCityId("Test City")) {
-                entry {
-                    building = BuildingType.ARMOR_SMITH
+                entry("building.${BuildingType.ARMOR_SMITH}") {
                     collected = listOf(
                         ResourceType.WOOD.amount(3f + 2f),
                         ResourceType.STONE.amount(3f + 2f),
@@ -70,8 +68,7 @@ class ProductionQueueConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProductionQueue(getCityId("Test City")) {
-                entry {
-                    building = BuildingType.ARMOR_SMITH
+                entry("building.${BuildingType.ARMOR_SMITH}") {
                     collected = listOf(
                         ResourceType.WOOD.amount(6f + 3f),
                         ResourceType.STONE.amount(5f),

@@ -11,7 +11,7 @@ import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueCommandsResolutionTest : StringSpec({
 
-    "add buildings to production queue" {
+    "add entries to production queue" {
         gameTest {
             createGame {
                 worldSettings = WorldSettings.landOnly()
@@ -56,5 +56,4 @@ class ProductionQueueCommandsResolutionTest : StringSpec({
             }
         }
     }
-
 })
