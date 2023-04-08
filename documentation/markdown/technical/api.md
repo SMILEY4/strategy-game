@@ -45,6 +45,20 @@ All messages follow the following format
               "type": "place-scout",
               "q": "Int - the q-coordinate of the scout",
               "r": "Int - the r-coordinate of the scout",
+          },
+          {
+              "type": "production-queue-add-entry.building",
+              "cityId": "String - the id of the city to construct the building in",
+              "buildingType": "FARM | FISHERS_HUT | MINE | ..."
+          },
+          {
+              "type": "production-queue-add-entry.settler",
+              "cityId": "String - the id of the city to construct the settler in",
+          },
+          {
+              "type": "production-queue-remove-entry",
+              "cityId": "String - the id of the city to construct the settler in",
+              "queueEntryId": "String - the id of the entry in the queue to remove"
           }
       ]
   }
@@ -108,13 +122,7 @@ All messages follow the following format
                   }
               },
               "dataTier3?": {
-                  "resources": {
-                      "money": "Float - the amount of available money",
-                      "wood": "Float - the amount of available wood",
-                      "food": "Float - the amount of available food",
-                      "stone": "Float - the amount of available stone",
-                      "metal": "Float - the amount of available metal",
-                  }
+                  "availableSettlers": "Int - the amount of available settlers"
               }
           }
       ],
@@ -143,6 +151,19 @@ All messages follow the following format
                           "r": "Int - the r-coordinate of the worked tile",
                       }
                   }
+              ],
+              "productionQueue": [
+                   {
+                       "type": "building",
+                       "entryId": "String - the id of the entry",
+                       "progress": "Float[0,1] - the current construction progress",
+                       "buildingType": "FARM | FISHERS_HUT | MINE | ..."
+                   },
+                  {
+                       "type": "settler",
+                       "entryId": "String - the id of the entry",
+                       "progress": "Float[0,1] - the current construction progress"
+                   }
               ]
           }
       ],
