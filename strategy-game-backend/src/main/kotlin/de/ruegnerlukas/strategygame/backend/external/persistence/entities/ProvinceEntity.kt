@@ -22,7 +22,7 @@ class ProvinceEntity(
             countryId = serviceModel.countryId,
             cityIds = serviceModel.cityIds.toList(),
             provinceCityId = serviceModel.provinceCapitalCityId,
-            resources = serviceModel.resourcesProducedPrevTurn.toStacks(),
+            resources = serviceModel.resourcesProducedCurrTurn.toStacks(),
         )
 
     }

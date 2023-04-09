@@ -85,6 +85,14 @@ class TurnUpdateActionImpl(
             WorldPrepareAction().perform(game)
         }
 
+        val eventCityGrowthProgressUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
+            CityGrowthUpdateAction(gameConfig).perform(game)
+        }
+
+        val eventCitySizeUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
+            CitySizeUpdateAction().perform(game)
+        }
+
         eventSystem.atTrigger<Unit>("preparation")
             .thenRun(eventWorldPrepare)
 
@@ -112,6 +120,10 @@ class TurnUpdateActionImpl(
 
         eventSystem.after(eventEconomyUpdate)
             .thenRun(eventProductionQueueUpdate)
+            .thenRun(eventCityGrowthProgressUpdate)
+
+        eventSystem.after(eventCityGrowthProgressUpdate)
+            .thenRun(eventCitySizeUpdate)
 
         eventSystem.after(eventCityCreation)
             .thenRun(eventCityInfluence)

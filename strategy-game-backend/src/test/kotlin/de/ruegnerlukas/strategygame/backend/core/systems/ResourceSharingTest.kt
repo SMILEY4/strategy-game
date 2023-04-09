@@ -1,5 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.core.economy
+package de.ruegnerlukas.strategygame.backend.core.systems
 
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
@@ -31,6 +32,7 @@ class ResourceSharingTest : StringSpec({
         - 2x Stables
         */
         gameTest {
+            ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -133,6 +135,7 @@ class ResourceSharingTest : StringSpec({
         - 3x Woodcutter
         */
         gameTest {
+            ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")

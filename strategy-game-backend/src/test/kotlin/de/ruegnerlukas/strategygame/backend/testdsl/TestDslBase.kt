@@ -1,6 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.testdsl
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
+import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.shared.coApply
@@ -9,8 +11,12 @@ import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
 import io.kotest.common.runBlocking
 
 suspend fun gameTest(block: suspend GameTestContext.() -> Unit) {
+    try {
     Monitoring.enabled = false
     GameTestContext().coApply(block)
+    } finally {
+        ProvinceEconomyNode.enablePopGrowthEntity = true
+    }
 }
 
 class GameTestContext {

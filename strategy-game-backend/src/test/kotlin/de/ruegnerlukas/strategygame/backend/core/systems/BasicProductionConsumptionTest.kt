@@ -1,6 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.core.economy
+package de.ruegnerlukas.strategygame.backend.core.systems
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
@@ -21,6 +22,7 @@ class BasicProductionConsumptionTest : StringSpec({
 
     "test basic city without any production,consumption" {
         gameTest {
+            ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -45,6 +47,7 @@ class BasicProductionConsumptionTest : StringSpec({
 
     "test basic city with some food available" {
         gameTest {
+            ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -72,6 +75,7 @@ class BasicProductionConsumptionTest : StringSpec({
 
     "test basic production chain with all resources available" {
         gameTest {
+            ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -213,6 +217,7 @@ class BasicProductionConsumptionTest : StringSpec({
 
     "test basic production chain without enough food for population" {
         gameTest {
+            ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -351,6 +356,7 @@ class BasicProductionConsumptionTest : StringSpec({
 
     "test basic production chain without enough resource production (middle of the chain)" {
         gameTest {
+            ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")

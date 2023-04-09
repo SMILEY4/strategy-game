@@ -5,9 +5,10 @@ import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.amount
+import de.ruegnerlukas.strategygame.backend.shared.Logging
 import java.lang.Float.min
 
-class ConsumptionEntityUpdateService {
+class ConsumptionEntityUpdateService:Logging {
 
     fun update(entity: EconomyEntity, currentNode: EconomyNode) {
         if (entity.allowPartialConsumption()) {
@@ -25,6 +26,7 @@ class ConsumptionEntityUpdateService {
                 val amountAvailable = currentNode.getStorage().getAvailable(requiredType)
                 val amountPossible = min(requiredAmount, amountAvailable)
                 provideResources(entity, currentNode, requiredType, amountPossible)
+                log().debug("[eco-update] $entity in node $currentNode consumed $amountPossible of $requiredType")
             }
         }
     }
@@ -32,6 +34,7 @@ class ConsumptionEntityUpdateService {
     private fun updateFixed(entity: EconomyEntity, currentNode: EconomyNode) {
         if (allResourcesAvailable(currentNode, entity.getRequires())) {
             provideResources(entity, currentNode, entity.getRequires())
+            log().debug("[eco-update] $entity in node $currentNode consumed ${entity.getRequires().toList()}")
         }
     }
 

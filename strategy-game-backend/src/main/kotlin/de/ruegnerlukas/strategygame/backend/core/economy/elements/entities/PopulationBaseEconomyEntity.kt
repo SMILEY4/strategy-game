@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.amount
 
-class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, private val config: GameConfig) : EconomyEntity {
+class PopulationBaseEconomyEntity(private val owner: EconomyNode, val city: City, private val config: GameConfig) : EconomyEntity {
 
     private val providedResources = ResourceCollection.basic()
     private var hasProduced = false
@@ -19,7 +19,7 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, pr
 
     override fun getRequires(): ResourceCollection = getRemainingRequiredResources()
 
-    override fun getProduces(): ResourceCollection = ResourceCollection.basic()
+    override fun getProduces(): ResourceCollection = ResourceCollection.empty()
 
     override fun allowPartialConsumption(): Boolean = true
 
@@ -39,6 +39,8 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, pr
         hasProduced = true
     }
 
+    fun getConsumedFood() = providedResources[ResourceType.FOOD]
+
     private fun getRemainingRequiredResources(): ResourceCollection {
         return getRequiredResources()
             .sub(providedResources)
@@ -50,5 +52,6 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, pr
             ResourceType.FOOD.amount(if (city.isProvinceCapital) config.cityFoodCostPerTurn else config.townFoodCostPerTurn)
         )
     }
+
 
 }

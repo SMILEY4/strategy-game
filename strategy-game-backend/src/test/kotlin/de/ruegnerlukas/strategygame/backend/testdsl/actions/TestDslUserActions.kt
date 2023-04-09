@@ -128,9 +128,7 @@ suspend fun GameTestContext.submitTurn(userId: String, block: suspend SubmitTurn
             }
         }
     } catch (ignore: Exception) {
-
     }
-
 }
 
 class SubmitTurnUserActionDsl(val userId: String) {

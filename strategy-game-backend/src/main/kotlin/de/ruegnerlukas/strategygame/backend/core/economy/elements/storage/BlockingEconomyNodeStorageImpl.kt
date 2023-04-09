@@ -12,7 +12,7 @@ class BlockingEconomyNodeStorageImpl : EconomyNodeStorage {
 
     override fun getAvailable(type: ResourceType): Float = 0f
 
-    override fun getAvailable(): ResourceCollection = ResourceCollection.basic()
+    override fun getAvailable(): ResourceCollection = ResourceCollection.empty()
 
     override fun remove(type: ResourceType, amount: Float) = Unit
 
@@ -26,9 +26,9 @@ class BlockingEconomyNodeStorageImpl : EconomyNodeStorage {
 
     override fun add(resources: ResourceCollection)  = Unit
 
-    override fun getAdded(): ResourceCollection = ResourceCollection.basic()
+    override fun getAdded(): ResourceCollection = ResourceCollection.empty()
 
-    override fun getRemoved(): ResourceCollection = ResourceCollection.basic()
+    override fun getRemoved(): ResourceCollection = ResourceCollection.empty()
 
-    override fun getRemovedFromShared(): ResourceCollection = ResourceCollection.basic()
+    override fun getRemovedFromShared(): ResourceCollection = ResourceCollection.empty()
 }

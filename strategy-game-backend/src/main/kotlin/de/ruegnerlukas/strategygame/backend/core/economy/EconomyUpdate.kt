@@ -5,6 +5,8 @@ import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectEntities
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectNodes
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.PopulationBaseEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.PopulationGrowthEconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.ProductionQueueEconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.WorldEconomyNode
@@ -54,6 +56,12 @@ class EconomyUpdate(private val config: GameConfig) {
         node.getEntities()
             .filterIsInstance<ProductionQueueEconomyEntity>()
             .forEach { entity -> entity.queueEntry.collectedResources.add(entity.getProvidedResources()) }
+        node.getEntities()
+            .filterIsInstance<PopulationBaseEconomyEntity>()
+            .forEach { entity -> entity.city.popConsumedFood = entity.getConsumedFood() }
+        node.getEntities()
+            .filterIsInstance<PopulationGrowthEconomyEntity>()
+            .forEach{ entity -> entity.city.popGrowthConsumedFood = entity.hasConsumedFood() }
     }
 
 }

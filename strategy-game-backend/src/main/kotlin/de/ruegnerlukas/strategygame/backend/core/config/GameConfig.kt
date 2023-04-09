@@ -50,6 +50,10 @@ data class GameConfig(
      */
     val townFoodCostPerTurn: Float = 1f,
     /**
+     * the amount of available food "required" for population growth
+     */
+    val popGrowthFoodCost: Float = 1f,
+    /**
      * the max amount of influence a town generates
      */
     val townInfluenceAmount: Float = 10f,
