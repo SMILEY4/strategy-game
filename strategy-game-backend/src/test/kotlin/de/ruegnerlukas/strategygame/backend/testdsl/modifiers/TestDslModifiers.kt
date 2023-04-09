@@ -97,6 +97,8 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
         name = dslConfig.name!!,
         color = RGBColor.random(),
         isProvinceCapital = true,
+        size = 1,
+        growthProgress = 0f,
         buildings = dslConfig.buildings.map { (type, dir) ->
             Building(
                 type = type,
@@ -136,6 +138,8 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
         name = dslConfig.name!!,
         color = RGBColor.random(),
         isProvinceCapital = false,
+        size = 1,
+        growthProgress = 0f,
         buildings = dslConfig.buildings.map { (type, dir) ->
             Building(
                 type = type,

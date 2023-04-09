@@ -16,6 +16,8 @@ class CityEntity(
     val isProvinceCapital: Boolean,
     val buildings: List<Building>,
     val productionQueue: List<ProductionQueueEntryEntity>,
+    var size: Int,
+    var growthProgress: Float,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -29,7 +31,9 @@ class CityEntity(
             color = serviceModel.color,
             isProvinceCapital = serviceModel.isProvinceCapital,
             buildings = serviceModel.buildings,
-            productionQueue = serviceModel.productionQueue.map { ProductionQueueEntryEntity.of(it) }
+            productionQueue = serviceModel.productionQueue.map { ProductionQueueEntryEntity.of(it) },
+            size = serviceModel.size,
+            growthProgress = serviceModel.growthProgress
         )
     }
 
@@ -41,7 +45,9 @@ class CityEntity(
         color = this.color,
         isProvinceCapital = this.isProvinceCapital,
         buildings = this.buildings.toMutableList(),
-        productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList()
+        productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList(),
+        size = this.size,
+        growthProgress = this.growthProgress
     )
 
 }

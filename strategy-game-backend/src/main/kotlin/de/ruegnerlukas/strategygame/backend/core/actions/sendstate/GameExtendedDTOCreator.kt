@@ -230,7 +230,9 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
             color = city.color,
             isProvinceCapital = city.isProvinceCapital,
             buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile, it.active) },
-            productionQueue = city.productionQueue.map { buildProductionQueueEntry(it) }
+            productionQueue = city.productionQueue.map { buildProductionQueueEntry(it) },
+            size = city.size,
+            growthProgress = city.growthProgress
         )
     }
 

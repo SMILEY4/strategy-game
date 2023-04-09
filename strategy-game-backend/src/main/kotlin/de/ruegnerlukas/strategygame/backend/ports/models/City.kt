@@ -10,5 +10,7 @@ class City(
     val color: RGBColor,
     val isProvinceCapital: Boolean,
     val buildings: MutableList<Building>,
-    val productionQueue: MutableList<ProductionQueueEntry>
+    val productionQueue: MutableList<ProductionQueueEntry>,
+    var size: Int,
+    var growthProgress: Float
 )
