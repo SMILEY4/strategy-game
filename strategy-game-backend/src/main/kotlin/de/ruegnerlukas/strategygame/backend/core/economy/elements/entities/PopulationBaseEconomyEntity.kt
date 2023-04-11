@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.economy.elements.entities
 
+import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
@@ -8,7 +9,11 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.amount
 
-class PopulationBaseEconomyEntity(private val owner: EconomyNode, val city: City, private val config: GameConfig) : EconomyEntity {
+class PopulationBaseEconomyEntity(
+    private val owner: EconomyNode,
+    val city: City,
+    private val popFoodConsumption: PopFoodConsumption
+) : EconomyEntity {
 
     private val providedResources = ResourceCollection.basic()
     private var hasProduced = false
@@ -49,7 +54,7 @@ class PopulationBaseEconomyEntity(private val owner: EconomyNode, val city: City
 
     private fun getRequiredResources(): ResourceCollection {
         return ResourceCollection.basic(
-            ResourceType.FOOD.amount(if (city.isProvinceCapital) config.cityFoodCostPerTurn else config.townFoodCostPerTurn)
+            ResourceType.FOOD.amount(popFoodConsumption.getRequiredFood(city))
         )
     }
 

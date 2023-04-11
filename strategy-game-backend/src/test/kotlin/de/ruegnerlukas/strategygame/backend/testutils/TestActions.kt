@@ -15,6 +15,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActi
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
@@ -35,6 +36,8 @@ import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUp
 import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import io.mockk.every
+import io.mockk.mockk
 
 data class TestActions(
     val context: TestActionContext,
@@ -55,14 +58,14 @@ data class TestActions(
             val commandResolutionErrors = mutableMapOf<Int, List<CommandResolutionError>>()
         }
 
-        fun create(database: ArangoDatabase): TestActions {
+        fun create(database: ArangoDatabase, fixedPopFoodConsumption: Int? = null): TestActions {
             val context = TestActionContext()
             val gameCreate = gameCreateAction(database)
             val gameJoin = gameJoinAction(database)
             val gameRequestConnect = gameRequestConnectionAction(database)
             val gameConnect = gameConnectAction(database)
             val gamesList = gamesListAction(database)
-            val turnUpdate = turnUpdateAction(database)
+            val turnUpdate = turnUpdateAction(database, popFoodConsumption(fixedPopFoodConsumption))
             val resolveCommands = resolveCommandsAction(context, turnUpdate)
             val turnSubmit = turnSubmitAction(database, resolveCommands, turnUpdate)
             val turnEnd = turnEndAction(database, resolveCommands, turnUpdate)
@@ -186,11 +189,22 @@ data class TestActions(
                 turnUpdate
             )
 
-        private fun turnUpdateAction(database: ArangoDatabase) =
+        private fun turnUpdateAction(database: ArangoDatabase, popFoodConsumption: PopFoodConsumption) =
             TurnUpdateActionImpl(
                 ReservationInsertImpl(database),
-                GameConfig.default()
+                GameConfig.default(),
+                popFoodConsumption
             )
+
+        private fun popFoodConsumption(fixed: Int? = null): PopFoodConsumption {
+            if (fixed == null) {
+                return PopFoodConsumption()
+            } else {
+                return mockk<PopFoodConsumption>().also {
+                    every { it.getRequiredFood(any()) } returns fixed.toFloat()
+                }
+            }
+        }
     }
 
 }

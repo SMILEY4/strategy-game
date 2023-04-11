@@ -38,18 +38,6 @@ data class GameConfig(
      */
     val cityTileMaxForeignInfluence: Float = 3f,
     /**
-     * the amount of money produced by a city each turn
-     */
-    val cityIncomePerTurn: Float = 10f,
-    /**
-     * the amount of food consumed by a city each turn
-     */
-    val cityFoodCostPerTurn: Float = 2f,
-    /**
-     * the amount of food consumed by a town each turn
-     */
-    val townFoodCostPerTurn: Float = 1f,
-    /**
      * the amount of available food "required" for population growth
      */
     val popGrowthFoodCost: Float = 1f,

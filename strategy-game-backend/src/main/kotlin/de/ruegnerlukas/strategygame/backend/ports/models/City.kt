@@ -13,7 +13,6 @@ class City(
     val productionQueue: MutableList<ProductionQueueEntry>,
     var size: Int,
     var growthProgress: Float,
-
     var popConsumedFood: Float = 0f,
     var popGrowthConsumedFood: Boolean = false
 )

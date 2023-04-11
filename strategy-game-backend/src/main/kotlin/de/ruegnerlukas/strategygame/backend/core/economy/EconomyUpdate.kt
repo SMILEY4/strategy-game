@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.economy
 
+import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectEntities
@@ -17,7 +18,7 @@ import de.ruegnerlukas.strategygame.backend.core.economy.service.ProductionNodeU
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 
-class EconomyUpdate(private val config: GameConfig) {
+class EconomyUpdate(private val config: GameConfig, private val popFoodConsumption: PopFoodConsumption) {
 
     private val consumptionNodeUpdateService = ConsumptionNodeUpdateService(ConsumptionEntityUpdateService())
     private val productionNodeUpdateService = ProductionNodeUpdateService(ProductionEntityUpdateService())
@@ -30,7 +31,7 @@ class EconomyUpdate(private val config: GameConfig) {
     }
 
     private fun buildEconomyTree(game: GameExtended): EconomyNode {
-        return WorldEconomyNode(game, config)
+        return WorldEconomyNode(game, config, popFoodConsumption)
     }
 
     private fun writeBack(rootNode: EconomyNode) {

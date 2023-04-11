@@ -9,20 +9,21 @@ import de.ruegnerlukas.strategygame.backend.shared.coApply
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
 import io.kotest.common.runBlocking
+import org.testcontainers.shaded.org.bouncycastle.crypto.tls.CipherType.block
 
-suspend fun gameTest(block: suspend GameTestContext.() -> Unit) {
+suspend fun gameTest(fixedPopFoodConsumption: Int? = null, block: suspend GameTestContext.() -> Unit) {
     try {
     Monitoring.enabled = false
-    GameTestContext().coApply(block)
+    GameTestContext(fixedPopFoodConsumption).coApply(block)
     } finally {
         ProvinceEconomyNode.enablePopGrowthEntity = true
     }
 }
 
-class GameTestContext {
+class GameTestContext(fixedPopFoodConsumption: Int? = null) {
 
     private val database = runBlocking { TestUtilsFactory.createTestDatabase() }
-    private val actions = TestActions.create(database)
+    private val actions = TestActions.create(database, fixedPopFoodConsumption)
     private val gameConfig = GameConfig.default()
     private var gameId: String? = null
     private var gameSnapshot: GameExtended? = null

@@ -1,9 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
+import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.shared.RGBColor
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
@@ -14,11 +18,13 @@ import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addCity
 import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addTileResources
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils.TileDirection
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.floats.plusOrMinus
+import io.kotest.matchers.shouldBe
 
 class CityGrowthTest : StringSpec({
 
     "city with more than enough available food " {
-        gameTest {
+        gameTest(fixedPopFoodConsumption = 2) {
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -69,7 +75,7 @@ class CityGrowthTest : StringSpec({
     }
 
     "city with just enough base food available" {
-        gameTest {
+        gameTest(fixedPopFoodConsumption = 2) {
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -104,7 +110,7 @@ class CityGrowthTest : StringSpec({
     }
 
     "city with some but not enough food available" {
-        gameTest {
+        gameTest(fixedPopFoodConsumption = 2) {
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -138,7 +144,7 @@ class CityGrowthTest : StringSpec({
     }
 
     "city with no food available" {
-        gameTest {
+        gameTest(fixedPopFoodConsumption = 2) {
             createGame {
                 worldSettings = WorldSettings.landOnly()
                 user("user")
@@ -198,6 +204,20 @@ class CityGrowthTest : StringSpec({
         }
     }
 
+    "test city base food consumption" {
+        cityOfSize(0).also { expectRequiredBaseFood(it, 0f) }
+        cityOfSize(1).also { expectRequiredBaseFood(it, 1f) }
+        cityOfSize(2).also { expectRequiredBaseFood(it, 1f) }
+        cityOfSize(3).also { expectRequiredBaseFood(it, 1f) }
+        cityOfSize(4).also { expectRequiredBaseFood(it, 1f) }
+        cityOfSize(5).also { expectRequiredBaseFood(it, 2f) }
+        cityOfSize(6).also { expectRequiredBaseFood(it, 2f) }
+        cityOfSize(7).also { expectRequiredBaseFood(it, 2f) }
+        cityOfSize(8).also { expectRequiredBaseFood(it, 2f) }
+        cityOfSize(9).also { expectRequiredBaseFood(it, 3f) }
+        cityOfSize(10).also { expectRequiredBaseFood(it, 3f) }
+    }
+
 }) {
 
     companion object {
@@ -217,6 +237,26 @@ class CityGrowthTest : StringSpec({
         internal class CityGrowthUpdateDsl {
             var expectedProgress: Float? = null
             var expectedSize: Int? = null
+        }
+
+        internal fun cityOfSize(size: Int) =
+            City(
+                cityId = "test-city",
+                countryId = "test-country",
+                tile = TileRef("test-tile", 0, 0),
+                name = "Test City",
+                color = RGBColor.random(),
+                isProvinceCapital = true,
+                buildings = mutableListOf(),
+                productionQueue = mutableListOf(),
+                size = size,
+                growthProgress = 0f,
+                popConsumedFood = 0f,
+                popGrowthConsumedFood = false,
+            )
+
+        internal fun expectRequiredBaseFood(city: City, expected: Float) {
+            PopFoodConsumption().getRequiredFood(city) shouldBe expected.plusOrMinus(0.0001f)
         }
 
     }

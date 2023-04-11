@@ -31,7 +31,7 @@ class ResourceSharingTest : StringSpec({
         - 1x Toolmaker
         - 2x Stables
         */
-        gameTest {
+        gameTest(fixedPopFoodConsumption = 2) {
             ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()
@@ -134,7 +134,7 @@ class ResourceSharingTest : StringSpec({
         - 3x Farms
         - 3x Woodcutter
         */
-        gameTest {
+        gameTest(fixedPopFoodConsumption = 2) {
             ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
                 worldSettings = WorldSettings.landOnly()

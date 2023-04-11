@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 /**
  * Updates the growth-progress of a city based on various factors
  */
-class CityGrowthUpdateAction(private val config: GameConfig) : Logging {
+class CityGrowthUpdateAction(private val popFoodConsumption: PopFoodConsumption) : Logging {
 
     fun perform(game: GameExtended) {
         game.cities.forEach { update(it) }
@@ -21,7 +21,7 @@ class CityGrowthUpdateAction(private val config: GameConfig) : Logging {
             log().debug("adding growth-point for city ${city.cityId}: pop-growth-consumed-food=true (+1)")
             points++
         }
-        if (city.popConsumedFood < (if (city.isProvinceCapital) config.cityFoodCostPerTurn else config.townFoodCostPerTurn)) {
+        if (city.popConsumedFood < popFoodConsumption.getRequiredFood(city)) {
             log().debug("adding growth-point for city ${city.cityId}: pop-consumed-food below required (-1)")
             points--
         }
