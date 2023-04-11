@@ -1,10 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.core.economy
 
+import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectEntities
 import de.ruegnerlukas.strategygame.backend.core.economy.data.EconomyNode.Companion.collectNodes
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.PopulationBaseEconomyEntity
+import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.PopulationGrowthEconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.entities.ProductionQueueEconomyEntity
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.WorldEconomyNode
@@ -15,7 +18,7 @@ import de.ruegnerlukas.strategygame.backend.core.economy.service.ProductionNodeU
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 
-class EconomyUpdate(private val config: GameConfig) {
+class EconomyUpdate(private val config: GameConfig, private val popFoodConsumption: PopFoodConsumption) {
 
     private val consumptionNodeUpdateService = ConsumptionNodeUpdateService(ConsumptionEntityUpdateService())
     private val productionNodeUpdateService = ProductionNodeUpdateService(ProductionEntityUpdateService())
@@ -28,7 +31,7 @@ class EconomyUpdate(private val config: GameConfig) {
     }
 
     private fun buildEconomyTree(game: GameExtended): EconomyNode {
-        return WorldEconomyNode(game, config)
+        return WorldEconomyNode(game, config, popFoodConsumption)
     }
 
     private fun writeBack(rootNode: EconomyNode) {
@@ -54,6 +57,12 @@ class EconomyUpdate(private val config: GameConfig) {
         node.getEntities()
             .filterIsInstance<ProductionQueueEconomyEntity>()
             .forEach { entity -> entity.queueEntry.collectedResources.add(entity.getProvidedResources()) }
+        node.getEntities()
+            .filterIsInstance<PopulationBaseEconomyEntity>()
+            .forEach { entity -> entity.city.popConsumedFood = entity.getConsumedFood() }
+        node.getEntities()
+            .filterIsInstance<PopulationGrowthEconomyEntity>()
+            .forEach{ entity -> entity.city.popGrowthConsumedFood = entity.hasConsumedFood() }
     }
 
 }

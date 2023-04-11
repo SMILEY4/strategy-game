@@ -8,11 +8,11 @@ import de.ruegnerlukas.strategygame.backend.shared.Logging
 /**
  * Handles turn-income and turn-expenses
  */
-class EconomyUpdateAction(private val gameConfig: GameConfig): Logging {
+class EconomyUpdateAction(private val gameConfig: GameConfig, private val popFoodConsumption: PopFoodConsumption): Logging {
 
     fun perform(game: GameExtended) {
         log().debug("Update economy")
-        EconomyUpdate(gameConfig).update(game)
+        EconomyUpdate(gameConfig, popFoodConsumption).update(game)
     }
 
 }

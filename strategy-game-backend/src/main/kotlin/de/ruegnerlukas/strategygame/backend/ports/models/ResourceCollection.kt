@@ -6,6 +6,8 @@ interface ResourceCollection {
 
         const val DEFAULT_DELTA: Float = 0.00001f
 
+        fun empty() = basic()
+
         /**
          * @return a new [BasicResourceCollection] with the given data
          */

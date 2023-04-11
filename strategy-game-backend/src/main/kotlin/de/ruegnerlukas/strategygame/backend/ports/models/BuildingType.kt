@@ -24,9 +24,9 @@ enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) 
 }
 
 abstract class BuildingTemplateData(
-    val constructionCost: ResourceCollection = ResourceCollection.basic(),
-    val requires: ResourceCollection = ResourceCollection.basic(),
-    val produces: ResourceCollection = ResourceCollection.basic(),
+    val constructionCost: ResourceCollection = ResourceCollection.empty(),
+    val requires: ResourceCollection = ResourceCollection.empty(),
+    val produces: ResourceCollection = ResourceCollection.empty(),
     val requiredTileResource: TileResourceType? = null
 )
 

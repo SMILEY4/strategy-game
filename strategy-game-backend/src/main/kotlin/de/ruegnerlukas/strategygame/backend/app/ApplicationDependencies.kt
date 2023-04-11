@@ -18,6 +18,7 @@ import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActi
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserCreateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.user.UserDeleteActionImpl
@@ -149,7 +150,7 @@ val applicationDependencies = module {
     single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
-    single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get()) }
+    single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get(), PopFoodConsumption()) }
     single<DisconnectAllPlayersAction> { DisconnectAllPlayersActionImpl(get(), get()) }
 
 }

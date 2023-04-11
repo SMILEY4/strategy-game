@@ -8,26 +8,26 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.amount
 
-class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, private val config: GameConfig) : EconomyEntity {
+class PopulationGrowthEconomyEntity(private val owner: EconomyNode, val city: City, val config: GameConfig) : EconomyEntity {
 
     private val providedResources = ResourceCollection.basic()
     private var hasProduced = false
 
     override fun getNode(): EconomyNode = owner
 
-    override fun getPriority(): Float = if (city.isProvinceCapital) 2.5f else 2f
+    override fun getPriority(): Float = 0f
 
     override fun getRequires(): ResourceCollection = getRemainingRequiredResources()
 
-    override fun getProduces(): ResourceCollection = ResourceCollection.basic()
+    override fun getProduces(): ResourceCollection = ResourceCollection.empty()
 
-    override fun allowPartialConsumption(): Boolean = true
+    override fun allowPartialConsumption(): Boolean = false
 
     override fun isInactive(): Boolean = false
 
     override fun isReadyToConsume(): Boolean = getRemainingRequiredResources().isNotEmpty()
 
-    override fun isReadyToProduce(): Boolean = !hasProduced
+    override fun isReadyToProduce(): Boolean = getRemainingRequiredResources().isEmpty() && !hasProduced
 
     override fun hasProduced(): Boolean = hasProduced
 
@@ -39,6 +39,8 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, pr
         hasProduced = true
     }
 
+    fun hasConsumedFood() = hasProduced()
+
     private fun getRemainingRequiredResources(): ResourceCollection {
         return getRequiredResources()
             .sub(providedResources)
@@ -47,7 +49,7 @@ class PopulationEconomyEntity(private val owner: EconomyNode, val city: City, pr
 
     private fun getRequiredResources(): ResourceCollection {
         return ResourceCollection.basic(
-            ResourceType.FOOD.amount(if (city.isProvinceCapital) config.cityFoodCostPerTurn else config.townFoodCostPerTurn)
+            ResourceType.FOOD.amount(config.popGrowthFoodCost)
         )
     }
 

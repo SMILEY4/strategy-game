@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.commandresolution
+package de.ruegnerlukas.strategygame.backend.core.systems
 
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame

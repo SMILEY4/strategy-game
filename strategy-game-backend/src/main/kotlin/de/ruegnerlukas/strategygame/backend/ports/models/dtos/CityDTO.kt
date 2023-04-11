@@ -11,5 +11,7 @@ data class CityDTO(
     val color: RGBColor,
     val isProvinceCapital: Boolean,
     val buildings: List<BuildingDTO>,
-    val productionQueue: List<ProductionQueueEntryDTO>
+    val productionQueue: List<ProductionQueueEntryDTO>,
+    val size: Int,
+    val growthProgress: Float // TODO: split city-dto into tiers -> hide prod-queue, growth-progress, buildings from other players ?
 )

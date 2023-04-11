@@ -19,6 +19,7 @@ import de.ruegnerlukas.strategygame.backend.shared.events.EventSystem
 class TurnUpdateActionImpl(
     private val reservationInsert: ReservationInsert,
     private val gameConfig: GameConfig,
+    private val popFoodConsumption: PopFoodConsumption
 ) : TurnUpdateAction {
 
     private val eventSystem = EventSystem<GameExtended>()
@@ -58,7 +59,7 @@ class TurnUpdateActionImpl(
         }
 
         val eventEconomyUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
-            EconomyUpdateAction(gameConfig).perform(game)
+            EconomyUpdateAction(gameConfig, popFoodConsumption).perform(game)
         }
 
         val eventInfluenceOwnership = EventAction<GameExtended, Collection<Tile>, Unit> { _, tiles ->
@@ -83,6 +84,14 @@ class TurnUpdateActionImpl(
 
         val eventWorldPrepare = EventAction<GameExtended, Unit, Unit> { game, _ ->
             WorldPrepareAction().perform(game)
+        }
+
+        val eventCityGrowthProgressUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
+            CityGrowthUpdateAction(popFoodConsumption).perform(game)
+        }
+
+        val eventCitySizeUpdate = EventAction<GameExtended, Unit, Unit> { game, _ ->
+            CitySizeUpdateAction().perform(game)
         }
 
         eventSystem.atTrigger<Unit>("preparation")
@@ -112,6 +121,10 @@ class TurnUpdateActionImpl(
 
         eventSystem.after(eventEconomyUpdate)
             .thenRun(eventProductionQueueUpdate)
+            .thenRun(eventCityGrowthProgressUpdate)
+
+        eventSystem.after(eventCityGrowthProgressUpdate)
+            .thenRun(eventCitySizeUpdate)
 
         eventSystem.after(eventCityCreation)
             .thenRun(eventCityInfluence)

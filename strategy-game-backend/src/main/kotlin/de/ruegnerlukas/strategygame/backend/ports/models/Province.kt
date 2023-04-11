@@ -9,6 +9,5 @@ data class Province(
     var resourcesProducedPrevTurn: ResourceCollection = ResourceCollection.basic(),
     var resourcesProducedCurrTurn: ResourceCollection = ResourceCollection.basic(),
     var resourcesConsumedCurrTurn: ResourceCollection = ResourceCollection.basic(),
-    var resourcesMissing: ResourceCollection = ResourceCollection.basic()
-
+    var resourcesMissing: ResourceCollection = ResourceCollection.basic(),
 )

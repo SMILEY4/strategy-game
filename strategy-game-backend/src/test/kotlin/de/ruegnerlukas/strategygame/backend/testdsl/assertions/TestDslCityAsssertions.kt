@@ -7,6 +7,7 @@ import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCities
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.floats.plusOrMinus
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 
@@ -51,6 +52,12 @@ private suspend fun assertCity(database: ArangoDatabase, expectedCity: CityAsser
     if (expectedCity.province != null) {
         TestUtils.getProvinceByCityId(database, actualCity.cityId).provinceId shouldBe expectedCity.province
     }
+    if(expectedCity.growthProgress != null) {
+        actualCity.growthProgress shouldBe expectedCity.growthProgress!!.plusOrMinus(0.0001f)
+    }
+    if(expectedCity.size != null) {
+        actualCity.size shouldBe expectedCity.size
+    }
 }
 
 class CitiesAssertionDsl {
@@ -72,4 +79,6 @@ class CityAssertionDsl(
     var name: String? = null
     var countryId: String? = null
     var province: String? = null
+    var growthProgress: Float? = null
+    var size: Int? = null
 }
