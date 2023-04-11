@@ -1,6 +1,5 @@
 import React, {ReactElement} from "react";
 import {useCityById} from "../../../../../core/hooks/useCityById";
-import {useGameConfig} from "../../../../../core/hooks/useGameConfig";
 import {useSelectedTilePosition} from "../../../../../core/hooks/useSelectedTilePosition";
 import {useTileAt} from "../../../../../core/hooks/useTileAt";
 import {useValidateCreateCity} from "../../../../../core/hooks/useValidateCreateCity";
@@ -8,7 +7,6 @@ import {useValidateCreateTown} from "../../../../../core/hooks/useValidateCreate
 import {useValidatePlaceScout} from "../../../../../core/hooks/useValidatePlaceScout";
 import {BuildingType} from "../../../../../core/models/buildingType";
 import {City} from "../../../../../core/models/city";
-import {ResourceType} from "../../../../../core/models/resourceType";
 import {Tile} from "../../../../../core/models/tile";
 import {TilePosition} from "../../../../../core/models/tilePosition";
 import {AppConfig} from "../../../../../main";
@@ -23,7 +21,6 @@ export function MenuSelectedTile(props: {menuLevel: number}): ReactElement {
     const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
     const canPlaceScout = useValidatePlaceScout(selectedTilePos);
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
-    const config = useGameConfig();
     const canCreateCity = useValidateCreateCity(selectedTilePos);
     const canCreateTown = useValidateCreateTown(selectedTilePos);
 
@@ -40,14 +37,14 @@ export function MenuSelectedTile(props: {menuLevel: number}): ReactElement {
                         <AdvButton
                             label={"Create City"}
                             actionCosts={[]}
-                            turnCosts={[{type: ResourceType.FOOD, value: -config.cityFoodCostPerTurn}]}
+                            turnCosts={[]}
                             disabled={!canCreateCity}
                             onClick={() => createCity(selectedTile?.position)}
                         />
                         <AdvButton
                             label={"Create Town"}
                             actionCosts={[]}
-                            turnCosts={[{type: ResourceType.FOOD, value: -config.townFoodCostPerTurn}]}
+                            turnCosts={[]}
                             disabled={!canCreateTown}
                             onClick={() => createTown(selectedTile?.position)}
                         />

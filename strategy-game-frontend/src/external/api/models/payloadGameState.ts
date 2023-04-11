@@ -47,6 +47,8 @@ export interface PayloadGameState {
     cities: ({
         cityId: string,
         countryId: string,
+        size: number,
+        growthProgress: number,
         tile: {
             tileId: string,
             q: number,

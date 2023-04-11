@@ -14,6 +14,7 @@ import {
     BuildingProductionQueueEntry,
     SettlerProductionQueueEntry,
 } from "../../../../../core/models/productionQueueEntry";
+import {City} from "../../../../../core/models/city";
 
 export function MenuCity(props: { cityId: string, menuLevel: number }): ReactElement {
 
@@ -34,6 +35,11 @@ export function MenuCity(props: { cityId: string, menuLevel: number }): ReactEle
                 <>
                     <h2>City</h2>
                     <p>{"Name: " + city.name}</p>
+                    <p>{"Size: " + city.size + "(" + (city.growthProgress >= 0 ? "+" : "") + city.growthProgress + ")"}</p>
+                    <p>
+                        {"Requires: "}
+                        <ResourceLabel type={ResourceType.FOOD} value={cityBaseFoodConsumption(city)} showPlusSign={false}/>
+                    </p>
 
                     <Section title={"Overview"}>
                         <p className={"clickable"}
@@ -158,6 +164,10 @@ export function MenuCity(props: { cityId: string, menuLevel: number }): ReactEle
 
     function openCity(cityId: string) {
         uiService.openMenuCity(cityId, props.menuLevel + 1);
+    }
+
+    function cityBaseFoodConsumption(city: City) {
+        return Math.ceil(city.size / 4);
     }
 
 }

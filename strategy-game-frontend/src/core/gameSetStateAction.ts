@@ -147,6 +147,8 @@ export class GameSetStateAction {
             cityId: city.cityId,
             name: city.name,
             countryId: city.countryId,
+            size: city.size,
+            growthProgress: city.growthProgress,
             tile: {
                 tileId: city.tile.tileId,
                 q: city.tile.q,
