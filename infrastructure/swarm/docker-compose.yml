@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+
+    traefik:
+        image: "traefik:v2.9"
+        command:
+            # docker swarm configuration
+            - "--providers.docker=true"
+            - "--providers.docker.swarmmode"
+            - "--providers.docker.network=backend_traefik-public"
+            - "--providers.docker.exposedbydefault=false"
+            # configure entrypoint
+            - "--entryPoints.http.address=:80"
+            - "--entryPoints.https.address=:443"
+            # ssl configuration
+            # enable Dashboard
+            - "--api.dashboard=true"
+            # logging
+            - "--log.level=DEBUG"
+            - "--accesslog"
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8088:8080"
+        networks:
+            - "traefik-public"
+        volumes:
+            # So that Traefik can listen to the Docker events
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        deploy:
+            labels:
+                traefik.enable: "true"
+            placement:
+                constraints:
+                    - node.role == manager
+
+    app:
+        image: 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:latest
+        secrets:
+            - awsSecretAccessKey
+            - adminPassword
+        environment:
+            LOG_AS_JSON: "true"
+        ports:
+            - "8080:8080"
+        networks:
+            - "traefik-public"
+            - "application"
+        deploy:
+            labels:
+                traefik.enable: "true"
+                traefik.port: "8080"
+                traefik.http.routers.app.rule: "PathPrefix(`/`)"
+                traefik.http.routers.app.entrypoints: "https"
+                traefik.http.routers.app.tls: "true"
+                traefik.http.services.app.loadbalancer.server.port: "8080"
+
+
+    database:
+        image: arangodb:3.10.0
+        environment:
+            ARANGO_NO_AUTH: 1
+        ports:
+            - "8529:8529"
+        networks:
+            - "application"
+        volumes:
+            - arangodb_data_container:/var/lib/arangodb3
+            - arangodb_apps_data_container:/var/lib/arangodb3-apps
+        deploy:
+            labels:
+                traefik.enable: "false"
+
+volumes:
+    arangodb_data_container:
+    arangodb_apps_data_container:
+
+networks:
+    traefik-public:
+    application:
+
+secrets:
+    awsSecretAccessKey:
+        external: true
+    adminPassword:
+        external: true

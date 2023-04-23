@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+    InstanceName:
+        Type: "String"
+        Description: "Name of the ec2-instance"
+        Default: "swarm-worker"
+    InstanceKeyPairName:
+        Type: "String"
+        Description: "Name of a key-pair for ec2-instances"
+        Default: "ec2-kp"
+    InstanceType:
+        Type: "String"
+        Description: "Type of the ec2-instance"
+        Default: "t2.micro"
+    ImageId:
+        Type: "String"
+        Description: "Type of the image. Use Ubuntu or change the username in the UserData-Script of the ec2 instance."
+        Default: "ami-0ec7f9846da6b0f61"
+    InstanceProfile:
+        Type: String
+        Description: "The name of the (worker) instance-profile."
+        Default: "ec2-swarm-worker"
+    SecurityGroup:
+        Type: String
+        Description: "The name/id of the (worker) security-group."
+        Default: "ec2-swarm"
+
+Resources:
+
+    Instance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            Tags:
+                - Key: "Name"
+                  Value: !Ref InstanceName
+            ImageId: !Ref ImageId
+            InstanceType: !Ref InstanceType
+            IamInstanceProfile: !Ref InstanceProfile
+            KeyName: !Ref InstanceKeyPairName
+            SecurityGroupIds:
+                - !Ref SecurityGroup
+            UserData:
+                Fn::Base64: |
+                    #!/bin/bash -xe
+
+                    echo "setting up instance as swarm-worker..."
+
+                    sudo apt-get update
+                    
+                    sudo apt install docker.io -y
+                    sudo usermod -aG docker ubuntu
+                    newgrp docker
+                    
+                    sudo apt install amazon-ecr-credential-helper
+                    mkdir /home/ubuntu/.docker
+                    echo "{\"credsStore\":\"ecr-login\"}" >> /home/ubuntu/.docker/config.json
+                    
+                    echo "...Setup of swarm-worker (nearly) complete. Please manually join this worker to swarm."
