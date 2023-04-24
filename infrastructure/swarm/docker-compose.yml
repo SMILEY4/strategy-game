@@ -11,8 +11,7 @@ services:
             - "--providers.docker.network=backend_traefik-public"
             - "--providers.docker.exposedbydefault=false"
             # configure entrypoint
-            - "--entryPoints.http.address=:80"
-            - "--entryPoints.https.address=:443"
+            - "--entryPoints.wep.address=:80"
             # ssl configuration
             # enable Dashboard
             - "--api.dashboard=true"
@@ -21,7 +20,6 @@ services:
             - "--accesslog"
         ports:
             - "80:80"
-            - "443:443"
             - "8088:8080"
         networks:
             - "traefik-public"
@@ -52,8 +50,7 @@ services:
                 traefik.enable: "true"
                 traefik.port: "8080"
                 traefik.http.routers.app.rule: "PathPrefix(`/`)"
-                traefik.http.routers.app.entrypoints: "https"
-                traefik.http.routers.app.tls: "true"
+                traefik.http.routers.app.entrypoints: "web"
                 traefik.http.services.app.loadbalancer.server.port: "8080"
 
 
