@@ -1,51 +1,20 @@
 version: "3.9"
 
-# Requires two environment variables:
-# export DOMAIN=api.strategy-game.lruegner.de
-# export EMAIL=youremai@yourdomain.de
 services:
 
-    traefik:
-        image: "traefik:v2.9"
-        command:
-            # docker swarm configuration
-            - "--providers.docker=true"
-            - "--providers.docker.swarmmode"
-            - "--providers.docker.network=backend_traefik-public"
-            - "--providers.docker.exposedbydefault=false"
-            # configure entrypoint
-            - "--entryPoints.web.address=:80"
-            - "--entryPoints.websecure.address=:443"
-            # ssl configuration
-            - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge=true"
-            - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
-            - "--certificatesresolvers.letsencryptresolver.acme.email=${EMAIL}"
-            - "--certificatesresolvers.letsencryptresolver.acme.storage=/letsencrypt/acme.json"
-            - "--certificatesResolvers.letsencryptresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory" # LetsEncrypt Staging Server - uncomment when testing
-            # redirect HTTP -> HTTPS
-            - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-            - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-            # logging
-            - "--log.level=DEBUG"
-            - "--accesslog"
+    reverse_proxy:
+        image: "caddy:2.6.4"
         ports:
             - "80:80"
             - "443:443"
+            - "443:443/udp"
         networks:
-            - "traefik-public"
+            - "proxy-public"
         volumes:
-            - "/var/run/docker.sock:/var/run/docker.sock:ro"
-            - "traefik-certificates:/letsencrypt"
+            - "/Caddyfile:/etc/caddy/Caddyfile"
+            - "caddy_data:/data"
+            - "caddy_config:/config"
         deploy:
-            labels:
-                traefik.enable: "true"
-                traefik.http.services.traefik.loadbalancer.server.port: "888" # required by swarm but not used.
-                # global redirect to https
-                traefik.http.routers.http-catchall.rule: "hostregexp(`{host:.+}`)"
-                traefik.http.routers.http-catchall.entrypoints: "web"
-                traefik.http.routers.http-catchall.middlewares": redirect-to-https@docker"
-                # middleware redirect
-                traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: "https"
             placement:
                 constraints:
                     - node.role == manager
@@ -60,19 +29,8 @@ services:
         ports:
             - "8080:8080"
         networks:
-            - "traefik-public"
+            - "proxy-public"
             - "application"
-        deploy:
-            labels:
-                traefik.enable: "true"
-                traefik.http.services.app.loadbalancer.server.port: "8080"
-                traefik.port: "8080"
-                # routing
-                traefik.http.routers.app.rule: "Host(`${DOMAIN}`)"
-                traefik.http.routers.app.entrypoints: "websecure"
-                # https
-                traefik.http.routers.app.tls: "true"
-                traefik.http.routers.app.tls.certresolver: "letsencryptresolver"
 
     database:
         image: arangodb:3.10.0
@@ -85,17 +43,15 @@ services:
         volumes:
             - arangodb_data_container:/var/lib/arangodb3
             - arangodb_apps_data_container:/var/lib/arangodb3-apps
-        deploy:
-            labels:
-                traefik.enable: "false"
 
 volumes:
-    traefik-certificates:
+    caddy_data:
+    caddy_config:
     arangodb_data_container:
     arangodb_apps_data_container:
 
 networks:
-    traefik-public:
+    proxy-public:
     application:
 
 secrets:
