@@ -273,8 +273,6 @@ Resources:
                                 ProjectName: !Ref CodeBuildProjectBackend
                             InputArtifacts:
                                 -   Name: "strategy-game_backend_src-artifact"
-                            OutputArtifacts:
-                                -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
 
     PipelineBackendDevelop:
@@ -316,8 +314,6 @@ Resources:
                                 ProjectName: !Ref CodeBuildProjectBackend
                             InputArtifacts:
                                 -   Name: "strategy-game_backend_src-artifact"
-                            OutputArtifacts:
-                                -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
 
     PipelineBackendRelease:
@@ -346,7 +342,6 @@ Resources:
                                 DetectChanges: false
                             OutputArtifacts:
                                 -   Name: "strategy-game_backend_src-artifact"
-
                             RunOrder: 1
                 -   Name: "Build"
                     Actions:
@@ -360,6 +355,4 @@ Resources:
                                 ProjectName: !Ref CodeBuildProjectBackend
                             InputArtifacts:
                                 -   Name: "strategy-game_backend_src-artifact"
-                            OutputArtifacts:
-                                -   Name: "strategy-game_backend_build-artifact"
                             RunOrder: 1
