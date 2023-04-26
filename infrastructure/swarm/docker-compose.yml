@@ -11,7 +11,7 @@ services:
         networks:
             - "proxy-public"
         volumes:
-            - "/Caddyfile:/etc/caddy/Caddyfile"
+            - "./caddy/Caddyfile:/etc/caddy/Caddyfile"
             - "caddy_data:/data"
             - "caddy_config:/config"
         deploy:
@@ -44,11 +44,39 @@ services:
             - arangodb_data_container:/var/lib/arangodb3
             - arangodb_apps_data_container:/var/lib/arangodb3-apps
 
+    prometheus:
+        image: prom/prometheus:v2.39.1
+        ports:
+            - "9090:9090"
+        networks:
+            - "proxy-public"
+            - "application"
+        volumes:
+            - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+            - "prometheus_data:/prometheus"
+        command: --config.file=/etc/prometheus/prometheus.yml
+
+
+    grafana:
+        image: grafana/grafana:9.2.1
+        ports:
+            - "3000:3000"
+        user: "104"
+        volumes:
+            - "./grafana/dashboards:/etc/grafana/provisioning/dashboards"
+            - "./grafana/datasources:/etc/grafana/provisioning/datasources"
+            - "grafana_data:/var/lib/grafana"
+        networks:
+            - "proxy-public"
+            - "application"
+
 volumes:
     caddy_data:
     caddy_config:
     arangodb_data_container:
     arangodb_apps_data_container:
+    prometheus_data:
+    grafana_data:
 
 networks:
     proxy-public:

@@ -48,13 +48,27 @@ Resources:
 
                     sudo apt-get update
                     
+                    echo "installing aws-cli..."
+                    sudo apt-get install awscli -y
+
+                    echo "installing python..."
+                    sudo apt install python3 -y
+
+                    echo "installing docker..."
                     sudo apt install docker.io -y
                     sudo usermod -aG docker ubuntu
                     newgrp docker
                     docker swarm init
                     
+                    echo "installing amazon-ecr-credential-helper..."
                     sudo apt install amazon-ecr-credential-helper
-                    mkdir /home/ubuntu/.docker
+                    sudo -u ubuntu mkdir /home/ubuntu/.docker
                     echo "{\"credsStore\":\"ecr-login\"}" >> /home/ubuntu/.docker/config.json
                     
+                    echo "setting up application..."
+                    sudo -u ubuntu mkdir /home/ubuntu/app
+                    aws s3 cp s3://strategy-game.swarm/swarm-setup.py /home/ubuntu/app/swarm-setup.py
+                    sudo chown ubuntu /home/ubuntu/app/swarm-setup.py
+                    python3 /home/ubuntu/app/swarm-setup.py
+
                     echo "...Setup of swarm-master complete"
