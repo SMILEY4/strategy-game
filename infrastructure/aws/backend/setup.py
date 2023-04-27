@@ -1,3 +1,6 @@
+# initial configuration/setup of an existing docker swarm (i.e. things that can not be configured during ec2-creation)
+# Usage: `python3 setup.py`
+
 import json
 import os
 

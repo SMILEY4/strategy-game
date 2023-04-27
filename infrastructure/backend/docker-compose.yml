@@ -22,7 +22,7 @@ services:
     app:
         image: 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:latest
         secrets:
-            - awsSecretAccessKey
+            - secretAccessKey
             - adminPassword
         environment:
             LOG_AS_JSON: "true"
@@ -83,7 +83,7 @@ networks:
     application:
 
 secrets:
-    awsSecretAccessKey:
+    secretAccessKey:
         external: true
     adminPassword:
         external: true

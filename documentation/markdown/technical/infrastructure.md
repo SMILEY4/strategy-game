@@ -1,105 +1,161 @@
----
-title: Infrastructure Documentation
----
+# Notes: Infrastructure
 
+The infrastructure-directory contains the following sub-directories
 
+- */aws* - all configuration specific to aws  - mostly cloudformation-stacks to create aws resources
+- */backend* - all files required to run the backend-application in a docker-swarm- e.g. docker-compose.yml and config-files
+- */local* - all files required to run the application locally (e.g. docker-compose.yml). Similar to "/backend" but with a more simplified/minimal setup.
 
-# Setting up the Infrastructure
+## AWS Cloudformation Stacks
 
-## Prerequisites
+AWS resources are created via Cloudformation.
 
-Required AWS-Resources that are not created with the CloudFormation stack
+### Resources not included in stacks
 
-- **Certificate for WebApp**
+Required AWS-Resources that are not created with any CloudFormation-stack
+
+- *Certificate for WebApp*
   - An SSL-Certificate for the WebApp-Domain registered in "Amazon Certificate Manager"
   - Must be registered in region us-east-1
-- **Domain + Hosted Zone**
+- *Domain + Hosted Zone*
   - A domain in AWS Route53 with a hosted zone
-- **CodeStart-Github-Connection**
+- *CodeStart-Github-Connection*
   - A connection to GitHub via CodeStar for the deployment-pipeline
-- **Kubernetes-Cluster**
-  - The whole system (except the frontend) can be run in a Kubernetes-Cluster. The setup for this is currently not automated
-  - more information can be found here: [Kubernetes Cluster](./kubernetes_cluster.md)
-  - All resources/config-files required to setup a cluster using Kops, aswell as deploying the whole system can be found in the `/infrastructure/kubernetes`-directory
+- *Instance Key-Pair*
+  - A key to access ec2-instances
+
+### cf-base.yml
+
+Creates the following base resources:
+
+- *DockerRepository* - the private ecr docker-repository
+- *log and artifact s3-buckets* - s3-buckets holding logs and (temporary) artifacts
+
+### backend/cf-docker-swarm-base.yml
+
+Creates the following resources required to run a docker-swarm on aws:
+
+- *SwarmConfigBucket* - s3 bucket containing scripts and configuration required to setup and run the docker-swarm (not the actual application) - i.e. contains the setup and deploy scripts
+- *DeploymentArtifactBucket* - s3 bucket containing .zip-files with the necessary files and configuration to deploy the backend system (e.g. docker-compose-file, Caddyfile, ...)
+- *SecurityGroups* -  the security-group for the ec2-instances running the docker-swarm (master and workers). Allows communication between the instances and exposes only the ports required for the application to the public (i.e. 80, 443, 22)
+- *MasterInstanceRole, Profile* - the iam-role and profile for the docker-swarm-master ec2-instances
+- *WorkerInstanceRole, Profile* - the iam-role and profile for the docker-swarm-worker ec2-instances
+
+### backend/cf-docker-swarm-master.yml
+
+Creates the following resources to create the docker-swarm master-node:
+
+- *Instance* - the ec2-instance configured as a docker-swarm-master. Installs all required dependencies and downloads the setup and deploy scripts from the `strategy-game.swarm`-bucket
+
+No additional manual setup is required. Only one master-node should exist at once.
+
+Two scripts are downloaded from the  `strategy-game.swarm`-bucket:
+
+- *setup.py* - automatically run during ec2-creation. Executes some addition setup for the swarm, e.g. creating docker secrets.
+- *deploy.py* - used to deploy the system on the swarm. Has to be executed manually. 
+
+### backend/cf-docker-swarm-worker.yml
+
+Creates the following resources to create a single docker-swarm worker-node:
+
+- *Instance* - the ec2-instance configured as a docker-swarm-worker. Installs all required dependencies.
+
+The worker instance must be manually connected to the master-node.
+
+- ssh into the master node and get the connection-command
+
+  ```bash
+  docker swarm join-token worker
+  ```
+
+- ssh into the created worker node and run the command to join the swarm
+
+### frontent/cf-frontend.yml
+
+Creates the following resources to host the webapp:
+
+- *WebAppBucket* - the public s3-bucket hosting the webapp
+- *BasicAuthFunction* - a (javascript) cloudfront-function adding basic-auth to the webapp. The username and password are hardcoded in this code/cloudformation-file. This auth it NOT meant to protect secure data, but to prevent bots from easily crawling the page!
+- *CloudFrontDistribution* - the setup of the cloudfront-cdn including tls
+- *Route53Records* - the route53-record
+
+### buildpipeline/cf-build-pipeline-backend.yml
+
+Creates the following resources to create a aws code-pipeline for the backend application:
+
+- *IAM-Roles* - all required iam-roles
+- *CodeBuildBackend* - the code-build project running the buildspec.yml and building the backend and uploading the docker image to ECR
+- *PipelineBackendDeploymentMarker* - the pipeline building the backend. Uses the git `deployment-marker`-branch 
+- *PipelineBackendDevelop* - the pipeline building the backend. Uses the git `develop`-branch 
+- *PipelineBackendRelease* - the pipeline building the backend. Uses the git `relese`-branch 
+
+The codebuild-project uses the "buildspec-backend.yml". It build the backend docker-image and uploads it to ECR tagged as "latest" and an another identifying tag. this tag is either the value of a git-tag (if present) at the checked-out commit or a short form of the commit-hash
+
+### buildpipeline/cf-build-pipeline-frontend.yml
+
+Creates the following resources to create a aws code-pipeline for the frontend application:
+
+- *IAM-Roles* - all required iam-roles
+- *CodeBuildProjectFrontend* - the code-build project running the buildspec.yml and building the webapp-artifact
+- *PipelineFrontendDeploymentMarker* - the pipeline building the webapp. Uses the git `deployment-marker`-branch 
+- *PipelineFrontendDevelop* - the pipeline building the webapp. Uses the git `develop`-branch 
+- *PipelineFrontendRelease* - the pipeline building the webapp. Uses the git `relese`-branch 
+
+The codebuild-project uses the "buildspec-frontend.yml". It builds the webapp-artifact. The pipeline then deploys the webapp to the specified (public) s3-bucket
 
 
 
+# Deploying the Frontend
 
-## AWS-Cloudformation Stacks
+The frontend can be deployed completly automatically with CodePipelines.
 
-The complete infrastructure can be created by "AWS CloudFormation". Several stacks exist in the "/infrastructure/aws"-directory:
+- `strategy-game.frontend.release` - the deployment of the "release"-branch
+- `strategy-game.frontend.develop` - the deployment of the "develop"-branch
+- `strategy-game.frontend.deployment-marker` - the deployment of the "deployment-marker"-branch. Hard-reset this branch to any commit.
 
-### Base-Stack
-
-- `cf-base.yml`
-
-- Infrastructure stack that is only created once and contains common config/services
-
-- contains for example the AWS ECR, common logging S3-Buckets, ...
-
-### Frontend-Stack
-
-- `frontend/cf-frontend.yml`
-- Infrastructure to run/host the frontend 
-- contains for example the S3-Bucket, Cloudfront-setup, Route53-entry, ...
-
-### Backend Build-Pipeline
-
-- `buildpipeline/cf-build-pipeline-backend.yml`
-- infrastructure to automatically build and deploy the backend
-
-### Frontend Build-Pipeline
-
-- `buildpipeline/cf-build-pipeline-frontend.yml`
-- infrastructure to automatically build and deploy the frontend
+The respective git-branch is checked out, the webapp is built and deployed to the public s3-bucket
 
 
 
-## Creating a new Infrastructure-Stack
+## Deploying the Backend
 
-The CloudFormation stacks are defined in `./infrastructure/aws/...`
+The deployment of the backend involves multiple steps
 
-A new stack can be created via the AWS-Console
+**1. Building the docker image and pushing to ECR**
 
-0. AWS-Console -> "CloudFormation"
+The docker image can be built manually or with a respective CodePipeline
 
-1. "Create Stack" -> "With new resources"
-   - "Template is ready"
-   - "Upload a template file" -> "Choose File" -> `./infrastructure/infrastructure-stack.yml`
-2. Choose a (unique) name for the new stack and check the parameters
-3. "Next" -> "Select check-box for capabilities" -> "Create Stack"
+- `strategy-game.backend.release` - the deployment of the "release"-branch
+- `strategy-game.backend.develop` - the deployment of the "develop"-branch
+- `strategy-game.backend.deployment-marker` - the deployment of the "deployment-marker"-branch. Hard-reset this branch to any commit.
 
+**2. Uploading a deployment artifact to s3**
 
+A .zip-file containing the docker-compose-file and other config-files has to be uploaded to the s3-bucket. The docker-compose.yml must reference a docker image that exists in ECR. the docker compose-file must be a top-level file in the zip-archive.
 
-## Deleting an Infrastructure-Stack
+The .zip-archive must have a name matching the following schema: `artifact_<tag>.zip`. "tag" is any string identifying the archive (e.g. "latest", "0.4.1", "a125efc", ...).
 
-- An existing infrastructure stack can be deleted via the AWS-Console
+**3. running the deployment-script**
 
-  1. Manually empty all S3-Buckets created by the stack
-2. "CloudFormation" -> "Delete Stack" 
+A deploy.py script was automatically downloaded to the docker-swarm master instance at when creating the instance.
 
+Connect to the swarm-master via ssh and execute the "deploy.py"-script with the following arguments:
 
+- the tag of the artifact-archive uploaded in step 2 to use for the deployment (e.g. "latest", "0.4.1", "a125efc", ...). 
 
-# Deploying the Applications
+ 
 
-## Executing the Deployment
+## Accessing non-exposed apps in docker-swarm
 
-The frontend and backend can be automatically build and deployed with their respective CodePipelines
+Apps (e.g. grafana, prometheus) that are running on ports that are not publicly exposed can be accessed via ssh-tunnels
 
-- AWS-Console -> "CodePipeline" -> "Release change"
+```bash
+ssh -i [./pathToKey.pem] ubuntu@[Public IPv4 DNS] -L [localport]:[Public IPv4 DNS]:[remotePort]
+```
 
-**Pipelines**
+- *pathToKey* - the .pem-file used to access the ec2-instance
+- *Public IPv4 DNS* - the public IPv4 DNS of the instance to access, i.e. "ec2-xxx-xxx.xxx.xxx.eu-central-1.compute.amazonaws.com"
+- *remotePort* - the port of the instance the application is running on
+- *localPort* - the local port to bind the app to
 
-- `strategy-game.backend.release` - the backend deployment of the "release"-branch
-- `strategy-game.backend.develop` - the backend deployment of the "develop"-branch
-- `strategy-game.backend.deployment-marker` - the backend deployment of the "deployment-marker"-branch. Hard-reset this branch to any commit.
-- `strategy-game.frontend.release` - the frontenddeployment of the "release"-branch
-- `strategy-game.frontend.develop` - the frontenddeployment of the "develop"-branch
-- `strategy-game.frontend.deployment-marker` - the frontenddeployment of the "deployment-marker"-branch. Hard-reset this branch to any commit.
-
-**⚠ Note (@March 2023)**
-
-The backend is currently not "deployed" - only the docker image pushed into the private AWS Container Registry 
-
-
-
+The app can then be accessed on "http://localhost:[localport]" 

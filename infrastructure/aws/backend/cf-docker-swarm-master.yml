@@ -54,6 +54,9 @@ Resources:
                     echo "installing python..."
                     sudo apt install python3 -y
 
+                    echo "installing unzip..."
+                    sudo apt install unzip -y
+
                     echo "installing docker..."
                     sudo apt install docker.io -y
                     sudo usermod -aG docker ubuntu
@@ -67,8 +70,10 @@ Resources:
                     
                     echo "setting up application..."
                     sudo -u ubuntu mkdir /home/ubuntu/app
-                    aws s3 cp s3://strategy-game.swarm/swarm-setup.py /home/ubuntu/app/swarm-setup.py
-                    sudo chown ubuntu /home/ubuntu/app/swarm-setup.py
-                    python3 /home/ubuntu/app/swarm-setup.py
+                    aws s3 cp s3://strategy-game.swarm/setup.py /home/ubuntu/app/setup.py
+                    aws s3 cp s3://strategy-game.swarm/deploy.py /home/ubuntu/app/deploy.py
+                    sudo chown ubuntu /home/ubuntu/app/setup.py
+                    sudo chown ubuntu /home/ubuntu/app/deploy.py
+                    python3 /home/ubuntu/app/setup.py
 
                     echo "...Setup of swarm-master complete"

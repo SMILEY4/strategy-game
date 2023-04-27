@@ -3,9 +3,31 @@ AWSTemplateFormatVersion: "2010-09-09"
 Resources:
 
     #===================================================================================================================
-    #    Common
+    #    Swarm Configuration
     #===================================================================================================================
 
+
+    SwarmConfigBucket:
+        Type: "AWS::S3::Bucket"
+        DeletionPolicy: "Delete"
+        Properties:
+            BucketName: "strategy-game.swarm"
+
+
+    #===================================================================================================================
+    #    Deployment Artifact Bucket
+    #===================================================================================================================
+
+    DeploymentArtifactBucket:
+        Type: "AWS::S3::Bucket"
+        DeletionPolicy: "Delete"
+        Properties:
+            BucketName: "strategy-game.backend-deploy-artifacts"
+
+
+    #===================================================================================================================
+    #    Security Groups
+    #===================================================================================================================
 
     SwarmSecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
@@ -58,12 +80,23 @@ Resources:
             ToPort: 7946
             SourceSecurityGroupId: !GetAtt SwarmSecurityGroup.GroupId
 
-    SwarmSGIngressManagerCommunication:
+
+    SwarmSGIngressTrafficTCP:
         Type: "AWS::EC2::SecurityGroupIngress"
         DependsOn: SwarmSecurityGroup
         Properties:
             GroupId: !GetAtt SwarmSecurityGroup.GroupId
             IpProtocol: tcp
+            FromPort: 4789
+            ToPort: 4789
+            SourceSecurityGroupId: !GetAtt SwarmSecurityGroup.GroupId
+
+    SwarmSGIngressTrafficUDP:
+        Type: "AWS::EC2::SecurityGroupIngress"
+        DependsOn: SwarmSecurityGroup
+        Properties:
+            GroupId: !GetAtt SwarmSecurityGroup.GroupId
+            IpProtocol: udp
             FromPort: 4789
             ToPort: 4789
             SourceSecurityGroupId: !GetAtt SwarmSecurityGroup.GroupId
@@ -101,6 +134,7 @@ Resources:
             Path: "/"
             Roles:
                 - !Ref MasterInstanceRole
+
 
     #===================================================================================================================
     #    Worker
