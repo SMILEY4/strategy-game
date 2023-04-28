@@ -25,8 +25,20 @@ Parameters:
         Type: String
         Description: "The name/id of the (master) security-group."
         Default: "ec2-swarm"
+    AppDomain:
+        Type: "String"
+        Description: "Domain name of the api (without www)"
+        Default: "api.strategy-game.lruegner.de"
+    HostedZoneId:
+        Type: "String"
+        Description: "Id of the hosted zone of the domain"
+        Default: "Z0864027FH95HV1Z970G"
 
 Resources:
+
+    #===================================================================================================================
+    #    EC2 Instance
+    #===================================================================================================================
 
     Instance:
         Type: "AWS::EC2::Instance"
@@ -77,3 +89,22 @@ Resources:
                     python3 /home/ubuntu/app/setup.py
 
                     echo "...Setup of swarm-master complete"
+
+
+    #===================================================================================================================
+    #    Route53 Record
+    #===================================================================================================================
+
+    Route53Records:
+        Type: "AWS::Route53::RecordSetGroup"
+        Properties:
+            HostedZoneId: !Ref HostedZoneId
+            RecordSets:
+                -   Name: !Join
+                        - ""
+                        -   - ""
+                            - !Ref AppDomain
+                            - "."
+                    Type: "A"
+                    ResourceRecords:
+                        - !GetAtt Instance.PublicIp

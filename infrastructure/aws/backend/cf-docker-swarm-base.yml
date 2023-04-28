@@ -6,7 +6,6 @@ Resources:
     #    Swarm Configuration
     #===================================================================================================================
 
-
     SwarmConfigBucket:
         Type: "AWS::S3::Bucket"
         DeletionPolicy: "Delete"
