@@ -29,6 +29,7 @@ Required AWS-Resources that are not created with any CloudFormation-stack
 Creates the following base resources:
 
 - *DockerRepository* - the private ecr docker-repository
+- *config-bucket* - s3 bucket holding some config files required by some applications
 - *log and artifact s3-buckets* - s3-buckets holding logs and (temporary) artifacts
 
 ### backend/cf-docker-swarm-base.yml
@@ -105,7 +106,56 @@ The codebuild-project uses the "buildspec-frontend.yml". It builds the webapp-ar
 
 
 
-# Deploying the Frontend
+## Deploying the Infrastructure
+
+**1. Create the common base resources**
+
+- create a new cloudformation stack from "/aws/cf-base.yml"
+- upload the frontend environment files ".env.local" and ".env.production.local" to the "strategy-game.config"-s3-bucket (in the directory "frontend")
+- upload the files "aws/backend/setup.py" and "aws/backend/deploy.py" to the "strategy-game.config"-s3-bucket (in the directory "swarm")
+
+**2. Create the frontend resources**
+
+- create a new cloudformation stack from "/aws/frontend/cf-frontend.yml"
+
+**3. Create the frontend build-pipeline**
+
+- create a new cloudformation stack from "/aws/buildpipeline/cf-build-pipeline-frontend.yml"
+- ⚠ AWS CodeBuild takes the buildspec from the specified branch of the git-repository
+- ⚠ AWS CodePipelines automatically start after creation -> manually stop started pipelines 
+
+**4. Create the backend docker-swarm base stack**
+
+- create a new cloudformation stack from "/aws/backend/cf-docker-swarm-base.yml"
+
+**5. Create the backend docker-swarm master-instance stack**
+
+- create a new cloudformation stack from "/aws/backend/cf-docker-swarm-master.yml"
+  - enter the ec2-instance-type when creating the stack
+
+**6. (optional) Create backend docker-swarm- worker-instance stacks**
+
+- create a new cloudformation stack from "/aws/backend/cf-docker-swarm-worker.yml"
+  - enter the ec2-instance-type when creating the stack
+  - enter the instance name when creating multiple stacks
+- manually connect the worker-instance to the swarm
+  - ssh into the master instance and run `docker swarm join-token worker`. The command returns the join-command for worker-instances
+  - ssh into the worker instance(s) and execute the returned join-command
+  - verify worker nodes: ssh into the master instance and run `docker node ls` to list all nodes (incl. master node)
+
+**7. Create the backend build-pipeline**
+
+- create a new cloudformation stack from "/aws/buildpipeline/cf-build-pipeline-backend.yml"
+- ⚠ AWS CodeBuild takes the buildspec from the specified branch of the git-repository
+- ⚠ AWS CodePipelines automatically start after creation -> manually stop started pipelines 
+
+
+
+
+
+
+
+## Deploying the Frontend
 
 The frontend can be deployed completly automatically with CodePipelines.
 

@@ -82,8 +82,8 @@ Resources:
                     
                     echo "setting up application..."
                     sudo -u ubuntu mkdir /home/ubuntu/app
-                    aws s3 cp s3://strategy-game.swarm/setup.py /home/ubuntu/app/setup.py
-                    aws s3 cp s3://strategy-game.swarm/deploy.py /home/ubuntu/app/deploy.py
+                    aws s3 cp s3://strategy-game.config/swarm/setup.py /home/ubuntu/app/setup.py
+                    aws s3 cp s3://strategy-game.config/swarm/deploy.py /home/ubuntu/app/deploy.py
                     sudo chown ubuntu /home/ubuntu/app/setup.py
                     sudo chown ubuntu /home/ubuntu/app/deploy.py
                     python3 /home/ubuntu/app/setup.py
@@ -106,5 +106,6 @@ Resources:
                             - !Ref AppDomain
                             - "."
                     Type: "A"
+                    TTL: 300
                     ResourceRecords:
                         - !GetAtt Instance.PublicIp

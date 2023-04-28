@@ -17,6 +17,12 @@ Resources:
     #    Common S3-Buckets
     #===================================================================================================================
 
+    ConfigBucket:
+        Type: "AWS::S3::Bucket"
+        DeletionPolicy: "Delete"
+        Properties:
+            BucketName: "strategy-game.config"
+
     GeneralLogBucket:
         Type: "AWS::S3::Bucket"
         DeletionPolicy: "Delete"

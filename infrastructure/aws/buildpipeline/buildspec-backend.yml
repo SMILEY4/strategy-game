@@ -25,7 +25,7 @@ phases:
             - echo image-tag = $IMAGE_TAG
             - cd strategy-game-backend
             - echo Building the Docker image...
-            - docker build --platform linux/arm64 -t $REPOSITORY_URI:latest .
+            - docker build --platform linux/amd64 -t $REPOSITORY_URI:latest .
             - cd ..
 
     post_build:

@@ -24,11 +24,11 @@ def cmd_download_s3(source, target):
 
 
 def cmd_unzip_artifact():
-    return f"unzip {WORKING_DIR}/artifact.zip -d artifact -o"
+    return f"unzip -o {WORKING_DIR}/artifact.zip -d artifact"
 
 
 def cmd_deploy_docker_stack():
-    return f"docker stack deploy --compose-file {WORKING_DIR}/artifact/docker-compose.yml backend"
+    return f"docker stack deploy --compose-file {WORKING_DIR}/artifact/docker-compose.yml --with-registry-auth backend"
 
 
 def s3_path(tag):
