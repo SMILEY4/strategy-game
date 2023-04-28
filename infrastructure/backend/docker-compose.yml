@@ -70,6 +70,36 @@ services:
             - "proxy-public"
             - "application"
 
+    elasticsearch:
+        image: elasticsearch:7.9.3
+        environment:
+            - discovery.type=single-node
+            - ES_JAVA_OPTS=-Xms1g -Xmx2g
+        volumes:
+            - "esdata:/usr/share/elasticsearch/data"
+        ports:
+            - "9200:9200"
+
+    kibana:
+        image: kibana:7.9.3
+        depends_on:
+            - elasticsearch
+        ports:
+            - "5601:5601"
+
+    logstash:
+        image: logstash:7.9.3
+        ports:
+            - "12201:12201/udp"
+        depends_on:
+            - elasticsearch
+        deploy:
+            mode: global
+        volumes:
+            - "./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf"
+            - "logstash-pipeline:/usr/share/logstash/pipeline/"
+
+
 volumes:
     caddy_data:
     caddy_config:
@@ -77,6 +107,9 @@ volumes:
     arangodb_apps_data_container:
     prometheus_data:
     grafana_data:
+    esdata:
+    logstash-pipeline:
+
 
 networks:
     proxy-public:

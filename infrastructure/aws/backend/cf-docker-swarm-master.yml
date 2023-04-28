@@ -44,11 +44,18 @@ Resources:
         Type: "AWS::EC2::Instance"
         Properties:
             Tags:
-                - Key: "Name"
-                  Value: !Ref InstanceName
+                -   Key: "Name"
+                    Value: !Ref InstanceName
             ImageId: !Ref ImageId
             InstanceType: !Ref InstanceType
             IamInstanceProfile: !Ref InstanceProfile
+            BlockDeviceMappings:
+                -   DeviceName: "/dev/sdm"
+                    Ebs:
+                        VolumeType: "io1"
+                        Iops: "200"
+                        DeleteOnTermination: "true"
+                        VolumeSize: "16"
             KeyName: !Ref InstanceKeyPairName
             SecurityGroupIds:
                 - !Ref SecurityGroup
@@ -71,6 +78,7 @@ Resources:
 
                     echo "installing docker..."
                     sudo apt install docker.io -y
+                    echo "{\"log-driver\": \"gelf\", \"log-opts\": { \"gelf-address\": \"udp://localhost:12201\"}}" >> /etc/docker/daemon.json
                     sudo usermod -aG docker ubuntu
                     newgrp docker
                     docker swarm init
@@ -79,7 +87,7 @@ Resources:
                     sudo apt install amazon-ecr-credential-helper
                     sudo -u ubuntu mkdir /home/ubuntu/.docker
                     echo "{\"credsStore\":\"ecr-login\"}" >> /home/ubuntu/.docker/config.json
-                    
+
                     echo "setting up application..."
                     sudo -u ubuntu mkdir /home/ubuntu/app
                     aws s3 cp s3://strategy-game.config/swarm/setup.py /home/ubuntu/app/setup.py
