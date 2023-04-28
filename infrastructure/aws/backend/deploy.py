@@ -10,6 +10,7 @@ DEPLOYMENT_ARTIFACT_BUCKET = "strategy-game.backend-deploy-artifacts"
 DEPLOYMENT_ARTIFACT_PREFIX = "artifact_"
 DEPLOYMENT_ARTIFACT_SUFFIX = ".zip"
 WORKING_DIR = "/home/ubuntu/app"
+STACK_NAME = "backend"
 
 
 def run_command(cmd):
@@ -27,8 +28,12 @@ def cmd_unzip_artifact():
     return f"unzip -o {WORKING_DIR}/artifact.zip -d artifact"
 
 
+def cmd_delete_docker_stack():
+    return f"docker stack rm {STACK_NAME}"
+
+
 def cmd_deploy_docker_stack():
-    return f"docker stack deploy --compose-file {WORKING_DIR}/artifact/docker-compose.yml --with-registry-auth backend"
+    return f"docker stack deploy --compose-file {WORKING_DIR}/artifact/docker-compose.yml --with-registry-auth {STACK_NAME}"
 
 
 def s3_path(tag):
@@ -49,6 +54,7 @@ def deploy(tag):
     print(f"Deploying deployment artifact with tag '{tag}'...")
     print(run_command(cmd_download_s3(s3_path(tag), WORKING_DIR + "/artifact.zip")))
     print(run_command(cmd_unzip_artifact()))
+    print(run_command(cmd_delete_docker_stack()))
     deploy_stack()
 
 
