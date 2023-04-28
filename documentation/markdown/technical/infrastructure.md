@@ -153,8 +153,6 @@ The codebuild-project uses the "buildspec-frontend.yml". It builds the webapp-ar
 
 
 
-
-
 ## Deploying the Frontend
 
 The frontend can be deployed completly automatically with CodePipelines.
