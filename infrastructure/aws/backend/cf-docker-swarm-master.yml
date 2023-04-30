@@ -17,12 +17,20 @@ Parameters:
         Type: "String"
         Description: "Type of the image. Use Ubuntu or change the username in the UserData-Script of the ec2 instance."
         Default: "ami-0ec7f9846da6b0f61"
+    RootDeviceName:
+        Type: "String"
+        Description: "The device name of the root volume of your AMI (https://repost.aws/knowledge-center/cloudformation-root-volume-property)",
+        Default: "/dev/sda1"
+    VolumeSize:
+        Type: "String"
+        Description: "The volume size of the master instance"
+        Default: "16"
     InstanceProfile:
-        Type: String
+        Type: "String"
         Description: "The name of the (master) instance-profile."
         Default: "ec2-swarm-master"
     SecurityGroup:
-        Type: String
+        Type: "String"
         Description: "The name/id of the (master) security-group."
         Default: "ec2-swarm"
     AppDomain:
@@ -50,12 +58,11 @@ Resources:
             InstanceType: !Ref InstanceType
             IamInstanceProfile: !Ref InstanceProfile
             BlockDeviceMappings:
-                -   DeviceName: "/dev/sdm"
+                -   DeviceName: !Ref RootDeviceName
                     Ebs:
-                        VolumeType: "io1"
-                        Iops: "200"
+                        VolumeType: "gp2"
                         DeleteOnTermination: "true"
-                        VolumeSize: "16"
+                        VolumeSize: !Ref VolumeSize
             KeyName: !Ref InstanceKeyPairName
             SecurityGroupIds:
                 - !Ref SecurityGroup
