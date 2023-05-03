@@ -1,4 +1,4 @@
-# Notes: Infrastructure
+# Infrastructure
 
 The infrastructure-directory contains the following sub-directories
 
@@ -198,7 +198,7 @@ Connect to the swarm-master via ssh and execute the "deploy.py"-script with the 
 Apps (e.g. grafana, prometheus) that are running on ports that are not publicly exposed can be accessed via ssh-tunnels
 
 ```bash
-ssh -i [./pathToKey.pem] ubuntu@[Public IPv4 DNS] -L [localport]:[Public IPv4 DNS]:[remotePort]
+ssh -i [./pathToKey.pem] ubuntu@[Public IPv4 DNS] -N -L [localport]:[Public IPv4 DNS]:[remotePort]
 ```
 
 - *pathToKey* - the .pem-file used to access the ec2-instance

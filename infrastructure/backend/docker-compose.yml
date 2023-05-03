@@ -18,6 +18,11 @@ services:
             placement:
                 constraints:
                     - node.role == manager
+        logging:
+            driver: "gelf"
+            options:
+                gelf-address: "udp://localhost:12201"
+                tag: "caddy"
 
     app:
         image: 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:latest
@@ -31,6 +36,11 @@ services:
         networks:
             - "proxy-public"
             - "application"
+        logging:
+            driver: "gelf"
+            options:
+                gelf-address: "udp://localhost:12201"
+                tag: "app"
 
     database:
         image: arangodb:3.10.0
@@ -43,6 +53,11 @@ services:
         volumes:
             - arangodb_data_container:/var/lib/arangodb3
             - arangodb_apps_data_container:/var/lib/arangodb3-apps
+        logging:
+            driver: "gelf"
+            options:
+                gelf-address: "udp://localhost:12201"
+                tag: "database"
 
     prometheus:
         image: prom/prometheus:v2.39.1
@@ -98,7 +113,6 @@ services:
         volumes:
             - "./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf"
             - "logstash-pipeline:/usr/share/logstash/pipeline/"
-
 
 volumes:
     caddy_data:

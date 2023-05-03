@@ -19,7 +19,7 @@ Parameters:
         Default: "ami-0ec7f9846da6b0f61"
     RootDeviceName:
         Type: "String"
-        Description: "The device name of the root volume of your AMI (https://repost.aws/knowledge-center/cloudformation-root-volume-property)",
+        Description: "The device name of the root volume of your AMI (https://repost.aws/knowledge-center/cloudformation-root-volume-property)"
         Default: "/dev/sda1"
     VolumeSize:
         Type: "String"
@@ -85,7 +85,6 @@ Resources:
 
                     echo "installing docker..."
                     sudo apt install docker.io -y
-                    echo "{\"log-driver\": \"gelf\", \"log-opts\": { \"gelf-address\": \"udp://localhost:12201\"}}" >> /etc/docker/daemon.json
                     sudo usermod -aG docker ubuntu
                     newgrp docker
                     docker swarm init
