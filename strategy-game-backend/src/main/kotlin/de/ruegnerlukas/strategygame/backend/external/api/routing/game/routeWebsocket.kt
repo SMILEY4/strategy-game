@@ -45,7 +45,9 @@ fun Route.routeWebsocket(
     onOpen { connection ->
         val userId = connection.getData<String>(USER_ID)!!
         val gameId = connection.getData<String>(GAME_ID)!!
-        connectAction.perform(userId, gameId, connection.getId())
+        withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
+            connectAction.perform(userId, gameId, connection.getId())
+        }
     }
     text {
         onEach { connection, message ->

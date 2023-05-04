@@ -23,11 +23,9 @@ phases:
             - echo Build started on `date`
             - echo repository-uri = $$REPOSITORY_URI
             - echo image-tag = $IMAGE_TAG
-            - echo Copying secret configs...
-            - aws s3 cp s3://strategy-game.config/backend/application.prod.local.conf strategy-game-backend/src/main/resources/application.prod.local.conf
             - cd strategy-game-backend
             - echo Building the Docker image...
-            - docker build --platform linux/arm64 -t $REPOSITORY_URI:latest .
+            - docker build --platform linux/amd64 -t $REPOSITORY_URI:latest .
             - cd ..
 
     post_build:

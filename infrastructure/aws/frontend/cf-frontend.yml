@@ -17,10 +17,6 @@ Parameters:
         Type: "String"
         Description: "Id of the hosted zone of the domain"
         Default: "Z0864027FH95HV1Z970G"
-    GeneralLogBucketName:
-        Type: "String"
-        Description: "The name of the s3-bucket to use for general system logs"
-        Default: "strategy-game.logs"
 
 Resources:
 
@@ -165,17 +161,10 @@ Resources:
                     SslSupportMethod: "sni-only"
                 HttpVersion: "http2"
                 PriceClass: "PriceClass_100"
-                Logging:
-                    Bucket: !Join
-                        - ""
-                        -   - !Ref GeneralLogBucketName
-                            - ".s3.amazonaws.com"
-                    Prefix: "cloudfront/"
-                    IncludeCookies: false
 
 
     #===================================================================================================================
-    #    Route53
+    #    Route53 Record
     #===================================================================================================================
 
     Route53Records:

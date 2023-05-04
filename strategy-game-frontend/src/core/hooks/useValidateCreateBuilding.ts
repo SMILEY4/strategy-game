@@ -1,10 +1,10 @@
 import {BuildingType} from "../models/buildingType";
 import {City} from "../models/city";
-import {CommandProductionQueueAddEntry} from "../models/command";
 import {validations} from "../../shared/validation";
 import {useCommands} from "./useCommands";
 import {useCountryPlayer} from "./useCountryPlayer";
 import {useGameConfig} from "./useGameConfig";
+import {CommandProductionQueueAddBuildingEntry} from "../models/command";
 
 export function useValidateCreateBuilding(city: City | null): (type: BuildingType) => boolean {
     const country = useCountryPlayer();
@@ -19,8 +19,8 @@ export function useValidateCreateBuilding(city: City | null): (type: BuildingTyp
                 });
                 ctx.validate("BUILDING.CITY_SPACE", () => {
                     const amountBuildingCommands = commands
-                        .filter(cmd => cmd.commandType === "production-queue-add-entry")
-                        .map(cmd => cmd as CommandProductionQueueAddEntry)
+                        .filter(cmd => cmd.commandType === "production-queue-add-entry.building")
+                        .map(cmd => cmd as CommandProductionQueueAddBuildingEntry)
                         .filter(cmd => cmd.cityId === city.cityId)
                         .length;
                     if (city.isProvinceCapital) {

@@ -1,4 +1,8 @@
-# Kubernetes Cluster on AWS EC2 using Kops
+---
+title: Notes: Kubernetes Cluster on AWS EC2
+---
+
+# Notes: Kubernetes Cluster on AWS EC2 using Kops
 
 
 
