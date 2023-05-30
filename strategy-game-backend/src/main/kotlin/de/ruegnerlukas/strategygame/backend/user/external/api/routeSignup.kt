@@ -1,19 +1,20 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.user
+package de.ruegnerlukas.strategygame.backend.user.external.api
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateUserData
-import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.shared.Err
+import de.ruegnerlukas.strategygame.backend.shared.Ok
 import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
 import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
+import de.ruegnerlukas.strategygame.backend.user.ports.provided.CreateUser
+import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
 
-fun Route.routeSignup(userCreate: UserCreateAction) = post("signup", {
+fun Route.routeSignup(userCreate: CreateUser) = post("signup", {
     description = "Create a new user"
     request {
         body(CreateUserData::class)
@@ -41,8 +42,8 @@ fun Route.routeSignup(userCreate: UserCreateAction) = post("signup", {
     withLoggingContextAsync(mdcTraceId()) {
         call.receive<CreateUserData>().let { requestData ->
             when (val result = userCreate.perform(requestData.email, requestData.password, requestData.username)) {
-                is Either.Right -> ApiResponse.respondSuccess(call)
-                is Either.Left -> ApiResponse.respondFailure(call, result.value)
+                is Ok -> ApiResponse.respondSuccess(call)
+                is Err -> ApiResponse.respondFailure(call, result.value)
             }
         }
     }

@@ -1,19 +1,20 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.user
+package de.ruegnerlukas.strategygame.backend.user.external.api
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.shared.Err
+import de.ruegnerlukas.strategygame.backend.shared.Ok
 import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
 import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken
+import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
 
-fun Route.routeRefresh(userRefresh: UserRefreshTokenAction) = post("refresh", {
+fun Route.routeRefresh(userRefresh: RefreshUserToken) = post("refresh", {
     description = "Get a new token without sending the users credentials again"
     request {
         body(String::class)
@@ -47,11 +48,11 @@ fun Route.routeRefresh(userRefresh: UserRefreshTokenAction) = post("refresh", {
     withLoggingContextAsync(mdcTraceId()) {
         call.receive<String>().let { requestData ->
             when (val result = userRefresh.perform(requestData)) {
-                is Either.Right -> ApiResponse.respondSuccess(call, result.value)
-                is Either.Left -> when (result.value) {
-                    UserRefreshTokenAction.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
-                    UserRefreshTokenAction.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
-                    UserRefreshTokenAction.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
+                is Ok -> ApiResponse.respondSuccess(call, result.value)
+                is Err -> when (result.value) {
+                    RefreshUserToken.NotAuthorizedError -> ApiResponse.respondAuthFailed(call)
+                    RefreshUserToken.UserNotConfirmedError -> ApiResponse.respondFailure(call, result.value)
+                    RefreshUserToken.UserNotFoundError -> ApiResponse.respondFailure(call, result.value)
                 }
             }
         }

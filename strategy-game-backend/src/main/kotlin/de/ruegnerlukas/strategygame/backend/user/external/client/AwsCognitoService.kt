@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.external.users
+package de.ruegnerlukas.strategygame.backend.user.external.client
 
 import arrow.core.Either
 import arrow.core.left
@@ -26,19 +26,15 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
 import de.ruegnerlukas.strategygame.backend.app.Config
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthDataExtended
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.AuthUserError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.CodeDeliveryError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.CreateUserError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.DeleteUserError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.InvalidEmailOrPasswordError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.NotAuthorizedError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.RefreshAuthError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotConfirmedError
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService.UserNotFoundError
+import de.ruegnerlukas.strategygame.backend.shared.Err
 import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.shared.Ok
+import de.ruegnerlukas.strategygame.backend.shared.err
+import de.ruegnerlukas.strategygame.backend.shared.ok
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthDataExtended
+import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService.*
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -153,13 +149,13 @@ class AwsCognitoService(
 					)
 			)
 			log().info("Successfully created user $email")
-			return Either.Right("").void()
+			return Unit.ok()
 		} catch (e: Exception) {
 			log().info("Failed to create user $email: ${e.message}", e)
 			return when (e) {
-				is UsernameExistsException -> UserIdentityService.UserAlreadyExistsError.left()
-				is InvalidParameterException -> InvalidEmailOrPasswordError.left()
-				is CodeDeliveryFailureException -> CodeDeliveryError.left()
+				is UsernameExistsException -> UserAlreadyExistsError.err()
+				is InvalidParameterException -> InvalidEmailOrPasswordError.err()
+				is CodeDeliveryFailureException -> CodeDeliveryError.err()
 				else -> throw Exception("Could not create user. Cause: $e")
 			}
 		}
@@ -181,19 +177,17 @@ class AwsCognitoService(
 					)
 			)
 			log().info("Successfully authenticated user $email")
-			return Either.Right(
-				AuthDataExtended(
-					idToken = result.authenticationResult.idToken,
-					refreshToken = result.authenticationResult.refreshToken,
-					accessToken = result.authenticationResult.accessToken
-				)
-			)
+			return AuthDataExtended(
+				idToken = result.authenticationResult.idToken,
+				refreshToken = result.authenticationResult.refreshToken,
+				accessToken = result.authenticationResult.accessToken
+			).ok()
 		} catch (e: Exception) {
 			log().info("Failed to authenticate user $email: ${e.message}", e)
 			return when (e) {
-				is NotAuthorizedException -> NotAuthorizedError.left()
-				is UserNotConfirmedException -> UserNotConfirmedError.left()
-				is UserNotFoundException -> UserNotFoundError.left()
+				is NotAuthorizedException -> NotAuthorizedError.err()
+				is UserNotConfirmedException -> UserNotConfirmedError.err()
+				is UserNotFoundException -> UserNotFoundError.err()
 				else -> throw Exception("Could not authenticate user. Cause: $e")
 			}
 		}
@@ -213,13 +207,13 @@ class AwsCognitoService(
 			return AuthData(
 				idToken = result.authenticationResult.idToken,
 				refreshToken = result.authenticationResult.refreshToken,
-			).right()
+			).ok()
 		} catch (e: Exception) {
 			log().info("Failed to refresh user-authentication: ${e.message}", e)
 			return when (e) {
-				is NotAuthorizedException -> NotAuthorizedError.left()
-				is UserNotConfirmedException -> UserNotConfirmedError.left()
-				is UserNotFoundException -> UserNotFoundError.left()
+				is NotAuthorizedException -> NotAuthorizedError.err()
+				is UserNotConfirmedException -> UserNotConfirmedError.err()
+				is UserNotFoundException -> UserNotFoundError.err()
 				else -> throw Exception("Could not refresh auth-token. Cause: $e")
 			}
 		}
@@ -228,18 +222,17 @@ class AwsCognitoService(
 
 	override suspend fun deleteUser(email: String, password: String): Either<DeleteUserError, Unit> {
 		try {
-			authenticate(email, password).fold(
-				{ throw IllegalStateException(it.toString()) },
-				{ provider.deleteUser(DeleteUserRequest().withAccessToken(it.accessToken)) }
-			)
-			log().info("Successfully deleted user $email")
-			return Unit.right()
+			return when(val auth = authenticate(email, password)) {
+				is Err -> NotAuthorizedError.err()
+				is Ok -> {
+					provider.deleteUser(DeleteUserRequest().withAccessToken(auth.value.accessToken))
+					log().info("Successfully deleted user $email")
+					Unit.ok()
+				}
+			}
 		} catch (e: Exception) {
 			log().info("Failed to delete user $email: ${e.message}", e)
-			return when (e) {
-				is IllegalStateException -> NotAuthorizedError.left()
-				else -> throw Exception("Could not delete user. Cause: $e")
-			}
+			throw Exception("Could not delete user. Cause: $e")
 		}
 	}
 

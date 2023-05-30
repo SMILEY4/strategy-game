@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.models
+package de.ruegnerlukas.strategygame.backend.user.ports.models
 
 data class AuthData(
     val idToken: String,

@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.external.api.routing
 import de.ruegnerlukas.strategygame.backend.external.api.routing.game.routingGame
 import de.ruegnerlukas.strategygame.backend.external.api.routing.internal.routeStaticResources
 import de.ruegnerlukas.strategygame.backend.external.api.routing.internal.routingInternal
-import de.ruegnerlukas.strategygame.backend.external.api.routing.user.routingUser
+import de.ruegnerlukas.strategygame.backend.user.external.api.routingUser
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal

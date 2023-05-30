@@ -1,12 +1,13 @@
-package de.ruegnerlukas.strategygame.backend.ports.required
+package de.ruegnerlukas.strategygame.backend.user.ports.required
 
 import arrow.core.Either
+import arrow.core.Either.*
 import de.ruegnerlukas.strategygame.backend.app.Config
 import de.ruegnerlukas.strategygame.backend.app.ConfigData
-import de.ruegnerlukas.strategygame.backend.external.users.AwsCognitoService
-import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthDataExtended
+import de.ruegnerlukas.strategygame.backend.user.external.client.AwsCognitoService
+import de.ruegnerlukas.strategygame.backend.user.external.client.DummyUserIdentityService
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {

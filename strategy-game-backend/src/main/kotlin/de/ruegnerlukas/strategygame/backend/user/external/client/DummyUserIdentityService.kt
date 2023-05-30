@@ -1,17 +1,19 @@
-package de.ruegnerlukas.strategygame.backend.external.users
+package de.ruegnerlukas.strategygame.backend.user.external.client
 
 import arrow.core.Either
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthDataExtended
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthDataExtended
+import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal
+import java.lang.UnsupportedOperationException
 import java.util.Date
+import kotlin.time.Duration.Companion.hours
 
 class DummyUserIdentityService : UserIdentityService {
 
@@ -19,7 +21,7 @@ class DummyUserIdentityService : UserIdentityService {
 
 		private const val SECRET = "mysecret"
 		private const val ISSUER = "dummy-identity-provider"
-		private const val VALIDITY_MS = 36_000_00 * 10 // 10 hours
+		private val VALIDITY_MS = 10.hours.inWholeMilliseconds
 
 		private fun validateJwt(credential: JWTCredential): JWTPrincipal {
 			return JWTPrincipal(credential.payload)
@@ -80,16 +82,16 @@ class DummyUserIdentityService : UserIdentityService {
 	}
 
 	override fun createUser(email: String, password: String, username: String): Either<UserIdentityService.CreateUserError, Unit> {
-		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support creating users")
+		throw UnsupportedOperationException("DummyUserIdentityService does not support creating users")
 	}
 
 	override fun refreshAuthentication(refreshToken: String): Either<UserIdentityService.RefreshAuthError, AuthData> {
-		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support refreshing tokens")
+		throw UnsupportedOperationException("DummyUserIdentityService does not support refreshing tokens")
 
 	}
 
 	override suspend fun deleteUser(email: String, password: String): Either<UserIdentityService.DeleteUserError, Unit> {
-		throw java.lang.UnsupportedOperationException("DummyUserIdentityService does not support deleting users")
+		throw UnsupportedOperationException("DummyUserIdentityService does not support deleting users")
 	}
 
 }

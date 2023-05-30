@@ -20,10 +20,6 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.user.UserCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.user.UserDeleteActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.user.UserLoginActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.user.UserRefreshTokenActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
@@ -66,12 +62,7 @@ import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameSta
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnEndAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.update.TurnUpdateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserDeleteAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserLoginAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.user.UserRefreshTokenAction
 import de.ruegnerlukas.strategygame.backend.ports.required.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.ports.required.UserIdentityService
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.CommandsInsert
@@ -89,6 +80,15 @@ import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQuer
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.TilesUpdate
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UsersConnectedToGamesQuery
+import de.ruegnerlukas.strategygame.backend.user.core.CreateUserImpl
+import de.ruegnerlukas.strategygame.backend.user.core.DeleteUserImpl
+import de.ruegnerlukas.strategygame.backend.user.core.LoginUserImpl
+import de.ruegnerlukas.strategygame.backend.user.core.RefreshUserTokenImpl
+import de.ruegnerlukas.strategygame.backend.user.ports.provided.CreateUser
+import de.ruegnerlukas.strategygame.backend.user.ports.provided.DeleteUser
+import de.ruegnerlukas.strategygame.backend.user.ports.provided.LoginUser
+import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken
+import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 import io.github.smiley4.ktorwebsocketsextended.WSExtended
 import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
 import io.micrometer.prometheus.PrometheusConfig
@@ -108,10 +108,10 @@ val applicationDependencies = module {
     single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
     single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
 
-    single<UserCreateAction> { UserCreateActionImpl(get()) }
-    single<UserDeleteAction> { UserDeleteActionImpl(get()) }
-    single<UserLoginAction> { UserLoginActionImpl(get()) }
-    single<UserRefreshTokenAction> { UserRefreshTokenActionImpl(get()) }
+    single<CreateUser> { CreateUserImpl(get()) }
+    single<DeleteUser> { DeleteUserImpl(get()) }
+    single<LoginUser> { LoginUserImpl(get()) }
+    single<RefreshUserToken> { RefreshUserTokenImpl(get()) }
 
     single<CommandsInsert> { CommandsInsertImpl(get()) }
     single<GameInsert> { GameInsertImpl(get()) }

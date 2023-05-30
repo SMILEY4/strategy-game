@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.application
 
-import de.ruegnerlukas.strategygame.backend.ports.models.LoginData
-import de.ruegnerlukas.strategygame.backend.external.users.DummyUserIdentityService
-import de.ruegnerlukas.strategygame.backend.ports.models.AuthData
 import de.ruegnerlukas.strategygame.backend.testutils.integrationTest
+import de.ruegnerlukas.strategygame.backend.user.external.api.LoginData
+import de.ruegnerlukas.strategygame.backend.user.external.client.DummyUserIdentityService
+import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
