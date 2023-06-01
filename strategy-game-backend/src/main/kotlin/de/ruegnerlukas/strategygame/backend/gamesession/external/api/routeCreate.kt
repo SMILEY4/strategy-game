@@ -1,11 +1,11 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.game
+package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.getUserIdOrThrow
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
 import de.ruegnerlukas.strategygame.backend.shared.mdcUserId
 import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync

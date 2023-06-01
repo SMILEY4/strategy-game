@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.game
+package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -6,10 +6,10 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameConnectActionError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction.InvalidPlayerState
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.GameConnectActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.InvalidPlayerState
 import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction

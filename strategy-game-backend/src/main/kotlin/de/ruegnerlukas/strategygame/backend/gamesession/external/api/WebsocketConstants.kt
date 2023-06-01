@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.game
+package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 object WebsocketConstants {
     const val GAME_ID = "gameId"

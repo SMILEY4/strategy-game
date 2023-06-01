@@ -1,8 +1,8 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.game
+package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
 import de.ruegnerlukas.strategygame.backend.external.api.routing.getUserIdOrThrow
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GamesListAction
 import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
 import de.ruegnerlukas.strategygame.backend.shared.mdcUserId
 import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync

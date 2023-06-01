@@ -1,16 +1,14 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.game
+package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GamesByUserQuery
 import de.ruegnerlukas.strategygame.backend.shared.Logging
 import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
-import io.ktor.websocket.CloseReason
 import io.ktor.websocket.close
-import kotlinx.coroutines.isActive
 
 class GameDisconnectActionImpl(
     private val gamesByUserQuery: GamesByUserQuery,

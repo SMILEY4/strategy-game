@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing
 
-import de.ruegnerlukas.strategygame.backend.external.api.routing.game.routingGame
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.routingGame
 import de.ruegnerlukas.strategygame.backend.external.api.routing.internal.routeStaticResources
 import de.ruegnerlukas.strategygame.backend.external.api.routing.internal.routingInternal
 import de.ruegnerlukas.strategygame.backend.user.external.api.routingUser

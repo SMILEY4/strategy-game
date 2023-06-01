@@ -1,15 +1,15 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.game
+package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
 import de.ruegnerlukas.strategygame.backend.external.api.message.models.MessageMetadata
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
-import de.ruegnerlukas.strategygame.backend.external.api.routing.game.WebsocketConstants.GAME_ID
-import de.ruegnerlukas.strategygame.backend.external.api.routing.game.WebsocketConstants.USER_ID
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.GAME_ID
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.USER_ID
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.shared.Json
 import de.ruegnerlukas.strategygame.backend.shared.mdcConnectionId
 import de.ruegnerlukas.strategygame.backend.shared.mdcGameId

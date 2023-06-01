@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.connectGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectPlayers

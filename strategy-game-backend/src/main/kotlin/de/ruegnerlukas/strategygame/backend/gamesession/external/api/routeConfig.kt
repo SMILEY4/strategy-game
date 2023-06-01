@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.game
+package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse

@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.ports.provided.game
+package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 

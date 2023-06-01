@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.game
+package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -11,10 +11,10 @@ import de.ruegnerlukas.strategygame.backend.shared.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameJoinActionErrors
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction.UserAlreadyPlayerError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction.GameJoinActionErrors
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction.UserAlreadyPlayerError
 import de.ruegnerlukas.strategygame.backend.ports.provided.game.UncoverMapAreaAction
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction

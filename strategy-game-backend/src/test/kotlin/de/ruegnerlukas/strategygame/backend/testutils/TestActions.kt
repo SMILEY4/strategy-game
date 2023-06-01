@@ -6,11 +6,11 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMa
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueRemoveEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.GameConnectActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.GameCreateActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.GameJoinActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.GameRequestConnectionActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.GamesListActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl

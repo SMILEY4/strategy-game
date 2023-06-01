@@ -1,15 +1,15 @@
-package de.ruegnerlukas.strategygame.backend.core.actions.game
+package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.ports.models.Game
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.AlreadyConnectedError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.GameRequestConnectionActionError
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction.NotParticipantError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.AlreadyConnectedError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.GameRequestConnectionActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery

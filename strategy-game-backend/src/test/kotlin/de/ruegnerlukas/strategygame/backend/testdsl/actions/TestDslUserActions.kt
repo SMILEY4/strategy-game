@@ -9,9 +9,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddBuild
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.shared.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext

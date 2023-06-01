@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.external.api.routing.internal
 
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.DisconnectAllPlayersAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectAllPlayersAction
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route

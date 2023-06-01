@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.game
+package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
-import de.ruegnerlukas.strategygame.backend.external.api.routing.game.WebsocketConstants.USER_ID
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.USER_ID
 import io.github.smiley4.ktorwebsocketsextended.routing.webSocketTicket
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal

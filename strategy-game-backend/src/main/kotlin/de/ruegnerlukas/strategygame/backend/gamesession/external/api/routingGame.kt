@@ -1,14 +1,14 @@
-package de.ruegnerlukas.strategygame.backend.external.api.routing.game
+package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDeleteAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GamesListAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameCreateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDeleteAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GamesListAction
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
