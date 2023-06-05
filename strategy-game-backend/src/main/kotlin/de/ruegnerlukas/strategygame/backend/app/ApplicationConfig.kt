@@ -3,11 +3,11 @@ package de.ruegnerlukas.strategygame.backend.app
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
-import de.ruegnerlukas.strategygame.backend.external.api.routing.routingApi
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService
-import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.toDisplayString
+import de.ruegnerlukas.strategygame.backend.common.api.ApiResponse
+import de.ruegnerlukas.strategygame.backend.common.api.routingApi
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
+import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.toDisplayString
 import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.AuthScheme

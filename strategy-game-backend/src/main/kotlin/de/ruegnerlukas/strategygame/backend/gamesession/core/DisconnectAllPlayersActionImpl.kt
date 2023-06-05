@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectAllPlayersAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.UsersConnectedToGamesQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.UsersConnectedToGamesQuery
 
 class DisconnectAllPlayersActionImpl(
     private val queryConnectedUsers: UsersConnectedToGamesQuery,

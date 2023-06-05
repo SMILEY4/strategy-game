@@ -1,21 +1,21 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
-import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
-import de.ruegnerlukas.strategygame.backend.external.api.message.models.MessageMetadata
-import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
+import de.ruegnerlukas.strategygame.backend.gameengine.external.message.handler.MessageHandler
+import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.Message
+import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.MessageMetadata
+import de.ruegnerlukas.strategygame.backend.common.api.ApiResponse
 import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.GAME_ID
 import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.USER_ID
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.shared.Json
-import de.ruegnerlukas.strategygame.backend.shared.mdcConnectionId
-import de.ruegnerlukas.strategygame.backend.shared.mdcGameId
-import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
-import de.ruegnerlukas.strategygame.backend.shared.mdcUserId
-import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
+import de.ruegnerlukas.strategygame.backend.common.Json
+import de.ruegnerlukas.strategygame.backend.common.mdcConnectionId
+import de.ruegnerlukas.strategygame.backend.common.mdcGameId
+import de.ruegnerlukas.strategygame.backend.common.mdcTraceId
+import de.ruegnerlukas.strategygame.backend.common.mdcUserId
+import de.ruegnerlukas.strategygame.backend.common.withLoggingContextAsync
 import io.github.smiley4.ktorwebsocketsextended.routing.webSocketExt
 import io.ktor.server.routing.Route
 

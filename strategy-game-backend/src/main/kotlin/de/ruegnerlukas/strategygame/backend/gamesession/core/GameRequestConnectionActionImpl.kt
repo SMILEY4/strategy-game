@@ -4,16 +4,16 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.GameRequestConnectionActionError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
-import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameQuery
+import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.Game
 
 class GameRequestConnectionActionImpl(
     private val gameQuery: GameQuery,

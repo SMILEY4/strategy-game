@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import de.ruegnerlukas.strategygame.backend.APPLICATION_MODE
 import de.ruegnerlukas.strategygame.backend.ApplicationMode
-import de.ruegnerlukas.strategygame.backend.shared.Json
+import de.ruegnerlukas.strategygame.backend.common.Json
 
 object Config {
 

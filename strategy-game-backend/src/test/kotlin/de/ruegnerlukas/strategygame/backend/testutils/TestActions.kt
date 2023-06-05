@@ -1,7 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
@@ -18,24 +16,24 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionIm
 import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.gameengine.external.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CommandsInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GamesByUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameAndPositionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
 import io.mockk.every
 import io.mockk.mockk
 
@@ -149,11 +147,11 @@ data class TestActions(
         private fun resolveCommandsAction(context: TestActionContext, turnUpdate: TurnUpdateActionImpl) =
             ReportingResolveCommandsActionImpl(
                 context,
-                ResolveCommandsActionImpl(
+                de.ruegnerlukas.strategygame.backend.gameengine.core.actions.commands.ResolveCommandsActionImpl(
                     ResolvePlaceMarkerCommandImpl(
                         turnUpdate
                     ),
-                    ResolveCreateCityCommandImpl(
+                    de.ruegnerlukas.strategygame.backend.gameengine.core.actions.commands.ResolveCreateCityCommandImpl(
                         GameConfig.default(),
                         turnUpdate
                     ),

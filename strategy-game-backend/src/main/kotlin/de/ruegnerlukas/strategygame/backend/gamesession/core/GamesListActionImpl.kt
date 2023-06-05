@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GamesListAction
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GamesByUserQuery
-import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GamesByUserQuery
+import de.ruegnerlukas.strategygame.backend.common.Logging
 
 class GamesListActionImpl(
     private val gamesByUserQuery: GamesByUserQuery

@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
-import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
-import de.ruegnerlukas.strategygame.backend.external.api.routing.getUserIdOrThrow
+import de.ruegnerlukas.strategygame.backend.common.api.ApiResponse
+import de.ruegnerlukas.strategygame.backend.common.api.getUserIdOrThrow
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GamesListAction
-import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
-import de.ruegnerlukas.strategygame.backend.shared.mdcUserId
-import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
+import de.ruegnerlukas.strategygame.backend.common.mdcTraceId
+import de.ruegnerlukas.strategygame.backend.common.mdcUserId
+import de.ruegnerlukas.strategygame.backend.common.withLoggingContextAsync
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call

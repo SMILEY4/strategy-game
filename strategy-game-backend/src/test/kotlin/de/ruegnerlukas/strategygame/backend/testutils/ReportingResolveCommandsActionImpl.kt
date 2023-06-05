@@ -4,7 +4,7 @@ import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions.Companion.TestActionContext
 
 class ReportingResolveCommandsActionImpl(

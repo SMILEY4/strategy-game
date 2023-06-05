@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDeleteAction
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameDelete
-import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameDelete
+import de.ruegnerlukas.strategygame.backend.common.Logging
 
 class GameDeleteActionImpl(private val gameDelete: GameDelete) : GameDeleteAction, Logging {
 

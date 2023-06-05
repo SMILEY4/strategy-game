@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.modifiers
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.ProvinceEntity
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.RouteEntity
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CityEntity
+import de.ruegnerlukas.strategygame.backend.common.persistence.entities.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.common.persistence.entities.RouteEntity
+import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
@@ -17,9 +17,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.shared.RGBColor
-import de.ruegnerlukas.strategygame.backend.shared.UUID
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.common.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.UUID
+import de.ruegnerlukas.strategygame.backend.common.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils

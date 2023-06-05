@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.common.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import io.kotest.matchers.collections.shouldHaveSize

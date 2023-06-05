@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.user.core
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.shared.Err
-import de.ruegnerlukas.strategygame.backend.shared.Ok
-import de.ruegnerlukas.strategygame.backend.shared.err
-import de.ruegnerlukas.strategygame.backend.shared.ok
+import de.ruegnerlukas.strategygame.backend.common.Err
+import de.ruegnerlukas.strategygame.backend.common.Ok
+import de.ruegnerlukas.strategygame.backend.common.err
+import de.ruegnerlukas.strategygame.backend.common.ok
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken.NotAuthorizedError

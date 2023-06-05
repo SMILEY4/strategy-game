@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
-import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.external.api.message.handler.MessageHandler
+import de.ruegnerlukas.strategygame.backend.common.GameConfig
+import de.ruegnerlukas.strategygame.backend.gameengine.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameCreateAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDeleteAction

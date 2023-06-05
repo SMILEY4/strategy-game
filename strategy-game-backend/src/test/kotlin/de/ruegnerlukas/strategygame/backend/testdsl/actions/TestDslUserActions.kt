@@ -12,8 +12,8 @@ import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.common.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk

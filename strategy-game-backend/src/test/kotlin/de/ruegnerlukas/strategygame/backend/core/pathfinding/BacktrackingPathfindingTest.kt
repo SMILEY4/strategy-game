@@ -7,8 +7,6 @@ import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules.B
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
 import de.ruegnerlukas.strategygame.backend.ports.models.*
 import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
-import de.ruegnerlukas.strategygame.backend.shared.distance
-import de.ruegnerlukas.strategygame.backend.shared.positionsNeighbours
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly

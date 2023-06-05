@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.shared.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.RGBColor
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame

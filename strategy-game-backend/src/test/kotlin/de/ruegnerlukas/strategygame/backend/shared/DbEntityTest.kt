@@ -1,6 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.shared
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.common.Json
+import de.ruegnerlukas.strategygame.backend.common.getOrThrow
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.nulls.shouldNotBeNull

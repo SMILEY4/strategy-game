@@ -1,8 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.user.external.client
 
 import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider
@@ -26,11 +24,11 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
 import de.ruegnerlukas.strategygame.backend.app.Config
-import de.ruegnerlukas.strategygame.backend.shared.Err
-import de.ruegnerlukas.strategygame.backend.shared.Logging
-import de.ruegnerlukas.strategygame.backend.shared.Ok
-import de.ruegnerlukas.strategygame.backend.shared.err
-import de.ruegnerlukas.strategygame.backend.shared.ok
+import de.ruegnerlukas.strategygame.backend.common.Err
+import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.Ok
+import de.ruegnerlukas.strategygame.backend.common.err
+import de.ruegnerlukas.strategygame.backend.common.ok
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthDataExtended
 import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService

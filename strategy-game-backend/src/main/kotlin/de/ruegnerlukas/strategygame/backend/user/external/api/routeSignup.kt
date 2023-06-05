@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.user.external.api
 
-import de.ruegnerlukas.strategygame.backend.external.api.routing.ApiResponse
+import de.ruegnerlukas.strategygame.backend.common.api.ApiResponse
 import de.ruegnerlukas.strategygame.backend.ports.models.CreateUserData
-import de.ruegnerlukas.strategygame.backend.shared.Err
-import de.ruegnerlukas.strategygame.backend.shared.Ok
-import de.ruegnerlukas.strategygame.backend.shared.mdcTraceId
-import de.ruegnerlukas.strategygame.backend.shared.withLoggingContextAsync
+import de.ruegnerlukas.strategygame.backend.common.Err
+import de.ruegnerlukas.strategygame.backend.common.Ok
+import de.ruegnerlukas.strategygame.backend.common.mdcTraceId
+import de.ruegnerlukas.strategygame.backend.common.withLoggingContextAsync
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.CreateUser
 import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 import io.github.smiley4.ktorswaggerui.dsl.post

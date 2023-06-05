@@ -5,17 +5,17 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.Game
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.InvalidPlayerState
-import de.ruegnerlukas.strategygame.backend.ports.provided.sendstate.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameQuery
-import de.ruegnerlukas.strategygame.backend.ports.required.persistence.GameUpdate
-import de.ruegnerlukas.strategygame.backend.shared.Logging
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 
 class GameConnectActionImpl(
     private val gameQuery: GameQuery,
@@ -36,12 +36,14 @@ class GameConnectActionImpl(
         }
     }
 
+
     /**
      * Find and return the game or an [GameNotFoundError] if the game does not exist
      */
     private suspend fun findGame(gameId: String): Either<GameNotFoundError, Game> {
         return gameQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
+
 
     /**
      * Write the new connection of the player to the db.
@@ -56,6 +58,7 @@ class GameConnectActionImpl(
             return InvalidPlayerState.left()
         }
     }
+
 
     /**
      * Send the initial game-state to the connected player
