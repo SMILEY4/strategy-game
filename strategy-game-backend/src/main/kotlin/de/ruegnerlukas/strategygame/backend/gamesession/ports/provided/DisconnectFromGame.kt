@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
 
-interface GameDisconnectAction {
+interface DisconnectFromGame {
 
 	suspend fun perform(userId: String)
 

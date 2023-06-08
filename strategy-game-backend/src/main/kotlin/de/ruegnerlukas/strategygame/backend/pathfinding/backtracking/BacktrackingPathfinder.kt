@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.pathfinding.backtracking
 
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.containers.TileContainer
+import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
 import de.ruegnerlukas.strategygame.backend.pathfinding.NeighbourProvider
 import de.ruegnerlukas.strategygame.backend.pathfinding.Node
 import de.ruegnerlukas.strategygame.backend.pathfinding.NodeBuilder

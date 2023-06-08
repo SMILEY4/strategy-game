@@ -4,22 +4,22 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.AlreadyConnectedError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.GameRequestConnectionActionError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Game
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame.AlreadyConnectedError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame.GameRequestConnectionActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame.NotParticipantError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 
-class GameRequestConnectionActionImpl(
+class RequestConnectionToGameImpl(
     private val gameQuery: GameQuery,
-) : GameRequestConnectionAction, Logging {
+) : RequestConnectionToGame, Logging {
 
-    private val metricId = metricCoreAction(GameRequestConnectionAction::class)
+    private val metricId = metricCoreAction(RequestConnectionToGame::class)
 
     override suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit> {
         return Monitoring.coTime(metricId) {

@@ -9,10 +9,10 @@ import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddBuild
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.common.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
@@ -67,7 +67,7 @@ suspend fun GameTestContext.joinGame(userId: String, block: JoinGameUserActionDs
 
 class JoinGameUserActionDsl(val userId: String) {
     var gameId: String? = null
-    var expectedError: GameJoinAction.GameJoinActionErrors? = null
+    var expectedError: JoinGame.GameJoinActionErrors? = null
 }
 
 //=======================//
@@ -103,8 +103,8 @@ suspend fun GameTestContext.connectGame(userId: String, block: ConnectGameUserAc
 class ConnectGameUserActionDsl(val userId: String) {
     var gameId: String? = null
     var connectionId: Long? = null
-    var expectedRequestError: GameRequestConnectionAction.GameRequestConnectionActionError? = null
-    var expectedConnectError: GameConnectAction.GameConnectActionError? = null
+    var expectedRequestError: RequestConnectionToGame.GameRequestConnectionActionError? = null
+    var expectedConnectError: ConnectToGame.GameConnectActionError? = null
 
 }
 

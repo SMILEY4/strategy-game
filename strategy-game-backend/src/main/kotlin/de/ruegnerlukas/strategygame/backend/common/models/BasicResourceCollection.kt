@@ -2,96 +2,96 @@ package de.ruegnerlukas.strategygame.backend.common.models
 
 import kotlin.math.abs
 
-class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection {
+class BasicResourceCollection : ResourceCollection {
 
-    private val resources = mutableMapOf<de.ruegnerlukas.strategygame.backend.common.models.ResourceType, Float>()
-    private var delta = de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection.Companion.DEFAULT_DELTA
+    private val resources = mutableMapOf<ResourceType, Float>()
+    private var delta = ResourceCollection.DEFAULT_DELTA
 
 
-    override operator fun get(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType): Float {
+    override operator fun get(type: ResourceType): Float {
         return resources[type] ?: 0f
     }
 
 
-    override fun add(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun add(type: ResourceType, amount: Float): BasicResourceCollection {
         resources[type] = resources[type]?.let { it + amount } ?: amount
         return this
     }
 
 
-    override fun add(resources: de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun add(resources: ResourceCollection): BasicResourceCollection {
         resources.forEach { type, amount -> add(type, amount) }
         return this
     }
 
 
-    override fun add(resources: de.ruegnerlukas.strategygame.backend.common.models.ResourceStack): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun add(resources: ResourceStack): BasicResourceCollection {
         add(resources.type, resources.amount)
         return this
     }
 
 
-    override fun add(resources: Collection<de.ruegnerlukas.strategygame.backend.common.models.ResourceStack>): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun add(resources: Collection<ResourceStack>): BasicResourceCollection {
         resources.forEach { add(it) }
         return this
     }
 
 
-    override fun sub(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun sub(type: ResourceType, amount: Float): BasicResourceCollection {
         add(type, -amount)
         return this
     }
 
 
-    override fun sub(resources: de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun sub(resources: ResourceCollection): BasicResourceCollection {
         resources.forEach { type, amount -> sub(type, amount) }
         return this
     }
 
 
-    override fun sub(resources: de.ruegnerlukas.strategygame.backend.common.models.ResourceStack): de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection {
+    override fun sub(resources: ResourceStack): ResourceCollection {
         sub(resources.type, resources.amount)
         return this
     }
 
 
-    override fun sub(resources: Collection<de.ruegnerlukas.strategygame.backend.common.models.ResourceStack>): de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection {
+    override fun sub(resources: Collection<ResourceStack>): ResourceCollection {
         resources.forEach { sub(it) }
         return this
     }
 
 
-    override fun scale(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, factor: Float): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun scale(type: ResourceType, factor: Float): BasicResourceCollection {
         resources[type]?.also { resources[type] = it * factor }
         return this
     }
 
 
-    override fun scale(factor: Float): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun scale(factor: Float): BasicResourceCollection {
         resources.keys.forEach { scale(it, factor) }
         return this
     }
 
 
-    override fun set(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun set(type: ResourceType, amount: Float): BasicResourceCollection {
         resources[type] = amount
         return this
     }
 
 
-    override fun clear(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun clear(type: ResourceType): BasicResourceCollection {
         resources.remove(type)
         return this
     }
 
 
-    override fun clear(): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun clear(): BasicResourceCollection {
         resources.clear()
         return this
     }
 
 
-    override fun trim(): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun trim(): BasicResourceCollection {
         resources.keys
             .filter { equalsZero(this[it]) }
             .forEach { clear(it) }
@@ -99,11 +99,11 @@ class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.mode
     }
 
 
-    override fun hasAtLeast(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float): Boolean =
+    override fun hasAtLeast(type: ResourceType, amount: Float): Boolean =
         this[type] >= amount
 
 
-    override fun hasExactly(type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float, plusMinus: Float): Boolean =
+    override fun hasExactly(type: ResourceType, amount: Float, plusMinus: Float): Boolean =
         abs(this[type] - amount) <= plusMinus
 
 
@@ -123,9 +123,9 @@ class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.mode
         !isEmpty()
 
 
-    override fun all(includeZero: Boolean, condition: (type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float) -> Boolean): Boolean =
+    override fun all(includeZero: Boolean, condition: (type: ResourceType, amount: Float) -> Boolean): Boolean =
         if (includeZero) {
-            de.ruegnerlukas.strategygame.backend.common.models.ResourceType.values()
+            ResourceType.values()
                 .all { condition(it, this[it]) }
         } else {
             resources
@@ -134,9 +134,9 @@ class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.mode
         }
 
 
-    override fun any(includeZero: Boolean, condition: (type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float) -> Boolean): Boolean =
+    override fun any(includeZero: Boolean, condition: (type: ResourceType, amount: Float) -> Boolean): Boolean =
         if (includeZero) {
-            de.ruegnerlukas.strategygame.backend.common.models.ResourceType.values()
+            ResourceType.values()
                 .any { condition(it, this[it]) }
         } else {
             resources
@@ -145,9 +145,9 @@ class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.mode
         }
 
 
-    override fun forEach(includeZero: Boolean, consumer: (type: de.ruegnerlukas.strategygame.backend.common.models.ResourceType, amount: Float) -> Unit) =
+    override fun forEach(includeZero: Boolean, consumer: (type: ResourceType, amount: Float) -> Unit) =
         if (includeZero) {
-            de.ruegnerlukas.strategygame.backend.common.models.ResourceType.values()
+            ResourceType.values()
                 .forEach { consumer(it, this[it]) }
         } else {
             resources
@@ -156,9 +156,9 @@ class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.mode
         }
 
 
-    override fun toMap(includeZero: Boolean): Map<de.ruegnerlukas.strategygame.backend.common.models.ResourceType, Float> =
+    override fun toMap(includeZero: Boolean): Map<ResourceType, Float> =
         if (includeZero) {
-            de.ruegnerlukas.strategygame.backend.common.models.ResourceType.values()
+            ResourceType.values()
                 .associateWith { this[it] }
         } else {
             resources
@@ -167,9 +167,9 @@ class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.mode
         }
 
 
-    override fun toList(includeZero: Boolean): Collection<Pair<de.ruegnerlukas.strategygame.backend.common.models.ResourceType, Float>> =
+    override fun toList(includeZero: Boolean): Collection<Pair<ResourceType, Float>> =
         if (includeZero) {
-            de.ruegnerlukas.strategygame.backend.common.models.ResourceType.values()
+            ResourceType.values()
                 .map { it to this[it] }
         } else {
             resources
@@ -178,22 +178,22 @@ class BasicResourceCollection : de.ruegnerlukas.strategygame.backend.common.mode
         }
 
 
-    override fun toStacks(includeZero: Boolean): List<de.ruegnerlukas.strategygame.backend.common.models.ResourceStack> =
+    override fun toStacks(includeZero: Boolean): List<ResourceStack> =
         if (includeZero) {
-            de.ruegnerlukas.strategygame.backend.common.models.ResourceType.values()
-                .map { de.ruegnerlukas.strategygame.backend.common.models.ResourceStack(it, this[it]) }
+            ResourceType.values()
+                .map { ResourceStack(it, this[it]) }
         } else {
             resources
                 .filter { !equalsZero(it.value) }
-                .map { (type, amount) -> de.ruegnerlukas.strategygame.backend.common.models.ResourceStack(type, amount) }
+                .map { (type, amount) -> ResourceStack(type, amount) }
         }
 
 
-    override fun copy(): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection =
-        de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection.Companion.basic(this)
+    override fun copy(): BasicResourceCollection =
+        ResourceCollection.basic(this)
 
 
-    override fun setDelta(delta: Float): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
+    override fun setDelta(delta: Float): BasicResourceCollection {
         this.delta = delta
         return this
     }

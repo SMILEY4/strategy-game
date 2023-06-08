@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.message.websocket
+package de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket
 
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.Message
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.Message
 
 interface MessageProducer {
 

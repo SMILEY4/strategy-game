@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core.turn
+package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -7,21 +7,21 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandData
-import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnEndAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnSubmitAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnSubmitAction.TurnSubmitActionError
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CommandsInsert
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryByGameAndUserQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.Player
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.NotParticipantError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.TurnSubmitActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryByGameAndUserQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 
 class TurnSubmitActionImpl(
     private val actionEndTurn: TurnEndAction,

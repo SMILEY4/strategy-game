@@ -1,8 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.ports.required
+package de.ruegnerlukas.strategygame.backend.gamesession.ports.required
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 
 interface GameExtendedUpdate {

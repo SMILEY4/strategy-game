@@ -1,22 +1,22 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GamesByUserQuery
 import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Game
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GamesByUserQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectFromGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
-import io.ktor.websocket.close
+import io.ktor.websocket.*
 
-class GameDisconnectActionImpl(
+class DisconnectFromGameImpl(
     private val gamesByUserQuery: GamesByUserQuery,
     private val gameUpdate: GameUpdate,
     private val websocketConnectionHandler: WebSocketConnectionHandler
-) : GameDisconnectAction, Logging {
+) : DisconnectFromGame, Logging {
 
-    private val metricId = metricCoreAction(GameDisconnectAction::class)
+    private val metricId = metricCoreAction(DisconnectFromGame::class)
 
     override suspend fun perform(userId: String) {
         Monitoring.coTime(metricId) {

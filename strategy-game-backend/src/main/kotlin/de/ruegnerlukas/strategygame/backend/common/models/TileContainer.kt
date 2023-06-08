@@ -1,9 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.common.models.containers
-
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
+package de.ruegnerlukas.strategygame.backend.common.models
 
 
 class TileContainer() : Collection<Tile> {

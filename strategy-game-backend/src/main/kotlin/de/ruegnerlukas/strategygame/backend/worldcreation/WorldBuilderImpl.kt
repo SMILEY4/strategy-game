@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.common.WeightedCollection
 import kotlin.random.Random
 
-class WorldBuilder {
+class WorldBuilderImpl : WorldBuilder {
 
     private val noise = FastNoiseLite().apply {
         this.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2)
@@ -39,7 +39,7 @@ class WorldBuilder {
 
     private var random = Random(0)
 
-    fun buildTiles(settings: WorldSettings): List<WorldTile> {
+    override fun buildTiles(settings: WorldSettings): List<WorldTile> {
         noise.SetSeed(settings.seed)
         random = Random(settings.seed)
         val tilePositions = TilemapPositionsBuilder().createHexagon(settings.size)

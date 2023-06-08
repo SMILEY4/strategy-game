@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.pathfinding
 
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.containers.TileContainer
+import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
 
 /**
  * Provides valid neighbour tiles for a given tile

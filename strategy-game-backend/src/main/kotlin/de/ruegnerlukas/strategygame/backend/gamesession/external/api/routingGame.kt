@@ -1,29 +1,29 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import de.ruegnerlukas.strategygame.backend.common.GameConfig
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.handler.MessageHandler
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDeleteAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GamesListAction
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DeleteGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectFromGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ListGames
 import io.ktor.server.auth.authenticate
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 
 fun Route.routingGame() {
-    val createGame by inject<GameCreateAction>()
-    val joinGame by inject<GameJoinAction>()
-    val listGames by inject<GamesListAction>()
-    val deleteGame by inject<GameDeleteAction>()
+    val createGame by inject<CreateGame>()
+    val joinGame by inject<JoinGame>()
+    val listGames by inject<ListGames>()
+    val deleteGame by inject<DeleteGame>()
     val gameConfig by inject<GameConfig>()
     val messageHandler by inject<MessageHandler>()
-    val disconnectAction by inject<GameDisconnectAction>()
-    val requestConnection by inject<GameRequestConnectionAction>()
-    val connectAction by inject<GameConnectAction>()
+    val disconnectAction by inject<DisconnectFromGame>()
+    val requestConnection by inject<RequestConnectionToGame>()
+    val connectAction by inject<ConnectToGame>()
     route("game") {
         authenticate("user") {
             routeCreate(createGame, joinGame)

@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn
+package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandData

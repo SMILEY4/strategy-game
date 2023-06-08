@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
+package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.common.models.Country
@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryByGameAndUserQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 
 class CountryByGameAndUserQueryImpl(private val database: ArangoDatabase) : CountryByGameAndUserQuery {

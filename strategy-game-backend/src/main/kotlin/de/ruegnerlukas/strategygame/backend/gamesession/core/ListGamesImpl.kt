@@ -1,16 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GamesListAction
+import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GamesByUserQuery
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ListGames
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GamesByUserQuery
 
-class GamesListActionImpl(
+class ListGamesImpl(
     private val gamesByUserQuery: GamesByUserQuery
-) : GamesListAction, Logging {
+) : ListGames, Logging {
 
-    private val metricId = metricCoreAction(GamesListAction::class)
+    private val metricId = metricCoreAction(ListGames::class)
 
     override suspend fun perform(userId: String): List<String> {
         return Monitoring.coTime(metricId) {

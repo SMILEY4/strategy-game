@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
+package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CommandsInsert
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
 
 class CommandsInsertImpl(private val database: ArangoDatabase) : CommandsInsert {
 

@@ -1,6 +1,6 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core.game
+package de.ruegnerlukas.strategygame.backend.gameengine.core
 
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.game.UncoverMapAreaAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGameAndPosition

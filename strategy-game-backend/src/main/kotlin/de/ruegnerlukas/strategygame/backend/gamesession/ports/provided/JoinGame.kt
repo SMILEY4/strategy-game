@@ -5,7 +5,7 @@ import arrow.core.Either
 /**
  * Join an existing game
  */
-interface GameJoinAction {
+interface JoinGame {
 
     sealed class GameJoinActionErrors
 

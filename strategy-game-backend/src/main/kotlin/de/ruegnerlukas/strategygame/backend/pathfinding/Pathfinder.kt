@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.pathfinding
 
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.containers.TileContainer
+import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
 
 /**
  * Finds the path from a given starting tile/position to a destination tile/position

@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
 import arrow.core.Either
 
-interface GameConnectAction {
+interface ConnectToGame {
 
 	sealed class GameConnectActionError
 	object GameNotFoundError : GameConnectActionError()

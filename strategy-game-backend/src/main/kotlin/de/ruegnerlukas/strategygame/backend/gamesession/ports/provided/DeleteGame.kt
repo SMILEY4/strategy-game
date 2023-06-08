@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 /**
  * Delete a given game
  */
-interface GameDeleteAction {
+interface DeleteGame {
 
     /**
      * @param gameId the id of the game to delete

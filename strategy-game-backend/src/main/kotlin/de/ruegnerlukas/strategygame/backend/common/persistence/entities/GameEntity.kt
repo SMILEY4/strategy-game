@@ -1,12 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.common.persistence.entities
 
 import de.ruegnerlukas.strategygame.backend.common.models.Game
-import de.ruegnerlukas.strategygame.backend.common.models.containers.PlayerContainer
+import de.ruegnerlukas.strategygame.backend.common.models.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
-import de.ruegnerlukas.strategygame.backend.ports.models.containers.PlayerContainer
 
 class GameEntity(
     val turn: Int,

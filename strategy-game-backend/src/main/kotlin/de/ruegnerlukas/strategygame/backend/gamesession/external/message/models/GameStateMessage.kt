@@ -1,8 +1,8 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.message.models
+package de.ruegnerlukas.strategygame.backend.gamesession.external.message.models
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.common.models.dtos.GameExtendedDTO
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.GameStateMessage.Companion.GameStatePayload
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage.Companion.GameStatePayload
 
 
 @JsonTypeName(GameStateMessage.TYPE)

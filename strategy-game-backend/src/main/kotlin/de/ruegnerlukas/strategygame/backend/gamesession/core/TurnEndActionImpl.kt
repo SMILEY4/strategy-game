@@ -1,24 +1,24 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core.turn
+package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.update.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnEndAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnEndAction.CommandResolutionFailedError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnEndAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnEndAction.TurnEndActionError
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CommandsByGameQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.Player
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.TurnUpdateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedUpdate
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEndAction.CommandResolutionFailedError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEndAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEndAction.TurnEndActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedQuery
 
 class TurnEndActionImpl(
     private val actionResolveCommands: ResolveCommandsAction,

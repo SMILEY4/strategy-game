@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.message.handler
+package de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler
 
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.Message
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.SubmitTurnMessage
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.Message
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.SubmitTurnMessage
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.common.Logging
 

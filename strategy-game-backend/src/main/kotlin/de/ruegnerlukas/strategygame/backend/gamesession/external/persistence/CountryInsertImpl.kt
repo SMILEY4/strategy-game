@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
+package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.common.models.Country
@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDbEr
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryInsert
 
 class CountryInsertImpl(private val database: ArangoDatabase) : CountryInsert {
 

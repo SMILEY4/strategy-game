@@ -9,21 +9,21 @@ import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.GameConnectActionError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction.InvalidPlayerState
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.GameConnectActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.InvalidPlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 
-class GameConnectActionImpl(
+class ConnectToGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
     private val actionSendGameState: SendGameStateAction,
-) : GameConnectAction, Logging {
+) : ConnectToGame, Logging {
 
-    private val metricId = metricCoreAction(GameConnectAction::class)
+    private val metricId = metricCoreAction(ConnectToGame::class)
 
     override suspend fun perform(userId: String, gameId: String, connectionId: Long): Either<GameConnectActionError, Unit> {
         return Monitoring.coTime(metricId) {

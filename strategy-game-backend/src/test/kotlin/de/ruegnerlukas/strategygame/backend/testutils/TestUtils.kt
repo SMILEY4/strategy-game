@@ -3,11 +3,11 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import arrow.core.Either
 import arrow.core.getOrHandle
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CommandsByGameQueryImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CityEntity
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CountryEntity

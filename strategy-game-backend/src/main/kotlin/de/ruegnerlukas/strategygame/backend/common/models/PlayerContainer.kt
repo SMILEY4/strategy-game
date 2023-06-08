@@ -1,6 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.common.models.containers
-
-import de.ruegnerlukas.strategygame.backend.common.models.Player
+package de.ruegnerlukas.strategygame.backend.common.models
 
 
 class PlayerContainer() : Collection<Player> {

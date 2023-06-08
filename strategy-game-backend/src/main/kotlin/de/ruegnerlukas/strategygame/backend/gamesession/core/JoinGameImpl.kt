@@ -5,35 +5,35 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.COUNTRY_COLORS
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction.GameJoinActionErrors
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction.UserAlreadyPlayerError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.game.UncoverMapAreaAction
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGame
+import de.ruegnerlukas.strategygame.backend.common.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.Player
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.GameJoinActionErrors
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.UserAlreadyPlayerError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryInsert
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGame
 
-class GameJoinActionImpl(
+class JoinGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
     private val countryInsert: CountryInsert,
     private val tilesQuery: TilesQueryByGame,
     private val gameConfig: GameConfig,
     private val actionUncoverMapArea: UncoverMapAreaAction,
-) : GameJoinAction, Logging {
+) : JoinGame, Logging {
 
-    private val metricId = metricCoreAction(GameJoinAction::class)
+    private val metricId = metricCoreAction(JoinGame::class)
 
     override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
         return Monitoring.coTime(metricId) {

@@ -1,12 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
 import de.ruegnerlukas.strategygame.backend.common.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 
 /**
  * Create a new game
  */
-interface GameCreateAction {
+interface CreateGame {
 
 	/**
 	 * @return the id of the game

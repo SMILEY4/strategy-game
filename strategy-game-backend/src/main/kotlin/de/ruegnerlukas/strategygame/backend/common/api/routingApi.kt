@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.common.api
 
 import de.ruegnerlukas.strategygame.backend.gamesession.external.api.routingGame
-import de.ruegnerlukas.strategygame.backend.operation.external.routeStaticResources
-import de.ruegnerlukas.strategygame.backend.operation.external.routingInternal
+import de.ruegnerlukas.strategygame.backend.operation.routeStaticResources
+import de.ruegnerlukas.strategygame.backend.operation.routingInternal
 import de.ruegnerlukas.strategygame.backend.user.external.api.routingUser
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.jwt.JWTPrincipal

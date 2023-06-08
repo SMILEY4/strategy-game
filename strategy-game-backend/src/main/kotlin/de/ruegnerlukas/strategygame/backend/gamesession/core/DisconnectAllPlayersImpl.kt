@@ -1,13 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectAllPlayersAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectAllPlayers
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectFromGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.UsersConnectedToGamesQuery
 
-class DisconnectAllPlayersActionImpl(
+class DisconnectAllPlayersImpl(
     private val queryConnectedUsers: UsersConnectedToGamesQuery,
-    private val disconnect: GameDisconnectAction
-) : DisconnectAllPlayersAction {
+    private val disconnect: DisconnectFromGame
+) : DisconnectAllPlayers {
 
     override suspend fun perform() {
         getUserIds().forEach { userId ->

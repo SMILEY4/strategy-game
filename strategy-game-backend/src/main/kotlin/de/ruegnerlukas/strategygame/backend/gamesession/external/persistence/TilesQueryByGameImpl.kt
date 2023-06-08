@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
+package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGame
 
 class TilesQueryByGameImpl(private val database: ArangoDatabase) : TilesQueryByGame {
 

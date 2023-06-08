@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.common.models.dtos
+package de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos
 
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition

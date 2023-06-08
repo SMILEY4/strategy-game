@@ -3,8 +3,6 @@ package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 /**
  * Disconnect all currently connected players
  */
-interface DisconnectAllPlayersAction {
-
+interface DisconnectAllPlayers {
 	suspend fun perform()
-
 }

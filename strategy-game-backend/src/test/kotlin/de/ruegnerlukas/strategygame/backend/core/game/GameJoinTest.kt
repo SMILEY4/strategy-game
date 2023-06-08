@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.game
 
 import de.ruegnerlukas.strategygame.backend.ports.models.Player
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameJoinAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectPlayers
 import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
@@ -50,7 +50,7 @@ class GameJoinTest : StringSpec({
             joinGame("user-1")
             joinGame("user-2")
             joinGame("user-1") {
-                expectedError = GameJoinAction.UserAlreadyPlayerError
+                expectedError = JoinGame.UserAlreadyPlayerError
             }
             expectPlayers {
                 player {
@@ -72,7 +72,7 @@ class GameJoinTest : StringSpec({
             createGame { }
             joinGame("user") {
                 gameId = "unknown-game-id"
-                expectedError = GameJoinAction.GameNotFoundError
+                expectedError = JoinGame.GameNotFoundError
             }
         }
     }

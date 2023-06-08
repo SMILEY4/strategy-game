@@ -1,0 +1,31 @@
+TODO:
+
+worldbuilder use interface instead of implementation
+
+think about uncoverMapAction (where used?)
+
+cleanup models
+
+
+DEPENDENCIES
+
+digraph G {
+    commandresolution -> common;
+
+    economy -> common;
+
+    gameengine -> common;
+    gameengine -> commandresolution;
+    gameengine -> pathfinding;
+    gameengine -> economy;
+
+    gamesession -> common;
+    gamesession -> gameengine;
+    gamesession -> worldcreation;
+
+    pathfinding -> common;
+
+    worldcreation -> common;
+
+    user;
+}

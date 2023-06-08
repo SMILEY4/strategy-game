@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core.sendstate
+package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -8,14 +8,14 @@ import de.ruegnerlukas.strategygame.backend.common.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate.SendGameStateAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate.SendGameStateAction.SendGameStateActionError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate.SendGameStateAction.UserNotConnectedError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction.SendGameStateActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction.UserNotConnectedError
 
 class SendGameStateActionImpl(
     private val gameConfig: GameConfig,

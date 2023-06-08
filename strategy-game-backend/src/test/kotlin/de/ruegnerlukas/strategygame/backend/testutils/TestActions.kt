@@ -4,11 +4,11 @@ import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMa
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueRemoveEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.GameConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.GameCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.GameJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.GameRequestConnectionActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.GamesListActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.JoinGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionToGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.ListGamesImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
@@ -16,20 +16,20 @@ import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionIm
 import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CommandsByGameQueryImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GamesByUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameAndPositionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
@@ -39,11 +39,11 @@ import io.mockk.mockk
 
 data class TestActions(
     val context: TestActionContext,
-    val gameCreate: GameCreateActionImpl,
-    val gameJoin: GameJoinActionImpl,
-    val gameRequestConnect: GameRequestConnectionActionImpl,
-    val gameConnect: GameConnectActionImpl,
-    val gamesList: GamesListActionImpl,
+    val gameCreate: CreateGameImpl,
+    val gameJoin: JoinGameImpl,
+    val gameRequestConnect: RequestConnectionToGameImpl,
+    val gameConnect: ConnectToGameImpl,
+    val gamesList: ListGamesImpl,
     val turnSubmit: TurnSubmitActionImpl,
     val resolveCommands: ReportingResolveCommandsActionImpl,
     val turnEnd: TurnEndActionImpl,
@@ -82,12 +82,12 @@ data class TestActions(
         }
 
         private fun gameCreateAction(database: ArangoDatabase) =
-            GameCreateActionImpl(
+            CreateGameImpl(
                 GameInsertImpl(database)
             )
 
         private fun gameJoinAction(database: ArangoDatabase) =
-            GameJoinActionImpl(
+            JoinGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
                 CountryInsertImpl(database),
@@ -100,7 +100,7 @@ data class TestActions(
             )
 
         private fun gameConnectAction(database: ArangoDatabase) =
-            GameConnectActionImpl(
+            ConnectToGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
                 SendGameStateActionImpl(
@@ -135,12 +135,12 @@ data class TestActions(
             )
 
         private fun gamesListAction(database: ArangoDatabase) =
-            GamesListActionImpl(
+            ListGamesImpl(
                 GamesByUserQueryImpl(database)
             )
 
         private fun gameRequestConnectionAction(database: ArangoDatabase) =
-            GameRequestConnectionActionImpl(
+            RequestConnectionToGameImpl(
                 GameQueryImpl(database),
             )
 

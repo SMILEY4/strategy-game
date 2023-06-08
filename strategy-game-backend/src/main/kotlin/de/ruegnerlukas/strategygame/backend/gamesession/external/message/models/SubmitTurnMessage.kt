@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.message.models
+package de.ruegnerlukas.strategygame.backend.gamesession.external.message.models
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.SubmitTurnMessage.Companion.SubmitTurnPayload
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.SubmitTurnMessage.Companion.SubmitTurnPayload
 
 @JsonTypeName(SubmitTurnMessage.TYPE)
 class SubmitTurnMessage(payload: SubmitTurnPayload) : Message<SubmitTurnPayload>(TYPE, payload) {

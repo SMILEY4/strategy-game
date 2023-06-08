@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.sendstate
+package de.ruegnerlukas.strategygame.backend.gamesession.ports
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended

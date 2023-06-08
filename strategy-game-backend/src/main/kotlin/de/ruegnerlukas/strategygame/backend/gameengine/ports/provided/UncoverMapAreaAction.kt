@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.game
+package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided
 
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 

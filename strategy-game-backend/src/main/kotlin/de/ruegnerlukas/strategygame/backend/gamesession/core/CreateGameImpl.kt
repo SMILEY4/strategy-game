@@ -1,23 +1,23 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
-import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameCreateAction
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameInsert
 import de.ruegnerlukas.strategygame.backend.common.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TileData
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.common.models.containers.PlayerContainer
+import de.ruegnerlukas.strategygame.backend.common.models.PlayerContainer
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.trackingListOf
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert
 import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
 
-class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateAction, Logging {
+class CreateGameImpl(private val gameInsert: GameInsert) : CreateGame, Logging {
 
-    private val metricId = metricCoreAction(GameCreateAction::class)
+    private val metricId = metricCoreAction(CreateGame::class)
 
     override suspend fun perform(worldSettings: WorldSettings): String {
         return Monitoring.coTime(metricId) {

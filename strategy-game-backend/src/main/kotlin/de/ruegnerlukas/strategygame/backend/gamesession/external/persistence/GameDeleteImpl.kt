@@ -1,10 +1,10 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
+package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameDelete
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameDelete
 import de.ruegnerlukas.strategygame.backend.common.parallelIO
 
 class GameDeleteImpl(private val database: ArangoDatabase) : GameDelete {

@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
+package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.Province
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.containers.TileContainer
+import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CityEntity
@@ -22,7 +22,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.Route
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.common.tracking
 
 class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtendedQuery {

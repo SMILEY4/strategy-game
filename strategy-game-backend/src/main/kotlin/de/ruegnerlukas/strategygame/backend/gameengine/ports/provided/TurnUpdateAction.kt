@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.update
+package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided
 
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CreateCityCommandData

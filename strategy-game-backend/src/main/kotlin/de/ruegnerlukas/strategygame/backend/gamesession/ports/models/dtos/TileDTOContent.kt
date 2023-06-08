@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.common.models.dtos
+package de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

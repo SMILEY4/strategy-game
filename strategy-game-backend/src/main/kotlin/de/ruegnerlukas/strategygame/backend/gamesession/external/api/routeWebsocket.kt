@@ -1,29 +1,30 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.handler.MessageHandler
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.Message
-import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.MessageMetadata
-import de.ruegnerlukas.strategygame.backend.common.api.ApiResponse
-import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.GAME_ID
-import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.USER_ID
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameDisconnectAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.GameRequestConnectionAction
 import de.ruegnerlukas.strategygame.backend.common.Json
+import de.ruegnerlukas.strategygame.backend.common.api.ApiResponse
 import de.ruegnerlukas.strategygame.backend.common.mdcConnectionId
 import de.ruegnerlukas.strategygame.backend.common.mdcGameId
 import de.ruegnerlukas.strategygame.backend.common.mdcTraceId
 import de.ruegnerlukas.strategygame.backend.common.mdcUserId
 import de.ruegnerlukas.strategygame.backend.common.withLoggingContextAsync
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.Message
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.MessageMetadata
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.GAME_ID
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.WebsocketConstants.USER_ID
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectFromGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import io.github.smiley4.ktorwebsocketsextended.routing.webSocketExt
-import io.ktor.server.routing.Route
+import io.ktor.server.routing.*
+import kotlin.collections.set
 
 fun Route.routeWebsocket(
     messageHandler: MessageHandler,
-    disconnectAction: GameDisconnectAction,
-    requestConnection: GameRequestConnectionAction,
-    connectAction: GameConnectAction
+    disconnectAction: DisconnectFromGame,
+    requestConnection: RequestConnectionToGame,
+    connectAction: ConnectToGame
 ) = webSocketExt("{${GAME_ID}}", authenticate = true) {
     provideTicket { it.parameters["ticket"]!! }
     onConnect { call, data ->
@@ -35,9 +36,9 @@ fun Route.routeWebsocket(
                     /*do nothing*/
                 }
                 is Either.Left -> when (result.value) {
-                    GameRequestConnectionAction.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
-                    GameRequestConnectionAction.NotParticipantError -> ApiResponse.respondFailure(call, result.value)
-                    GameRequestConnectionAction.AlreadyConnectedError -> ApiResponse.respondFailure(call, result.value)
+                    RequestConnectionToGame.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
+                    RequestConnectionToGame.NotParticipantError -> ApiResponse.respondFailure(call, result.value)
+                    RequestConnectionToGame.AlreadyConnectedError -> ApiResponse.respondFailure(call, result.value)
                 }
             }
         }

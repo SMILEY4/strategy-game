@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.pathfinding.additionals
 
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.containers.TileContainer
+import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
 import de.ruegnerlukas.strategygame.backend.pathfinding.NeighbourProvider
 import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.NextNodeRule
 import de.ruegnerlukas.strategygame.backend.common.positionsNeighbours
