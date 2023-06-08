@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gameengine.external.message.handler
 
 import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.Message
 import de.ruegnerlukas.strategygame.backend.gameengine.external.message.models.SubmitTurnMessage
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.turn.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.common.Logging
 
 /**

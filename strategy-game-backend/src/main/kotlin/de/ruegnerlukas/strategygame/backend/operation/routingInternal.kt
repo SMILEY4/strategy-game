@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.operation.external
+package de.ruegnerlukas.strategygame.backend.operation
 
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectAllPlayersAction
 import io.ktor.server.auth.authenticate

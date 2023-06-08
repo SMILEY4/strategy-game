@@ -13,7 +13,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.common.models.containers.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.common.trackingListOf
-import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilder
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
 
 class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateAction, Logging {
 
@@ -45,7 +45,7 @@ class GameCreateActionImpl(private val gameInsert: GameInsert) : GameCreateActio
      * Build the tile entities
      */
     private fun buildTiles(worldSettings: WorldSettings): List<Tile> {
-        return WorldBuilder().buildTiles(worldSettings).map {
+        return WorldBuilderImpl().buildTiles(worldSettings).map {
             Tile(
                 tileId = DbId.PLACEHOLDER,
                 position = TilePosition(it.q, it.r),

@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.operation.external
+package de.ruegnerlukas.strategygame.backend.operation
 
 import io.ktor.server.http.content.resource
 import io.ktor.server.http.content.static

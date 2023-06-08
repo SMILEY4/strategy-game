@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.operation.external
+package de.ruegnerlukas.strategygame.backend.operation
 
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.HttpStatusCode
