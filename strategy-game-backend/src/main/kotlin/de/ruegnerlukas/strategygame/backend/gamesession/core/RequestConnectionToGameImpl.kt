@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction

@@ -12,14 +12,14 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.Res
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction.ResolveCommandsActionError
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolvePlaceMarkerCommand
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.PlaceMarkerAction
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.common.validation.ValidationContext
-import de.ruegnerlukas.strategygame.backend.common.validation.validations
+import de.ruegnerlukas.strategygame.backend.common.utils.ValidationContext
+import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class ResolvePlaceMarkerCommandImpl(
     private val placeMarkerAction: PlaceMarkerAction,

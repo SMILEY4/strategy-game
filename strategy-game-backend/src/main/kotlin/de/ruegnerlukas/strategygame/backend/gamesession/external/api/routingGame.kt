@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame

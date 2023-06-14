@@ -9,7 +9,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEnti
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert
-import de.ruegnerlukas.strategygame.backend.common.getOrThrow
+import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 
 class GameInsertImpl(private val database: ArangoDatabase) : GameInsert {
 

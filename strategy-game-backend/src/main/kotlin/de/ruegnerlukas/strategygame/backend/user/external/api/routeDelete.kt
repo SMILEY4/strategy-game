@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.user.external.api
 
-import de.ruegnerlukas.strategygame.backend.common.api.ApiResponse
-import de.ruegnerlukas.strategygame.backend.common.Err
-import de.ruegnerlukas.strategygame.backend.common.Ok
-import de.ruegnerlukas.strategygame.backend.common.mdcTraceId
-import de.ruegnerlukas.strategygame.backend.common.withLoggingContextAsync
+import de.ruegnerlukas.strategygame.backend.app.ApiResponse
+import de.ruegnerlukas.strategygame.backend.common.utils.Err
+import de.ruegnerlukas.strategygame.backend.common.utils.Ok
+import de.ruegnerlukas.strategygame.backend.common.logging.mdcTraceId
+import de.ruegnerlukas.strategygame.backend.common.logging.withLoggingContextAsync
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.DeleteUser
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.ktor.http.HttpStatusCode

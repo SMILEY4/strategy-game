@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.Message
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.common.Json
+import de.ruegnerlukas.strategygame.backend.common.utils.Json
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 
 

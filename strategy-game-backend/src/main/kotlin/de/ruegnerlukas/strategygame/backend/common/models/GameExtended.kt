@@ -1,7 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.common.models
 
-import de.ruegnerlukas.strategygame.backend.common.TrackingList
-
 
 data class GameExtended(
     val game: Game,

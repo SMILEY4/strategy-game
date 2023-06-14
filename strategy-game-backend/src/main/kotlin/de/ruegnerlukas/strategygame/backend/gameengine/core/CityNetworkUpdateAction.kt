@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+
 /**
  * Connects newly created cities with other cities
  */

@@ -13,7 +13,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectTo
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.common.coApply
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk

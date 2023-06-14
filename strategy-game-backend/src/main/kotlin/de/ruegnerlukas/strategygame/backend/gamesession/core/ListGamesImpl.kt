@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ListGames

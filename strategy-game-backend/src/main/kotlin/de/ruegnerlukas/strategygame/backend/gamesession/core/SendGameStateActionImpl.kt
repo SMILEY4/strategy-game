@@ -4,9 +4,9 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.GameMessageProducer
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring

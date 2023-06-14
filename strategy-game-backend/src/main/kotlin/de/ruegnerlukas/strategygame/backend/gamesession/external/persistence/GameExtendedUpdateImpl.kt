@@ -21,7 +21,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedUpdate
-import de.ruegnerlukas.strategygame.backend.common.parallelIO
+import de.ruegnerlukas.strategygame.backend.common.utils.parallelIO
 
 class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtendedUpdate {
 

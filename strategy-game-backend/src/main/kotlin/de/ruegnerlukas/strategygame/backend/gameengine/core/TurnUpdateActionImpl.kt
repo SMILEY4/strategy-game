@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core
 
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.PlaceMarkerAction
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.RemoveProductionQueueEntryAction
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.TurnUpdateAction
 

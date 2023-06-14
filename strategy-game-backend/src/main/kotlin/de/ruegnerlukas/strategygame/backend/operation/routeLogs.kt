@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.operation
 
-import de.ruegnerlukas.strategygame.backend.common.logviewer.LogViewer
+import de.ruegnerlukas.strategygame.backend.common.logging.LogViewer
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call

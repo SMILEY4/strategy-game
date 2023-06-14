@@ -23,7 +23,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedQuery
-import de.ruegnerlukas.strategygame.backend.common.tracking
+import de.ruegnerlukas.strategygame.backend.common.models.tracking
 
 class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtendedQuery {
 

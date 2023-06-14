@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.common.events
 
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 
 class EventSystem<CONTEXT> : Logging {
 

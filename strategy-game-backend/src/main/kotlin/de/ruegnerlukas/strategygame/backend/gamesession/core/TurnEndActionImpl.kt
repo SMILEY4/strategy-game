@@ -5,7 +5,7 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.Player
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring

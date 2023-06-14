@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.pathfinding.additionals
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TileType
 import de.ruegnerlukas.strategygame.backend.pathfinding.ScoreCalculator
-import de.ruegnerlukas.strategygame.backend.common.distance
+import de.ruegnerlukas.strategygame.backend.common.utils.distance
 
 /**
  * Calculates the score based on the given movement costs (default cost = 1)

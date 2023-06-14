@@ -7,7 +7,7 @@ import arrow.core.left
 import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandData
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.Player

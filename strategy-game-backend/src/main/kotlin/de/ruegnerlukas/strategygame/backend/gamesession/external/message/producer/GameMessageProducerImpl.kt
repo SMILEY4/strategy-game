@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.gamesession.external.message.produc
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage.Companion.GameStatePayload
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.common.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
 
 class GameMessageProducerImpl(private val producer: MessageProducer) : GameMessageProducer {

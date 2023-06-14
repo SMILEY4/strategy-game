@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.Country
@@ -37,7 +37,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.TileDT
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.TileDTOVisibility
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.common.positionsCircle
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 
 
 class GameExtendedDTOCreator(private val gameConfig: GameConfig) {

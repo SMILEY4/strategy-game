@@ -17,9 +17,9 @@ import de.ruegnerlukas.strategygame.backend.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.common.RGBColor
-import de.ruegnerlukas.strategygame.backend.common.UUID
-import de.ruegnerlukas.strategygame.backend.common.coApply
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.utils.UUID
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils

@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.common.models
 
-import de.ruegnerlukas.strategygame.backend.common.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 
 class City(
     val cityId: String,

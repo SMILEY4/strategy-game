@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.common.persistence
 
 import com.arangodb.ArangoDBException
 import de.ruegnerlukas.strategygame.backend.app.DatabaseConfig
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import kotlinx.coroutines.delay
 import java.util.concurrent.CompletionException

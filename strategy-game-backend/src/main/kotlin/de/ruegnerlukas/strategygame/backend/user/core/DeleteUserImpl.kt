@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.user.core
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.common.Err
-import de.ruegnerlukas.strategygame.backend.common.Ok
-import de.ruegnerlukas.strategygame.backend.common.err
-import de.ruegnerlukas.strategygame.backend.common.ok
+import de.ruegnerlukas.strategygame.backend.common.utils.Err
+import de.ruegnerlukas.strategygame.backend.common.utils.Ok
+import de.ruegnerlukas.strategygame.backend.common.utils.err
+import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.DeleteUser
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.DeleteUser.DeleteUserError
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.DeleteUser.NotAuthorizedError

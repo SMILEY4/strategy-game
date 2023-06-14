@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.economy.core.service
 
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.amount

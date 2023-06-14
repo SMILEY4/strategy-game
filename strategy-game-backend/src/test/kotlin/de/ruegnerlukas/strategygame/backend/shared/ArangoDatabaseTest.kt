@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.shared
 
-import de.ruegnerlukas.strategygame.backend.common.getOrThrow
+import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DocumentHandle

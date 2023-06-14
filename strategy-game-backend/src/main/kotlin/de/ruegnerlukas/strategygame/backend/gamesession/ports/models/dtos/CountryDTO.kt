@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos
 
-import de.ruegnerlukas.strategygame.backend.common.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 
 class CountryDTO(
     val dataTier1: CountryDTODataTier1,

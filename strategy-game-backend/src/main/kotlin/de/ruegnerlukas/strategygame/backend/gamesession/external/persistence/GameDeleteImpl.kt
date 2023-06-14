@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameDelete
-import de.ruegnerlukas.strategygame.backend.common.parallelIO
+import de.ruegnerlukas.strategygame.backend.common.utils.parallelIO
 
 class GameDeleteImpl(private val database: ArangoDatabase) : GameDelete {
 

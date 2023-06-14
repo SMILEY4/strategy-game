@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
-import de.ruegnerlukas.strategygame.backend.common.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 
 /**
  * Create a new game

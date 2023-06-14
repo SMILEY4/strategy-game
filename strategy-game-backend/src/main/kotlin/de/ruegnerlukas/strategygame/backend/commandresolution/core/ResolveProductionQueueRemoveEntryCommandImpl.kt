@@ -11,13 +11,13 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Produ
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveProductionQueueRemoveEntryCommand
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.RemoveProductionQueueEntryAction
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
-import de.ruegnerlukas.strategygame.backend.common.validation.ValidationContext
-import de.ruegnerlukas.strategygame.backend.common.validation.validations
+import de.ruegnerlukas.strategygame.backend.common.utils.ValidationContext
+import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class ResolveProductionQueueRemoveEntryCommandImpl(
     private val removeProductionQueueEntryAction: RemoveProductionQueueEntryAction,

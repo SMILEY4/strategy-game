@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos
 
 import de.ruegnerlukas.strategygame.backend.common.models.TileRef
-import de.ruegnerlukas.strategygame.backend.common.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 
 data class CityDTO(
     val cityId: String,

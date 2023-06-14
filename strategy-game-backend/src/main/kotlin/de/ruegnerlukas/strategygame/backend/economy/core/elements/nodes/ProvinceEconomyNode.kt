@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.economy.core.elements.nodes
 
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.Province
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyEntity

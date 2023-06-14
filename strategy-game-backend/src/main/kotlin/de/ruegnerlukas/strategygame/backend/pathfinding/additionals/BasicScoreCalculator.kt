@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.pathfinding.additionals
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.pathfinding.Node
 import de.ruegnerlukas.strategygame.backend.pathfinding.ScoreCalculator
-import de.ruegnerlukas.strategygame.backend.common.distance
+import de.ruegnerlukas.strategygame.backend.common.utils.distance
 
 class BasicScoreCalculator: ScoreCalculator<Node> {
 

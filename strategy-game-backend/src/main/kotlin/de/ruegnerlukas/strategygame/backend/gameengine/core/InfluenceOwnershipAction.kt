@@ -1,5 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.models.Tile
+
 /**
  * Re-calculates the owner of the tiles after a change in influence
  */

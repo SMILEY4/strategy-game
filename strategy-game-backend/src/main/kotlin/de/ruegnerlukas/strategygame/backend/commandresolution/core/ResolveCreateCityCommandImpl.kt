@@ -10,8 +10,8 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Creat
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCreateCityCommand
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.CreateCityAction
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
@@ -19,9 +19,9 @@ import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TileType
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
-import de.ruegnerlukas.strategygame.backend.common.max
-import de.ruegnerlukas.strategygame.backend.common.validation.ValidationContext
-import de.ruegnerlukas.strategygame.backend.common.validation.validations
+import de.ruegnerlukas.strategygame.backend.common.utils.max
+import de.ruegnerlukas.strategygame.backend.common.utils.ValidationContext
+import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class ResolveCreateCityCommandImpl(
     private val gameConfig: GameConfig,

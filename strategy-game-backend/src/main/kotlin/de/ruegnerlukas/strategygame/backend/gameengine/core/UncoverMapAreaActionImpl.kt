@@ -5,10 +5,10 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesUpdate
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.positionsCircle
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 
 class UncoverMapAreaActionImpl(
     private val tilesByPosition: TilesQueryByGameAndPosition,

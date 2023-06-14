@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.common.models.Tile

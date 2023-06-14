@@ -3,8 +3,7 @@ package de.ruegnerlukas.strategygame.backend.worldcreation
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TileType
-import de.ruegnerlukas.strategygame.backend.common.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.common.WeightedCollection
+import de.ruegnerlukas.strategygame.backend.common.utils.WeightedCollection
 import kotlin.random.Random
 
 class WorldBuilderImpl : WorldBuilder {

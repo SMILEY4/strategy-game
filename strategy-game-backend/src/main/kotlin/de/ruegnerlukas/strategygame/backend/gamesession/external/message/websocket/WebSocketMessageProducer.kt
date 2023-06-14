@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket
 
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.Message
-import de.ruegnerlukas.strategygame.backend.common.Json
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.utils.Json
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
 
 /**

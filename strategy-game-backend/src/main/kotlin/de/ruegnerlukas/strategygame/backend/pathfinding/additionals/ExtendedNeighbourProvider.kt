@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
 import de.ruegnerlukas.strategygame.backend.pathfinding.NeighbourProvider
 import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.NextNodeRule
-import de.ruegnerlukas.strategygame.backend.common.positionsNeighbours
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsNeighbours
 
 class ExtendedNeighbourProvider : NeighbourProvider<ExtendedNode> {
 

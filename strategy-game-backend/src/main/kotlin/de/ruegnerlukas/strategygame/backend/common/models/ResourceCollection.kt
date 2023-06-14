@@ -8,11 +8,12 @@ interface ResourceCollection {
 
         fun empty() = basic()
 
+
         /**
          * @return a new [BasicResourceCollection] with the given data
          */
-        fun basic(resources: Map<ResourceType, Number>): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
-            return de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection().also { collection ->
+        fun basic(resources: Map<ResourceType, Number>): BasicResourceCollection {
+            return BasicResourceCollection().also { collection ->
                 resources.forEach { (type, amount) ->
                     collection.set(type, amount.toFloat())
                 }
@@ -23,8 +24,8 @@ interface ResourceCollection {
         /**
          * @return a new [BasicResourceCollection] with the given data
          */
-        fun basic(resources: Collection<ResourceStack>): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
-            return de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection().also { collection ->
+        fun basic(resources: Collection<ResourceStack>): BasicResourceCollection {
+            return BasicResourceCollection().also { collection ->
                 resources.forEach { stack ->
                     collection.set(stack.type, stack.amount)
                 }
@@ -35,8 +36,8 @@ interface ResourceCollection {
         /**
          * @return a new [BasicResourceCollection] with the given data
          */
-        fun basic(vararg resources: ResourceStack): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
-            return de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection().also { collection ->
+        fun basic(vararg resources: ResourceStack): BasicResourceCollection {
+            return BasicResourceCollection().also { collection ->
                 resources.forEach { stack ->
                     collection.set(stack.type, stack.amount)
                 }
@@ -47,8 +48,8 @@ interface ResourceCollection {
         /**
          * @return a new [BasicResourceCollection] with the given data
          */
-        fun basic(resources: ResourceCollection): de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection {
-            return de.ruegnerlukas.strategygame.backend.common.models.BasicResourceCollection().also { collection ->
+        fun basic(resources: ResourceCollection): BasicResourceCollection {
+            return BasicResourceCollection().also { collection ->
                 resources.forEach { type, amount ->
                     collection.set(type, amount)
                 }

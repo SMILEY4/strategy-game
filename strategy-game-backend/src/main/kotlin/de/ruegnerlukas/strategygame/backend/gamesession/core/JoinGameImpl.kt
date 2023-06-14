@@ -5,9 +5,9 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.common.COUNTRY_COLORS
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.utils.COUNTRY_COLORS
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.Player

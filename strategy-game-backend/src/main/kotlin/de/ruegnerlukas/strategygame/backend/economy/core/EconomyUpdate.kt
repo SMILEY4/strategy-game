@@ -14,7 +14,7 @@ import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionNode
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionEntityUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionNodeUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
-import de.ruegnerlukas.strategygame.backend.common.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider

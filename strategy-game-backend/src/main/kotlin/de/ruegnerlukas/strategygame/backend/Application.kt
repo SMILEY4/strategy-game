@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend
 
 import de.ruegnerlukas.strategygame.backend.app.engine.CustomNettyEngineMain
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 
 object ApplicationMode {
     const val DEV = "dev"

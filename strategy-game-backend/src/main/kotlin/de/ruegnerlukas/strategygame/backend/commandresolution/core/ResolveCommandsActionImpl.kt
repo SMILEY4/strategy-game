@@ -17,7 +17,7 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.Res
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolvePlaceScoutCommand
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveProductionQueueAddEntryCommand
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveProductionQueueRemoveEntryCommand
-import de.ruegnerlukas.strategygame.backend.common.Logging
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction

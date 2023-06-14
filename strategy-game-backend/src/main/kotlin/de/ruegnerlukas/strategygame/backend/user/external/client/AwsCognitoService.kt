@@ -24,11 +24,11 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
 import de.ruegnerlukas.strategygame.backend.app.Config
-import de.ruegnerlukas.strategygame.backend.common.Err
-import de.ruegnerlukas.strategygame.backend.common.Logging
-import de.ruegnerlukas.strategygame.backend.common.Ok
-import de.ruegnerlukas.strategygame.backend.common.err
-import de.ruegnerlukas.strategygame.backend.common.ok
+import de.ruegnerlukas.strategygame.backend.common.utils.Err
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.utils.Ok
+import de.ruegnerlukas.strategygame.backend.common.utils.err
+import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthDataExtended
 import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
