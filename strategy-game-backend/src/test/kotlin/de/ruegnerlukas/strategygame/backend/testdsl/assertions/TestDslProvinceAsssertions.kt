@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 
-import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
+import de.ruegnerlukas.strategygame.backend.common.models.Province
+import de.ruegnerlukas.strategygame.backend.common.models.ResourceStack
+import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended

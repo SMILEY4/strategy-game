@@ -1,5 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+
 /**
  * Prepares the game/world for the next update-step
  */

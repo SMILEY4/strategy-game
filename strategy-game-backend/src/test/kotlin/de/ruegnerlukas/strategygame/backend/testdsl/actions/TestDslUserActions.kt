@@ -1,14 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.actions
 
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddBuildingEntryCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddSettlerEntryCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueAddSettlerEntryCommandData
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
@@ -17,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 
 
 //=======================//

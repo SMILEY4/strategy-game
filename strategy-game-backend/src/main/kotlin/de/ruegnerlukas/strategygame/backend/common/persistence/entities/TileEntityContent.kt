@@ -3,10 +3,9 @@ package de.ruegnerlukas.strategygame.backend.common.persistence.entities
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import de.ruegnerlukas.strategygame.backend.common.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.common.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.common.models.TileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.ScoutTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.TileContent
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

@@ -1,21 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueRemoveEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveCommandsActionImpl
+import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveCreateCityCommandImpl
+import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolvePlaceMarkerCommandImpl
+import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveProductionQueueAddEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveProductionQueueRemoveEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.JoinGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ListGamesImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
-import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
@@ -32,8 +28,15 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.Tile
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
+import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.SendGameStateActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
 import io.mockk.every
 import io.mockk.mockk
 
@@ -147,11 +150,11 @@ data class TestActions(
         private fun resolveCommandsAction(context: TestActionContext, turnUpdate: TurnUpdateActionImpl) =
             ReportingResolveCommandsActionImpl(
                 context,
-                de.ruegnerlukas.strategygame.backend.gameengine.core.actions.commands.ResolveCommandsActionImpl(
+                ResolveCommandsActionImpl(
                     ResolvePlaceMarkerCommandImpl(
                         turnUpdate
                     ),
-                    de.ruegnerlukas.strategygame.backend.gameengine.core.actions.commands.ResolveCreateCityCommandImpl(
+                    ResolveCreateCityCommandImpl(
                         GameConfig.default(),
                         turnUpdate
                     ),
@@ -191,7 +194,11 @@ data class TestActions(
             TurnUpdateActionImpl(
                 ReservationInsertImpl(database),
                 GameConfig.default(),
-                popFoodConsumption
+                popFoodConsumption,
+                EconomyUpdateImpl(
+                    GameConfig.default(),
+                    popFoodConsumption
+                )
             )
 
         private fun popFoodConsumption(fixed: Int? = null): PopFoodConsumption {

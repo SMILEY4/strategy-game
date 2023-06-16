@@ -1,12 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNeighbourProvider
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedNodeBuilder
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.ExtendedScoreCalculator
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.additionals.rules.BlockingTilesRule
-import de.ruegnerlukas.strategygame.backend.core.pathfinding.backtracking.BacktrackingPathfinder
-import de.ruegnerlukas.strategygame.backend.ports.models.*
-import de.ruegnerlukas.strategygame.backend.ports.models.containers.TileContainer
+import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
+import de.ruegnerlukas.strategygame.backend.common.models.TileData
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.TileType
+import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedNeighbourProvider
+import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedNodeBuilder
+import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedScoreCalculator
+import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.BlockingTilesRule
+import de.ruegnerlukas.strategygame.backend.pathfinding.backtracking.BacktrackingPathfinder
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly

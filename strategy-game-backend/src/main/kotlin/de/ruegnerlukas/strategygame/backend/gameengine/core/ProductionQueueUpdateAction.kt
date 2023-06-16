@@ -1,5 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.ProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.common.models.SettlerProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.TurnUpdateAction
+
 /**
  * Updates the entries in production queues
  */

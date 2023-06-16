@@ -6,13 +6,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.common.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.common.models.ResourceStack
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
-import de.ruegnerlukas.strategygame.backend.ports.models.SettlerProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.common.models.SettlerProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

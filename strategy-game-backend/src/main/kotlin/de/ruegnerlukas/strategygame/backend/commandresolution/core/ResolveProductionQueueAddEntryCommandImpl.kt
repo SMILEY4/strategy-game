@@ -39,7 +39,7 @@ class ResolveProductionQueueAddEntryCommandImpl(
                 validateCommand(command.countryId, city, gameConfig).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                addProductionQueueEntryAction.perform(game, command)
+                addProductionQueueEntryAction.performAddProductionQueueEntry(game, command)
                 emptyList()
             }
         }

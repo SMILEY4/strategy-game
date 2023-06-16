@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Creat
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 
 interface CreateCityAction {
-    suspend fun perform(
+    suspend fun performCreateCity(
         game: GameExtended,
         command: Command<CreateCityCommandData>
     )

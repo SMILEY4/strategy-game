@@ -36,7 +36,7 @@ class ResolveProductionQueueRemoveEntryCommandImpl(
                 validateCommand(command.countryId, city, command.data.queueEntryId).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                removeProductionQueueEntryAction.perform(game, command)
+                removeProductionQueueEntryAction.performRemoveProductionQueueEntry(game, command)
                 emptyList()
             }
         }

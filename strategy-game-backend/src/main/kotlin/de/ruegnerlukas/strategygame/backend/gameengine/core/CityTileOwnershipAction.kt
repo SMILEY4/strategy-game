@@ -1,5 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.Country
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.Province
+import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.models.TileOwner
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
+
 /**
  * Re-calculates the owner of the tiles near the created city.
  * This only handles the tiles that will be owned directly by the city, not tiles added to the province via influence

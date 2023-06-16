@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.common.persistence.entities
 
 import de.ruegnerlukas.strategygame.backend.common.models.Building
+import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.TileRef
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.City
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 
 class CityEntity(

@@ -1,12 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
-import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.models.amount
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.common.models.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.amount
+import de.ruegnerlukas.strategygame.backend.economy.core.elements.nodes.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.runEconomyUpdate
@@ -16,6 +15,7 @@ import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addCity
 import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addRoute
 import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addTileResources
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils.TileDirection
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 import io.kotest.core.spec.style.StringSpec
 
 class ResourceSharingTest : StringSpec({

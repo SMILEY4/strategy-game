@@ -1,5 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
+
 /**
  * Adds the scout at the given location and discovers the surrounding tiles
  */

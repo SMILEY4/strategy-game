@@ -2,6 +2,13 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.Either
 import arrow.core.getOrHandle
+import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.common.models.Game
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.common.models.Province
+import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
@@ -13,16 +20,9 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CityEnti
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CountryEntity
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.ports.models.Game
-import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.ports.models.Player
-import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.Country
+import de.ruegnerlukas.strategygame.backend.common.models.Player
 
 object TestUtils {
 

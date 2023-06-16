@@ -40,7 +40,7 @@ class ResolvePlaceScoutCommandImpl(
                 validateCommand(gameConfig, command.countryId, targetTile, game).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                placeScoutAction.perform(game, command)
+                placeScoutAction.performPlaceScout(game, command)
                 emptyList()
             }
         }

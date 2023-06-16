@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Produ
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 
 interface RemoveProductionQueueEntryAction {
-    suspend fun perform(
+    suspend fun performRemoveProductionQueueEntry(
         game: GameExtended,
         command: Command<ProductionQueueRemoveEntryCommandData>
     )

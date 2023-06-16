@@ -6,21 +6,19 @@ import de.ruegnerlukas.strategygame.backend.pathfinding_v2.Node
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.Path
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.Pathfinder
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.ScoreCalculator
-import de.ruegnerlukas.strategygame.backend.pathfinding_v2.TargetReachedCondition
 
 class AStarPathfinder<T : Node>(
-    private val targetReachedCondition: TargetReachedCondition<T>,
     private val neighbourProvider: NeighbourProvider<T>,
     private val scoreCalculator: ScoreCalculator<T>
 ) : Pathfinder<T> {
 
     override fun find(start: T, end: T): Path<T> {
-        if(targetReachedCondition.check(start)) {
+        if (start == end || start.locationId == end.locationId) {
             return Path.empty()
         }
         val context = PathfindingContext<T>(OpenList(), VisitedList())
         context.pushOpen(start)
-        return iterateOpen(context) { currentNode ->
+        return iterateOpen(context, end) { currentNode ->
             neighbourProvider.getNeighbours(currentNode) { neighbourNode ->
                 val score = calculateScore(currentNode, neighbourNode, end)
                 visitTile(context, neighbourNode, score)
@@ -28,10 +26,10 @@ class AStarPathfinder<T : Node>(
         }
     }
 
-    private fun iterateOpen(ctx: PathfindingContext<T>, consumer: (node: T) -> Unit): Path<T> {
+    private fun iterateOpen(ctx: PathfindingContext<T>, destination: T, consumer: (node: T) -> Unit): Path<T> {
         while (ctx.hasOpen()) {
             val currentNode = ctx.getNextOpen().next()
-            if (targetReachedCondition.check(currentNode)) {
+            if (currentNode == destination || currentNode.locationId == destination.locationId) {
                 return reconstructPath(currentNode)
             } else {
                 consumer(currentNode)
@@ -49,7 +47,7 @@ class AStarPathfinder<T : Node>(
 
     private fun visitTile(ctx: PathfindingContext<T>, current: T, score: NodeScore) {
         val prevScore = ctx.getVisitedGScore(current)
-        if(prevScore == null || score.g < prevScore)  {
+        if (prevScore == null || score.g < prevScore) {
             current.also {
                 it.f = score.f
                 it.g = score.g

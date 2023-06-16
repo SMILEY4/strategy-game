@@ -6,23 +6,21 @@ import de.ruegnerlukas.strategygame.backend.pathfinding_v2.NodeScore
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.Path
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.Pathfinder
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.ScoreCalculator
-import de.ruegnerlukas.strategygame.backend.pathfinding_v2.TargetReachedCondition
 import java.util.PriorityQueue
 
 private typealias OpenPathQueue<T> = PriorityQueue<BacktrackingPath<T>>
 
 class BacktrackingPathfinder<T : Node>(
-    private val targetReachedCondition: TargetReachedCondition<T>,
     private val neighbourProvider: NeighbourProvider<T>,
     private val scoreCalculator: ScoreCalculator<T>
 ) : Pathfinder<T> {
 
     override fun find(start: T, end: T): Path<T> {
-        if (targetReachedCondition.check(start)) {
+        if (start == end || start.locationId == end.locationId) {
             return Path.empty()
         }
         val openPaths = initOpenPaths(start)
-        return iterateOpen(openPaths) { currentPath ->
+        return iterateOpen(openPaths, end) { currentPath ->
             findPossibleNextNodes(currentPath) { neighbourNode ->
                 openPaths.add(append(currentPath, neighbourNode, end))
             }
@@ -36,10 +34,10 @@ class BacktrackingPathfinder<T : Node>(
         }
     }
 
-    private fun iterateOpen(openPaths: OpenPathQueue<T>, consumer: (path: BacktrackingPath<T>) -> Unit): BacktrackingPath<T> {
+    private fun iterateOpen(openPaths: OpenPathQueue<T>, destination: T, consumer: (path: BacktrackingPath<T>) -> Unit): BacktrackingPath<T> {
         while (openPaths.isNotEmpty()) {
             val current = openPaths.poll()
-            if (targetReachedCondition.check(current.nodes.last())) {
+            if(current.nodes.last() == destination || current.nodes.last().locationId == destination.locationId) {
                 return current
             }
             consumer(current)

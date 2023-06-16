@@ -1,5 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.Province
+import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.models.TileInfluence
+import de.ruegnerlukas.strategygame.backend.common.utils.distance
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
+import kotlin.math.max
+
 /**
  * Re-calculates the influence on tiles near the created city
  */

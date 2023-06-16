@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.actions
 
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils

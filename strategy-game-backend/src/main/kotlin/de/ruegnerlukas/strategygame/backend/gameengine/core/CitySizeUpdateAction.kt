@@ -1,5 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+
 /**
  * Updates the size of a city based on the current growth-progress
  */

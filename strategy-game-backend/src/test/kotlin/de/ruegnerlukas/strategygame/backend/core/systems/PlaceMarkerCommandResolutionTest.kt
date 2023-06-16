@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectCommandResolutionErrors
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectMarkers
@@ -8,6 +7,7 @@ import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectNoMarkers
 import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.submitTurn
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 import io.kotest.core.spec.style.StringSpec
 
 class PlaceMarkerCommandResolutionTest : StringSpec({

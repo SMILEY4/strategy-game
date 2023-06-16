@@ -1,6 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.models.TileInfluence
+import de.ruegnerlukas.strategygame.backend.common.models.TileOwner
+import de.ruegnerlukas.strategygame.backend.common.utils.max
 
 /**
  * Re-calculates the owner of the tiles after a change in influence

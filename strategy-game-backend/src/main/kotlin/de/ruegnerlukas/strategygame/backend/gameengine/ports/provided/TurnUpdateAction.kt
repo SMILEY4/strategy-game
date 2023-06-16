@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Place
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueAddEntryCommandData
 import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.core.update.BuildingCreationAction
+import de.ruegnerlukas.strategygame.backend.gameengine.core.BuildingCreationAction
 
 interface TurnUpdateAction {
 

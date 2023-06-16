@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Place
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 
 interface PlaceMarkerAction {
-    suspend fun perform(
+    suspend fun performPlaceMarker(
         game: GameExtended,
         command: Command<PlaceMarkerCommandData>
     )

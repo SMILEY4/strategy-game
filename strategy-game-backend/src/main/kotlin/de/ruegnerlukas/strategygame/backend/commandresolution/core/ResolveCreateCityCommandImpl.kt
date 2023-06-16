@@ -51,7 +51,7 @@ class ResolveCreateCityCommandImpl(
                     .ifInvalid<Unit> { reasons ->
                         return@either reasons.map { CommandResolutionError(command, it) }
                     }
-                createCityAction.perform(game, command)
+                createCityAction.performCreateCity(game, command)
                 emptyList()
             }
         }

@@ -1,13 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
-import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.TileRef
+import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
@@ -17,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
 import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addCity
 import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addTileResources
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils.TileDirection
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.floats.plusOrMinus
 import io.kotest.matchers.shouldBe

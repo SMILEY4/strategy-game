@@ -4,9 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.Province
 import de.ruegnerlukas.strategygame.backend.common.models.ResourceStack
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 
 class ProvinceEntity(
     val gameId: String,

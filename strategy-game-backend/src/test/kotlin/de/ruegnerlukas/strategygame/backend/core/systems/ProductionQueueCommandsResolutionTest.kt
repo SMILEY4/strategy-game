@@ -1,12 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCityId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.submitTurn
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectProductionQueue
 import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueCommandsResolutionTest : StringSpec({

@@ -7,11 +7,6 @@ import de.ruegnerlukas.strategygame.backend.common.models.TileOwner
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.TileData
-import de.ruegnerlukas.strategygame.backend.ports.models.TileInfluence
-import de.ruegnerlukas.strategygame.backend.ports.models.TileOwner
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
 
 class TileEntity(
     val gameId: String,

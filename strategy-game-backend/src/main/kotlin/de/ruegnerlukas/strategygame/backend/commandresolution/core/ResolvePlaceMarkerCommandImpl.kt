@@ -38,7 +38,7 @@ class ResolvePlaceMarkerCommandImpl(
                 validateCommand(targetTile).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
-                placeMarkerAction.perform(game, command)
+                placeMarkerAction.performPlaceMarker(game, command)
                 emptyList()
             }
         }

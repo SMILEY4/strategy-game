@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Produ
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 
 interface PlaceScoutAction {
-    suspend fun perform(
+    suspend fun performPlaceScout(
         game: GameExtended,
         command: Command<PlaceScoutCommandData>
     )

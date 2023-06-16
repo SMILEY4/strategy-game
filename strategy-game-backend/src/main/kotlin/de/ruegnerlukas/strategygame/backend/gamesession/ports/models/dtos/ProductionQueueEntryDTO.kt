@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

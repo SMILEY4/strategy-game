@@ -1,5 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.Building
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.TileRef
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
+
 /**
  * Adds the given building to the city
  */

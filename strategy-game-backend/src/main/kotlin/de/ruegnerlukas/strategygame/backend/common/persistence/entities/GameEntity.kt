@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.common.models.Player
 
 class GameEntity(
     val turn: Int,
