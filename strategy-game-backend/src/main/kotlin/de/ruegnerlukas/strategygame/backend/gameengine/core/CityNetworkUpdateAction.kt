@@ -5,23 +5,12 @@ import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.Route
-import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.TileRef
-import de.ruegnerlukas.strategygame.backend.common.models.TileType
 import de.ruegnerlukas.strategygame.backend.common.utils.distance
 import de.ruegnerlukas.strategygame.backend.common.utils.mapParallel
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.pathfinding.Path
 import de.ruegnerlukas.strategygame.backend.pathfinding.Pathfinder
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedNeighbourProvider
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedNode
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedNodeBuilder
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedScoreCalculator
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.BlockingTilesRule
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.MaxPathLengthRule
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.MaxProvincesRule
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.SwitchFromToWaterViaPointsRule
-import de.ruegnerlukas.strategygame.backend.pathfinding.backtracking.BacktrackingPathfinder
 
 /**
  * Connects newly created cities with other cities
@@ -40,7 +29,7 @@ class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val re
     }
 
     private suspend fun createOrUpdateRoutes(city: City, game: GameExtended) {
-        val pathfinder = buildPathfinder(game)
+        val pathfinder = buildCityNetworkPathfinder(game, gameConfig)
         game.cities
             .asSequence()
             .filter { canCreateRoute(city, it, game.routes, gameConfig.maxRouteLength) }
@@ -49,7 +38,7 @@ class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val re
             .forEach { (from, to, path) -> createOrUpdateRoute(from, to, path, game) }
     }
 
-    private suspend fun createOrUpdateRoute(from: City, to: City, path: Path<ExtendedNode>, game: GameExtended) {
+    private suspend fun createOrUpdateRoute(from: City, to: City, path: Path<CityNetworkNode>, game: GameExtended) {
         val existingRoute = existingRoute(from, to, game.routes)
         if (existingRoute == null) {
             game.routes.add(createRoute(from, to, path))
@@ -59,21 +48,6 @@ class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val re
                 game.routes.add(createRoute(from, to, path))
             }
         }
-    }
-
-    private fun buildPathfinder(game: GameExtended): Pathfinder<ExtendedNode> {
-        return BacktrackingPathfinder(
-            ExtendedNodeBuilder(),
-            ExtendedScoreCalculator(mapOf()),
-            ExtendedNeighbourProvider().withRules(
-                listOf(
-                    BlockingTilesRule(setOf(TileType.MOUNTAIN)),
-                    MaxPathLengthRule(gameConfig.maxRouteLength),
-                    MaxProvincesRule(2),
-                    SwitchFromToWaterViaPointsRule(game.cities.map { TilePosition(it.tile) })
-                )
-            )
-        )
     }
 
     private fun canCreateRoute(a: City, b: City, routes: List<Route>, maxSearchRadius: Int): Boolean {
@@ -94,23 +68,27 @@ class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val re
         return routes.find { (it.cityIdA == a.cityId && it.cityIdB == b.cityId) || (it.cityIdA == b.cityId && it.cityIdB == a.cityId) }
     }
 
-    private fun findPath(pf: Pathfinder<ExtendedNode>, from: City, to: City, game: GameExtended): Triple<City, City, Path<ExtendedNode>> {
+    private fun findPath(
+        pathfinder: Pathfinder<CityNetworkNode>,
+        from: City,
+        to: City,
+        game: GameExtended
+    ): Triple<City, City, Path<CityNetworkNode>> {
         return Triple(
             first = from,
             second = to,
-            third = pf.find(
-                start = TilePosition(from.tile),
-                destination = TilePosition(to.tile),
-                tiles = game.tiles
+            third = pathfinder.find(
+                CityNetworkNode.of(game.tiles.get(from.tile)!!),
+                CityNetworkNode.of(game.tiles.get(to.tile)!!),
             )
         )
     }
 
-    private fun isValidPath(data: Triple<City, City, Path<ExtendedNode>>): Boolean {
+    private fun isValidPath(data: Triple<City, City, Path<CityNetworkNode>>): Boolean {
         return data.third.nodes.isNotEmpty()
     }
 
-    private suspend fun createRoute(from: City, to: City, path: Path<ExtendedNode>): Route {
+    private suspend fun createRoute(from: City, to: City, path: Path<CityNetworkNode>): Route {
         return Route(
             routeId = reservationInsert.reserveRoute(),
             cityIdA = from.cityId,
@@ -120,3 +98,4 @@ class CityNetworkUpdateAction(private val gameConfig: GameConfig, private val re
     }
 
 }
+

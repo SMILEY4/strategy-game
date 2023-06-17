@@ -6,11 +6,15 @@ import de.ruegnerlukas.strategygame.backend.common.models.TileData
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TileType
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedNeighbourProvider
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedNodeBuilder
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.ExtendedScoreCalculator
-import de.ruegnerlukas.strategygame.backend.pathfinding.additionals.rules.BlockingTilesRule
-import de.ruegnerlukas.strategygame.backend.pathfinding.backtracking.BacktrackingPathfinder
+import de.ruegnerlukas.strategygame.backend.common.utils.distance
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsNeighbours
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.utils.BlockingTilesRule
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.utils.NextNodeRule
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.utils.TestNode
+import de.ruegnerlukas.strategygame.backend.core.pathfinding.utils.node
+import de.ruegnerlukas.strategygame.backend.pathfinding.NeighbourProvider
+import de.ruegnerlukas.strategygame.backend.pathfinding.ScoreCalculator
+import de.ruegnerlukas.strategygame.backend.pathfinding.algorithms.backtracking.BacktrackingPathfinder
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
@@ -19,7 +23,6 @@ import io.kotest.matchers.floats.shouldBeWithinPercentageOf
 class BacktrackingPathfindingTest : StringSpec({
 
     "basic path with blocking terrain" {
-
         val tiles = buildTiles(
             listOf(
                 listOf(0, 0, 0),
@@ -28,23 +31,16 @@ class BacktrackingPathfindingTest : StringSpec({
                 listOf(0, 0, 0),
             )
         )
-
         val pathfinder = BacktrackingPathfinder(
-            ExtendedNodeBuilder(),
-            ExtendedScoreCalculator(mapOf()),
-            ExtendedNeighbourProvider().withRules(
-                listOf(
-                    BlockingTilesRule(setOf(TileType.WATER))
-                )
-            )
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
-
         val path = pathfinder.find(
-            TilePosition(0, 0),
-            TilePosition(2, 3),
-            tiles
+            tiles.get(0, 0).node(),
+            tiles.get(2, 3).node(),
         )
-
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
             TilePosition(0, 0),
             TilePosition(1, 0),
@@ -55,11 +51,9 @@ class BacktrackingPathfindingTest : StringSpec({
             TilePosition(2, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(6.0f, 0.1)
-
     }
 
     "no path possible" {
-
         val tiles = buildTiles(
             listOf(
                 listOf(0, 0),
@@ -67,95 +61,68 @@ class BacktrackingPathfindingTest : StringSpec({
                 listOf(0, 0),
             )
         )
-
         val pathfinder = BacktrackingPathfinder(
-            ExtendedNodeBuilder(),
-            ExtendedScoreCalculator(mapOf()),
-            ExtendedNeighbourProvider().withRules(
-                listOf(
-                    BlockingTilesRule(setOf(TileType.WATER))
-                )
-            )
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
-
         val path = pathfinder.find(
-            TilePosition(0, 0),
-            TilePosition(1, 2),
-            tiles
+            tiles.get(0, 0).node(),
+            tiles.get(1, 2).node(),
         )
-
         path.nodes.map { it.tile.position }.shouldBeEmpty()
-
     }
 
     "start is same as end" {
-
         val tiles = buildTiles(
             listOf(
                 listOf(0, 0),
                 listOf(0, 0),
             )
         )
-
         val pathfinder = BacktrackingPathfinder(
-            ExtendedNodeBuilder(),
-            ExtendedScoreCalculator(mapOf()),
-            ExtendedNeighbourProvider().withRules(
-                listOf(
-                    BlockingTilesRule(setOf(TileType.WATER))
-                )
-            )
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
-
         val path = pathfinder.find(
-            TilePosition(0, 0),
-            TilePosition(0, 0),
-            tiles
+            tiles.get(0, 0).node(),
+            tiles.get(0, 0).node(),
         )
-
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
             TilePosition(0, 0)
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(0.0f, 0.1)
-
     }
 
     "start is neighbour of end" {
-
         val tiles = buildTiles(
             listOf(
                 listOf(0, 0),
                 listOf(0, 0),
             )
         )
-
         val pathfinder = BacktrackingPathfinder(
-            ExtendedNodeBuilder(),
-            ExtendedScoreCalculator(mapOf()),
-            ExtendedNeighbourProvider().withRules(
-                listOf(
-                    BlockingTilesRule(setOf(TileType.WATER))
-                )
-            )
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
-
         val path = pathfinder.find(
-            TilePosition(0, 0),
-            TilePosition(1, 0),
-            tiles
+            tiles.get(0, 0).node(),
+            tiles.get(1, 0).node(),
         )
-
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
             TilePosition(0, 0),
             TilePosition(1, 0)
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(1.0f, 0.1)
-
     }
 
 
     "path with different movement cost options" {
-
         val tiles = buildTiles(
             listOf(
                 listOf(0, 0, 0),
@@ -164,27 +131,20 @@ class BacktrackingPathfindingTest : StringSpec({
                 listOf(0, 0, 0),
             )
         )
-
         val pathfinder = BacktrackingPathfinder(
-            ExtendedNodeBuilder(),
-            ExtendedScoreCalculator(mapOf(
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(mapOf(
                 TileType.WATER to 9999f,
                 TileType.MOUNTAIN to 2f,
                 TileType.LAND to 1f
-            )),
-            ExtendedNeighbourProvider().withRules(
-                listOf(
-                    BlockingTilesRule(setOf(TileType.WATER))
-                )
-            )
+            ))
         )
-
         val path = pathfinder.find(
-            TilePosition(1, 0),
-            TilePosition(1, 3),
-            tiles
+            tiles.get(1, 0).node(),
+            tiles.get(1, 3).node(),
         )
-
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
             TilePosition(1, 0),
             TilePosition(2, 0),
@@ -193,13 +153,65 @@ class BacktrackingPathfindingTest : StringSpec({
             TilePosition(1, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(5.0f, 0.1)
-
     }
 
 
 }) {
 
     private companion object {
+
+        class AdvancedNeighbourProvider(private val tiles: TileContainer) : NeighbourProvider<TestNode> {
+
+            private val rules = mutableListOf<NextNodeRule<TestNode>>()
+
+            fun withRules(vararg rules: NextNodeRule<TestNode>): AdvancedNeighbourProvider {
+                this.rules.clear()
+                this.rules.addAll(rules)
+                return this
+            }
+
+            private fun allRulesApply(prev: TestNode, next: TestNode): Boolean {
+                return rules.all { it.evaluate(prev, next) }
+            }
+
+            override fun getNeighbours(current: TestNode, consumer: (neighbour: TestNode) -> Unit) {
+                positionsNeighbours(current.tile.position) { q, r ->
+                    val neighbourTile = tiles.get(q, r)
+                    if (neighbourTile != null) {
+                        val neighbourNode = TestNode(neighbourTile,
+                            pathLength = current.pathLength + 1,
+                            visitedProvinces = current.visitedProvinces + (neighbourTile.owner?.provinceId?.let { setOf(it) } ?: setOf()),
+                            prevNode = current
+                        )
+                        if (allRulesApply(current, neighbourNode)) {
+                            consumer(neighbourNode)
+                        }
+                    }
+                }
+            }
+
+        }
+
+        class AdvancedScoreCalculator(private val movementCosts: Map<TileType, Float>) : ScoreCalculator<TestNode> {
+
+            override fun f(g: Float, h: Float): Float {
+                return g + h
+            }
+
+            override fun h(node: TestNode, destination: TestNode): Float {
+                return node.tile.position.distance(destination.tile.position).toFloat()
+            }
+
+            override fun g(prev: TestNode, next: TestNode): Float {
+                return prev.g + movementCost(prev.tile) / 2f + movementCost(next.tile) / 2f
+            }
+
+            private fun movementCost(tile: Tile): Float {
+                return movementCosts[tile.data.terrainType] ?: 1f
+            }
+
+        }
+
 
         fun buildTiles(ids: List<List<Int>>): TileContainer {
             val tiles = mutableListOf<Tile>()

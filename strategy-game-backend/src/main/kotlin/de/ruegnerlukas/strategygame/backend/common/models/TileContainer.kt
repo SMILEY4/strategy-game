@@ -27,6 +27,10 @@ class TileContainer() : Collection<Tile> {
         return tilesByPos[toKey(q, r, tilesList.size)]
     }
 
+    fun get(ref: TileRef): Tile? {
+        return get(ref.tileId)
+    }
+
     private fun toKey(pos: TilePosition, a: Int) = toKey(pos.q, pos.r, a)
 
     private fun toKey(q: Int, r: Int, a: Int) = q + r * a
