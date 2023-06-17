@@ -82,7 +82,7 @@ class AdvancedPathfindingV2Test : StringSpec({
             AdvancedScoreCalculator(
                 mapOf(
                     TileType.WATER to 1f,
-                    TileType.MOUNTAIN to 2f,
+                    TileType.MOUNTAIN to 10f,
                     TileType.LAND to 1f
                 )
             )

@@ -17,7 +17,7 @@ class BacktrackingPathfinder<T : Node>(
 
     override fun find(start: T, end: T): Path<T> {
         if (start == end || start.locationId == end.locationId) {
-            return Path.empty()
+            return Path(listOf(start))
         }
         val openPaths = initOpenPaths(start)
         return iterateOpen(openPaths, end) { currentPath ->
@@ -47,7 +47,7 @@ class BacktrackingPathfinder<T : Node>(
 
     private fun findPossibleNextNodes(path: BacktrackingPath<T>, consumer: (next: T) -> Unit) {
         neighbourProvider.getNeighbours(path.nodes.last()) { neighbour ->
-            if (path.nodeIds.contains(neighbour.locationId)) {
+            if (!path.nodeIds.contains(neighbour.locationId)) {
                 consumer(neighbour)
             }
         }

@@ -68,7 +68,6 @@ class AdvancedPathfindingTest : StringSpec({
     }
 
     "expensive path is the only one shorter than max path length" {
-
         val tiles = buildTiles(
             listOf(
                 listOf(0, 0, 0),
@@ -77,7 +76,6 @@ class AdvancedPathfindingTest : StringSpec({
                 listOf(0, 0, 0),
             )
         )
-
         val pathfinder = BacktrackingPathfinder(
             ExtendedNodeBuilder(),
             ExtendedScoreCalculator(mapOf(
@@ -92,13 +90,11 @@ class AdvancedPathfindingTest : StringSpec({
                 )
             )
         )
-
         val path = pathfinder.find(
             TilePosition(0, 0),
             TilePosition(2, 3),
             tiles
         )
-
         path.nodes.map { it.tile.position } shouldContainExactly listOf(
             TilePosition(0, 0),
             TilePosition(0, 1),
@@ -108,7 +104,6 @@ class AdvancedPathfindingTest : StringSpec({
             TilePosition(2, 3),
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(14.0f, 0.1)
-
     }
 
     "all paths longer than max path length" {

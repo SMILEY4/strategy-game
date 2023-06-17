@@ -14,7 +14,7 @@ class AStarPathfinder<T : Node>(
 
     override fun find(start: T, end: T): Path<T> {
         if (start == end || start.locationId == end.locationId) {
-            return Path.empty()
+            return Path(listOf(start))
         }
         val context = PathfindingContext<T>(OpenList(), VisitedList())
         context.pushOpen(start)

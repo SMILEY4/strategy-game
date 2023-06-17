@@ -20,7 +20,7 @@ class TestNode(
 fun Tile?.node(): TestNode {
     return TestNode(
         tile = this!!,
-        pathLength = 0,
+        pathLength = 1,
         visitedProvinces = this.owner?.provinceId?.let { setOf(it) } ?: setOf(),
         prevNode = null
     )

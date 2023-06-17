@@ -8,17 +8,19 @@ import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TileType
 import de.ruegnerlukas.strategygame.backend.common.utils.distance
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsNeighbours
+import de.ruegnerlukas.strategygame.backend.core.pathfindingv2.utils.BlockingTilesRule
+import de.ruegnerlukas.strategygame.backend.core.pathfindingv2.utils.NextNodeRule
 import de.ruegnerlukas.strategygame.backend.core.pathfindingv2.utils.TestNode
 import de.ruegnerlukas.strategygame.backend.core.pathfindingv2.utils.node
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.NeighbourProvider
 import de.ruegnerlukas.strategygame.backend.pathfinding_v2.ScoreCalculator
-import de.ruegnerlukas.strategygame.backend.pathfinding_v2.algorithms.astar.AStarPathfinder
+import de.ruegnerlukas.strategygame.backend.pathfinding_v2.algorithms.backtracking.BacktrackingPathfinder
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.floats.shouldBeWithinPercentageOf
 
-class AStarPathfindingV2Test : StringSpec({
+class BacktrackingPathfindingV2Test : StringSpec({
 
     "basic path with blocking terrain" {
         val tiles = buildTiles(
@@ -29,9 +31,11 @@ class AStarPathfindingV2Test : StringSpec({
                 listOf(0, 0, 0),
             )
         )
-        val pathfinder = AStarPathfinder(
-            TerrainBasedNeighbourProvider(tiles),
-            BasicScoreCalculator(),
+        val pathfinder = BacktrackingPathfinder(
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
         val path = pathfinder.find(
             tiles.get(0, 0).node(),
@@ -57,16 +61,17 @@ class AStarPathfindingV2Test : StringSpec({
                 listOf(0, 0),
             )
         )
-        val pathfinder = AStarPathfinder(
-            TerrainBasedNeighbourProvider(tiles),
-            BasicScoreCalculator(),
+        val pathfinder = BacktrackingPathfinder(
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
         val path = pathfinder.find(
-           tiles.get(0, 0).node(),
-           tiles.get(1, 2).node(),
+            tiles.get(0, 0).node(),
+            tiles.get(1, 2).node(),
         )
         path.nodes.map { it.tile.position }.shouldBeEmpty()
-
     }
 
     "start is same as end" {
@@ -76,9 +81,11 @@ class AStarPathfindingV2Test : StringSpec({
                 listOf(0, 0),
             )
         )
-        val pathfinder = AStarPathfinder(
-            TerrainBasedNeighbourProvider(tiles),
-            BasicScoreCalculator(),
+        val pathfinder = BacktrackingPathfinder(
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
         val path = pathfinder.find(
             tiles.get(0, 0).node(),
@@ -97,9 +104,11 @@ class AStarPathfindingV2Test : StringSpec({
                 listOf(0, 0),
             )
         )
-        val pathfinder = AStarPathfinder(
-            TerrainBasedNeighbourProvider(tiles),
-            BasicScoreCalculator(),
+        val pathfinder = BacktrackingPathfinder(
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(emptyMap())
         )
         val path = pathfinder.find(
             tiles.get(0, 0).node(),
@@ -122,9 +131,15 @@ class AStarPathfindingV2Test : StringSpec({
                 listOf(0, 0, 0),
             )
         )
-        val pathfinder = AStarPathfinder(
-            TerrainBasedNeighbourProvider(tiles),
-            TerrainBasedScoreCalculator(),
+        val pathfinder = BacktrackingPathfinder(
+            AdvancedNeighbourProvider(tiles).withRules(
+                BlockingTilesRule(setOf(TileType.WATER))
+            ),
+            AdvancedScoreCalculator(mapOf(
+                TileType.WATER to 9999f,
+                TileType.MOUNTAIN to 2f,
+                TileType.LAND to 1f
+            ))
         )
         val path = pathfinder.find(
             tiles.get(1, 0).node(),
@@ -140,29 +155,44 @@ class AStarPathfindingV2Test : StringSpec({
         path.nodes.last().g.shouldBeWithinPercentageOf(5.0f, 0.1)
     }
 
+
 }) {
 
     private companion object {
 
-        class TerrainBasedNeighbourProvider(private val tiles: TileContainer) : NeighbourProvider<TestNode> {
+        class AdvancedNeighbourProvider(private val tiles: TileContainer) : NeighbourProvider<TestNode> {
+
+            private val rules = mutableListOf<NextNodeRule<TestNode>>()
+
+            fun withRules(vararg rules: NextNodeRule<TestNode>): AdvancedNeighbourProvider {
+                this.rules.clear()
+                this.rules.addAll(rules)
+                return this
+            }
+
+            private fun allRulesApply(prev: TestNode, next: TestNode): Boolean {
+                return rules.all { it.evaluate(prev, next) }
+            }
+
             override fun getNeighbours(current: TestNode, consumer: (neighbour: TestNode) -> Unit) {
                 positionsNeighbours(current.tile.position) { q, r ->
-                    val neighbour = tiles.get(q, r)
-                    if (neighbour != null && neighbour.data.terrainType != TileType.WATER) {
-                        consumer(
-                            TestNode(
-                                tile = neighbour,
-                                pathLength = current.pathLength + 1,
-                                visitedProvinces = emptySet(),
-                                prevNode = current
-                            )
+                    val neighbourTile = tiles.get(q, r)
+                    if (neighbourTile != null) {
+                        val neighbourNode = TestNode(neighbourTile,
+                            pathLength = current.pathLength + 1,
+                            visitedProvinces = current.visitedProvinces + (neighbourTile.owner?.provinceId?.let { setOf(it) } ?: setOf()),
+                            prevNode = current
                         )
+                        if (allRulesApply(current, neighbourNode)) {
+                            consumer(neighbourNode)
+                        }
                     }
                 }
             }
+
         }
 
-        class BasicScoreCalculator : ScoreCalculator<TestNode> {
+        class AdvancedScoreCalculator(private val movementCosts: Map<TileType, Float>) : ScoreCalculator<TestNode> {
 
             override fun f(g: Float, h: Float): Float {
                 return g + h
@@ -173,32 +203,15 @@ class AStarPathfindingV2Test : StringSpec({
             }
 
             override fun g(prev: TestNode, next: TestNode): Float {
-                return prev.g + 1f
-            }
-        }
-
-        class TerrainBasedScoreCalculator : ScoreCalculator<TestNode> {
-
-            override fun f(g: Float, h: Float): Float {
-                return g + h
-            }
-
-            override fun h(node: TestNode, destination: TestNode): Float {
-                return node.tile.position.distance(destination.tile.position).toFloat()
-            }
-
-            override fun g(prev: TestNode, next: TestNode): Float {
-                return prev.g + ((movementCost(prev.tile) + movementCost(next.tile)) / 2f)
+                return prev.g + movementCost(prev.tile) / 2f + movementCost(next.tile) / 2f
             }
 
             private fun movementCost(tile: Tile): Float {
-                return when (tile.data.terrainType) {
-                    TileType.LAND -> 1f
-                    TileType.WATER -> 99999f
-                    TileType.MOUNTAIN -> 2f
-                }
+                return movementCosts[tile.data.terrainType] ?: 1f
             }
+
         }
+
 
         fun buildTiles(ids: List<List<Int>>): TileContainer {
             val tiles = mutableListOf<Tile>()
@@ -209,7 +222,7 @@ class AStarPathfindingV2Test : StringSpec({
                             tileId = "$q/$r",
                             position = TilePosition(q, r),
                             data = TileData(
-                                terrainType = when (id) {
+                                terrainType = when(id) {
                                     1 -> TileType.WATER
                                     2 -> TileType.MOUNTAIN
                                     else -> TileType.LAND
@@ -230,4 +243,3 @@ class AStarPathfindingV2Test : StringSpec({
     }
 
 }
-
