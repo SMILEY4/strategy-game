@@ -13,9 +13,12 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.models.trackingListOf
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert
-import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilder
 
-class CreateGameImpl(private val gameInsert: GameInsert) : CreateGame, Logging {
+class CreateGameImpl(
+    private val worldBuilder: WorldBuilder,
+    private val gameInsert: GameInsert
+) : CreateGame, Logging {
 
     private val metricId = metricCoreAction(CreateGame::class)
 
@@ -45,7 +48,7 @@ class CreateGameImpl(private val gameInsert: GameInsert) : CreateGame, Logging {
      * Build the tile entities
      */
     private fun buildTiles(worldSettings: WorldSettings): List<Tile> {
-        return WorldBuilderImpl().buildTiles(worldSettings).map {
+        return worldBuilder.buildTiles(worldSettings).map {
             Tile(
                 tileId = DbId.PLACEHOLDER,
                 position = TilePosition(it.q, it.r),

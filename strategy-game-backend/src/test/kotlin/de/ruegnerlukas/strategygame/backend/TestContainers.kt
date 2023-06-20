@@ -14,7 +14,7 @@ import java.time.Duration
 class TestContainers : AbstractProjectConfig() {
 
     override suspend fun beforeProject() {
-//        ArangoDbContainer.start()
+        ArangoDbContainer.start()
     }
 }
 

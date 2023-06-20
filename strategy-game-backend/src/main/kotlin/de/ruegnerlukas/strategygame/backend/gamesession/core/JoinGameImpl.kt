@@ -3,8 +3,6 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
-import arrow.core.left
-import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.common.utils.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
@@ -14,7 +12,9 @@ import de.ruegnerlukas.strategygame.backend.common.models.Player
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
+import de.ruegnerlukas.strategygame.backend.common.utils.err
+import de.ruegnerlukas.strategygame.backend.common.utils.ok
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.UncoverMapAreaAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.GameJoinActionErrors
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.GameNotFoundError
@@ -41,8 +41,8 @@ class JoinGameImpl(
             either {
                 val game = findGame(gameId).bind()
                 validate(game, userId).bind()
-                insertPlayer(game, userId)
-                val countryId = insertCountry(game, userId)
+                createPlayer(game, userId)
+                val countryId = createCountry(game, userId)
                 uncoverStartingArea(countryId, gameId)
             }
         }
@@ -59,17 +59,17 @@ class JoinGameImpl(
      * Validate whether the given user can join the given game. Return nothing or an [UserAlreadyPlayerError]
      */
     private fun validate(game: Game, userId: String): Either<UserAlreadyPlayerError, Unit> {
-        if (game.players.existsByUserId(userId)) {
-            return UserAlreadyPlayerError.left()
+        return if (game.players.existsByUserId(userId)) {
+            UserAlreadyPlayerError.err()
         } else {
-            return Unit.right()
+            Unit.ok()
         }
     }
 
     /**
      * Add the user as a player to the given game
      */
-    private suspend fun insertPlayer(game: Game, userId: String) {
+    private suspend fun createPlayer(game: Game, userId: String) {
         game.players.add(
             Player(
                 userId = userId,
@@ -83,7 +83,7 @@ class JoinGameImpl(
     /**
      * Add the country for the given user to the given game
      */
-    private suspend fun insertCountry(game: Game, userId: String): String {
+    private suspend fun createCountry(game: Game, userId: String): String {
         return countryInsert.execute(
             Country(
                 countryId = DbId.PLACEHOLDER,

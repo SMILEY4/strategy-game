@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder

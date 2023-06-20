@@ -28,10 +28,11 @@ class DisconnectFromGameImpl(
 
 
     /**
-     * find all games of the current user
+     * find all games of the player with the given userId is currently connected to
      */
     private suspend fun findGames(userId: String): List<Game> {
         return gamesByUserQuery.execute(userId)
+            .filter { game -> game.players.findByUserId(userId)?.connectionId != null }
     }
 
 
@@ -39,7 +40,7 @@ class DisconnectFromGameImpl(
      * Set all connections of the given user to "null"
      */
     private suspend fun clearConnections(userId: String, games: List<Game>) {
-        gamesWithConnectedUser(games, userId).forEach { game ->
+        games.forEach { game ->
             game.players.findByUserId(userId)?.also { player ->
                 player.connectionId?.also { closeConnection(it) }
                 player.connectionId = null
@@ -55,13 +56,6 @@ class DisconnectFromGameImpl(
     private suspend fun closeConnection(connectionId: Long) {
         val connection = websocketConnectionHandler.getConnection(connectionId)
         connection?.getSession()?.close()
-    }
-
-    /**
-     * Find all games the player with the given userId is currently connected to
-     */
-    private fun gamesWithConnectedUser(games: List<Game>, userId: String): List<Game> {
-        return games.filter { game -> game.players.findByUserId(userId)?.connectionId != null }
     }
 
 }

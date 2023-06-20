@@ -1,11 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.app
 
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveCreateCityCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveProductionQueueAddEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveProductionQueueRemoveEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveCommandsActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.DisconnectAllPlayersImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
@@ -31,18 +27,12 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Gam
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameAndPositionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.UsersConnectedToGamesQueryImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCreateCityCommand
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolvePlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolvePlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveProductionQueueAddEntryCommand
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveProductionQueueRemoveEntryCommand
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.DisconnectAllPlayers
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
@@ -51,20 +41,32 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.Disconnec
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ListGames
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.UncoverMapAreaAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveCreateCityCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveProductionQueueAddEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveProductionQueueRemoveEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCreateCityCommand
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolvePlaceMarkerCommand
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolvePlaceScoutCommand
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveProductionQueueAddEntryCommand
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveProductionQueueRemoveEntryCommand
 import de.ruegnerlukas.strategygame.backend.gamesession.core.SendGameStateActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
@@ -79,8 +81,8 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdat
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GamesByUserQuery
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGame
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGameAndPosition
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesUpdate
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGameAndPosition
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesUpdate
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.UsersConnectedToGamesQuery
 import de.ruegnerlukas.strategygame.backend.user.core.CreateUserImpl
 import de.ruegnerlukas.strategygame.backend.user.core.DeleteUserImpl
@@ -91,6 +93,8 @@ import de.ruegnerlukas.strategygame.backend.user.ports.provided.DeleteUser
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.LoginUser
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken
 import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilder
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
 import io.github.smiley4.ktorwebsocketsextended.WSExtended
 import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
 import io.micrometer.prometheus.PrometheusConfig
@@ -134,12 +138,7 @@ val applicationDependencies = module {
 
     single<GameConfig> { GameConfig.default() }
     single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl(get()) }
-    single<ResolveCreateCityCommand> {
-        ResolveCreateCityCommandImpl(
-            get(),
-            get()
-        )
-    }
+    single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
     single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get(), get()) }
     single<ResolveProductionQueueAddEntryCommand> { ResolveProductionQueueAddEntryCommandImpl(get(), get()) }
     single<ResolveProductionQueueRemoveEntryCommand> { ResolveProductionQueueRemoveEntryCommandImpl(get()) }
@@ -148,11 +147,13 @@ val applicationDependencies = module {
 
     single<EconomyUpdate> { EconomyUpdateImpl(get(), get()) }
 
+    single<WorldBuilder> { WorldBuilderImpl() }
+
     single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
     single<ListGames> { ListGamesImpl(get()) }
     single<DeleteGame> { DeleteGameImpl(get()) }
     single<ConnectToGame> { ConnectToGameImpl(get(), get(), get()) }
-    single<CreateGame> { CreateGameImpl(get()) }
+    single<CreateGame> { CreateGameImpl(get(), get()) }
     single<DisconnectFromGame> { DisconnectFromGameImpl(get(), get(), get()) }
     single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
     single<JoinGame> { JoinGameImpl(get(), get(), get(), get(), get(), get()) }
@@ -166,9 +167,10 @@ val applicationDependencies = module {
             get()
         )
     }
-    single<TurnEndAction> { TurnEndActionImpl(get(), get(), get(), get(), get(), get()) }
+    single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
+    single<GameStepAction> { GameStepActionImpl(get(), get()) }
     single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 

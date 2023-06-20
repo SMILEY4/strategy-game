@@ -7,6 +7,7 @@ interface ConnectToGame {
 	sealed class GameConnectActionError
 	object GameNotFoundError : GameConnectActionError()
 	object InvalidPlayerState : GameConnectActionError()
+	object SendStateFailed : GameConnectActionError()
 
 	suspend fun perform(userId: String, gameId: String, connectionId: Long): Either<GameConnectActionError, Unit>
 

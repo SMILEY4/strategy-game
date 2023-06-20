@@ -1,7 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.Country
@@ -10,6 +8,8 @@ import de.ruegnerlukas.strategygame.backend.common.models.Province
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TileRef
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 import kotlin.math.max
 

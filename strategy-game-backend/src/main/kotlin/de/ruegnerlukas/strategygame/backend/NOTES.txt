@@ -1,10 +1,17 @@
 TODO:
 
-worldbuilder use interface instead of implementation
-
-think about uncoverMapAction (where used?)
-
-cleanup models
+- cleanup models (only one module should own any one model)
+- where to place db-entities -> owned by a module ?
+- replace List, Set, ... with generic collections where possible / at interfaces
+- models (city, tile, province, ...) owned by gameengine ?   -> "core" gameengine models, only borrowed by others
+- move dto-creation into gameengine ?
+    -> all models owned by gameengine + contains core-game-logic regarding e.g. visibility, ...
+    -> rename to e.g. player-view-models, ...
+- rework command model structure
+    - command vs instruction ?
+        - command is what the player sends (gamesession) -> gets validated, enhanced and "optimized"
+        - instruction is what the game processes (gameengine)
+        -> where commandresolution ?!?!?!?
 
 
 DEPENDENCIES

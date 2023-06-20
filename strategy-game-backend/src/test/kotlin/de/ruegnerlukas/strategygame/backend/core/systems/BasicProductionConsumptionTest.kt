@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
-import de.ruegnerlukas.strategygame.backend.economy.core.elements.nodes.ProvinceEconomyNode
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.common.models.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition

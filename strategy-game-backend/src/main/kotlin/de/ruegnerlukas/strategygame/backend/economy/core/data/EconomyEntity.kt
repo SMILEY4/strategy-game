@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 
 
 /**
- * Something that takes part in the economy by consuming and/or producing resources. Can be located in a specific city,province or country.
+ * Something that takes part in the economy by consuming and/or producing resources. Can be located in a specific city, province or country.
  */
 interface EconomyEntity {
 

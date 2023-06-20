@@ -162,7 +162,7 @@ fun Application.module() {
             scheme = AuthScheme.BEARER
             bearerFormat = "jwt"
         }
-        automaticTagGenerator = { url -> url.getOrNull(1) }
+        generateTags { url -> listOf(url.getOrNull(1)) }
         pathFilter = { _, url -> !(url.lastOrNull()?.let { it.endsWith(".js") || it.endsWith(".css") } ?: false) }
         defaultSecuritySchemeName = "Auth"
         defaultUnauthorizedResponse {

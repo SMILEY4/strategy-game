@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.required
 
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
 
 
 interface CommandsByGameQuery {

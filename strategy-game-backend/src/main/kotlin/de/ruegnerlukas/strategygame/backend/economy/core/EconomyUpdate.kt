@@ -1,25 +1,26 @@
 package de.ruegnerlukas.strategygame.backend.economy.core
 
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectEntities
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectNodes
-import de.ruegnerlukas.strategygame.backend.economy.core.elements.entities.BuildingEconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.core.elements.entities.PopulationBaseEconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.core.elements.entities.PopulationGrowthEconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.core.elements.entities.ProductionQueueEconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.core.elements.nodes.ProvinceEconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.core.elements.nodes.WorldEconomyNode
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionEntityUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionNodeUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionEntityUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionNodeUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
-import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.PopulationBaseEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.PopulationGrowthEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProductionQueueEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.WorldEconomyNode
 
-class EconomyUpdateImpl(private val config: GameConfig, private val popFoodConsumption: EconomyPopFoodConsumptionProvider): EconomyUpdate {
+// TODO: try to extract dependencies on game engine
+class EconomyUpdateImpl(private val config: GameConfig, private val popFoodConsumption: EconomyPopFoodConsumptionProvider) : EconomyUpdate {
 
     private val consumptionNodeUpdateService = ConsumptionNodeUpdateService(ConsumptionEntityUpdateService())
     private val productionNodeUpdateService = ProductionNodeUpdateService(ProductionEntityUpdateService())
@@ -63,7 +64,7 @@ class EconomyUpdateImpl(private val config: GameConfig, private val popFoodConsu
             .forEach { entity -> entity.city.popConsumedFood = entity.getConsumedFood() }
         node.getEntities()
             .filterIsInstance<PopulationGrowthEconomyEntity>()
-            .forEach{ entity -> entity.city.popGrowthConsumedFood = entity.hasConsumedFood() }
+            .forEach { entity -> entity.city.popGrowthConsumedFood = entity.hasConsumedFood() }
     }
 
 }

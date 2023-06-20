@@ -2,8 +2,6 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
-import arrow.core.left
-import arrow.core.right
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
@@ -11,11 +9,13 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.utils.err
+import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction.SendGameStateActionError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.SendGameStateAction.UserNotConnectedError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.SendGameStateAction.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.SendGameStateAction.SendGameStateActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.SendGameStateAction.UserNotConnectedError
 
 class SendGameStateActionImpl(
     private val gameConfig: GameConfig,
@@ -59,7 +59,8 @@ class SendGameStateActionImpl(
      * get connection id of player or null
      */
     private fun getConnectionId(game: GameExtended, userId: String): Either<UserNotConnectedError, Long> {
-        return game.game.players.findByUserId(userId)?.connectionId?.right() ?: UserNotConnectedError.left()
+        return game.game.players.findByUserId(userId)?.connectionId?.ok()
+            ?: UserNotConnectedError.err()
     }
 
 

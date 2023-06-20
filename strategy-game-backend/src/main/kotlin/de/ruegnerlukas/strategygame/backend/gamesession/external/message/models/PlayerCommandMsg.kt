@@ -3,14 +3,14 @@ package de.ruegnerlukas.strategygame.backend.gamesession.external.message.models
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueAddBuildingEntryCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueAddSettlerEntryCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddSettlerEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueRemoveEntryCommandData
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -22,40 +22,11 @@ import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
     JsonSubTypes.Type(value = CreateCityCommandMsg::class),
     JsonSubTypes.Type(value = PlaceScoutCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueAddBuildingEntryCommandMsg::class),
+    JsonSubTypes.Type(value = ProductionQueueAddSettlerEntryCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandMsg::class),
 )
 sealed class PlayerCommandMsg(val type: String) {
-
-    fun asCommandData(): CommandData {
-        return when (this) {
-            is CreateCityCommandMsg -> CreateCityCommandData(
-                q = this.q,
-                r = this.r,
-                name = this.name,
-                withNewProvince = this.withNewProvince,
-            )
-            is PlaceMarkerCommandMsg -> PlaceMarkerCommandData(
-                q = this.q,
-                r = this.r
-            )
-            is PlaceScoutCommandMsg -> PlaceScoutCommandData(
-                q = this.q,
-                r = this.r
-            )
-            is ProductionQueueAddBuildingEntryCommandMsg -> ProductionQueueAddBuildingEntryCommandData(
-                cityId = this.cityId,
-                buildingType = this.buildingType
-            )
-            is ProductionQueueAddSettlerEntryCommandMsg -> ProductionQueueAddSettlerEntryCommandData(
-                cityId = this.cityId
-            )
-            is ProductionQueueRemoveEntryCommandMsg -> ProductionQueueRemoveEntryCommandData(
-                cityId = this.cityId,
-                queueEntryId = this.queueEntryId
-            )
-        }
-    }
-
+    abstract fun asCommandData(): CommandData
 }
 
 
@@ -67,6 +38,11 @@ class PlaceMarkerCommandMsg(
     companion object {
         internal const val TYPE = "place-marker"
     }
+
+    override fun asCommandData() = PlaceMarkerCommandData(
+        q = this.q,
+        r = this.r
+    )
 }
 
 
@@ -80,6 +56,13 @@ class CreateCityCommandMsg(
     companion object {
         internal const val TYPE = "create-city"
     }
+
+    override fun asCommandData() = CreateCityCommandData(
+        q = this.q,
+        r = this.r,
+        name = this.name,
+        withNewProvince = this.withNewProvince,
+    )
 }
 
 
@@ -91,6 +74,11 @@ class PlaceScoutCommandMsg(
     companion object {
         internal const val TYPE = "place-scout"
     }
+
+    override fun asCommandData() = PlaceScoutCommandData(
+        q = this.q,
+        r = this.r
+    )
 }
 
 
@@ -102,6 +90,11 @@ class ProductionQueueAddBuildingEntryCommandMsg(
     companion object {
         internal const val TYPE = "production-queue-add-entry.building"
     }
+
+    override fun asCommandData() = ProductionQueueAddBuildingEntryCommandData(
+        cityId = this.cityId,
+        buildingType = this.buildingType
+    )
 }
 
 
@@ -112,6 +105,10 @@ class ProductionQueueAddSettlerEntryCommandMsg(
     companion object {
         internal const val TYPE = "production-queue-add-entry.settler"
     }
+
+    override fun asCommandData() = ProductionQueueAddSettlerEntryCommandData(
+        cityId = this.cityId
+    )
 }
 
 
@@ -123,4 +120,9 @@ class ProductionQueueRemoveEntryCommandMsg(
     companion object {
         internal const val TYPE = "production-queue-remove-entry"
     }
+
+    override fun asCommandData() = ProductionQueueRemoveEntryCommandData(
+        cityId = this.cityId,
+        queueEntryId = this.queueEntryId
+    )
 }

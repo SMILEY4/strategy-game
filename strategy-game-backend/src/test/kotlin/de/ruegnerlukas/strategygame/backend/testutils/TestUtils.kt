@@ -2,7 +2,6 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.Either
 import arrow.core.getOrHandle
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.MarkerTileContent
@@ -23,6 +22,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEnti
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.Player
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
 
 object TestUtils {
 

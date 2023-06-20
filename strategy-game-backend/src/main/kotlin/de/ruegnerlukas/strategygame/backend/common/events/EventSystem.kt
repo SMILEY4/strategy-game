@@ -24,7 +24,7 @@ class EventSystem<CONTEXT> : Logging {
     }
 
     private suspend fun <PAYLOAD, RESULT> runAction(eventAction: EventAction<CONTEXT, PAYLOAD, RESULT>, context: CONTEXT, payload: Any) {
-        val result: RESULT = eventAction.run(context, payload as PAYLOAD)
+        @Suppress("UNCHECKED_CAST") val result: RESULT = eventAction.run(context, payload as PAYLOAD)
         conditions
             .filterIsInstance<AfterEventCondition<CONTEXT, *>>()
             .filter { it.afterEvent == eventAction }

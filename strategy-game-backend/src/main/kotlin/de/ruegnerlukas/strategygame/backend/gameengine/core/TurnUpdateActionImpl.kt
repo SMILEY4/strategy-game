@@ -1,16 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueAddEntryCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.ProductionQueueRemoveEntryCommandData
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.AddProductionQueueEntryAction
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.CreateCityAction
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.PlaceMarkerAction
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.PlaceScoutAction
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.required.RemoveProductionQueueEntryAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.AddProductionQueueEntryAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CreateCityAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.PlaceMarkerAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.PlaceScoutAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.RemoveProductionQueueEntryAction
 import de.ruegnerlukas.strategygame.backend.common.events.EventAction
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
@@ -19,6 +14,11 @@ import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.BuildingCreationAction.Companion.BuildingCreationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.CityCreationAction.Companion.CityCreationResult
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 
@@ -27,7 +27,8 @@ class TurnUpdateActionImpl(
     private val gameConfig: GameConfig,
     private val popFoodConsumption: PopFoodConsumption,
     private val economyUpdate: EconomyUpdate
-) : TurnUpdateAction, AddProductionQueueEntryAction, RemoveProductionQueueEntryAction, PlaceMarkerAction, PlaceScoutAction, CreateCityAction {
+) : TurnUpdateAction, AddProductionQueueEntryAction, RemoveProductionQueueEntryAction, PlaceMarkerAction, PlaceScoutAction,
+    CreateCityAction {
 
     private val eventSystem = EventSystem<GameExtended>()
 

@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions.Companion.TestActionContext
 
 class ReportingResolveCommandsActionImpl(

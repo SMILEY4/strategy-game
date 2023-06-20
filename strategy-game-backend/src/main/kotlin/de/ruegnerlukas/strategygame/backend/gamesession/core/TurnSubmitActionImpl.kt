@@ -3,10 +3,6 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
-import arrow.core.left
-import arrow.core.right
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.Game
@@ -14,7 +10,14 @@ import de.ruegnerlukas.strategygame.backend.common.models.Player
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEndAction
+import de.ruegnerlukas.strategygame.backend.common.utils.Err
+import de.ruegnerlukas.strategygame.backend.common.utils.err
+import de.ruegnerlukas.strategygame.backend.common.utils.ok
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.CommandResolutionFailedError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.TurnSubmitActionError
@@ -24,7 +27,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 
 class TurnSubmitActionImpl(
-    private val actionEndTurn: TurnEndAction,
+    private val actionEndTurn: TurnEnd,
     private val gameQuery: GameQuery,
     private val countryByGameAndUserQuery: CountryByGameAndUserQuery,
     private val gameUpdate: GameUpdate,
@@ -70,12 +73,12 @@ class TurnSubmitActionImpl(
      */
     private suspend fun updatePlayerState(game: Game, userId: String): Either<TurnSubmitActionError, Unit> {
         val player = game.players.findByUserId(userId)
-        if (player != null) {
+        return if (player != null) {
             player.state = Player.STATE_SUBMITTED
             gameUpdate.execute(game)
-            return Unit.right()
+            Unit.ok()
         } else {
-            return NotParticipantError.left()
+            NotParticipantError.err()
         }
     }
 
@@ -110,10 +113,10 @@ class TurnSubmitActionImpl(
         val countPlaying = game.players.count { it.state == Player.STATE_PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
             val result = actionEndTurn.perform(game.gameId)
-            if (result is Either.Left) {
+            if (result is Err) {
                 when (result.value) {
-                    TurnEndAction.GameNotFoundError -> throw Exception("Could not find game ${game.gameId} when ending turn")
-                    TurnEndAction.CommandResolutionFailedError -> throw Exception("Could not resolve turn for game ${game.gameId}")
+                    GameNotFoundError -> throw Exception("Could not find game ${game.gameId} when ending turn")
+                    CommandResolutionFailedError -> throw Exception("Could not resolve turn for game ${game.gameId}")
                 }
             }
         }

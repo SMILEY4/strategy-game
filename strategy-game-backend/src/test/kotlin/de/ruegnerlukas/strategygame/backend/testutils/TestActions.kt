@@ -1,12 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveCreateCityCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveProductionQueueAddEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.core.ResolveProductionQueueRemoveEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveCommandsActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.JoinGameImpl
@@ -24,19 +19,26 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Gam
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GamesByUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameAndPositionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.commandresolution.ports.provided.ResolveCommandsAction
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveCreateCityCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveProductionQueueAddEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveProductionQueueRemoveEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandResolutionError
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.gamesession.core.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.SendGameStateActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
 import io.mockk.every
 import io.mockk.mockk
 
@@ -49,7 +51,7 @@ data class TestActions(
     val gamesList: ListGamesImpl,
     val turnSubmit: TurnSubmitActionImpl,
     val resolveCommands: ReportingResolveCommandsActionImpl,
-    val turnEnd: TurnEndActionImpl,
+    val turnEnd: TurnEndImpl,
     val turnUpdate: TurnUpdateActionImpl
 ) {
 
@@ -86,7 +88,8 @@ data class TestActions(
 
         private fun gameCreateAction(database: ArangoDatabase) =
             CreateGameImpl(
-                GameInsertImpl(database)
+                WorldBuilderImpl(),
+                GameInsertImpl(database),
             )
 
         private fun gameJoinAction(database: ArangoDatabase) =
@@ -119,8 +122,7 @@ data class TestActions(
             turnUpdate: TurnUpdateActionImpl
         ) =
             TurnSubmitActionImpl(
-                TurnEndActionImpl(
-                    resolveCommandsAction,
+                TurnEndImpl(
                     SendGameStateActionImpl(
                         GameConfig.default(),
                         GameExtendedQueryImpl(database),
@@ -129,8 +131,10 @@ data class TestActions(
                     GameExtendedQueryImpl(database),
                     GameExtendedUpdateImpl(database),
                     CommandsByGameQueryImpl(database),
-                    turnUpdate
-                ),
+                    GameStepActionImpl(
+                        resolveCommandsAction,
+                        turnUpdate
+                    )                ),
                 GameQueryImpl(database),
                 CountryByGameAndUserQueryImpl(database),
                 GameUpdateImpl(database),
@@ -177,8 +181,7 @@ data class TestActions(
             resolveCommandsAction: ResolveCommandsAction,
             turnUpdate: TurnUpdateActionImpl
         ) =
-            TurnEndActionImpl(
-                resolveCommandsAction,
+            TurnEndImpl(
                 SendGameStateActionImpl(
                     GameConfig.default(),
                     GameExtendedQueryImpl(database),
@@ -187,7 +190,10 @@ data class TestActions(
                 GameExtendedQueryImpl(database),
                 GameExtendedUpdateImpl(database),
                 CommandsByGameQueryImpl(database),
-                turnUpdate
+                GameStepActionImpl(
+                    resolveCommandsAction,
+                    turnUpdate
+                )
             )
 
         private fun turnUpdateAction(database: ArangoDatabase, popFoodConsumption: PopFoodConsumption) =
