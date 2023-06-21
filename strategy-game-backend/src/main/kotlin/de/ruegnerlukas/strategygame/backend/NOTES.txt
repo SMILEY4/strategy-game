@@ -24,3 +24,17 @@ TODO:
     - rename "command" to "instruction" for game-engine-module, convert at border
     - same command-type may result in multiple different instructions
     - instructions can have enhanced data (e.g. city instead of city-id)
+
+
+NEW EVENT SYSTEM
+
+=== Event Nodes ===
+
+- piece of runnable code with an id
+- can take some input
+- can produce some output
+
+
+=== Event Triggers ===
+
+-

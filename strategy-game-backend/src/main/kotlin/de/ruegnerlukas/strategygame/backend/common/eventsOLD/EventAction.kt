@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.common.events
+package de.ruegnerlukas.strategygame.backend.common.eventsOLD
 
 class EventAction<CONTEXT, PAYLOAD, RESULT>(private val action: suspend (context: CONTEXT, payload: PAYLOAD) -> RESULT) {
 

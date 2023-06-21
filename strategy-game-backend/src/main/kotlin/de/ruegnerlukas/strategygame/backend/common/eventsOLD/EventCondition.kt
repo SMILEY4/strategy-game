@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.common.events
+package de.ruegnerlukas.strategygame.backend.common.eventsOLD
 
 open class EventCondition<CONTEXT, PAYLOAD> {
 

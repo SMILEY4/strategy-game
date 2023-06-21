@@ -6,8 +6,8 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CreateCity
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.PlaceMarkerAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.PlaceScoutAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.RemoveProductionQueueEntryAction
-import de.ruegnerlukas.strategygame.backend.common.events.EventAction
-import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
+import de.ruegnerlukas.strategygame.backend.common.eventsOLD.EventAction
+import de.ruegnerlukas.strategygame.backend.common.eventsOLD.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
