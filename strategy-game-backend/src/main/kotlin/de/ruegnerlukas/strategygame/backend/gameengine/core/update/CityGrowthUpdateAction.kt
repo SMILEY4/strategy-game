@@ -1,8 +1,9 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.update
 
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 
 /**
  * Updates the growth-progress of a city based on various factors

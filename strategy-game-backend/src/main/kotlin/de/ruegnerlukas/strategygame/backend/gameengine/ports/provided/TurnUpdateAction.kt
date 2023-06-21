@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.core.BuildingCreationAction
+import de.ruegnerlukas.strategygame.backend.gameengine.core.update.BuildingCreationAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CreateCityCommandData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceMarkerCommandData

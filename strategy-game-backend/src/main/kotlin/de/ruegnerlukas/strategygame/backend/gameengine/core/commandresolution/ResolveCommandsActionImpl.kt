@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution
 
 import arrow.core.Either
 import arrow.core.continuations.either

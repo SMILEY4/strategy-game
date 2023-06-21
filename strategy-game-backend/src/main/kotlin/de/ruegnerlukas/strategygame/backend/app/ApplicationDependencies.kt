@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.app
 
-import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolvePlaceMarkerCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveCommandsActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolvePlaceMarkerCommandImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.DisconnectAllPlayersImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
@@ -52,10 +52,10 @@ import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
-import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveCreateCityCommandImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveProductionQueueAddEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.ResolveProductionQueueRemoveEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveCreateCityCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolvePlaceScoutCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveProductionQueueAddEntryCommandImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveProductionQueueRemoveEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction

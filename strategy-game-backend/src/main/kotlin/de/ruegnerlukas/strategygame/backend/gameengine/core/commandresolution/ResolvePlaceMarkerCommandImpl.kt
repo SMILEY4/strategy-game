@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -33,7 +33,7 @@ class ResolvePlaceMarkerCommandImpl(
             log().info("Resolving '${command.data.displayName()}'-command for game ${game.game.gameId} and country ${command.countryId}")
             either {
                 val targetTile = findTile(command.data.q, command.data.r, game).bind()
-                de.ruegnerlukas.strategygame.backend.gameengine.core.PlaceMarkerValidations.validateCommand(targetTile).ifInvalid<Unit> { reasons ->
+                PlaceMarkerValidations.validateCommand(targetTile).ifInvalid<Unit> { reasons ->
                     return@either reasons.map { CommandResolutionError(command, it) }
                 }
                 placeMarkerAction.performPlaceMarker(game, command)
@@ -51,19 +51,21 @@ class ResolvePlaceMarkerCommandImpl(
         }
     }
 
-}
+    companion object {
+        private object PlaceMarkerValidations {
 
-private object PlaceMarkerValidations {
+            fun validateCommand(targetTile: Tile): ValidationContext {
+                return validations(false) {
+                    validTileSpace(targetTile)
+                }
+            }
 
-    fun validateCommand(targetTile: Tile): ValidationContext {
-        return validations(false) {
-            validTileSpace(targetTile)
-        }
-    }
+            fun ValidationContext.validTileSpace(tile: Tile) {
+                validate("MARKER.TILE_SPACE") {
+                    tile.content.none { it is MarkerTileContent }
+                }
+            }
 
-    fun ValidationContext.validTileSpace(tile: Tile) {
-        validate("MARKER.TILE_SPACE") {
-            tile.content.none { it is MarkerTileContent }
         }
     }
 

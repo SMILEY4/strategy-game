@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -75,86 +75,90 @@ class ResolveCreateCityCommandImpl(
         }
     }
 
-}
+    companion object {
 
-private object CreateCityValidations {
+        private object CreateCityValidations {
 
-    fun validateCommand(
-        gameConfig: GameConfig,
-        name: String,
-        game: GameExtended,
-        country: Country,
-        targetTile: Tile,
-        withNewProvince: Boolean
-    ): ValidationContext {
-        return validations(false) {
-            validName(name)
-            validTargetTileType(targetTile)
-            validTileSpace(targetTile, game.cities)
-            validAvailableSettlers(country)
-            if (withNewProvince) {
-                validTileOwnerWithNewProvince(country, targetTile)
-                validTileInfluence(gameConfig, country, targetTile)
-            } else {
-                validTileOwnerInExistingProvince(country, targetTile)
+            fun validateCommand(
+                gameConfig: GameConfig,
+                name: String,
+                game: GameExtended,
+                country: Country,
+                targetTile: Tile,
+                withNewProvince: Boolean
+            ): ValidationContext {
+                return validations(false) {
+                    validName(name)
+                    validTargetTileType(targetTile)
+                    validTileSpace(targetTile, game.cities)
+                    validAvailableSettlers(country)
+                    if (withNewProvince) {
+                        validTileOwnerWithNewProvince(country, targetTile)
+                        validTileInfluence(gameConfig, country, targetTile)
+                    } else {
+                        validTileOwnerInExistingProvince(country, targetTile)
+                    }
+                }
             }
-        }
-    }
 
-    fun ValidationContext.validName(name: String) {
-        validate("CITY.NAME") {
-            name.isNotBlank()
-        }
-    }
-
-    fun ValidationContext.validTargetTileType(tile: Tile) {
-        validate("CITY.TARGET_TILE_TYPE") {
-            tile.data.terrainType == TileType.LAND
-        }
-    }
-
-    fun ValidationContext.validTileSpace(target: Tile, cities: List<City>) {
-        validate("CITY.TILE_SPACE") {
-            cities.find { it.tile.tileId == target.tileId } == null
-        }
-    }
-
-    fun ValidationContext.validTileOwnerInExistingProvince(country: Country, target: Tile) {
-        validate("CITY.TARGET_TILE_OWNER") {
-            target.owner?.countryId == country.countryId && target.owner?.cityId == null
-        }
-    }
-
-    fun ValidationContext.validTileOwnerWithNewProvince(country: Country, target: Tile) {
-        validate("CITY.TARGET_TILE_OWNER") {
-            (target.owner == null || target.owner?.countryId == country.countryId) && target.owner?.cityId == null
-        }
-    }
-
-    fun ValidationContext.validTileInfluence(gameConfig: GameConfig, country: Country, target: Tile) {
-        validate("CITY.COUNTRY_INFLUENCE") {
-            // country owns tile
-            if (target.owner != null && target.owner?.countryId == country.countryId) {
-                return@validate true
+            fun ValidationContext.validName(name: String) {
+                validate("CITY.NAME") {
+                    name.isNotBlank()
+                }
             }
-            // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-            val maxForeignInfluence = target.influences.filter { it.countryId != country.countryId }.map { it.amount }.max { it } ?: 0.0
-            if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
-                return@validate true
-            }
-            // country has the most influence on tile
-            val maxCountryInfluence = target.influences.filter { it.countryId == country.countryId }.map { it.amount }.max { it } ?: 0.0
-            if (maxCountryInfluence >= maxForeignInfluence) {
-                return@validate true
-            }
-            return@validate false
-        }
-    }
 
-    fun ValidationContext.validAvailableSettlers(country: Country) {
-        validate("CITY.AVAILABLE_SETTLERS") {
-            country.availableSettlers > 0
+            fun ValidationContext.validTargetTileType(tile: Tile) {
+                validate("CITY.TARGET_TILE_TYPE") {
+                    tile.data.terrainType == TileType.LAND
+                }
+            }
+
+            fun ValidationContext.validTileSpace(target: Tile, cities: List<City>) {
+                validate("CITY.TILE_SPACE") {
+                    cities.find { it.tile.tileId == target.tileId } == null
+                }
+            }
+
+            fun ValidationContext.validTileOwnerInExistingProvince(country: Country, target: Tile) {
+                validate("CITY.TARGET_TILE_OWNER") {
+                    target.owner?.countryId == country.countryId && target.owner?.cityId == null
+                }
+            }
+
+            fun ValidationContext.validTileOwnerWithNewProvince(country: Country, target: Tile) {
+                validate("CITY.TARGET_TILE_OWNER") {
+                    (target.owner == null || target.owner?.countryId == country.countryId) && target.owner?.cityId == null
+                }
+            }
+
+            fun ValidationContext.validTileInfluence(gameConfig: GameConfig, country: Country, target: Tile) {
+                validate("CITY.COUNTRY_INFLUENCE") {
+                    // country owns tile
+                    if (target.owner != null && target.owner?.countryId == country.countryId) {
+                        return@validate true
+                    }
+                    // nobody else has more than 'MAX_TILE_INFLUENCE' influence
+                    val maxForeignInfluence = target.influences.filter { it.countryId != country.countryId }.map { it.amount }.max { it } ?: 0.0
+                    if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
+                        return@validate true
+                    }
+                    // country has the most influence on tile
+                    val maxCountryInfluence = target.influences.filter { it.countryId == country.countryId }.map { it.amount }.max { it } ?: 0.0
+                    if (maxCountryInfluence >= maxForeignInfluence) {
+                        return@validate true
+                    }
+                    return@validate false
+                }
+            }
+
+            fun ValidationContext.validAvailableSettlers(country: Country) {
+                validate("CITY.AVAILABLE_SETTLERS") {
+                    country.availableSettlers > 0
+                }
+            }
+
         }
+
     }
 
 }

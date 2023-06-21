@@ -14,25 +14,13 @@ TODO:
         -> where commandresolution ?!?!?!?
 
 
-DEPENDENCIES
+- rework (gameengine) event system
+    - classes register themselves
+    - events/triggers always have one or none eventData/triggerData-object
+    - classes create listeners for events -> on("my-event") { game, data -> ... }
+    - listeners are always called with game + eventData
 
-digraph G {
-    commandresolution -> common;
-
-    economy -> common;
-
-    gameengine -> common;
-    gameengine -> commandresolution;
-    gameengine -> pathfinding;
-    gameengine -> economy;
-
-    gamesession -> common;
-    gamesession -> gameengine;
-    gamesession -> worldcreation;
-
-    pathfinding -> common;
-
-    worldcreation -> common;
-
-    user;
-}
+- rework command resolution -> full part of event system
+    - rename "command" to "instruction" for game-engine-module, convert at border
+    - same command-type may result in multiple different instructions
+    - instructions can have enhanced data (e.g. city instead of city-id)

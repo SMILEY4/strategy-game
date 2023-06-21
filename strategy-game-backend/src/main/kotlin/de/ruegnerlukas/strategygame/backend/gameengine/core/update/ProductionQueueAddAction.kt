@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.update
 
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging

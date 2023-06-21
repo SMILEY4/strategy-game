@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -13,7 +13,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.utils.ValidationContext
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
-import de.ruegnerlukas.strategygame.backend.gameengine.core.RemoveProductionQueueEntryValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveProductionQueueRemoveEntryCommandImpl.Companion.RemoveProductionQueueEntryValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCommandsAction
@@ -52,26 +52,28 @@ class ResolveProductionQueueRemoveEntryCommandImpl(
     }
 
 
-}
+    companion object {
+        private object RemoveProductionQueueEntryValidations {
 
-private object RemoveProductionQueueEntryValidations {
+            fun validateCommand(countryId: String, city: City, queueEntryId: String): ValidationContext {
+                return validations(false) {
+                    validCityOwner(city, countryId)
+                    validEntryId(city, queueEntryId)
+                }
+            }
 
-    fun validateCommand(countryId: String, city: City, queueEntryId: String): ValidationContext {
-        return validations(false) {
-            validCityOwner(city, countryId)
-            validEntryId(city, queueEntryId)
-        }
-    }
+            fun ValidationContext.validCityOwner(city: City, countryId: String) {
+                validate("REMOVE_PRODUCTION_QUEUE_ENTRY.CITY_OWNER") {
+                    city.countryId == countryId
+                }
+            }
 
-    fun ValidationContext.validCityOwner(city: City, countryId: String) {
-        validate("REMOVE_PRODUCTION_QUEUE_ENTRY.CITY_OWNER") {
-            city.countryId == countryId
-        }
-    }
+            fun ValidationContext.validEntryId(city: City, queueEntryId: String) {
+                validate("REMOVE_PRODUCTION_QUEUE_ENTRY.ENTRY_ID") {
+                    city.productionQueue.filter { it.entryId == queueEntryId }.size == 1
+                }
+            }
 
-    fun ValidationContext.validEntryId(city: City, queueEntryId: String) {
-        validate("REMOVE_PRODUCTION_QUEUE_ENTRY.ENTRY_ID") {
-            city.productionQueue.filter { it.entryId == queueEntryId }.size == 1
         }
     }
 

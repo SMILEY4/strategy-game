@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -15,7 +15,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.utils.ValidationContext
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
-import de.ruegnerlukas.strategygame.backend.gameengine.core.PlaceScoutValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolvePlaceScoutCommandImpl.Companion.PlaceScoutValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCommandsAction
@@ -51,39 +51,41 @@ class ResolvePlaceScoutCommandImpl(
         return targetTile?.right() ?: ResolveCommandsAction.TileNotFoundError.left()
     }
 
-}
+    companion object {
+        private object PlaceScoutValidations {
 
-private object PlaceScoutValidations {
+            fun validateCommand(gameConfig: GameConfig, countryId: String, targetTile: Tile, game: GameExtended): ValidationContext {
+                return validations(false) {
+                    validTileVisibility(countryId, targetTile)
+                    validTileSpace(countryId, targetTile)
+                    validScoutAmount(gameConfig, countryId, game.tiles)
+                }
+            }
 
-    fun validateCommand(gameConfig: GameConfig, countryId: String, targetTile: Tile, game: GameExtended): ValidationContext {
-        return validations(false) {
-            validTileVisibility(countryId, targetTile)
-            validTileSpace(countryId, targetTile)
-            validScoutAmount(gameConfig, countryId, game.tiles)
-        }
-    }
+            fun ValidationContext.validTileVisibility(countryId: String, tile: Tile) {
+                validate("SCOUT.TILE_VISIBILITY") {
+                    tile.discoveredByCountries.contains(countryId)
+                }
+            }
 
-    fun ValidationContext.validTileVisibility(countryId: String, tile: Tile) {
-        validate("SCOUT.TILE_VISIBILITY") {
-            tile.discoveredByCountries.contains(countryId)
-        }
-    }
+            fun ValidationContext.validTileSpace(countryId: String, tile: Tile) {
+                validate("SCOUT.TILE_SPACE") {
+                    tile.content
+                        .filterIsInstance<ScoutTileContent>()
+                        .none { it.countryId == countryId }
+                }
+            }
 
-    fun ValidationContext.validTileSpace(countryId: String, tile: Tile) {
-        validate("SCOUT.TILE_SPACE") {
-            tile.content
-                .filterIsInstance<ScoutTileContent>()
-                .none { it.countryId == countryId }
-        }
-    }
+            fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: Collection<Tile>) {
+                validate("SCOUT.AMOUNT") {
+                    tiles
+                        .asSequence()
+                        .mapNotNull { tile -> tile.content.find { it is ScoutTileContent }?.let { it as ScoutTileContent } }
+                        .filter { scout -> scout.countryId == countryId }
+                        .count() < gameConfig.scoutsMaxAmount
+                }
+            }
 
-    fun ValidationContext.validScoutAmount(gameConfig: GameConfig, countryId: String, tiles: Collection<Tile>) {
-        validate("SCOUT.AMOUNT") {
-            tiles
-                .asSequence()
-                .mapNotNull { tile -> tile.content.find { it is ScoutTileContent }?.let { it as ScoutTileContent } }
-                .filter { scout -> scout.countryId == countryId }
-                .count() < gameConfig.scoutsMaxAmount
         }
     }
 

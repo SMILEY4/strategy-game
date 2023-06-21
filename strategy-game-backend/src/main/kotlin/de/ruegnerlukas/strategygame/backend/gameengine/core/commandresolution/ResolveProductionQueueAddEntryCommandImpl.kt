@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core
+package de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -14,7 +14,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.utils.ValidationContext
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
-import de.ruegnerlukas.strategygame.backend.gameengine.core.AddProductionQueueEntryValidations.validateCommand
+import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveProductionQueueAddEntryCommandImpl.Companion.AddProductionQueueEntryValidations.validateCommand
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCommandsAction
@@ -54,30 +54,32 @@ class ResolveProductionQueueAddEntryCommandImpl(
         }
     }
 
-}
+    companion object {
+        private object AddProductionQueueEntryValidations {
 
-private object AddProductionQueueEntryValidations {
-
-    fun validateCommand(countryId: String, city: City, gameConfig: GameConfig): ValidationContext {
-        return validations(false) {
-            validCityOwner(city, countryId)
-            validCitySpace(gameConfig, city)
-        }
-    }
-
-    fun ValidationContext.validCityOwner(city: City, countryId: String) {
-        validate("ADD_PRODUCTION_QUEUE_ENTRY.CITY_OWNER") {
-            city.countryId == countryId
-        }
-    }
-
-    fun ValidationContext.validCitySpace(gameConfig: GameConfig, city: City) {
-        validate("ADD_PRODUCTION_QUEUE_ENTRY.BUILDING.CITY_SPACE") {
-            if (city.isProvinceCapital) {
-                (gameConfig.cityBuildingSlots - city.buildings.size) > 0
-            } else {
-                (gameConfig.townBuildingSlots - city.buildings.size) > 0
+            fun validateCommand(countryId: String, city: City, gameConfig: GameConfig): ValidationContext {
+                return validations(false) {
+                    validCityOwner(city, countryId)
+                    validCitySpace(gameConfig, city)
+                }
             }
+
+            fun ValidationContext.validCityOwner(city: City, countryId: String) {
+                validate("ADD_PRODUCTION_QUEUE_ENTRY.CITY_OWNER") {
+                    city.countryId == countryId
+                }
+            }
+
+            fun ValidationContext.validCitySpace(gameConfig: GameConfig, city: City) {
+                validate("ADD_PRODUCTION_QUEUE_ENTRY.BUILDING.CITY_SPACE") {
+                    if (city.isProvinceCapital) {
+                        (gameConfig.cityBuildingSlots - city.buildings.size) > 0
+                    } else {
+                        (gameConfig.townBuildingSlots - city.buildings.size) > 0
+                    }
+                }
+            }
+
         }
     }
 
