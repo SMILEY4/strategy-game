@@ -35,6 +35,7 @@ class Action1(eventSystem: EventSystem) {
             trigger(StartTrigger)
             action {
                 println("starting system")
+                eventSystem.publish(Action1Definition.after(), EventDataValues(1, 2))
                 EventDataValues(4, 2)
             }
         }
