@@ -123,42 +123,42 @@ class TurnUpdateActionImpl(
             .thenRun(eventWorldPrepare)
 
         eventSystem.atTrigger<Command<CreateCityCommandData>>("command.create-city")
-            .thenRun(eventCityCreation)
+            .thenRun(eventCityCreation) // done
 
         eventSystem.atTrigger<BuildingCreationData>("event.create-building")
-            .thenRun(eventBuildingCreation)
+            .thenRun(eventBuildingCreation) // done
 
         eventSystem.atTrigger<Command<ProductionQueueAddEntryCommandData>>("command.add-production-queue-entry")
-            .thenRun(eventAddProductionQueueEntry)
+            .thenRun(eventAddProductionQueueEntry) // done
 
         eventSystem.atTrigger<Command<ProductionQueueRemoveEntryCommandData>>("command.remove-production-queue-entry")
-            .thenRun(eventRemoveProductionQueueEntry)
+            .thenRun(eventRemoveProductionQueueEntry) // done
 
         eventSystem.atTrigger<Command<PlaceMarkerCommandData>>("command.place-marker")
-            .thenRun(eventMarkerPlace)
+            .thenRun(eventMarkerPlace) // done
 
         eventSystem.atTrigger<Command<PlaceScoutCommandData>>("command.place-scout")
-            .thenRun(eventScoutPlace)
+            .thenRun(eventScoutPlace) // done
 
         eventSystem.atTrigger<Unit>("global-update")
-            .thenRun(eventScoutLifetime)
-            .thenRun(eventEconomyUpdate)
+            .thenRun(eventScoutLifetime) // done
+            .thenRun(eventEconomyUpdate) // created but todo
 
         eventSystem.after(eventEconomyUpdate)
-            .thenRun(eventProductionQueueUpdate)
-            .thenRun(eventCityGrowthProgressUpdate)
+            .thenRun(eventProductionQueueUpdate) // done
+            .thenRun(eventCityGrowthProgressUpdate) // done
 
         eventSystem.after(eventCityGrowthProgressUpdate)
-            .thenRun(eventCitySizeUpdate)
+            .thenRun(eventCitySizeUpdate) // done
 
-        eventSystem.after(eventCityCreation)
-            .thenRun(eventCityInfluence)
-            .thenRun(eventCityTileOwnership)
-            .thenRun(eventCityNetworkUpdate)
+        eventSystem.after(eventCityCreation) // done
+            .thenRun(eventCityInfluence) // done
+            .thenRun(eventCityTileOwnership) // done
+            .thenRun(eventCityNetworkUpdate) // done
 
-        eventSystem.after(eventCityInfluence)
-            .thenRun(eventInfluenceVisibility)
-            .thenRun(eventInfluenceOwnership)
+        eventSystem.after(eventCityInfluence) // done
+            .thenRun(eventInfluenceVisibility) // done
+            .thenRun(eventInfluenceOwnership) // done
     }
 
     override suspend fun prepare(game: GameExtended) {

@@ -197,7 +197,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                 user("user-1")
                 user("user-2")
             }
-
             submitTurn("user-1") {
                 createCity {
                     q = 0
@@ -206,7 +205,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                 }
             }
             submitTurn("user-2")
-
             submitTurn("user-1")
             submitTurn("user-2") {
                 createCity {
@@ -215,7 +213,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                     name = "Second City"
                 }
             }
-
             expectCommandResolutionErrors {
                 turn = 1
                 errors = listOf("CITY.TARGET_TILE_OWNER", "CITY.COUNTRY_INFLUENCE")
@@ -238,7 +235,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                 user("user-1")
                 user("user-2")
             }
-
             submitTurn("user-1") {
                 createCity {
                     q = 0
@@ -247,7 +243,6 @@ class CreateCityCommandResolutionTest : StringSpec({
                 }
             }
             submitTurn("user-2")
-
             submitTurn("user-1")
             submitTurn("user-2") {
                 createCity {
