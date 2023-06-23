@@ -25,7 +25,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Til
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImplOLD
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveCreateCityCommandImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolvePlaceScoutCommandImpl
@@ -131,7 +131,7 @@ data class TestActions(
                     GameExtendedQueryImpl(database),
                     GameExtendedUpdateImpl(database),
                     CommandsByGameQueryImpl(database),
-                    GameStepActionImpl(
+                    GameStepActionImplOLD(
                         resolveCommandsAction,
                         turnUpdate
                     )                ),
@@ -190,7 +190,7 @@ data class TestActions(
                 GameExtendedQueryImpl(database),
                 GameExtendedUpdateImpl(database),
                 CommandsByGameQueryImpl(database),
-                GameStepActionImpl(
+                GameStepActionImplOLD(
                     resolveCommandsAction,
                     turnUpdate
                 )

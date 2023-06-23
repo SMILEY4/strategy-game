@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
-import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImplOLD
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveCommandsActionImpl
@@ -184,7 +184,7 @@ val applicationDependencies = module {
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
-    single<GameStepAction> { GameStepActionImpl(get(), get()) }
+    single<GameStepAction> { GameStepActionImplOLD(get(), get()) }
     single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 

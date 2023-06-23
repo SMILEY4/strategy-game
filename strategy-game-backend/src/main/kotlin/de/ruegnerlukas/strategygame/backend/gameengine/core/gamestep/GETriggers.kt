@@ -5,6 +5,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 
 
 object TriggerGlobalUpdate : EventTriggerDefinition<GameExtended>()
+
 object TriggerResolveCreateCity : EventTriggerDefinition<CreateCityOperationData>()
 object TriggerResolvePlaceMarker : EventTriggerDefinition<PlaceMarkerOperationData>()
 object TriggerResolvePlaceScout : EventTriggerDefinition<PlaceScoutOperationData>()
