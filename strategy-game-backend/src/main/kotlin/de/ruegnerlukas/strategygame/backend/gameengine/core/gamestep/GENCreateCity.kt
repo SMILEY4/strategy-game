@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
-import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
+import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
@@ -18,7 +18,7 @@ import kotlin.math.max
  */
 class GENCreateCity(private val reservationInsert: ReservationInsert, eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<CreateCityOperationData, CreateCityResultData>()
+    object Definition : BasicEventNodeDefinition<CreateCityOperationData, CreateCityResultData>()
 
     init {
         eventSystem.createNode(Definition) {

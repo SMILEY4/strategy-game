@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
-import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
+import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Building
@@ -17,7 +17,7 @@ import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
  */
 class GENCreateBuilding(eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<CreateBuildingData, Unit>()
+    object Definition : BasicEventNodeDefinition<CreateBuildingData, Unit>()
 
     init {
         eventSystem.createNode(Definition) {

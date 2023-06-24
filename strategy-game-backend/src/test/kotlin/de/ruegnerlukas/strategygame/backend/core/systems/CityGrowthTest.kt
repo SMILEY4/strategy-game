@@ -96,7 +96,7 @@ class CityGrowthTest : StringSpec({
             }
             update {
                 expectedSize = 1
-                expectedProgress = 0.0f
+                expectedProgress = 0.0f // TODO: fails, is 0.1  (adds +0.2 to last turns -0.1)
             }
             update {
                 expectedSize = 1

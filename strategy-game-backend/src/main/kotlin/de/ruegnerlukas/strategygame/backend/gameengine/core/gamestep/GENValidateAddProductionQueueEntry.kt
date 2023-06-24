@@ -8,7 +8,8 @@ import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidateAddProductionQueueEntry(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<AddProductionQueueEntryOperationData, AddProductionQueueEntryOperationData>()
+    object Definition :
+        EventNodeDefinition<AddProductionQueueEntryOperationData, AddProductionQueueEntryOperationData, OperationInvalidData, Unit>()
 
 
     init {
@@ -29,7 +30,7 @@ class GENValidateAddProductionQueueEntry(private val gameConfig: GameConfig, eve
                 }
                 if (result.isInvalid()) {
                     log().info("Invalid operation: ${result.getInvalidCodes()}")
-                    eventResultCancel()
+                    eventResultCancel(OperationInvalidData(data.game, result.getInvalidCodes()))
                 } else {
                     eventResultOk(data)
                 }

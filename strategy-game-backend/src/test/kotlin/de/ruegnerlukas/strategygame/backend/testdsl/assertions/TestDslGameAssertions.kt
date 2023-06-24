@@ -1,15 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandResolutionError
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 
-suspend fun GameTestContext.expectCommandResolutionErrors(block: CommandResolutionErrorsAssertionDsl.() -> Unit) {
+fun GameTestContext.expectCommandResolutionErrors(block: CommandResolutionErrorsAssertionDsl.() -> Unit) {
     val dslConfig = CommandResolutionErrorsAssertionDsl().apply(block)
     val errors = getActions().context.commandResolutionErrors[dslConfig.turn] ?: emptyList()
-    errors.map { it.errorMessage } shouldContainExactlyInAnyOrder (dslConfig.errors ?: emptyList())
+    errors shouldContainExactlyInAnyOrder (dslConfig.errors ?: emptyList())
 }
 
 class CommandResolutionErrorsAssertionDsl {

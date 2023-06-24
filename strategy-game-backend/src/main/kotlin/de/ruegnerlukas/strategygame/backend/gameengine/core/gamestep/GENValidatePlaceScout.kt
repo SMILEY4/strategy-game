@@ -9,7 +9,7 @@ import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<PlaceScoutOperationData, PlaceScoutOperationData>()
+    object Definition : EventNodeDefinition<PlaceScoutOperationData, PlaceScoutOperationData, OperationInvalidData, Unit>()
 
     init {
         eventSystem.createNode(Definition) {
@@ -34,7 +34,7 @@ class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: Eve
                 }
                 if (result.isInvalid()) {
                     log().info("Invalid operation: ${result.getInvalidCodes()}")
-                    eventResultCancel()
+                    eventResultCancel(OperationInvalidData(data.game, result.getInvalidCodes()))
                 } else {
                     eventResultOk(data)
                 }

@@ -7,7 +7,8 @@ import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidateRemoveProductionQueueEntry(eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<RemoveProductionQueueEntryOperationData, RemoveProductionQueueEntryOperationData>()
+    object Definition :
+        EventNodeDefinition<RemoveProductionQueueEntryOperationData, RemoveProductionQueueEntryOperationData, OperationInvalidData, Unit>()
 
 
     init {
@@ -24,7 +25,7 @@ class GENValidateRemoveProductionQueueEntry(eventSystem: EventSystem) : Logging 
                 }
                 if (result.isInvalid()) {
                     log().info("Invalid operation ${result.getInvalidCodes()}")
-                    eventResultCancel()
+                    eventResultCancel(OperationInvalidData(data.game, result.getInvalidCodes()))
                 } else {
                     eventResultOk(data)
                 }

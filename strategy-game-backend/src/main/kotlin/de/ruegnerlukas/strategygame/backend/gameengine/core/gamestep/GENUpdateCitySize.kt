@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
-import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
-import de.ruegnerlukas.strategygame.backend.common.events.EventResult
+import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
@@ -12,7 +11,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
  */
 class GENUpdateCitySize(eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<GameExtended, Unit>()
+    object Definition : BasicEventNodeDefinition<GameExtended, Unit>()
 
     companion object {
         private const val MAX_SIZE_CHANGES = 10

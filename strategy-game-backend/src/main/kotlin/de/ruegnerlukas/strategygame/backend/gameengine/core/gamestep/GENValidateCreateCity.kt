@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidateCreateCity(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<CreateCityOperationData, CreateCityOperationData>()
+    object Definition : EventNodeDefinition<CreateCityOperationData, CreateCityOperationData, OperationInvalidData, Unit>()
 
 
     init {
@@ -27,37 +27,39 @@ class GENValidateCreateCity(private val gameConfig: GameConfig, eventSystem: Eve
                     mustBeTrue("CITY.TILE_SPACE") {
                         data.game.cities.find { it.tile.tileId == data.targetTile.tileId } == null
                     }
-                    mustBeTrue("CITY.TARGET_TILE_OWNER") {
-                        data.targetTile.owner?.countryId == data.country.countryId && data.targetTile.owner?.cityId == null
-                    }
-                    mustBeTrue("CITY.TARGET_TILE_OWNER") {
-                        (data.targetTile.owner == null || data.targetTile.owner?.countryId == data.country.countryId)
-                                && data.targetTile.owner?.cityId == null
-                    }
-                    mustBeTrue("CITY.COUNTRY_INFLUENCE") {
-                        // country owns tile
-                        if (data.targetTile.owner != null && data.targetTile.owner?.countryId == data.country.countryId) {
-                            return@mustBeTrue true
+                    if (data.withNewProvince) {
+                        mustBeTrue("CITY.TARGET_TILE_OWNER") {
+                            (data.targetTile.owner == null || data.targetTile.owner?.countryId == data.country.countryId) && data.targetTile.owner?.cityId == null
                         }
-                        // nobody else has more than 'MAX_TILE_INFLUENCE' influence
-                        val maxForeignInfluence = data.targetTile.influences
-                            .filter { it.countryId != data.country.countryId }
-                            .map { it.amount }
-                            .max { it }
-                            ?: 0.0
-                        if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
-                            return@mustBeTrue true
+                        mustBeTrue("CITY.COUNTRY_INFLUENCE") {
+                            // country owns tile
+                            if (data.targetTile.owner != null && data.targetTile.owner?.countryId == data.country.countryId) {
+                                return@mustBeTrue true
+                            }
+                            // nobody else has more than 'MAX_TILE_INFLUENCE' influence
+                            val maxForeignInfluence = data.targetTile.influences
+                                .filter { it.countryId != data.country.countryId }
+                                .map { it.amount }
+                                .max { it }
+                                ?: 0.0
+                            if (maxForeignInfluence < gameConfig.cityTileMaxForeignInfluence) {
+                                return@mustBeTrue true
+                            }
+                            // country has the most influence on tile
+                            val maxCountryInfluence = data.targetTile.influences
+                                .filter { it.countryId == data.country.countryId }
+                                .map { it.amount }
+                                .max { it }
+                                ?: 0.0
+                            if (maxCountryInfluence >= maxForeignInfluence) {
+                                return@mustBeTrue true
+                            }
+                            return@mustBeTrue false
                         }
-                        // country has the most influence on tile
-                        val maxCountryInfluence = data.targetTile.influences
-                            .filter { it.countryId == data.country.countryId }
-                            .map { it.amount }
-                            .max { it }
-                            ?: 0.0
-                        if (maxCountryInfluence >= maxForeignInfluence) {
-                            return@mustBeTrue true
+                    } else {
+                        mustBeTrue("CITY.TARGET_TILE_OWNER") {
+                            data.targetTile.owner?.countryId == data.country.countryId && data.targetTile.owner?.cityId == null
                         }
-                        return@mustBeTrue false
                     }
                     mustBeTrue("CITY.AVAILABLE_SETTLERS") {
                         data.country.availableSettlers > 0
@@ -65,7 +67,7 @@ class GENValidateCreateCity(private val gameConfig: GameConfig, eventSystem: Eve
                 }
                 if (result.isInvalid()) {
                     log().info("Invalid operation: creating city ${data.targetName}: ${result.getInvalidCodes()}")
-                    eventResultCancel()
+                    eventResultCancel(OperationInvalidData(data.game, result.getInvalidCodes()))
                 } else {
                     eventResultOk(data)
                 }

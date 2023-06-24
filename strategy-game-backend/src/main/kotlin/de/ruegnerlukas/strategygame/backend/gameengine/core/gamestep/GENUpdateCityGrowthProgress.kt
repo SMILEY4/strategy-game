@@ -1,18 +1,18 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
-import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
+import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import kotlin.math.ceil
+import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
 
 /**
  * Updates the growth-progress of a city based on various factors
  */
-class GENUpdateCityGrowthProgress(eventSystem: EventSystem) : Logging {
+class GENUpdateCityGrowthProgress(private var popFoodConsumption: EconomyPopFoodConsumptionProvider, eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<GameExtended, GameExtended>()
+    object Definition : BasicEventNodeDefinition<GameExtended, GameExtended>()
 
     init {
         eventSystem.createNode(Definition) {
@@ -51,7 +51,7 @@ class GENUpdateCityGrowthProgress(eventSystem: EventSystem) : Logging {
     }
 
     private fun getRequiredFood(city: City): Float {
-        return ceil(city.size / 4f)
+        return popFoodConsumption.getRequiredFood(city)
     }
 
 }

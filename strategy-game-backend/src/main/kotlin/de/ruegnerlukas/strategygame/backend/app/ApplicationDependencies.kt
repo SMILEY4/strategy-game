@@ -8,6 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
 import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImplOLD
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
@@ -35,6 +36,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdatePr
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateScoutLifetime
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateCreateCity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateOperationInvalid
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
@@ -184,7 +186,7 @@ val applicationDependencies = module {
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
-    single<GameStepAction> { GameStepActionImplOLD(get(), get()) }
+    single<GameStepAction> { GameStepActionImpl(get()) }
     single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 
@@ -205,10 +207,11 @@ val applicationDependencies = module {
     single<GENValidateRemoveProductionQueueEntry> { GENValidateRemoveProductionQueueEntry(get()) } withOptions { createdAtStart() }
     single<GENRemoveProductionQueueEntry> { GENRemoveProductionQueueEntry(get(), get()) } withOptions { createdAtStart() }
     single<GENUpdateScoutLifetime> { GENUpdateScoutLifetime(get(), get()) } withOptions { createdAtStart() }
-    single<GENUpdateEconomy> { GENUpdateEconomy(get()) } withOptions { createdAtStart() }
+    single<GENUpdateEconomy> { GENUpdateEconomy(get(), get(), get()) } withOptions { createdAtStart() }
     single<GENUpdateProductionQueue> { GENUpdateProductionQueue(get()) } withOptions { createdAtStart() }
     single<GENCreateBuilding> { GENCreateBuilding(get()) } withOptions { createdAtStart() }
-    single<GENUpdateCityGrowthProgress> { GENUpdateCityGrowthProgress(get()) } withOptions { createdAtStart() }
+    single<GENUpdateCityGrowthProgress> { GENUpdateCityGrowthProgress(get(), get()) } withOptions { createdAtStart() }
     single<GENUpdateCitySize> { GENUpdateCitySize(get()) } withOptions { createdAtStart() }
+    single<GENValidateOperationInvalid> { GENValidateOperationInvalid(get()) } withOptions { createdAtStart() }
 
 }

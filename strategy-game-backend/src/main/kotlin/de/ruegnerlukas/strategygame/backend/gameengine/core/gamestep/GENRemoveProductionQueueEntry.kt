@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
-import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
+import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.City
@@ -13,7 +13,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.Province
  */
 class GENRemoveProductionQueueEntry(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<RemoveProductionQueueEntryOperationData, Unit>()
+    object Definition : BasicEventNodeDefinition<RemoveProductionQueueEntryOperationData, Unit>()
 
     init {
         eventSystem.createNode(Definition) {

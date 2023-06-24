@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {
 
-    object Definition : EventNodeDefinition<PlaceMarkerOperationData, PlaceMarkerOperationData>()
+    object Definition : EventNodeDefinition<PlaceMarkerOperationData, PlaceMarkerOperationData, OperationInvalidData, Unit>()
 
 
     init {
@@ -22,7 +22,7 @@ class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {
                 }
                 if (result.isInvalid()) {
                     log().info("Invalid operation: placing marker: ${result.getInvalidCodes()}")
-                    eventResultCancel()
+                    eventResultCancel(OperationInvalidData(data.game, result.getInvalidCodes()))
                 } else {
                     eventResultOk(data)
                 }

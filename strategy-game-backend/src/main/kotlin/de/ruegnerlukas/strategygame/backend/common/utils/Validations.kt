@@ -21,9 +21,9 @@ class Validations {
         results[code] = valid
     }
 
-    fun isValid() = results.values.all { true }
+    fun isValid() = results.values.all { it }
 
-    fun isInvalid() = results.values.any { false }
+    fun isInvalid() = results.values.any { !it }
 
     fun getValidCodes(): Set<String> = results.filter { it.value }.map { it.key }.toSet()
 
