@@ -6,18 +6,8 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringServiceImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
-import de.ruegnerlukas.strategygame.backend.economy.ports.provided.EconomyUpdate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImplOLD
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
-import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveCreateCityCommandImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveProductionQueueAddEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.commandresolution.ResolveProductionQueueRemoveEntryCommandImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateCity
@@ -42,13 +32,6 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCommandsAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveCreateCityCommand
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolvePlaceMarkerCommand
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolvePlaceScoutCommand
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveProductionQueueAddEntryCommand
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.ResolveProductionQueueRemoveEntryCommand
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.TurnUpdateAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
@@ -161,15 +144,8 @@ val applicationDependencies = module {
     single<UsersConnectedToGamesQuery> { UsersConnectedToGamesQueryImpl(get()) }
 
     single<GameConfig> { GameConfig.default() }
-    single<ResolvePlaceMarkerCommand> { ResolvePlaceMarkerCommandImpl(get()) }
-    single<ResolveCreateCityCommand> { ResolveCreateCityCommandImpl(get(), get()) }
-    single<ResolvePlaceScoutCommand> { ResolvePlaceScoutCommandImpl(get(), get()) }
-    single<ResolveProductionQueueAddEntryCommand> { ResolveProductionQueueAddEntryCommandImpl(get(), get()) }
-    single<ResolveProductionQueueRemoveEntryCommand> { ResolveProductionQueueRemoveEntryCommandImpl(get()) }
 
     single<PopFoodConsumption> { PopFoodConsumption() }
-
-    single<EconomyUpdate> { EconomyUpdateImpl(get(), get()) }
 
     single<WorldBuilder> { WorldBuilderImpl() }
 
@@ -182,12 +158,10 @@ val applicationDependencies = module {
     single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
     single<JoinGame> { JoinGameImpl(get(), get(), get(), get(), get(), get()) }
     single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
-    single<ResolveCommandsAction> { ResolveCommandsActionImpl(get(), get(), get(), get(), get()) }
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
     single<GameStepAction> { GameStepActionImpl(get()) }
-    single<TurnUpdateAction> { TurnUpdateActionImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 
     single<EventSystem> { EventSystem() }

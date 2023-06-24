@@ -11,8 +11,6 @@ import de.ruegnerlukas.strategygame.backend.common.models.Route
 import de.ruegnerlukas.strategygame.backend.common.models.TileRef
 import de.ruegnerlukas.strategygame.backend.common.utils.distance
 import de.ruegnerlukas.strategygame.backend.common.utils.mapParallel
-import de.ruegnerlukas.strategygame.backend.gameengine.core.updateOLD.CityNetworkNode
-import de.ruegnerlukas.strategygame.backend.gameengine.core.updateOLD.buildCityNetworkPathfinder
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.pathfinding.Path
 import de.ruegnerlukas.strategygame.backend.pathfinding.Pathfinder

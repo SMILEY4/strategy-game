@@ -1,40 +1,11 @@
 TODO:
 
 - cleanup models (only one module should own any one model)
+
 - where to place db-entities -> owned by a module ?
-- replace List, Set, ... with generic collections where possible / at interfaces
+
 - models (city, tile, province, ...) owned by gameengine ?   -> "core" gameengine models, only borrowed by others
+
 - move dto-creation into gameengine ?
     -> all models owned by gameengine + contains core-game-logic regarding e.g. visibility, ...
     -> rename to e.g. player-view-models, ...
-- rework command model structure
-    - command vs instruction ?
-        - command is what the player sends (gamesession) -> gets validated, enhanced and "optimized"
-        - instruction is what the game processes (gameengine)
-        -> where commandresolution ?!?!?!?
-
-
-- rework (gameengine) event system
-    - classes register themselves
-    - events/triggers always have one or none eventData/triggerData-object
-    - classes create listeners for events -> on("my-event") { game, data -> ... }
-    - listeners are always called with game + eventData
-
-- rework command resolution -> full part of event system
-    - rename "command" to "instruction" for game-engine-module, convert at border
-    - same command-type may result in multiple different instructions
-    - instructions can have enhanced data (e.g. city instead of city-id)
-
-
-NEW EVENT SYSTEM
-
-=== Event Nodes ===
-
-- piece of runnable code with an id
-- can take some input
-- can produce some output
-
-
-=== Event Triggers ===
-
--

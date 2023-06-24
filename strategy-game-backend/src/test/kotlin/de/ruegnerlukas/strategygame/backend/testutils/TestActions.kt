@@ -3,10 +3,8 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.economy.core.EconomyUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
-import de.ruegnerlukas.strategygame.backend.gameengine.core.TurnUpdateActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateCity
@@ -65,7 +63,7 @@ data class TestActions(
     val gamesList: ListGamesImpl,
     val turnSubmit: TurnSubmitActionImpl,
     val turnEnd: TurnEndImpl,
-    val turnUpdate: TurnUpdateActionImpl
+    val gameEventSystem: EventSystem,
 ) {
 
     companion object {
@@ -81,7 +79,6 @@ data class TestActions(
             val gameRequestConnect = gameRequestConnectionAction(database)
             val gameConnect = gameConnectAction(database)
             val gamesList = gamesListAction(database)
-            val turnUpdate = turnUpdateAction(database, popFoodConsumption(fixedPopFoodConsumption))
             val eventSystem = gameEventSystem(context, database, popFoodConsumption(fixedPopFoodConsumption))
             val turnSubmit = turnSubmitAction(database, eventSystem)
             val turnEnd = turnEndAction(database, eventSystem)
@@ -94,7 +91,7 @@ data class TestActions(
                 gamesList = gamesList,
                 turnSubmit = turnSubmit,
                 turnEnd = turnEnd,
-                turnUpdate = turnUpdate
+                gameEventSystem = eventSystem
             )
         }
 
@@ -201,17 +198,6 @@ data class TestActions(
                 GameExtendedUpdateImpl(database),
                 CommandsByGameQueryImpl(database),
                 GameStepActionImpl(eventSystem)
-            )
-
-        private fun turnUpdateAction(database: ArangoDatabase, popFoodConsumption: PopFoodConsumption) =
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default(),
-                popFoodConsumption,
-                EconomyUpdateImpl(
-                    GameConfig.default(),
-                    popFoodConsumption
-                )
             )
 
         private fun popFoodConsumption(fixed: Int? = null): PopFoodConsumption {

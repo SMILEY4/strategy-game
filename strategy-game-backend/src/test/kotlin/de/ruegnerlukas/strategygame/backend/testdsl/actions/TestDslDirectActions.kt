@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.actions
 
 import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerGlobalUpdate
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
@@ -16,8 +17,7 @@ suspend fun GameTestContext.runEconomyUpdate() {
             province.resourcesMissing = ResourceCollection.basic()
         }
     }
-    getActions().turnUpdate.prepare(game)
-    getActions().turnUpdate.globalUpdate(game)
+    getActions().gameEventSystem.publish(TriggerGlobalUpdate, game)
     TestUtils.saveGameExtended(getDb(), game)
     setSnapshot(game)
 }

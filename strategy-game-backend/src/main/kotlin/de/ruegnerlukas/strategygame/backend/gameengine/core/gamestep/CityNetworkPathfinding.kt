@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core.updateOLD
+package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
