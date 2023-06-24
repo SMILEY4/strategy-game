@@ -4,8 +4,8 @@ import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.GameEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert

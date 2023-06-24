@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddBuildingEntryCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddSettlerEntryCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

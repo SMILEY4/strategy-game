@@ -11,18 +11,18 @@ import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.ProvinceEntity
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CityEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CountryEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.Country
 import de.ruegnerlukas.strategygame.backend.common.models.Player
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 
 object TestUtils {
 

@@ -6,10 +6,10 @@ import de.ruegnerlukas.strategygame.backend.common.models.TileRef
 import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.ProvinceEntity
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.RouteEntity
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.TileEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CityEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.RouteEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.TileEntity
 import de.ruegnerlukas.strategygame.backend.common.models.Building
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.common.models.City

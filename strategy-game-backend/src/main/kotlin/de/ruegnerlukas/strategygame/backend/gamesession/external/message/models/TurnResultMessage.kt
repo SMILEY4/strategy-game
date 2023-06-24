@@ -1,8 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.message.models
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.CommandResolutionErrorDTO
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.TurnResultMessage.Companion.TurnResultPayload
 
 
@@ -13,8 +12,8 @@ class TurnResultMessage(payload: TurnResultPayload) : Message<TurnResultPayload>
 		const val TYPE = "turn-result"
 
 		data class TurnResultPayload(
-            val game: GameExtendedDTO,
-            val errors: List<CommandResolutionErrorDTO>
+			val game: GameExtendedDTO,
+			val errors: List<*> // TODO: remove ?
 		)
 
 	}

@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.message.models
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage.Companion.GameStatePayload
 
 
@@ -12,7 +11,7 @@ class GameStateMessage(payload: GameStatePayload) : Message<GameStatePayload>(TY
         const val TYPE = "game-state"
 
         data class GameStatePayload(
-            val game: GameExtendedDTO
+            val game: Any
         )
 
     }

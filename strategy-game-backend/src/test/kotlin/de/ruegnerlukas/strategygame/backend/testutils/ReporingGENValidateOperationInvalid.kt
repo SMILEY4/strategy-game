@@ -25,7 +25,7 @@ class GENReportOperationInvalid(private val testContext: TestActionContext, even
                 GENValidateRemoveProductionQueueEntry.Definition.cancelled(),
             )
             action { data ->
-                testContext.commandResolutionErrors[data.game.game.turn] = data.codes.toList()
+                testContext.commandResolutionErrors[data.game.meta.turn] = data.codes.toList()
                 eventResultOk(Unit)
             }
         }

@@ -30,6 +30,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
@@ -54,8 +55,9 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Com
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameDeleteImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
@@ -81,8 +83,8 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsI
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryInsert
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameDelete
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameExtendedUpdate
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
@@ -152,7 +154,7 @@ val applicationDependencies = module {
     single<SendGameStateAction> { SendGameStateActionImpl(get(), get(), get()) }
     single<ListGames> { ListGamesImpl(get()) }
     single<DeleteGame> { DeleteGameImpl(get()) }
-    single<ConnectToGame> { ConnectToGameImpl(get(), get(), get()) }
+    single<ConnectToGame> { ConnectToGameImpl(get(), get(), get(), get()) }
     single<CreateGame> { CreateGameImpl(get(), get()) }
     single<DisconnectFromGame> { DisconnectFromGameImpl(get(), get(), get()) }
     single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
@@ -161,9 +163,10 @@ val applicationDependencies = module {
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }
     single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
-    single<GameStepAction> { GameStepActionImpl(get()) }
+    single<GameStepAction> { GameStepActionImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 
+    single<PlayerViewCreator> { PlayerViewCreatorImpl(get(), get()) }
     single<EventSystem> { EventSystem() }
     single<GENCreateCity> { GENCreateCity(get(), get()) } withOptions { createdAtStart() }
     single<GENUpdateCityInfluence> { GENUpdateCityInfluence(get(), get()) } withOptions { createdAtStart() }

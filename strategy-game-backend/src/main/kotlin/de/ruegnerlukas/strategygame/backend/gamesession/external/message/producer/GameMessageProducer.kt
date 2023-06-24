@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer
 
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
 
 interface GameMessageProducer {
 

@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.common.models
 
 
 data class GameExtended(
-    val game: Game,
+    val meta: GameMeta,
     val tiles: TileContainer,
     val countries: List<Country>,
     val cities: TrackingList<City>,

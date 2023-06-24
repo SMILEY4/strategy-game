@@ -63,7 +63,7 @@ class GENUpdateScoutLifetime(
     }
 
     private fun getTimeAlive(game: GameExtended, scout: ScoutTileContent): Int {
-        return game.game.turn - scout.turn
+        return game.meta.turn - scout.turn
     }
 
     private fun removeScouts(scoutsToRemove: MutableMap<Tile, MutableList<ScoutTileContent>>) {

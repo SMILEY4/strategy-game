@@ -13,8 +13,8 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.utils.Err
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError

@@ -3,9 +3,11 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.Country
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.Province
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.CreateCityOperationData
@@ -19,22 +21,52 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerReso
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddBuildingEntryCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueAddSettlerEntryCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.GameExtendedDTOCreator
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
 
 class GameStepActionImpl(
-    private val eventSystem: EventSystem
+    private val gameExtendedQuery: GameExtendedQuery,
+    private val gameExtendedUpdate: GameExtendedUpdate,
+    private val eventSystem: EventSystem,
+    private val playerViewCreator: PlayerViewCreator
 ) : GameStepAction {
 
-    override suspend fun perform(game: GameExtended, commands: List<Command<*>>) {
+    override suspend fun perform(gameId: String, commands: List<Command<*>>, userIds: List<String>): Map<String, GameExtendedDTO> {
+        val game = getGameState(gameId)
         handleCommands(game, commands)
         eventSystem.publish(TriggerGlobalUpdate, game)
+        saveGameState(game)
+        return userIds.associateWith { userId ->
+            playerViewCreator.build(userId, game)
+        }
+    }
+
+
+    /**
+     * Find and return the [GameExtended] or [GameNotFoundError] if the game does not exist
+     */
+    private suspend fun getGameState(gameId: String): GameExtended {
+        return gameExtendedQuery.execute(gameId).getOrThrow()
+    }
+
+
+    /**
+     * Update the game state in the database
+     */
+    private suspend fun saveGameState(game: GameExtended) {
+        gameExtendedUpdate.execute(game)
     }
 
 

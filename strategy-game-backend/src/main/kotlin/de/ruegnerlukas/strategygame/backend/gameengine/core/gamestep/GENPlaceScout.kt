@@ -22,7 +22,7 @@ class GENPlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem
             trigger(GENValidatePlaceScout.Definition.after())
             action { data ->
                 log().debug("Place scout at ${data.targetTile.position} of country ${data.country.countryId}")
-                addScout(data.targetTile, data.country.countryId, data.game.game.turn)
+                addScout(data.targetTile, data.country.countryId, data.game.meta.turn)
                 discoverTiles(data.game, data.targetTile, data.country.countryId)
                 eventResultOk(Unit)
             }

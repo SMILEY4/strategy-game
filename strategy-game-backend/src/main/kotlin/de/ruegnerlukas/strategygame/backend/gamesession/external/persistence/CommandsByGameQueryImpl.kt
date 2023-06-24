@@ -2,10 +2,10 @@ package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.common.persistence.entities.CommandEntity
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CommandEntity
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 
 class CommandsByGameQueryImpl(private val database: ArangoDatabase) : CommandsByGameQuery {

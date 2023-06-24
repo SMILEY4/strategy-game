@@ -26,6 +26,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
@@ -41,8 +42,8 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Com
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
@@ -50,6 +51,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Gam
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
 import io.mockk.every
 import io.mockk.mockk
@@ -151,25 +153,29 @@ data class TestActions(
             ConnectToGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                SendGameStateActionImpl(
-                    GameConfig.default(),
+                PlayerViewCreatorImpl(
                     GameExtendedQueryImpl(database),
-                    GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
+                    GameConfig.default()
                 ),
+                TestUtilsFactory.MockMessageProducer()
             )
 
         private fun turnSubmitAction(database: ArangoDatabase, eventSystem: EventSystem) =
             TurnSubmitActionImpl(
                 TurnEndImpl(
-                    SendGameStateActionImpl(
-                        GameConfig.default(),
-                        GameExtendedQueryImpl(database),
-                        GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
-                    ),
-                    GameExtendedQueryImpl(database),
-                    GameExtendedUpdateImpl(database),
                     CommandsByGameQueryImpl(database),
-                    GameStepActionImpl(eventSystem)
+                    GameQueryImpl(database),
+                    GameUpdateImpl(database),
+                    GameStepActionImpl(
+                        GameExtendedQueryImpl(database),
+                        GameExtendedUpdateImpl(database),
+                        eventSystem,
+                        PlayerViewCreatorImpl(
+                            GameExtendedQueryImpl(database),
+                            GameConfig.default()
+                        ),
+                    ),
+                    TestUtilsFactory.MockMessageProducer()
                 ),
                 GameQueryImpl(database),
                 CountryByGameAndUserQueryImpl(database),
@@ -189,15 +195,19 @@ data class TestActions(
 
         private fun turnEndAction(database: ArangoDatabase, eventSystem: EventSystem) =
             TurnEndImpl(
-                SendGameStateActionImpl(
-                    GameConfig.default(),
-                    GameExtendedQueryImpl(database),
-                    GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
-                ),
-                GameExtendedQueryImpl(database),
-                GameExtendedUpdateImpl(database),
                 CommandsByGameQueryImpl(database),
-                GameStepActionImpl(eventSystem)
+                GameQueryImpl(database),
+                GameUpdateImpl(database),
+                GameStepActionImpl(
+                    GameExtendedQueryImpl(database),
+                    GameExtendedUpdateImpl(database),
+                    eventSystem,
+                    PlayerViewCreatorImpl(
+                        GameExtendedQueryImpl(database),
+                        GameConfig.default()
+                    ),
+                ),
+                TestUtilsFactory.MockMessageProducer()
             )
 
         private fun popFoodConsumption(fixed: Int? = null): PopFoodConsumption {

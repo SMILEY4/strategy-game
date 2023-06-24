@@ -2,18 +2,18 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.Game
+import de.ruegnerlukas.strategygame.backend.common.models.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.common.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TileData
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
-import de.ruegnerlukas.strategygame.backend.common.models.PlayerContainer
+import de.ruegnerlukas.strategygame.backend.common.models.trackingListOf
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
-import de.ruegnerlukas.strategygame.backend.common.models.trackingListOf
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert
 import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilder
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 
 class CreateGameImpl(
     private val worldBuilder: WorldBuilder,
@@ -33,6 +33,7 @@ class CreateGameImpl(
         }
     }
 
+
     /**
      * Build the game entity
      */
@@ -43,6 +44,7 @@ class CreateGameImpl(
             players = PlayerContainer()
         )
     }
+
 
     /**
      * Build the tile entities
@@ -63,6 +65,7 @@ class CreateGameImpl(
             )
         }
     }
+
 
     /**
      * Write the given game entity to the database

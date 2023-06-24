@@ -8,32 +8,34 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.InvalidPlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.SendStateFailed
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.SendGameStateAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 
 class ConnectToGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
-    private val sendGameState: SendGameStateAction,
+    private val playerViewCreator: PlayerViewCreator,
+    private val producer: MessageProducer
 ) : ConnectToGame, Logging {
 
     private val metricId = metricCoreAction(ConnectToGame::class)
 
 
     override suspend fun perform(userId: String, gameId: String, connectionId: Long): Either<GameConnectActionError, Unit> {
-
         return Monitoring.coTime(metricId) {
             log().info("Connect user $userId ($connectionId) to game $gameId")
             either {
                 val game = findGame(gameId).bind()
                 updateConnection(game, userId, connectionId).bind()
-                sendInitialGameStateMessage(gameId, userId)
+                sendInitialGameStateMessage(gameId, userId, connectionId)
             }
         }
     }
@@ -66,9 +68,9 @@ class ConnectToGameImpl(
     /**
      * Send the initial game-state to the connected player
      * */
-    private suspend fun sendInitialGameStateMessage(gameId: String, userId: String): Either<SendStateFailed, Unit> {
-        return sendGameState.perform(gameId, userId)
-            .mapLeft { SendStateFailed }
+    private suspend fun sendInitialGameStateMessage(gameId: String, userId: String, connectionId: Long) {
+        val view: Any = playerViewCreator.build(userId, gameId)
+        producer.sendToSingle(connectionId, GameStateMessage(GameStateMessage.Companion.GameStatePayload(view)))
     }
 
 }
