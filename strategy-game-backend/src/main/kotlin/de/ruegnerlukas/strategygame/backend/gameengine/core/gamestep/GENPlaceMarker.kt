@@ -3,9 +3,9 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.Country
-import de.ruegnerlukas.strategygame.backend.common.models.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 
 /**
  * Adds the marker at the given location

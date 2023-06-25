@@ -3,13 +3,13 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.Building
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.common.models.City
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileRef
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 
 /**

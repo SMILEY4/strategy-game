@@ -3,18 +3,14 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.Game
-import de.ruegnerlukas.strategygame.backend.common.models.Player
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.common.utils.err
-import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
-import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage.Companion.GameStatePayload
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.SendGameStateAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.TurnEndActionError
@@ -72,6 +68,7 @@ class TurnEndImpl(
             .map { it.userId }
     }
 
+
     /**
      * Update the state of the game to prepare it for the next turn
      */
@@ -82,6 +79,7 @@ class TurnEndImpl(
         }
     }
 
+
     /**
      * Persists the given game
      */
@@ -89,22 +87,23 @@ class TurnEndImpl(
         updateGame.execute(game)
     }
 
+
     /**
      * Send the new game-state to the connected players
      */
     private suspend fun sendGameStateMessages(game: Game, playerViews: Map<String, Any>) {
         playerViews.forEach { (userId, view) ->
-            val connectionId = getConnectionId(game, userId).getOrThrow()
+            val connectionId = getConnectionId(game, userId)
             producer.sendToSingle(connectionId, GameStateMessage(GameStatePayload(view)))
         }
     }
 
+
     /**
      * get connection id of player or null
      */
-    private fun getConnectionId(game: Game, userId: String): Either<SendGameStateAction.UserNotConnectedError, Long> {
-        return game.players.findByUserId(userId)?.connectionId?.ok()
-            ?: SendGameStateAction.UserNotConnectedError.err()
+    private fun getConnectionId(game: Game, userId: String): Long {
+        return game.players.findByUserId(userId)?.connectionId ?: throw Exception("Player is not connected")
     }
 
 }

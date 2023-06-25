@@ -1,12 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.worldcreation
 
-import de.ruegnerlukas.strategygame.backend.common.models.TileType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainType
 import java.util.Random
 
 data class WorldSettings(
     val size: Int = 30,
     val seed: Int = Random().nextInt(),
-    val singleTileType: TileType?, // if not null = all tiles will be of this type
+    val singleTileType: TerrainType?, // if not null = all tiles will be of this type
 ) {
     companion object {
 
@@ -21,13 +21,13 @@ data class WorldSettings(
         fun landOnly() = WorldSettings(
             size = 40,
             seed = Random().nextInt(),
-            singleTileType = TileType.LAND
+            singleTileType = TerrainType.LAND
         )
 
         fun waterOnly() = WorldSettings(
             size = 40,
             seed = Random().nextInt(),
-            singleTileType = TileType.WATER
+            singleTileType = TerrainType.WATER
         )
     }
 }

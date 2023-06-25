@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {

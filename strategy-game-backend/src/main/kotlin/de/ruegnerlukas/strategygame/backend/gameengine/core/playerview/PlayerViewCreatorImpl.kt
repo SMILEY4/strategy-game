@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery

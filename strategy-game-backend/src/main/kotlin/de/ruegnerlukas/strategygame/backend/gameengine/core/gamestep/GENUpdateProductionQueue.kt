@@ -3,11 +3,11 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.BuildingProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.common.models.City
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.ProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.common.models.SettlerProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlerProductionQueueEntry
 
 /**
  * Updates the entries in production queues

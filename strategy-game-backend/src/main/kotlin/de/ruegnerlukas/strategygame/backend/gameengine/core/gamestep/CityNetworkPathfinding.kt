@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileContainer
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainType
 import de.ruegnerlukas.strategygame.backend.common.utils.distance
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsNeighbours
 import de.ruegnerlukas.strategygame.backend.pathfinding.ConditionalNeighbourProvider
@@ -19,10 +19,10 @@ import de.ruegnerlukas.strategygame.backend.pathfinding.algorithms.backtracking.
 internal fun buildCityNetworkPathfinder(game: GameExtended, config: GameConfig): Pathfinder<CityNetworkNode> {
     return BacktrackingPathfinder(
         CityNetworkNeighbourProvider(game.tiles).withConditions(
-            CityNetworkNeighbourCondition.BlockingTiles(setOf(TileType.MOUNTAIN)),
+            CityNetworkNeighbourCondition.BlockingTiles(setOf(TerrainType.MOUNTAIN)),
             CityNetworkNeighbourCondition.MaxPathLength(config.maxRouteLength),
             CityNetworkNeighbourCondition.MaxProvinces(2),
-            CityNetworkNeighbourCondition.SwitchFromToWaterViaPoints(game.cities.map { TilePosition(it.tile) })
+            CityNetworkNeighbourCondition.SwitchFromToWaterViaPoints(game.cities.map { TilePosition(it.tile.q, it.tile.r) })
         ),
         CityNetworkScoreCalculator(emptyMap())
     )
@@ -53,7 +53,7 @@ class CityNetworkNode(
 }
 
 
-class CityNetworkScoreCalculator(private val movementCosts: Map<TileType, Float>) : ScoreCalculator<CityNetworkNode> {
+class CityNetworkScoreCalculator(private val movementCosts: Map<TerrainType, Float>) : ScoreCalculator<CityNetworkNode> {
 
     override fun f(g: Float, h: Float): Float {
         return g + h
@@ -144,7 +144,7 @@ object CityNetworkNeighbourCondition {
     /**
      * The path may not go through any of the given tile-types
      */
-    class BlockingTiles(private val blockingTiles: Set<TileType>) : NeighbourCondition<CityNetworkNode> {
+    class BlockingTiles(private val blockingTiles: Set<TerrainType>) : NeighbourCondition<CityNetworkNode> {
 
         override fun evaluate(prev: CityNetworkNode, next: CityNetworkNode): Boolean {
             return !blockingTiles.contains(next.tile.data.terrainType)
@@ -169,11 +169,11 @@ object CityNetworkNeighbourCondition {
         }
 
         private fun isWater(tile: Tile): Boolean {
-            return tile.data.terrainType == TileType.WATER
+            return tile.data.terrainType == TerrainType.WATER
         }
 
         private fun isLand(tile: Tile): Boolean {
-            return tile.data.terrainType != TileType.WATER
+            return tile.data.terrainType != TerrainType.WATER
         }
 
         private fun isSwitchingPoint(tile: Tile): Boolean {

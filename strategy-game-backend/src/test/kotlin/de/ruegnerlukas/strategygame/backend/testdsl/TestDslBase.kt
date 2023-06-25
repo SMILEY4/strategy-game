@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.testdsl
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode

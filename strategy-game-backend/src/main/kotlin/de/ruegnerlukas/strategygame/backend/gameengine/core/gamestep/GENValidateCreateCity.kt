@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.TileType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainType
 import de.ruegnerlukas.strategygame.backend.common.utils.max
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
@@ -22,7 +22,7 @@ class GENValidateCreateCity(private val gameConfig: GameConfig, eventSystem: Eve
                         data.targetName.isNotBlank()
                     }
                     mustBeTrue("CITY.TARGET_TILE_TYPE") {
-                        data.targetTile.data.terrainType == TileType.LAND
+                        data.targetTile.data.terrainType == TerrainType.LAND
                     }
                     mustBeTrue("CITY.TILE_SPACE") {
                         data.game.cities.find { it.tile.tileId == data.targetTile.tileId } == null

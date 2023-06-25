@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
-import de.ruegnerlukas.strategygame.backend.common.models.TileData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileContainer
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileData
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.common.models.TileType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainType
 import de.ruegnerlukas.strategygame.backend.common.utils.distance
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsNeighbours
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.utils.BlockingTilesRule
@@ -33,7 +33,7 @@ class BacktrackingPathfindingTest : StringSpec({
         )
         val pathfinder = BacktrackingPathfinder(
             AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TileType.WATER))
+                BlockingTilesRule(setOf(TerrainType.WATER))
             ),
             AdvancedScoreCalculator(emptyMap())
         )
@@ -63,7 +63,7 @@ class BacktrackingPathfindingTest : StringSpec({
         )
         val pathfinder = BacktrackingPathfinder(
             AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TileType.WATER))
+                BlockingTilesRule(setOf(TerrainType.WATER))
             ),
             AdvancedScoreCalculator(emptyMap())
         )
@@ -83,7 +83,7 @@ class BacktrackingPathfindingTest : StringSpec({
         )
         val pathfinder = BacktrackingPathfinder(
             AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TileType.WATER))
+                BlockingTilesRule(setOf(TerrainType.WATER))
             ),
             AdvancedScoreCalculator(emptyMap())
         )
@@ -106,7 +106,7 @@ class BacktrackingPathfindingTest : StringSpec({
         )
         val pathfinder = BacktrackingPathfinder(
             AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TileType.WATER))
+                BlockingTilesRule(setOf(TerrainType.WATER))
             ),
             AdvancedScoreCalculator(emptyMap())
         )
@@ -133,12 +133,12 @@ class BacktrackingPathfindingTest : StringSpec({
         )
         val pathfinder = BacktrackingPathfinder(
             AdvancedNeighbourProvider(tiles).withRules(
-                BlockingTilesRule(setOf(TileType.WATER))
+                BlockingTilesRule(setOf(TerrainType.WATER))
             ),
             AdvancedScoreCalculator(mapOf(
-                TileType.WATER to 9999f,
-                TileType.MOUNTAIN to 2f,
-                TileType.LAND to 1f
+                TerrainType.WATER to 9999f,
+                TerrainType.MOUNTAIN to 2f,
+                TerrainType.LAND to 1f
             ))
         )
         val path = pathfinder.find(
@@ -192,7 +192,7 @@ class BacktrackingPathfindingTest : StringSpec({
 
         }
 
-        class AdvancedScoreCalculator(private val movementCosts: Map<TileType, Float>) : ScoreCalculator<TestNode> {
+        class AdvancedScoreCalculator(private val movementCosts: Map<TerrainType, Float>) : ScoreCalculator<TestNode> {
 
             override fun f(g: Float, h: Float): Float {
                 return g + h
@@ -223,11 +223,11 @@ class BacktrackingPathfindingTest : StringSpec({
                             position = TilePosition(q, r),
                             data = TileData(
                                 terrainType = when(id) {
-                                    1 -> TileType.WATER
-                                    2 -> TileType.MOUNTAIN
-                                    else -> TileType.LAND
+                                    1 -> TerrainType.WATER
+                                    2 -> TerrainType.MOUNTAIN
+                                    else -> TerrainType.LAND
                                 },
-                                resourceType = TileResourceType.NONE
+                                resourceType = TerrainResourceType.NONE
                             ),
                             influences = mutableListOf(),
                             owner = null,

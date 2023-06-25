@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileRef
-import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
@@ -30,7 +30,7 @@ class CityGrowthTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"
@@ -81,7 +81,7 @@ class CityGrowthTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"
@@ -116,7 +116,7 @@ class CityGrowthTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"
@@ -150,7 +150,7 @@ class CityGrowthTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"

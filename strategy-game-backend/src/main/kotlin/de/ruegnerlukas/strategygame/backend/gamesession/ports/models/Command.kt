@@ -4,7 +4,8 @@ import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 
 class Command<T : CommandData>(
     val commandId: String,
-    val countryId: String,
+    val gameId: String,
+    val userId: String,
     val turn: Int,
     val data: T
 )

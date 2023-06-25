@@ -3,23 +3,22 @@ package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.fx.coroutines.parZip
-import de.ruegnerlukas.strategygame.backend.common.models.Game
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.Province
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileContainer
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CountryEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CountryEntity
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.GameEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.ProvinceEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.RouteEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.common.models.City
-import de.ruegnerlukas.strategygame.backend.common.models.Country
-import de.ruegnerlukas.strategygame.backend.common.models.GameMeta
-import de.ruegnerlukas.strategygame.backend.common.models.Route
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.RouteEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.TileEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameMeta
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
@@ -57,9 +56,8 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
         }
     }
 
-    private suspend fun fetchGame(gameId: String): Either<EntityNotFoundError, Game> {
+    private suspend fun fetchGame(gameId: String): Either<EntityNotFoundError, GameEntity> {
         return database.getDocument(Collections.GAMES, gameId, GameEntity::class.java)
-            .map { it.asServiceModel() }
             .mapLeft { EntityNotFoundError }
     }
 

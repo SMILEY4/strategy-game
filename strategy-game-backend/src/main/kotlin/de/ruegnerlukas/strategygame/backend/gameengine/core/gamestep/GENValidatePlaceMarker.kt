@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {

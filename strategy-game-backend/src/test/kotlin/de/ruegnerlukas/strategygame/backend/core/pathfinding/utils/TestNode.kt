@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding.utils
 
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.pathfinding.Node
 
 class TestNode(

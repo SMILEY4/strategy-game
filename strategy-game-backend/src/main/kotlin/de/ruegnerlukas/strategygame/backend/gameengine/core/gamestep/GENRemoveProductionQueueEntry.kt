@@ -3,10 +3,10 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.ProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.common.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 
 /**
  * Cancels the given production queue entry and refunds resources

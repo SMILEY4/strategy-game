@@ -1,14 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.common.models
 
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
+
 enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) {
     FARM(10, BuildingTemplateDataFarm()),
     FISHERS_HUT(10, BuildingTemplateDataFishersHut()),
     MINE(10, BuildingTemplateDataMine()),
     QUARRY(10, BuildingTemplateDataQuarry()),
     WOODCUTTER(10, BuildingTemplateDataWoodcutter()),
-
     CATTLE_FARM(15, BuildingTemplateDataCattleFarm()),
-
     ARMOR_SMITH(20, BuildingTemplateDataArmorSmith()),
     COOPER(20, BuildingTemplateDataCooper()),
     JEWELLER(20, BuildingTemplateDataJeweller()),
@@ -16,7 +19,6 @@ enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) 
     STABLES(20, BuildingTemplateDataStables()),
     TOOLMAKER(20, BuildingTemplateDataToolMarker()),
     WEAPON_SMITH(20, BuildingTemplateDataWeaponSmith()),
-
     MARKET(30, BuildingTemplateDataMarket()),
     PARCHMENTERS_WORKSHOP(30, BuildingTemplateDataParchmentersWorkshop()),
     TAILORS_WORKSHOP(30, BuildingTemplateDataTailorsWorkshop()),
@@ -27,7 +29,7 @@ abstract class BuildingTemplateData(
     val constructionCost: ResourceCollection = ResourceCollection.empty(),
     val requires: ResourceCollection = ResourceCollection.empty(),
     val produces: ResourceCollection = ResourceCollection.empty(),
-    val requiredTileResource: TileResourceType? = null
+    val requiredTileResource: TerrainResourceType? = null
 )
 
 class BuildingTemplateDataFarm : BuildingTemplateData(
@@ -38,7 +40,7 @@ class BuildingTemplateDataFarm : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.FOOD.amount(1f)
     ),
-    requiredTileResource = TileResourceType.PLAINS,
+    requiredTileResource = TerrainResourceType.PLAINS,
 )
 
 class BuildingTemplateDataFishersHut : BuildingTemplateData(
@@ -49,7 +51,7 @@ class BuildingTemplateDataFishersHut : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.FOOD.amount(1f)
     ),
-    requiredTileResource = TileResourceType.FISH,
+    requiredTileResource = TerrainResourceType.FISH,
 )
 
 class BuildingTemplateDataWoodcutter : BuildingTemplateData(
@@ -60,7 +62,7 @@ class BuildingTemplateDataWoodcutter : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.WOOD.amount(1f)
     ),
-    requiredTileResource = TileResourceType.FOREST,
+    requiredTileResource = TerrainResourceType.FOREST,
 )
 
 class BuildingTemplateDataQuarry : BuildingTemplateData(
@@ -71,7 +73,7 @@ class BuildingTemplateDataQuarry : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.STONE.amount(1f)
     ),
-    requiredTileResource = TileResourceType.STONE,
+    requiredTileResource = TerrainResourceType.STONE,
 )
 
 class BuildingTemplateDataMine : BuildingTemplateData(
@@ -82,7 +84,7 @@ class BuildingTemplateDataMine : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.METAL.amount(1f)
     ),
-    requiredTileResource = TileResourceType.METAL,
+    requiredTileResource = TerrainResourceType.METAL,
 )
 
 class BuildingTemplateDataArmorSmith : BuildingTemplateData(

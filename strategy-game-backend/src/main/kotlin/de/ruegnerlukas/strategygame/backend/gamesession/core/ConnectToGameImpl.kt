@@ -3,7 +3,6 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.utils.err
@@ -11,11 +10,11 @@ import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.GameConnectActionError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.InvalidPlayerState
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame.SendStateFailed
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 

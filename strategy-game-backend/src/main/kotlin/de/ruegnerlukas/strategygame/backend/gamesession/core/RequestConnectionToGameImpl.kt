@@ -3,11 +3,11 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.Game
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame.AlreadyConnectedError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame.GameNotFoundError

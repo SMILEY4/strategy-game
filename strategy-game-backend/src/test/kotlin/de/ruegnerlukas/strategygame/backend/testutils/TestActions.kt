@@ -4,6 +4,8 @@ import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializePlayerActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
@@ -27,23 +29,21 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.JoinGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ListGamesImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionToGameImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.SendGameStateActionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.core.UncoverMapAreaActionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.UncoverMapAreaActionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
@@ -51,7 +51,6 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Gam
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesUpdateImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
 import io.mockk.every
 import io.mockk.mockk
@@ -132,20 +131,25 @@ data class TestActions(
 
         private fun gameCreateAction(database: ArangoDatabase) =
             CreateGameImpl(
-                WorldBuilderImpl(),
                 GameInsertImpl(database),
+                InitializeWorldActionImpl(
+                    WorldBuilderImpl(),
+                    TilesInsertImpl(database)
+                )
             )
 
         private fun gameJoinAction(database: ArangoDatabase) =
             JoinGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                CountryInsertImpl(database),
-                TilesQueryByGameImpl(database),
-                GameConfig(),
-                UncoverMapAreaActionImpl(
-                    TilesQueryByGameAndPositionImpl(database),
-                    TilesUpdateImpl(database)
+                InitializePlayerActionImpl(
+                    GameConfig.default(),
+                    CountryInsertImpl(database),
+                    TilesQueryByGameImpl(database),
+                    UncoverMapAreaActionImpl(
+                        TilesQueryByGameAndPositionImpl(database),
+                        TilesUpdateImpl(database)
+                    )
                 )
             )
 
@@ -178,7 +182,6 @@ data class TestActions(
                     TestUtilsFactory.MockMessageProducer()
                 ),
                 GameQueryImpl(database),
-                CountryByGameAndUserQueryImpl(database),
                 GameUpdateImpl(database),
                 CommandsInsertImpl(database),
             )

@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.worldcreation
 
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.common.models.TileType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainType
 import de.ruegnerlukas.strategygame.backend.common.utils.WeightedCollection
 import kotlin.random.Random
 
@@ -19,20 +19,20 @@ class WorldBuilderImpl : WorldBuilder {
     }
 
     private val resourceConfig = mapOf(
-        TileType.LAND to WeightedCollection<TileResourceType>().apply {
-            add(0.6, TileResourceType.PLAINS)
-            add(0.2, TileResourceType.FOREST)
-            add(0.15, TileResourceType.STONE)
-            add(0.05, TileResourceType.METAL)
+        TerrainType.LAND to WeightedCollection<TerrainResourceType>().apply {
+            add(0.6, TerrainResourceType.PLAINS)
+            add(0.2, TerrainResourceType.FOREST)
+            add(0.15, TerrainResourceType.STONE)
+            add(0.05, TerrainResourceType.METAL)
         },
-        TileType.WATER to WeightedCollection<TileResourceType>().apply {
-            add(0.7, TileResourceType.NONE)
-            add(0.3, TileResourceType.FISH)
+        TerrainType.WATER to WeightedCollection<TerrainResourceType>().apply {
+            add(0.7, TerrainResourceType.NONE)
+            add(0.3, TerrainResourceType.FISH)
         },
-        TileType.MOUNTAIN to WeightedCollection<TileResourceType>().apply {
-            add(0.1, TileResourceType.NONE)
-            add(0.5, TileResourceType.STONE)
-            add(0.3, TileResourceType.METAL)
+        TerrainType.MOUNTAIN to WeightedCollection<TerrainResourceType>().apply {
+            add(0.1, TerrainResourceType.NONE)
+            add(0.5, TerrainResourceType.STONE)
+            add(0.3, TerrainResourceType.METAL)
         }
     )
 
@@ -56,18 +56,18 @@ class WorldBuilderImpl : WorldBuilder {
         )
     }
 
-    private fun tileTypeAt(height: Float): TileType {
+    private fun tileTypeAt(height: Float): TerrainType {
         return if (height < 0) {
-            TileType.WATER
+            TerrainType.WATER
         } else if (height > 0.4 && random.nextFloat() > 0.35) {
-            TileType.MOUNTAIN
+            TerrainType.MOUNTAIN
         } else {
-            TileType.LAND
+            TerrainType.LAND
         }
     }
 
-    private fun resourceTypeAt(terrain: TileType): TileResourceType {
-        return resourceConfig[terrain]?.chooseRandom(random) ?: TileResourceType.NONE
+    private fun resourceTypeAt(terrain: TerrainType): TerrainResourceType {
+        return resourceConfig[terrain]?.chooseRandom(random) ?: TerrainResourceType.NONE
     }
 
 }

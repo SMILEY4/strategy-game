@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.actions
 
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerGlobalUpdate
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended

@@ -13,14 +13,13 @@ class CommandsByGameQueryImpl(private val database: ArangoDatabase) : CommandsBy
     private val metricId = metricDbQuery(CommandsByGameQuery::class)
 
     override suspend fun execute(gameId: String, turn: Int): List<Command<*>> {
-        database.assertCollections(Collections.COMMANDS, Collections.COUNTRIES)
+        database.assertCollections(Collections.COMMANDS)
         return Monitoring.coTime(metricId) {
             database.query(
                 """
 				FOR command IN ${Collections.COMMANDS}
-					FOR country IN ${Collections.COUNTRIES}
-						FILTER command.countryId == country._key AND country.gameId == @gameId AND command.turn == @turn
-						RETURN command
+					FILTER command.gameId == @gameId AND command.turn == @turn
+					RETURN command
                 """.trimIndent(),
                 mapOf("gameId" to gameId, "turn" to turn),
                 CommandEntity::class.java

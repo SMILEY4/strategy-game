@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.pathfinding
 
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TileContainer
-import de.ruegnerlukas.strategygame.backend.common.models.TileData
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileContainer
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileData
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.common.models.TileType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainType
 import de.ruegnerlukas.strategygame.backend.common.utils.distance
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsNeighbours
 import de.ruegnerlukas.strategygame.backend.core.pathfinding.utils.TestNode
@@ -148,7 +148,7 @@ class AStarPathfindingTest : StringSpec({
             override fun getNeighbours(current: TestNode, consumer: (neighbour: TestNode) -> Unit) {
                 positionsNeighbours(current.tile.position) { q, r ->
                     val neighbour = tiles.get(q, r)
-                    if (neighbour != null && neighbour.data.terrainType != TileType.WATER) {
+                    if (neighbour != null && neighbour.data.terrainType != TerrainType.WATER) {
                         consumer(
                             TestNode(
                                 tile = neighbour,
@@ -193,9 +193,9 @@ class AStarPathfindingTest : StringSpec({
 
             private fun movementCost(tile: Tile): Float {
                 return when (tile.data.terrainType) {
-                    TileType.LAND -> 1f
-                    TileType.WATER -> 99999f
-                    TileType.MOUNTAIN -> 2f
+                    TerrainType.LAND -> 1f
+                    TerrainType.WATER -> 99999f
+                    TerrainType.MOUNTAIN -> 2f
                 }
             }
         }
@@ -210,11 +210,11 @@ class AStarPathfindingTest : StringSpec({
                             position = TilePosition(q, r),
                             data = TileData(
                                 terrainType = when (id) {
-                                    1 -> TileType.WATER
-                                    2 -> TileType.MOUNTAIN
-                                    else -> TileType.LAND
+                                    1 -> TerrainType.WATER
+                                    2 -> TerrainType.MOUNTAIN
+                                    else -> TerrainType.LAND
                                 },
-                                resourceType = TileResourceType.NONE
+                                resourceType = TerrainResourceType.NONE
                             ),
                             influences = mutableListOf(),
                             owner = null,

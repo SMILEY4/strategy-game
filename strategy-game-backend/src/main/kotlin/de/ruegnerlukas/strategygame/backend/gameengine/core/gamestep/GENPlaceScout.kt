@@ -4,9 +4,9 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.ScoutTileContent
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 

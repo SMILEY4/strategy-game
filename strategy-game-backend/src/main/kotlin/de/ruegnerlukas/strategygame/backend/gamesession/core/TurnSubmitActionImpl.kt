@@ -4,9 +4,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.models.Country
-import de.ruegnerlukas.strategygame.backend.common.models.Game
-import de.ruegnerlukas.strategygame.backend.common.models.Player
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
@@ -15,6 +12,8 @@ import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
@@ -22,14 +21,12 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmi
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.NotParticipantError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.TurnSubmitActionError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 
 class TurnSubmitActionImpl(
     private val actionEndTurn: TurnEnd,
     private val gameQuery: GameQuery,
-    private val countryByGameAndUserQuery: CountryByGameAndUserQuery,
     private val gameUpdate: GameUpdate,
     private val commandsInsert: CommandsInsert,
 ) : TurnSubmitAction, Logging {
@@ -41,9 +38,8 @@ class TurnSubmitActionImpl(
             log().info("user $userId submits ${commands.size} commands for game $gameId")
             either {
                 val game = getGame(gameId)
-                val country = getCountry(game, userId)
                 updatePlayerState(game, userId).bind()
-                saveCommands(game, country, commands)
+                saveCommands(game, userId, commands)
                 maybeEndTurn(game)
             }
         }
@@ -56,15 +52,6 @@ class TurnSubmitActionImpl(
     private suspend fun getGame(gameId: String): Game {
         return gameQuery.execute(gameId)
             .getOrElse { throw Exception("Could not get game $gameId") }
-    }
-
-
-    /**
-     * Fetch the country for the given user and game
-     */
-    private suspend fun getCountry(game: Game, userId: String): Country {
-        return countryByGameAndUserQuery.execute(game.gameId, userId)
-            .getOrElse { throw Exception("Country for user $userId in game ${game.gameId} not found.") }
     }
 
 
@@ -86,20 +73,21 @@ class TurnSubmitActionImpl(
     /**
      * save the given commands at the given game
      */
-    private suspend fun saveCommands(game: Game, country: Country, commands: List<CommandData>) {
-        commandsInsert.execute(createCommands(game, country, commands))
+    private suspend fun saveCommands(game: Game, userId: String, commands: List<CommandData>) {
+        commandsInsert.execute(createCommands(game, userId, commands))
     }
 
 
     /**
      * Create commands from the given command-data
      */
-    private fun createCommands(game: Game, country: Country, commands: List<CommandData>): List<Command<*>> {
+    private fun createCommands(game: Game, userId: String, commands: List<CommandData>): List<Command<*>> {
         return commands.map { data ->
             Command(
                 commandId = DbId.PLACEHOLDER,
+                userId = userId,
+                gameId = game.gameId,
                 turn = game.turn,
-                countryId = country.countryId,
                 data = data
             )
         }

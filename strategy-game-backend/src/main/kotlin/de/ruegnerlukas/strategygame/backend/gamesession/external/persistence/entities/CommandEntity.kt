@@ -16,7 +16,8 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQ
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
 
 class CommandEntity<T : CommandEntityData>(
-    val countryId: String,
+    val userId: String,
+    val gameId: String,
     val turn: Int,
     val data: T,
     key: String? = null,
@@ -26,7 +27,8 @@ class CommandEntity<T : CommandEntityData>(
 
         fun of(serviceModel: Command<*>) = CommandEntity(
             key = DbId.asDbId(serviceModel.commandId),
-            countryId = serviceModel.countryId,
+            userId = serviceModel.userId,
+            gameId = serviceModel.gameId,
             turn = serviceModel.turn,
             data = of(serviceModel.data)
         )
@@ -65,7 +67,8 @@ class CommandEntity<T : CommandEntityData>(
 
     fun asServiceModel() = Command(
         commandId = this.getKeyOrThrow(),
-        countryId = this.countryId,
+        userId = this.userId,
+        gameId = this.gameId,
         turn = this.turn,
         data = asServiceModel(this.data)
     )

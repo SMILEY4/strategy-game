@@ -2,11 +2,11 @@ package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.Either
 import arrow.core.getOrHandle
-import de.ruegnerlukas.strategygame.backend.common.models.Game
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.common.models.Province
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
@@ -15,13 +15,13 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.Game
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.CountryEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.ProvinceEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.common.models.City
-import de.ruegnerlukas.strategygame.backend.common.models.Country
-import de.ruegnerlukas.strategygame.backend.common.models.Player
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CountryEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.TileEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 
 object TestUtils {

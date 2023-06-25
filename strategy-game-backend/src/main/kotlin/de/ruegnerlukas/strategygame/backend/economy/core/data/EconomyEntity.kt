@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.economy.core.data
 
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 
 
 /**

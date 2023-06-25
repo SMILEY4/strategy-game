@@ -1,12 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
-import de.ruegnerlukas.strategygame.backend.common.models.City
-import de.ruegnerlukas.strategygame.backend.common.models.Country
-import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.Province
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
@@ -21,7 +20,6 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerReso
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.GameExtendedDTOCreator
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
@@ -80,7 +78,7 @@ class GameStepActionImpl(
                         TriggerResolveCreateCity,
                         CreateCityOperationData(
                             game = game,
-                            country = getCountry(game, typedCommand.countryId),
+                            country = getCountryByUser(game, typedCommand.userId),
                             targetName = typedCommand.data.name,
                             targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
                             withNewProvince = typedCommand.data.withNewProvince,
@@ -93,7 +91,7 @@ class GameStepActionImpl(
                         TriggerResolvePlaceMarker,
                         PlaceMarkerOperationData(
                             game = game,
-                            country = getCountry(game, typedCommand.countryId),
+                            country = getCountryByUser(game, typedCommand.userId),
                             targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
                         )
                     )
@@ -104,7 +102,7 @@ class GameStepActionImpl(
                         TriggerResolvePlaceScout,
                         PlaceScoutOperationData(
                             game = game,
-                            country = getCountry(game, typedCommand.countryId),
+                            country = getCountryByUser(game, typedCommand.userId),
                             targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
                         )
                     )
@@ -115,7 +113,7 @@ class GameStepActionImpl(
                         TriggerResolveAddProductionQueueEntry,
                         AddProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountry(game, typedCommand.countryId),
+                            country = getCountryByUser(game, typedCommand.userId),
                             city = getCity(game, typedCommand.data.cityId),
                             entry = BuildingProductionQueueEntryData(
                                 buildingType = typedCommand.data.buildingType
@@ -129,7 +127,7 @@ class GameStepActionImpl(
                         TriggerResolveAddProductionQueueEntry,
                         AddProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountry(game, typedCommand.countryId),
+                            country = getCountryByUser(game, typedCommand.userId),
                             city = getCity(game, typedCommand.data.cityId),
                             entry = SettlerProductionQueueEntryData()
                         )
@@ -141,7 +139,7 @@ class GameStepActionImpl(
                         TriggerResolveRemoveProductionQueueEntry,
                         RemoveProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountry(game, typedCommand.countryId),
+                            country = getCountryByUser(game, typedCommand.userId),
                             province = getProvince(game, typedCommand.data.cityId),
                             city = getCity(game, typedCommand.data.cityId),
                             entryId = typedCommand.data.queueEntryId
@@ -152,8 +150,8 @@ class GameStepActionImpl(
         }
     }
 
-    private fun getCountry(game: GameExtended, countryId: String): Country {
-        return game.countries.find { it.countryId == countryId } ?: throw Exception("Could not find country with id $countryId")
+    private fun getCountryByUser(game: GameExtended, userId: String): Country {
+        return game.countries.find { it.userId == userId } ?: throw Exception("Could not find country with user-id $userId")
     }
 
     private fun getTile(game: GameExtended, q: Int, r: Int): Tile {

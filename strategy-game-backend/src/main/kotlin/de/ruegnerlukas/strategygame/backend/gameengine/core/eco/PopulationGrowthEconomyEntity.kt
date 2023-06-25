@@ -3,10 +3,10 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.eco
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.City
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceType
-import de.ruegnerlukas.strategygame.backend.common.models.amount
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
 
 class PopulationGrowthEconomyEntity(private val owner: EconomyNode, val city: City, val config: GameConfig) : EconomyEntity {
 

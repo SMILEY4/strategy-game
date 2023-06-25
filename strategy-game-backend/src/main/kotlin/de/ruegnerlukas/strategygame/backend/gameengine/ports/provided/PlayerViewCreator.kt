@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided
 
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
 
 interface PlayerViewCreator {

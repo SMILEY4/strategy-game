@@ -2,10 +2,10 @@ package de.ruegnerlukas.strategygame.backend.core.systems
 
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.common.models.amount
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.runEconomyUpdate
@@ -52,7 +52,7 @@ class BasicProductionConsumptionTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"
@@ -80,7 +80,7 @@ class BasicProductionConsumptionTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"
@@ -222,7 +222,7 @@ class BasicProductionConsumptionTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"
@@ -361,7 +361,7 @@ class BasicProductionConsumptionTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addCity {
                 name = "Test City"

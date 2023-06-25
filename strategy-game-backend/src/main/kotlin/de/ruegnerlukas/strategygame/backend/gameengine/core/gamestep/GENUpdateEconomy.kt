@@ -4,8 +4,8 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectEntities
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectNodes

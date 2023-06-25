@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.common.models.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.common.models.amount
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
@@ -38,10 +38,10 @@ class ResourceSharingTest : StringSpec({
                 user("user")
             }
             addTileResources(-5, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addTileResources(+5, 0) {
-                allNeighbours(TileResourceType.FOREST)
+                allNeighbours(TerrainResourceType.FOREST)
             }
             addCity {
                 name = "Test City Food"
@@ -141,18 +141,18 @@ class ResourceSharingTest : StringSpec({
                 user("user")
             }
             addTileResources(-5, 0) {
-                allNeighbours(TileResourceType.PLAINS)
+                allNeighbours(TerrainResourceType.PLAINS)
             }
             addTileResources(+5, 0) {
-                allNeighbours(TileResourceType.FOREST)
+                allNeighbours(TerrainResourceType.FOREST)
             }
             addTileResources(+10, 0) {
-                topLeft = TileResourceType.PLAINS
-                left = TileResourceType.PLAINS
-                bottomLeft = TileResourceType.PLAINS
-                topRight = TileResourceType.FOREST
-                right = TileResourceType.FOREST
-                bottomRight = TileResourceType.FOREST
+                topLeft = TerrainResourceType.PLAINS
+                left = TerrainResourceType.PLAINS
+                bottomLeft = TerrainResourceType.PLAINS
+                topRight = TerrainResourceType.FOREST
+                right = TerrainResourceType.FOREST
+                bottomRight = TerrainResourceType.FOREST
             }
             addCity {
                 name = "Test City Food"

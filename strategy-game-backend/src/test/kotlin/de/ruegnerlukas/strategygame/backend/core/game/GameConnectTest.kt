@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.core.game
 
-import de.ruegnerlukas.strategygame.backend.common.models.Player
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.connectGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame

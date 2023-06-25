@@ -1,15 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities
 
-import de.ruegnerlukas.strategygame.backend.common.models.Game
-import de.ruegnerlukas.strategygame.backend.common.models.GameMeta
-import de.ruegnerlukas.strategygame.backend.common.models.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.common.models.Player
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameMeta
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerContainer
 
 class GameEntity(
     val turn: Int,
-    val players: List<Player>,
+    val players: List<PlayerEntity>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -17,8 +16,9 @@ class GameEntity(
         fun of(serviceModel: Game) = GameEntity(
             key = DbId.asDbId(serviceModel.gameId),
             turn = serviceModel.turn,
-            players = serviceModel.players.toList()
+            players = serviceModel.players.map { PlayerEntity.of(it) }.toList()
         )
+
         fun of(serviceModel: GameMeta, game: GameEntity) = GameEntity(
             key = DbId.asDbId(serviceModel.gameId),
             turn = serviceModel.turn,
@@ -30,7 +30,7 @@ class GameEntity(
     fun asServiceModel() = Game(
         gameId = this.getKeyOrThrow(),
         turn = this.turn,
-        players = PlayerContainer(this.players)
+        players = PlayerContainer(this.players.map { it.asServiceModel() })
     )
 
 }

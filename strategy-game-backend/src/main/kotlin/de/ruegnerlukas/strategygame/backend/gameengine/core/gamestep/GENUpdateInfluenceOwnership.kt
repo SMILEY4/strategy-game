@@ -4,9 +4,9 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TileInfluence
-import de.ruegnerlukas.strategygame.backend.common.models.TileOwner
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileInfluence
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileOwner
 import de.ruegnerlukas.strategygame.backend.common.utils.max
 
 /**
