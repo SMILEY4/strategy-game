@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceStack
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlerProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
@@ -22,7 +21,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceColl
 sealed class ProductionQueueEntryEntity(
     val type: String,
     val entryId: String,
-    val collectedResources: List<ResourceStack>,
+    val collectedResources: List<ResourceStackEntity>,
 ) {
 
     companion object {
@@ -30,12 +29,12 @@ sealed class ProductionQueueEntryEntity(
             when (serviceModel) {
                 is BuildingProductionQueueEntry -> BuildingProductionQueueEntryEntity(
                     entryId = serviceModel.entryId,
-                    collectedResources = serviceModel.collectedResources.toStacks(),
+                    collectedResources = serviceModel.collectedResources.toStacks().map { ResourceStackEntity.of(it) },
                     buildingType = serviceModel.buildingType
                 )
                 is SettlerProductionQueueEntry -> SettlerProductionQueueEntryEntity(
                     entryId = serviceModel.entryId,
-                    collectedResources = serviceModel.collectedResources.toStacks(),
+                    collectedResources = serviceModel.collectedResources.toStacks().map { ResourceStackEntity.of(it) },
                 )
             }
     }
@@ -45,11 +44,11 @@ sealed class ProductionQueueEntryEntity(
             is BuildingProductionQueueEntryEntity -> BuildingProductionQueueEntry(
                 entryId = this.entryId,
                 buildingType = this.buildingType,
-                collectedResources = ResourceCollection.basic(this.collectedResources)
+                collectedResources = ResourceCollection.basic(this.collectedResources.map { it.asServiceModel() })
             )
             is SettlerProductionQueueEntryEntity -> SettlerProductionQueueEntry(
                 entryId = this.entryId,
-                collectedResources = ResourceCollection.basic(this.collectedResources)
+                collectedResources = ResourceCollection.basic(this.collectedResources.map { it.asServiceModel() })
             )
         }
 
@@ -59,7 +58,7 @@ sealed class ProductionQueueEntryEntity(
 @JsonTypeName(BuildingProductionQueueEntryEntity.TYPE)
 class BuildingProductionQueueEntryEntity(
     entryId: String,
-    collectedResources: List<ResourceStack>,
+    collectedResources: List<ResourceStackEntity>,
     val buildingType: BuildingType
 ) : ProductionQueueEntryEntity(TYPE, entryId, collectedResources) {
     companion object {
@@ -71,7 +70,7 @@ class BuildingProductionQueueEntryEntity(
 @JsonTypeName(SettlerProductionQueueEntryEntity.TYPE)
 class SettlerProductionQueueEntryEntity(
     entryId: String,
-    collectedResources: List<ResourceStack>,
+    collectedResources: List<ResourceStackEntity>,
 ) : ProductionQueueEntryEntity(TYPE, entryId, collectedResources) {
     companion object {
         internal const val TYPE = "settler"

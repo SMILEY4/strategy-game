@@ -7,8 +7,8 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializePlayerAction
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryInsert
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGame
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGame
 
 class InitializePlayerActionImpl(
     private val gameConfig: GameConfig,

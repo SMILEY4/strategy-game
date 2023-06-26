@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 class CountryEntity(
     val gameId: String,
     val userId: String,
-    val color: RGBColor,
+    val color: ColorEntity,
     val availableSettlers: Int,
     key: String? = null
 ) : DbEntity(key) {
@@ -18,7 +18,7 @@ class CountryEntity(
             key = DbId.asDbId(serviceModel.countryId),
             gameId = gameId,
             userId = serviceModel.userId,
-            color = serviceModel.color,
+            color = ColorEntity.of(serviceModel.color),
             availableSettlers = serviceModel.availableSettlers
         )
     }
@@ -26,7 +26,7 @@ class CountryEntity(
     fun asServiceModel() = Country(
         countryId = this.getKeyOrThrow(),
         userId = this.userId,
-        color = this.color,
+        color = this.color.toRGBColor(),
         availableSettlers = this.availableSettlers
     )
 

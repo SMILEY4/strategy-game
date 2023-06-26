@@ -16,10 +16,10 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileContent
     JsonSubTypes.Type(value = MarkerTileEntityContent::class),
     JsonSubTypes.Type(value = ScoutTileEntityContent::class),
 )
-sealed class TileEntityContent(val type: String) {
+sealed class TileContentEntity(val type: String) {
 
     companion object {
-        fun of(serviceModel: TileContent): TileEntityContent {
+        fun of(serviceModel: TileContent): TileContentEntity {
             return when (serviceModel) {
                 is MarkerTileContent -> MarkerTileEntityContent(
                     countryId = serviceModel.countryId
@@ -49,7 +49,7 @@ sealed class TileEntityContent(val type: String) {
 @JsonTypeName(MarkerTileEntityContent.TYPE)
 class MarkerTileEntityContent(
     val countryId: String
-) : TileEntityContent(TYPE) {
+) : TileContentEntity(TYPE) {
     companion object {
         internal const val TYPE = "marker"
     }
@@ -59,7 +59,7 @@ class MarkerTileEntityContent(
 class ScoutTileEntityContent(
     val countryId: String,
     val turn: Int
-) : TileEntityContent(TYPE) {
+) : TileContentEntity(TYPE) {
     companion object {
         internal const val TYPE = "scout"
     }

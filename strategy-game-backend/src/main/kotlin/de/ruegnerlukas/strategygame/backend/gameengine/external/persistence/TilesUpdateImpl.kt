@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
+package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
 
 import arrow.core.Either
 import arrow.core.left
@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.mode
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesUpdate
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesUpdate
 
 class TilesUpdateImpl(private val database: ArangoDatabase) : TilesUpdate {
 

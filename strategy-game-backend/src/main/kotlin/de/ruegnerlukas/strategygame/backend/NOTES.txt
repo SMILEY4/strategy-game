@@ -1,2 +1,0 @@
-TODO:
-- remove all domain models from persistence models

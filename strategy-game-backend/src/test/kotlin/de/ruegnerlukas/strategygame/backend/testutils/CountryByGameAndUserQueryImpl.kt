@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
+package de.ruegnerlukas.strategygame.backend.testutils
 
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
@@ -7,14 +7,13 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CountryEntity
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryByGameAndUserQuery
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 
-class CountryByGameAndUserQueryImpl(private val database: ArangoDatabase) : CountryByGameAndUserQuery {
+class CountryByGameAndUserQueryImpl(private val database: ArangoDatabase) {
 
-    private val metricId = metricDbQuery(CountryByGameAndUserQuery::class)
+    private val metricId = metricDbQuery(CountryByGameAndUserQueryImpl::class)
 
-    override suspend fun execute(gameId: String, userId: String): Either<EntityNotFoundError, Country> {
+    suspend fun execute(gameId: String, userId: String): Either<EntityNotFoundError, Country> {
         return Monitoring.coTime(metricId) {
             database.assertCollections(Collections.COUNTRIES)
             database

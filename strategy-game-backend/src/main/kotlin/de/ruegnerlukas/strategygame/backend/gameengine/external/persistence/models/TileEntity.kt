@@ -1,21 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models
 
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileInfluence
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileOwner
-import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 
 class TileEntity(
     val gameId: String,
-    val position: TilePosition,
-    val data: TileData,
-    val influences: List<TileInfluence>,
-    val owner: TileOwner?,
+    val position: TilePositionEntity,
+    val data: TileDataEntity,
+    val influences: List<TileInfluenceEntity>,
+    val owner: TileOwnerEntity?,
     val discoveredByCountries: List<String>,
-    val content: List<TileEntityContent>,
+    val content: List<TileContentEntity>,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -23,21 +19,21 @@ class TileEntity(
         fun of(serviceModel: Tile, gameId: String) = TileEntity(
             key = DbId.asDbId(serviceModel.tileId),
             gameId = gameId,
-            position = serviceModel.position,
-            data = serviceModel.data,
-            influences = serviceModel.influences,
-            owner = serviceModel.owner,
+            position = TilePositionEntity.of(serviceModel.position),
+            data = TileDataEntity.of(serviceModel.data),
+            influences = serviceModel.influences.map { TileInfluenceEntity.of(it) },
+            owner = serviceModel.owner?.let { TileOwnerEntity.of(it) },
             discoveredByCountries = serviceModel.discoveredByCountries,
-            content = serviceModel.content.map { TileEntityContent.of(it) },
+            content = serviceModel.content.map { TileContentEntity.of(it) },
         )
     }
 
     fun asServiceModel() = Tile(
         tileId = this.getKeyOrThrow(),
-        position = this.position,
-        data = this.data,
-        influences = this.influences.toMutableList(),
-        owner = this.owner,
+        position = this.position.asServiceModel(),
+        data = this.data.asServiceModel(),
+        influences = this.influences.map { it.asServiceModel() }.toMutableList(),
+        owner = this.owner?.asServiceModel(),
         discoveredByCountries = this.discoveredByCountries.toMutableList(),
         content = this.content.map { it.asServiceModel() }.toMutableList(),
     )

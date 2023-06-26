@@ -7,8 +7,8 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGameAndPosition
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesUpdate
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGameAndPosition
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesUpdate
 
 class UncoverMapAreaActionImpl(
     private val tilesByPosition: TilesQueryByGameAndPosition,

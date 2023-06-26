@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models
 
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceStack
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
@@ -11,7 +10,7 @@ class ProvinceEntity(
     val countryId: String,
     val cityIds: List<String>,
     val provinceCityId: String,
-    val resources: List<ResourceStack>,
+    val resources: List<ResourceStackEntity>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -22,7 +21,7 @@ class ProvinceEntity(
             countryId = serviceModel.countryId,
             cityIds = serviceModel.cityIds.toList(),
             provinceCityId = serviceModel.provinceCapitalCityId,
-            resources = serviceModel.resourcesProducedCurrTurn.toStacks(),
+            resources = serviceModel.resourcesProducedCurrTurn.toStacks().map { ResourceStackEntity.of(it) },
         )
 
     }
@@ -32,7 +31,7 @@ class ProvinceEntity(
         countryId = this.countryId,
         cityIds = this.cityIds.toMutableList(),
         provinceCapitalCityId = this.provinceCityId,
-        resourcesProducedPrevTurn = ResourceCollection.basic(this.resources),
+        resourcesProducedPrevTurn = ResourceCollection.basic(this.resources.map { it.asServiceModel() }),
         resourcesProducedCurrTurn = ResourceCollection.basic(),
         resourcesConsumedCurrTurn = ResourceCollection.basic(),
         resourcesMissing = ResourceCollection.basic(),

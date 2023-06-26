@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models
 
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
@@ -9,7 +8,7 @@ class RouteEntity(
     val gameId: String,
     val cityIdA: String,
     val cityIdB: String,
-    val path: List<TileRef>,
+    val path: List<TileRefEntity>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -19,7 +18,7 @@ class RouteEntity(
             gameId = gameId,
             cityIdA = serviceModel.cityIdA,
             cityIdB = serviceModel.cityIdB,
-            path = serviceModel.path
+            path = serviceModel.path.map { TileRefEntity.of(it) }
         )
     }
 
@@ -27,7 +26,7 @@ class RouteEntity(
         routeId = this.getKeyOrThrow(),
         cityIdA = this.cityIdA,
         cityIdB = this.cityIdB,
-        path = this.path,
+        path = this.path.map { it.asServiceModel() },
     )
 
 }

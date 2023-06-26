@@ -52,8 +52,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.message.produce
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.WebSocketMessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameDeleteImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
@@ -64,9 +63,9 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.Gam
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GamesByUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameAndPositionImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameAndPositionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.UsersConnectedToGamesQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
@@ -81,8 +80,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmi
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryByGameAndUserQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CountryInsert
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameDelete
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
@@ -91,9 +89,9 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInser
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GamesByUserQuery
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGame
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesQueryByGameAndPosition
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.TilesUpdate
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGame
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGameAndPosition
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesUpdate
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.UsersConnectedToGamesQuery
 import de.ruegnerlukas.strategygame.backend.user.core.CreateUserImpl
 import de.ruegnerlukas.strategygame.backend.user.core.DeleteUserImpl
@@ -141,7 +139,6 @@ val applicationDependencies = module {
     single<GameDelete> { GameDeleteImpl(get()) }
     single<CountryInsert> { CountryInsertImpl(get()) }
     single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
-    single<CountryByGameAndUserQuery> { CountryByGameAndUserQueryImpl(get()) }
     single<ReservationInsert> { ReservationInsertImpl(get()) }
     single<TilesQueryByGame> { TilesQueryByGameImpl(get()) }
     single<TilesQueryByGameAndPosition> { TilesQueryByGameAndPositionImpl(get()) }
