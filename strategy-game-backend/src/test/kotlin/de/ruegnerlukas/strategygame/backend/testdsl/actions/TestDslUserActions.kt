@@ -1,22 +1,22 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.actions
 
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.CreateCityCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceMarkerCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.PlaceScoutCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddBuildingEntryCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueAddSettlerEntryCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueRemoveEntryCommandData
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameConnectAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameJoinAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
-import de.ruegnerlukas.strategygame.backend.ports.provided.turn.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceMarkerCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 
 
 //=======================//
@@ -67,7 +67,7 @@ suspend fun GameTestContext.joinGame(userId: String, block: JoinGameUserActionDs
 
 class JoinGameUserActionDsl(val userId: String) {
     var gameId: String? = null
-    var expectedError: GameJoinAction.GameJoinActionErrors? = null
+    var expectedError: JoinGame.GameJoinActionErrors? = null
 }
 
 //=======================//
@@ -103,8 +103,8 @@ suspend fun GameTestContext.connectGame(userId: String, block: ConnectGameUserAc
 class ConnectGameUserActionDsl(val userId: String) {
     var gameId: String? = null
     var connectionId: Long? = null
-    var expectedRequestError: GameRequestConnectionAction.GameRequestConnectionActionError? = null
-    var expectedConnectError: GameConnectAction.GameConnectActionError? = null
+    var expectedRequestError: RequestConnectionToGame.GameRequestConnectionActionError? = null
+    var expectedConnectError: ConnectToGame.GameConnectActionError? = null
 
 }
 

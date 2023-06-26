@@ -1,15 +1,13 @@
 package de.ruegnerlukas.strategygame.backend.testdsl
 
-import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.core.economy.elements.nodes.ProvinceEconomyNode
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.required.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
 import io.kotest.common.runBlocking
-import org.testcontainers.shaded.org.bouncycastle.crypto.tls.CipherType.block
 
 suspend fun gameTest(fixedPopFoodConsumption: Int? = null, block: suspend GameTestContext.() -> Unit) {
     try {

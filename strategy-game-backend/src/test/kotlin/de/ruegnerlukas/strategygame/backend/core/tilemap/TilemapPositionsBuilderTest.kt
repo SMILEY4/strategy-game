@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.tilemap
 
-import de.ruegnerlukas.strategygame.backend.core.world.TilemapPositionsBuilder
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.worldcreation.TilemapPositionsBuilder
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 

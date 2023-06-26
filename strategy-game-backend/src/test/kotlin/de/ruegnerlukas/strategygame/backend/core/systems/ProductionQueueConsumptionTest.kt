@@ -1,11 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.ports.models.WorldSettings
-import de.ruegnerlukas.strategygame.backend.ports.models.amount
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCityId
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
@@ -15,6 +14,7 @@ import de.ruegnerlukas.strategygame.backend.testdsl.gameTest
 import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addCity
 import de.ruegnerlukas.strategygame.backend.testdsl.modifiers.addTileResources
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils.TileDirection
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueConsumptionTest : StringSpec({
@@ -26,12 +26,12 @@ class ProductionQueueConsumptionTest : StringSpec({
                 user("user")
             }
             addTileResources(0, 0) {
-                topLeft = TileResourceType.STONE
-                left = TileResourceType.STONE
-                bottomLeft = TileResourceType.STONE
-                topRight = TileResourceType.FOREST
-                right = TileResourceType.FOREST
-                bottomRight = TileResourceType.FOREST
+                topLeft = TerrainResourceType.STONE
+                left = TerrainResourceType.STONE
+                bottomLeft = TerrainResourceType.STONE
+                topRight = TerrainResourceType.FOREST
+                right = TerrainResourceType.FOREST
+                bottomRight = TerrainResourceType.FOREST
             }
             addCity {
                 name = "Test City"

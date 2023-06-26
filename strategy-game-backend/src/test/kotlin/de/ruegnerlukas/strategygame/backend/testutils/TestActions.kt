@@ -1,61 +1,76 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCommandsActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveCreateCityCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceMarkerCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolvePlaceScoutCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueAddEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.commands.ResolveProductionQueueRemoveEntryCommandImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameConnectActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameCreateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameJoinActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GameRequestConnectionActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.GamesListActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.game.UncoverMapAreaActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.sendstate.SendGameStateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnEndActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.turn.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.core.actions.update.PopFoodConsumption
-import de.ruegnerlukas.strategygame.backend.core.actions.update.TurnUpdateActionImpl
-import de.ruegnerlukas.strategygame.backend.core.config.GameConfig
-import de.ruegnerlukas.strategygame.backend.external.api.message.producer.GameMessageProducerImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsByGameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CommandsInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryByGameAndUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.CountryInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GameUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.GamesByUserQueryImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameAndPositionImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesQueryByGameImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.actions.TilesUpdateImpl
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.ports.models.CommandResolutionError
-import de.ruegnerlukas.strategygame.backend.ports.provided.commands.ResolveCommandsAction
+import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
+import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializePlayerActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateCity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENPlaceMarker
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENPlaceScout
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENRemoveProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateCityGrowthProgress
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateCityInfluence
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateCityNetwork
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateCitySize
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateCityTileOwnership
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateEconomy
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateInfluenceOwnership
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateInfluenceVisibility
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateProductionQueue
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpdateScoutLifetime
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateAddProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateCreateCity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceMarker
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesInsertImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.JoinGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.ListGamesImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionToGameImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GamesByUserQueryImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameAndPositionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
+import de.ruegnerlukas.strategygame.backend.worldcreation.WorldBuilderImpl
 import io.mockk.every
 import io.mockk.mockk
 
 data class TestActions(
     val context: TestActionContext,
-    val gameCreate: GameCreateActionImpl,
-    val gameJoin: GameJoinActionImpl,
-    val gameRequestConnect: GameRequestConnectionActionImpl,
-    val gameConnect: GameConnectActionImpl,
-    val gamesList: GamesListActionImpl,
+    val gameCreate: CreateGameImpl,
+    val gameJoin: JoinGameImpl,
+    val gameRequestConnect: RequestConnectionToGameImpl,
+    val gameConnect: ConnectToGameImpl,
+    val gamesList: ListGamesImpl,
     val turnSubmit: TurnSubmitActionImpl,
-    val resolveCommands: ReportingResolveCommandsActionImpl,
-    val turnEnd: TurnEndActionImpl,
-    val turnUpdate: TurnUpdateActionImpl
+    val turnEnd: TurnEndImpl,
+    val gameEventSystem: EventSystem,
 ) {
 
     companion object {
 
         class TestActionContext {
-            val commandResolutionErrors = mutableMapOf<Int, List<CommandResolutionError>>()
+            val commandResolutionErrors = mutableMapOf<Int, List<String>>()
         }
 
         fun create(database: ArangoDatabase, fixedPopFoodConsumption: Int? = null): TestActions {
@@ -65,10 +80,9 @@ data class TestActions(
             val gameRequestConnect = gameRequestConnectionAction(database)
             val gameConnect = gameConnectAction(database)
             val gamesList = gamesListAction(database)
-            val turnUpdate = turnUpdateAction(database, popFoodConsumption(fixedPopFoodConsumption))
-            val resolveCommands = resolveCommandsAction(context, turnUpdate)
-            val turnSubmit = turnSubmitAction(database, resolveCommands, turnUpdate)
-            val turnEnd = turnEndAction(database, resolveCommands, turnUpdate)
+            val eventSystem = gameEventSystem(context, database, popFoodConsumption(fixedPopFoodConsumption))
+            val turnSubmit = turnSubmitAction(database, eventSystem)
+            val turnEnd = turnEndAction(database, eventSystem)
             return TestActions(
                 context = context,
                 gameCreate = gameCreate,
@@ -77,123 +91,126 @@ data class TestActions(
                 gameConnect = gameConnect,
                 gamesList = gamesList,
                 turnSubmit = turnSubmit,
-                resolveCommands = resolveCommands,
                 turnEnd = turnEnd,
-                turnUpdate = turnUpdate
+                gameEventSystem = eventSystem
             )
         }
 
+        private fun gameEventSystem(
+            context: TestActionContext,
+            database: ArangoDatabase,
+            popFoodConsumption: PopFoodConsumption
+        ): EventSystem {
+            return EventSystem().also { eventSystem ->
+                // game-engine
+                GENCreateCity(ReservationInsertImpl(database), eventSystem)
+                GENUpdateCityInfluence(GameConfig.default(), eventSystem)
+                GENUpdateCityNetwork(GameConfig.default(), ReservationInsertImpl(database), eventSystem)
+                GENUpdateCityTileOwnership(eventSystem)
+                GENUpdateInfluenceOwnership(GameConfig.default(), eventSystem)
+                GENUpdateInfluenceVisibility(eventSystem)
+                GENValidateCreateCity(GameConfig.default(), eventSystem)
+                GENValidatePlaceMarker(eventSystem)
+                GENPlaceMarker(eventSystem)
+                GENValidatePlaceScout(GameConfig.default(), eventSystem)
+                GENPlaceScout(GameConfig.default(), eventSystem)
+                GENValidateAddProductionQueueEntry(GameConfig.default(), eventSystem)
+                GENAddProductionQueueEntry(eventSystem)
+                GENValidateRemoveProductionQueueEntry(eventSystem)
+                GENRemoveProductionQueueEntry(GameConfig.default(), eventSystem)
+                GENUpdateScoutLifetime(GameConfig.default(), eventSystem)
+                GENUpdateEconomy(GameConfig.default(), popFoodConsumption, eventSystem)
+                GENUpdateProductionQueue(eventSystem)
+                GENCreateBuilding(eventSystem)
+                GENUpdateCityGrowthProgress(popFoodConsumption, eventSystem)
+                GENUpdateCitySize(eventSystem)
+                // test
+                GENReportOperationInvalid(context, eventSystem)
+            }
+        }
+
         private fun gameCreateAction(database: ArangoDatabase) =
-            GameCreateActionImpl(
-                GameInsertImpl(database)
+            CreateGameImpl(
+                GameInsertImpl(database),
+                InitializeWorldActionImpl(
+                    WorldBuilderImpl(),
+                    TilesInsertImpl(database)
+                )
             )
 
         private fun gameJoinAction(database: ArangoDatabase) =
-            GameJoinActionImpl(
+            JoinGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                CountryInsertImpl(database),
-                TilesQueryByGameImpl(database),
-                GameConfig(),
-                UncoverMapAreaActionImpl(
-                    TilesQueryByGameAndPositionImpl(database),
-                    TilesUpdateImpl(database)
+                InitializePlayerActionImpl(
+                    GameConfig.default(),
+                    CountryInsertImpl(database),
+                    TilesQueryByGameImpl(database),
+                    UncoverMapAreaActionImpl(
+                        TilesQueryByGameAndPositionImpl(database),
+                        TilesUpdateImpl(database)
+                    )
                 )
             )
 
         private fun gameConnectAction(database: ArangoDatabase) =
-            GameConnectActionImpl(
+            ConnectToGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                SendGameStateActionImpl(
-                    GameConfig.default(),
+                PlayerViewCreatorImpl(
                     GameExtendedQueryImpl(database),
-                    GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
+                    GameConfig.default()
                 ),
+                TestUtilsFactory.MockMessageProducer()
             )
 
-        private fun turnSubmitAction(
-            database: ArangoDatabase,
-            resolveCommandsAction: ResolveCommandsAction,
-            turnUpdate: TurnUpdateActionImpl
-        ) =
+        private fun turnSubmitAction(database: ArangoDatabase, eventSystem: EventSystem) =
             TurnSubmitActionImpl(
-                TurnEndActionImpl(
-                    resolveCommandsAction,
-                    SendGameStateActionImpl(
-                        GameConfig.default(),
-                        GameExtendedQueryImpl(database),
-                        GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
-                    ),
-                    GameExtendedQueryImpl(database),
-                    GameExtendedUpdateImpl(database),
+                TurnEndImpl(
                     CommandsByGameQueryImpl(database),
-                    turnUpdate
+                    GameQueryImpl(database),
+                    GameUpdateImpl(database),
+                    GameStepActionImpl(
+                        GameExtendedQueryImpl(database),
+                        GameExtendedUpdateImpl(database),
+                        eventSystem,
+                        PlayerViewCreatorImpl(
+                            GameExtendedQueryImpl(database),
+                            GameConfig.default()
+                        ),
+                    ),
+                    TestUtilsFactory.MockMessageProducer()
                 ),
                 GameQueryImpl(database),
-                CountryByGameAndUserQueryImpl(database),
                 GameUpdateImpl(database),
                 CommandsInsertImpl(database),
             )
 
         private fun gamesListAction(database: ArangoDatabase) =
-            GamesListActionImpl(
+            ListGamesImpl(
                 GamesByUserQueryImpl(database)
             )
 
         private fun gameRequestConnectionAction(database: ArangoDatabase) =
-            GameRequestConnectionActionImpl(
+            RequestConnectionToGameImpl(
                 GameQueryImpl(database),
             )
 
-        private fun resolveCommandsAction(context: TestActionContext, turnUpdate: TurnUpdateActionImpl) =
-            ReportingResolveCommandsActionImpl(
-                context,
-                ResolveCommandsActionImpl(
-                    ResolvePlaceMarkerCommandImpl(
-                        turnUpdate
-                    ),
-                    ResolveCreateCityCommandImpl(
-                        GameConfig.default(),
-                        turnUpdate
-                    ),
-                    ResolvePlaceScoutCommandImpl(
-                        GameConfig.default(),
-                        turnUpdate
-                    ),
-                    ResolveProductionQueueAddEntryCommandImpl(
-                        turnUpdate,
+        private fun turnEndAction(database: ArangoDatabase, eventSystem: EventSystem) =
+            TurnEndImpl(
+                CommandsByGameQueryImpl(database),
+                GameQueryImpl(database),
+                GameUpdateImpl(database),
+                GameStepActionImpl(
+                    GameExtendedQueryImpl(database),
+                    GameExtendedUpdateImpl(database),
+                    eventSystem,
+                    PlayerViewCreatorImpl(
+                        GameExtendedQueryImpl(database),
                         GameConfig.default()
                     ),
-                    ResolveProductionQueueRemoveEntryCommandImpl(
-                        turnUpdate
-                    )
-                )
-            )
-
-        private fun turnEndAction(
-            database: ArangoDatabase,
-            resolveCommandsAction: ResolveCommandsAction,
-            turnUpdate: TurnUpdateActionImpl
-        ) =
-            TurnEndActionImpl(
-                resolveCommandsAction,
-                SendGameStateActionImpl(
-                    GameConfig.default(),
-                    GameExtendedQueryImpl(database),
-                    GameMessageProducerImpl(TestUtilsFactory.MockMessageProducer()),
                 ),
-                GameExtendedQueryImpl(database),
-                GameExtendedUpdateImpl(database),
-                CommandsByGameQueryImpl(database),
-                turnUpdate
-            )
-
-        private fun turnUpdateAction(database: ArangoDatabase, popFoodConsumption: PopFoodConsumption) =
-            TurnUpdateActionImpl(
-                ReservationInsertImpl(database),
-                GameConfig.default(),
-                popFoodConsumption
+                TestUtilsFactory.MockMessageProducer()
             )
 
         private fun popFoodConsumption(fixed: Int? = null): PopFoodConsumption {

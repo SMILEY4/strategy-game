@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.game
 
-import de.ruegnerlukas.strategygame.backend.ports.models.Player
-import de.ruegnerlukas.strategygame.backend.ports.provided.game.GameRequestConnectionAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.connectGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectPlayers
@@ -33,7 +33,7 @@ class GameConnectTest : StringSpec({
             createGame()
             connectGame("user") {
                 connectionId = 0
-                expectedRequestError = GameRequestConnectionAction.NotParticipantError
+                expectedRequestError = RequestConnectionToGame.NotParticipantError
             }
         }
     }
@@ -47,7 +47,7 @@ class GameConnectTest : StringSpec({
             }
             connectGame("user") {
                 connectionId = 1
-                expectedRequestError = GameRequestConnectionAction.AlreadyConnectedError
+                expectedRequestError = RequestConnectionToGame.AlreadyConnectedError
             }
             expectPlayers {
                 player {
@@ -65,7 +65,7 @@ class GameConnectTest : StringSpec({
             connectGame("user") {
                 gameId = "unknown-game-id"
                 connectionId = 0
-                expectedRequestError = GameRequestConnectionAction.GameNotFoundError
+                expectedRequestError = RequestConnectionToGame.GameNotFoundError
             }
         }
     }

@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.accessors
 
-import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
 

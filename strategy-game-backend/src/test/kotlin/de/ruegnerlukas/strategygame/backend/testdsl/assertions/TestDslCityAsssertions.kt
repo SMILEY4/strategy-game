@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCities
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils

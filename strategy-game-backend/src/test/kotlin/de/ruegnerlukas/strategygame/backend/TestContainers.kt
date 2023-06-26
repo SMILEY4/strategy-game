@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.DatabaseProvider
+import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
 import io.kotest.core.config.AbstractProjectConfig
 import org.slf4j.LoggerFactory

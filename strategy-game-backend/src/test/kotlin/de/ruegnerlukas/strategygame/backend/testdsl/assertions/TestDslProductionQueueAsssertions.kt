@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.ports.models.ProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceStack
-import de.ruegnerlukas.strategygame.backend.ports.models.SettlerProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceStack
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlerProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCities
 import io.kotest.matchers.collections.shouldContainExactly

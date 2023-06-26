@@ -1,25 +1,25 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.modifiers
 
-import de.ruegnerlukas.strategygame.backend.external.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.CityEntity
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.ProvinceEntity
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.RouteEntity
-import de.ruegnerlukas.strategygame.backend.external.persistence.entities.TileEntity
-import de.ruegnerlukas.strategygame.backend.ports.models.Building
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.ports.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.ports.models.City
-import de.ruegnerlukas.strategygame.backend.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.ports.models.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.ports.models.Route
-import de.ruegnerlukas.strategygame.backend.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.ports.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.ports.models.TileResourceType
-import de.ruegnerlukas.strategygame.backend.shared.RGBColor
-import de.ruegnerlukas.strategygame.backend.shared.UUID
-import de.ruegnerlukas.strategygame.backend.shared.coApply
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.RouteEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.TileEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Building
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.utils.UUID
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
@@ -46,7 +46,7 @@ private suspend fun setTileResource(
     tiles: Collection<Tile>,
     q: Int,
     r: Int,
-    resourceType: TileResourceType?
+    resourceType: TerrainResourceType?
 ) {
     if (resourceType != null) {
         tiles.find { it.position.q == q && it.position.r == r }
@@ -62,20 +62,20 @@ private suspend fun saveTile(tile: Tile, gameId: String, database: ArangoDatabas
 }
 
 class AddTileResourcesDirectActionDsl {
-    var topLeft: TileResourceType? = null
-    var topRight: TileResourceType? = null
-    var left: TileResourceType? = null
-    var right: TileResourceType? = null
-    var bottomLeft: TileResourceType? = null
-    var bottomRight: TileResourceType? = null
-    var center: TileResourceType? = null
+    var topLeft: TerrainResourceType? = null
+    var topRight: TerrainResourceType? = null
+    var left: TerrainResourceType? = null
+    var right: TerrainResourceType? = null
+    var bottomLeft: TerrainResourceType? = null
+    var bottomRight: TerrainResourceType? = null
+    var center: TerrainResourceType? = null
 
-    fun all(type: TileResourceType) {
+    fun all(type: TerrainResourceType) {
         allNeighbours(type)
         center = type
     }
 
-    fun allNeighbours(type: TileResourceType) {
+    fun allNeighbours(type: TerrainResourceType) {
         topLeft = type
         topRight = type
         left = type

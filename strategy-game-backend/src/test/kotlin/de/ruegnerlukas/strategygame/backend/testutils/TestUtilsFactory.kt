@@ -1,10 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import de.ruegnerlukas.strategygame.backend.external.api.message.models.Message
-import de.ruegnerlukas.strategygame.backend.external.api.message.websocket.MessageProducer
-import de.ruegnerlukas.strategygame.backend.shared.Json
-import de.ruegnerlukas.strategygame.backend.external.persistence.arango.ArangoDatabase
-import kotlinx.coroutines.future.await
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.Message
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
+import de.ruegnerlukas.strategygame.backend.common.utils.Json
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 
 
 object TestUtilsFactory {

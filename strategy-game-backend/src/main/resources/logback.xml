@@ -1,6 +1,6 @@
 <configuration>
 
-    <import class="de.ruegnerlukas.strategygame.backend.shared.LogSuppressor"/>
+    <import class="de.ruegnerlukas.strategygame.backend.common.logging.LogSuppressor"/>
     <import class="ch.qos.logback.core.ConsoleAppender"/>
     <import class="ch.qos.logback.core.FileAppender"/>
     <import class="ch.qos.logback.classic.filter.ThresholdFilter"/>

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import de.ruegnerlukas.strategygame.backend.app.Config
-import de.ruegnerlukas.strategygame.backend.shared.Json
+import de.ruegnerlukas.strategygame.backend.common.utils.Json
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
