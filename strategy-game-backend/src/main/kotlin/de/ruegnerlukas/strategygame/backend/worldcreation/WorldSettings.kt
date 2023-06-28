@@ -6,7 +6,7 @@ import java.util.Random
 data class WorldSettings(
     val size: Int = 30,
     val seed: Int = Random().nextInt(),
-    val singleTileType: TerrainType?, // if not null = all tiles will be of this type
+    val singleTileType: TerrainType?, // if =/= null => all tiles will be of this type
 ) {
     companion object {
 

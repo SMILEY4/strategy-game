@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.game
 
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.assertions.expectPlayers
@@ -17,7 +18,7 @@ class GameJoinTest : StringSpec({
             expectPlayers {
                 player {
                     userId = "user"
-                    state = Player.STATE_PLAYING
+                    state = PlayerState.PLAYING
                     connectionId = null
                 }
             }
@@ -32,12 +33,12 @@ class GameJoinTest : StringSpec({
             expectPlayers {
                 player {
                     userId = "user-1"
-                    state = Player.STATE_PLAYING
+                    state = PlayerState.PLAYING
                     connectionId = null
                 }
                 player {
                     userId = "user-2"
-                    state = Player.STATE_PLAYING
+                    state = PlayerState.PLAYING
                     connectionId = null
                 }
             }
@@ -50,17 +51,17 @@ class GameJoinTest : StringSpec({
             joinGame("user-1")
             joinGame("user-2")
             joinGame("user-1") {
-                expectedError = JoinGame.UserAlreadyPlayerError
+                expectedError = JoinGame.UserAlreadyJoinedError
             }
             expectPlayers {
                 player {
                     userId = "user-1"
-                    state = Player.STATE_PLAYING
+                    state = PlayerState.PLAYING
                     connectionId = null
                 }
                 player {
                     userId = "user-2"
-                    state = Player.STATE_PLAYING
+                    state = PlayerState.PLAYING
                     connectionId = null
                 }
             }

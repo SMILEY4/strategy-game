@@ -5,10 +5,9 @@ import arrow.core.Either
 
 interface TurnEnd {
 
-	sealed class TurnEndActionError
-	object GameNotFoundError : TurnEndActionError()
-	object CommandResolutionFailedError: TurnEndActionError()
+	sealed class TurnEndError
+	object GameNotFoundError : TurnEndError()
 
-	suspend fun perform(gameId: String): Either<TurnEndActionError, Unit>
+	suspend fun perform(gameId: String): Either<TurnEndError, Unit>
 
 }

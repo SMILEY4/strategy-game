@@ -30,7 +30,7 @@ fun Route.routeJoin(joinGame: JoinGame) = post("join/{gameId}", {
                 example("GameNotFoundError", ApiResponse.failure(JoinGame.GameNotFoundError)) {
                     description = "game with given id could not be found."
                 }
-                example("UserAlreadyPlayerError", ApiResponse.failure(JoinGame.UserAlreadyPlayerError)) {
+                example("UserAlreadyPlayerError", ApiResponse.failure(JoinGame.UserAlreadyJoinedError)) {
                     description = "The user has already joined the game."
                 }
             }
@@ -44,7 +44,7 @@ fun Route.routeJoin(joinGame: JoinGame) = post("join/{gameId}", {
             is Either.Right -> ApiResponse.respondSuccess(call)
             is Either.Left -> when (result.value) {
                 JoinGame.GameNotFoundError -> ApiResponse.respondFailure(call, result.value)
-                JoinGame.UserAlreadyPlayerError -> ApiResponse.respondFailure(call, result.value)
+                JoinGame.UserAlreadyJoinedError -> ApiResponse.respondFailure(call, result.value)
             }
         }
     }

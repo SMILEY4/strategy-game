@@ -3,7 +3,7 @@ package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
 
-interface TurnSubmitAction {
+interface TurnSubmit {
 
     sealed class TurnSubmitActionError
     object NotParticipantError : TurnSubmitActionError()

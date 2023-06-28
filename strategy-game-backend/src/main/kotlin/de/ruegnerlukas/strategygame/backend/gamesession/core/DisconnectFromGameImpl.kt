@@ -37,7 +37,7 @@ class DisconnectFromGameImpl(
 
 
     /**
-     * Set all connections of the given user to "null"
+     * Clear all connections of the given user
      */
     private suspend fun clearConnections(userId: String, games: List<Game>) {
         games.forEach { game ->

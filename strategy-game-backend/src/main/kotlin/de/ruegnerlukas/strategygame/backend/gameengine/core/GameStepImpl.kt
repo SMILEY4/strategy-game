@@ -1,12 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import arrow.core.Either
+import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.CreateCityOperationData
@@ -20,7 +18,15 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerReso
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameStepError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
@@ -31,23 +37,31 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutC
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
 
-class GameStepActionImpl(
+class GameStepImpl(
     private val gameExtendedQuery: GameExtendedQuery,
     private val gameExtendedUpdate: GameExtendedUpdate,
     private val eventSystem: EventSystem,
     private val playerViewCreator: PlayerViewCreator
-) : GameStepAction {
+) : GameStep {
 
-    override suspend fun perform(gameId: String, commands: List<Command<*>>, userIds: List<String>): Map<String, GameExtendedDTO> {
-        val game = getGameState(gameId)
-        handleCommands(game, commands)
-        eventSystem.publish(TriggerGlobalUpdate, game)
-        saveGameState(game)
-        return userIds.associateWith { userId ->
-            playerViewCreator.build(userId, game)
+    private val metricId = metricCoreAction(GameStep::class)
+
+    override suspend fun perform(
+        gameId: String,
+        commands: List<Command<*>>,
+        userIds: List<String>
+    ): Either<GameStepError, Map<String, GameExtendedDTO>> {
+        return Monitoring.coTime(metricId) {
+            either {
+                val game = getGameState(gameId).bind()
+                handleCommands(game, commands)
+                handleGlobalUpdate(game)
+                saveGameState(game)
+                userIds.associateWith { userId ->
+                    playerViewCreator.build(userId, game)
+                }
+            }
         }
     }
 
@@ -55,8 +69,8 @@ class GameStepActionImpl(
     /**
      * Find and return the [GameExtended] or [GameNotFoundError] if the game does not exist
      */
-    private suspend fun getGameState(gameId: String): GameExtended {
-        return gameExtendedQuery.execute(gameId).getOrThrow()
+    private suspend fun getGameState(gameId: String): Either<GameNotFoundError, GameExtended> {
+        return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
 
@@ -148,6 +162,10 @@ class GameStepActionImpl(
                 }
             }
         }
+    }
+
+    private suspend fun handleGlobalUpdate(game: GameExtended) {
+        eventSystem.publish(TriggerGlobalUpdate, game)
     }
 
     private fun getCountryByUser(game: GameExtended, userId: String): Country {

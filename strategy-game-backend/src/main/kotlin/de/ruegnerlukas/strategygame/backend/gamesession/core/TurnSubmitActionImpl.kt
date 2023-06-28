@@ -13,13 +13,12 @@ import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.CommandResolutionFailedError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.NotParticipantError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction.TurnSubmitActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit.NotParticipantError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit.TurnSubmitActionError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
@@ -29,9 +28,9 @@ class TurnSubmitActionImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
     private val commandsInsert: CommandsInsert,
-) : TurnSubmitAction, Logging {
+) : TurnSubmit, Logging {
 
-    private val metricId = metricCoreAction(TurnSubmitAction::class)
+    private val metricId = metricCoreAction(TurnSubmit::class)
 
     override suspend fun perform(userId: String, gameId: String, commands: List<CommandData>): Either<TurnSubmitActionError, Unit> {
         return Monitoring.coTime(metricId) {
@@ -61,7 +60,7 @@ class TurnSubmitActionImpl(
     private suspend fun updatePlayerState(game: Game, userId: String): Either<TurnSubmitActionError, Unit> {
         val player = game.players.findByUserId(userId)
         return if (player != null) {
-            player.state = Player.STATE_SUBMITTED
+            player.state = PlayerState.SUBMITTED
             gameUpdate.execute(game)
             Unit.ok()
         } else {
@@ -98,13 +97,12 @@ class TurnSubmitActionImpl(
      * End turn if all players submitted their commands (none in state "playing")
      */
     private suspend fun maybeEndTurn(game: Game) {
-        val countPlaying = game.players.count { it.state == Player.STATE_PLAYING && it.connectionId != null }
+        val countPlaying = game.players.count { it.state == PlayerState.PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
             val result = actionEndTurn.perform(game.gameId)
             if (result is Err) {
                 when (result.value) {
                     GameNotFoundError -> throw Exception("Could not find game ${game.gameId} when ending turn")
-                    CommandResolutionFailedError -> throw Exception("Could not resolve turn for game ${game.gameId}")
                 }
             }
         }

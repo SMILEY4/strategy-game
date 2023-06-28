@@ -154,7 +154,6 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
         }
     }
 
-
     /**
      * Get the document with the given key from the given collection as the given type.
      * @return the document or [DocumentNotFoundError] if the document does not exist

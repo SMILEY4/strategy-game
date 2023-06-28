@@ -7,24 +7,27 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.utils.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.common.utils.err
+import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializePlayerAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializePlayer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.GameJoinActionErrors
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.UserAlreadyPlayerError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame.UserAlreadyJoinedError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
 
 class JoinGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
-    private val initializePlayer: InitializePlayerAction
+    private val initializePlayer: InitializePlayer
 ) : JoinGame, Logging {
 
     private val metricId = metricCoreAction(JoinGame::class)
+
 
     override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
         return Monitoring.coTime(metricId) {
@@ -33,7 +36,7 @@ class JoinGameImpl(
                 val game = findGame(gameId).bind()
                 validate(game, userId).bind()
                 createPlayer(game, userId)
-                initializePlayer.perform(gameId, userId, COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size])
+                initializePlayer(game, userId)
             }
         }
     }
@@ -48,11 +51,11 @@ class JoinGameImpl(
 
 
     /**
-     * Validate whether the given user can join the given game. Return nothing or an [UserAlreadyPlayerError]
+     * Validate whether the given user can join the given game. Return nothing or an [UserAlreadyJoinedError]
      */
-    private fun validate(game: Game, userId: String): Either<UserAlreadyPlayerError, Unit> {
+    private fun validate(game: Game, userId: String): Either<UserAlreadyJoinedError, Unit> {
         return if (game.players.existsByUserId(userId)) {
-            UserAlreadyPlayerError.err()
+            UserAlreadyJoinedError.err()
         } else {
             Unit.ok()
         }
@@ -67,10 +70,18 @@ class JoinGameImpl(
             Player(
                 userId = userId,
                 connectionId = null,
-                state = Player.STATE_PLAYING,
+                state = PlayerState.PLAYING,
             )
         )
         gameUpdate.execute(game)
+    }
+
+
+    /**
+     * Create the necessary data in the game-world
+     */
+    private suspend fun initializePlayer(game: Game, userId: String) {
+        initializePlayer.perform(game.gameId, userId, COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size]).getOrThrow()
     }
 
 }

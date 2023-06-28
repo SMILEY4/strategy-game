@@ -3,9 +3,9 @@ package de.ruegnerlukas.strategygame.backend.testutils
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializePlayerActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializePlayerImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
@@ -40,10 +40,11 @@ import de.ruegnerlukas.strategygame.backend.gamesession.core.ListGamesImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.DiscoverMapAreaImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExistsQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
@@ -132,9 +133,10 @@ data class TestActions(
         private fun gameCreateAction(database: ArangoDatabase) =
             CreateGameImpl(
                 GameInsertImpl(database),
-                InitializeWorldActionImpl(
+                InitializeWorldImpl(
                     WorldBuilderImpl(),
-                    TilesInsertImpl(database)
+                    TilesInsertImpl(database),
+                    GameExistsQueryImpl(database)
                 )
             )
 
@@ -142,14 +144,16 @@ data class TestActions(
             JoinGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                InitializePlayerActionImpl(
+                InitializePlayerImpl(
                     GameConfig.default(),
                     CountryInsertImpl(database),
                     TilesQueryByGameImpl(database),
-                    UncoverMapAreaActionImpl(
+                    DiscoverMapAreaImpl(
                         TilesQueryByGameAndPositionImpl(database),
-                        TilesUpdateImpl(database)
-                    )
+                        TilesUpdateImpl(database),
+                        GameExistsQueryImpl(database)
+                    ),
+                    GameExistsQueryImpl(database)
                 )
             )
 
@@ -170,7 +174,7 @@ data class TestActions(
                     CommandsByGameQueryImpl(database),
                     GameQueryImpl(database),
                     GameUpdateImpl(database),
-                    GameStepActionImpl(
+                    GameStepImpl(
                         GameExtendedQueryImpl(database),
                         GameExtendedUpdateImpl(database),
                         eventSystem,
@@ -201,7 +205,7 @@ data class TestActions(
                 CommandsByGameQueryImpl(database),
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                GameStepActionImpl(
+                GameStepImpl(
                     GameExtendedQueryImpl(database),
                     GameExtendedUpdateImpl(database),
                     eventSystem,

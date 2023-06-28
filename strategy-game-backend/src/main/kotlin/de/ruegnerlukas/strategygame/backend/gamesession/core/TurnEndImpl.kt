@@ -5,15 +5,16 @@ import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
+import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage.Companion.GameStatePayload
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.TurnEndActionError
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.TurnEndError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
@@ -22,13 +23,13 @@ class TurnEndImpl(
     private val commandsByGameQuery: CommandsByGameQuery,
     private val queryGame: GameQuery,
     private val updateGame: GameUpdate,
-    private val gameStepAction: GameStepAction,
+    private val gameStepAction: GameStep,
     private val producer: MessageProducer
 ) : TurnEnd, Logging {
 
     private val metricId = metricCoreAction(TurnEnd::class)
 
-    override suspend fun perform(gameId: String): Either<TurnEndActionError, Unit> {
+    override suspend fun perform(gameId: String): Either<TurnEndError, Unit> {
         return Monitoring.coTime(metricId) {
             log().info("End turn of game $gameId")
             either {
@@ -55,7 +56,7 @@ class TurnEndImpl(
      */
     private suspend fun stepGame(game: Game): Map<String, Any> {
         val commands = commandsByGameQuery.execute(game.gameId, game.turn)
-        return gameStepAction.perform(game.gameId, commands, getConnectedUsers(game))
+        return gameStepAction.perform(game.gameId, commands, getConnectedUsers(game)).getOrThrow()
     }
 
 
@@ -75,7 +76,7 @@ class TurnEndImpl(
     private fun updateGameInfo(game: Game) {
         game.turn = game.turn + 1
         game.players.forEach { player ->
-            player.state = Player.STATE_PLAYING
+            player.state = PlayerState.PLAYING
         }
     }
 

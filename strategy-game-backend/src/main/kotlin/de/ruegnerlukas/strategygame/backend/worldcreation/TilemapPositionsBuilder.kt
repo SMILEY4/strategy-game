@@ -138,9 +138,7 @@ class TilemapPositionsBuilder {
 
 
 	private fun positions(factory: (MutableList<TilePosition>) -> Unit): List<TilePosition> {
-		val positions = mutableListOf<TilePosition>()
-		factory(positions)
-		return positions
+		return mutableListOf<TilePosition>().also(factory)
 	}
 
 }
