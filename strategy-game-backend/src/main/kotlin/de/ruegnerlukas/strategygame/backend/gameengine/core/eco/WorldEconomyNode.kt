@@ -7,7 +7,6 @@ import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNodeStorage
 import de.ruegnerlukas.strategygame.backend.economy.core.data.BlockingEconomyNodeStorageImpl
 import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProvinceNetwork
 
 class WorldEconomyNode(
     val game: GameExtended,

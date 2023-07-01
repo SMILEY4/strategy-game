@@ -18,11 +18,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerReso
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameNotFoundError
@@ -92,9 +88,9 @@ class GameStepImpl(
                         TriggerResolveCreateCity,
                         CreateCityOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
+                            country = game.findCountryByUser(typedCommand.userId),
                             targetName = typedCommand.data.name,
-                            targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
                             withNewProvince = typedCommand.data.withNewProvince,
                         )
                     )
@@ -105,8 +101,8 @@ class GameStepImpl(
                         TriggerResolvePlaceMarker,
                         PlaceMarkerOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
                         )
                     )
                 }
@@ -116,8 +112,8 @@ class GameStepImpl(
                         TriggerResolvePlaceScout,
                         PlaceScoutOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
                         )
                     )
                 }
@@ -127,8 +123,8 @@ class GameStepImpl(
                         TriggerResolveAddProductionQueueEntry,
                         AddProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            city = getCity(game, typedCommand.data.cityId),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            city = game.findCity(typedCommand.data.cityId),
                             entry = BuildingProductionQueueEntryData(
                                 buildingType = typedCommand.data.buildingType
                             )
@@ -141,8 +137,8 @@ class GameStepImpl(
                         TriggerResolveAddProductionQueueEntry,
                         AddProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            city = getCity(game, typedCommand.data.cityId),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            city = game.findCity(typedCommand.data.cityId),
                             entry = SettlerProductionQueueEntryData()
                         )
                     )
@@ -153,9 +149,9 @@ class GameStepImpl(
                         TriggerResolveRemoveProductionQueueEntry,
                         RemoveProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            province = getProvince(game, typedCommand.data.cityId),
-                            city = getCity(game, typedCommand.data.cityId),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            province = game.findProvinceByCity(typedCommand.data.cityId),
+                            city = game.findCity(typedCommand.data.cityId),
                             entryId = typedCommand.data.queueEntryId
                         )
                     )
@@ -166,22 +162,6 @@ class GameStepImpl(
 
     private suspend fun handleGlobalUpdate(game: GameExtended) {
         eventSystem.publish(TriggerGlobalUpdate, game)
-    }
-
-    private fun getCountryByUser(game: GameExtended, userId: String): Country {
-        return game.countries.find { it.userId == userId } ?: throw Exception("Could not find country with user-id $userId")
-    }
-
-    private fun getTile(game: GameExtended, q: Int, r: Int): Tile {
-        return game.tiles.get(q, r) ?: throw Exception("Could not find tile at $q,$r")
-    }
-
-    private fun getProvince(game: GameExtended, cityId: String): Province {
-        return game.provinces.find { it.cityIds.contains(cityId) } ?: throw Exception("Could not find province for city with id $cityId")
-    }
-
-    private fun getCity(game: GameExtended, cityId: String): City {
-        return game.cities.find { it.cityId == cityId } ?: throw Exception("Could not find city with id $cityId")
     }
 
 }

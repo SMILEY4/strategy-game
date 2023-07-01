@@ -20,8 +20,8 @@ class GENRemoveProductionQueueEntry(private val gameConfig: GameConfig, eventSys
             trigger(GENValidateRemoveProductionQueueEntry.Definition.after())
             action { data ->
                 log().debug("Canceling production-queue-entry ${data.entryId} in city ${data.city.cityId}")
-                val entry = getEntry(data.city, data.entryId)
-                entry?.also { removeEntry(data.city, data.province, it) }
+                val entry = data.city.findProductionQueueEntry(data.entryId)
+                removeEntry(data.city, data.province, entry)
                 eventResultOk(Unit)
             }
         }
@@ -32,10 +32,6 @@ class GENRemoveProductionQueueEntry(private val gameConfig: GameConfig, eventSys
             entry.collectedResources.copy().scale(gameConfig.productionQueueRefundPercentage)
         )
         city.productionQueue.remove(entry)
-    }
-
-    private fun getEntry(city: City, entryId: String): ProductionQueueEntry? {
-        return city.productionQueue.find { it.entryId == entryId }
     }
 
 }

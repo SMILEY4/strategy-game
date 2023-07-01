@@ -10,4 +10,10 @@ data class Tile(
     var owner: TileOwner?,
     val discoveredByCountries: MutableList<String>,
     val content: MutableList<TileContent>
-)
+) {
+
+    inline fun <reified T : TileContent> findContent(): List<T> = content.filterIsInstance<T>()
+
+    inline fun <reified T : TileContent> findOneContent(): T? = findContent<T>().firstOrNull()
+
+}

@@ -55,9 +55,7 @@ class GENUpdateProductionQueue(private val eventSystem: EventSystem) : Logging {
     }
 
     private fun apply(game: GameExtended, city: City, entry: SettlerProductionQueueEntry) {
-        game.countries.find { it.countryId == city.countryId }?.also { country ->
-            country.availableSettlers++
-        }
+        city.findCountry(game).availableSettlers++
     }
 
     private fun addMagicResources(queueEntry: ProductionQueueEntry) {

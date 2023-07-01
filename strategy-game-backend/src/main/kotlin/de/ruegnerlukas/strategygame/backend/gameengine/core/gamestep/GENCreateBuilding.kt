@@ -43,7 +43,7 @@ class GENCreateBuilding(eventSystem: EventSystem) : Logging {
             return positionsCircle(city.tile, 1)
                 .asSequence()
                 .filter { !isSameTile(city, it) }
-                .mapNotNull { getTile(game, it) }
+                .mapNotNull { game.findTileOrNull(it) }
                 .filter { isTileFreeForBuilding(it, city) }
                 .filter { hasRequiredResource(it, buildingType) }
                 .toList()
@@ -54,10 +54,6 @@ class GENCreateBuilding(eventSystem: EventSystem) : Logging {
 
     private fun isSameTile(city: City, pos: TilePosition): Boolean {
         return city.tile.q == pos.q && city.tile.r == pos.r
-    }
-
-    private fun getTile(game: GameExtended, pos: TilePosition): Tile? {
-        return game.tiles.get(pos)
     }
 
     private fun isTileFreeForBuilding(tile: Tile, city: City): Boolean {

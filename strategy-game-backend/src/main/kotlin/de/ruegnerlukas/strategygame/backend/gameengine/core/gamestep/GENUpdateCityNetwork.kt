@@ -42,7 +42,7 @@ class GENUpdateCityNetwork(
         return if (city.isProvinceCapital) {
             city
         } else {
-            game.cities.find { it.cityId == province.provinceCapitalCityId } ?: throw Exception("City not found")
+            province.findCapitalCity(game)
         }
     }
 

@@ -47,7 +47,7 @@ class GENUpdateScoutLifetime(
     }
 
     private fun getScoutOrNull(tile: Tile): Pair<Tile, ScoutTileContent>? {
-        return tile.content.find { it is ScoutTileContent }?.let { tile to it as ScoutTileContent }
+        return tile.findOneContent<ScoutTileContent>()?.let { tile to it }
     }
 
     private fun handleScout(

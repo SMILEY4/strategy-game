@@ -12,4 +12,12 @@ data class Province(
     var resourcesProducedCurrTurn: ResourceCollection = ResourceCollection.basic(),
     var resourcesConsumedCurrTurn: ResourceCollection = ResourceCollection.basic(),
     var resourcesMissing: ResourceCollection = ResourceCollection.basic(),
-)
+) {
+
+    fun findCountry(game: GameExtended): Country = game.findCountry(countryId)
+
+    fun findCities(game: GameExtended): List<City>  = cityIds.map { game.findCity(it) }
+
+    fun findCapitalCity(game: GameExtended): City = game.findCity(provinceCapitalCityId)
+
+}

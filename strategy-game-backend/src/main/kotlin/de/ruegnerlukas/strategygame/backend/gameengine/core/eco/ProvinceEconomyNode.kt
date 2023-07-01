@@ -23,7 +23,7 @@ class ProvinceEconomyNode(
     private val storage = EconomyNodeStorageImpl(province.resourcesProducedPrevTurn)
 
     private val entities = mutableListOf<EconomyEntity>().also { entities ->
-        province.cityIds.map { cityId -> game.cities.find { it.cityId == cityId }!! }.forEach { city ->
+        province.findCities(game).forEach { city ->
             entities.add(PopulationBaseEconomyEntity(this, city, popFoodConsumption))
             if (enablePopGrowthEntity) {
                 entities.add(PopulationGrowthEconomyEntity(this, city, config))

@@ -76,7 +76,7 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
 
     private fun addToExistingProvince(game: GameExtended, city: City, targetTile: Tile): Province {
         val provinceId = targetTile.owner?.provinceId ?: throw Exception("No province is owning target tile")
-        val province = game.provinces.find { it.provinceId == provinceId } ?: throw Exception("Promise could not be found")
+        val province = game.findProvince(provinceId)
         return province.also { it.cityIds.add(city.cityId) }
     }
 

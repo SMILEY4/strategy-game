@@ -1,4 +1,8 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.ports.models
+package de.ruegnerlukas.strategygame.backend.gameengine.core.eco
+
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
 
 class ProvinceNetwork {
 
@@ -7,8 +11,8 @@ class ProvinceNetwork {
         fun networksFrom(game: GameExtended): List<ProvinceNetwork> {
             val networks = mutableListOf<ProvinceNetwork>()
             game.routes.forEach { route ->
-                val provinceA = getProvince(game, route.cityIdA)
-                val provinceB = getProvince(game, route.cityIdB)
+                val provinceA = game.findProvinceByCity(route.cityIdA)
+                val provinceB = game.findProvinceByCity(route.cityIdB)
                 val networkA = findNetwork(networks, provinceA)
                 val networkB = findNetwork(networks, provinceB)
                 // both cities "a" and "b" do not exist an any network
@@ -38,10 +42,6 @@ class ProvinceNetwork {
                 }
             }
             return networks
-        }
-
-        private fun getProvince(game: GameExtended, cityId: String): Province {
-            return game.provinces.find { it.cityIds.contains(cityId) } ?: throw Exception("Could not find province by city")
         }
 
         private fun findNetwork(networks: Collection<ProvinceNetwork>, province: Province): ProvinceNetwork? {

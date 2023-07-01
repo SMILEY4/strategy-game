@@ -35,7 +35,7 @@ class GENUpdateCityInfluence(private val gameConfig: GameConfig, eventSystem: Ev
     private fun getAffectedTiles(game: GameExtended, city: City): List<Tile> {
         val tiles = mutableListOf<Tile>()
         positionsCircle(city.tile, gameConfig.cityMaxRange) { q, r ->
-            game.tiles.get(q, r)?.also { tiles.add(it) }
+            game.findTileOrNull(q, r)?.also { tiles.add(it) }
         }
         return tiles
     }
@@ -43,7 +43,7 @@ class GENUpdateCityInfluence(private val gameConfig: GameConfig, eventSystem: Ev
     private fun updateTile(game: GameExtended, tile: Tile) {
         tile.influences.clear()
         game.cities.forEach { city ->
-            val province = getProvince(game, city.cityId)
+            val province = city.findProvince(game)
             updateTileInfluences(tile, city, province)
         }
     }
@@ -70,10 +70,6 @@ class GENUpdateCityInfluence(private val gameConfig: GameConfig, eventSystem: Ev
 
     private fun calcInfluence(distance: Int, spread: Float, amount: Float): Double {
         return max((-(distance.toDouble() / spread) + 1) * amount, 0.0)
-    }
-
-    private fun getProvince(game: GameExtended, cityId: String): Province {
-        return game.provinces.find { it.cityIds.contains(cityId) }!!
     }
 
 }
