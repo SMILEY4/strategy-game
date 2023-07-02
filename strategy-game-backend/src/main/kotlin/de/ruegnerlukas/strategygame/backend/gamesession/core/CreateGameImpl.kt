@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializeWorld
@@ -17,10 +17,10 @@ class CreateGameImpl(
     private val initializeWorld: InitializeWorld
 ) : CreateGame, Logging {
 
-    private val metricId = metricCoreAction(CreateGame::class)
+    private val metricId = MetricId.action(CreateGame::class)
 
     override suspend fun perform(worldSettings: WorldSettings): String {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             log().info("Creating new game with seed ${worldSettings.seed}")
             val gameId = createGame()
             initializeWorld(gameId, worldSettings)

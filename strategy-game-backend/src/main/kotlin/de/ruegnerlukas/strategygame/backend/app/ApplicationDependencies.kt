@@ -2,8 +2,9 @@ package de.ruegnerlukas.strategygame.backend.app
 
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MicrometerMonitoringService
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringServiceImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepImpl
@@ -122,7 +123,7 @@ val applicationDependencies = module {
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
-    single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
+    single<MonitoringService> { MicrometerMonitoringService(get()).also { Monitoring.service = it } }
     single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
 
     single<CreateUser> { CreateUserImpl(get()) }

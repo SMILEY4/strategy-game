@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.trackingListOf
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
@@ -25,10 +25,10 @@ class InitializeWorldImpl(
     private val gameExistsQuery: GameExistsQuery
 ) : InitializeWorld {
 
-    private val metricId = metricCoreAction(InitializeWorld::class)
+    private val metricId = MetricId.action(InitializeWorld::class)
 
     override suspend fun perform(gameId: String, worldSettings: WorldSettings): Either<InitializeWorldError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             either {
                 validateGame(gameId).bind()
                 val tiles = buildTiles(worldSettings)

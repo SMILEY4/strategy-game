@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
@@ -24,10 +24,10 @@ class DiscoverMapAreaImpl(
     private val gameExistsQuery: GameExistsQuery
 ) : DiscoverMapArea, Logging {
 
-    private val metricId = metricCoreAction(DiscoverMapArea::class)
+    private val metricId = MetricId.action(DiscoverMapArea::class)
 
     override suspend fun perform(countryId: String, gameId: String, center: TilePosition, radius: Int): Either<DiscoverMapAreaError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             either {
                 validateGame(gameId).bind()
                 val tiles = findTiles(gameId, positionsCircle(center, radius)).bind()
@@ -41,12 +41,13 @@ class DiscoverMapAreaImpl(
      * Check if the game with the given id exists
      */
     private suspend fun validateGame(gameId: String): Either<GameNotFoundError, Unit> {
-        return if(gameExistsQuery.perform(gameId)) {
+        return if (gameExistsQuery.perform(gameId)) {
             Unit.ok()
         } else {
             GameNotFoundError.err()
         }
     }
+
 
     /**
      * Find all tiles with the given positions

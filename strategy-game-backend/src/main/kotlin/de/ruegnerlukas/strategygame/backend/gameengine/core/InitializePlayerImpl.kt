@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.common.utils.err
@@ -27,11 +27,11 @@ class InitializePlayerImpl(
     private val gameExistsQuery: GameExistsQuery
 ) : InitializePlayer {
 
-    private val metricId = metricCoreAction(InitializePlayer::class)
+    private val metricId = MetricId.action(InitializePlayer::class)
 
 
     override suspend fun perform(gameId: String, userId: String, color: RGBColor): Either<InitializePlayerError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             either {
                 validateGame(gameId).bind()
                 val countryId = createCountry(gameId, userId, color)
@@ -41,11 +41,12 @@ class InitializePlayerImpl(
 
     }
 
+
     /**
      * Check if the game with the given id exists
      */
     private suspend fun validateGame(gameId: String): Either<GameNotFoundError, Unit> {
-        return if(gameExistsQuery.perform(gameId)) {
+        return if (gameExistsQuery.perform(gameId)) {
             Unit.ok()
         } else {
             GameNotFoundError.err()

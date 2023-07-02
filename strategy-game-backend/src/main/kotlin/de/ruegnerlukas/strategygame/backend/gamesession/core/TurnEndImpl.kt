@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
@@ -27,10 +27,10 @@ class TurnEndImpl(
     private val producer: MessageProducer
 ) : TurnEnd, Logging {
 
-    private val metricId = metricCoreAction(TurnEnd::class)
+    private val metricId = MetricId.action(TurnEnd::class)
 
     override suspend fun perform(gameId: String): Either<TurnEndError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             log().info("End turn of game $gameId")
             either {
                 val game = findGame(gameId).bind()

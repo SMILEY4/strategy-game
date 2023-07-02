@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.getOrElse
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.utils.Err
 import de.ruegnerlukas.strategygame.backend.common.utils.err
@@ -30,10 +30,10 @@ class TurnSubmitActionImpl(
     private val commandsInsert: CommandsInsert,
 ) : TurnSubmit, Logging {
 
-    private val metricId = metricCoreAction(TurnSubmit::class)
+    private val metricId = MetricId.action(TurnSubmit::class)
 
     override suspend fun perform(userId: String, gameId: String, commands: Collection<CommandData>): Either<TurnSubmitActionError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             log().info("user $userId submits ${commands.size} commands for game $gameId")
             either {
                 val game = getGame(gameId)

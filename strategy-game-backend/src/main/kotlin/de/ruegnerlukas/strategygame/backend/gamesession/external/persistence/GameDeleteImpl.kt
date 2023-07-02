@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.utils.parallelIO
@@ -9,10 +9,10 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameDelet
 
 class GameDeleteImpl(private val database: ArangoDatabase) : GameDelete {
 
-    private val metricId = metricDbQuery(GameDelete::class)
+    private val metricId = MetricId.query(GameDelete::class)
 
     override suspend fun execute(gameId: String) {
-        Monitoring.coTime(metricId) {
+        time(metricId) {
             parallelIO(
                 { deleteGame(gameId) },
                 { deleteCountries(gameId) },

@@ -2,15 +2,8 @@ package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
 
 import arrow.core.Either
 import arrow.core.continuations.either
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameMeta
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
@@ -20,18 +13,25 @@ import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.parallelIO
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CountryEntity
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.GameEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.RouteEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.TileEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameMeta
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.GameEntity
 
 class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtendedUpdate {
 
-    private val metricId = metricDbQuery(GameExtendedUpdate::class)
+    private val metricId = MetricId.query(GameExtendedUpdate::class)
 
     override suspend fun execute(game: GameExtended): Either<EntityNotFoundError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             either {
                 val gameId = game.meta.gameId
                 updateGame(game.meta).bind()

@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.utils.COUNTRY_COLORS
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
@@ -26,11 +26,11 @@ class JoinGameImpl(
     private val initializePlayer: InitializePlayer
 ) : JoinGame, Logging {
 
-    private val metricId = metricCoreAction(JoinGame::class)
+    private val metricId = MetricId.action(JoinGame::class)
 
 
     override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             log().info("Joining game $gameId as user $userId)")
             either {
                 val game = findGame(gameId).bind()

@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.CreateCityOperationData
@@ -41,14 +41,14 @@ class GameStepImpl(
     private val playerViewCreator: PlayerViewCreator
 ) : GameStep {
 
-    private val metricId = metricCoreAction(GameStep::class)
+    private val metricId = MetricId.action(GameStep::class)
 
     override suspend fun perform(
         gameId: String,
         commands: Collection<Command<*>>,
         userIds: Collection<String>
     ): Either<GameStepError, Map<String, GameExtendedDTO>> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             either {
                 val game = getGameState(gameId).bind()
                 handleCommands(game, commands)

@@ -9,6 +9,9 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileCo
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlerProductionQueueEntry
@@ -35,21 +38,19 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTOInfluence
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTOOwner
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTOVisibility
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 
 
 class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
 
-    private val metricId = metricCoreAction(GameExtendedDTOCreator::class)
+    private val metricId = MetricId.action(GameExtendedDTOCreator::class)
 
     private val unknownCountryId = "?"
     private val unknownProvinceId = "?"
     private val unknownCityId = "?"
 
     fun create(userId: String, game: GameExtended): GameExtendedDTO {
-        return Monitoring.time(metricId) {
+        return time(metricId) {
             val playerCountry = game.countries.first { it.userId == userId }
             val knownCountryIds = getKnownCountryIds(playerCountry.countryId, game.tiles).toSet()
 

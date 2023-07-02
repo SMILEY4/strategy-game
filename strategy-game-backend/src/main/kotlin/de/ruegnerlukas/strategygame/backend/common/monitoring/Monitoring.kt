@@ -1,26 +1,21 @@
 package de.ruegnerlukas.strategygame.backend.common.monitoring
 
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.MetricId
-import org.koin.java.KoinJavaComponent.inject
-
 object Monitoring {
 
-    var enabled = true
+    lateinit var service: MonitoringService
 
-    val monitoring: MonitoringService
-        get() = if (enabled) inject<MonitoringService>(MonitoringService::class.java).value else NoOpMonitoringService()
+    inline fun <T> time(id: MetricId, block: () -> T): T {
+        val ts = service.currentTime()
+        try {
+            return block()
+        } finally {
+            val te = service.currentTime()
+            service.recordTimer(id, te - ts)
+        }
+    }
 
-    fun count(id: MetricId, amount: Number) = monitoring.count(id, amount)
-
-    fun <T> time(id: MetricId, block: () -> T) = monitoring.time(id, block)
-
-    suspend fun <T> coTime(id: MetricId, block: suspend () -> T) = monitoring.coTime(id, block)
-
-    fun gauge(id: MetricId, block: () -> Number) = monitoring.gauge(id, block)
-
-    fun summary(id: MetricId, amount: Number) = monitoring.summary(id, amount)
-
-
-
+    fun gauge(id: MetricId, block: () -> Number) {
+        service.recordGauge(id, block)
+    }
 
 }

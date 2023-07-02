@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
@@ -27,11 +27,11 @@ class ConnectToGameImpl(
     private val producer: MessageProducer
 ) : ConnectToGame, Logging {
 
-    private val metricId = metricCoreAction(ConnectToGame::class)
+    private val metricId = MetricId.action(ConnectToGame::class)
 
 
     override suspend fun perform(userId: String, gameId: String, connectionId: Long): Either<GameConnectActionError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             log().info("Connect user $userId ($connectionId) to game $gameId")
             either {
                 val game = findGame(gameId).bind()
