@@ -11,7 +11,7 @@ import java.lang.Float.min
 class ConsumptionEntityUpdateService: Logging {
 
     fun update(entity: EconomyEntity, currentNode: EconomyNode) {
-        if (entity.allowPartialConsumption()) {
+        if (entity.allowPartialInput()) {
             updatePartial(entity, currentNode)
         } else {
             updateFixed(entity, currentNode)
@@ -19,10 +19,10 @@ class ConsumptionEntityUpdateService: Logging {
     }
 
     private fun updatePartial(entity: EconomyEntity, currentNode: EconomyNode) {
-        if (allResourcesAvailable(currentNode, entity.getRequires())) {
+        if (allResourcesAvailable(currentNode, entity.getRequiredInput())) {
             updateFixed(entity, currentNode)
         } else {
-            entity.getRequires().forEach { requiredType, requiredAmount ->
+            entity.getRequiredInput().forEach { requiredType, requiredAmount ->
                 val amountAvailable = currentNode.getStorage().getAvailable(requiredType)
                 val amountPossible = min(requiredAmount, amountAvailable)
                 provideResources(entity, currentNode, requiredType, amountPossible)
@@ -32,9 +32,9 @@ class ConsumptionEntityUpdateService: Logging {
     }
 
     private fun updateFixed(entity: EconomyEntity, currentNode: EconomyNode) {
-        if (allResourcesAvailable(currentNode, entity.getRequires())) {
-            provideResources(entity, currentNode, entity.getRequires())
-            log().debug("[eco-update] $entity in node $currentNode consumed ${entity.getRequires().toList()}")
+        if (allResourcesAvailable(currentNode, entity.getRequiredInput())) {
+            provideResources(entity, currentNode, entity.getRequiredInput())
+            log().debug("[eco-update] $entity in node $currentNode consumed ${entity.getRequiredInput().toList()}")
         }
     }
 
@@ -43,7 +43,7 @@ class ConsumptionEntityUpdateService: Logging {
         if (currentNode != entity.getNode()) {
             entity.getNode().getStorage().removedFromSharedStorage(resources)
         }
-        entity.provideResources(resources)
+        entity.addResources(resources)
     }
 
     private fun provideResources(entity: EconomyEntity, currentNode: EconomyNode, type: ResourceType, amount: Float) {

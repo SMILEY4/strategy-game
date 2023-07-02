@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.utils.coApply
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtilsFactory
 import io.kotest.common.runBlocking
