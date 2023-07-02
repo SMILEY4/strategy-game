@@ -5,5 +5,5 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 
 interface TilesUpdate {
-	suspend fun execute(tiles: List<Tile>, gameId: String): Either<EntityNotFoundError, Unit>
+	suspend fun execute(tiles: Collection<Tile>, gameId: String): Either<EntityNotFoundError, Unit>
 }

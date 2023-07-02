@@ -16,7 +16,7 @@ class TilesUpdateImpl(private val database: ArangoDatabase) : TilesUpdate {
 
     private val metricId = metricDbQuery(TilesUpdate::class)
 
-    override suspend fun execute(tiles: List<Tile>, gameId: String): Either<EntityNotFoundError, Unit> {
+    override suspend fun execute(tiles: Collection<Tile>, gameId: String): Either<EntityNotFoundError, Unit> {
         return Monitoring.coTime(metricId) {
             if (database.replaceDocuments(Collections.TILES, tiles.map { TileEntity.of(it, gameId) }).size == tiles.size) {
                 Unit.right()

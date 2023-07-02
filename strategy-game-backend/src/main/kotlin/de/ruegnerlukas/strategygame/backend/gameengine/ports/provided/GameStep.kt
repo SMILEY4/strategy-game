@@ -14,7 +14,7 @@ interface GameStep {
 
     suspend fun perform(
         gameId: String,
-        commands: List<Command<*>>,
-        userIds: List<String>
+        commands: Collection<Command<*>>,
+        userIds: Collection<String>
     ): Either<GameStepError, Map<String, GameExtendedDTO>>
 }

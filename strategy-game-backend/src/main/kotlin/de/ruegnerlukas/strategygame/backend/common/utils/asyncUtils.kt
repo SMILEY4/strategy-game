@@ -11,7 +11,7 @@ import kotlin.coroutines.CoroutineContext
 /**
  * Performs the given actions in parallel on the given [CoroutineContext]
  */
-suspend fun parallel(context: CoroutineContext, actions: List<suspend () -> Unit>) {
+suspend fun parallel(context: CoroutineContext, actions: Collection<suspend () -> Unit>) {
     withContext(context) {
         actions.map { launch { it.invoke() } }.joinAll()
     }

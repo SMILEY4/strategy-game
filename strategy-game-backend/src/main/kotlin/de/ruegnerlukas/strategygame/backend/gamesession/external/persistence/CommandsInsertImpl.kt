@@ -12,7 +12,7 @@ class CommandsInsertImpl(private val database: ArangoDatabase) : CommandsInsert 
 
     private val metricId = MonitoringService.metricDbQuery(CommandsInsert::class)
 
-    override suspend fun execute(commands: List<Command<*>>) {
+    override suspend fun execute(commands: Collection<Command<*>>) {
         Monitoring.coTime(metricId) {
             database.insertDocuments(Collections.COMMANDS, commands.map { CommandEntity.of(it) })
         }

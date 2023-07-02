@@ -61,7 +61,7 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
         }
     }
 
-    private suspend fun updateCountries(countries: List<Country>, gameId: String) {
+    private suspend fun updateCountries(countries: Collection<Country>, gameId: String) {
         database.insertOrReplaceDocuments(Collections.COUNTRIES, countries.map { CountryEntity.of(it, gameId) })
     }
 
@@ -69,7 +69,7 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
         database.insertOrReplaceDocuments(Collections.TILES, tiles.map { TileEntity.of(it, gameId) })
     }
 
-    private suspend fun updateCities(cities: List<City>, gameId: String) {
+    private suspend fun updateCities(cities: Collection<City>, gameId: String) {
         database.insertOrReplaceDocuments(Collections.CITIES, cities.map { CityEntity.of(it, gameId) })
     }
 
@@ -77,7 +77,7 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
         database.deleteDocuments(Collections.CITIES, cities.map { CityEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
-    private suspend fun updateProvinces(provinces: List<Province>, gameId: String) {
+    private suspend fun updateProvinces(provinces: Collection<Province>, gameId: String) {
         database.insertOrReplaceDocuments(Collections.PROVINCES, provinces.map { ProvinceEntity.of(it, gameId) })
     }
 
@@ -85,7 +85,7 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
         database.deleteDocuments(Collections.PROVINCES, provinces.map { ProvinceEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
-    private suspend fun updateRoutes(routes: List<Route>, gameId: String) {
+    private suspend fun updateRoutes(routes: Collection<Route>, gameId: String) {
         database.insertOrReplaceDocuments(Collections.ROUTES, routes.map { RouteEntity.of(it, gameId) })
     }
 

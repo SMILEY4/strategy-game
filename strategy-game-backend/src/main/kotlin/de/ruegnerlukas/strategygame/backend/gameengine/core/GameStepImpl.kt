@@ -45,8 +45,8 @@ class GameStepImpl(
 
     override suspend fun perform(
         gameId: String,
-        commands: List<Command<*>>,
-        userIds: List<String>
+        commands: Collection<Command<*>>,
+        userIds: Collection<String>
     ): Either<GameStepError, Map<String, GameExtendedDTO>> {
         return Monitoring.coTime(metricId) {
             either {
@@ -79,7 +79,7 @@ class GameStepImpl(
 
 
     @Suppress("UNCHECKED_CAST")
-    private suspend fun handleCommands(game: GameExtended, commands: List<Command<*>>) {
+    private suspend fun handleCommands(game: GameExtended, commands: Collection<Command<*>>) {
         commands.forEach { command ->
             when (command.data) {
                 is CreateCityCommandData -> {

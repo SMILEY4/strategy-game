@@ -32,7 +32,7 @@ class TurnSubmitActionImpl(
 
     private val metricId = metricCoreAction(TurnSubmit::class)
 
-    override suspend fun perform(userId: String, gameId: String, commands: List<CommandData>): Either<TurnSubmitActionError, Unit> {
+    override suspend fun perform(userId: String, gameId: String, commands: Collection<CommandData>): Either<TurnSubmitActionError, Unit> {
         return Monitoring.coTime(metricId) {
             log().info("user $userId submits ${commands.size} commands for game $gameId")
             either {
@@ -72,7 +72,7 @@ class TurnSubmitActionImpl(
     /**
      * save the given commands at the given game
      */
-    private suspend fun saveCommands(game: Game, userId: String, commands: List<CommandData>) {
+    private suspend fun saveCommands(game: Game, userId: String, commands: Collection<CommandData>) {
         commandsInsert.execute(createCommands(game, userId, commands))
     }
 
@@ -80,7 +80,7 @@ class TurnSubmitActionImpl(
     /**
      * Create commands from the given command-data
      */
-    private fun createCommands(game: Game, userId: String, commands: List<CommandData>): List<Command<*>> {
+    private fun createCommands(game: Game, userId: String, commands: Collection<CommandData>): List<Command<*>> {
         return commands.map { data ->
             Command(
                 commandId = DbId.PLACEHOLDER,

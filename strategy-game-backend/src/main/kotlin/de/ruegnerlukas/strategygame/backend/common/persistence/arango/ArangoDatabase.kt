@@ -115,7 +115,7 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * Insert the given documents into the given collection.
      * @return a [DocumentHandle]s for each successfully inserted document.
      */
-    suspend fun <T> insertDocuments(collection: String, values: List<T>): List<DocumentHandle> {
+    suspend fun <T> insertDocuments(collection: String, values: Collection<T>): List<DocumentHandle> {
         if (values.isNotEmpty()) {
             return getCollection(collection)
                 .insertDocuments(values, INSERT_OPTIONS)
@@ -143,7 +143,7 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * Insert the given document into the given collection. If a document with the same key already exists, it will be overwritten
      * @return the [DocumentHandle]s for each successfully inserted or replaced document.
      */
-    suspend fun <T> insertOrReplaceDocuments(collection: String, values: List<T>): List<DocumentHandle> {
+    suspend fun <T> insertOrReplaceDocuments(collection: String, values: Collection<T>): List<DocumentHandle> {
         if (values.isNotEmpty()) {
             return getCollection(collection)
                 .insertDocuments(values, INSERT_OR_REPLACE_OPTIONS)

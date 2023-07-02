@@ -51,7 +51,7 @@ class DiscoverMapAreaImpl(
     /**
      * Find all tiles with the given positions
      */
-    private suspend fun findTiles(gameId: String, positions: List<TilePosition>): Either<NoTilesError, List<Tile>> {
+    private suspend fun findTiles(gameId: String, positions: Collection<TilePosition>): Either<NoTilesError, List<Tile>> {
         val tiles = tilesByPosition.execute(gameId, positions)
         return if (tiles.isEmpty()) {
             NoTilesError.err()
@@ -64,7 +64,7 @@ class DiscoverMapAreaImpl(
     /**
      * Mark the given tiles as discovered by the given country and update them in the database
      */
-    private suspend fun uncoverTiles(tiles: List<Tile>, countryId: String, gameId: String) {
+    private suspend fun uncoverTiles(tiles: Collection<Tile>, countryId: String, gameId: String) {
         tiles
             .filter { !it.discoveredByCountries.contains(countryId) }
             .forEach { it.discoveredByCountries.add(countryId) }

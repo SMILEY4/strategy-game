@@ -4,5 +4,5 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 
 
 interface CommandsInsert {
-	suspend fun execute(commands: List<Command<*>>)
+	suspend fun execute(commands: Collection<Command<*>>)
 }

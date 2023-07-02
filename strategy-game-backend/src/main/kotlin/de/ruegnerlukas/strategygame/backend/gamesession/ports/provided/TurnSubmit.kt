@@ -8,6 +8,6 @@ interface TurnSubmit {
     sealed class TurnSubmitActionError
     object NotParticipantError : TurnSubmitActionError()
 
-    suspend fun perform(userId: String, gameId: String, commands: List<CommandData>): Either<TurnSubmitActionError, Unit>
+    suspend fun perform(userId: String, gameId: String, commands: Collection<CommandData>): Either<TurnSubmitActionError, Unit>
 
 }

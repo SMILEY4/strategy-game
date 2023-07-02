@@ -68,7 +68,7 @@ class GENUpdateCityNetwork(
         }
     }
 
-    private fun canCreateRoute(a: City, b: City, routes: List<Route>, maxSearchRadius: Int): Boolean {
+    private fun canCreateRoute(a: City, b: City, routes: Collection<Route>, maxSearchRadius: Int): Boolean {
         return a.isProvinceCapital
                 && b.isProvinceCapital
                 && a.cityId != b.cityId
@@ -76,7 +76,7 @@ class GENUpdateCityNetwork(
                 && !routeAlreadyExists(a, b, routes)
     }
 
-    private fun routeAlreadyExists(a: City, b: City, routes: List<Route>): Boolean {
+    private fun routeAlreadyExists(a: City, b: City, routes: Collection<Route>): Boolean {
         return routes.any {
             (it.cityIdA == a.cityId && it.cityIdB == b.cityId) || (it.cityIdA == b.cityId && it.cityIdB == a.cityId)
         }

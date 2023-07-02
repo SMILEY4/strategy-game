@@ -278,7 +278,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
         )
     }
 
-    private fun knowsRoute(route: Route, cityDTOs: List<CityDTO>): Boolean {
+    private fun knowsRoute(route: Route, cityDTOs: Collection<CityDTO>): Boolean {
         val cityA = cityDTOs.find { it.cityId == route.cityIdA }
         val cityB = cityDTOs.find { it.cityId == route.cityIdA }
         return cityA != null && cityB != null

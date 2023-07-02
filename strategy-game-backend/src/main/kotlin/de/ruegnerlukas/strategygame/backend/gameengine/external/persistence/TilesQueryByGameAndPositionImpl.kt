@@ -13,7 +13,7 @@ class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : Ti
 
     private val metricId = metricDbQuery(TilesQueryByGameAndPosition::class)
 
-    override suspend fun execute(gameId: String, positions: List<TilePosition>): List<Tile> {
+    override suspend fun execute(gameId: String, positions: Collection<TilePosition>): List<Tile> {
         return Monitoring.coTime(metricId) {
             database.assertCollections(Collections.TILES)
             database.query(
@@ -29,7 +29,7 @@ class TilesQueryByGameAndPositionImpl(private val database: ArangoDatabase) : Ti
         }
     }
 
-    private fun strPos(positions: List<TilePosition>): String {
+    private fun strPos(positions: Collection<TilePosition>): String {
         return positions.joinToString(separator = ",") { "{q: ${it.q}, r: ${it.r}}" }.let { "[$it]" }
     }
 
