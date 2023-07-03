@@ -12,7 +12,7 @@ class BuildingEconomyEntity(
     val building: Building,
 ) : BasicEconomyEntity(
     owner = owner,
-    priority = if (city.isProvinceCapital) 1.5f else 1f,
+    priority = if (city.meta.isProvinceCapital) 1.5f else 1f,
     resourcesInput = ResourceCollection.basic(building.type.templateData.requires),
     resourcesOutput = ResourceCollection.basic(building.type.templateData.produces),
     active = fulfillsTileRequirement(building),

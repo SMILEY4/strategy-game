@@ -21,10 +21,10 @@ class GENValidateAddProductionQueueEntry(private val gameConfig: GameConfig, eve
                         data.city.countryId == data.country.countryId
                     }
                     mustBeTrue("ADD_PRODUCTION_QUEUE_ENTRY.BUILDING.CITY_SPACE") {
-                        if (data.city.isProvinceCapital) {
-                            (gameConfig.cityBuildingSlots - data.city.buildings.size) > 0
+                        if (data.city.meta.isProvinceCapital) {
+                            (gameConfig.cityBuildingSlots - data.city.infrastructure.buildings.size) > 0
                         } else {
-                            (gameConfig.townBuildingSlots - data.city.buildings.size) > 0
+                            (gameConfig.townBuildingSlots - data.city.infrastructure.buildings.size) > 0
                         }
                     }
                 }

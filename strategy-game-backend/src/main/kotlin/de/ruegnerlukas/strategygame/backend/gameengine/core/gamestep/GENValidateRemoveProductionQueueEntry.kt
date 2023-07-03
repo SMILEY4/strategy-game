@@ -20,7 +20,7 @@ class GENValidateRemoveProductionQueueEntry(eventSystem: EventSystem) : Logging 
                         data.city.countryId == data.country.countryId
                     }
                     mustBeTrue("REMOVE_PRODUCTION_QUEUE_ENTRY.ENTRY_ID") {
-                        data.city.productionQueue.filter { it.entryId == data.entryId }.size == 1
+                        data.city.infrastructure.productionQueue.filter { it.entryId == data.entryId }.size == 1
                     }
                 }
                 if (result.isInvalid()) {

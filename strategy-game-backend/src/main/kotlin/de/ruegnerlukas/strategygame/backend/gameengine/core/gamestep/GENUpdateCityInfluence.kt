@@ -49,8 +49,8 @@ class GENUpdateCityInfluence(private val gameConfig: GameConfig, eventSystem: Ev
     }
 
     private fun updateTileInfluences(tile: Tile, city: City, province: Province) {
-        val influenceSpread = if (city.isProvinceCapital) gameConfig.cityInfluenceSpread else gameConfig.townInfluenceSpread
-        val influenceAmount = if (city.isProvinceCapital) gameConfig.cityInfluenceAmount else gameConfig.townInfluenceAmount
+        val influenceSpread = if (city.meta.isProvinceCapital) gameConfig.cityInfluenceSpread else gameConfig.townInfluenceSpread
+        val influenceAmount = if (city.meta.isProvinceCapital) gameConfig.cityInfluenceAmount else gameConfig.townInfluenceAmount
         val cityInfluence = calcInfluence(tile.position.distance(city.tile), influenceSpread, influenceAmount)
         if (cityInfluence > 0) {
             addTileInfluence(tile, city, province, cityInfluence)

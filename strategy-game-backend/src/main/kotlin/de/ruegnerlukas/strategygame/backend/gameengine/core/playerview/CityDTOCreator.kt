@@ -23,13 +23,13 @@ class CityDTOCreator {
             cityId = city.cityId,
             countryId = city.countryId,
             tile = city.tile,
-            name = city.name,
-            color = city.color,
-            isProvinceCapital = city.isProvinceCapital,
-            buildings = city.buildings.map { BuildingDTO(it.type.name, it.tile, it.active) },
-            productionQueue = city.productionQueue.map { buildProductionQueueEntry(it) },
-            size = city.size,
-            growthProgress = city.growthProgress
+            name = city.meta.name,
+            color = city.meta.color,
+            isProvinceCapital = city.meta.isProvinceCapital,
+            buildings = city.infrastructure.buildings.map { BuildingDTO(it.type.name, it.tile, it.active) },
+            productionQueue = city.infrastructure.productionQueue.map { buildProductionQueueEntry(it) },
+            size = city.population.size,
+            growthProgress = city.population.growthProgress
         )
     }
 

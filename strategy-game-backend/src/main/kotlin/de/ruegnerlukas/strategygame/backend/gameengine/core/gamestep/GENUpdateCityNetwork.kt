@@ -39,7 +39,7 @@ class GENUpdateCityNetwork(
     }
 
     private fun getCapitalCity(game: GameExtended, city: City, province: Province): City {
-        return if (city.isProvinceCapital) {
+        return if (city.meta.isProvinceCapital) {
             city
         } else {
             province.findCapitalCity(game)
@@ -69,8 +69,8 @@ class GENUpdateCityNetwork(
     }
 
     private fun canCreateRoute(a: City, b: City, routes: Collection<Route>, maxSearchRadius: Int): Boolean {
-        return a.isProvinceCapital
-                && b.isProvinceCapital
+        return a.meta.isProvinceCapital
+                && b.meta.isProvinceCapital
                 && a.cityId != b.cityId
                 && a.tile.distance(b.tile) <= maxSearchRadius
                 && !routeAlreadyExists(a, b, routes)

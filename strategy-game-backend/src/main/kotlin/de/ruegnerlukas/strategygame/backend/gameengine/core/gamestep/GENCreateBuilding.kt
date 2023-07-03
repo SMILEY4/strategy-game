@@ -33,7 +33,7 @@ class GENCreateBuilding(eventSystem: EventSystem) : Logging {
     private fun addBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
         decideTargetTile(game, city, buildingType)
             .let { Building(type = buildingType, tile = it, active = false) }
-            .also { city.buildings.add(it) }
+            .also { city.infrastructure.buildings.add(it) }
     }
 
     private fun decideTargetTile(game: GameExtended, city: City, buildingType: BuildingType): TileRef? {
@@ -57,7 +57,7 @@ class GENCreateBuilding(eventSystem: EventSystem) : Logging {
     }
 
     private fun isTileFreeForBuilding(tile: Tile, city: City): Boolean {
-        return city.buildings.none { tile.tileId == it.tile?.tileId }
+        return city.infrastructure.buildings.none { tile.tileId == it.tile?.tileId }
     }
 
     private fun hasRequiredResource(tile: Tile, buildingType: BuildingType): Boolean {

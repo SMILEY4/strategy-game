@@ -28,13 +28,13 @@ class GENUpdateProductionQueue(private val eventSystem: EventSystem) : Logging {
     }
 
     private suspend fun update(game: GameExtended, city: City) {
-        city.productionQueue.firstOrNull()?.also { update(game, city, it) }
+        city.infrastructure.productionQueue.firstOrNull()?.also { update(game, city, it) }
     }
 
     private suspend fun update(game: GameExtended, city: City, queueEntry: ProductionQueueEntry) {
         if (isCompleted(queueEntry)) {
             log().debug("Complete production-queue-entry ${queueEntry.entryId}")
-            city.productionQueue.remove(queueEntry)
+            city.infrastructure.productionQueue.remove(queueEntry)
             when (queueEntry) {
                 is BuildingProductionQueueEntry -> apply(game, city, queueEntry)
                 is SettlerProductionQueueEntry -> apply(game, city, queueEntry)

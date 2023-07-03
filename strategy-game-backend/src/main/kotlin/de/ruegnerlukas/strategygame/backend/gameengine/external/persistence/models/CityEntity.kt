@@ -3,6 +3,9 @@ package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.mod
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulation
 
 class CityEntity(
     val gameId: String,
@@ -24,13 +27,13 @@ class CityEntity(
             gameId = gameId,
             countryId = serviceModel.countryId,
             tile = TileRefEntity.of(serviceModel.tile),
-            name = serviceModel.name,
-            color = ColorEntity.of(serviceModel.color),
-            isProvinceCapital = serviceModel.isProvinceCapital,
-            buildings = serviceModel.buildings.map { BuildingEntity.of(it) },
-            productionQueue = serviceModel.productionQueue.map { ProductionQueueEntryEntity.of(it) },
-            size = serviceModel.size,
-            growthProgress = serviceModel.growthProgress
+            name = serviceModel.meta.name,
+            color = ColorEntity.of(serviceModel.meta.color),
+            isProvinceCapital = serviceModel.meta.isProvinceCapital,
+            buildings = serviceModel.infrastructure.buildings.map { BuildingEntity.of(it) },
+            productionQueue = serviceModel.infrastructure.productionQueue.map { ProductionQueueEntryEntity.of(it) },
+            size = serviceModel.population.size,
+            growthProgress = serviceModel.population.growthProgress
         )
     }
 
@@ -38,13 +41,19 @@ class CityEntity(
         cityId = this.getKeyOrThrow(),
         countryId = this.countryId,
         tile = this.tile.asServiceModel(),
-        name = this.name,
-        color = this.color.toRGBColor(),
-        isProvinceCapital = this.isProvinceCapital,
-        buildings = this.buildings.map { it.asServiceModel() }.toMutableList(),
-        productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList(),
-        size = this.size,
-        growthProgress = this.growthProgress
+        meta = CityMetadata(
+            name = this.name,
+            color = this.color.toRGBColor(),
+            isProvinceCapital = this.isProvinceCapital,
+        ),
+        infrastructure = CityInfrastructure(
+            buildings = this.buildings.map { it.asServiceModel() }.toMutableList(),
+            productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList(),
+        ),
+        population = CityPopulation(
+            size = this.size,
+            growthProgress = this.growthProgress
+        )
     )
 
 }

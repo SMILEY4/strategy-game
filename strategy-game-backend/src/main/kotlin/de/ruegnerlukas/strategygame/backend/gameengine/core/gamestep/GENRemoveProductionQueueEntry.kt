@@ -31,7 +31,7 @@ class GENRemoveProductionQueueEntry(private val gameConfig: GameConfig, eventSys
         province.resourcesProducedCurrTurn.add(
             entry.collectedResources.copy().scale(gameConfig.productionQueueRefundPercentage)
         )
-        city.productionQueue.remove(entry)
+        city.infrastructure.productionQueue.remove(entry)
     }
 
 }
