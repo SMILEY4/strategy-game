@@ -5,7 +5,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.runEconomyUpdate

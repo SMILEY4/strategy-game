@@ -34,7 +34,7 @@ class GENUpdateCityTileOwnership(eventSystem: EventSystem) : Logging {
 
     private fun iterateAffectedTiles(game: GameExtended, city: City, consumer: (tile: Tile) -> Unit) {
         positionsCircle(city.tile, 1) { q, r ->
-            game.tiles.get(q, r)?.let { tile ->
+            game.findTileOrNull(q, r)?.let { tile ->
                 consumer(tile)
             }
         }

@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence
 
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricDbQuery
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
@@ -11,10 +11,10 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInser
 
 class GameInsertImpl(private val database: ArangoDatabase) : GameInsert {
 
-    private val metricId = metricDbQuery(GameInsert::class)
+    private val metricId = MetricId.query(GameInsert::class)
 
     override suspend fun execute(game: Game): String {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             insertGame(game)
         }
     }

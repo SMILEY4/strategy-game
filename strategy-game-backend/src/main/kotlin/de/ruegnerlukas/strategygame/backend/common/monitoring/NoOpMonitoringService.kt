@@ -1,31 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.common.monitoring
 
-import io.micrometer.core.instrument.MeterRegistry
-
-class NoOpMonitoringService : MonitoringService {
-
-    override fun count(id: MonitoringService.Companion.MetricId, amount: Number) {
-        // nothing to do
-    }
-
-    override fun <T> time(id: MonitoringService.Companion.MetricId, block: () -> T): T {
-        return block()
-    }
-
-    override suspend fun <T> coTime(id: MonitoringService.Companion.MetricId, block: suspend () -> T): T {
-        return block()
-    }
-
-    override fun gauge(id: MonitoringService.Companion.MetricId, block: () -> Number) {
-        // nothing to do
-    }
-
-    override fun summary(id: MonitoringService.Companion.MetricId, amount: Number) {
-        // nothing to do
-    }
-
-    override fun getRegistry(): MeterRegistry {
-        throw UnsupportedOperationException()
-    }
-
+class NoOpMonitoringService() : MonitoringService {
+    override fun currentTime(): Long = System.currentTimeMillis()
+    override fun recordTimer(id: MetricId, time: Long) = Unit
+    override fun recordCount(id: MetricId, amount: Number) = Unit
+    override fun recordGauge(id: MetricId, block: () -> Number) = Unit
+    override fun recordSummary(id: MetricId, amount: Number) = Unit
 }

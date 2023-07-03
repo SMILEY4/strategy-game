@@ -14,12 +14,12 @@ import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionNode
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionEntityUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionNodeUpdateService
 import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.BuildingEconomyEntity
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.PopulationBaseEconomyEntity
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.PopulationGrowthEconomyEntity
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProductionQueueEconomyEntity
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceEconomyNode
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.WorldEconomyNode
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.ProductionQueueEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.WorldEconomyNode
 
 /**
  * Handles turn-income and turn-expenses
@@ -68,12 +68,12 @@ class GENUpdateEconomy(
         }
         node.province.resourcesMissing = ResourceCollection.basic().also { missing ->
             node.collectEntities()
-                .filter { !it.isInactive() }
-                .forEach { entity -> missing.add(entity.getRequires()) }
+                .filter { it.isActive() }
+                .forEach { entity -> missing.add(entity.getRequiredInput()) }
         }
         node.getEntities()
             .filterIsInstance<BuildingEconomyEntity>()
-            .forEach { entity -> entity.building.active = entity.hasProduced() }
+            .forEach { entity -> entity.building.active = entity.completedOutput() }
         node.getEntities()
             .filterIsInstance<ProductionQueueEconomyEntity>()
             .forEach { entity -> entity.queueEntry.collectedResources.add(entity.getProvidedResources()) }

@@ -3,8 +3,9 @@ package de.ruegnerlukas.strategygame.backend.app
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MicrometerMonitoringService
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.utils.toDisplayString
 import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 import io.github.smiley4.ktorswaggerui.SwaggerUI
@@ -175,20 +176,22 @@ fun Application.module() {
         }
     }
     val monitoring by inject<MonitoringService>()
-    install(MicrometerMetrics) {
-        registry = monitoring.getRegistry()
-        meterBinders = listOf(
-            ClassLoaderMetrics(),
-            JvmMemoryMetrics(),
-            JvmGcMetrics(),
-            ProcessorMetrics(),
-            JvmThreadMetrics(),
-            FileDescriptorMetrics(),
-            UptimeMetrics()
-        )
-        timers { call, _ ->
-            if (call is RoutingApplicationCall) {
-                tag("route", call.route.toDisplayString())
+    if (monitoring is MicrometerMonitoringService) {
+        install(MicrometerMetrics) {
+            registry = (monitoring as MicrometerMonitoringService).getRegistry()
+            meterBinders = listOf(
+                ClassLoaderMetrics(),
+                JvmMemoryMetrics(),
+                JvmGcMetrics(),
+                ProcessorMetrics(),
+                JvmThreadMetrics(),
+                FileDescriptorMetrics(),
+                UptimeMetrics()
+            )
+            timers { call, _ ->
+                if (call is RoutingApplicationCall) {
+                    tag("route", call.route.toDisplayString())
+                }
             }
         }
     }

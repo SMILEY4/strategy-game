@@ -7,7 +7,6 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 
 /**
@@ -37,13 +36,9 @@ class GENPlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem
     private fun discoverTiles(game: GameExtended, scoutTile: Tile, countryId: String) {
         positionsCircle(scoutTile.position, gameConfig.scoutVisibilityRange)
             .asSequence()
-            .mapNotNull { findTile(game, it) }
+            .mapNotNull { game.findTileOrNull(it) }
             .filter { !hasDiscovered(countryId, it) }
             .forEach { it.discoveredByCountries.add(countryId) }
-    }
-
-    private fun findTile(game: GameExtended, pos: TilePosition): Tile? {
-        return game.tiles.get(pos)
     }
 
     private fun hasDiscovered(countryId: String, tile: Tile): Boolean {

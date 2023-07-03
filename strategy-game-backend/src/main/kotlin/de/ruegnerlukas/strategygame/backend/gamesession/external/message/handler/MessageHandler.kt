@@ -2,14 +2,14 @@ package de.ruegnerlukas.strategygame.backend.gamesession.external.message.handle
 
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.Message
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.SubmitTurnMessage
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 
 /**
  * Message-dispatcher for websocket messages
  */
 class MessageHandler(
-    private val turnSubmitAction: TurnSubmitAction
+    private val turnSubmitAction: TurnSubmit
 ) : Logging {
 
     /**

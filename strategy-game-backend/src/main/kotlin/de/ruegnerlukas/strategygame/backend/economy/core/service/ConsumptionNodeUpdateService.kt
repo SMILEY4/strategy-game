@@ -22,8 +22,8 @@ class ConsumptionNodeUpdateService(private val consumptionEntityUpdateService: C
 
     private fun updateEntities(node: EconomyNode) {
         node.collectEntities()
-            .filter { !it.isInactive() }
-            .filter { it.isReadyToConsume() }
+            .filter { it.isActive() }
+            .filter { it.allowReadyForInput() }
             .sortedBy { it.getPriority() }
             .forEach { consumptionEntityUpdateService.update(it, node) }
     }

@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.core.game
 
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.connectGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
@@ -21,7 +22,7 @@ class GameConnectTest : StringSpec({
             expectPlayers {
                 player {
                     userId = "user"
-                    state = Player.STATE_PLAYING
+                    state = PlayerState.PLAYING
                     connectionId = 0
                 }
             }
@@ -52,7 +53,7 @@ class GameConnectTest : StringSpec({
             expectPlayers {
                 player {
                     userId = "user"
-                    state = Player.STATE_PLAYING
+                    state = PlayerState.PLAYING
                     connectionId = 0
                 }
             }

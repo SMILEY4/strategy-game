@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit
 import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
@@ -134,7 +134,7 @@ suspend fun GameTestContext.submitTurn(userId: String, block: suspend SubmitTurn
 class SubmitTurnUserActionDsl(val userId: String) {
     var gameId: String? = null
     var commands: MutableList<CommandData> = mutableListOf()
-    var expectedError: TurnSubmitAction.TurnSubmitActionError? = null
+    var expectedError: TurnSubmit.TurnSubmitActionError? = null
 
     fun createCity(block: CreateCityCommandDsl.() -> Unit) {
         CreateCityCommandDsl().apply(block).also {

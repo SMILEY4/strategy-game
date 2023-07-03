@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerState
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getPlayers
 import io.kotest.matchers.collections.shouldContain
@@ -53,5 +54,5 @@ class PlayersAssertionDsl {
 class PlayerAssertionDsl {
     var userId: String? = null
     var connectionId: Long? = null
-    var state: String? = null
+    var state: PlayerState? = null
 }

@@ -15,4 +15,15 @@ class City(
     var growthProgress: Float,
     var popConsumedFood: Float = 0f,
     var popGrowthConsumedFood: Boolean = false
-)
+) {
+
+    fun findCountry(game: GameExtended): Country = game.findCountry(countryId)
+
+    fun findProvince(game: GameExtended): Province = game.findProvinceByCity(cityId)
+
+    fun findTile(game: GameExtended): Tile = game.findTile(tile.tileId)
+
+    fun findProductionQueueEntry(entryId: String): ProductionQueueEntry = productionQueue.find { it.entryId == entryId }
+        ?: throw Exception("Could not find production-queue-entry $entryId in city $cityId")
+
+}

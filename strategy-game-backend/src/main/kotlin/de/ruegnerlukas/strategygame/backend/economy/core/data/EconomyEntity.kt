@@ -21,57 +21,57 @@ interface EconomyEntity {
 
 
     /**
-     * @return the resources this entity requires or wants to consume. Changes when this entity is provided resources.
+     * @return the resources this entity requires or wants to consume. Can change when this entity is provided resources.
      */
-    fun getRequires(): ResourceCollection
+    fun getRequiredInput(): ResourceCollection
 
 
     /**
-     * @return the resources this entity produces
+     * @return the resources this entity produces/generates
      */
-    fun getProduces(): ResourceCollection
+    fun getOutput(): ResourceCollection
 
 
     /**
      * @return whether all resources have to be fully consumed from the storage of the "owning" node or
      * if some part can be taken from "higher" nodes.
      */
-    fun allowPartialConsumption(): Boolean
+    fun allowPartialInput(): Boolean
 
 
     /**
-     * Whether this entity is inactive and is not taking part in consumption or production
+     * Whether this entity is taking part in consumption or production
      */
-    fun isInactive(): Boolean
+    fun isActive(): Boolean
 
 
     /**
      * @return whether this entity is ready to consume resources
      */
-    fun isReadyToConsume(): Boolean
+    fun allowReadyForInput(): Boolean
 
 
     /**
      * @return whether this entity is ready to produce resources
      */
-    fun isReadyToProduce(): Boolean
+    fun isReadyForOutput(): Boolean
 
 
     /**
      * @return whether this entity has produced resources / was handled during production phase
      */
-    fun hasProduced(): Boolean
+    fun completedOutput(): Boolean
 
 
     /**
      * provide this entity with the given required resources
      */
-    fun provideResources(resources: ResourceCollection)
+    fun addResources(resources: ResourceCollection)
 
 
     /**
      * flags this entity as "has produced all its resources"
      */
-    fun flagProduced()
+    fun flagOutputDone()
 
 }

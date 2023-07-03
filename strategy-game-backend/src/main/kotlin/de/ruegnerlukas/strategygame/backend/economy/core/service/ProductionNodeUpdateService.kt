@@ -15,8 +15,8 @@ class ProductionNodeUpdateService(private val productionEntityUpdateService: Pro
 
     private fun updateEntities(node: EconomyNode) {
         node.getEntities()
-            .filter { !it.isInactive() }
-            .filter { it.isReadyToProduce() }
+            .filter { it.isActive() }
+            .filter { it.isReadyForOutput() }
             .sortedBy { it.getPriority() }
             .forEach { productionEntityUpdateService.update(it) }
     }

@@ -1,12 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
+import arrow.core.Either
+import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.CreateCityOperationData
@@ -20,7 +18,11 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerReso
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameNotFoundError
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameStepError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
@@ -31,23 +33,31 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutC
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
 
-class GameStepActionImpl(
+class GameStepImpl(
     private val gameExtendedQuery: GameExtendedQuery,
     private val gameExtendedUpdate: GameExtendedUpdate,
     private val eventSystem: EventSystem,
     private val playerViewCreator: PlayerViewCreator
-) : GameStepAction {
+) : GameStep {
 
-    override suspend fun perform(gameId: String, commands: List<Command<*>>, userIds: List<String>): Map<String, GameExtendedDTO> {
-        val game = getGameState(gameId)
-        handleCommands(game, commands)
-        eventSystem.publish(TriggerGlobalUpdate, game)
-        saveGameState(game)
-        return userIds.associateWith { userId ->
-            playerViewCreator.build(userId, game)
+    private val metricId = MetricId.action(GameStep::class)
+
+    override suspend fun perform(
+        gameId: String,
+        commands: Collection<Command<*>>,
+        userIds: Collection<String>
+    ): Either<GameStepError, Map<String, GameExtendedDTO>> {
+        return time(metricId) {
+            either {
+                val game = getGameState(gameId).bind()
+                handleCommands(game, commands)
+                handleGlobalUpdate(game)
+                saveGameState(game)
+                userIds.associateWith { userId ->
+                    playerViewCreator.build(userId, game)
+                }
+            }
         }
     }
 
@@ -55,8 +65,8 @@ class GameStepActionImpl(
     /**
      * Find and return the [GameExtended] or [GameNotFoundError] if the game does not exist
      */
-    private suspend fun getGameState(gameId: String): GameExtended {
-        return gameExtendedQuery.execute(gameId).getOrThrow()
+    private suspend fun getGameState(gameId: String): Either<GameNotFoundError, GameExtended> {
+        return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
 
@@ -69,7 +79,7 @@ class GameStepActionImpl(
 
 
     @Suppress("UNCHECKED_CAST")
-    private suspend fun handleCommands(game: GameExtended, commands: List<Command<*>>) {
+    private suspend fun handleCommands(game: GameExtended, commands: Collection<Command<*>>) {
         commands.forEach { command ->
             when (command.data) {
                 is CreateCityCommandData -> {
@@ -78,9 +88,9 @@ class GameStepActionImpl(
                         TriggerResolveCreateCity,
                         CreateCityOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
+                            country = game.findCountryByUser(typedCommand.userId),
                             targetName = typedCommand.data.name,
-                            targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
                             withNewProvince = typedCommand.data.withNewProvince,
                         )
                     )
@@ -91,8 +101,8 @@ class GameStepActionImpl(
                         TriggerResolvePlaceMarker,
                         PlaceMarkerOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
                         )
                     )
                 }
@@ -102,8 +112,8 @@ class GameStepActionImpl(
                         TriggerResolvePlaceScout,
                         PlaceScoutOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            targetTile = getTile(game, typedCommand.data.q, typedCommand.data.r),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
                         )
                     )
                 }
@@ -113,8 +123,8 @@ class GameStepActionImpl(
                         TriggerResolveAddProductionQueueEntry,
                         AddProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            city = getCity(game, typedCommand.data.cityId),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            city = game.findCity(typedCommand.data.cityId),
                             entry = BuildingProductionQueueEntryData(
                                 buildingType = typedCommand.data.buildingType
                             )
@@ -127,8 +137,8 @@ class GameStepActionImpl(
                         TriggerResolveAddProductionQueueEntry,
                         AddProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            city = getCity(game, typedCommand.data.cityId),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            city = game.findCity(typedCommand.data.cityId),
                             entry = SettlerProductionQueueEntryData()
                         )
                     )
@@ -139,9 +149,9 @@ class GameStepActionImpl(
                         TriggerResolveRemoveProductionQueueEntry,
                         RemoveProductionQueueEntryOperationData(
                             game = game,
-                            country = getCountryByUser(game, typedCommand.userId),
-                            province = getProvince(game, typedCommand.data.cityId),
-                            city = getCity(game, typedCommand.data.cityId),
+                            country = game.findCountryByUser(typedCommand.userId),
+                            province = game.findProvinceByCity(typedCommand.data.cityId),
+                            city = game.findCity(typedCommand.data.cityId),
                             entryId = typedCommand.data.queueEntryId
                         )
                     )
@@ -150,20 +160,8 @@ class GameStepActionImpl(
         }
     }
 
-    private fun getCountryByUser(game: GameExtended, userId: String): Country {
-        return game.countries.find { it.userId == userId } ?: throw Exception("Could not find country with user-id $userId")
-    }
-
-    private fun getTile(game: GameExtended, q: Int, r: Int): Tile {
-        return game.tiles.get(q, r) ?: throw Exception("Could not find tile at $q,$r")
-    }
-
-    private fun getProvince(game: GameExtended, cityId: String): Province {
-        return game.provinces.find { it.cityIds.contains(cityId) } ?: throw Exception("Could not find province for city with id $cityId")
-    }
-
-    private fun getCity(game: GameExtended, cityId: String): City {
-        return game.cities.find { it.cityId == cityId } ?: throw Exception("Could not find city with id $cityId")
+    private suspend fun handleGlobalUpdate(game: GameExtended) {
+        eventSystem.publish(TriggerGlobalUpdate, game)
     }
 
 }

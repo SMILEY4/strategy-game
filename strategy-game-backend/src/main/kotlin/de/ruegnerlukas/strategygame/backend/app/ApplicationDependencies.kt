@@ -2,12 +2,13 @@ package de.ruegnerlukas.strategygame.backend.app
 
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MicrometerMonitoringService
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringServiceImpl
 import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
@@ -33,7 +34,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStepAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
@@ -45,7 +46,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.core.ListGamesImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.UncoverMapAreaActionImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.DiscoverMapAreaImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
@@ -53,11 +54,12 @@ import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websock
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExistsQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameDeleteImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesInsertImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializeWorldAction
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializeWorld
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
@@ -76,11 +78,12 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ListGames
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestConnectionToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmitAction
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.UncoverMapAreaAction
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExistsQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameDelete
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
@@ -120,7 +123,7 @@ val applicationDependencies = module {
     single<ArangoDatabase> { runBlocking { DatabaseProvider.create(Config.get().database) } } withOptions { createdAtStart() }
     single<GameMessageProducer> { GameMessageProducerImpl(WebSocketMessageProducer(get())) }
     single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
-    single<MonitoringService> { MonitoringServiceImpl(get(), get()) }
+    single<MonitoringService> { MicrometerMonitoringService(get()).also { Monitoring.service = it } }
     single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
 
     single<CreateUser> { CreateUserImpl(get()) }
@@ -137,6 +140,7 @@ val applicationDependencies = module {
     single<GameExtendedQuery> { GameExtendedQueryImpl(get()) }
     single<GameUpdate> { GameUpdateImpl(get()) }
     single<GameDelete> { GameDeleteImpl(get()) }
+    single<GameExistsQuery> { GameExistsQueryImpl(get()) }
     single<CountryInsert> { CountryInsertImpl(get()) }
     single<GameExtendedUpdate> { GameExtendedUpdateImpl(get()) }
     single<ReservationInsert> { ReservationInsertImpl(get()) }
@@ -156,17 +160,17 @@ val applicationDependencies = module {
     single<ConnectToGame> { ConnectToGameImpl(get(), get(), get(), get()) }
     single<CreateGame> { CreateGameImpl(get(), get()) }
     single<DisconnectFromGame> { DisconnectFromGameImpl(get(), get(), get()) }
-    single<UncoverMapAreaAction> { UncoverMapAreaActionImpl(get(), get()) }
+    single<DiscoverMapArea> { DiscoverMapAreaImpl(get(), get(), get()) }
     single<JoinGame> { JoinGameImpl(get(), get(), get()) }
     single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }
-    single<TurnSubmitAction> { TurnSubmitActionImpl(get(), get(), get(), get()) }
+    single<TurnSubmit> { TurnSubmitActionImpl(get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
-    single<GameStepAction> { GameStepActionImpl(get(), get(), get(), get()) }
+    single<GameStep> { GameStepImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 
     single<PlayerViewCreator> { PlayerViewCreatorImpl(get(), get()) }
-    single<InitializeWorldAction> { InitializeWorldActionImpl(get(), get()) }
+    single<InitializeWorld> { InitializeWorldImpl(get(), get(), get()) }
     single<EventSystem> { EventSystem() }
     single<GENCreateCity> { GENCreateCity(get(), get()) } withOptions { createdAtStart() }
     single<GENUpdateCityInfluence> { GENUpdateCityInfluence(get(), get()) } withOptions { createdAtStart() }

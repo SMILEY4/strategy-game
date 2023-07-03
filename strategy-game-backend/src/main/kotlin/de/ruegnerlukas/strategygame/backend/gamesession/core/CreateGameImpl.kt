@@ -1,10 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializeWorldAction
+import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializeWorld
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
@@ -13,16 +14,16 @@ import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 
 class CreateGameImpl(
     private val gameInsert: GameInsert,
-    private val initializeWorld: InitializeWorldAction
+    private val initializeWorld: InitializeWorld
 ) : CreateGame, Logging {
 
-    private val metricId = metricCoreAction(CreateGame::class)
+    private val metricId = MetricId.action(CreateGame::class)
 
     override suspend fun perform(worldSettings: WorldSettings): String {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             log().info("Creating new game with seed ${worldSettings.seed}")
             val gameId = createGame()
-            initializeWorld.perform(gameId, worldSettings)
+            initializeWorld(gameId, worldSettings)
             log().info("Created new game with id $gameId")
             gameId
         }
@@ -30,7 +31,7 @@ class CreateGameImpl(
 
 
     /**
-     * Build and persist the game entity
+     * Build and persist the game
      */
     private suspend fun createGame(): String {
         return gameInsert.execute(
@@ -40,6 +41,14 @@ class CreateGameImpl(
                 players = PlayerContainer()
             )
         )
+    }
+
+
+    /**
+     * Initialize and populate the world
+     */
+    private suspend fun initializeWorld(gameId: String, worldSettings: WorldSettings) {
+        initializeWorld.perform(gameId, worldSettings).getOrThrow()
     }
 
 }

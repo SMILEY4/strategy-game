@@ -9,7 +9,7 @@ interface JoinGame {
 
     sealed class GameJoinActionErrors
 
-    object UserAlreadyPlayerError : GameJoinActionErrors() {
+    object UserAlreadyJoinedError : GameJoinActionErrors() {
         override fun toString(): String = this.javaClass.simpleName
     }
 

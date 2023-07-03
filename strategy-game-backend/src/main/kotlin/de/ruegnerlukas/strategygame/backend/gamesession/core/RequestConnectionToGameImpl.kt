@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
-import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService.Companion.metricCoreAction
+import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
+import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
@@ -19,10 +19,10 @@ class RequestConnectionToGameImpl(
     private val gameQuery: GameQuery,
 ) : RequestConnectionToGame, Logging {
 
-    private val metricId = metricCoreAction(RequestConnectionToGame::class)
+    private val metricId = MetricId.action(RequestConnectionToGame::class)
 
     override suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit> {
-        return Monitoring.coTime(metricId) {
+        return time(metricId) {
             log().info("Requesting to connect to game $gameId as user $userId")
             either {
                 val game = findGame(gameId).bind()
