@@ -8,6 +8,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.OperationInvalidData
 import de.ruegnerlukas.strategygame.backend.testutils.TestActions.Companion.TestActionContext
 
@@ -23,6 +24,7 @@ class GENReportOperationInvalid(private val testContext: TestActionContext, even
                 GENValidatePlaceMarker.Definition.cancelled(),
                 GENValidatePlaceScout.Definition.cancelled(),
                 GENValidateRemoveProductionQueueEntry.Definition.cancelled(),
+                GENValidateUpgradeSettlementTier.Definition.cancelled(),
             )
             action { data ->
                 testContext.commandResolutionErrors[data.game.meta.turn] = data.codes.toList()

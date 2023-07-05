@@ -41,6 +41,8 @@ import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionTo
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.DiscoverMapAreaImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpgradeSettlementTier
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
@@ -115,7 +117,7 @@ data class TestActions(
                 GENPlaceMarker(eventSystem)
                 GENValidatePlaceScout(GameConfig.default(), eventSystem)
                 GENPlaceScout(GameConfig.default(), eventSystem)
-                GENValidateAddProductionQueueEntry(GameConfig.default(), eventSystem)
+                GENValidateAddProductionQueueEntry(eventSystem)
                 GENAddProductionQueueEntry(eventSystem)
                 GENValidateRemoveProductionQueueEntry(eventSystem)
                 GENRemoveProductionQueueEntry(GameConfig.default(), eventSystem)
@@ -125,6 +127,8 @@ data class TestActions(
                 GENCreateBuilding(eventSystem)
                 GENUpdateCityGrowthProgress(popFoodConsumption, eventSystem)
                 GENUpdateCitySize(eventSystem)
+                GENValidateUpgradeSettlementTier(eventSystem)
+                GENUpgradeSettlementTier(eventSystem)
                 // test
                 GENReportOperationInvalid(context, eventSystem)
             }

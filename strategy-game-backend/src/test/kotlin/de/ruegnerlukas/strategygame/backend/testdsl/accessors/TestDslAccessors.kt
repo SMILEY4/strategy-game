@@ -20,7 +20,7 @@ suspend fun GameTestContext.getCities(): List<City> {
 }
 
 suspend fun GameTestContext.getCityId(cityName: String): String {
-    return getCities().find { it.name == cityName }!!.cityId
+    return getCities().find { it.meta.name == cityName }!!.cityId
 }
 
 suspend fun GameTestContext.getCountryId(userId: String): String {

@@ -47,6 +47,8 @@ import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionTo
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.DiscoverMapAreaImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpgradeSettlementTier
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
@@ -183,7 +185,7 @@ val applicationDependencies = module {
     single<GENPlaceMarker> { GENPlaceMarker(get()) } withOptions { createdAtStart() }
     single<GENValidatePlaceScout> { GENValidatePlaceScout(get(), get()) } withOptions { createdAtStart() }
     single<GENPlaceScout> { GENPlaceScout(get(), get()) } withOptions { createdAtStart() }
-    single<GENValidateAddProductionQueueEntry> { GENValidateAddProductionQueueEntry(get(), get()) } withOptions { createdAtStart() }
+    single<GENValidateAddProductionQueueEntry> { GENValidateAddProductionQueueEntry(get()) } withOptions { createdAtStart() }
     single<GENAddProductionQueueEntry> { GENAddProductionQueueEntry(get()) } withOptions { createdAtStart() }
     single<GENValidateRemoveProductionQueueEntry> { GENValidateRemoveProductionQueueEntry(get()) } withOptions { createdAtStart() }
     single<GENRemoveProductionQueueEntry> { GENRemoveProductionQueueEntry(get(), get()) } withOptions { createdAtStart() }
@@ -194,5 +196,8 @@ val applicationDependencies = module {
     single<GENUpdateCityGrowthProgress> { GENUpdateCityGrowthProgress(get(), get()) } withOptions { createdAtStart() }
     single<GENUpdateCitySize> { GENUpdateCitySize(get()) } withOptions { createdAtStart() }
     single<GENValidateOperationInvalid> { GENValidateOperationInvalid(get()) } withOptions { createdAtStart() }
+    single<GENValidateUpgradeSettlementTier> { GENValidateUpgradeSettlementTier(get()) } withOptions { createdAtStart() }
+    single<GENUpgradeSettlementTier> { GENUpgradeSettlementTier(get()) } withOptions { createdAtStart() }
+
 
 }

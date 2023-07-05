@@ -6,7 +6,7 @@ import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
-class GENValidateAddProductionQueueEntry(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {
+class GENValidateAddProductionQueueEntry(eventSystem: EventSystem) : Logging {
 
     object Definition :
         EventNodeDefinition<AddProductionQueueEntryOperationData, AddProductionQueueEntryOperationData, OperationInvalidData, Unit>()
@@ -21,11 +21,7 @@ class GENValidateAddProductionQueueEntry(private val gameConfig: GameConfig, eve
                         data.city.countryId == data.country.countryId
                     }
                     mustBeTrue("ADD_PRODUCTION_QUEUE_ENTRY.BUILDING.CITY_SPACE") {
-                        if (data.city.meta.isProvinceCapital) {
-                            (gameConfig.cityBuildingSlots - data.city.infrastructure.buildings.size) > 0
-                        } else {
-                            (gameConfig.townBuildingSlots - data.city.infrastructure.buildings.size) > 0
-                        }
+                        data.city.tier.buildingSlots -data.city.infrastructure.buildings.size > 0
                     }
                 }
                 if (result.isInvalid()) {

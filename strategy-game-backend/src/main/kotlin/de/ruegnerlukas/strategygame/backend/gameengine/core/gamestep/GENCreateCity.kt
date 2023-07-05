@@ -3,13 +3,17 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulation
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
 import kotlin.math.max
 
@@ -64,13 +68,20 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
             cityId = reservationInsert.reserveCity(),
             countryId = countryId,
             tile = TileRef(tile),
-            name = name,
-            color = RGBColor.random(),
-            isProvinceCapital = isProvinceCapital,
-            buildings = mutableListOf(),
-            productionQueue = mutableListOf(),
-            size = 1,
-            growthProgress = 0f
+            tier = SettlementTier.VILLAGE,
+            meta = CityMetadata(
+                name = name,
+                color = RGBColor.random(),
+                isProvinceCapital = isProvinceCapital,
+            ),
+            infrastructure = CityInfrastructure(
+                buildings = mutableListOf(),
+                productionQueue = mutableListOf(),
+            ),
+            population = CityPopulation(
+                size = 1,
+                growthProgress = 0f
+            ),
         ).also { game.cities.add(it) }
     }
 

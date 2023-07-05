@@ -6,6 +6,7 @@ class City(
     val cityId: String,
     val countryId: String,
     val tile: TileRef,
+    var tier: SettlementTier,
     val meta: CityMetadata,
     val infrastructure: CityInfrastructure,
     val population: CityPopulation,

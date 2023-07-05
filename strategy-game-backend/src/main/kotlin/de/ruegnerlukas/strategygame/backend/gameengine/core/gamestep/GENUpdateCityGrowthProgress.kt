@@ -3,9 +3,9 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
 
 /**
  * Updates the growth-progress of a city based on various factors
@@ -44,7 +44,11 @@ class GENUpdateCityGrowthProgress(private var popFoodConsumption: EconomyPopFood
             log().debug("adding growth-point for city ${city.cityId}: capital (+1)")
             points++
         }
-
+        if (city.population.size >= city.tier.maxSize && points > 0) {
+            // MUST/SHOULD ALWAYS BE LAST !!
+            log().debug("removing growth-point(s) for city ${city.cityId}: max population size for tier (-${points})")
+            points = 0
+        }
         val growthChange = points / 10f
         city.population.growthProgress += growthChange
         log().debug("new growth progress of city ${city.cityId} is ${city.population.growthProgress} (added $growthChange)")

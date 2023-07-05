@@ -18,8 +18,11 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerReso
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveUpgradeSettlementTier
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.UpgradeSettlementTierOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.nextTier
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameStepError
@@ -33,6 +36,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutC
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.UpgradeSettlementTierCommandData
 
 class GameStepImpl(
     private val gameExtendedQuery: GameExtendedQuery,
@@ -92,6 +96,18 @@ class GameStepImpl(
                             targetName = typedCommand.data.name,
                             targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
                             withNewProvince = typedCommand.data.withNewProvince,
+                        )
+                    )
+                }
+                is UpgradeSettlementTierCommandData -> {
+                    val typedCommand = command as Command<UpgradeSettlementTierCommandData>
+                    val city = game.findCity(typedCommand.data.cityId)
+                    eventSystem.publish(
+                        TriggerResolveUpgradeSettlementTier,
+                        UpgradeSettlementTierOperationData(
+                            game = game,
+                            city = city,
+                            targetTier = city.tier.nextTier() ?: city.tier
                         )
                     )
                 }
