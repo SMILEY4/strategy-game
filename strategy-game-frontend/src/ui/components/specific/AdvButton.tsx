@@ -11,7 +11,7 @@ export function AdvButton(props: {
     onClick: () => void
 }): ReactElement {
     return (
-        <div className={"adv-button" + (props.disabled ? " disabled" : "")} onClick={props.onClick}>
+        <div className={"adv-button" + (props.disabled ? " disabled" : "")} onClick={() => !props.disabled && props.onClick()}>
             <div className="label">
                 {props.label}
             </div>

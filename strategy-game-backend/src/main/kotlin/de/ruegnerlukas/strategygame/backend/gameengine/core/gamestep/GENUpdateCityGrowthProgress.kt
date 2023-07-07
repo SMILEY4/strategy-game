@@ -51,7 +51,7 @@ class GENUpdateCityGrowthProgress(private var popFoodConsumption: EconomyPopFood
         }
         val growthChange = points / 10f
         city.population.growthProgress += growthChange
-        log().debug("new growth progress of city ${city.cityId} is ${city.population.growthProgress} (added $growthChange)")
+        log().info("new growth progress of city ${city.cityId} is ${city.population.growthProgress} (added $growthChange)")
     }
 
     private fun getRequiredFood(city: City): Float {

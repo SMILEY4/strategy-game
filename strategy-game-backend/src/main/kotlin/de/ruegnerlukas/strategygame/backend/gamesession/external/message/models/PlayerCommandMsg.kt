@@ -11,6 +11,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutC
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.UpgradeSettlementTierCommandData
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -20,6 +21,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQ
 @JsonSubTypes(
     JsonSubTypes.Type(value = PlaceMarkerCommandMsg::class),
     JsonSubTypes.Type(value = CreateCityCommandMsg::class),
+    JsonSubTypes.Type(value = UpgradeSettlementTierCommandMsg::class),
     JsonSubTypes.Type(value = PlaceScoutCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueAddBuildingEntryCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueAddSettlerEntryCommandMsg::class),
@@ -62,6 +64,20 @@ class CreateCityCommandMsg(
         r = this.r,
         name = this.name,
         withNewProvince = this.withNewProvince,
+    )
+}
+
+
+@JsonTypeName(UpgradeSettlementTierCommandMsg.TYPE)
+class UpgradeSettlementTierCommandMsg(
+    val cityId: String
+) : PlayerCommandMsg(TYPE) {
+    companion object {
+        internal const val TYPE = "upgrade-settlement-tier"
+    }
+
+    override fun asCommandData() = UpgradeSettlementTierCommandData(
+        cityId = this.cityId
     )
 }
 

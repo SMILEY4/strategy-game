@@ -55,6 +55,7 @@ export interface PayloadGameState {
             r: number
         },
         isProvinceCapital: boolean,
+        tier: "VILLAGE" | "TOWN" | "CITY",
         name: string,
         color: Color,
         buildings: ({

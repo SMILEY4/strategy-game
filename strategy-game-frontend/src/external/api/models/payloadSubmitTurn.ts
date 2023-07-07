@@ -5,7 +5,7 @@ import {
     CommandPlaceMarker,
     CommandPlaceScout,
     CommandProductionQueueAddBuildingEntry,
-    CommandProductionQueueAddSettlerEntry,
+    CommandProductionQueueAddSettlerEntry, CommandUpgradeSettlementTier,
 } from "../../../core/models/command";
 import {when, whenCase} from "../../../shared/when";
 
@@ -18,7 +18,8 @@ export interface SubmitCommand {
         | "place-scout"
         | "create-city"
         | "production-queue-add-entry.building"
-        | "production-queue-add-entry.settler";
+        | "production-queue-add-entry.settler"
+        | "upgrade-settlement-tier";
 }
 
 export interface SubmitCommandPlaceMarker extends SubmitCommand {
@@ -39,6 +40,11 @@ export interface SubmitCommandCreateCity extends SubmitCommand {
     q: number,
     r: number,
     withNewProvince: boolean
+}
+
+export interface SubmitCommandUpgradeSettlementTier extends SubmitCommand {
+    type: "upgrade-settlement-tier";
+    cityId: string;
 }
 
 export interface SubmitCommandProductionQueueAddBuildingEntry extends SubmitCommand {
@@ -87,6 +93,13 @@ export namespace PayloadSubmitTurn {
                     q: cmdCreateCity.q,
                     r: cmdCreateCity.r,
                     withNewProvince: cmdCreateCity.withNewProvince,
+                };
+            }),
+            whenCase<string, SubmitCommandUpgradeSettlementTier>("upgrade-settlement-tier", () => {
+                const cmdUpgradeTier = cmd as CommandUpgradeSettlementTier;
+                return {
+                    type: "upgrade-settlement-tier",
+                    cityId: cmdUpgradeTier.cityId
                 };
             }),
             whenCase<string, SubmitCommandProductionQueueAddBuildingEntry>("production-queue-add-entry.building", () => {

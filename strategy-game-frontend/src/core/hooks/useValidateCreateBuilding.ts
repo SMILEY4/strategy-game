@@ -9,7 +9,6 @@ import {CommandProductionQueueAddBuildingEntry} from "../models/command";
 export function useValidateCreateBuilding(city: City | null): (type: BuildingType) => boolean {
     const country = useCountryPlayer();
     const commands = useCommands();
-    const config = useGameConfig();
 
     if (city) {
         return (type: BuildingType) => {
@@ -23,15 +22,26 @@ export function useValidateCreateBuilding(city: City | null): (type: BuildingTyp
                         .map(cmd => cmd as CommandProductionQueueAddBuildingEntry)
                         .filter(cmd => cmd.cityId === city.cityId)
                         .length;
-                    if (city.isProvinceCapital) {
-                        return config.cityBuildingSlots - (city.buildings.length + amountBuildingCommands) > 0;
-                    } else {
-                        return config.townBuildingSlots - (city.buildings.length + amountBuildingCommands) > 0;
-                    }
+                    return getMaxBuildingSlots(city.tier) - (city.buildings.length + amountBuildingCommands) > 0;
                 });
             }).isValid();
         };
     } else {
         return () => false;
     }
+
+    function getMaxBuildingSlots(tier: "VILLAGE" | "TOWN" | "CITY"): number {
+        if (tier === "VILLAGE") {
+            return 2;
+        }
+        if (tier === "TOWN") {
+            return 4;
+        }
+        if (tier === "CITY") {
+            return 6;
+        }
+        throw Error("Unexpected settlement tier: " + tier);
+    }
+
 }
+

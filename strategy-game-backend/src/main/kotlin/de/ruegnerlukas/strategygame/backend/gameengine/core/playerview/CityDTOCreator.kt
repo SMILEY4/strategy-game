@@ -22,6 +22,7 @@ class CityDTOCreator {
         return CityDTO(
             cityId = city.cityId,
             countryId = city.countryId,
+            tier = city.tier.name,
             tile = city.tile,
             name = city.meta.name,
             color = city.meta.color,
