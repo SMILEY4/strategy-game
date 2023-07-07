@@ -24,6 +24,11 @@ class CreateCityCommandData(
 ) : CommandData()
 
 
+class UpgradeSettlementTierCommandData(
+    val cityId: String
+) : CommandData()
+
+
 class PlaceMarkerCommandData(
     val q: Int,
     val r: Int

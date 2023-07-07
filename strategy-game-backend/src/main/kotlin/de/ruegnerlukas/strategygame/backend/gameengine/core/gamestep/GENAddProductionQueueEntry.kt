@@ -20,8 +20,8 @@ class GENAddProductionQueueEntry(eventSystem: EventSystem) : Logging {
         eventSystem.createNode(Definition) {
             trigger(GENValidateAddProductionQueueEntry.Definition.after())
             action { data ->
-                log().debug("Add production-queue-entry  to city ${data.city.cityId}")
-                data.city.productionQueue.add(buildEntry(data))
+                log().info("Add production-queue-entry to city ${data.city.cityId}")
+                data.city.infrastructure.productionQueue.add(buildEntry(data))
                 eventResultOk(Unit)
             }
         }

@@ -14,7 +14,7 @@ class PopulationBaseEconomyEntity(
     popFoodConsumption: EconomyPopFoodConsumptionProvider
 ) : BasicEconomyEntity(
     owner = owner,
-    priority = if (city.isProvinceCapital) 2.5f else 2f,
+    priority = if (city.meta.isProvinceCapital) 2.5f else 2f,
     resourcesInput = getRequiredResources(popFoodConsumption, city),
     allowPartialInput = true,
 ) {

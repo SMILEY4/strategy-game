@@ -7,7 +7,7 @@ import kotlin.math.ceil
 class PopFoodConsumption: EconomyPopFoodConsumptionProvider {
 
     override fun getRequiredFood(city: City): Float {
-        return ceil(city.size / 4f)
+        return ceil(city.population.size / 4f)
     }
 
 }

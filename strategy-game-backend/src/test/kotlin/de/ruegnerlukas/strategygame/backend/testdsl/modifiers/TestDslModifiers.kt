@@ -1,11 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.modifiers
 
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.common.utils.UUID
+import de.ruegnerlukas.strategygame.backend.common.utils.coApply
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.RouteEntity
@@ -13,13 +16,14 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.mode
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulation
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
-import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
-import de.ruegnerlukas.strategygame.backend.common.utils.UUID
-import de.ruegnerlukas.strategygame.backend.common.utils.coApply
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlementTier
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getGameExtended
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
@@ -94,25 +98,32 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
         cityId = UUID.gen(),
         countryId = dslConfig.countryId!!,
         tile = TileRef(tiles.find { it.position == dslConfig.tile }!!),
-        name = dslConfig.name!!,
-        color = RGBColor.random(),
-        isProvinceCapital = true,
-        size = 1,
-        growthProgress = 0f,
-        buildings = dslConfig.buildings.map { (type, dir) ->
-            Building(
-                type = type,
-                tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
-                active = true
-            )
-        }.toMutableList(),
-        productionQueue = dslConfig.queue.map { buildingType ->
-            BuildingProductionQueueEntry(
-                entryId = UUID.gen(),
-                buildingType = buildingType,
-                collectedResources = ResourceCollection.basic()
-            )
-        }.toMutableList()
+        tier = dslConfig.tier ?: SettlementTier.CITY,
+        meta = CityMetadata(
+            name = dslConfig.name!!,
+            color = RGBColor.random(),
+            isProvinceCapital = true,
+        ),
+        infrastructure = CityInfrastructure(
+            buildings = dslConfig.buildings.map { (type, dir) ->
+                Building(
+                    type = type,
+                    tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
+                    active = true
+                )
+            }.toMutableList(),
+            productionQueue = dslConfig.queue.map { buildingType ->
+                BuildingProductionQueueEntry(
+                    entryId = UUID.gen(),
+                    buildingType = buildingType,
+                    collectedResources = ResourceCollection.basic()
+                )
+            }.toMutableList()
+        ),
+        population = CityPopulation(
+            size = dslConfig.initialSize ?: (dslConfig.tier ?: SettlementTier.CITY).minRequiredSize,
+            growthProgress = 0f,
+        ),
     )
     CityEntity.of(city, getActiveGame()).also { entity ->
         getDb().insertDocument(Collections.CITIES, entity)
@@ -135,25 +146,32 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
         cityId = UUID.gen(),
         countryId = dslConfig.countryId!!,
         tile = TileRef(tiles.find { it.position == dslConfig.tile }!!),
-        name = dslConfig.name!!,
-        color = RGBColor.random(),
-        isProvinceCapital = false,
-        size = 1,
-        growthProgress = 0f,
-        buildings = dslConfig.buildings.map { (type, dir) ->
-            Building(
-                type = type,
-                tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
-                active = true
-            )
-        }.toMutableList(),
-        productionQueue = dslConfig.queue.map { buildingType ->
-            BuildingProductionQueueEntry(
-                entryId = UUID.gen(),
-                buildingType = buildingType,
-                collectedResources = ResourceCollection.basic()
-            )
-        }.toMutableList()
+        tier = dslConfig.tier ?: SettlementTier.TOWN,
+        meta = CityMetadata(
+            name = dslConfig.name!!,
+            color = RGBColor.random(),
+            isProvinceCapital = false,
+        ),
+        infrastructure = CityInfrastructure(
+            buildings = dslConfig.buildings.map { (type, dir) ->
+                Building(
+                    type = type,
+                    tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
+                    active = true
+                )
+            }.toMutableList(),
+            productionQueue = dslConfig.queue.map { buildingType ->
+                BuildingProductionQueueEntry(
+                    entryId = UUID.gen(),
+                    buildingType = buildingType,
+                    collectedResources = ResourceCollection.basic()
+                )
+            }.toMutableList()
+        ),
+        population = CityPopulation(
+            size = dslConfig.initialSize ?: (dslConfig.tier ?: SettlementTier.TOWN).minRequiredSize,
+            growthProgress = 0f,
+        ),
     )
     CityEntity.of(city, getActiveGame()).also { entity ->
         getDb().insertDocument(Collections.CITIES, entity)
@@ -167,11 +185,13 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
 }
 
 class AddCityDirectActionDsl {
+    var tier: SettlementTier? = null
     var countryId: String? = null
     var tile: TilePosition? = null
     var name: String? = null
     var buildings = mutableListOf<Pair<BuildingType, TileDirection?>>()
     var queue = mutableListOf<BuildingType>()
+    var initialSize: Int? = null
 
     fun building(type: BuildingType, position: TileDirection? = null) {
         buildings.add(type to position)
@@ -185,8 +205,8 @@ class AddCityDirectActionDsl {
 
 
 suspend fun GameTestContext.addRoute(nameCityA: String, nameCityB: String) {
-    val cityIdA = getGameExtended().cities.find { it.name == nameCityA }!!.cityId
-    val cityIdB = getGameExtended().cities.find { it.name == nameCityB }!!.cityId
+    val cityIdA = getGameExtended().cities.find { it.meta.name == nameCityA }!!.cityId
+    val cityIdB = getGameExtended().cities.find { it.meta.name == nameCityB }!!.cityId
     val route = Route(
         routeId = UUID.gen(),
         cityIdA = cityIdA,

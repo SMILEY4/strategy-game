@@ -79,10 +79,10 @@ class GENUpdateEconomy(
             .forEach { entity -> entity.queueEntry.collectedResources.add(entity.getProvidedResources()) }
         node.getEntities()
             .filterIsInstance<PopulationBaseEconomyEntity>()
-            .forEach { entity -> entity.city.popConsumedFood = entity.getConsumedFood() }
+            .forEach { entity -> entity.city.population.popConsumedFood = entity.getConsumedFood() }
         node.getEntities()
             .filterIsInstance<PopulationGrowthEconomyEntity>()
-            .forEach { entity -> entity.city.popGrowthConsumedFood = entity.hasConsumedFood() }
+            .forEach { entity -> entity.city.population.popGrowthConsumedFood = entity.hasConsumedFood() }
     }
 
 }

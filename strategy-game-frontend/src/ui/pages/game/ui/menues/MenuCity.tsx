@@ -15,6 +15,7 @@ import {
     SettlerProductionQueueEntry,
 } from "../../../../../core/models/productionQueueEntry";
 import {City} from "../../../../../core/models/city";
+import {useValidateUpgradeSettlementTier} from "../../../../../core/hooks/useValidateUpgradeSettlementTier";
 
 export function MenuCity(props: { cityId: string, menuLevel: number }): ReactElement {
 
@@ -24,6 +25,7 @@ export function MenuCity(props: { cityId: string, menuLevel: number }): ReactEle
     const provinceCapital = useCityById(province?.provinceCapitalCityId);
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
     const validateCreateBuilding = useValidateCreateBuilding(city);
+    const validateUpgradeSettlementTier = useValidateUpgradeSettlementTier(city)
     const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
 
     return (
@@ -35,11 +37,21 @@ export function MenuCity(props: { cityId: string, menuLevel: number }): ReactEle
                 <>
                     <h2>City</h2>
                     <p>{"Name: " + city.name}</p>
+                    <p>{"Tier: " + city.tier}</p>
                     <p>{"Size: " + city.size + "(" + (city.growthProgress >= 0 ? "+" : "") + city.growthProgress + ")"}</p>
                     <p>
                         {"Requires: "}
-                        <ResourceLabel type={ResourceType.FOOD} value={cityBaseFoodConsumption(city)} showPlusSign={false}/>
+                        <ResourceLabel type={ResourceType.FOOD} value={cityBaseFoodConsumption(city)}
+                                       showPlusSign={false}/>
                     </p>
+
+                    <AdvButton
+                        label={"Upgrade Tier"}
+                        actionCosts={[]}
+                        turnCosts={[]}
+                        disabled={!validateUpgradeSettlementTier()}
+                        onClick={() => upgradeSettlementTier()}
+                    />
 
                     <Section title={"Overview"}>
                         <p className={"clickable"}
@@ -151,6 +163,12 @@ export function MenuCity(props: { cityId: string, menuLevel: number }): ReactEle
     function createSettler() {
         if (city) {
             actionAddCommand.addCreateSettler(city.cityId);
+        }
+    }
+
+    function upgradeSettlementTier() {
+        if (city) {
+            actionAddCommand.addUpgradeSettlementTier(city.cityId);
         }
     }
 

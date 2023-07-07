@@ -15,7 +15,7 @@ export class GameJoinAction {
         console.debug("Joining game", gameId);
         return this.gameApi.join(gameId)
             .catch(error => {
-                if (error.errorCode !== "UserAlreadyPlayerError") {
+                if (error.errorCode !== "UserAlreadyJoinedError") {
                     throw error;
                 }
             });

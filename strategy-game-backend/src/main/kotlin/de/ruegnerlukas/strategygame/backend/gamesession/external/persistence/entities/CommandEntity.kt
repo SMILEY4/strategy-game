@@ -3,9 +3,9 @@ package de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.en
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
@@ -14,6 +14,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutC
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.UpgradeSettlementTierCommandData
 
 class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -40,6 +41,9 @@ class CommandEntity<T : CommandEntityData>(
                     r = serviceModel.r,
                     name = serviceModel.name,
                     withNewProvince = serviceModel.withNewProvince
+                )
+                is UpgradeSettlementTierCommandData -> UpgradeSettlementTierCommandEntityData(
+                    cityId = serviceModel.cityId,
                 )
                 is PlaceMarkerCommandData -> PlaceMarkerCommandEntityData(
                     q = serviceModel.q,
@@ -81,6 +85,9 @@ class CommandEntity<T : CommandEntityData>(
                 name = entity.name,
                 withNewProvince = entity.withNewProvince
             )
+            is UpgradeSettlementTierCommandEntityData -> UpgradeSettlementTierCommandData(
+                cityId = entity.cityId
+            )
             is PlaceMarkerCommandEntityData -> PlaceMarkerCommandData(
                 q = entity.q,
                 r = entity.r,
@@ -113,6 +120,7 @@ class CommandEntity<T : CommandEntityData>(
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = CreateCityCommandEntityData::class),
+    JsonSubTypes.Type(value = UpgradeSettlementTierCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceMarkerCommandEntityData::class),
     JsonSubTypes.Type(value = PlaceScoutCommandEntityData::class),
     JsonSubTypes.Type(value = ProductionQueueAddBuildingEntryCommandEntityData::class),
@@ -133,6 +141,16 @@ class CreateCityCommandEntityData(
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "create-city"
+    }
+}
+
+
+@JsonTypeName(UpgradeSettlementTierCommandEntityData.TYPE)
+class UpgradeSettlementTierCommandEntityData(
+    val cityId: String,
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "upgrade-settlement-tier"
     }
 }
 

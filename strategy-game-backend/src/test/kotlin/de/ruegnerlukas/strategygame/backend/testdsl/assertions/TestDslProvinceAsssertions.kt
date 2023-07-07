@@ -20,7 +20,7 @@ suspend fun GameTestContext.expectProvinceResources(provinceCapitalName: String,
 
 suspend fun getProvince(ctx: GameTestContext, provinceCapitalName: String): Province {
     return ctx.getGameExtended().let { game ->
-        val city = game.cities.find { it.name == provinceCapitalName && it.isProvinceCapital }!!
+        val city = game.cities.find { it.meta.name == provinceCapitalName && it.meta.isProvinceCapital }!!
         game.provinces.find { it.provinceCapitalCityId == city.cityId }!!
     }
 }

@@ -146,6 +146,7 @@ export class GameSetStateAction {
         return game.cities.map(city => ({
             cityId: city.cityId,
             name: city.name,
+            tier: city.tier,
             countryId: city.countryId,
             size: city.size,
             growthProgress: city.growthProgress,

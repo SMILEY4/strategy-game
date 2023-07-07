@@ -52,7 +52,6 @@ dependencies {
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
 
-
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
     implementation("com.amazonaws:aws-java-sdk-core:$versionAwsSdk")
@@ -103,8 +102,6 @@ dependencies {
 
     val versionKotlinTest: String by project
     testImplementation("org.jetbrains.kotlin:kotlin-test:$versionKotlinTest")
-
-
 }
 
 tasks.withType<Test>().configureEach {

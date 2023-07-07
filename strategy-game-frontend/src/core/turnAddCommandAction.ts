@@ -6,6 +6,7 @@ import {
     CommandPlaceScout,
     CommandProductionQueueAddBuildingEntry,
     CommandProductionQueueAddSettlerEntry,
+    CommandUpgradeSettlementTier,
 } from "./models/command";
 import {GameState} from "./models/gameState";
 import {TilePosition} from "./models/tilePosition";
@@ -71,6 +72,13 @@ export class TurnAddCommandAction {
             commandType: "production-queue-add-entry.settler",
             cityId: cityId,
         } as CommandProductionQueueAddSettlerEntry);
+    }
+
+    addUpgradeSettlementTier(cityId: string) {
+        this.perform({
+            commandType: "upgrade-settlement-tier",
+            cityId: cityId,
+        } as CommandUpgradeSettlementTier);
     }
 
 }

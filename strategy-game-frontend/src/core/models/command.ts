@@ -5,7 +5,8 @@ export interface Command {
         | "place-scout"
         | "create-city"
         | "production-queue-add-entry.building"
-        | "production-queue-add-entry.settler";
+        | "production-queue-add-entry.settler"
+        | "upgrade-settlement-tier";
 }
 
 export interface CommandPlaceMarker extends Command {
@@ -36,5 +37,10 @@ export interface CommandProductionQueueAddBuildingEntry extends Command {
 
 export interface CommandProductionQueueAddSettlerEntry extends Command {
     commandType: "production-queue-add-entry.settler"
+    cityId: string,
+}
+
+export interface CommandUpgradeSettlementTier extends Command {
+    commandType: "upgrade-settlement-tier"
     cityId: string,
 }

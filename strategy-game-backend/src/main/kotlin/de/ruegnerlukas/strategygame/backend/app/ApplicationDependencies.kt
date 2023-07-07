@@ -7,6 +7,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
@@ -47,6 +48,9 @@ import de.ruegnerlukas.strategygame.backend.gamesession.core.RequestConnectionTo
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.DiscoverMapAreaImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializePlayerImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpgradeSettlementTier
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
@@ -80,6 +84,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.RequestCo
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializePlayer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
@@ -95,6 +100,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GamesByUs
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGame
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesQueryByGameAndPosition
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.TilesUpdate
+import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.UsersConnectedToGamesQuery
 import de.ruegnerlukas.strategygame.backend.user.core.CreateUserImpl
 import de.ruegnerlukas.strategygame.backend.user.core.DeleteUserImpl
@@ -116,7 +122,6 @@ import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 val applicationDependencies = module {
 
     single<UserIdentityService> { UserIdentityService.create(Config.get()) } withOptions { createdAtStart() }
@@ -125,6 +130,7 @@ val applicationDependencies = module {
     single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
     single<MonitoringService> { MicrometerMonitoringService(get()).also { Monitoring.service = it } }
     single<WebSocketConnectionHandler> { WSExtended.getConnectionHandler() }
+    single<MessageProducer> { WebSocketMessageProducer(get()) }
 
     single<CreateUser> { CreateUserImpl(get()) }
     single<DeleteUser> { DeleteUserImpl(get()) }
@@ -169,7 +175,9 @@ val applicationDependencies = module {
     single<GameStep> { GameStepImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 
+    single<EconomyPopFoodConsumptionProvider> { PopFoodConsumption() }
     single<PlayerViewCreator> { PlayerViewCreatorImpl(get(), get()) }
+    single<InitializePlayer> { InitializePlayerImpl(get(), get(), get(), get(), get()) }
     single<InitializeWorld> { InitializeWorldImpl(get(), get(), get()) }
     single<EventSystem> { EventSystem() }
     single<GENCreateCity> { GENCreateCity(get(), get()) } withOptions { createdAtStart() }
@@ -183,7 +191,7 @@ val applicationDependencies = module {
     single<GENPlaceMarker> { GENPlaceMarker(get()) } withOptions { createdAtStart() }
     single<GENValidatePlaceScout> { GENValidatePlaceScout(get(), get()) } withOptions { createdAtStart() }
     single<GENPlaceScout> { GENPlaceScout(get(), get()) } withOptions { createdAtStart() }
-    single<GENValidateAddProductionQueueEntry> { GENValidateAddProductionQueueEntry(get(), get()) } withOptions { createdAtStart() }
+    single<GENValidateAddProductionQueueEntry> { GENValidateAddProductionQueueEntry(get()) } withOptions { createdAtStart() }
     single<GENAddProductionQueueEntry> { GENAddProductionQueueEntry(get()) } withOptions { createdAtStart() }
     single<GENValidateRemoveProductionQueueEntry> { GENValidateRemoveProductionQueueEntry(get()) } withOptions { createdAtStart() }
     single<GENRemoveProductionQueueEntry> { GENRemoveProductionQueueEntry(get(), get()) } withOptions { createdAtStart() }
@@ -194,5 +202,8 @@ val applicationDependencies = module {
     single<GENUpdateCityGrowthProgress> { GENUpdateCityGrowthProgress(get(), get()) } withOptions { createdAtStart() }
     single<GENUpdateCitySize> { GENUpdateCitySize(get()) } withOptions { createdAtStart() }
     single<GENValidateOperationInvalid> { GENValidateOperationInvalid(get()) } withOptions { createdAtStart() }
+    single<GENValidateUpgradeSettlementTier> { GENValidateUpgradeSettlementTier(get()) } withOptions { createdAtStart() }
+    single<GENUpgradeSettlementTier> { GENUpgradeSettlementTier(get()) } withOptions { createdAtStart() }
+
 
 }

@@ -25,10 +25,10 @@ class ProvinceEconomyNode(
             if (enablePopGrowthEntity) {
                 entities.add(PopulationGrowthEconomyEntity(owner, city, config))
             }
-            city.buildings.forEach { building ->
+            city.infrastructure.buildings.forEach { building ->
                 entities.add(BuildingEconomyEntity(owner, city, building))
             }
-            city.productionQueue.firstOrNull()?.also { queueEntry ->
+            city.infrastructure.productionQueue.firstOrNull()?.also { queueEntry ->
                 entities.add(ProductionQueueEconomyEntity(owner, queueEntry))
             }
         }

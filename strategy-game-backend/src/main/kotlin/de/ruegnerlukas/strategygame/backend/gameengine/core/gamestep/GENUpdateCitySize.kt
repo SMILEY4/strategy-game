@@ -40,18 +40,18 @@ class GENUpdateCitySize(eventSystem: EventSystem) : Logging {
         }
     }
 
-    private fun shouldGrow(city: City) = city.growthProgress >= 1f
+    private fun shouldGrow(city: City) = city.population.growthProgress >= 1f
 
-    private fun shouldShrink(city: City) = city.growthProgress <= -1f
+    private fun shouldShrink(city: City) = city.population.growthProgress <= -1f
 
     private fun grow(city: City) {
-        city.size++
-        city.growthProgress -= 1f
+        city.population.size++
+        city.population.growthProgress -= 1f
     }
 
     private fun shrink(city: City) {
-        city.size--
-        city.growthProgress += 1f
+        city.population.size--
+        city.population.growthProgress += 1f
     }
 
 }

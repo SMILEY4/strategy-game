@@ -6,6 +6,7 @@ import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 data class CityDTO(
     val cityId: String,
     val countryId: String,
+    val tier: String,
     val tile: TileRef,
     val name: String,
     val color: RGBColor,

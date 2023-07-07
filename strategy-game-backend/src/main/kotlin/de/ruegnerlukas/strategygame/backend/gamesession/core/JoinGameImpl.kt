@@ -31,7 +31,7 @@ class JoinGameImpl(
 
     override suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit> {
         return time(metricId) {
-            log().info("Joining game $gameId as user $userId)")
+            log().info("Joining game $gameId as user $userId")
             either {
                 val game = findGame(gameId).bind()
                 validate(game, userId).bind()
@@ -55,6 +55,7 @@ class JoinGameImpl(
      */
     private fun validate(game: Game, userId: String): Either<UserAlreadyJoinedError, Unit> {
         return if (game.players.existsByUserId(userId)) {
+            log().warn("User has $userId already joined game ${game.gameId}")
             UserAlreadyJoinedError.err()
         } else {
             Unit.ok()

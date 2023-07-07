@@ -13,6 +13,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutC
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddSettlerEntryCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueRemoveEntryCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.UpgradeSettlementTierCommandData
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeError
 import de.ruegnerlukas.strategygame.backend.testutils.shouldBeOk
@@ -162,6 +163,16 @@ class SubmitTurnUserActionDsl(val userId: String) {
         }
     }
 
+    suspend fun upgradeSettlementTier(block: suspend UpgradeSettlementTierCommandDsl.() -> Unit) {
+        UpgradeSettlementTierCommandDsl().coApply(block).also {
+            commands.add(
+                UpgradeSettlementTierCommandData(
+                    cityId = it.cityId!!
+                )
+            )
+        }
+    }
+
     fun placeMarker(block: PlaceMarkerCommandDsl.() -> Unit) {
         PlaceMarkerCommandDsl().apply(block).also {
             commands.add(
@@ -228,6 +239,10 @@ class CreateTownCommandDsl {
     var q: Int? = null
     var r: Int? = null
     var name: String? = null
+}
+
+class UpgradeSettlementTierCommandDsl {
+    var cityId: String? = null
 }
 
 class PlaceMarkerCommandDsl {

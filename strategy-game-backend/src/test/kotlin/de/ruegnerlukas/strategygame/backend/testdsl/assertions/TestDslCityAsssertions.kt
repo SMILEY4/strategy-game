@@ -3,6 +3,7 @@ package de.ruegnerlukas.strategygame.backend.testdsl.assertions
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.common.utils.coApply
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlementTier
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCities
 import de.ruegnerlukas.strategygame.backend.testutils.TestUtils
@@ -43,20 +44,23 @@ private suspend fun assertCity(database: ArangoDatabase, expectedCity: CityAsser
     val actualCity = actualCities.find { actualCity ->
         actualCity.tile.q == expectedCity.q
                 && actualCity.tile.r == expectedCity.r
-                && actualCity.name == expectedCity.name
+                && actualCity.meta.name == expectedCity.name
                 && actualCity.countryId == expectedCity.countryId
-                && actualCity.isProvinceCapital == expectedCity.isProvinceCapital
+                && actualCity.meta.isProvinceCapital == expectedCity.isProvinceCapital
     }
     actualCity.shouldNotBeNull()
-    actualCity.isProvinceCapital shouldBe expectedCity.isProvinceCapital
+    actualCity.meta.isProvinceCapital shouldBe expectedCity.isProvinceCapital
     if (expectedCity.province != null) {
         TestUtils.getProvinceByCityId(database, actualCity.cityId).provinceId shouldBe expectedCity.province
     }
     if(expectedCity.growthProgress != null) {
-        actualCity.growthProgress shouldBe expectedCity.growthProgress!!.plusOrMinus(0.0001f)
+        actualCity.population.growthProgress shouldBe expectedCity.growthProgress!!.plusOrMinus(0.0001f)
     }
     if(expectedCity.size != null) {
-        actualCity.size shouldBe expectedCity.size
+        actualCity.population.size shouldBe expectedCity.size
+    }
+    if(expectedCity.tier != null) {
+        actualCity.tier shouldBe expectedCity.tier
     }
 }
 
@@ -81,4 +85,5 @@ class CityAssertionDsl(
     var province: String? = null
     var growthProgress: Float? = null
     var size: Int? = null
+    var tier: SettlementTier? = null
 }

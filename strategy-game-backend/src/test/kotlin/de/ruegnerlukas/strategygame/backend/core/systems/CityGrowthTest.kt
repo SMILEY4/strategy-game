@@ -1,12 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulation
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlementTier
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
 import de.ruegnerlukas.strategygame.backend.testdsl.GameTestContext
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
@@ -204,6 +208,47 @@ class CityGrowthTest : StringSpec({
         }
     }
 
+    "village cannot grow larger than max size" {
+        gameTest(fixedPopFoodConsumption = 2) {
+            createGame {
+                worldSettings = WorldSettings.landOnly()
+                user("user")
+            }
+            addTileResources(0, 0) {
+                allNeighbours(TerrainResourceType.PLAINS)
+            }
+            addCity {
+                name = "Test City"
+                tier = SettlementTier.VILLAGE
+                initialSize = SettlementTier.VILLAGE.maxSize
+                tile = TilePosition(0, 0)
+                countryId = getCountryId("user")
+                building(BuildingType.FARM, TileDirection.LEFT)
+                building(BuildingType.FARM, TileDirection.RIGHT)
+                building(BuildingType.FARM, TileDirection.TOP_LEFT)
+                building(BuildingType.FARM, TileDirection.TOP_RIGHT)
+                building(BuildingType.FARM, TileDirection.BOTTOM_LEFT)
+                building(BuildingType.FARM, TileDirection.BOTTOM_RIGHT)
+            }
+            update {
+                expectedSize = SettlementTier.VILLAGE.maxSize
+                expectedProgress = -0.1f
+            }
+            update {
+                expectedSize = SettlementTier.VILLAGE.maxSize
+                expectedProgress = -0.1f
+            }
+            update {
+                expectedSize = SettlementTier.VILLAGE.maxSize
+                expectedProgress = -0.1f
+            }
+            update {
+                expectedSize = SettlementTier.VILLAGE.maxSize
+                expectedProgress = -0.1f
+            }
+        }
+    }
+
     "test city base food consumption" {
         cityOfSize(0).also { expectRequiredBaseFood(it, 0f) }
         cityOfSize(1).also { expectRequiredBaseFood(it, 1f) }
@@ -244,15 +289,22 @@ class CityGrowthTest : StringSpec({
                 cityId = "test-city",
                 countryId = "test-country",
                 tile = TileRef("test-tile", 0, 0),
-                name = "Test City",
-                color = RGBColor.random(),
-                isProvinceCapital = true,
-                buildings = mutableListOf(),
-                productionQueue = mutableListOf(),
-                size = size,
-                growthProgress = 0f,
-                popConsumedFood = 0f,
-                popGrowthConsumedFood = false,
+                tier = SettlementTier.CITY,
+                meta = CityMetadata(
+                    name = "Test City",
+                    color = RGBColor.random(),
+                    isProvinceCapital = true,
+                ),
+                infrastructure = CityInfrastructure(
+                    buildings = mutableListOf(),
+                    productionQueue = mutableListOf(),
+                ),
+                population = CityPopulation(
+                    size = size,
+                    growthProgress = 0f,
+                    popConsumedFood = 0f,
+                    popGrowthConsumedFood = false,
+                ),
             )
 
         internal fun expectRequiredBaseFood(city: City, expected: Float) {

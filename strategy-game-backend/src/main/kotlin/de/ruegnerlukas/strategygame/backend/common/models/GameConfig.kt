@@ -26,14 +26,6 @@ data class GameConfig(
      */
     val buildingCostStone: Float = 50f,
     /**
-     * The max amount of buildings in a town
-     */
-    val townBuildingSlots: Int = 6,
-    /**
-     * The max amount of buildings in a city
-     */
-    val cityBuildingSlots: Int = 6,
-    /**
      * the max amount of influence another country can have on a tile to still be able to build the city
      */
     val cityTileMaxForeignInfluence: Float = 3f,

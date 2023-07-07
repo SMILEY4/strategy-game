@@ -11,5 +11,6 @@ object TriggerResolvePlaceMarker : EventTriggerDefinition<PlaceMarkerOperationDa
 object TriggerResolvePlaceScout : EventTriggerDefinition<PlaceScoutOperationData>()
 object TriggerResolveAddProductionQueueEntry : EventTriggerDefinition<AddProductionQueueEntryOperationData>()
 object TriggerResolveRemoveProductionQueueEntry : EventTriggerDefinition<RemoveProductionQueueEntryOperationData>()
+object TriggerResolveUpgradeSettlementTier : EventTriggerDefinition<UpgradeSettlementTierOperationData>()
 
 object TriggerCreateBuilding : EventTriggerDefinition<CreateBuildingData>()
