@@ -65,4 +65,4 @@ Creates a runnable .jar
 ./gradlew shadowJar
 ```
 
-The created jar can be found in `./build/libs/strategy-game-backend-x.y-all.jar`
+The created jar can be found in `./build/libs/backend-x.y-all.jar`

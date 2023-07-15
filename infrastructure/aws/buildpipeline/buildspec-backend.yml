@@ -23,7 +23,7 @@ phases:
             - echo Build started on `date`
             - echo repository-uri = $$REPOSITORY_URI
             - echo image-tag = $IMAGE_TAG
-            - cd strategy-game-backend
+            - cd backend
             - echo Building the Docker image...
             - docker build --platform linux/amd64 -t $REPOSITORY_URI:latest .
             - cd ..
