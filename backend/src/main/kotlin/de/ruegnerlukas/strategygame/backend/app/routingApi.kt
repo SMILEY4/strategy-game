@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.app
 
-import de.ruegnerlukas.strategygame.backend.gamesession.external.api.routingGame
+import de.ruegnerlukas.strategygame.backend.gameengine.external.api.routingGameEngine
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.routingGameSession
 import de.ruegnerlukas.strategygame.backend.operation.routeStaticResources
 import de.ruegnerlukas.strategygame.backend.operation.routingInternal
 import de.ruegnerlukas.strategygame.backend.user.external.api.routingUser
@@ -13,7 +14,8 @@ import io.ktor.server.routing.route
 fun Route.routingApi() {
     route("api") {
         routingUser()
-        routingGame()
+        routingGameSession()
+        routingGameEngine()
         routingInternal()
     }
     routeStaticResources()

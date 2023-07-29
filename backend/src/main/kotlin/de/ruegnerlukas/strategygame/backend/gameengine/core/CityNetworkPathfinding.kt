@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
+package de.ruegnerlukas.strategygame.backend.gameengine.core
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
