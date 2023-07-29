@@ -29,7 +29,7 @@ export class GameApiImpl implements GameApi {
     config(): Promise<GameConfig> {
         return Promise.resolve()
             .then(() => this.httpClient.get({
-                url: "/api/game/config",
+                url: "/api/session/config",
                 requireAuth: true,
                 token: this.userRepository.getAuthToken(),
             }))
@@ -44,7 +44,7 @@ export class GameApiImpl implements GameApi {
     list(): Promise<string[]> {
         return Promise.resolve()
             .then(() => this.httpClient.get({
-                url: "/api/game/list",
+                url: "/api/session/list",
                 requireAuth: true,
                 token: this.userRepository.getAuthToken(),
             }))
@@ -59,7 +59,7 @@ export class GameApiImpl implements GameApi {
     create(seed: string | null): Promise<string> {
         return Promise.resolve()
             .then(() => this.httpClient.post({
-                url: "/api/game/create" + (seed ? ("?seed=" + seed) : ""),
+                url: "/api/session/create" + (seed ? ("?seed=" + seed) : ""),
                 requireAuth: true,
                 token: this.userRepository.getAuthToken(),
             }))
@@ -76,7 +76,7 @@ export class GameApiImpl implements GameApi {
     join(gameId: string): Promise<void> {
         return Promise.resolve()
             .then(() => this.httpClient.post({
-                url: `/api/game/join/${gameId}`,
+                url: `/api/session/join/${gameId}`,
                 requireAuth: true,
                 token: this.userRepository.getAuthToken(),
             }))
@@ -91,7 +91,7 @@ export class GameApiImpl implements GameApi {
 
 
     connect(gameId: string): Promise<void> {
-        const url = `/api/game/${gameId}`;
+        const url = `/api/session/${gameId}`;
         console.log("open websocket-connection:", url);
         return this.websocketClient.open(url, this.userRepository.getAuthToken(), message => {
             this.messageHandler.onMessage(message.type, message.payload);

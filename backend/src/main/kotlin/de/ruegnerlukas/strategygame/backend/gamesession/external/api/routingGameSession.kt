@@ -15,7 +15,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 
-fun Route.routingGame() {
+fun Route.routingGameSession() {
     val createGame by inject<CreateGame>()
     val joinGame by inject<JoinGame>()
     val listGames by inject<ListGames>()
@@ -26,7 +26,7 @@ fun Route.routingGame() {
     val requestConnection by inject<RequestConnectionToGame>()
     val connectAction by inject<ConnectToGame>()
     val disconnectAll by inject<DisconnectAllPlayers>()
-    route("game") {
+    route("session") {
         authenticate("user") {
             routeCreate(createGame, joinGame)
             routeJoin(joinGame)
