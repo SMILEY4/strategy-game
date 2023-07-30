@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
-import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
+import de.ruegnerlukas.strategygame.backend.gameengine.core.common.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata

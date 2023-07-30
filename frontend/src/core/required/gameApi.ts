@@ -1,6 +1,8 @@
 import {Command} from "../models/command";
 import {GameConfig} from "../models/gameConfig";
 import {BaseError} from "../../shared/error";
+import {TilePosition} from "../models/tilePosition";
+import {CityCreationPreview} from "../models/CityCreationPreview";
 
 export interface GameApi {
     config: () => Promise<GameConfig>;
@@ -10,6 +12,7 @@ export interface GameApi {
     connect: (gameId: string) => Promise<void>;
     disconnect: () => void;
     submitTurn: (commands: Command[]) => void;
+    previewCityCreation: (gameId: string, pos: TilePosition, isProvinceCapital: boolean) => Promise<CityCreationPreview>
 }
 
 export class GameApiError extends BaseError {

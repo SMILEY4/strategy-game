@@ -4,6 +4,7 @@ import {Command} from "../../../core/models/command";
 import {GameState} from "../../../core/models/gameState";
 import {TilePosition} from "../../../core/models/tilePosition";
 import {GameStore} from "./gameStore";
+import {CityCreationPreview} from "../../../core/models/CityCreationPreview";
 
 export class GameRepositoryImpl implements GameRepository {
 
@@ -13,6 +14,14 @@ export class GameRepositoryImpl implements GameRepository {
 
     getCompleteState(): GameStore.StateValues {
         return GameStore.useState.getState();
+    }
+
+    getGameId(): string {
+        return GameStore.useState.getState().gameId;
+    }
+
+    setGameId(id: string): void {
+        GameStore.useState.getState().setGameId(id);
     }
 
     setGameState(state: GameState): void {
@@ -30,7 +39,7 @@ export class GameRepositoryImpl implements GameRepository {
     setMouseOverTile(q: number, r: number): void {
         GameStore.useState.getState().setTileMouseOver({
             q: q,
-            r: r
+            r: r,
         });
     }
 
@@ -41,7 +50,7 @@ export class GameRepositoryImpl implements GameRepository {
     setSelectedTile(q: number, r: number): void {
         GameStore.useState.getState().setTileSelected({
             q: q,
-            r: r
+            r: r,
         });
     }
 
@@ -71,6 +80,15 @@ export class GameRepositoryImpl implements GameRepository {
 
     getCommands(): Command[] {
         return GameStore.useState.getState().commands;
+    }
+
+    getPreviewCityCreation(): CityCreationPreview | null {
+        return GameStore.useState.getState().previewCityCreation;
+    }
+
+    setPreviewCityCreation(preview: CityCreationPreview | null): void {
+        console.log("set preview", preview)
+        GameStore.useState.getState().setPreviewCityCreation(preview);
     }
 
 }

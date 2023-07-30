@@ -19,6 +19,7 @@ export class GameConnectAction {
         console.log("connect to game ", gameId);
         return this.gameApi.connect(gameId).then(() => {
             this.gameRepository.setGameState(GameState.LOADING);
+            this.gameRepository.setGameId(gameId)
         });
     }
 

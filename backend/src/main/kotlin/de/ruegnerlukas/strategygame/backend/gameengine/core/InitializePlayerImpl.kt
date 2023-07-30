@@ -63,7 +63,7 @@ class InitializePlayerImpl(
                 countryId = DbId.PLACEHOLDER,
                 userId = userId,
                 color = color,
-                availableSettlers = 1
+                availableSettlers = 3
             ),
             gameId
         ).getOrElse { throw Exception("Could not insert country of user $userId in game $gameId") }

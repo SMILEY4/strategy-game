@@ -6,20 +6,24 @@ import {MapMode} from "../../../core/models/mapMode";
 import {TilePosition} from "../../../core/models/tilePosition";
 import {generateId} from "../../../shared/utils";
 import {SetState} from "../../../shared/zustandUtils";
+import {CityCreationPreview} from "../../../core/models/CityCreationPreview";
 
 export namespace GameStore {
 
     export interface StateValues {
+        gameId: string
         revisionId: string,
         currentState: GameState,
         commands: Command[],
         camera: CameraState,
         tileMouseOver: TilePosition | null,
         tileSelected: TilePosition | null,
-        mapMode: MapMode
+        mapMode: MapMode,
+        previewCityCreation: CityCreationPreview | null
     }
 
     const initialStateValues: StateValues = {
+        gameId: "?",
         revisionId: generateId(),
         currentState: GameState.OUT_OF_GAME,
         commands: [],
@@ -30,10 +34,12 @@ export namespace GameStore {
         },
         tileMouseOver: null,
         tileSelected: null,
-        mapMode: MapMode.DEFAULT
+        mapMode: MapMode.DEFAULT,
+        previewCityCreation: null
     };
 
     interface StateActions {
+        setGameId: (id: string) => void;
         setCurrentState: (state: GameState) => void;
         addCommand: (command: Command) => void;
         clearCommands: () => void;
@@ -42,10 +48,15 @@ export namespace GameStore {
         setTileMouseOver: (pos: TilePosition | null) => void;
         setTileSelected: (pos: TilePosition | null) => void;
         setMapMode: (mode: MapMode) => void;
+        setPreviewCityCreation: (preview: CityCreationPreview | null) => void;
     }
 
     function stateActions(set: SetState<State>): StateActions {
         return {
+            setGameId: (id: string) => set(() => ({
+                gameId: id,
+                revisionId: generateId()
+            })),
             setCurrentState: (state: GameState) => set(() => ({
                 currentState: state,
                 revisionId: generateId()
@@ -79,6 +90,9 @@ export namespace GameStore {
             })),
             setMapMode: (mode: MapMode) => set(() => ({
                 mapMode: mode,
+            })),
+            setPreviewCityCreation: (preview: CityCreationPreview | null) => set(() => ({
+                previewCityCreation: preview,
             })),
         };
     }

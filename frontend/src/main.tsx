@@ -51,6 +51,7 @@ import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 
 import {App} from "./ui/App";
 import "./ui/index.css";
+import {GamePreviewCityCreation} from "./core/gamePreviewCityCreation";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -67,6 +68,7 @@ export namespace AppConfig {
         GameInitAction: qualifier<GameInitAction>("GameInitAction"),
         GameJoinAction: qualifier<GameJoinAction>("GameJoinAction"),
         GameListAction: qualifier<GameListAction>("GameListAction"),
+        GamePreviewCityCreation: qualifier<GamePreviewCityCreation>("GamePreviewCityCreation"),
         GameRepository: qualifier<GameRepository>("GameRepository"),
         GameSetStateAction: qualifier<GameSetStateAction>("GameSetStateAction"),
         GameUpdateAction: qualifier<GameUpdateAction>("GameUpdateAction"),
@@ -100,6 +102,7 @@ export namespace AppConfig {
     diContainer.bind(DIQ.GameInitAction, ctx => new GameInitAction(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.Renderer)));
     diContainer.bind(DIQ.GameJoinAction, ctx => new GameJoinAction(ctx.get(DIQ.GameApi)));
     diContainer.bind(DIQ.GameListAction, ctx => new GameListAction(ctx.get(DIQ.GameApi)));
+    diContainer.bind(DIQ.GamePreviewCityCreation, ctx => new GamePreviewCityCreation(ctx.get(DIQ.GameApi) ,ctx.get(DIQ.GameRepository)));
     diContainer.bind(DIQ.GameRepository, ctx => new GameRepositoryImpl());
     diContainer.bind(DIQ.GameSetStateAction, ctx => new GameSetStateAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.WorldRepository)));
     diContainer.bind(DIQ.GameUpdateAction, ctx => new GameUpdateAction(ctx.get(DIQ.Renderer)));
