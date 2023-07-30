@@ -20,11 +20,17 @@ export class Renderer {
 
     private readonly lineRenderer: LineRenderer;
 
-    constructor(canvasHandle: GameCanvasHandle, shaderSourceManager: ShaderSourceManager, gameRepository: GameRepository, worldRepository: WorldRepository, userRepository: UserRepository) {
+    constructor(
+        canvasHandle: GameCanvasHandle,
+        shaderSourceManager: ShaderSourceManager,
+        gameRepository: GameRepository,
+        worldRepository: WorldRepository,
+        userRepository: UserRepository,
+    ) {
         this.canvasHandle = canvasHandle;
         this.gameRepository = gameRepository;
         this.worldRepository = worldRepository;
-        this.tilemapRenderer = new TilemapRenderer(canvasHandle, shaderSourceManager);
+        this.tilemapRenderer = new TilemapRenderer(canvasHandle, shaderSourceManager, userRepository);
         this.tileObjectRenderer = new TileObjectRenderer(canvasHandle, shaderSourceManager, userRepository);
         this.lineRenderer = new LineRenderer(canvasHandle, shaderSourceManager);
     }
@@ -55,7 +61,13 @@ export class Renderer {
         gameState.routes.forEach(route => {
             const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r));
             this.lineRenderer.registerLine(route.routeId, positions, 1, [1, 1, 1, 0.3]);
-        })
+        });
+        if (localGameState.previewCityCreation) {
+            localGameState.previewCityCreation.addedRoutes.forEach(route => {
+                const positions = route.path.map(node => TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, node.q, node.r));
+                this.lineRenderer.registerLine(route.routeId, positions, 1, [0, 1, 1, 0.3]);
+            });
+        }
 
         this.tilemapRenderer.render(combinedRevId, camera, gameState, localGameState);
         this.lineRenderer.render(camera);

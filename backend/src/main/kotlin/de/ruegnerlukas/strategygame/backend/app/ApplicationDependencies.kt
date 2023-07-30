@@ -10,7 +10,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.PopFoodConsumption
+import de.ruegnerlukas.strategygame.backend.gameengine.core.common.PopFoodConsumption
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateCity
@@ -49,8 +49,10 @@ import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnEndImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.DiscoverMapAreaImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializePlayerImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.common.RouteGenerator
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
+import de.ruegnerlukas.strategygame.backend.gameengine.core.preview.PreviewCityCreationImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
@@ -85,6 +87,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializePlayer
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PreviewCityCreation
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
@@ -175,6 +178,8 @@ val applicationDependencies = module {
     single<GameStep> { GameStepImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 
+    single<RouteGenerator> { RouteGenerator(get()) }
+    single<PreviewCityCreation> { PreviewCityCreationImpl(get(), get(), get()) }
     single<EconomyPopFoodConsumptionProvider> { PopFoodConsumption() }
     single<PlayerViewCreator> { PlayerViewCreatorImpl(get(), get()) }
     single<InitializePlayer> { InitializePlayerImpl(get(), get(), get(), get(), get()) }

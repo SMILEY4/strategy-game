@@ -56,22 +56,22 @@ export class TileObjectRenderer {
                     name: "in_color", // r, g, b, a
                     type: ShaderAttributeType.FLOAT,
                     amountComponents: 4,
-                }
+                },
             ],
             uniforms: [
                 {
                     name: BatchRenderer.UNIFORM_VIEW_PROJECTION_MATRIX,
-                    type: ShaderUniformType.MAT3
+                    type: ShaderUniformType.MAT3,
                 },
                 {
                     name: "u_texture_sprites",
-                    type: ShaderUniformType.SAMPLER_2D
+                    type: ShaderUniformType.SAMPLER_2D,
                 },
                 {
                     name: "u_texture_labels",
-                    type: ShaderUniformType.SAMPLER_2D
-                }
-            ]
+                    type: ShaderUniformType.SAMPLER_2D,
+                },
+            ],
         });
         this.textureSprites = Texture.createFromPath(this.gameCanvas.getGL(), "/resources.png");
         this.batchRenderer = new BatchRenderer(this.gameCanvas.getGL(), 64000, false);
@@ -103,6 +103,14 @@ export class TileObjectRenderer {
                 this.addCityLabel(camera.getZoom(), e.q, e.r, this.textRenderer.getRegion(e.name + " (P)"));
             });
 
+        // CITY PREVIEW
+        if (localGameState.previewCityCreation && userCountryId) {
+            const pos = localGameState.previewCityCreation.position;
+            const isProvinceCapital = localGameState.previewCityCreation.isProvinceCapital;
+            const color = this.getColor(countries, userCountryId, false);
+            this.addCitySprite(pos.q, pos.r, isProvinceCapital, [color[0], color[1], color[2], 0.7]);
+        }
+
         // MARKERS
         gameState.markers
             .forEach(e => this.addMarkerSprite(e.tile.q, e.tile.r, this.getColor(countries, e.countryId, false)));
@@ -127,8 +135,8 @@ export class TileObjectRenderer {
         this.batchRenderer.end(camera, this.shader, {
             uniforms: {
                 "u_texture_sprites": 0,
-                "u_texture_labels": 1
-            }
+                "u_texture_labels": 1,
+            },
         });
     }
 
@@ -152,7 +160,7 @@ export class TileObjectRenderer {
                 align: "center" as CanvasTextAlign,
                 baseline: "middle" as CanvasTextBaseline,
                 shadowBlur: 4,
-                shadowColor: "white"
+                shadowColor: "white",
             }))
             .some(added => added);
         if (wasNewTextAdded) {

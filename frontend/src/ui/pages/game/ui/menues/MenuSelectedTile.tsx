@@ -21,6 +21,7 @@ export function MenuSelectedTile(props: {menuLevel: number}): ReactElement {
     const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
     const canPlaceScout = useValidatePlaceScout(selectedTilePos);
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
+    const cityPreviewService = AppConfig.di.get(AppConfig.DIQ.GamePreviewCityCreation);
     const canCreateCity = useValidateCreateCity(selectedTilePos);
     const canCreateTown = useValidateCreateTown(selectedTilePos);
 
@@ -144,10 +145,16 @@ export function MenuSelectedTile(props: {menuLevel: number}): ReactElement {
 
     function createCity(position: TilePosition) {
         uiService.openDialogCreateCity(position);
+        if(position){
+            cityPreviewService.showPreview(position, true)
+        }
     }
 
     function createTown(position: TilePosition) {
         uiService.openDialogCreateTown(position);
+        if(position){
+            cityPreviewService.showPreview(position, false)
+        }
     }
 
     function placeScout(position: TilePosition) {

@@ -3,10 +3,14 @@ import {CameraState} from "../models/cameraState";
 import {Command} from "../models/command";
 import {GameState} from "../models/gameState";
 import {TilePosition} from "../models/tilePosition";
+import {CityCreationPreview} from "../models/CityCreationPreview";
 
 export interface GameRepository {
     getRevisionId: () => string
     getCompleteState: () => GameStore.StateValues
+
+    setGameId: (id: string) => void;
+    getGameId: () => string;
 
     setGameState: (state: GameState) => void
     getGameState: () => GameState
@@ -25,5 +29,8 @@ export interface GameRepository {
     clearCommands: () => void
     addCommand: (command: Command) => void
     getCommands: () => Command[]
+
+    getPreviewCityCreation: () => (CityCreationPreview | null)
+    setPreviewCityCreation: (preview: CityCreationPreview | null) => void
 
 }

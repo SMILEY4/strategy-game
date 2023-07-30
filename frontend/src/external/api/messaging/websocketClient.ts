@@ -18,7 +18,7 @@ export class WebsocketClient {
         }
         return Promise.resolve()
             .then(() => this.httpClient.get({
-                url: "/api/game/wsticket",
+                url: "/api/session/wsticket",
                 requireAuth: true,
                 token: token
             }))

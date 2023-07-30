@@ -8,6 +8,8 @@ import {WebsocketClient} from "./messaging/websocketClient";
 import {PayloadSubmitTurn} from "./models/payloadSubmitTurn";
 import {ResponseUtils} from "./http/responseUtils";
 import {UnexpectedError} from "../../shared/error";
+import {CityCreationPreview} from "../../core/models/CityCreationPreview";
+import {TilePosition} from "../../core/models/tilePosition";
 import handleErrorResponses = ResponseUtils.handleErrorResponses;
 
 export class GameApiImpl implements GameApi {
@@ -106,6 +108,33 @@ export class GameApiImpl implements GameApi {
 
     submitTurn(commands: Command[]): void {
         this.websocketClient.send("submit-turn", PayloadSubmitTurn.buildSubmitTurnPayload(commands));
+    }
+
+    previewCityCreation(gameId: string, pos: TilePosition, isProvinceCapital: boolean): Promise<CityCreationPreview> {
+        return Promise.resolve()
+            .then(() => this.httpClient.post({
+                url: "/api/game/" + gameId + "/preview/city",
+                body: {
+                    tile: {
+                        q: pos.q,
+                        r: pos.r,
+                    },
+                    isProvinceCapital: isProvinceCapital,
+                },
+                requireAuth: true,
+                token: this.userRepository.getAuthToken(),
+            }))
+            .then(response => handleErrorResponses(response, error => {
+                if (error.status === "Unauthorized") return new UnauthorizedError();
+                return new UnexpectedError(error.status);
+            }))
+            .then(response => response.json())
+            .then(data => ({
+                position: pos,
+                isProvinceCapital: isProvinceCapital,
+                addedRoutes: data.addedRoutes,
+                claimedTiles: data.claimedTiles,
+            }));
     }
 
 }

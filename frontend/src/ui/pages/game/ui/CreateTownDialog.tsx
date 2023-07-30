@@ -6,6 +6,7 @@ import {TextField} from "../../../components/specific/TextField";
 export function CreateTownDialog(props: { frameId: string, tile: TilePosition }): ReactElement {
     const actionAddCommand = AppConfig.di.get(AppConfig.DIQ.TurnAddCommandAction);
     const uiService = AppConfig.di.get(AppConfig.DIQ.UIService);
+    const cityPreviewService = AppConfig.di.get(AppConfig.DIQ.GamePreviewCityCreation);
     const [name, setName] = useState("");
 
     return (
@@ -19,10 +20,12 @@ export function CreateTownDialog(props: { frameId: string, tile: TilePosition })
 
     function onCancel() {
         uiService.close(props.frameId);
+        cityPreviewService.clearPreview()
     }
 
     function onAccept() {
         uiService.close(props.frameId);
+        cityPreviewService.clearPreview()
         actionAddCommand.addCreateCity(props.tile, name, false);
     }
 }

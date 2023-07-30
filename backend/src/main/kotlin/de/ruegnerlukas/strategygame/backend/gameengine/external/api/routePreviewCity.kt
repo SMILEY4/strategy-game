@@ -10,13 +10,14 @@ import de.ruegnerlukas.strategygame.backend.common.logging.withLoggingContextAsy
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityCreationPreviewData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityCreationPreviewRequest
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PreviewCityCreation
-import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.post
 
-fun Route.routePreviewCity(previewCity: PreviewCityCreation) = get("/{gameId}/preview/city", {
+fun Route.routePreviewCity(previewCity: PreviewCityCreation) = post("/{gameId}/preview/city", {
     description = "Provides a preview for creating a given city."
     request {
         pathParameter<String>("gameId") {
