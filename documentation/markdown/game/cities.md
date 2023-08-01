@@ -19,7 +19,6 @@ title: Cities
 
 **Effects**
 
-- City generates fixed amount of money each turn
 - City adds influence to surrounding tiles
 - Border spreads based on influence
 

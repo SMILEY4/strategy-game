@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+    InstanceName:
+        Type: "String"
+        Description: "Name of the ec2-instance"
+        Default: "swarm-master"
+    InstanceKeyPairName:
+        Type: "String"
+        Description: "Name of a key-pair for ec2-instances"
+        Default: "ec2-kp"
+    InstanceType:
+        Type: "String"
+        Description: "Type of the ec2-instance"
+        Default: "t2.micro"
+    ImageId:
+        Type: "String"
+        Description: "Type of the image. Use Ubuntu or change the username in the UserData-Script of the ec2 instance."
+        Default: "ami-0ec7f9846da6b0f61"
+    RootDeviceName:
+        Type: "String"
+        Description: "The device name of the root volume of your AMI (https://repost.aws/knowledge-center/cloudformation-root-volume-property)"
+        Default: "/dev/sda1"
+    VolumeSize:
+        Type: "String"
+        Description: "The volume size of the master instance"
+        Default: "16"
+    InstanceProfile:
+        Type: "String"
+        Description: "The name of the (master) instance-profile."
+        Default: "ec2-swarm-master"
+    SecurityGroup:
+        Type: "String"
+        Description: "The name/id of the (master) security-group."
+        Default: "ec2-swarm"
+    AppDomain:
+        Type: "String"
+        Description: "Domain name of the api (without www)"
+        Default: "api.strategy-game.lruegner.de"
+    HostedZoneId:
+        Type: "String"
+        Description: "Id of the hosted zone of the domain"
+        Default: "Z0864027FH95HV1Z970G"
+
+Resources:
+
+    #===================================================================================================================
+    #    EC2 Instance
+    #===================================================================================================================
+
+    Instance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            Tags:
+                -   Key: "Name"
+                    Value: !Ref InstanceName
+            ImageId: !Ref ImageId
+            InstanceType: !Ref InstanceType
+            IamInstanceProfile: !Ref InstanceProfile
+            BlockDeviceMappings:
+                -   DeviceName: !Ref RootDeviceName
+                    Ebs:
+                        VolumeType: "gp2"
+                        DeleteOnTermination: "true"
+                        VolumeSize: !Ref VolumeSize
+            KeyName: !Ref InstanceKeyPairName
+            SecurityGroupIds:
+                - !Ref SecurityGroup
+            UserData:
+                Fn::Base64: |
+                    #!/bin/bash -xe
+
+                    echo "setting up instance as swarm-master..."
+
+                    sudo apt-get update
+                    
+                    echo "installing aws-cli..."
+                    sudo apt-get install awscli -y
+
+                    echo "installing python..."
+                    sudo apt install python3 -y
+
+                    echo "installing unzip..."
+                    sudo apt install unzip -y
+
+                    echo "installing docker..."
+                    sudo apt install docker.io -y
+                    sudo usermod -aG docker ubuntu
+                    newgrp docker
+                    docker swarm init
+                    
+                    echo "installing amazon-ecr-credential-helper..."
+                    sudo apt install amazon-ecr-credential-helper
+                    sudo -u ubuntu mkdir /home/ubuntu/.docker
+                    echo "{\"credsStore\":\"ecr-login\"}" >> /home/ubuntu/.docker/config.json
+
+                    echo "setting up application..."
+                    sudo -u ubuntu mkdir /home/ubuntu/app
+                    aws s3 cp s3://strategy-game.config/swarm/setup.py /home/ubuntu/app/setup.py
+                    aws s3 cp s3://strategy-game.config/swarm/deploy.py /home/ubuntu/app/deploy.py
+                    sudo chown ubuntu /home/ubuntu/app/setup.py
+                    sudo chown ubuntu /home/ubuntu/app/deploy.py
+                    python3 /home/ubuntu/app/setup.py
+
+                    echo "...Setup of swarm-master complete"
+
+
+    #===================================================================================================================
+    #    Route53 Record
+    #===================================================================================================================
+
+    Route53Records:
+        Type: "AWS::Route53::RecordSetGroup"
+        Properties:
+            HostedZoneId: !Ref HostedZoneId
+            RecordSets:
+                -   Name: !Join
+                        - ""
+                        -   - ""
+                            - !Ref AppDomain
+                            - "."
+                    Type: "A"
+                    TTL: 300
+                    ResourceRecords:
+                        - !GetAtt Instance.PublicIp

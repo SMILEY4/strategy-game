@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+- name: Overview
+  folder: ''
+  type: file
+  disableDeletion: true
+  editable: true
+  options:
+    path: /etc/grafana/provisioning/dashboards/general

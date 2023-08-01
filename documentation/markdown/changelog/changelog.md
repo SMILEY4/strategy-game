@@ -4,9 +4,24 @@ title: Changelog
 
 
 
+# Version 0.5.0 - 01.08.2023
+
+- Cities
+
+  - creation requires settlers in country
+  - production queue for buildings and settlers
+  - production queue consumes required resources until satisfied
+  - attribute "size" and "tier"
+  - city-size grows/shrinks based on multiple factors
+  - (first) preview of city during its creation in ui
+- config for docker-swarm on aws ec2
+- refactor backend -> vertical slices
+
+
+
 # Version 0.4.0 - 19.03.2023
 
-<img src="D:\LukasRuegner\Programmieren\Workspace\strategy-game\documentation\markdown\changelog\0_4_0-game.png" alt="0_3_0-game" style="max-width: 70%;" />
+<img src="0_4_0-game.png" alt="0_3_0-game" style="max-width: 70%;" />
 
 - Economy System
   - resources are stored locally (in provinces)
@@ -29,7 +44,7 @@ title: Changelog
 
 # Version 0.3.0 - 05.11.2022
 
-<img src="D:\LukasRuegner\Programmieren\Workspace\strategy-game\documentation\markdown\changelog\0_3_0-game.png" alt="0_3_0-game" style="max-width: 70%;" />
+<img src="0_3_0-game.png" alt="0_3_0-game" style="max-width: 70%;" />
 
 - Visibility System
   - "unexplored", "explored", "visible"
@@ -37,8 +52,8 @@ title: Changelog
   - tiles get explored / are visible based on owner, distance to cities and scouts 
 - Map-Modes
   - world-map display different information based on currently selected mode
-  - <img src="D:\LukasRuegner\Programmieren\Workspace\strategy-game\documentation\markdown\changelog\0_3_0-mapmode_cities.png" alt="0_3_0-mapmode_cities" style="zoom:25%;" />
-  - <img src="D:\LukasRuegner\Programmieren\Workspace\strategy-game\documentation\markdown\changelog\0_3_0-mapmode_resources.png" alt="0_3_0-mapmode_cities" style="zoom:25%;" />
+  - <img src="0_3_0-mapmode_cities.png" alt="0_3_0-mapmode_cities" style="zoom:25%;" />
+  - <img src="0_3_0-mapmode_resources.png" alt="0_3_0-mapmode_cities" style="zoom:25%;" />
 
 - Added resources (wood, stone, metal, food)
   - location of sources generated procedurally
@@ -66,7 +81,7 @@ title: Changelog
 
 # Version 0.2.0 - 19.08.2022
 
-<img src="D:\LukasRuegner\Programmieren\Workspace\strategy-game\documentation\markdown\changelog\0_2_2-game.png" alt="0_2_2-game" style="max-width: 70%;" />
+<img src="0_2_2-game.png" alt="0_2_2-game" style="max-width: 70%;" />
 
 - Basic Ingame UI
   - dialog/window System

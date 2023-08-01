@@ -218,8 +218,8 @@ Resources:
                 BuildSpec: "infrastructure/aws/buildpipeline/buildspec-backend.yml"
             Environment:
                 ComputeType: "BUILD_GENERAL1_SMALL"
-                Type: "ARM_CONTAINER"
-                Image: "aws/codebuild/amazonlinux2-aarch64-standard:2.0"
+                Type: "LINUX_CONTAINER"
+                Image: "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
                 PrivilegedMode: true
             LogsConfig:
                 S3Logs:
