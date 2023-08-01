@@ -4,6 +4,21 @@ title: Changelog
 
 
 
+# Version 0.5.0 - 01.08.2023
+
+- Cities
+
+  - creation requires settlers in country
+  - production queue for buildings and settlers
+  - production queue consumes required resources until satisfied
+  - attribute "size" and "tier"
+  - city-size grows/shrinks based on multiple factors
+  - (first) preview of city during its creation in ui
+- config for docker-swarm on aws ec2
+- refactor backend -> vertical slices
+
+
+
 # Version 0.4.0 - 19.03.2023
 
 <img src="0_4_0-game.png" alt="0_3_0-game" style="max-width: 70%;" />
