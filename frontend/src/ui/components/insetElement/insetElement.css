@@ -1,0 +1,18 @@
+.inset-element {
+    --inset-element__color-light:       #381d2b;
+    --inset-element__color-dark:        #231221;
+
+    --inset-element__color-light-focus: hsl(329, 32%, 10%);
+    --inset-element__color-dark-focus:  hsl(307, 32%, 6%);
+
+}
+
+.inset-element {
+    position:   relative;
+    background: radial-gradient(var(--inset-element__color-light) 10%, var(--inset-element__color-dark) 80%);
+    color:      #ded9d0;
+}
+
+.inset-element:focus-within {
+    background: radial-gradient(var(--inset-element__color-light-focus) 10%, var(--inset-element__color-dark-focus) 80%);
+}

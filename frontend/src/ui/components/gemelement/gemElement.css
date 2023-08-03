@@ -1,0 +1,72 @@
+.gem-element {
+    --gem__main-color-light:              hsl(159, 42%, 47%);
+    --gem__main-color-light--hover:       hsl(162, 56%, 53%);
+    --gem__main-color-light--active:      hsl(162, 46%, 36%);
+    --gem__main-color-dark:               hsl(180, 17%, 12%);
+
+    --gem__border-color-light:            hsla(160, 17%, 54%, 0.75);
+    --gem__border-color-light--hover:     hsla(160, 17%, 64%, 0.75);
+    --gem__border-color-light--active:    hsla(160, 17%, 44%, 0.75);
+    --gem__border-color-dark:             hsla(180, 14%, 16%, 0.75);
+
+    --gem__highlight-color-light:         hsl(159, 46%, 70%);
+    --gem__highlight-color-light--hover:  hsl(159, 56%, 87%);
+    --gem__highlight-color-light--active: hsl(159, 56%, 60%);
+    --gem__highlight-color-dark:          hsl(180, 17%, 14%);
+}
+
+
+.gem-element {
+    position: relative;
+    margin:  3px;
+}
+
+
+.gem-element__outer {
+    position:            relative;
+    border:              5px solid;
+    border-image-slice:  1;
+    border-image-source: radial-gradient(circle, var(--gem__border-color-light) 20%, var(--gem__border-color-dark) 80%);
+    background:          radial-gradient(at bottom, var(--gem__main-color-light) 0%, var(--gem__main-color-dark) 80%);
+}
+
+.gem-element__inner {
+    position:            relative;
+    border:              1px solid;
+    border-image-slice:  1;
+    border-image-source: radial-gradient(circle, var(--gem__highlight-color-light) 0%, var(--gem__highlight-color-dark) 100%);
+}
+
+
+.gem-element__background {
+    position:         absolute;
+    top:              0;
+    left:             0;
+    bottom:           0;
+    right:            0;
+    background-image: url("/textures/non_uniform_concret_wall_prepared.jpg");
+    background-size:  cover;
+    mix-blend-mode:   multiply;
+    opacity:          30%;
+    pointer-events:   none;
+}
+
+
+.gem-element--interactive:hover .gem-element__outer {
+    border-image-source: radial-gradient(circle, var(--gem__border-color-light--hover) 20%, var(--gem__border-color-dark) 80%);
+    background:          radial-gradient(at bottom, var(--gem__main-color-light--hover) 0%, var(--gem__main-color-dark) 80%);
+}
+
+.gem-element--interactive:hover .gem-element__inner {
+    border-image-source: radial-gradient(circle, var(--gem__highlight-color-light--hover) 0%, var(--gem__highlight-color-dark) 100%);
+}
+
+
+.gem-element--interactive:active .gem-element__outer {
+    background:          radial-gradient(at bottom, var(--gem__main-color-light--active) 10%, var(--gem__main-color-dark) 80%);
+    border-image-source: radial-gradient(circle, var(--gem__border-color-light--active) 10%, var(--gem__border-color-dark) 80%);
+}
+
+.gem-element--interactive:active .gem-element__inner {
+    border-image-source: radial-gradient(circle, var(--gem__highlight-color-light--active) 0%, var(--gem__highlight-color-dark) 100%);
+}

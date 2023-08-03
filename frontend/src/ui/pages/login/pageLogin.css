@@ -1,0 +1,30 @@
+.page-login {
+    width:           100%;
+    height:          100%;
+
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+}
+
+.page-login__content {
+    padding:         3rem;
+    display:         flex;
+    gap:             1rem;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+}
+
+.page-login__content > h1 {
+    margin:    0;
+    padding:   0 0 0.8rem;
+    font-size: 3em;
+}
+
+.page-login__content > p {
+    margin:    0;
+    padding:   0;
+    font-size: 1em;
+    text-decoration: underline;
+}
