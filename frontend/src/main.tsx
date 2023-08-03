@@ -49,8 +49,8 @@ import {createDiContainer, qualifier} from "./shared/di";
 import SHADER_SRC_LINE_VERT from "./core/rendering/lines/lineShader.vsh?raw";
 import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 
-import {App} from "./ui/App";
-import "./ui/index.css";
+import {App} from "./uiOLD/App";
+import "./uiOLD/index.css";
 import {GamePreviewCityCreation} from "./core/gamePreviewCityCreation";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
