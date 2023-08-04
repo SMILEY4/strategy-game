@@ -1,21 +1,29 @@
 import {ReactElement} from "react";
-import "./panelDecorated.css";
 import {joinClassNames} from "../../utils";
-
+import "./panelDecorated.css"
 
 export interface PanelDecoratedProps {
-    children?: any;
+    color?: "red" | "blue"
     className?: string;
+    classNameContent?: string;
+    children?: any;
 }
 
 export function PanelDecorated(props: PanelDecoratedProps): ReactElement {
 
     return (
-        <div className={joinClassNames(["decorated-panel", props.className])}>
-            <div className="decorated-panel__background"/>
-            <div className="decorated-panel__border"/>
-            {props.children}
+        <div className={joinClassNames(["panel-decorated", colorClass(props), props.className])}>
+            <div className="panel-decorated__background"/>
+            <div className="panel-decorated__border"/>
+            <div className={joinClassNames(["panel-decorated__content", props.classNameContent])}>
+                {props.children}
+            </div>
         </div>
     );
+
+    function colorClass(props: PanelDecoratedProps): string {
+        if (props.color === "blue") return "panel-decorated--blue";
+        return "panel-decorated--red";
+    }
 
 }

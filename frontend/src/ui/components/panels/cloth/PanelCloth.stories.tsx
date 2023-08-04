@@ -14,36 +14,41 @@ export default meta;
 type Story = StoryObj<typeof PanelCloth>;
 
 
-export const Default: Story = {
+export const Gray: Story = {
     render: () => (
-        <PanelCloth>
-            <div style={{
-                width: "500px",
-                height: "500px",
-            }}/>
+        <PanelCloth color="gray">
+            <DummyContent/>
         </PanelCloth>
     )
 };
 
 export const Red: Story = {
     render: () => (
-        <PanelCloth type="red">
-            <div style={{
-                width: "500px",
-                height: "500px",
-            }}/>
+        <PanelCloth color="red">
+            <DummyContent/>
+
         </PanelCloth>
     )
 };
 
 export const Blue: Story = {
     render: () => (
-        <PanelCloth type="blue">
-            <div style={{
-                width: "500px",
-                height: "500px",
-            }}/>
+        <PanelCloth color="blue">
+            <DummyContent/>
         </PanelCloth>
     )
 };
 
+function DummyContent() {
+    return (
+        <div style={{
+            width: "500px",
+            height: "500px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        }}>
+            Content
+        </div>
+    )
+}

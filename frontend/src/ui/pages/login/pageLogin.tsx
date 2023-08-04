@@ -1,9 +1,9 @@
 import React, {ReactElement, useState} from "react";
-import {BgPanel} from "../../components/backgroundpanel/BgPanel";
-import {DecoratedPanel} from "../../components/decoratedpanel/DecoratedPanel";
-import {TextInput} from "../../components/textinputfield/TextInput";
-import {Button} from "../../components/button/Button";
+import {TextInput} from "../../components/controls/textinputfield/TextInput";
+import {ButtonGem} from "../../components/controls/button/ButtonGem";
 import "./pageLogin.css";
+import {PanelCloth} from "../../components/panels/cloth/panelCloth";
+import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
 
 
 export function PageLogin(): ReactElement {
@@ -12,15 +12,15 @@ export function PageLogin(): ReactElement {
     const [password, setPassword] = useState("");
 
     return (
-        <BgPanel className="page-login" type="blue">
-            <DecoratedPanel className="page-login__content">
+        <PanelCloth className="page-login" color="blue">
+            <PanelDecorated classNameContent="page-login__content">
                 <h1>Welcome!</h1>
-                <TextInput value={"E-Mail"} onAccept={setEmail} type="email" disabled={false}/>
-                <TextInput value={"Password"} onAccept={setPassword} type="password" disabled={false}/>
-                <Button onClick={login}>Login</Button>
+                <TextInput value={"E-Mail"} onAccept={setEmail} type="email" border="silver" disabled={false}/>
+                <TextInput value={"Password"} onAccept={setPassword} type="password" border="silver" disabled={false}/>
+                <ButtonGem onClick={login}>Login</ButtonGem>
                 <p>Register</p>
-            </DecoratedPanel>
-        </BgPanel>
+            </PanelDecorated>
+        </PanelCloth>
     );
 
     function login() {

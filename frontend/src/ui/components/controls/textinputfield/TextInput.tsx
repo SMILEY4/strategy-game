@@ -1,12 +1,13 @@
 import {HTMLInputTypeAttribute, ReactElement} from "react";
-import {MetalBorder} from "../metalborder/MetalBorder";
-import "./textInput.css";
+import {BorderMetallic} from "../../objects/border/metallic/BorderMetallic";
 import {useTextInput} from "./useTextInput";
-import {InsetElement} from "../insetElement/InsetElement";
+import {ElementInset} from "../../objects/element/inset/ElementInset";
+import "./textInput.css";
 
 export interface TextInputProps {
     value: string,
     type?: "text" | "email" | "password",
+    border?: "gold" | "silver"
     disabled: boolean,
     onAccept: (value: string) => void
 }
@@ -22,8 +23,8 @@ export function TextInput(props: TextInputProps): ReactElement {
     } = useTextInput(props.value, props.disabled, props.onAccept);
 
     return (
-        <MetalBorder className="text-input">
-            <InsetElement className="text-input__content">
+        <BorderMetallic color={props.border} className="text-input">
+            <ElementInset className="text-input__content">
                 <input
                     className="text-input__input"
                     placeholder=""
@@ -34,8 +35,8 @@ export function TextInput(props: TextInputProps): ReactElement {
                     onKeyDown={handleKeyDown}
                     type={getType(props)}
                 />
-            </InsetElement>
-        </MetalBorder>
+            </ElementInset>
+        </BorderMetallic>
     );
 
     function getType(props: TextInputProps): HTMLInputTypeAttribute {

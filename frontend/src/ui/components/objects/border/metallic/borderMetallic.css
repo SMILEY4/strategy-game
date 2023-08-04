@@ -1,0 +1,52 @@
+.border-metallic {
+    --metallic-border__gold-0: hsl(47, 12%, 80%);
+    --metallic-border__gold-1: hsl(43, 31%, 50%);
+    --metallic-border__gold-2: hsl(39, 75%, 25%);
+
+    --metallic-border__silver-0: hsl(47, 0%, 70%);
+    --metallic-border__silver-1: hsl(43, 0%, 50%);
+    --metallic-border__silver-2: hsl(39, 0%, 25%);
+}
+
+.border-metallic {
+    position: relative;
+}
+
+.border-metallic__border-1 {
+    box-sizing:     border-box;
+    position:       absolute;
+    top:            0;
+    bottom:         0;
+    left:           0;
+    right:          0;
+
+    border:         3px groove black;
+    pointer-events: none;
+}
+
+.border-metallic__border-2 {
+    box-sizing:          border-box;
+    position:            absolute;
+    top:                 0;
+    bottom:              0;
+    left:                0;
+    right:               0;
+
+    mix-blend-mode:      color-dodge;
+    border:              3px solid;
+    border-image-slice:  1;
+    pointer-events:      none;
+}
+
+.border-metallic--gold .border-metallic__border-2 {
+    border-image-source: radial-gradient(circle, var(--metallic-border__gold-0), var(--metallic-border__gold-1), var(--metallic-border__gold-2));
+}
+
+.border-metallic--silver .border-metallic__border-2 {
+    border-image-source: radial-gradient(circle, var(--metallic-border__silver-0), var(--metallic-border__silver-1), var(--metallic-border__silver-1));
+}
+
+.border-metallic__content {
+    position: relative;
+    padding:  3px;
+}
