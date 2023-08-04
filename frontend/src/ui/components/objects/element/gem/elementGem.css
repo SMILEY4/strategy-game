@@ -22,6 +22,15 @@
     position: relative;
 }
 
+button.element-gem, button:focus.element-gem, button:active.element-gem {
+    padding: unset;
+    margin: unset;
+    background: unset;
+    border: unset;
+    outline: unset;
+    font-size: 16px;
+}
+
 
 .element-gem__outer {
     position:            relative;
@@ -36,8 +45,12 @@
     border:              1px solid;
     border-image-slice:  1;
     border-image-source: radial-gradient(circle, var(--element-gem__highlight-light) 0%, var(--element-gem__highlight-dark) 100%);
-    color: var(--element-gem__content);
     padding: 0.15rem 0.5rem;
+}
+
+.element-gem__inner,
+.element-gem__inner * {
+    color: var(--element-gem__content);
 }
 
 

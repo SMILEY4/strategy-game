@@ -1,13 +1,4 @@
-.text-input {
-    /*width:            200px;*/
-    /*height:           45px;*/
-}
-
-.text-input__content {
-}
-
 .text-input__input, .text-input__input:active, .text-input__input:focus {
-    color:            #ded9d0;
     position:         relative;
     padding:          unset;
     margin:           unset;
@@ -16,4 +7,8 @@
     background-color: transparent;
     box-sizing:       border-box;
     font-size:        14px;
+}
+
+.text-input input::placeholder {
+    opacity: 40%;
 }

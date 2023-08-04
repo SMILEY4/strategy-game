@@ -6,9 +6,9 @@ import "./textInput.css";
 
 export interface TextInputProps {
     value: string,
+    placeholder?: string,
     type?: "text" | "email" | "password",
     border?: "gold" | "silver"
-    disabled: boolean,
     onAccept: (value: string) => void
 }
 
@@ -20,14 +20,14 @@ export function TextInput(props: TextInputProps): ReactElement {
         handleChange,
         handleBlur,
         handleKeyDown,
-    } = useTextInput(props.value, props.disabled, props.onAccept);
+    } = useTextInput(props.value, false, props.onAccept);
 
     return (
         <BorderMetallic color={props.border} className="text-input">
             <ElementInset className="text-input__content">
                 <input
                     className="text-input__input"
-                    placeholder=""
+                    placeholder={props.placeholder}
                     value={currentValue}
                     disabled={isDisabled}
                     onChange={handleChange}

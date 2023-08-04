@@ -11,8 +11,12 @@
 .element-inset {
     position:   relative;
     background: radial-gradient(var(--element-inset__red-light) 10%, var(--element-inset__red-dark) 80%);
-    color:      var(--element-inset__red_content);
     padding:    0.3rem 0.5rem;
+}
+
+.element-inset,
+.element-inset * {
+    color:      var(--element-inset__red_content);
 }
 
 .element-inset:focus-within {

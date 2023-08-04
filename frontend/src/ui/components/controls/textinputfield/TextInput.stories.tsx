@@ -22,7 +22,6 @@ export const GoldBorder: Story = {
             value={"Your Text"}
             onAccept={() => undefined}
             type="text"
-            disabled={false}
         />
 
     ),
@@ -35,7 +34,6 @@ export const SilverBorder: Story = {
             value={"Your Text"}
             onAccept={() => undefined}
             type="text"
-            disabled={false}
         />
 
     ),

@@ -4,15 +4,18 @@ import {joinClassNames} from "../../../utils";
 
 export interface ElementGemProps {
     className?: string,
-    children?: any;
+    type?: "div" | "button"
     interactive?: boolean,
     onClick?: () => void
+    children?: any;
 }
 
 export function ElementGem(props: ElementGemProps): ReactElement {
     return (
-        <div
-            className={joinClassNames(["element-gem", classInteractive(props), props.className])}
+        <ElementGemWrapper
+            className={props.className}
+            type={props.type}
+            interactive={props.interactive}
             onClick={props.onClick}
         >
             <div className={"element-gem__outer"}>
@@ -21,11 +24,28 @@ export function ElementGem(props: ElementGemProps): ReactElement {
                 </div>
             </div>
             <div className="element-gem__background"/>
-        </div>
+        </ElementGemWrapper>
     );
+}
 
-    function classInteractive(props: ElementGemProps): string | null {
-        return props.interactive ? "element-gem--interactive" : null;
+
+function ElementGemWrapper(props: ElementGemProps): ReactElement {
+    const className = joinClassNames([
+        "element-gem",
+        props.interactive ? "element-gem--interactive" : null,
+        props.className
+    ])
+    if (props.type == "button") {
+        return (
+            <button className={className} onClick={props.onClick}>
+                {props.children}
+            </button>
+        );
+    } else {
+        return (
+            <div className={className} onClick={props.onClick}>
+                {props.children}
+            </div>
+        );
     }
-
 }

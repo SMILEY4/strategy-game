@@ -12,16 +12,25 @@
 
 .panel-cloth--gray {
     background-color: var(--panel-cloth__gray);
-    color: var(--panel-cloth__gray-content)
 }
-
 .panel-cloth--red {
     background-color: var(--panel-cloth__red);
-    color: var(--panel-cloth__red-content)
 }
-
 .panel-cloth--blue {
     background-color: var(--panel-cloth__blue);
+}
+
+
+.panel-cloth--gray,
+.panel-cloth--gray * {
+    color: var(--panel-cloth__gray-content)
+}
+.panel-cloth--red,
+.panel-cloth--red * {
+    color: var(--panel-cloth__red-content)
+}
+.panel-cloth--blue,
+.panel-cloth--blue *{
     color: var(--panel-cloth__blue-content)
 }
 

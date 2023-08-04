@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import "./pageNotFound.css";
-import {PanelCloth} from "../../components/panels/cloth/panelCloth";
 import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
+import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
 
 
 export function PageNotFound(): ReactElement {
