@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import "./decoratedPanel.css";
+import "./panelDecorated.css";
 import {joinClassNames} from "../../utils";
 
 
