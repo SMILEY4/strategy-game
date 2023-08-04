@@ -1,0 +1,45 @@
+BASE ELEMENTS
+
+ClothPanel
+    panel element with cloth texture
+    - color (blue*, red, gray, ...)
+    - vignette (yes*, no)
+    - children
+    - className
+
+
+PanelDecorated
+    paper textured panel with decorative border
+    - color (red*, blue, ...)
+    - dropShadow (yes*, no)
+    - children
+    - className
+
+GemElement
+    decorative gem-like box
+    - color (green*, blue, orange, ...)
+    - reactHover (yes, no*)
+    - reactActive
+
+InsetElement
+    element that looks slightly inset or lowered
+    - reactFocusWithin
+    - color (red*, blue, ... -> same as PanelDecorated)
+    - children
+    - className
+
+MetallicBorder
+    decorative metallic border
+    - color (gold*, silver, copper, ...)
+    - children
+    - className
+
+
+
+FUNCTIONAL ELEMENTS
+
+GemButton
+
+TextButton
+
+TextField
