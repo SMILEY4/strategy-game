@@ -18,4 +18,4 @@
    npm run dev
    ```
 
-   or - if you use an Intellij-based IDE - click the "Run Button" next to the "dev"-entry in the "package.json"
+   or - if you use an Intellij-based IDE - click the "Run ElementGem" next to the "dev"-entry in the "package.json"

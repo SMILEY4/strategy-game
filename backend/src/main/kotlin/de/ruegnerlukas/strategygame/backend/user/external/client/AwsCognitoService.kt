@@ -11,6 +11,7 @@ import com.amazonaws.services.cognitoidp.model.AuthFlowType
 import com.amazonaws.services.cognitoidp.model.CodeDeliveryFailureException
 import com.amazonaws.services.cognitoidp.model.DeleteUserRequest
 import com.amazonaws.services.cognitoidp.model.InvalidParameterException
+import com.amazonaws.services.cognitoidp.model.InvalidPasswordException
 import com.amazonaws.services.cognitoidp.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidp.model.SignUpRequest
 import com.amazonaws.services.cognitoidp.model.UserNotConfirmedException
@@ -153,6 +154,7 @@ class AwsCognitoService(
 			return when (e) {
 				is UsernameExistsException -> UserAlreadyExistsError.err()
 				is InvalidParameterException -> InvalidEmailOrPasswordError.err()
+				is InvalidPasswordException -> InvalidEmailOrPasswordError.err()
 				is CodeDeliveryFailureException -> CodeDeliveryError.err()
 				else -> throw Exception("Could not create user. Cause: $e")
 			}

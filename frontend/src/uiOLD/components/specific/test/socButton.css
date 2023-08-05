@@ -5,8 +5,6 @@
 	box-sizing:  border-box;
 	user-select: none;
 	cursor:      pointer;
-
-
 }
 
 
@@ -79,6 +77,7 @@
 	border:              1px solid;
 	border-image-slice:  1;
 	border-image-source: radial-gradient(circle, var(--highlight-color-light) 0%, var(--highlight-color-dark) 100%);
+
 }
 
 

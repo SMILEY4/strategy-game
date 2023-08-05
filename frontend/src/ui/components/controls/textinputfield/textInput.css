@@ -1,0 +1,14 @@
+.text-input__input, .text-input__input:active, .text-input__input:focus {
+    position:         relative;
+    padding:          unset;
+    margin:           unset;
+    border:           unset;
+    outline:          unset;
+    background-color: transparent;
+    box-sizing:       border-box;
+    font-size:        14px;
+}
+
+.text-input input::placeholder {
+    opacity: 40%;
+}

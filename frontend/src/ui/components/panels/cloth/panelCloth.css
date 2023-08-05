@@ -1,0 +1,56 @@
+.panel-cloth {
+    --panel-cloth__gray:         hsl(0, 0%, 12%);
+    --panel-cloth__red:          hsl(6, 47%, 13%);
+    --panel-cloth__blue:         hsl(211, 53%, 12%);
+
+    --panel-cloth__gray-content: hsl(0, 0%, 72%);
+    --panel-cloth__red-content:  hsl(6, 7%, 73%);
+    --panel-cloth__blue-content: hsl(211, 13%, 72%);
+
+    --panel-cloth__vignette:     rgba(0, 0, 0, 0.8);
+}
+
+.panel-cloth--gray {
+    background-color: var(--panel-cloth__gray);
+}
+.panel-cloth--red {
+    background-color: var(--panel-cloth__red);
+}
+.panel-cloth--blue {
+    background-color: var(--panel-cloth__blue);
+}
+
+
+.panel-cloth--gray,
+.panel-cloth--gray * {
+    color: var(--panel-cloth__gray-content)
+}
+.panel-cloth--red,
+.panel-cloth--red * {
+    color: var(--panel-cloth__red-content)
+}
+.panel-cloth--blue,
+.panel-cloth--blue *{
+    color: var(--panel-cloth__blue-content)
+}
+
+.panel-cloth, .panel-cloth > * {
+    position: relative;
+}
+
+.bg-panel__overlay {
+    position:          absolute;
+    top:               0;
+    bottom:            0;
+    left:              0;
+    right:             0;
+    overflow:          hidden;
+
+    background-image:  url("/textures/fine_machine_woven_cloth_prepared.jpg");
+    background-size:   60%;
+    opacity:           55%;
+    background-repeat: repeat;
+    mix-blend-mode:    multiply;
+
+    box-shadow:        inset 0 0 80px var(--panel-cloth__vignette);
+}

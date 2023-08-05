@@ -1,9 +1,16 @@
 import React, {ReactElement} from "react";
+import "./pageNotFound.css";
+import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
+import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
+
 
 export function PageNotFound(): ReactElement {
-	return (
-		<div>
-			404 - The requested page does not exist
-		</div>
-	);
+    return (
+        <PanelCloth className="page-404" color="blue">
+            <PanelDecorated classNameContent="page-404__content">
+                <h1>404</h1>
+                <p>The requested page does not exist</p>
+            </PanelDecorated>
+        </PanelCloth>
+    );
 }

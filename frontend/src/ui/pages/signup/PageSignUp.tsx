@@ -1,42 +1,132 @@
 import React, {ReactElement, useState} from "react";
+import {TextInput} from "../../components/controls/textinputfield/TextInput";
+import {ButtonGem} from "../../components/controls/button/gem/ButtonGem";
+import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
+import {ButtonText} from "../../components/controls/button/text/ButtonText";
+import "./pageSignUp.css";
+import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
 import {useNavigate} from "react-router-dom";
 import {AppConfig} from "../../../main";
-import "./pageSignUp.css";
+
 
 export function PageSignUp(): ReactElement {
 
-    const actionSignUp = AppConfig.di.get(AppConfig.DIQ.UserSignUpAction);
-    const [signUpEmail, setSignUpEmail] = useState("");
-    const [signUpPassword, setSignUpPassword] = useState("");
-    const [signUpUsername, setSignUpUsername] = useState("");
-    const [signUpStatus, setSignUpStatus] = useState("");
-    const navigate = useNavigate();
+    const {
+        username,
+        email,
+        password,
+        error,
+        setUsername,
+        setEmail,
+        setPassword,
+        signUp,
+        login,
+    } = useSignUp();
 
     return (
-        <div className="page-signup">
-            <div>
-                <h3>Sign-Up</h3>
-                <div>Email</div>
-                <input type="email" value={signUpEmail} onChange={(e) => setSignUpEmail(e.target.value + "")}/>
-                <div>Username</div>
-                <input type="text" value={signUpUsername} onChange={(e) => setSignUpUsername(e.target.value + "")}/>
-                <div>Password</div>
-                <input type="password" value={signUpPassword} onChange={(e) => setSignUpPassword(e.target.value + "")}/>
-                <div/>
-                <button onClick={onSignUp}>SignUp</button>
-                <div>{signUpStatus}</div>
-            </div>
-        </div>
+        <PanelCloth className="page-signup" color="blue">
+            <PanelDecorated classNameContent="page-signup__content">
+
+                <h1>Sign Up</h1>
+
+                <TextInput
+                    value={username}
+                    onAccept={setUsername}
+                    placeholder="Username"
+                    type="text"
+                    border="silver"
+                />
+
+                <TextInput
+                    value={email}
+                    onAccept={setEmail}
+                    placeholder="Email Address"
+                    type="email"
+                    border="silver"
+                />
+
+                <TextInput
+                    value={password}
+                    onAccept={setPassword}
+                    placeholder={"Password"}
+                    type="password"
+                    border="silver"
+                />
+
+                {error && (
+                    <div className="signup-error">{error}</div>
+                )}
+
+                <div className="signup-actions">
+                    <ButtonText onClick={login}>Log-In</ButtonText>
+                    <ButtonGem onClick={signUp}>Sign Up</ButtonGem>
+                </div>
+
+
+            </PanelDecorated>
+        </PanelCloth>
     );
 
-    function onSignUp() {
-        actionSignUp.perform(signUpEmail, signUpPassword, signUpUsername)
-            .then(() => setSignUpStatus("Confirmation code sent"))
-            .then(() => navigate("/login"))
-            .catch(e => {
-                console.error(e);
-                setSignUpStatus("Sign-Up failed");
-            });
+}
+
+
+function useSignUp() {
+
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
+
+    const actionSignUp = AppConfig.di.get(AppConfig.DIQ.UserSignUpAction);
+    const navigate = useNavigate();
+
+    function changeUsername(value: string) {
+        setUsername(value);
+        setError(null);
     }
+
+    function changeEmail(value: string) {
+        setEmail(value);
+        setError(null);
+    }
+
+    function changePassword(value: string) {
+        setPassword(value);
+        setError(null);
+    }
+
+    function login() {
+        navigate("/login");
+    }
+
+    function signUp() {
+        if (!username) {
+            setError("Username is missing!");
+            return;
+        }
+        if (!email) {
+            setError("Email address is missing!");
+            return;
+        }
+        if (!password) {
+            setError("Password is missing!");
+            return;
+        }
+        actionSignUp.perform(email, password, username)
+            .then(() => navigate("/signup/confirm"))
+            .catch(e => setError("Error: " + e));
+    }
+
+    return {
+        username: username,
+        email: email,
+        password: password,
+        error: error,
+        setUsername: changeUsername,
+        setEmail: changeEmail,
+        setPassword: changePassword,
+        signUp: signUp,
+        login: login,
+    };
 
 }
