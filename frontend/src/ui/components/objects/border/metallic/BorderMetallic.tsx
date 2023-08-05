@@ -6,6 +6,7 @@ export interface BorderMetallicProps {
     color?: "gold" | "silver"
     children?: any;
     className?: string;
+    classNameContent?: string
 }
 
 export function BorderMetallic(props: BorderMetallicProps): ReactElement {
@@ -13,7 +14,7 @@ export function BorderMetallic(props: BorderMetallicProps): ReactElement {
     return (
         <div className={joinClassNames(["border-metallic", colorClass(props), props.className])}>
             <div className="border-metallic__border-1"/>
-            <div className="border-metallic__content">
+            <div className={joinClassNames(["border-metallic__content", props.classNameContent])}>
                 {props.children}
             </div>
             <div className="border-metallic__border-2"/>

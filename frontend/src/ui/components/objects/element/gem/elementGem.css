@@ -48,8 +48,8 @@ button.element-gem, button:focus.element-gem, button:active.element-gem {
     padding: 0.15rem 0.5rem;
 }
 
-.element-gem__inner,
-.element-gem__inner * {
+.element-gem .element-gem__inner,
+.element-gem .element-gem__inner * {
     color: var(--element-gem__content);
 }
 

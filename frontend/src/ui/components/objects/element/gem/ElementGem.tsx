@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
-import "./elementGem.css";
 import {joinClassNames} from "../../../utils";
+import "./elementGem.css";
 
 export interface ElementGemProps {
     className?: string,

@@ -19,6 +19,6 @@
     color:      var(--element-inset__red_content);
 }
 
-.element-inset:focus-within {
+.element-inset--interactive:focus-within {
     background: radial-gradient(var(--element-inset__red-light--focus) 10%, var(--element-inset__red-dark--focus) 80%);
 }

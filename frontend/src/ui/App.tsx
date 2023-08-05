@@ -8,6 +8,7 @@ import {RequireAuth} from "./components/misc/RequireAuth";
 import {PageHome} from "../uiOLD/pages/home/PageHome";
 import {PageGame} from "../uiOLD/pages/game/PageGame";
 import "./app.css";
+import {PageSessions} from "./pages/sessions/pageSessions";
 
 export function App() {
     return (
@@ -17,6 +18,8 @@ export function App() {
                 <Route path="login" element={<PageLogin/>}/>
                 <Route path="signup" element={<PageSignUp/>}/>
                 <Route path="signup/confirm" element={<PageSignupConfirm/>}/>
+
+                <Route path="sessions" element={<PageSessions/>}/>
 
                 {/*TEMP*/}
                 <Route path="home" element={
