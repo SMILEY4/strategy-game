@@ -15,7 +15,7 @@ export namespace ResponseUtils {
     }
 
     export function getError(response: Response): Promise<ResponseError> {
-        return response.json()
+        return parseErrorResponse(response)
             .then(error => {
                 if (response.status == 401 && error.successful === undefined && error.status === undefined) {
                     return ({
@@ -34,5 +34,16 @@ export namespace ResponseUtils {
                 return error;
             });
     }
+
+    export function parseErrorResponse(response: Response): Promise<any> {
+        return response.text()
+            .then(c => JSON.parse(c))
+            .catch(() => ({
+                successful: false,
+                status: "Error",
+                content: undefined,
+            }));
+    }
+
 
 }
