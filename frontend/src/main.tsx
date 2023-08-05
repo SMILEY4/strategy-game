@@ -51,6 +51,7 @@ import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 
 import {GamePreviewCityCreation} from "./core/gamePreviewCityCreation";
 import {App} from "./ui/App";
+import {GameDeleteAction} from "./core/gameDeleteAction";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -63,6 +64,7 @@ export namespace AppConfig {
         GameConfigRepository: qualifier<GameConfigRepository>("GameConfigRepository"),
         GameConnectAction: qualifier<GameConnectAction>("GameConnectAction"),
         GameCreateAction: qualifier<GameCreateAction>("GameCreateAction"),
+        GameDeleteAction: qualifier<GameDeleteAction>("GameDeleteAction"),
         GameDisposeAction: qualifier<GameDisposeAction>("GameDisposeAction"),
         GameInitAction: qualifier<GameInitAction>("GameInitAction"),
         GameJoinAction: qualifier<GameJoinAction>("GameJoinAction"),
@@ -97,6 +99,7 @@ export namespace AppConfig {
     diContainer.bind(DIQ.GameConfigRepository, ctx => new GameConfigRepositoryImpl());
     diContainer.bind(DIQ.GameConnectAction, ctx => new GameConnectAction(ctx.get(DIQ.GameApi), ctx.get(DIQ.GameRepository)));
     diContainer.bind(DIQ.GameCreateAction, ctx => new GameCreateAction(ctx.get(DIQ.GameApi)));
+    diContainer.bind(DIQ.GameDeleteAction, ctx => new GameDeleteAction(ctx.get(DIQ.GameApi)));
     diContainer.bind(DIQ.GameDisposeAction, ctx => new GameDisposeAction(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.Renderer)));
     diContainer.bind(DIQ.GameInitAction, ctx => new GameInitAction(ctx.get(DIQ.GameCanvasHandle), ctx.get(DIQ.Renderer)));
     diContainer.bind(DIQ.GameJoinAction, ctx => new GameJoinAction(ctx.get(DIQ.GameApi)));

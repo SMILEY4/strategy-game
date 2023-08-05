@@ -8,6 +8,7 @@ export interface GameApi {
     config: () => Promise<GameConfig>;
     list: () => Promise<string[]>;
     create: (seed: string | null) => Promise<string>;
+    delete: (gameId: string) => Promise<void>;
     join: (gameId: string) => Promise<void>;
     connect: (gameId: string) => Promise<void>;
     disconnect: () => void;

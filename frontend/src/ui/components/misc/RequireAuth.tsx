@@ -16,7 +16,7 @@ export function RequireAuth(props: { loginUrl: string, children: any }) {
     useBeforeRender(() => {
         if (!isAuthenticated && DEV_USERNAME && DEV_PASSWORD) {
             actionLogIn.perform(DEV_USERNAME, DEV_PASSWORD)
-                .then(() => navigate("/home"))
+                .then(() => navigate("/sessions"))
                 .catch(e => console.error("Error during login", e));
         }
     }, []);

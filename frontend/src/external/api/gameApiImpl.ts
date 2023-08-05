@@ -75,6 +75,20 @@ export class GameApiImpl implements GameApi {
     }
 
 
+    delete(gameId: string): Promise<void> {
+        return Promise.resolve()
+            .then(() => this.httpClient.delete({
+                url: "/api/session/delete/" + gameId,
+                requireAuth: true,
+                token: this.userRepository.getAuthToken(),
+            }))
+            .then(response => handleErrorResponses(response, error => {
+                return new UnexpectedError(error.status);
+            }))
+            .then(response => undefined);
+    }
+
+
     join(gameId: string): Promise<void> {
         return Promise.resolve()
             .then(() => this.httpClient.post({

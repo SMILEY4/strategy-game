@@ -87,7 +87,7 @@ function useLogin() {
             return;
         }
         actionLogIn.perform(email, password)
-            .then(() => navigate("/home"))
+            .then(() => navigate("/sessions"))
             .catch(e => setError("Error: " + e));
     }
 

@@ -18,9 +18,11 @@ export function App() {
                 <Route path="login" element={<PageLogin/>}/>
                 <Route path="signup" element={<PageSignUp/>}/>
                 <Route path="signup/confirm" element={<PageSignupConfirm/>}/>
-
-                <Route path="sessions" element={<PageSessions/>}/>
-
+                <Route path="sessions" element={
+                    <RequireAuth loginUrl="/login">
+                        <PageSessions/>
+                    </RequireAuth>
+                }/>
                 {/*TEMP*/}
                 <Route path="home" element={
                     <RequireAuth loginUrl="/login">

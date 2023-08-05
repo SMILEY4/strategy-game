@@ -6,13 +6,14 @@ import "./buttonGem.css";
 export interface ButtonGemProps {
     onClick?: () => void,
     border?: "gold" | "silver"
+    disabled?: boolean
     children?: any,
 }
 
 export function ButtonGem(props: ButtonGemProps): ReactElement {
     return (
         <BorderMetallic color={props.border} className="button-gem">
-            <ElementGem interactive type="button" onClick={props.onClick}>
+            <ElementGem interactive type="button" onClick={props.disabled === false ? (() => undefined) :  props.onClick}>
                 {props.children}
             </ElementGem>
         </BorderMetallic>
