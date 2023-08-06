@@ -3,5 +3,7 @@ export interface UserRepository {
     clearAuth: () => void;
     setAuthToken: (token: string) => void;
     getAuthToken: () => string;
+    getAuthTokenOrNull: () => string | null;
     getUserId: () => string;
+    getUserIdOrNull: () => string | null;
 }

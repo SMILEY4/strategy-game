@@ -1,12 +1,6 @@
-import {UserStore} from "../../external/state/user/userStore";
-import {optional} from "../../shared/optional";
+import {AppConfig} from "../../main";
 
 export function useUserIdOrNull(): string | null {
-    return optional(UserStore.useState(state => state.idToken))
-        .map(token => UserStore.userIdFromToken(token))
-        .getValue()
-}
-
-export function useUserId(): string {
-    return optional(useUserIdOrNull()).getValueOrThrow();
+    const repository = AppConfig.di.get(AppConfig.DIQ.UserRepository);
+    return repository.getUserIdOrNull()
 }

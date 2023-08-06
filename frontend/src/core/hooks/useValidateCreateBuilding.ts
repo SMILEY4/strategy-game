@@ -3,7 +3,6 @@ import {City} from "../models/city";
 import {validations} from "../../shared/validation";
 import {useCommands} from "./useCommands";
 import {useCountryPlayer} from "./useCountryPlayer";
-import {useGameConfig} from "./useGameConfig";
 import {CommandProductionQueueAddBuildingEntry} from "../models/command";
 
 export function useValidateCreateBuilding(city: City | null): (type: BuildingType) => boolean {

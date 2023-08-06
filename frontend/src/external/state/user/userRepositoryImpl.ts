@@ -31,6 +31,15 @@ export class UserRepositoryImpl implements UserRepository {
         return this.userIdFromToken(this.getAuthToken());
     }
 
+    getUserIdOrNull(): string | null {
+        const token = this.getAuthTokenOrNull();
+        if(token) {
+            return this.userIdFromToken(token)
+        } else {
+            return null;
+        }
+    }
+
     private userIdFromToken(token: string): string {
         if (token) {
             return (jwt_decode(token) as any).sub;
