@@ -31,11 +31,11 @@ export function PageGame(): ReactElement {
         return (
             <div className="game">
                 <div className="game-container">
-                    <Canvas/>
-                    <div className="game-ui">
-                        <GameMenuBar/>
-                    </div>
-                    <MenuFrameStack/>
+                    {/*<Canvas/>*/}
+                    {/*<div className="game-ui">*/}
+                    {/*    <GameMenuBar/>*/}
+                    {/*</div>*/}
+                    {/*<MenuFrameStack/>*/}
                 </div>
             </div>
         );

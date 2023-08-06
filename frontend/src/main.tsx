@@ -50,7 +50,7 @@ import SHADER_SRC_LINE_VERT from "./core/rendering/lines/lineShader.vsh?raw";
 import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 
 import {GamePreviewCityCreation} from "./core/gamePreviewCityCreation";
-import {App} from "./ui/App";
+import {App} from "./ui/pages/App";
 import {GameDeleteAction} from "./core/gameDeleteAction";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -128,7 +128,7 @@ export namespace AppConfig {
     diContainer.bind(DIQ.TurnSubmitAction, ctx => new TurnSubmitAction(ctx.get(DIQ.GameRepository), ctx.get(DIQ.GameApi)));
     diContainer.bind(DIQ.UIService, ctx => new UIServiceImpl());
     diContainer.bind(DIQ.UserApi, ctx => new UserApiImpl(ctx.get(DIQ.HttpClient), ctx.get(DIQ.UserRepository)));
-    diContainer.bind(DIQ.UserLoginAction, ctx => new UserLoginAction(ctx.get(DIQ.UserApi), ctx.get(DIQ.GameApi), ctx.get(DIQ.UserRepository), ctx.get(DIQ.GameConfigRepository)));
+    diContainer.bind(DIQ.UserLoginAction, ctx => new UserLoginAction(ctx.get(DIQ.UserApi), ctx.get(DIQ.UserRepository)));
     diContainer.bind(DIQ.UserLogOutAction, ctx => new UserLogOutAction(ctx.get(DIQ.UserRepository)));
     diContainer.bind(DIQ.UserRepository, ctx => new UserRepositoryImpl());
     diContainer.bind(DIQ.UserSignUpAction, ctx => new UserSignUpAction(ctx.get(DIQ.UserApi)));

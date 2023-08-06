@@ -1,12 +1,12 @@
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import React from "react";
-import {PageNotFound} from "./pages/notfound/PageNotFound";
-import {PageLogin} from "./pages/login/PageLogin";
-import {PageSignUp} from "./pages/signup/PageSignUp";
-import {PageSignupConfirm} from "./pages/signupconfirm/PageSignupConfirm";
-import {RequireAuth} from "./components/misc/RequireAuth";
-import {PageGame} from "../uiOLD/pages/game/PageGame";
-import {PageSessions} from "./pages/sessions/pageSessions";
+import {PageNotFound} from "./notfound/PageNotFound";
+import {PageLogin} from "./login/PageLogin";
+import {PageSignUp} from "./signup/PageSignUp";
+import {PageSignupConfirm} from "./signupconfirm/PageSignupConfirm";
+import {RequireAuth} from "../components/misc/RequireAuth";
+import {PageGame} from "../../uiOLD/pages/game/PageGame";
+import {PageSessions} from "./sessions/pageSessions";
 import "./app.css";
 
 export function App() {

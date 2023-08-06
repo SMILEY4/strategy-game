@@ -3,10 +3,13 @@ import {TextInput} from "../../components/controls/textinputfield/TextInput";
 import {ButtonGem} from "../../components/controls/button/gem/ButtonGem";
 import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
 import {ButtonText} from "../../components/controls/button/text/ButtonText";
-import "./pageLogin.css";
 import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
-import {AppConfig} from "../../../main";
+import {useLogin, useLoginPostRedirect} from "../../hooks/user";
 import {useNavigate} from "react-router-dom";
+import "./pageLogin.css";
+import {useQuery} from "../../components/misc/useQuery";
+import {optional} from "../../../shared/optional";
+import {Base64} from "../../../shared/base64";
 
 
 export function PageLogin(): ReactElement {
@@ -19,7 +22,7 @@ export function PageLogin(): ReactElement {
         setPassword,
         login,
         signUp
-    } = useLogin()
+    } = usePageLogin()
 
     return (
         <PanelCloth className="page-login" color="blue">
@@ -58,13 +61,15 @@ export function PageLogin(): ReactElement {
 }
 
 
-function useLogin() {
+function usePageLogin() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const actionLogIn = AppConfig.di.get(AppConfig.DIQ.UserLoginAction);
     const navigate = useNavigate();
+    const login = useLogin()
+    const loginRedirect = useLoginPostRedirect("/sessions")
+
 
     function changeEmail(value: string) {
         setEmail(value)
@@ -77,7 +82,7 @@ function useLogin() {
         setError(null)
     }
 
-    function login() {
+    function requestLogin() {
         if (!email) {
             setError("Email address is missing!");
             return;
@@ -86,8 +91,8 @@ function useLogin() {
             setError("Password is missing!");
             return;
         }
-        actionLogIn.perform(email, password)
-            .then(() => navigate("/sessions"))
+        login(email, password)
+            .then(() => loginRedirect())
             .catch(e => setError("Error: " + e));
     }
 
@@ -101,7 +106,7 @@ function useLogin() {
         error: error,
         setEmail: changeEmail,
         setPassword: changePassword,
-        login: login,
+        login: requestLogin,
         signUp: signUp,
     };
 }

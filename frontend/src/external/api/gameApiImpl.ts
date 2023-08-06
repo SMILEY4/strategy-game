@@ -18,7 +18,7 @@ export class GameApiImpl implements GameApi {
     private readonly websocketClient: WebsocketClient;
     private readonly messageHandler: MessageHandler;
     private readonly userRepository: UserRepository;
-
+    private readonly authProvider = () => localStorage.getItem("auth-token")!!
 
     constructor(httpClient: HttpClient, websocketClient: WebsocketClient, messageHandler: MessageHandler, userRepository: UserRepository) {
         this.httpClient = httpClient;
@@ -33,7 +33,7 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.get({
                 url: "/api/session/config",
                 requireAuth: true,
-                token: this.userRepository.getAuthToken(),
+                token: this.authProvider(),
             }))
             .then(response => handleErrorResponses(response, error => {
                 if (error.status === "Unauthorized") return new UnauthorizedError();
@@ -48,7 +48,7 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.get({
                 url: "/api/session/list",
                 requireAuth: true,
-                token: this.userRepository.getAuthToken(),
+                token: this.authProvider(),
             }))
             .then(response => handleErrorResponses(response, error => {
                 if (error.status === "Unauthorized") return new UnauthorizedError();
@@ -63,7 +63,7 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.post({
                 url: "/api/session/create" + (seed ? ("?seed=" + seed) : ""),
                 requireAuth: true,
-                token: this.userRepository.getAuthToken(),
+                token: this.authProvider(),
             }))
             .then(response => handleErrorResponses(response, error => {
                 if (error.status === "Unauthorized") return new UnauthorizedError();
@@ -80,7 +80,7 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.delete({
                 url: "/api/session/delete/" + gameId,
                 requireAuth: true,
-                token: this.userRepository.getAuthToken(),
+                token: this.authProvider(),
             }))
             .then(response => handleErrorResponses(response, error => {
                 return new UnexpectedError(error.status);
@@ -94,7 +94,7 @@ export class GameApiImpl implements GameApi {
             .then(() => this.httpClient.post({
                 url: `/api/session/join/${gameId}`,
                 requireAuth: true,
-                token: this.userRepository.getAuthToken(),
+                token: this.authProvider(),
             }))
             .then(response => handleErrorResponses(response, error => {
                 if (error.status === "Unauthorized") return new UnauthorizedError();
@@ -136,7 +136,7 @@ export class GameApiImpl implements GameApi {
                     isProvinceCapital: isProvinceCapital,
                 },
                 requireAuth: true,
-                token: this.userRepository.getAuthToken(),
+                token: this.authProvider(),
             }))
             .then(response => handleErrorResponses(response, error => {
                 if (error.status === "Unauthorized") return new UnauthorizedError();
