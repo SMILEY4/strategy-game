@@ -1,0 +1,28 @@
+.list {
+    position: relative;
+    overflow: hidden;
+}
+
+.list .border-metallic__content {
+    height: 100%
+}
+
+.list__content {
+    overflow: auto;
+    padding: 0;
+}
+
+.list__content > *{
+    width: 100%;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    transition-duration: 0.1s;
+}
+
+.list__content > *:nth-child(even) {
+    background-color: rgba(0, 0, 0, 20%);
+}
+
+.list__content > *:hover {
+    background-color: rgba(255, 255, 255, 10%);
+}

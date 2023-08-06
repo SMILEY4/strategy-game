@@ -49,6 +49,7 @@
 .border-metallic__content {
     position: relative;
     padding:  3px;
+    box-sizing: border-box
 }
 
 .border-metallic__content > * {

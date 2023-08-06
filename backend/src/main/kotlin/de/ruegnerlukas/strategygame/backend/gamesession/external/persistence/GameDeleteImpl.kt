@@ -13,6 +13,15 @@ class GameDeleteImpl(private val database: ArangoDatabase) : GameDelete {
 
     override suspend fun execute(gameId: String) {
         time(metricId) {
+            database.assertCollections(
+                Collections.GAMES,
+                Collections.COUNTRIES,
+                Collections.TILES,
+                Collections.CITIES,
+                Collections.COMMANDS,
+                Collections.PROVINCES,
+                Collections.ROUTES,
+            )
             parallelIO(
                 { deleteGame(gameId) },
                 { deleteCountries(gameId) },

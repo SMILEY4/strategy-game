@@ -5,23 +5,21 @@ import {PageLogin} from "./pages/login/PageLogin";
 import {PageSignUp} from "./pages/signup/PageSignUp";
 import {PageSignupConfirm} from "./pages/signupconfirm/PageSignupConfirm";
 import {RequireAuth} from "./components/misc/RequireAuth";
-import {PageHome} from "../uiOLD/pages/home/PageHome";
 import {PageGame} from "../uiOLD/pages/game/PageGame";
+import {PageSessions} from "./pages/sessions/pageSessions";
 import "./app.css";
 
 export function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Navigate to="home" replace/>}/>
+                <Route path="/" element={<Navigate to="sessions" replace/>}/>
                 <Route path="login" element={<PageLogin/>}/>
                 <Route path="signup" element={<PageSignUp/>}/>
                 <Route path="signup/confirm" element={<PageSignupConfirm/>}/>
-
-                {/*TEMP*/}
-                <Route path="home" element={
+                <Route path="sessions" element={
                     <RequireAuth loginUrl="/login">
-                        <PageHome/>
+                        <PageSessions/>
                     </RequireAuth>
                 }/>
                 {/*TEMP*/}
@@ -30,7 +28,6 @@ export function App() {
                         <PageGame/>
                     </RequireAuth>
                 }/>
-
                 <Route path="*" element={<PageNotFound/>}/>
             </Routes>
         </BrowserRouter>

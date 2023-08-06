@@ -24,7 +24,7 @@ export function TextInput(props: TextInputProps): ReactElement {
 
     return (
         <BorderMetallic color={props.border} className="text-input">
-            <ElementInset className="text-input__content">
+            <ElementInset interactive className="text-input__content">
                 <input
                     className="text-input__input"
                     placeholder={props.placeholder}

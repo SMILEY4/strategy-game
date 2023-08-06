@@ -1,20 +1,31 @@
 .element-gem {
-    --element-gem__light:                   hsl(159, 42%, 47%);
-    --element-gem__light--hover:            hsl(162, 56%, 53%);
-    --element-gem__light--active:           hsl(162, 46%, 36%);
-    --element-gem__dark:                    hsl(180, 17%, 12%);
+    --element-gem__light:                     hsl(159, 42%, 47%);
+    --element-gem__light--hover:              hsl(162, 56%, 53%);
+    --element-gem__light--active:             hsl(162, 46%, 36%);
+    --element-gem__dark:                      hsl(180, 17%, 12%);
 
-    --element-gem__border-light:            hsla(160, 17%, 54%, 0.75);
-    --element-gem__border-light--hover:     hsla(160, 17%, 64%, 0.75);
-    --element-gem__border_light--active:    hsla(160, 17%, 44%, 0.75);
-    --element-gem__border-dark:             hsla(180, 14%, 16%, 0.75);
+    --element-gem__border-light:              hsla(160, 17%, 54%, 0.75);
+    --element-gem__border-light--hover:       hsla(160, 17%, 64%, 0.75);
+    --element-gem__border_light--active:      hsla(160, 17%, 44%, 0.75);
+    --element-gem__border-dark:               hsla(180, 14%, 16%, 0.75);
 
-    --element-gem__highlight-light:         hsl(159, 46%, 70%);
-    --element-gem__highlight-light--hover:  hsl(159, 56%, 87%);
-    --element-gem__highlight-light--active: hsl(159, 56%, 60%);
-    --element-gem__highlight-dark:          hsl(180, 17%, 14%);
+    --element-gem__highlight-light:           hsl(159, 46%, 70%);
+    --element-gem__highlight-light--hover:    hsl(159, 56%, 87%);
+    --element-gem__highlight-light--active:   hsl(159, 56%, 60%);
+    --element-gem__highlight-dark:            hsl(180, 17%, 14%);
 
-    --element-gem__content:                 hsl(0, 0%, 93%);
+
+    --element-gem--disabled__light:           hsl(159, 8%, 47%);
+    --element-gem--disabled__dark:            hsl(180, 7%, 12%);
+
+    --element-gem--disabled__border-light:    hsla(160, 5%, 54%, 0.75);
+    --element-gem--disabled__border-dark:     hsla(180, 4%, 16%, 0.75);
+
+    --element-gem--disabled__highlight-light: hsl(159, 16%, 70%);
+    --element-gem--disabled__highlight-dark:  hsl(180, 7%, 14%);
+
+    --element-gem__content:                   hsl(0, 0%, 93%);
+    --element-gem--disabled__content:         hsl(0, 0%, 83%);
 }
 
 
@@ -23,12 +34,12 @@
 }
 
 button.element-gem, button:focus.element-gem, button:active.element-gem {
-    padding: unset;
-    margin: unset;
+    padding:    unset;
+    margin:     unset;
     background: unset;
-    border: unset;
-    outline: unset;
-    font-size: 16px;
+    border:     unset;
+    outline:    unset;
+    font-size:  16px;
 }
 
 
@@ -45,11 +56,11 @@ button.element-gem, button:focus.element-gem, button:active.element-gem {
     border:              1px solid;
     border-image-slice:  1;
     border-image-source: radial-gradient(circle, var(--element-gem__highlight-light) 0%, var(--element-gem__highlight-dark) 100%);
-    padding: 0.15rem 0.5rem;
+    padding:             0.15rem 0.5rem;
 }
 
-.element-gem__inner,
-.element-gem__inner * {
+.element-gem .element-gem__inner,
+.element-gem .element-gem__inner * {
     color: var(--element-gem__content);
 }
 
@@ -68,6 +79,21 @@ button.element-gem, button:focus.element-gem, button:active.element-gem {
 }
 
 
+.element-gem--disabled .element-gem__outer {
+    border-image-source: radial-gradient(circle, var(--element-gem--disabled__border-light) 20%, var(--element-gem--disabled__border-dark) 80%);
+    background:          radial-gradient(at bottom, var(--element-gem--disabled__light) 0%, var(--element-gem--disabled__dark) 80%);
+}
+
+.element-gem--disabled .element-gem__inner {
+    border-image-source: radial-gradient(circle, var(--element-gem--disabled__highlight-light) 0%, var(--element-gem--disabled__highlight-dark) 100%);
+}
+
+.element-gem--disabled .element-gem__inner,
+.element-gem--disabled .element-gem__inner * {
+    color: var(--element-gem--disabled__content);
+}
+
+
 .element-gem--interactive {
     cursor: pointer;
 }
@@ -80,7 +106,6 @@ button.element-gem, button:focus.element-gem, button:active.element-gem {
 .element-gem--interactive:hover .element-gem__inner {
     border-image-source: radial-gradient(circle, var(--element-gem__highlight-light--hover) 0%, var(--element-gem__highlight-dark) 100%);
 }
-
 
 .element-gem--interactive:active .element-gem__outer {
     background:          radial-gradient(at bottom, var(--element-gem__light--active) 10%, var(--element-gem__dark) 80%);
