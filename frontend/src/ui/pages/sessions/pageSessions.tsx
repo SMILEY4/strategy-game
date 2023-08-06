@@ -7,11 +7,11 @@ import {TextInput} from "../../components/controls/textinputfield/TextInput";
 import {ButtonText} from "../../components/controls/button/text/ButtonText";
 import {
     useConnectGameSession,
-    useCreateGameSession, useDeleteGameSessions,
+    useCreateGameSession,
+    useDeleteGameSessions,
     useJoinGameSession,
     useLoadGameSessions,
 } from "../../hooks/gameSessions";
-import {useNavigate} from "react-router-dom";
 import "./pageSessions.css";
 
 
@@ -111,13 +111,11 @@ function useSessions() {
     const [seed, setSeed] = useState("");
     const [sessionIdJoin, setSessionIdJoin] = useState("");
 
-    const loadGameSessions = useLoadGameSessions()
-    const createGameSession = useCreateGameSession()
-    const joinGameSession = useJoinGameSession()
-    const connectGameSession = useConnectGameSession()
-    const deleteGameSession = useDeleteGameSessions()
-    const navigate = useNavigate();
-
+    const loadGameSessions = useLoadGameSessions();
+    const createGameSession = useCreateGameSession();
+    const joinGameSession = useJoinGameSession();
+    const connectGameSession = useConnectGameSession();
+    const deleteGameSession = useDeleteGameSessions();
 
     useEffect(() => loadSessions(), []);
 
@@ -172,10 +170,7 @@ function useSessions() {
     }
 
     function connect(sessionId: string) {
-        connectGameSession(sessionId)
-            .then(() => navigate("/game"))
-            .catch(console.error);
-
+        connectGameSession(sessionId);
     }
 
     function drop(sessionId: string) {
