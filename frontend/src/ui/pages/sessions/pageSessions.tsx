@@ -67,7 +67,7 @@ export function PageSessions(): ReactElement {
                         />
                         <div className="page-sessions__join__actions">
                             <ButtonText onClick={cancelJoin}>Cancel</ButtonText>
-                            <ButtonGem onClick={acceptJoin} disabled={!!joinSessionId}>Join</ButtonGem>
+                            <ButtonGem onClick={acceptJoin} disabled={!joinSessionId}>Join</ButtonGem>
                         </div>
                     </PanelDecorated>
                 </div>
@@ -132,21 +132,19 @@ function useSessions() {
     }
 
     function acceptCreate() {
+        setSeed("");
+        setShowCreate(false);
         actionCreateGame.perform(getCleanSeed(seed))
-            .then(() => {
-                setSeed("");
-                setShowCreate(false);
-                loadSessions();
-            })
+            .then(() => loadSessions())
             .catch(console.error);
     }
 
     function getCleanSeed(seed: string) {
-        let cleanSeed = seed.trim()
+        let cleanSeed = seed.trim();
         if (cleanSeed.length === 0) {
-            return null
+            return null;
         } else {
-            return cleanSeed
+            return cleanSeed;
         }
     }
 
@@ -161,12 +159,10 @@ function useSessions() {
     }
 
     function acceptJoin() {
+        setSessionIdJoin("");
+        setShowJoin(false);
         actionJoin.perform(sessionIdJoin)
-            .then(() => {
-                setSessionIdJoin("");
-                setShowJoin(false);
-                loadSessions();
-            })
+            .then(() => loadSessions())
             .catch(console.error);
     }
 

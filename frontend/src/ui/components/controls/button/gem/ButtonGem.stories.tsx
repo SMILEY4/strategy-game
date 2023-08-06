@@ -29,3 +29,12 @@ export const SilverBorder: Story = {
         </ButtonGem>
     ),
 };
+
+
+export const Disabled: Story = {
+    render: () => (
+        <ButtonGem border="gold" disabled>
+            Button
+        </ButtonGem>
+    ),
+};

@@ -13,7 +13,12 @@ export interface ButtonGemProps {
 export function ButtonGem(props: ButtonGemProps): ReactElement {
     return (
         <BorderMetallic color={props.border} className="button-gem">
-            <ElementGem interactive type="button" onClick={props.disabled === false ? (() => undefined) :  props.onClick}>
+            <ElementGem
+                type="button"
+                interactive
+                disabled={props.disabled}
+                onClick={props.disabled === true ? (() => undefined) :  props.onClick}
+            >
                 {props.children}
             </ElementGem>
         </BorderMetallic>

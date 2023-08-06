@@ -6,6 +6,7 @@ export interface ElementGemProps {
     className?: string,
     type?: "div" | "button"
     interactive?: boolean,
+    disabled?: boolean,
     onClick?: () => void
     children?: any;
 }
@@ -15,6 +16,7 @@ export function ElementGem(props: ElementGemProps): ReactElement {
         <ElementGemWrapper
             className={props.className}
             type={props.type}
+            disabled={props.disabled}
             interactive={props.interactive}
             onClick={props.onClick}
         >
@@ -32,7 +34,8 @@ export function ElementGem(props: ElementGemProps): ReactElement {
 function ElementGemWrapper(props: ElementGemProps): ReactElement {
     const className = joinClassNames([
         "element-gem",
-        props.interactive ? "element-gem--interactive" : null,
+        (props.interactive && !props.disabled) ? "element-gem--interactive" : null,
+        props.disabled ? "element-gem--disabled" : null,
         props.className
     ])
     if (props.type == "button") {
