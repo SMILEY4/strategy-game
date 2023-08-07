@@ -7,14 +7,16 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
-fun Route.routeDisconnectAll(disconnectAll: DisconnectAllPlayers) = post("disconnect/all", {
-    description = "Disconnects all connected users from all games  ."
-    response {
-        HttpStatusCode.OK to {
-            description = "Action was performed successfully"
+object RouteDisconnectAll {
+
+    fun Route.routeDisconnectAll(disconnectAll: DisconnectAllPlayers) = post("disconnect/all", {
+        description = "Disconnects all connected users from all games  ."
+        response {
+            HttpStatusCode.OK to {}
         }
+    }) {
+        disconnectAll.perform()
+        call.respond(HttpStatusCode.OK)
     }
-}) {
-    disconnectAll.perform()
-    call.respond(HttpStatusCode.OK)
+
 }

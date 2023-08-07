@@ -1,5 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.user.external.api
 
+import de.ruegnerlukas.strategygame.backend.user.external.api.RouteDelete.routeDelete
+import de.ruegnerlukas.strategygame.backend.user.external.api.RouteLogin.routeLogin
+import de.ruegnerlukas.strategygame.backend.user.external.api.RouteRefresh.routeRefresh
+import de.ruegnerlukas.strategygame.backend.user.external.api.RouteSignup.routeSignup
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.CreateUser
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.DeleteUser
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.LoginUser

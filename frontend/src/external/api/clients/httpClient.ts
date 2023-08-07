@@ -75,7 +75,7 @@ export class HttpClient {
             }
         } else {
             return response.text().then(content => {
-                throw new ResponseError(response.status, content);
+                throw ResponseError.from(content, response.status);
             });
         }
     }
@@ -126,12 +126,57 @@ export class NetworkError extends Error {
 
 export class ResponseError extends Error {
 
+    readonly type: string;
     readonly status: number;
-    readonly content: string;
+    readonly title: string;
+    readonly errorCode: string;
+    readonly detail: string;
+    readonly context: any | null;
 
-    constructor(status: number, content: string) {
+    constructor(type: string, status: number, title: string, errorCode: string, detail: string, context: any) {
         super("Http-Response returned " + status + ".");
+        this.type = type;
         this.status = status;
-        this.content = content;
+        this.title = title;
+        this.errorCode = errorCode;
+        this.detail = detail;
+        this.context = context;
     }
+
+    public static from(str: string, status: number): ResponseError {
+        try {
+            const jsonContent = JSON.parse(str);
+            const isErrorResponse = Object.hasOwn(jsonContent, "type")
+                && Object.hasOwn(jsonContent, "status")
+                && Object.hasOwn(jsonContent, "title")
+                && Object.hasOwn(jsonContent, "errorCode")
+                && Object.hasOwn(jsonContent, "detail");
+            if (isErrorResponse) {
+                return new ResponseError(
+                    jsonContent.type,
+                    jsonContent.status,
+                    jsonContent.title,
+                    jsonContent.errorCode,
+                    jsonContent.detail,
+                    jsonContent.context,
+                );
+            } else {
+                return ResponseError.fallback(str, status);
+            }
+        } catch (e) {
+            return ResponseError.fallback(str, status);
+        }
+    }
+
+    private static fallback(str: string, status: number): ResponseError {
+        return new ResponseError(
+            "about:blank",
+            status,
+            "Error",
+            "ERROR",
+            str,
+            null,
+        );
+    }
+
 }
