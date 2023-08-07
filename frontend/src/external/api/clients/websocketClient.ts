@@ -19,6 +19,7 @@ export class WebsocketClient {
                 ws.onopen = () => resolve();
                 ws.onclose = () => this.close();
                 ws.onmessage = (e: MessageEvent) => consumer(JSON.parse(e.data));
+                ws.onerror = (e) => reject(e)
                 this.websocket = ws;
             } catch (e) {
                 reject(e);

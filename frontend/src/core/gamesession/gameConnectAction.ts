@@ -18,7 +18,7 @@ export class GameConnectAction {
         this.gameConfigRepository = gameConfigRepository;
     }
 
-    perform(gameId: string): Promise<void> {
+    perform(gameId: string): void {
         console.log("connect to game ", gameId);
         return Promise.resolve()
             .then(() => {
@@ -27,7 +27,8 @@ export class GameConnectAction {
             })
             .then(() => this.gameApi.config())
             .then(config => this.gameConfigRepository.setConfig(config))
-            .then(() => this.gameApi.connect(gameId));
+            .then(() => this.gameApi.connect(gameId))
+            .catch(() => this.gameRepository.setGameState(GameState.ERROR));
     }
 
 }

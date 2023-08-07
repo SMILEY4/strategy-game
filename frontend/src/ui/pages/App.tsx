@@ -5,8 +5,8 @@ import {PageLogin} from "./login/PageLogin";
 import {PageSignUp} from "./signup/PageSignUp";
 import {PageSignupConfirm} from "./signupconfirm/PageSignupConfirm";
 import {RequireAuth} from "../components/misc/RequireAuth";
-import {PageGame} from "../../uiOLD/pages/game/PageGame";
 import {PageSessions} from "./sessions/pageSessions";
+import {PageInGame} from "./ingame/PageInGame";
 import "./app.css";
 
 
@@ -23,10 +23,9 @@ export function App() {
                         <PageSessions/>
                     </RequireAuth>
                 }/>
-                {/*TEMP*/}
                 <Route path="game" element={
                     <RequireAuth loginUrl="/login">
-                        <PageGame/>
+                        <PageInGame/>
                     </RequireAuth>
                 }/>
                 <Route path="*" element={<PageNotFound/>}/>
