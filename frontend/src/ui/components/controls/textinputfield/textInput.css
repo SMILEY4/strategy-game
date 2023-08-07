@@ -6,7 +6,7 @@
     outline:          unset;
     background-color: transparent;
     box-sizing:       border-box;
-    font-size:        14px;
+    font-size:        16px;
 }
 
 .text-input input::placeholder {
