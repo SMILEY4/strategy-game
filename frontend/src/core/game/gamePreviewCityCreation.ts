@@ -1,7 +1,7 @@
-import {GameApi} from "./required/gameApi";
-import {GameRepository} from "./required/gameRepository";
-import {TilePosition} from "./models/tilePosition";
-import {CityCreationPreview} from "./models/CityCreationPreview";
+import {GameApi} from "../required/gameApi";
+import {GameRepository} from "../required/gameRepository";
+import {TilePosition} from "../models/tilePosition";
+import {CityCreationPreview} from "../models/CityCreationPreview";
 
 /**
  * Handle the city-creation preview

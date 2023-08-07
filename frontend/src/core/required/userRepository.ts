@@ -6,4 +6,5 @@ export interface UserRepository {
     getAuthTokenOrNull: () => string | null;
     getUserId: () => string;
     getUserIdOrNull: () => string | null;
+    getTokenExpiration: () => number
 }

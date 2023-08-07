@@ -1,5 +1,5 @@
-import {GameCanvasHandle} from "./rendering/gameCanvasHandle";
-import {Renderer} from "./rendering/renderer";
+import {GameCanvasHandle} from "../rendering/gameCanvasHandle";
+import {Renderer} from "../rendering/renderer";
 
 /**
  * Clean up the game, e.g. when leaving the page

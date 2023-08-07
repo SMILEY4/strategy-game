@@ -1,28 +1,28 @@
-import {MsgMarkerTileContent, MsgScoutTileContent} from "../external/api/models/messagingTileContent";
-import {PayloadGameState} from "../external/api/models/payloadGameState";
-import {orDefault} from "../shared/utils";
-import {BuildingType} from "./models/buildingType";
-import {City} from "./models/city";
-import {Color} from "./models/Color";
-import {Country} from "./models/country";
-import {GameState} from "./models/gameState";
-import {Marker} from "./models/marker";
-import {Province} from "./models/province";
-import {ResourceType} from "./models/resourceType";
-import {Route} from "./models/route";
-import {Scout} from "./models/scout";
-import {TerrainType} from "./models/terrainType";
-import {Tile} from "./models/tile";
-import {TileLayerMeta} from "./models/tileLayerMeta";
-import {TileResourceType} from "./models/tileResourceType";
-import {GameRepository} from "./required/gameRepository";
-import {WorldRepository} from "./required/worldRepository";
+import {MsgMarkerTileContent, MsgScoutTileContent} from "../../external/api/models/messagingTileContent";
+import {PayloadGameState} from "../../external/api/models/payloadGameState";
+import {orDefault} from "../../shared/utils";
+import {BuildingType} from "../models/buildingType";
+import {City} from "../models/city";
+import {Color} from "../models/Color";
+import {Country} from "../models/country";
+import {GameState} from "../models/gameState";
+import {Marker} from "../models/marker";
+import {Province} from "../models/province";
+import {ResourceType} from "../models/resourceType";
+import {Route} from "../models/route";
+import {Scout} from "../models/scout";
+import {TerrainType} from "../models/terrainType";
+import {Tile} from "../models/tile";
+import {TileLayerMeta} from "../models/tileLayerMeta";
+import {TileResourceType} from "../models/tileResourceType";
+import {GameRepository} from "../required/gameRepository";
+import {WorldRepository} from "../required/worldRepository";
 import {TileBorderCalculator} from "./tileBorderCalculator";
 import {
     BuildingProductionQueueEntryDTO,
     SettlerProductionQueueEntryDTO,
-} from "../external/api/models/productionQueueEntryDTO";
-import {BuildingProductionQueueEntry, SettlerProductionQueueEntry} from "./models/productionQueueEntry";
+} from "../../external/api/models/productionQueueEntryDTO";
+import {BuildingProductionQueueEntry, SettlerProductionQueueEntry} from "../models/productionQueueEntry";
 import colorToRgbArray = Color.colorToRgbArray;
 
 /**

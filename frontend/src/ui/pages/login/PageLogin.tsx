@@ -7,9 +7,6 @@ import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
 import {useLogin, useLoginPostRedirect} from "../../hooks/user";
 import {useNavigate} from "react-router-dom";
 import "./pageLogin.css";
-import {useQuery} from "../../components/misc/useQuery";
-import {optional} from "../../../shared/optional";
-import {Base64} from "../../../shared/base64";
 
 
 export function PageLogin(): ReactElement {

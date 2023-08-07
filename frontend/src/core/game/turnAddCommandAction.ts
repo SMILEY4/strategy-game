@@ -1,4 +1,4 @@
-import {BuildingType} from "./models/buildingType";
+import {BuildingType} from "../models/buildingType";
 import {
     Command,
     CommandCreateCity,
@@ -7,11 +7,11 @@ import {
     CommandProductionQueueAddBuildingEntry,
     CommandProductionQueueAddSettlerEntry,
     CommandUpgradeSettlementTier,
-} from "./models/command";
-import {GameState} from "./models/gameState";
-import {TilePosition} from "./models/tilePosition";
-import {GameConfigRepository} from "./required/gameConfigRepository";
-import {GameRepository} from "./required/gameRepository";
+} from "../models/command";
+import {GameState} from "../models/gameState";
+import {TilePosition} from "../models/tilePosition";
+import {GameConfigRepository} from "../required/gameConfigRepository";
+import {GameRepository} from "../required/gameRepository";
 
 /**
  * Add a command - all added commands will be submitted at the end of the turn

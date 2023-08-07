@@ -1,5 +1,5 @@
-import {UserApi} from "./required/userApi";
-import {UserRepository} from "./required/userRepository";
+import {UserApi} from "../required/userApi";
+import {UserRepository} from "../required/userRepository";
 
 /**
  * Login
@@ -17,7 +17,7 @@ export class UserLoginAction {
     perform(email: string, password: string): Promise<void> {
         console.debug("Logging in");
         return this.userApi.login(email, password)
-            .then((token: string) => this.userRepository.setAuthToken(token));
+            .then(data => this.userRepository.setAuthToken(data.idToken));
     }
 
 }

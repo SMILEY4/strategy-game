@@ -1,4 +1,4 @@
-import {Renderer} from "./rendering/renderer";
+import {Renderer} from "../rendering/renderer";
 
 /**
  * An update of the game loop - called x times per second

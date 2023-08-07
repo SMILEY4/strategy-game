@@ -1,7 +1,7 @@
-import {Tile} from "./models/tile";
-import {GameRepository} from "./required/gameRepository";
-import {UIService} from "./required/UIService";
-import {TilePicker} from "./tilemap/tilePicker";
+import {Tile} from "../models/tile";
+import {GameRepository} from "../required/gameRepository";
+import {UIService} from "../required/UIService";
+import {TilePicker} from "../tilemap/tilePicker";
 
 /**
  * Handles a mouse-click

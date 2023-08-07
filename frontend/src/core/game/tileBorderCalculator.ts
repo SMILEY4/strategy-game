@@ -1,5 +1,5 @@
-import {Tile} from "./models/tile";
-import {orDefault} from "../shared/utils";
+import {Tile} from "../models/tile";
+import {orDefault} from "../../shared/utils";
 
 export class TileBorderCalculator {
 

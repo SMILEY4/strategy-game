@@ -10,6 +10,6 @@ export class BaseError extends Error {
 
 export class UnexpectedError extends BaseError {
     constructor(errorCode: string) {
-        super(errorCode, "An unexpected error oc curred.");
+        super(errorCode, "An unexpected error occurred.");
     }
 }

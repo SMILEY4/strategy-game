@@ -1,6 +1,6 @@
-import {GameState} from "./models/gameState";
-import {GameApi} from "./required/gameApi";
-import {GameRepository} from "./required/gameRepository";
+import {GameState} from "../models/gameState";
+import {GameApi} from "../required/gameApi";
+import {GameRepository} from "../required/gameRepository";
 
 /**
  * Submit and end the turn

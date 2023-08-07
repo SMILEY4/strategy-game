@@ -1,4 +1,4 @@
-import {UserRepository} from "./required/userRepository";
+import {UserRepository} from "../required/userRepository";
 
 /**
  * Log out

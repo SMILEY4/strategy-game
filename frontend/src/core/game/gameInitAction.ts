@@ -1,5 +1,5 @@
-import {GameCanvasHandle} from "./rendering/gameCanvasHandle";
-import {Renderer} from "./rendering/renderer";
+import {GameCanvasHandle} from "../rendering/gameCanvasHandle";
+import {Renderer} from "../rendering/renderer";
 
 /**
  * Initialized the game when entering the page

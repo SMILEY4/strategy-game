@@ -1,4 +1,4 @@
-import {GameRepository} from "./required/gameRepository";
+import {GameRepository} from "../required/gameRepository";
 
 /**
  * Handles a mouse-scroll

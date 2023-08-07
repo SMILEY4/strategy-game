@@ -1,5 +1,5 @@
-import {GameRepository} from "./required/gameRepository";
-import {TilePicker} from "./tilemap/tilePicker";
+import {GameRepository} from "../required/gameRepository";
+import {TilePicker} from "../tilemap/tilePicker";
 
 /**
  * Handles a mouse-movement

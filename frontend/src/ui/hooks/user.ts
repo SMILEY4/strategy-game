@@ -35,3 +35,10 @@ export function useLoginPostRedirect(defaultUrl: string) {
     const redirectUrl = optional(Base64.decodeOrNull(queryParams.get("redirect"))).getValueOr(defaultUrl)
     return () => navigate(redirectUrl)
 }
+
+export function useHandleUnauthorized() {
+    const redirect = useLoginRedirect("/login");
+    return () => {
+        redirect()
+    }
+}

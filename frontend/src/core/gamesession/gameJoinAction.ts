@@ -1,4 +1,6 @@
-import {GameApi} from "./required/gameApi";
+import {UnauthorizedError} from "../models/errors/UnauthorizedError";
+import {ResponseError} from "../../external/api/clients/httpClient";
+import {GameApi} from "../required/gameApi";
 
 /**
  * Join a game as a player (don't connect yet)
@@ -15,9 +17,10 @@ export class GameJoinAction {
         console.debug("Joining game", gameId);
         return this.gameApi.join(gameId)
             .catch(error => {
-                if (error.errorCode !== "UserAlreadyJoinedError") {
-                    throw error;
+                if (error instanceof ResponseError && error.status === 401) {
+                    throw new UnauthorizedError();
                 }
+                throw error;
             });
     }
 

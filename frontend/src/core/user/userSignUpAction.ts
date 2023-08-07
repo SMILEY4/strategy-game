@@ -1,4 +1,4 @@
-import {UserApi} from "./required/userApi";
+import {UserApi} from "../required/userApi";
 
 /**
  * Create a new account
