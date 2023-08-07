@@ -51,8 +51,8 @@ import {App} from "./ui/pages/App";
 import {GameDeleteAction} from "./core/gamesession/gameDeleteAction";
 import {HttpClient} from "./external/api/clients/httpClient";
 import {WebsocketClient} from "./external/api/clients/websocketClient";
-import {GameApiImpl} from "./external/api/gameApi";
 import {AuthProvider} from "./external/api/clients/authProvider";
+import {GameApiImpl} from "./external/api/gameApiImpl";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
