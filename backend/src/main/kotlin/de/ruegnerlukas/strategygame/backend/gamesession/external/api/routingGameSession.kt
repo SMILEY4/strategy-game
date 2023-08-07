@@ -1,6 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteConfig.routeConfig
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteCreate.routeCreate
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteDelete.routeDelete
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteDisconnectAll.routeDisconnectAll
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteJoin.routeJoin
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteList.routeList
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteWebsocket.routeWebsocket
+import de.ruegnerlukas.strategygame.backend.gamesession.external.api.RouteWebsocketTicket.routeWebsocketTicket
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.ConnectToGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
