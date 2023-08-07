@@ -1,5 +1,4 @@
 import React, {ReactElement, useEffect} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
 import {useGameState} from "../../../core/hooks/useGameState";
 import {GameState} from "../../../core/models/gameState";
 import {MenuFrameStack} from "../../components/specific/dialog/MenuFrameStack";
@@ -17,7 +16,7 @@ export function PageGame(): ReactElement {
 
     useEffect(() => {
         const paramGameId = queryParams.get("id")!!
-        actionConnect.perform(paramGameId).then(undefined)
+        actionConnect.perform(paramGameId)
     }, []);
 
     if (currentState === GameState.LOADING || currentState === GameState.OUT_OF_GAME) {

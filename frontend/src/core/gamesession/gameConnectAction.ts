@@ -20,7 +20,7 @@ export class GameConnectAction {
 
     perform(gameId: string): void {
         console.log("connect to game ", gameId);
-        return Promise.resolve()
+        Promise.resolve()
             .then(() => {
                 this.gameRepository.setGameState(GameState.LOADING);
                 this.gameRepository.setGameId(gameId);
