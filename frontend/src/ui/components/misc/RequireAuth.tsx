@@ -1,29 +1,15 @@
 import {useEffect} from "react";
-import {useNavigate} from "react-router-dom";
-import {useIsAuthenticated} from "../../../core/hooks/useIsAuthenticated";
-import {AppConfig} from "../../../main";
-import {useBeforeRender} from "./useBeforeRender";
-
-const DEV_USERNAME = import.meta.env.PUB_DEV_USERNAME;
-const DEV_PASSWORD = import.meta.env.PUB_DEV_PASSWORD;
+import {useAuthenticated, useLoginRedirect} from "../../hooks/user";
 
 export function RequireAuth(props: { loginUrl: string, children: any }) {
 
-    const isAuthenticated = useIsAuthenticated();
-    const navigate = useNavigate();
-    const actionLogIn = AppConfig.di.get(AppConfig.DIQ.UserLoginAction);
-
-    useBeforeRender(() => {
-        if (!isAuthenticated && DEV_USERNAME && DEV_PASSWORD) {
-            actionLogIn.perform(DEV_USERNAME, DEV_PASSWORD)
-                .then(() => navigate("/sessions"))
-                .catch(e => console.error("Error during login", e));
-        }
-    }, []);
+    const authenticated = useAuthenticated();
+    const redirect = useLoginRedirect(props.loginUrl)
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            navigate(props.loginUrl, {replace: true});
+        if (!authenticated) {
+            console.warn("Not authenticated. Redirecting to login-page.")
+            redirect()
         }
     });
 

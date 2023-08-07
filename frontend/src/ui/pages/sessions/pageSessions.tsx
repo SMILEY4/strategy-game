@@ -3,9 +3,14 @@ import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
 import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
 import {List} from "../../components/controls/list/List";
 import {ButtonGem} from "../../components/controls/button/gem/ButtonGem";
-import {AppConfig} from "../../../main";
 import {TextInput} from "../../components/controls/textinputfield/TextInput";
 import {ButtonText} from "../../components/controls/button/text/ButtonText";
+import {
+    useConnectGameSession,
+    useCreateGameSession, useDeleteGameSessions,
+    useJoinGameSession,
+    useLoadGameSessions,
+} from "../../hooks/gameSessions";
 import {useNavigate} from "react-router-dom";
 import "./pageSessions.css";
 
@@ -99,13 +104,6 @@ export function PageSessions(): ReactElement {
 
 function useSessions() {
 
-    const actionListGames = AppConfig.di.get(AppConfig.DIQ.GameListAction);
-    const actionCreateGame = AppConfig.di.get(AppConfig.DIQ.GameCreateAction);
-    const actionJoin = AppConfig.di.get(AppConfig.DIQ.GameJoinAction);
-    const actionConnect = AppConfig.di.get(AppConfig.DIQ.GameConnectAction);
-    const actionDelete = AppConfig.di.get(AppConfig.DIQ.GameDeleteAction);
-    const navigate = useNavigate();
-
     const [sessions, setSessions] = useState<string[]>([]);
     const [showJoin, setShowJoin] = useState(false);
     const [showCreate, setShowCreate] = useState(false);
@@ -113,11 +111,18 @@ function useSessions() {
     const [seed, setSeed] = useState("");
     const [sessionIdJoin, setSessionIdJoin] = useState("");
 
+    const loadGameSessions = useLoadGameSessions()
+    const createGameSession = useCreateGameSession()
+    const joinGameSession = useJoinGameSession()
+    const connectGameSession = useConnectGameSession()
+    const deleteGameSession = useDeleteGameSessions()
+    const navigate = useNavigate();
+
 
     useEffect(() => loadSessions(), []);
 
     function loadSessions() {
-        actionListGames.perform()
+        loadGameSessions()
             .then((list: string[]) => setSessions(list));
     }
 
@@ -134,7 +139,7 @@ function useSessions() {
     function acceptCreate() {
         setSeed("");
         setShowCreate(false);
-        actionCreateGame.perform(getCleanSeed(seed))
+        createGameSession(getCleanSeed(seed))
             .then(() => loadSessions())
             .catch(console.error);
     }
@@ -161,20 +166,20 @@ function useSessions() {
     function acceptJoin() {
         setSessionIdJoin("");
         setShowJoin(false);
-        actionJoin.perform(sessionIdJoin)
+        joinGameSession(sessionIdJoin)
             .then(() => loadSessions())
             .catch(console.error);
     }
 
     function connect(sessionId: string) {
-        actionConnect.perform(sessionId)
+        connectGameSession(sessionId)
             .then(() => navigate("/game"))
             .catch(console.error);
 
     }
 
     function drop(sessionId: string) {
-        actionDelete.perform(sessionId)
+        deleteGameSession(sessionId)
             .then(() => loadSessions())
             .catch(console.error);
     }

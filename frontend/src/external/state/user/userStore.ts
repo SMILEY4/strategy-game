@@ -40,12 +40,5 @@ export namespace UserStore {
         ...stateActions(set)
     }));
 
-    export function userIdFromToken(token: string): string {
-        if (token) {
-            return (jwt_decode(token) as any).sub;
-        } else {
-            return "";
-        }
-    }
 
 }

@@ -7,6 +7,7 @@ import "./pageSignUp.css";
 import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
 import {useNavigate} from "react-router-dom";
 import {AppConfig} from "../../../main";
+import {useSignup} from "../../hooks/user";
 
 
 export function PageSignUp(): ReactElement {
@@ -21,7 +22,7 @@ export function PageSignUp(): ReactElement {
         setPassword,
         signUp,
         login,
-    } = useSignUp();
+    } = usePageSignUp();
 
     return (
         <PanelCloth className="page-signup" color="blue">
@@ -70,14 +71,13 @@ export function PageSignUp(): ReactElement {
 }
 
 
-function useSignUp() {
+function usePageSignUp() {
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
-
-    const actionSignUp = AppConfig.di.get(AppConfig.DIQ.UserSignUpAction);
+    const signup = useSignup();
     const navigate = useNavigate();
 
     function changeUsername(value: string) {
@@ -112,7 +112,7 @@ function useSignUp() {
             setError("Password is missing!");
             return;
         }
-        actionSignUp.perform(email, password, username)
+        signup(email, password, username)
             .then(() => navigate("/signup/confirm"))
             .catch(e => setError("Error: " + e));
     }
