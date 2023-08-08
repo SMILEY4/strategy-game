@@ -13,6 +13,7 @@ import {
     useLoadGameSessions,
 } from "../../hooks/gameSessions";
 import "./pageSessions.css";
+import {ButtonOutline} from "../../components/controls/button/outline/ButtonOutline";
 
 
 export function PageSessions(): ReactElement {
@@ -45,8 +46,8 @@ export function PageSessions(): ReactElement {
                     {sessionIds.map(sessionId => (
                         <div key={sessionId} className="page-sessions__list__row">
                             <div>{sessionId}</div>
-                            <ButtonGem onClick={() => drop(sessionId)}>Delete</ButtonGem>
-                            <ButtonGem onClick={() => connect(sessionId)}>Connect</ButtonGem>
+                            <ButtonOutline onClick={() => drop(sessionId)}>Delete</ButtonOutline>
+                            <ButtonOutline onClick={() => connect(sessionId)}>Connect</ButtonOutline>
                         </div>
                     ))}
                 </List>

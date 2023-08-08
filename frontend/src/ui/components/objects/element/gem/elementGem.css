@@ -1,18 +1,20 @@
 .element-gem {
-    --element-gem__light:                     hsl(159, 42%, 47%);
+    --element-gem__light:                     hsl(159, 42%, 40%);
     --element-gem__light--hover:              hsl(162, 56%, 53%);
     --element-gem__light--active:             hsl(162, 46%, 36%);
-    --element-gem__dark:                      hsl(180, 17%, 12%);
+    --element-gem__dark:                      hsl(180, 21%, 15%);
 
     --element-gem__border-light:              hsla(160, 17%, 54%, 0.75);
     --element-gem__border-light--hover:       hsla(160, 17%, 64%, 0.75);
     --element-gem__border_light--active:      hsla(160, 17%, 44%, 0.75);
     --element-gem__border-dark:               hsla(180, 14%, 16%, 0.75);
 
-    --element-gem__highlight-light:           hsl(159, 46%, 70%);
+    --element-gem__highlight-light:           hsl(159, 46%, 79%);
     --element-gem__highlight-light--hover:    hsl(159, 56%, 87%);
     --element-gem__highlight-light--active:   hsl(159, 56%, 60%);
-    --element-gem__highlight-dark:            hsl(180, 17%, 14%);
+    --element-gem__highlight-dark:            hsl(180, 22%, 20%);
+
+    --element-gem__content:                   hsl(0, 0%, 96%);
 
 
     --element-gem--disabled__light:           hsl(159, 8%, 47%);
@@ -24,7 +26,6 @@
     --element-gem--disabled__highlight-light: hsl(159, 16%, 70%);
     --element-gem--disabled__highlight-dark:  hsl(180, 7%, 14%);
 
-    --element-gem__content:                   hsl(0, 0%, 93%);
     --element-gem--disabled__content:         hsl(0, 0%, 83%);
 }
 

@@ -1,0 +1,43 @@
+.button-outline {
+    --button-outline__border:            hsla(0, 0%, 95%, 60%);
+    --button-outline__border--hover:     hsla(0, 0%, 95%, 80%);
+    --button-outline__border--disabled:  hsla(0, 0%, 95%, 50%);
+
+    --button-outline__content:           hsla(0, 0%, 95%, 100%);
+    --button-outline__content--disabled: hsla(0, 0%, 95%, 80%);
+
+    --button-outline__bg--hover:         hsla(0, 0%, 96%, 8%);
+    --button-outline__bg--active:        hsla(0, 0%, 0%, 5%);
+}
+
+.button-outline {
+
+    margin:           unset;
+    border:           unset;
+    outline:          unset;
+    background-color: transparent;
+    box-sizing:       border-box;
+
+    border:           2px solid var(--button-outline__border);
+    color:            var(--button-outline__content);
+    font-size:        16px;
+    padding:          0.1rem 0.5rem;
+}
+
+.button-outline:not(.button-outline--disabled) {
+    cursor: pointer;
+}
+
+.button-outline:hover:not(.button-outline--disabled) {
+    background-color: var(--button-outline__bg--hover);
+    border-color:     var(--button-outline__border--hover);
+}
+
+.button-outline:active:not(.button-outline--disabled) {
+    background-color: var(--button-outline__bg--active);
+}
+
+.button-outline--disabled {
+    color:        var(--button-outline__content--disabled);
+    border-color: var(--button-outline__border--disabled);
+}

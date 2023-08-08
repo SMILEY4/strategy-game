@@ -20,7 +20,7 @@
     left:           0;
     right:          0;
 
-    border:         3px groove black;
+    border:         3px groove #000000;
     pointer-events: none;
 }
 
