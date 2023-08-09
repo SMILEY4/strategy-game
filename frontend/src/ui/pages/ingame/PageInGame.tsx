@@ -7,6 +7,7 @@ import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
 import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
 import {Canvas} from "./canvas/Canvas";
 import "./pageInGame.css";
+import {MenuBar} from "./menubar/MenuBar";
 
 const USE_DUMMY_CANVAS = true;
 
@@ -50,6 +51,7 @@ function GamePlaying(): ReactElement {
                     ? <div className="dummy-canvas"/>
                     : <Canvas/>
             }
+            <MenuBar/>
         </div>
     );
 }

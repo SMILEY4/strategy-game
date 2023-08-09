@@ -20,7 +20,7 @@
     left:           0;
     right:          0;
 
-    border:         3px groove #000000;
+    border:         3px ridge #a4a4a4;
     pointer-events: none;
 }
 
@@ -48,7 +48,7 @@
 
 .border-metallic__content {
     position: relative;
-    padding:  3px;
+    padding:  2.5px;
     box-sizing: border-box
 }
 

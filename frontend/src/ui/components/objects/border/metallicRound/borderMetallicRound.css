@@ -1,0 +1,35 @@
+.border-metallic-round {
+    --metallic-border__gold-0:   hsl(47, 12%, 80%);
+    --metallic-border__gold-1:   hsl(43, 31%, 50%);
+    --metallic-border__gold-2:   hsl(39, 75%, 25%);
+
+    --metallic-border__silver-0: hsl(47, 0%, 70%);
+    --metallic-border__silver-1: hsl(43, 0%, 20%);
+    --metallic-border__silver-2: hsl(39, 0%, 5%);
+}
+
+.border-metallic-round {
+    position:         relative;
+    box-sizing:       border-box;
+    border-radius:    999px;
+    padding:          1px;
+    background: linear-gradient(180deg, var(--metallic-border__gold-0) 0%, var(--metallic-border__gold-2) 100%);
+}
+
+.border-metallic-count__inner {
+    position:         relative;
+    width:            100%;
+    height:           100%;
+    box-sizing:       border-box;
+    border-radius:    999px;
+    padding:          1px;
+    background: linear-gradient(180deg, var(--metallic-border__gold-2) 0%, var(--metallic-border__gold-0) 100%);
+}
+
+.border-metallic-count__content {
+    position:         relative;
+    width:            100%;
+    height:           100%;
+    box-sizing:       border-box;
+    border-radius:    999px;
+}
