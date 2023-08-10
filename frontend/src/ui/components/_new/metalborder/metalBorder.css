@@ -1,0 +1,57 @@
+.metal-border__outer {
+    position:   relative;
+    box-sizing: border-box;
+    padding:    2px;
+}
+
+.metal-border__inner {
+    position:   relative;
+    box-sizing: border-box;
+    padding:    2px;
+    width:      100%;
+    height:     100%;
+    border:     1px solid;
+}
+
+.metal-border__content {
+    width:  100%;
+    height: 100%;
+}
+
+.metal-border__outer {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 30%), 0 0 4px rgba(0, 0, 0, 40%);
+}
+
+.metal-border__content {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 60%);
+}
+
+/*GOLD*/
+
+.metal-border--gold.metal-border__outer {
+    background: linear-gradient(var(--color__base__gold-0), var(--color__base__gold-2), var(--color__base__gold-3));
+}
+
+.metal-border--gold .metal-border__inner {
+    background: linear-gradient(var(--color__base__gold-3), var(--color__base__gold-2), var(--color__base__gold-1));
+    border-color:  var(--color__base__gold-0);
+}
+
+/*SILVER*/
+
+.metal-border--silver.metal-border__outer {
+    background: linear-gradient(var(--color__base__silver-0), var(--color__base__silver-2), var(--color__base__silver-3));
+}
+
+.metal-border--silver .metal-border__inner {
+    background: linear-gradient(var(--color__base__silver-3), var(--color__base__silver-2), var(--color__base__silver-1));
+    border-color:  var(--color__base__silver-0);
+}
+
+/*ROUND*/
+
+.metal-border--round.metal-border__outer,
+.metal-border--round .metal-border__inner,
+.metal-border--round .metal-border__content {
+    border-radius: 9999px;
+}

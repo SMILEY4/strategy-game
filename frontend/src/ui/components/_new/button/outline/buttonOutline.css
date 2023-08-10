@@ -1,0 +1,36 @@
+.button-outline {
+    padding:       0.1rem 0.5rem;
+    display:       flex;
+    align-items:   center;
+    border:        3px solid var(--color__base__gold-2);
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.button-outline:not(.button-outline--disabled) {
+    cursor: pointer;
+}
+
+.button-outline,
+.button-outline * {
+    color: var(--content);
+}
+
+.button-outline--disabled,
+.button-outline--disabled * {
+    color: var(--content--disabled);
+}
+
+.button-outline--disabled {
+    border-color: var(--color__base__gold-2--disabled);
+}
+
+.button-outline:hover:not(.button-outline--disabled) {
+    background-color: var(--color__background__gold-2);
+}
+
+.button-outline.button-outline--round {
+    overflow: hidden;
+    border-radius: 9999px;
+    padding: 0.3rem 0.3rem;
+}

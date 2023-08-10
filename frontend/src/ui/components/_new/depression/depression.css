@@ -1,0 +1,18 @@
+
+.depression {
+    position:   relative;
+    background: radial-gradient(var(--depression--light) 10%, var(--depression--dark) 80%);
+}
+
+.depression,
+.depression * {
+    color: var(--depression__content);
+}
+
+.depression--interactive-focus:focus-within {
+    background: radial-gradient(var(--depression--light--focus) 10%, var(--depression--dark--focus) 80%);
+}
+
+.depression--interactive-hover:hover {
+    background: radial-gradient(var(--depression--light--hover) 10%, var(--depression--dark--hover) 80%);
+}

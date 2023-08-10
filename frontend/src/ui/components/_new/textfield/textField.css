@@ -1,0 +1,26 @@
+.text-field .depression {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding:    0.15rem 0.4rem;
+}
+
+.text-field__input, .text-field__input:active, .text-field__input:focus {
+    position:         relative;
+    padding:          unset;
+    margin:           unset;
+    border:           unset;
+    outline:          unset;
+    background-color: transparent;
+    box-sizing:       border-box;
+    font-size:        16px;
+}
+
+.text-field__input input::placeholder {
+    opacity: 40%;
+}
+
+.text-field__input {
+    width: 100%;
+    height: 100%;
+}

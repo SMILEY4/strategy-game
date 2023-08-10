@@ -1,0 +1,25 @@
+.checkbox-outline {
+    width:  1.15rem;
+    height: 1.15rem;
+
+    border:        3px solid var(--color__base__gold-2);
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.checkbox-outline--round {
+    border-radius: 9999px;
+}
+
+.checkbox-outline:hover {
+    cursor: pointer;
+    background-color: var(--color__background__gold-2);
+}
+
+.checkbox-outline__checkmark {
+    filter:   drop-shadow(0 0 2px rgba(0,0,0,40%)) drop-shadow(0 0 3px rgba(0,0,0,30%));
+    position: relative;
+    width:    110%;
+    height:   110%;
+    color: var(--depression__content)
+}

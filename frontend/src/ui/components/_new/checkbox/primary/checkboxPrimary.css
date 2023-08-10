@@ -1,0 +1,25 @@
+.checkbox-primary {
+    width:  1.5rem;
+    height: 1.5rem;
+}
+
+.checkbox-primary:hover {
+    cursor: pointer;
+}
+
+.checkbox-primary__inner {
+    position: relative;
+    width:    100%;
+    height:   100%;
+}
+
+.checkbox-primary__checkmark {
+    filter:   drop-shadow(0 0 2px black) drop-shadow(0 0 3px black);
+    position: relative;
+    width:    110%;
+    height:   110%;
+}
+
+.checkbox-primary.border--round .checkbox-primary__inner {
+    border-radius: 9999px;
+}
