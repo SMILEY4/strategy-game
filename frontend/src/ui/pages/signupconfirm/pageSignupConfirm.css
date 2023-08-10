@@ -9,6 +9,9 @@
 
 .page-signup-confirm__content {
     padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
 }
 
 .page-signup-confirm__content > h1 {
@@ -23,6 +26,6 @@
     font-size: 1.25em;
 }
 
-.page-signup-confirm__content > button {
+.page-signup-confirm__content > .button {
     margin-top: 1rem;
 }

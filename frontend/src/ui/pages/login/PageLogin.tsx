@@ -1,12 +1,12 @@
 import React, {ReactElement, useState} from "react";
-import {TextInput} from "../../components/controls/textinputfield/TextInput";
-import {ButtonGem} from "../../components/controls/button/gem/ButtonGem";
-import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
-import {ButtonText} from "../../components/controls/button/text/ButtonText";
-import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
+import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
+import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {useLogin, useLoginPostRedirect} from "../../hooks/user";
 import {useNavigate} from "react-router-dom";
 import "./pageLogin.css";
+import {TextField} from "../../components/textfield/TextField";
+import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 
 
 export function PageLogin(): ReactElement {
@@ -27,20 +27,20 @@ export function PageLogin(): ReactElement {
 
                 <h1>Login</h1>
 
-                <TextInput
+                <TextField
                     value={email}
                     onAccept={setEmail}
                     placeholder="Email Address"
                     type="email"
-                    border="silver"
+                    borderType="silver"
                 />
 
-                <TextInput
+                <TextField
                     value={password}
                     onAccept={setPassword}
                     placeholder={"Password"}
                     type="password"
-                    border="silver"
+                    borderType="silver"
                 />
 
                 {error && (
@@ -48,8 +48,8 @@ export function PageLogin(): ReactElement {
                 )}
 
                 <div className="login-actions">
-                    <ButtonText onClick={signUp}>Sign up</ButtonText>
-                    <ButtonGem onClick={login}>Login</ButtonGem>
+                    <ButtonOutline onClick={signUp}>Sign up</ButtonOutline>
+                    <ButtonPrimary onClick={login}>Login</ButtonPrimary>
                 </div>
 
             </PanelDecorated>
@@ -80,6 +80,7 @@ function usePageLogin() {
     }
 
     function requestLogin() {
+        console.log("LOGIN")
         if (!email) {
             setError("Email address is missing!");
             return;

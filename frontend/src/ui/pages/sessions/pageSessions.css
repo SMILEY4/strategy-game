@@ -59,7 +59,7 @@
     flex-grow: 1;
 }
 
-.page-sessions__list__row > .button-gem {
+.page-sessions__list__row > .button {
     flex-grow: 0;
 }
 

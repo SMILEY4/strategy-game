@@ -1,10 +1,7 @@
 import React, {ReactElement, useEffect, useState} from "react";
-import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
-import {List} from "../../components/controls/list/List";
-import {ButtonGem} from "../../components/controls/button/gem/ButtonGem";
-import {TextInput} from "../../components/controls/textinputfield/TextInput";
-import {ButtonText} from "../../components/controls/button/text/ButtonText";
+import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
+import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
+import {List} from "../../components/list/List";
 import {
     useConnectGameSession,
     useCreateGameSession,
@@ -12,8 +9,10 @@ import {
     useJoinGameSession,
     useLoadGameSessions,
 } from "../../hooks/gameSessions";
+import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {TextField} from "../../components/textfield/TextField";
 import "./pageSessions.css";
-import {ButtonOutline} from "../../components/controls/button/outline/ButtonOutline";
 
 
 export function PageSessions(): ReactElement {
@@ -53,8 +52,8 @@ export function PageSessions(): ReactElement {
                 </List>
 
                 <div className="page-sessions__actions">
-                    <ButtonGem onClick={startCreate}>Create</ButtonGem>
-                    <ButtonGem onClick={startJoin}>Join</ButtonGem>
+                    <ButtonPrimary onClick={startCreate}>Create</ButtonPrimary>
+                    <ButtonPrimary onClick={startJoin}>Join</ButtonPrimary>
                 </div>
 
             </PanelDecorated>
@@ -64,16 +63,16 @@ export function PageSessions(): ReactElement {
                 <div className="page-sessions__dialog-surface">
                     <PanelDecorated className="page-sessions__join" classNameContent="page-sessions__join-content">
                         <h1>Join</h1>
-                        <TextInput
+                        <TextField
                             value={joinSessionId}
                             onAccept={setJoinSessionId}
                             placeholder="Session Id"
                             type="text"
-                            border="silver"
+                            borderType="silver"
                         />
                         <div className="page-sessions__join__actions">
-                            <ButtonText onClick={cancelJoin}>Cancel</ButtonText>
-                            <ButtonGem onClick={acceptJoin} disabled={!joinSessionId}>Join</ButtonGem>
+                            <ButtonOutline onClick={cancelJoin}>Cancel</ButtonOutline>
+                            <ButtonPrimary onClick={acceptJoin} disabled={!joinSessionId}>Join</ButtonPrimary>
                         </div>
                     </PanelDecorated>
                 </div>
@@ -83,16 +82,16 @@ export function PageSessions(): ReactElement {
                 <div className="page-sessions__dialog-surface">
                     <PanelDecorated className="page-sessions__create" classNameContent="page-sessions__create-content">
                         <h1>Create</h1>
-                        <TextInput
+                        <TextField
                             value={seed}
                             onAccept={setSeed}
                             placeholder="Seed (Optional)"
                             type="text"
-                            border="silver"
+                            borderType="silver"
                         />
                         <div className="page-sessions__create__actions">
-                            <ButtonText onClick={cancelCreate}>Cancel</ButtonText>
-                            <ButtonGem onClick={acceptCreate}>Create</ButtonGem>
+                            <ButtonOutline onClick={cancelCreate}>Cancel</ButtonOutline>
+                            <ButtonPrimary onClick={acceptCreate}>Create</ButtonPrimary>
                         </div>
                     </PanelDecorated>
                 </div>

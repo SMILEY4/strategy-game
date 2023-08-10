@@ -1,9 +1,9 @@
 import React, {ReactElement} from "react";
-import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
+import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
+import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {useNavigate} from "react-router-dom";
-import {ButtonText} from "../../components/controls/button/text/ButtonText";
 import "./pageSignupConfirm.css";
+import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
 
 
 export function PageSignupConfirm(): ReactElement {
@@ -16,7 +16,7 @@ export function PageSignupConfirm(): ReactElement {
                 <h1>Confirm E-Mail</h1>
                 <p>A confirmation email has been sent to the specified address.</p>
                 <p>Complete the signup by clicking the link in the email.</p>
-                <ButtonText onClick={login}>Return to Login</ButtonText>
+                <ButtonOutline onClick={login}>Return to Login</ButtonOutline>
             </PanelDecorated>
         </PanelCloth>
     );

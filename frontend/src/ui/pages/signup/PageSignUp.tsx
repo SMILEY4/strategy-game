@@ -1,13 +1,12 @@
 import React, {ReactElement, useState} from "react";
-import {TextInput} from "../../components/controls/textinputfield/TextInput";
-import {ButtonGem} from "../../components/controls/button/gem/ButtonGem";
-import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
-import {ButtonText} from "../../components/controls/button/text/ButtonText";
-import "./pageSignUp.css";
-import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
+import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
+import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {useNavigate} from "react-router-dom";
-import {AppConfig} from "../../../main";
 import {useSignup} from "../../hooks/user";
+import {TextField} from "../../components/textfield/TextField";
+import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import "./pageSignUp.css";
 
 
 export function PageSignUp(): ReactElement {
@@ -30,28 +29,28 @@ export function PageSignUp(): ReactElement {
 
                 <h1>Sign Up</h1>
 
-                <TextInput
+                <TextField
                     value={username}
                     onAccept={setUsername}
                     placeholder="Username"
                     type="text"
-                    border="silver"
+                    borderType="silver"
                 />
 
-                <TextInput
+                <TextField
                     value={email}
                     onAccept={setEmail}
                     placeholder="Email Address"
                     type="email"
-                    border="silver"
+                    borderType="silver"
                 />
 
-                <TextInput
+                <TextField
                     value={password}
                     onAccept={setPassword}
                     placeholder={"Password"}
                     type="password"
-                    border="silver"
+                    borderType="silver"
                 />
 
                 {error && (
@@ -59,8 +58,8 @@ export function PageSignUp(): ReactElement {
                 )}
 
                 <div className="signup-actions">
-                    <ButtonText onClick={login}>Log-In</ButtonText>
-                    <ButtonGem onClick={signUp}>Sign Up</ButtonGem>
+                    <ButtonOutline onClick={login}>Log-In</ButtonOutline>
+                    <ButtonPrimary onClick={signUp}>Sign Up</ButtonPrimary>
                 </div>
 
 
