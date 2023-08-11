@@ -13,5 +13,17 @@ Components
 - CheckboxLabeled        TODO
 - CheckboxOutlineLabeled TODO
 
-- TextField
-- TextFieldOutlines TODO
+- TextFieldPrimary
+- TextFieldOutline
+
+
+common props ? -> todo
+=> generalize common props
+- round
+- border-type
+- disabled
+- className
+- onClick
+- onSelect
+- selected
+...

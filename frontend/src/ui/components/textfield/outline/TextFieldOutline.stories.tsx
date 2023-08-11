@@ -1,18 +1,18 @@
 import {Meta, StoryObj} from "@storybook/react";
 import React from "react";
-import {TextField} from "./TextField";
+import {TextFieldOutline} from "./TextFieldOutline";
 
 const meta = {
-    title: "Controls/TextField/Primary",
-    component: TextField,
+    title: "Controls/TextField/Outline",
+    component: TextFieldOutline,
     parameters: {
         layout: "centered",
     },
     tags: ["autodocs"],
-} satisfies Meta<typeof TextField>;
+} satisfies Meta<typeof TextFieldOutline>;
 
 export default meta;
-type Story = StoryObj<typeof TextField>;
+type Story = StoryObj<typeof TextFieldOutline>;
 
 
 export const Default: Story = {
@@ -20,5 +20,5 @@ export const Default: Story = {
         value: "",
         placeholder: "Placeholder",
         type: "text",
-    }
+    },
 };

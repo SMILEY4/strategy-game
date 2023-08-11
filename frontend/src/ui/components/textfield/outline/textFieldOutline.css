@@ -1,0 +1,35 @@
+.text-field-outline {
+    color: var(--content);
+    border:        3px solid var(--color__base__gold-1);
+    border-radius: 2px;
+    box-sizing:    border-box;
+    padding:       0.15rem 0.4rem;
+}
+
+.text-field-outline,
+.text-field-outline:active,
+.text-field-outline:focus {
+    position:         relative;
+    margin:           unset;
+    outline:          unset;
+    background-color: transparent;
+    box-sizing:       border-box;
+    font-size:        16px;
+}
+
+.text-field-outline__input input::placeholder {
+    opacity: 40%;
+}
+
+.text-field-outline:focus:not(.text-field--disabled):not(.text-field--readonly) {
+    background-color: var(--color__background__gold-2);
+}
+
+.text-field-outline--disabled,
+.text-field-outline--disabled * {
+    color: var(--content--disabled);
+}
+
+.text-field-outline--disabled {
+    border-color: var(--color__base__gold-2--disabled);
+}

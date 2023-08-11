@@ -4,19 +4,21 @@ import {Gem} from "../../objects/gem/Gem";
 import {joinClassNames} from "../../utils";
 import "./buttonPrimary.css";
 import "../../variables.css";
+import {useButton, UseButtonProps} from "../../headless/useButton";
 
 
-export interface ButtonPrimaryProps {
+export interface ButtonPrimaryProps extends UseButtonProps {
     borderType?: "gold" | "silver"
-    disabled?: boolean;
     round?: boolean,
-    onClick?: () => void;
     className?: string;
     classNameContent?: string;
     children?: any;
 }
 
 export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
+
+    const {elementProps, isDisabled} = useButton(props);
+
     return (
         <MetalBorder
             className={joinClassNames([
@@ -29,8 +31,8 @@ export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
         >
             <Gem
                 classNameContent="button-primary__content"
-                disabled={props.disabled}
-                onClick={handleClick}
+                disabled={isDisabled}
+                onClick={elementProps.onClick}
                 round={props.round}
                 interactive
             >
@@ -38,11 +40,5 @@ export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
             </Gem>
         </MetalBorder>
     );
-
-    function handleClick() {
-        if(!props.disabled && props.onClick) {
-            props.onClick();
-        }
-    }
 
 }

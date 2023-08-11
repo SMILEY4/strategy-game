@@ -4,9 +4,9 @@ import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {useLogin, useLoginPostRedirect} from "../../hooks/user";
 import {useNavigate} from "react-router-dom";
 import "./pageLogin.css";
-import {TextField} from "../../components/textfield/TextField";
 import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
 
 
 export function PageLogin(): ReactElement {
@@ -21,26 +21,28 @@ export function PageLogin(): ReactElement {
         signUp
     } = usePageLogin()
 
+
+
     return (
         <PanelCloth className="page-login" color="blue">
             <PanelDecorated classNameContent="page-login__content">
 
                 <h1>Login</h1>
 
-                <TextField
+                <TextFieldPrimary
                     value={email}
-                    onAccept={setEmail}
                     placeholder="Email Address"
                     type="email"
                     borderType="silver"
+                    onChange={setEmail}
                 />
 
-                <TextField
+                <TextFieldPrimary
                     value={password}
-                    onAccept={setPassword}
                     placeholder={"Password"}
                     type="password"
                     borderType="silver"
+                    onChange={setPassword}
                 />
 
                 {error && (
@@ -80,7 +82,6 @@ function usePageLogin() {
     }
 
     function requestLogin() {
-        console.log("LOGIN")
         if (!email) {
             setError("Email address is missing!");
             return;

@@ -1,11 +1,13 @@
-.text-field .depression {
+.text-field-primary .depression {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
     padding:    0.15rem 0.4rem;
 }
 
-.text-field__input, .text-field__input:active, .text-field__input:focus {
+.text-field-primary__input,
+.text-field-primary__input:active,
+.text-field-primary__input:focus {
     position:         relative;
     padding:          unset;
     margin:           unset;
@@ -16,11 +18,11 @@
     font-size:        16px;
 }
 
-.text-field__input input::placeholder {
+.text-field-primary__input input::placeholder {
     opacity: 40%;
 }
 
-.text-field__input {
+.text-field-primary__input {
     width: 100%;
     height: 100%;
 }

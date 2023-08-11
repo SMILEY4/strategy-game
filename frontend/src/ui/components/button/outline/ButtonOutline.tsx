@@ -1,38 +1,35 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
+import {useButton, UseButtonProps} from "../../headless/useButton";
 import "./buttonOutline.css";
 import "../../variables.css";
 
 
-export interface ButtonOutlineProps {
-    disabled?: boolean;
+export interface ButtonOutlineProps extends UseButtonProps {
     round?: boolean,
-    onClick?: () => void;
     className?: string;
     classNameContent?: string;
     children?: any;
 }
 
 export function ButtonOutline(props: ButtonOutlineProps): ReactElement {
+
+    const {elementProps, isDisabled} = useButton(props);
+
     return (
         <div
+            {...elementProps}
             className={joinClassNames([
                 "button",
                 "button-outline",
-                props.disabled ? "button--disabled button-outline--disabled" : null,
+                isDisabled ? "button--disabled button-outline--disabled" : null,
                 props.round ? "button-outline--round" : null,
                 props.className,
             ])}
-            onClick={handleClick}
         >
             {props.children}
         </div>
     );
 
-    function handleClick() {
-        if (!props.disabled && props.onClick) {
-            props.onClick();
-        }
-    }
 
 }

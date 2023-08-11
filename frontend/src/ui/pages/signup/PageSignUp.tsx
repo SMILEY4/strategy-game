@@ -3,10 +3,10 @@ import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDec
 import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {useNavigate} from "react-router-dom";
 import {useSignup} from "../../hooks/user";
-import {TextField} from "../../components/textfield/TextField";
 import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import "./pageSignUp.css";
+import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
 
 
 export function PageSignUp(): ReactElement {
@@ -29,25 +29,25 @@ export function PageSignUp(): ReactElement {
 
                 <h1>Sign Up</h1>
 
-                <TextField
+                <TextFieldPrimary
                     value={username}
-                    onAccept={setUsername}
+                    onChange={setUsername}
                     placeholder="Username"
                     type="text"
                     borderType="silver"
                 />
 
-                <TextField
+                <TextFieldPrimary
                     value={email}
-                    onAccept={setEmail}
+                    onChange={setEmail}
                     placeholder="Email Address"
                     type="email"
                     borderType="silver"
                 />
 
-                <TextField
+                <TextFieldPrimary
                     value={password}
-                    onAccept={setPassword}
+                    onChange={setPassword}
                     placeholder={"Password"}
                     type="password"
                     borderType="silver"

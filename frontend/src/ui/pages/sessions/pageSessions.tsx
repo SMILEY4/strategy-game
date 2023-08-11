@@ -11,8 +11,8 @@ import {
 } from "../../hooks/gameSessions";
 import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
-import {TextField} from "../../components/textfield/TextField";
 import "./pageSessions.css";
+import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
 
 
 export function PageSessions(): ReactElement {
@@ -41,7 +41,7 @@ export function PageSessions(): ReactElement {
 
                 <h1>Sessions</h1>
 
-                <List border="silver" className="page-sessions__list">
+                <List borderType="silver" className="page-sessions__list">
                     {sessionIds.map(sessionId => (
                         <div key={sessionId} className="page-sessions__list__row">
                             <div>{sessionId}</div>
@@ -63,9 +63,9 @@ export function PageSessions(): ReactElement {
                 <div className="page-sessions__dialog-surface">
                     <PanelDecorated className="page-sessions__join" classNameContent="page-sessions__join-content">
                         <h1>Join</h1>
-                        <TextField
+                        <TextFieldPrimary
                             value={joinSessionId}
-                            onAccept={setJoinSessionId}
+                            onChange={setJoinSessionId}
                             placeholder="Session Id"
                             type="text"
                             borderType="silver"
@@ -82,9 +82,9 @@ export function PageSessions(): ReactElement {
                 <div className="page-sessions__dialog-surface">
                     <PanelDecorated className="page-sessions__create" classNameContent="page-sessions__create-content">
                         <h1>Create</h1>
-                        <TextField
+                        <TextFieldPrimary
                             value={seed}
-                            onAccept={setSeed}
+                            onChange={setSeed}
                             placeholder="Seed (Optional)"
                             type="text"
                             borderType="silver"

@@ -11,7 +11,7 @@
     border-radius: 9999px;
 }
 
-.checkbox-outline:hover {
+.checkbox-outline:hover:not(.checkbox-outline--disabled):not(.checkbox-outline--readonly) {
     cursor: pointer;
     background-color: var(--color__background__gold-2);
 }
@@ -22,4 +22,15 @@
     width:    110%;
     height:   110%;
     color: var(--depression__content)
+}
+
+
+
+.checkbox-outline--disabled,
+.checkbox-outline--disabled * {
+    color: var(--content--disabled);
+}
+
+.checkbox-outline--disabled {
+    border-color: var(--color__base__gold-2--disabled);
 }

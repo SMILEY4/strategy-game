@@ -1,45 +1,44 @@
-import React, {ReactElement, useState} from "react";
+import React, {ReactElement} from "react";
 import {Depression} from "../../objects/depression/Depression";
 import {MetalBorder} from "../../objects/metalborder/MetalBorder";
 import {joinClassNames} from "../../utils";
 import {GiCheckMark} from "react-icons/gi";
 import "../../variables.css";
 import "./checkboxPrimary.css";
+import {useCheckbox, UseCheckboxProps} from "../../headless/useCheckbox";
 
-export interface CheckboxPrimaryProps {
+export interface CheckboxPrimaryProps extends UseCheckboxProps {
     borderType?: "gold" | "silver"
     round?: boolean,
-    onSelect?: (selected: boolean) => void,
     className?: string;
 }
 
 export function CheckboxPrimary(props: CheckboxPrimaryProps): ReactElement {
 
-    const [selected, setSelected] = useState(false);
+    const {elementProps, isSelected, isDisabled, isReadOnly} = useCheckbox(props);
 
     return (
         <MetalBorder
             className={joinClassNames([
                 "checkbox",
                 "checkbox-primary",
-                props.className
+                isDisabled ? "checkbox--disabled checkbox-primary--disabled" : null,
+                isReadOnly ? "checkbox--readonly checkbox-primary--readonly" : null,
+                props.className,
             ])}
             type={props.borderType || "gold"}
             round={props.round}
-            onClick={handleClick}
         >
-            <Depression className="checkbox-primary__inner" interactiveHover onClick={handleClick} >
-                {selected && (
+            <Depression
+                {...elementProps}
+                className="checkbox-primary__inner"
+                interactiveHover={!isDisabled && !isReadOnly}
+            >
+                {isSelected && (
                     <GiCheckMark className="checkbox-primary__checkmark"/>
                 )}
             </Depression>
         </MetalBorder>
     );
-
-    function handleClick() {
-        const nextValue = !selected
-        setSelected(nextValue);
-        props.onSelect && props.onSelect(nextValue)
-    }
 
 }
