@@ -12,14 +12,14 @@ import {MenuBar} from "./menubar/MenuBar";
 const USE_DUMMY_CANVAS = true;
 
 export function PageInGame(): ReactElement {
-    const {currentState} = usePageInGame();
-    if (currentState === GameState.LOADING) {
-        return <GameLoading/>;
-    } else if (currentState === GameState.PLAYING || currentState === GameState.SUBMITTED) {
+    // const {currentState} = usePageInGame();
+    // if (currentState === GameState.LOADING) {
+    //     return <GameLoading/>;
+    // } else if (currentState === GameState.PLAYING || currentState === GameState.SUBMITTED) {
         return <GamePlaying/>;
-    } else {
-        return <GameError state={currentState}/>;
-    }
+    // } else {
+    //     return <GameError state={currentState}/>;
+    // }
 }
 
 function GameLoading(): ReactElement {

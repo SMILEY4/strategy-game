@@ -24,9 +24,9 @@ export function App() {
                     </RequireAuth>
                 }/>
                 <Route path="game" element={
-                    <RequireAuth loginUrl="/login">
+                    // <RequireAuth loginUrl="/login">
                         <PageInGame/>
-                    </RequireAuth>
+                    // </RequireAuth>
                 }/>
                 <Route path="*" element={<PageNotFound/>}/>
             </Routes>

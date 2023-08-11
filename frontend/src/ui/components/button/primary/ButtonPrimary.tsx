@@ -25,12 +25,13 @@ export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
                 "button",
                 "button-primary",
                 props.disabled ? "button--disabled button-primary--disabled" : null,
+                props.className
             ])}
             type={props.borderType || "gold"}
             round={props.round}
         >
             <Gem
-                classNameContent="button-primary__content"
+                classNameContent={joinClassNames(["button-primary__content", props.classNameContent])}
                 disabled={isDisabled}
                 onClick={elementProps.onClick}
                 round={props.round}

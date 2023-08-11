@@ -1,32 +1,55 @@
 import "./menuBar.css";
 import React, {ReactElement} from "react";
-import {CgDebug, CgShapeHexagon} from "react-icons/cg";
-import {FiMap} from "react-icons/fi";
+import {MetalBorder} from "../../../components/objects/metalborder/MetalBorder";
+import {Depression} from "../../../components/objects/depression/Depression";
+import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
+import {CgDebug} from "react-icons/cg";
+import {FiFlag, FiMap} from "react-icons/fi";
 
 export function MenuBar(): ReactElement {
 
+    function onEndTurn() {
+        console.log("menubar: end turn");
+    }
+
+    function onOpenDebugMenu() {
+        console.log("menubar: open debug menu");
+    }
+
+    function onCountryMenu() {
+        console.log("menubar: open country menu");
+    }
+
+    function onMapMenu() {
+        console.log("menubar: open map menu");
+    }
+
     return (
-        <div className="menubar">
-            {/*<BorderMetallic className="menubar__panel">*/}
-            {/*    <div className="menubar__panel__content"/>*/}
-            {/*</BorderMetallic>*/}
-            {/*<ButtonGem className="menubar__end-turn">End Turn</ButtonGem>*/}
-            {/*<div className="menubar_tool_panel">*/}
+        <MetalBorder type="gold" className="menubar">
+            <Depression>
+                <div className="menubar__content">
 
-            {/*    <BorderMetallicRound className="menubar__tool">*/}
-            {/*        <CgDebug/>*/}
-            {/*    </BorderMetallicRound>*/}
+                    <ButtonPrimary round className="btn-menu" onClick={onOpenDebugMenu}>
+                        <CgDebug/>
+                    </ButtonPrimary>
 
-            {/*    <BorderMetallicRound className="menubar__tool">*/}
-            {/*        <FiMap/>*/}
-            {/*    </BorderMetallicRound>*/}
+                    <ButtonPrimary round className="btn-menu" onClick={onCountryMenu}>
+                        <FiFlag/>
+                    </ButtonPrimary>
 
-            {/*    <BorderMetallicRound className="menubar__tool">*/}
-            {/*        <CgShapeHexagon/>*/}
-            {/*    </BorderMetallicRound>*/}
+                    <ButtonPrimary round className="btn-menu" onClick={onMapMenu}>
+                        <FiMap/>
+                    </ButtonPrimary>
 
-            {/*</div>*/}
-        </div>
+                    <div className="menubar__spacer"/>
+
+                    <ButtonPrimary className="btn-end-turn" onClick={onEndTurn}>
+                        End Turn
+                    </ButtonPrimary>
+
+                </div>
+            </Depression>
+        </MetalBorder>
     );
 
 }
