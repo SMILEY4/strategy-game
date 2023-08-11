@@ -8,6 +8,7 @@ import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDec
 import {Canvas} from "./canvas/Canvas";
 import "./pageInGame.css";
 import {MenuBar} from "./menubar/MenuBar";
+import {WindowStack} from "../../components/windows/WindowStack";
 
 const USE_DUMMY_CANVAS = true;
 
@@ -16,7 +17,7 @@ export function PageInGame(): ReactElement {
     // if (currentState === GameState.LOADING) {
     //     return <GameLoading/>;
     // } else if (currentState === GameState.PLAYING || currentState === GameState.SUBMITTED) {
-        return <GamePlaying/>;
+    return <GamePlaying/>;
     // } else {
     //     return <GameError state={currentState}/>;
     // }
@@ -52,6 +53,7 @@ function GamePlaying(): ReactElement {
                     : <Canvas/>
             }
             <MenuBar/>
+            <WindowStack/>
         </div>
     );
 }
