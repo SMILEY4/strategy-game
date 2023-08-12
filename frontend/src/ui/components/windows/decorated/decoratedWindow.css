@@ -1,0 +1,47 @@
+.window-decorated {
+    position: relative;
+    width:    100%;
+    height:   100%;
+}
+
+.window-decorated .window-decorated__close {
+    position: absolute;
+    top:      -5px;
+    right:    -5px;
+    height:   35px;
+    width:    35px;
+}
+
+.window-decorated .window-decorated__close .gem__inner {
+    padding: 0;
+}
+
+
+.window-decorated .window-decorated__resize-area {
+    width:    20px;
+    height:   20px;
+    position: absolute;
+    bottom:   0;
+    right:    0;
+    cursor:   se-resize;
+    background-color: rgba(0, 255, 0, 50%);
+}
+
+.window-decorated__drag-area {
+    position: absolute;
+    right:    0;
+    top:      0;
+    left:     0;
+    height:   30px;
+    cursor:   move;
+    background-color: rgba(0, 0, 255, 50%);
+}
+
+.window-decorated .window-decorated__content {
+    position:        relative;
+    width:           100%;
+    height:          100%;
+    overflow:        auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--depression__content) var(--depression--dark);
+}

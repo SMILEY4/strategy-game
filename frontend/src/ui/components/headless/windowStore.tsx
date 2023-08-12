@@ -1,6 +1,7 @@
 import create from "zustand";
 import {SetState} from "../../../shared/zustandUtils";
 import {TestWindow} from "../windows/TestWindow";
+import {DecoratedWindow} from "../windows/decorated/DecoratedWindow";
 
 export interface WindowData {
     id: string,
@@ -26,7 +27,7 @@ export namespace WindowStore {
                 top: 100,
                 width: 200,
                 height: 100,
-                content: <TestWindow windowId={"test-1"}/>,
+                content: <DecoratedWindow windowId={"test-1"}/>,
             },
         ],
     };

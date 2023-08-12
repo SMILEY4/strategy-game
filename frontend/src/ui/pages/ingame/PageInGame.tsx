@@ -8,7 +8,7 @@ import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDec
 import {Canvas} from "./canvas/Canvas";
 import "./pageInGame.css";
 import {MenuBar} from "./menubar/MenuBar";
-import {WindowStack} from "../../components/windows/WindowStack";
+import {WindowStack} from "../../components/windows/stack/WindowStack";
 
 const USE_DUMMY_CANVAS = true;
 

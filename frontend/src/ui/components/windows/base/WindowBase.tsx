@@ -1,13 +1,13 @@
 import {ReactElement} from "react";
-import {joinClassNames} from "../utils";
-import {useWindowData} from "../headless/useWindowData";
-import "./window.css";
+import {joinClassNames} from "../../utils";
+import {useWindowData} from "../../headless/useWindowData";
+import "./windowBase.css";
 
-export interface WindowProps {
+export interface WindowBaseProps {
     windowId: string;
 }
 
-export function Window(props: WindowProps): ReactElement {
+export function WindowBase(props: WindowBaseProps): ReactElement {
 
     const {
         elementProps,
