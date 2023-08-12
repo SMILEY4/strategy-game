@@ -2,6 +2,7 @@ import create from "zustand";
 import {SetState} from "../../../shared/zustandUtils";
 import {TestWindow} from "../windows/TestWindow";
 import {DecoratedWindow} from "../windows/decorated/DecoratedWindow";
+import {DevWindow} from "../../pages/ingame/windows/dev/DevWindow";
 
 export interface WindowData {
     id: string,
@@ -20,16 +21,7 @@ export namespace WindowStore {
     }
 
     const initialStateValues: StateValues = {
-        windows: [
-            {
-                id: "test-1",
-                left: 100,
-                top: 100,
-                width: 200,
-                height: 100,
-                content: <DecoratedWindow windowId={"test-1"}/>,
-            },
-        ],
+        windows: [],
     };
 
     interface StateActions {
@@ -41,7 +33,7 @@ export namespace WindowStore {
     function stateActions(set: SetState<State>): StateActions {
         return {
             add: (data: WindowData) => set((state: State) => ({
-                windows: [...state.windows, data],
+                windows: [...state.windows.filter(w => w.id !== data.id), data],
             })),
             remove: (id: string) => set((state: State) => ({
                 windows: state.windows.filter(e => e.id !== id),

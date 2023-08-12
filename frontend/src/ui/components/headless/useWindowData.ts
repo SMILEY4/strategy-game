@@ -1,6 +1,6 @@
 import {WindowStore} from "./windowStore";
 import {useDraggable} from "../../../uiOLD/components/primitives/useDraggable";
-import {MouseEvent} from "react";
+import {MouseEvent, useRef} from "react";
 
 const FRAME_STACK_ID = "window-stack";
 
@@ -40,8 +40,10 @@ export interface UseWindowProps {
 
 export function useWindow(id: string, props: UseWindowProps) {
 
-    const [refDrag, onMouseDownDrag] = useDraggable(filterCanDrag, onDrag);
-    const [refResize, onMouseDownResize] = useDraggable(filterCanResize, onResize);
+    const refWindow = useRef<HTMLDivElement>(null);
+
+    const [refDrag, onMouseDownDrag] = useDraggable(filterCanDrag, onDragPrepare, onDrag);
+    const [refResize, onMouseDownResize] = useDraggable(filterCanResize, onResizePrepare, onResize);
     const modify = WindowStore.useState(state => state.modify);
     const close = useCloseWindow();
     const data = WindowStore.useState(state => state.windows.find(w => w.id === id));
@@ -57,6 +59,9 @@ export function useWindow(id: string, props: UseWindowProps) {
         return e.button === 0;
     }
 
+    function onDragPrepare() {
+    }
+
     function onDrag(x: number, y: number, dx: number, dy: number) {
         const areaSize = contentAreaSize()
         modify(id, window => ({
@@ -66,11 +71,23 @@ export function useWindow(id: string, props: UseWindowProps) {
         }));
     }
 
+    function onResizePrepare() {
+        if(refWindow.current) {
+            const currentWidth = refWindow.current.offsetWidth
+            const currentHeight = refWindow.current.offsetHeight
+            modify(id, window => ({
+                ...window,
+                width: currentWidth,
+                height: currentHeight,
+            }));
+        }
+    }
+
     function onResize(x: number, y: number, dx: number, dy: number) {
         modify(id, window => ({
             ...window,
-            width: Math.max(window.width + dx, props.minWidth),
-            height: Math.max(window.height + dy, props.minHeight),
+            width: window.width + dx,
+            height: window.height + dy,
         }));
     }
 
@@ -93,6 +110,7 @@ export function useWindow(id: string, props: UseWindowProps) {
             ref: refDrag,
             onMouseDown: onMouseDownDrag,
         },
+        refWindow,
         closeWindow: () => close(id),
     };
 }

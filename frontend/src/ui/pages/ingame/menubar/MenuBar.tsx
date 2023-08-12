@@ -5,24 +5,30 @@ import {Depression} from "../../../components/objects/depression/Depression";
 import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
 import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiMap} from "react-icons/fi";
+import {useOpenDevWindow} from "../windows/dev/DevWindow";
+import {useOpenMapWindow} from "../windows/map/MapWindow";
 
 export function MenuBar(): ReactElement {
+
+    const openDevMenu = useOpenDevWindow();
+    const openMapMenu = useOpenMapWindow();
 
     function onEndTurn() {
         console.log("menubar: end turn");
     }
 
     function onOpenDebugMenu() {
-        console.log("menubar: open debug menu");
+        openDevMenu();
+    }
+
+    function onMapMenu() {
+        openMapMenu();
     }
 
     function onCountryMenu() {
         console.log("menubar: open country menu");
     }
 
-    function onMapMenu() {
-        console.log("menubar: open map menu");
-    }
 
     return (
         <MetalBorder type="gold" className="menubar">
@@ -33,12 +39,12 @@ export function MenuBar(): ReactElement {
                         <CgDebug/>
                     </ButtonPrimary>
 
-                    <ButtonPrimary round className="btn-menu" onClick={onCountryMenu}>
-                        <FiFlag/>
-                    </ButtonPrimary>
-
                     <ButtonPrimary round className="btn-menu" onClick={onMapMenu}>
                         <FiMap/>
+                    </ButtonPrimary>
+
+                    <ButtonPrimary round className="btn-menu" onClick={onCountryMenu}>
+                        <FiFlag/>
                     </ButtonPrimary>
 
                     <div className="menubar__spacer"/>

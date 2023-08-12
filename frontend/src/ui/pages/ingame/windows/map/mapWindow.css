@@ -1,0 +1,15 @@
+.map-window {
+    min-width: fit-content;
+    min-height: 250px;
+}
+
+.map-window__content {
+    display:        flex;
+    flex-direction: column;
+    gap:            5px;
+}
+
+.map-window__content h1 {
+    padding: unset;
+    margin: unset;
+}

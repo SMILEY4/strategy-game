@@ -1,19 +1,25 @@
-import React, {ReactElement, useEffect} from "react";
+import React, {ReactElement} from "react";
 import {useQuery} from "../../components/misc/useQuery";
 import {AppConfig} from "../../../main";
 import {GameState} from "../../../core/models/gameState";
-import {useGameState} from "../../../core/hooks/useGameState";
 import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
 import {Canvas} from "./canvas/Canvas";
 import "./pageInGame.css";
 import {MenuBar} from "./menubar/MenuBar";
 import {WindowStack} from "../../components/windows/stack/WindowStack";
+import {GameStore} from "../../../external/state/game/gameStore";
 
 const USE_DUMMY_CANVAS = true;
 
 export function PageInGame(): ReactElement {
-    // const {currentState} = usePageInGame();
+    // const currentState = useGameState();
+    // const loadGame = useLoadGame();
+    //
+    // useEffect(() => {
+    //     loadGame()
+    // }, [])
+    //
     // if (currentState === GameState.LOADING) {
     //     return <GameLoading/>;
     // } else if (currentState === GameState.PLAYING || currentState === GameState.SUBMITTED) {
@@ -58,17 +64,16 @@ function GamePlaying(): ReactElement {
     );
 }
 
-function usePageInGame() {
-    const actionConnect = AppConfig.di.get(AppConfig.DIQ.GameConnectAction);
-    const currentState = useGameState();
-    const queryParams = useQuery();
 
-    useEffect(() => {
+function useLoadGame() {
+    const actionConnect = AppConfig.di.get(AppConfig.DIQ.GameConnectAction);
+    const queryParams = useQuery();
+    return () => {
         const paramGameId = queryParams.get("id")!!;
         actionConnect.perform(paramGameId);
-    }, []);
-
-    return {
-        currentState: currentState,
     };
+}
+
+function useGameState() {
+    return GameStore.useState(state => state.currentState)
 }

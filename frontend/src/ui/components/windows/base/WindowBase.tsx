@@ -16,7 +16,7 @@ export function WindowBase(props: WindowBaseProps): ReactElement {
     } = useWindowData(props.windowId);
 
     return (
-        <div {...elementProps} className={joinClassNames(["window", className])}>
+        <div {...elementProps} className={joinClassNames(["window", className])} id={props.windowId}>
             {content}
         </div>
     );

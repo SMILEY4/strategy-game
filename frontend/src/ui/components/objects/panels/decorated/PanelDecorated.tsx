@@ -6,13 +6,14 @@ export interface PanelDecoratedProps {
     color?: "red" | "blue"
     className?: string;
     classNameContent?: string;
+    elementRef?: any,
     children?: any;
 }
 
 export function PanelDecorated(props: PanelDecoratedProps): ReactElement {
 
     return (
-        <div className={joinClassNames(["panel-decorated", colorClass(props), props.className])}>
+        <div className={joinClassNames(["panel-decorated", colorClass(props), props.className])} ref={props.elementRef}>
             <div className="panel-decorated__background"/>
             <div className="panel-decorated__border"/>
             <div className={joinClassNames(["panel-decorated__content", props.classNameContent])}>

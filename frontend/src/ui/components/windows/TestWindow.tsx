@@ -6,7 +6,7 @@ export function TestWindow(props: { windowId: string }) {
     const {
         dragProps,
         resizerProps,
-    } = useWindow(props.windowId);
+    } = useWindow(props.windowId, {minWidth: 100, minHeight: 100});
 
     return (
         <div className="test-window">

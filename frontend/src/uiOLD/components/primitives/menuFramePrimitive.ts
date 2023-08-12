@@ -10,8 +10,8 @@ export function useMenuFrame(data: UiFrameData, conditionAllowDrag: (eventTarget
     const [width, widthRef, setWidth] = useStateRef(data.width);
     const [height, heightRef, setHeight] = useStateRef(data.height);
 
-    const [dialogDragRef, onDragMouseDown] = useDraggable(canDrag, onDrag);
-    const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResize, onResize);
+    const [dialogDragRef, onDragMouseDown] = useDraggable(canDrag, () => undefined, onDrag);
+    const [dialogResizeRef, onResizeMouseDown] = useDraggable(canResize, () => undefined, onResize);
 
 
     useEffect(() => {

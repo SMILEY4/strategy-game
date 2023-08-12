@@ -2,6 +2,7 @@ import {MouseEvent, RefObject, useRef} from "react";
 
 export function useDraggable(
     mouseDownFilter: (e: MouseEvent<any>) => boolean,
+    onDragPrepare: () => void,
     onDrag: (x: number, y: number, dx: number, dy: number) => void
 ): [RefObject<HTMLDivElement>, (e: MouseEvent<any>) => void] {
 
@@ -21,6 +22,7 @@ export function useDraggable(
             document.addEventListener("mouseup", onMouseUp);
             e.stopPropagation();
             e.preventDefault();
+            onDragPrepare()
         }
     }
 

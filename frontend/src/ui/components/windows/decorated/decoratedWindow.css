@@ -5,15 +5,28 @@
 }
 
 .window-decorated .window-decorated__close {
-    position: absolute;
-    top:      -5px;
-    right:    -5px;
-    height:   35px;
-    width:    35px;
+    position:         absolute;
+    top:              -0px;
+    right:            -0px;
+    height:           25px;
+    width:            25px;
+    padding:          0;
+
+    display:          flex;
+    justify-content:  center;
+    align-items:      center;
+
+    border-color:     hsl(324, 6%, 65%);
+    background-color: hsl(324, 36%, 14%);
 }
 
-.window-decorated .window-decorated__close .gem__inner {
-    padding: 0;
+.window-decorated .window-decorated__close:hover {
+    background-color: hsl(342, 47%, 18%);
+}
+
+.window-decorated .window-decorated__close > * {
+    width:  90%;
+    height: 90%;
 }
 
 
@@ -24,7 +37,7 @@
     bottom:   0;
     right:    0;
     cursor:   se-resize;
-    background-color: rgba(0, 255, 0, 50%);
+    /*background-color: rgba(0, 255, 0, 50%);*/
 }
 
 .window-decorated__drag-area {
@@ -34,7 +47,7 @@
     left:     0;
     height:   30px;
     cursor:   move;
-    background-color: rgba(0, 0, 255, 50%);
+    /*background-color: rgba(0, 0, 255, 50%);*/
 }
 
 .window-decorated .window-decorated__content {
