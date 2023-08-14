@@ -4,6 +4,7 @@ import {DecoratedWindow} from "../../../../components/windows/decorated/Decorate
 import "./devWindow.css";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
+import {AppConfig} from "../../../../../main";
 
 export interface DevWindowProps {
     windowId: string;
@@ -32,17 +33,17 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 
 
 export function useOpenDevWindow() {
-    const DEV_WINDOW_ID = "menubar-window";
+    const WINDOW_ID = "menubar-window";
     const addWindow = useOpenWindow();
     return () => {
         addWindow({
-            id: DEV_WINDOW_ID,
+            id: WINDOW_ID,
             className: "dev-window",
             left: 25,
             top: 60,
             width: 350,
             height: 310,
-            content: <DevWindow windowId={DEV_WINDOW_ID}/>,
+            content: <DevWindow windowId={WINDOW_ID}/>,
         });
     };
 }
@@ -50,7 +51,7 @@ export function useOpenDevWindow() {
 
 function useWebGlContext() {
     return [
-        () => console.log("todo: loose wgl-context"),
-        () => console.log("todo: restore wgl-context"),
+        () => AppConfig.debugLooseWebglContext(),
+        () => AppConfig.debugRestoreWebglContext(),
     ];
 }

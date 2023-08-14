@@ -7,11 +7,13 @@ import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiMap} from "react-icons/fi";
 import {useOpenDevWindow} from "../windows/dev/DevWindow";
 import {useOpenMapWindow} from "../windows/map/MapWindow";
+import {useOpenCountryWindow} from "../windows/country/CountryWindow";
 
 export function MenuBar(): ReactElement {
 
     const openDevMenu = useOpenDevWindow();
     const openMapMenu = useOpenMapWindow();
+    const openCountryMenu = useOpenCountryWindow();
 
     function onEndTurn() {
         console.log("menubar: end turn");
@@ -26,7 +28,7 @@ export function MenuBar(): ReactElement {
     }
 
     function onCountryMenu() {
-        console.log("menubar: open country menu");
+        openCountryMenu("4370345", true);
     }
 
 

@@ -9,21 +9,24 @@
 
 .list__content {
     overflow: auto;
-    padding: 0;
-    height: 100%;
+    padding:  0;
+    height:   100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .list__content > * {
-    width: 100%;
-    padding: 5px 10px;
-    box-sizing: border-box;
+    width:               100%;
+    padding:             5px 10px;
+    box-sizing:          border-box;
     transition-duration: 0.1s;
 }
 
-.list__content > *:nth-child(even) {
-    background-color: rgba(0, 0, 0, 20%);
+.list__content > * {
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 20%) 10%, rgba(0, 0, 0, 20%) 90%, transparent 100%);
 }
 
 .list__content > *:hover {
-    background-color: rgba(255, 255, 255, 10%);
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 10%) 10%, rgba(0, 0, 0, 10%) 90%, transparent 100%);
 }

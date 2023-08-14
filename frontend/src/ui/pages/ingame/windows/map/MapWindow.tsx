@@ -4,8 +4,6 @@ import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import "./mapWindow.css";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
-const MAP_WINDOW_ID = "menubar-window";
-
 export interface MapWindowProps {
     windowId: string;
 }
@@ -41,27 +39,29 @@ export function MapWindow(props: MapWindowProps): ReactElement {
 
 
 export function useOpenMapWindow() {
+    const WINDOW_ID = "menubar-window";
     const addWindow = useOpenWindow();
     return () => {
         addWindow({
-            id: MAP_WINDOW_ID,
+            id: WINDOW_ID,
             className: "map-window",
             left: 75,
             top: 60,
             width: 350,
             height: 400,
-            content: <MapWindow windowId={MAP_WINDOW_ID}/>,
+            content: <MapWindow windowId={WINDOW_ID}/>,
         });
     };
 }
 
+// TODO
 function useSetMapModes() {
     return {
-        setDefault: () => console.log("todo: set map mode"),
-        setCountries: () => console.log("todo: set map mode"),
-        setProvinces: () => console.log("todo: set map mode"),
-        setCities: () => console.log("todo: set map mode"),
-        setTerrain: () => console.log("todo: set map mode"),
-        setResources: () => console.log("todo: set map mode"),
+        setDefault: () => alert("todo: set map mode"),
+        setCountries: () => alert("todo: set map mode"),
+        setProvinces: () => alert("todo: set map mode"),
+        setCities: () => alert("todo: set map mode"),
+        setTerrain: () => alert("todo: set map mode"),
+        setResources: () => alert("todo: set map mode"),
     };
 }

@@ -1,39 +1,45 @@
 import React, {ReactElement, useEffect, useState} from "react";
+import * as gameSession from "../../hooks/gameSessions";
 import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
 import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {List} from "../../components/list/List";
-import {
-    useConnectGameSession,
-    useCreateGameSession,
-    useDeleteGameSessions,
-    useJoinGameSession,
-    useLoadGameSessions,
-} from "../../hooks/gameSessions";
 import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
-import "./pageSessions.css";
 import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
+import "./pageSessions.css";
 
 
 export function PageSessions(): ReactElement {
 
     const {
-        sessionIds,
-        startCreate,
-        cancelCreate,
-        acceptCreate,
+        sessions,
+        loadSessions,
+    } = useSessionData();
+
+    const {
+        startCreateSession,
+        cancelCreateSession,
+        acceptCreateSession,
+        showCreateSession,
         seed,
         setSeed,
-        startJoin,
-        cancelJoin,
-        acceptJoin,
-        joinSessionId,
-        setJoinSessionId,
-        connect,
-        drop,
-        showDialogJoin,
-        showDialogCreate,
-    } = useSessions();
+    } = useCreateSession(loadSessions);
+
+    const {
+        startJoinSession,
+        cancelJoinSession,
+        acceptJoinSession,
+        showJoinSession,
+        sessionIdJoin,
+        setSessionIdJoin,
+    } = useJoinSession(loadSessions);
+
+    const deleteSession = useDeleteSession(loadSessions);
+    const connectSession = useConnectSession();
+
+    useEffect(() => {
+        loadSessions()
+    }, [])
 
     return (
         <PanelCloth className="page-sessions" color="blue">
@@ -42,43 +48,43 @@ export function PageSessions(): ReactElement {
                 <h1>Sessions</h1>
 
                 <List borderType="silver" className="page-sessions__list">
-                    {sessionIds.map(sessionId => (
+                    {sessions.map(sessionId => (
                         <div key={sessionId} className="page-sessions__list__row">
                             <div>{sessionId}</div>
-                            <ButtonOutline onClick={() => drop(sessionId)}>Delete</ButtonOutline>
-                            <ButtonOutline onClick={() => connect(sessionId)}>Connect</ButtonOutline>
+                            <ButtonOutline onClick={() => deleteSession(sessionId)}>Delete</ButtonOutline>
+                            <ButtonOutline onClick={() => connectSession(sessionId)}>Connect</ButtonOutline>
                         </div>
                     ))}
                 </List>
 
                 <div className="page-sessions__actions">
-                    <ButtonPrimary onClick={startCreate}>Create</ButtonPrimary>
-                    <ButtonPrimary onClick={startJoin}>Join</ButtonPrimary>
+                    <ButtonPrimary onClick={startCreateSession}>Create</ButtonPrimary>
+                    <ButtonPrimary onClick={startJoinSession}>Join</ButtonPrimary>
                 </div>
 
             </PanelDecorated>
 
 
-            {showDialogJoin && (
+            {showJoinSession && (
                 <div className="page-sessions__dialog-surface">
                     <PanelDecorated className="page-sessions__join" classNameContent="page-sessions__join-content">
                         <h1>Join</h1>
                         <TextFieldPrimary
-                            value={joinSessionId}
-                            onChange={setJoinSessionId}
+                            value={sessionIdJoin}
+                            onChange={setSessionIdJoin}
                             placeholder="Session Id"
                             type="text"
                             borderType="silver"
                         />
                         <div className="page-sessions__join__actions">
-                            <ButtonOutline onClick={cancelJoin}>Cancel</ButtonOutline>
-                            <ButtonPrimary onClick={acceptJoin} disabled={!joinSessionId}>Join</ButtonPrimary>
+                            <ButtonOutline onClick={cancelJoinSession}>Cancel</ButtonOutline>
+                            <ButtonPrimary onClick={acceptJoinSession} disabled={!sessionIdJoin}>Join</ButtonPrimary>
                         </div>
                     </PanelDecorated>
                 </div>
             )}
 
-            {showDialogCreate && (
+            {showCreateSession && (
                 <div className="page-sessions__dialog-surface">
                     <PanelDecorated className="page-sessions__create" classNameContent="page-sessions__create-content">
                         <h1>Create</h1>
@@ -90,8 +96,8 @@ export function PageSessions(): ReactElement {
                             borderType="silver"
                         />
                         <div className="page-sessions__create__actions">
-                            <ButtonOutline onClick={cancelCreate}>Cancel</ButtonOutline>
-                            <ButtonPrimary onClick={acceptCreate}>Create</ButtonPrimary>
+                            <ButtonOutline onClick={cancelCreateSession}>Cancel</ButtonOutline>
+                            <ButtonPrimary onClick={acceptCreateSession}>Create</ButtonPrimary>
                         </div>
                     </PanelDecorated>
                 </div>
@@ -101,46 +107,23 @@ export function PageSessions(): ReactElement {
     );
 }
 
-
-function useSessions() {
-
+function useSessionData() {
     const [sessions, setSessions] = useState<string[]>([]);
-    const [showJoin, setShowJoin] = useState(false);
-    const [showCreate, setShowCreate] = useState(false);
+    const loadGameSessions = gameSession.useLoadGameSessions();
 
+    return {
+        sessions: sessions,
+        loadSessions: () => {
+            loadGameSessions()
+                .then((list: string[]) => setSessions(list));
+        },
+    };
+}
+
+function useCreateSession(reloadSessions: () => void) {
+    const createGameSession = gameSession.useCreateGameSession();
+    const [show, setShow] = useState(false);
     const [seed, setSeed] = useState("");
-    const [sessionIdJoin, setSessionIdJoin] = useState("");
-
-    const loadGameSessions = useLoadGameSessions();
-    const createGameSession = useCreateGameSession();
-    const joinGameSession = useJoinGameSession();
-    const connectGameSession = useConnectGameSession();
-    const deleteGameSession = useDeleteGameSessions();
-
-    useEffect(() => loadSessions(), []);
-
-    function loadSessions() {
-        loadGameSessions()
-            .then((list: string[]) => setSessions(list));
-    }
-
-    function startCreate() {
-        setSeed("");
-        setShowCreate(true);
-    }
-
-    function cancelCreate() {
-        setSeed("");
-        setShowCreate(false);
-    }
-
-    function acceptCreate() {
-        setSeed("");
-        setShowCreate(false);
-        createGameSession(getCleanSeed(seed))
-            .then(() => loadSessions())
-            .catch(console.error);
-    }
 
     function getCleanSeed(seed: string) {
         let cleanSeed = seed.trim();
@@ -151,49 +134,68 @@ function useSessions() {
         }
     }
 
-    function startJoin() {
-        setSessionIdJoin("");
-        setShowJoin(true);
-    }
-
-    function cancelJoin() {
-        setSessionIdJoin("");
-        setShowJoin(false);
-    }
-
-    function acceptJoin() {
-        setSessionIdJoin("");
-        setShowJoin(false);
-        joinGameSession(sessionIdJoin)
-            .then(() => loadSessions())
-            .catch(console.error);
-    }
-
-    function connect(sessionId: string) {
-        connectGameSession(sessionId);
-    }
-
-    function drop(sessionId: string) {
-        deleteGameSession(sessionId)
-            .then(() => loadSessions())
-            .catch(console.error);
-    }
-
     return {
-        sessionIds: sessions,
-        startCreate: startCreate,
-        cancelCreate: cancelCreate,
-        acceptCreate: acceptCreate,
+        startCreateSession: () => {
+            setSeed("");
+            setShow(true);
+        },
+        cancelCreateSession: () => {
+            setSeed("");
+            setShow(false);
+        },
+        acceptCreateSession: () => {
+            setSeed("");
+            setShow(false);
+            createGameSession(getCleanSeed(seed))
+                .then(() => reloadSessions())
+                .catch(console.error);
+        },
+        showCreateSession: show,
         seed: seed,
         setSeed: setSeed,
-        startJoin: startJoin,
-        cancelJoin: cancelJoin,
-        acceptJoin: acceptJoin,
-        joinSessionId: sessionIdJoin,
-        setJoinSessionId: setSessionIdJoin,
-        connect: connect,
-        drop: drop,
-        showDialogJoin: showJoin,
-        showDialogCreate: showCreate,
+    };
+
+}
+
+function useJoinSession(reloadSessions: () => void) {
+    const joinGameSession = gameSession.useJoinGameSession();
+    const [show, setShow] = useState(false);
+    const [sessionId, setSessionId] = useState("");
+
+    return {
+        startJoinSession: () => {
+            setSessionId("");
+            setShow(true);
+        },
+        cancelJoinSession: () => {
+            setSessionId("");
+            setShow(false);
+        },
+        acceptJoinSession: () => {
+            setSessionId("");
+            setShow(false);
+            joinGameSession(sessionId)
+                .then(() => reloadSessions())
+                .catch(console.error);
+        },
+        showJoinSession: show,
+        sessionIdJoin: sessionId,
+        setSessionIdJoin: setSessionId,
+    };
+}
+
+function useDeleteSession(reloadSessions: () => void) {
+    const deleteGameSession = gameSession.useDeleteGameSession();
+    return (id: string) => {
+        deleteGameSession(id)
+            .then(() => reloadSessions())
+            .catch(console.error);
+    };
+}
+
+function useConnectSession() {
+    const connectGameSession = gameSession.useConnectGameSession();
+    return (id: string) => {
+        connectGameSession(id);
     };
 }

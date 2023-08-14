@@ -1,0 +1,58 @@
+.country-window__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.country-content__title {
+    display: flex;
+}
+
+.country-content__title * {
+    font-size: 1.6rem;
+    margin-bottom: 0;
+}
+
+.country-content__title h1:nth-child(2) {
+    opacity: 40%;
+}
+
+
+
+
+.country-content__province {
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 20%) 10%, rgba(0, 0, 0, 20%) 90%, transparent 100%);
+    padding: 0.25rem 0;
+}
+
+.country-content__province__title {
+    display: flex;
+}
+
+.country-content__province__title * {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.country-content__province__title h2:nth-child(2) {
+    opacity: 40%;
+}
+
+
+
+
+.country-content__province__city {
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 20%) 10%, rgba(0, 0, 0, 20%) 90%, transparent 100%);
+    margin: 0.25rem 1rem;
+    display: flex;
+}
+
+.country-content__province__city * {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.country-content__province__city h2:nth-child(2) {
+    opacity: 40%;
+}

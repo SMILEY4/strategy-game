@@ -1,12 +1,12 @@
 import React, {ReactElement, useState} from "react";
 import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
 import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
-import {useLogin, useLoginPostRedirect} from "../../hooks/user";
+import * as user from "../../hooks/user";
 import {useNavigate} from "react-router-dom";
-import "./pageLogin.css";
 import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
+import "./pageLogin.css";
 
 
 export function PageLogin(): ReactElement {
@@ -17,11 +17,10 @@ export function PageLogin(): ReactElement {
         error,
         setEmail,
         setPassword,
-        login,
-        signUp
-    } = usePageLogin()
-
-
+        setError,
+    } = useLoginData();
+    const login = useLogin(email, password, setError);
+    const signUp = useSignUp();
 
     return (
         <PanelCloth className="page-login" color="blue">
@@ -60,52 +59,45 @@ export function PageLogin(): ReactElement {
 }
 
 
-function usePageLogin() {
-
+function useLoginData() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
-    const login = useLogin()
-    const loginRedirect = useLoginPostRedirect("/sessions")
+    return {
+        email: email,
+        setEmail: (value: string) => {
+            setEmail(value);
+            setError(null);
+        },
+        password: password,
+        setPassword: (value: string) => {
+            setPassword(value);
+            setError(null);
+        },
+        error: error,
+        setError: setError,
+    };
+}
 
-
-    function changeEmail(value: string) {
-        setEmail(value)
-        setError(null)
-    }
-
-
-    function changePassword(value: string) {
-        setPassword(value)
-        setError(null)
-    }
-
-    function requestLogin() {
+function useLogin(email: string, password: string, setError: (error: string) => void) {
+    const login = user.useLogin();
+    const loginRedirect = user.useLoginPostRedirect("/sessions");
+    return () => {
         if (!email) {
             setError("Email address is missing!");
-            return;
         }
         if (!password) {
             setError("Password is missing!");
-            return;
         }
         login(email, password)
             .then(() => loginRedirect())
             .catch(e => setError("Error: " + e));
-    }
+    };
+}
 
-    function signUp() {
+function useSignUp() {
+    const navigate = useNavigate();
+    return () => {
         navigate("/signup");
-    }
-
-    return {
-        email: email,
-        password: password,
-        error: error,
-        setEmail: changeEmail,
-        setPassword: changePassword,
-        login: requestLogin,
-        signUp: signUp,
     };
 }

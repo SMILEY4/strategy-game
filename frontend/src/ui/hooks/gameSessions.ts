@@ -50,7 +50,7 @@ export function useJoinGameSession() {
 
 }
 
-export function useDeleteGameSessions() {
+export function useDeleteGameSession() {
     const action = AppConfig.di.get(AppConfig.DIQ.GameDeleteAction);
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
