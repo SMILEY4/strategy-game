@@ -1,0 +1,38 @@
+.test {
+
+  //@base-light:   hsl(325, 42%, 24%);
+  //@base-dark:    hsl(323, 43%, 10%);
+  @base-light:   hsl(0, 43%, 24%);
+  @base-dark:    hsl(314, 41%, 10%);
+
+  @border-light: hsl(25, 10%, 80%);
+  @border-dark:  hsl(25, 10%, 50%);
+
+  border-radius: 4px;
+  box-sizing:    border-box;
+  padding:       1px;
+  background:    linear-gradient(90deg, @border-dark, @border-light, @border-dark);
+
+  box-shadow:    0 0 3px rgba(0, 0, 0, 70%),
+              0 0 10px rgba(0, 0, 0, 50%);
+
+  .test__inner {
+
+    background:    radial-gradient(ellipse at bottom, @base-light 20%, transparent 60%),
+                   linear-gradient(@base-dark 50%, @base-light);
+
+    border-radius: 3px;
+
+    box-shadow:    inset 0 0 2px 1px rgba(0, 0, 0, 30%),
+                   inset 0 0 3px rgba(0, 0, 0, 40%),
+                   inset 0 0 5px rgba(0, 0, 0, 70%),
+                   inset 0 0 7px rgba(0, 0, 0, 80%),
+                   inset 0 0 10px 3px @base-light;
+
+    color: wheat;
+
+    padding: 0.3rem 2rem;
+
+  }
+
+}

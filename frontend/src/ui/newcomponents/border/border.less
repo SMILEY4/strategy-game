@@ -1,0 +1,35 @@
+.new-border {
+
+  @color-light: #a1a1a1;
+  @color-dark:  #3b3b3b;
+
+  @color-light: hsl(43, 32%, 65%);
+  @color-dark:  hsl(38, 98%, 17%);
+
+  box-shadow:   0 0 3px rgba(0, 0, 0, 30%),
+              0 0 6px rgba(0, 0, 0, 30%),
+              0 0 10px rgba(0, 0, 0, 30%);
+
+  &.border__outer {
+    position:         relative;
+    box-sizing:       border-box;
+    border-radius:    3px;
+    padding:          1px;
+    background: linear-gradient(180deg, @color-light, @color-dark);
+  }
+
+  .border__inner {
+    position:         relative;
+    box-sizing:       border-box;
+    border-radius:    2px;
+    padding:          1px;
+    background: linear-gradient(180deg, @color-dark, @color-light);
+  }
+
+  .border__inner > * {
+    border-radius: 1px;
+    width:         100%;
+    height:        100%;
+  }
+
+}
