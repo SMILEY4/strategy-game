@@ -56,5 +56,5 @@
     height:          100%;
     overflow:        auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--depression__content) var(--depression--dark);
+    scrollbar-color: var(--inset__content) var(--inset--dark);
 }

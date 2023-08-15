@@ -1,9 +1,8 @@
 import {MouseEvent, ReactElement} from "react";
 import {joinClassNames} from "../../utils";
-import "./depression.css";
-import "../../variables.css";
+import "./inset.css";
 
-export interface DepressionProps {
+export interface InsetProps {
     children?: any;
     interactiveHover?: boolean,
     interactiveFocus?: boolean,
@@ -11,14 +10,14 @@ export interface DepressionProps {
     className?: string,
 }
 
-export function Depression(props: DepressionProps): ReactElement {
+export function Inset(props: InsetProps): ReactElement {
 
     return (
         <div
             className={joinClassNames([
-            "depression",
-            props.interactiveFocus ? "depression--interactive-focus" : null,
-            props.interactiveHover ? "depression--interactive-hover" : null,
+            "inset",
+            props.interactiveFocus ? "inset--interactive-focus" : null,
+            props.interactiveHover ? "inset--interactive-hover" : null,
             props.className,
         ])}
             onClick={props.onClick}

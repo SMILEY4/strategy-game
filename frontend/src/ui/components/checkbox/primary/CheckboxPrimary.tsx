@@ -1,11 +1,11 @@
 import React, {ReactElement} from "react";
-import {Depression} from "../../objects/depression/Depression";
 import {MetalBorder} from "../../objects/metalborder/MetalBorder";
 import {joinClassNames} from "../../utils";
 import {GiCheckMark} from "react-icons/gi";
 import "../../variables.css";
 import "./checkboxPrimary.css";
 import {useCheckbox, UseCheckboxProps} from "../../headless/useCheckbox";
+import {Inset} from "../../objects/inset/Inset";
 
 export interface CheckboxPrimaryProps extends UseCheckboxProps {
     borderType?: "gold" | "silver"
@@ -29,7 +29,7 @@ export function CheckboxPrimary(props: CheckboxPrimaryProps): ReactElement {
             type={props.borderType || "gold"}
             round={props.round}
         >
-            <Depression
+            <Inset
                 {...elementProps}
                 className="checkbox-primary__inner"
                 interactiveHover={!isDisabled && !isReadOnly}
@@ -37,7 +37,7 @@ export function CheckboxPrimary(props: CheckboxPrimaryProps): ReactElement {
                 {isSelected && (
                     <GiCheckMark className="checkbox-primary__checkmark"/>
                 )}
-            </Depression>
+            </Inset>
         </MetalBorder>
     );
 

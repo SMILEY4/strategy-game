@@ -1,18 +1,18 @@
 import {Meta, StoryObj} from "@storybook/react";
-import {Depression} from "./Depression";
 import React from "react";
+import {Inset} from "./Inset";
 
 const meta = {
-    title: "Objects/Depression",
-    component: Depression,
+    title: "Objects/Inset",
+    component: Inset,
     parameters: {
         layout: "centered",
     },
     tags: ["autodocs"],
-} satisfies Meta<typeof Depression>;
+} satisfies Meta<typeof Inset>;
 
 export default meta;
-type Story = StoryObj<typeof Depression>;
+type Story = StoryObj<typeof Inset>;
 
 
 export const Default: Story = {

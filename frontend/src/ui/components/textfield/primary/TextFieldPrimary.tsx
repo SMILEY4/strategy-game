@@ -1,10 +1,10 @@
 import {ReactElement} from "react";
 import {MetalBorder} from "../../objects/metalborder/MetalBorder";
-import {Depression} from "../../objects/depression/Depression";
 import "../../variables.css";
 import "./textFieldPrimary.css";
 import {useTextField, UseTextFieldProps} from "../../headless/useTextField";
 import {joinClassNames} from "../../utils";
+import {Inset} from "../../objects/inset/Inset";
 
 export interface TextFieldPrimaryProps extends UseTextFieldProps {
     borderType?: "gold" | "silver";
@@ -26,12 +26,12 @@ export function TextFieldPrimary(props: TextFieldPrimaryProps): ReactElement {
             ])}
             type={props.borderType || "gold"}
         >
-            <Depression interactiveFocus={!isDisabled && !isReadOnly}>
+            <Inset interactiveFocus={!isDisabled && !isReadOnly}>
                 <input
                     {...elementProps}
                     className="text-field-primary__input"
                 />
-            </Depression>
+            </Inset>
         </MetalBorder>
     );
 }

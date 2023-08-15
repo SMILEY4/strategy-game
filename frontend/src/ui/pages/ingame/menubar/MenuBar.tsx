@@ -1,13 +1,13 @@
 import "./menuBar.css";
 import React, {ReactElement} from "react";
 import {MetalBorder} from "../../../components/objects/metalborder/MetalBorder";
-import {Depression} from "../../../components/objects/depression/Depression";
 import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
 import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiMap} from "react-icons/fi";
 import {useOpenDevWindow} from "../windows/dev/DevWindow";
 import {useOpenMapWindow} from "../windows/map/MapWindow";
 import {useOpenCountryWindow} from "../windows/country/CountryWindow";
+import {Inset} from "../../../components/objects/inset/Inset";
 
 export function MenuBar(): ReactElement {
 
@@ -34,7 +34,7 @@ export function MenuBar(): ReactElement {
 
     return (
         <MetalBorder type="gold" className="menubar">
-            <Depression>
+            <Inset>
                 <div className="menubar__content">
 
                     <ButtonPrimary round className="btn-menu" onClick={onOpenDebugMenu}>
@@ -56,7 +56,7 @@ export function MenuBar(): ReactElement {
                     </ButtonPrimary>
 
                 </div>
-            </Depression>
+            </Inset>
         </MetalBorder>
     );
 

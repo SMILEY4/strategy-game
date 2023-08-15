@@ -1,0 +1,18 @@
+
+.inset {
+    position:   relative;
+    background: radial-gradient(var(--inset--light) 10%, var(--inset--dark) 80%);
+}
+
+.inset,
+.inset * {
+    color: var(--inset__content);
+}
+
+.inset--interactive-focus:focus-within {
+    background: radial-gradient(var(--inset--light--focus) 10%, var(--inset--dark--focus) 80%);
+}
+
+.inset--interactive-hover:hover {
+    background: radial-gradient(var(--inset--light--hover) 10%, var(--inset--dark--hover) 80%);
+}
