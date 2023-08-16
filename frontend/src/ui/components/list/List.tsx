@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import "./list.css";
+import "./list.scoped.css";
 import {joinClassNames} from "../utils";
 import {MetalBorder} from "../objects/metalborder/MetalBorder";
 import {Inset} from "../objects/inset/Inset";

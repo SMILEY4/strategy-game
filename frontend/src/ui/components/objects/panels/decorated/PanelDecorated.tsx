@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../../utils";
-import "./panelDecorated.css"
+import "./panelDecorated.scoped.css"
 
 export interface PanelDecoratedProps {
     color?: "red" | "blue"

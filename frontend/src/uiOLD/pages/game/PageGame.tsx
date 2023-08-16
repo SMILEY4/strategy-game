@@ -6,7 +6,7 @@ import {Canvas} from "./canvas/Canvas";
 import "./pageGame.css";
 import {GameMenuBar} from "./ui/topbar/GameMenuBar";
 import {AppConfig} from "../../../main";
-import {useQuery} from "../../../ui/components/misc/useQuery";
+import {useQuery} from "../../../ui/components/headless/useQuery";
 
 export function PageGame(): ReactElement {
 

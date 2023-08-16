@@ -1,8 +1,7 @@
 import {ReactElement} from "react";
-import "../../variables.css";
-import "./textFieldOutline.css";
 import {useTextField, UseTextFieldProps} from "../../headless/useTextField";
 import {joinClassNames} from "../../utils";
+import "./textFieldOutline.scoped.css";
 
 export interface TextFieldOutlineProps extends UseTextFieldProps {
     className?: string;

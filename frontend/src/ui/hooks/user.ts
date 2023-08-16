@@ -1,7 +1,7 @@
 import {AppConfig} from "../../main";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Base64} from "../../shared/base64";
-import {useQuery} from "../components/misc/useQuery";
+import {useQuery} from "../components/headless/useQuery";
 import {optional} from "../../shared/optional";
 
 export function useLogin() {

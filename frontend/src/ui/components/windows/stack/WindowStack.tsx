@@ -1,7 +1,7 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
 import {useWindowStack} from "../../headless/useWindowData";
-import "./windowStack.css";
+import "./windowStack.scoped.css";
 import {WindowBase} from "../base/WindowBase";
 
 export interface WindowStackProps {

@@ -1,0 +1,21 @@
+.text-field-outline {
+    color:         white;
+    border:        3px solid white;
+    border-radius: 2px;
+    box-sizing:    border-box;
+    padding:       0.15rem 0.4rem;
+}
+
+.text-field-outline,
+.text-field-outline:active,
+.text-field-outline:focus {
+    position:         relative;
+    margin:           unset;
+    outline:          unset;
+    box-sizing:       border-box;
+    font-size:        16px;
+}
+
+.text-field-outline__input input::placeholder {
+    opacity: 40%;
+}

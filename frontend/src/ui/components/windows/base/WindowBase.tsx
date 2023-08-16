@@ -1,7 +1,7 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
 import {useWindowData} from "../../headless/useWindowData";
-import "./windowBase.css";
+import "./windowBase.scoped.css";
 
 export interface WindowBaseProps {
     windowId: string;

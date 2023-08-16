@@ -1,6 +1,6 @@
 import {MouseEvent, ReactElement} from "react";
 import {joinClassNames} from "../../utils";
-import "./inset.css";
+import "./inset.scoped.css";
 
 export interface InsetProps {
     children?: any;

@@ -1,0 +1,13 @@
+.button-outline {
+    padding:       0.1rem 0.5rem;
+    display:       flex;
+    align-items:   center;
+    border:        3px solid white;
+    color:         white;
+    border-radius: 2px;
+    box-sizing:    border-box;
+}
+
+.button-outline--round {
+    border-radius: 9999px;
+}

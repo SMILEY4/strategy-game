@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {useQuery} from "../../components/misc/useQuery";
+import {useQuery} from "../../components/headless/useQuery";
 import {AppConfig} from "../../../main";
 import {GameState} from "../../../core/models/gameState";
 import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";

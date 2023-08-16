@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import "./metalBorder.css";
+import "./metalBorder.scoped.css";
 import "../../variables.css";
 import {joinClassNames} from "../../utils";
 

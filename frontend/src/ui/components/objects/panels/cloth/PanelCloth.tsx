@@ -1,6 +1,6 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../../utils";
-import "./panelCloth.css";
+import "./panelCloth.scoped.css";
 
 
 export interface PanelClothProps {

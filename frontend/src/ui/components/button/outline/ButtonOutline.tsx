@@ -1,8 +1,7 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
 import {useButton, UseButtonProps} from "../../headless/useButton";
-import "./buttonOutline.css";
-import "../../variables.css";
+import "./buttonOutline.scoped.css";
 
 
 export interface ButtonOutlineProps extends UseButtonProps {

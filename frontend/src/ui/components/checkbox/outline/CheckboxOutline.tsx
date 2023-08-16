@@ -2,8 +2,7 @@ import React, {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
 import {GiCheckMark} from "react-icons/gi";
 import {useCheckbox, UseCheckboxProps} from "../../headless/useCheckbox";
-import "../../variables.css";
-import "./checkboxOutline.css";
+import "./checkboxOutline.scoped.css";
 
 export interface CheckboxOutlineProps extends UseCheckboxProps {
     round?: boolean,

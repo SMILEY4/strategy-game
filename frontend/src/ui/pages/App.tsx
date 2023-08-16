@@ -4,7 +4,7 @@ import {PageNotFound} from "./notfound/PageNotFound";
 import {PageLogin} from "./login/PageLogin";
 import {PageSignUp} from "./signup/PageSignUp";
 import {PageSignupConfirm} from "./signupconfirm/PageSignupConfirm";
-import {RequireAuth} from "../components/misc/RequireAuth";
+import {RequireAuth} from "../components/headless/RequireAuth";
 import {PageSessions} from "./sessions/pageSessions";
 import {PageInGame} from "./ingame/PageInGame";
 import "./app.css";
