@@ -1,41 +1,41 @@
-import {Inset} from "./Inset";
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {Panel} from "../panel/Panel";
+import {InsetPanel} from "./InsetPanel";
+import {DecoratedPanel} from "../decorated/DecoratedPanel";
 
 const meta = {
-    title: "Inset",
-    component: Inset,
+    title: "Panels/Inset",
+    component: InsetPanel,
     parameters: {
         layout: "centered",
     },
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<typeof Inset>
+type Story = StoryObj<typeof InsetPanel>
 export default meta;
 
 
 export const Default: Story = {
     render: () => (
-        <Inset>
+        <InsetPanel>
             <DummyContent/>
-        </Inset>
+        </InsetPanel>
     ),
 };
 
 export const OnPanel: Story = {
     render: () => (
-        <Panel color="red">
+        <DecoratedPanel color="red">
             <DummyPadding padding="0">
-                <Inset>
+                <InsetPanel>
                     <DummyContent/>
-                </Inset>
-                <Inset>
+                </InsetPanel>
+                <InsetPanel>
                     <DummyContent/>
-                </Inset>
+                </InsetPanel>
             </DummyPadding>
-        </Panel>
+        </DecoratedPanel>
     ),
 };
 
@@ -48,7 +48,7 @@ function DummyContent() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            gap: "1rem"
+            gap: "1rem",
         }}>
             Content
         </div>
@@ -62,7 +62,7 @@ function DummyPadding(props: { padding: string, children?: any }) {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            gap: "1rem"
+            gap: "1rem",
         }}>
             {props.children}
         </div>
