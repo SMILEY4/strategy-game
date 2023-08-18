@@ -1,6 +1,5 @@
-import {ReactElement} from "react";
+import React, {ReactElement} from "react";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import "./devWindow.css";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
@@ -15,20 +14,20 @@ export function DevWindow(props: DevWindowProps): ReactElement {
     const [enterFullscreen, exitFullscreen] = useFullscreen("root");
     const [looseWGLContext, restoreWGLContext] = useWebGlContext();
 
-    return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            classNameContent="dev-window__content"
-            withCloseButton
-        >
-            <h1>Debug</h1>
-            <ButtonPrimary onClick={enterFullscreen}>Enter Fullscreen</ButtonPrimary>
-            <ButtonPrimary onClick={exitFullscreen}>Exit Fullscreen</ButtonPrimary>
-            <ButtonPrimary onClick={looseWGLContext}>Loose WebGL-Context</ButtonPrimary>
-            <ButtonPrimary onClick={restoreWGLContext}>Restore WebGL-Context</ButtonPrimary>
-        </DecoratedWindow>
-    );
-
+    return <div>TODO</div>
+    // return (
+    //     <DecoratedWindow
+    //         windowId={props.windowId}
+    //         classNameContent="dev-window__content"
+    //         withCloseButton
+    //     >
+    //         <h1>Debug</h1>
+    //         <ButtonPrimary onClick={enterFullscreen}>Enter Fullscreen</ButtonPrimary>
+    //         <ButtonPrimary onClick={exitFullscreen}>Exit Fullscreen</ButtonPrimary>
+    //         <ButtonPrimary onClick={looseWGLContext}>Loose WebGL-Context</ButtonPrimary>
+    //         <ButtonPrimary onClick={restoreWGLContext}>Restore WebGL-Context</ButtonPrimary>
+    //     </DecoratedWindow>
+    // );
 }
 
 

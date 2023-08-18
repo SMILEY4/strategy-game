@@ -1,8 +1,6 @@
-import {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import "./mapWindow.css";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
 export interface MapWindowProps {
     windowId: string;
@@ -19,21 +17,22 @@ export function MapWindow(props: MapWindowProps): ReactElement {
         setResources,
     } = useSetMapModes();
 
-    return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            classNameContent="map-window__content"
-            withCloseButton
-        >
-            <h1>Map</h1>
-            <ButtonPrimary onClick={setDefault}>Default</ButtonPrimary>
-            <ButtonPrimary onClick={setCountries}>Countries</ButtonPrimary>
-            <ButtonPrimary onClick={setProvinces}>Provinces</ButtonPrimary>
-            <ButtonPrimary onClick={setCities}>Cities</ButtonPrimary>
-            <ButtonPrimary onClick={setTerrain}>Terrain</ButtonPrimary>
-            <ButtonPrimary onClick={setResources}>Resources</ButtonPrimary>
-        </DecoratedWindow>
-    );
+    return <div>TODO</div>;
+    // return (
+    //     <DecoratedWindow
+    //         windowId={props.windowId}
+    //         classNameContent="map-window__content"
+    //         withCloseButton
+    //     >
+    //         <h1>Map</h1>
+    //         <ButtonPrimary onClick={setDefault}>Default</ButtonPrimary>
+    //         <ButtonPrimary onClick={setCountries}>Countries</ButtonPrimary>
+    //         <ButtonPrimary onClick={setProvinces}>Provinces</ButtonPrimary>
+    //         <ButtonPrimary onClick={setCities}>Cities</ButtonPrimary>
+    //         <ButtonPrimary onClick={setTerrain}>Terrain</ButtonPrimary>
+    //         <ButtonPrimary onClick={setResources}>Resources</ButtonPrimary>
+    //     </DecoratedWindow>
+    // );
 
 }
 

@@ -1,12 +1,13 @@
 import React, {ReactElement, useState} from "react";
-import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {useNavigate} from "react-router-dom";
-import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
-import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
-import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
-import "./pageSignUp.css";
 import * as user from "../../hooks/user";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1} from "../../components/static/header/Header";
+import {TextField} from "../../components/textfield/TextField";
+import {HBox} from "../../components/layout/hbox/HBox";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 
 
 export function PageSignUp(): ReactElement {
@@ -25,49 +26,49 @@ export function PageSignUp(): ReactElement {
     const login = useLogin();
 
     return (
-        <PanelCloth className="page-signup" color="blue">
-            <PanelDecorated classNameContent="page-signup__content">
+        <BackgroundImagePanel fillParent centerContent>
+            <DecoratedPanel red>
+                <VBox centerVertical stretch>
 
-                <h1>Sign Up</h1>
+                    <Header1>Sign-Up</Header1>
 
-                <TextFieldPrimary
-                    value={username}
-                    onChange={setUsername}
-                    placeholder="Username"
-                    type="text"
-                    borderType="silver"
-                />
+                    <TextField
+                        value={username}
+                        placeholder={"Username"}
+                        type="text"
+                        onChange={setUsername}
+                    />
 
-                <TextFieldPrimary
-                    value={email}
-                    onChange={setEmail}
-                    placeholder="Email Address"
-                    type="email"
-                    borderType="silver"
-                />
+                    <TextField
+                        value={email}
+                        placeholder={"Email"}
+                        type="email"
+                        onChange={setEmail}
+                    />
 
-                <TextFieldPrimary
-                    value={password}
-                    onChange={setPassword}
-                    placeholder={"Password"}
-                    type="password"
-                    borderType="silver"
-                />
+                    <TextField
+                        value={password}
+                        placeholder={"Password"}
+                        type="password"
+                        onChange={setPassword}
+                    />
 
-                {error && (
-                    <div className="signup-error">{error}</div>
-                )}
+                    <div/>
 
-                <div className="signup-actions">
-                    <ButtonOutline onClick={login}>Log-In</ButtonOutline>
-                    <ButtonPrimary onClick={signUp}>Sign Up</ButtonPrimary>
-                </div>
+                    <HBox centerVertical right>
+                        <ButtonPrimary blue onClick={login}>
+                            Login
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={signUp}>
+                            Sign-Up
+                        </ButtonPrimary>
+                    </HBox>
 
 
-            </PanelDecorated>
-        </PanelCloth>
-    );
-
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
+    )
 }
 
 function useSignUpData() {

@@ -1,0 +1,38 @@
+@import "./../../common.less";
+
+.background-panel {
+
+  position:   relative;
+  background: radial-gradient(ellipse at top, #262b33, #101010);
+
+  &.background-panel--fill {
+    width:           100%;
+    height:          100%;
+  }
+
+  &.background-panel--center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .background {
+    position:          absolute;
+    bottom:            0;
+    left:              0;
+    right:             0;
+    top:               0;
+    background-image:  @background-texture;
+    background-size:   140%;
+    background-repeat: repeat;
+    mix-blend-mode:    multiply;
+    opacity:           70%;
+    pointer-events:    none;
+  }
+
+  .content {
+    position: relative;
+    padding:  16px;
+  }
+
+}

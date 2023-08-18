@@ -2,8 +2,6 @@ import React, {ReactElement} from "react";
 import {useQuery} from "../../components/headless/useQuery";
 import {AppConfig} from "../../../main";
 import {GameState} from "../../../core/models/gameState";
-import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
-import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
 import {Canvas} from "./canvas/Canvas";
 import "./pageInGame.css";
 import {MenuBar} from "./menubar/MenuBar";
@@ -30,24 +28,26 @@ export function PageInGame(): ReactElement {
 }
 
 function GameLoading(): ReactElement {
-    return (
-        <PanelCloth className="page-ingame page-ingame--loading" color="blue">
-            <PanelDecorated classNameContent="page-ingame--loading__content">
-                <p>Loading...</p>
-            </PanelDecorated>
-        </PanelCloth>
-    );
+    return <div>TODO</div>
+    // return (
+    //     <PanelCloth className="page-ingame page-ingame--loading" color="blue">
+    //         <PanelDecorated classNameContent="page-ingame--loading__content">
+    //             <p>Loading...</p>
+    //         </PanelDecorated>
+    //     </PanelCloth>
+    // );
 }
 
 function GameError(props: { state: GameState }): ReactElement {
-    return (
-        <PanelCloth className="page-ingame page-ingame--error" color="blue">
-            <PanelDecorated classNameContent="page-ingame--error__content">
-                <p>An unexpected error occurred.</p>
-                <p>{"(state=" + props.state + ")"}</p>
-            </PanelDecorated>
-        </PanelCloth>
-    );
+    return <div>TODO</div>
+    // return (
+    //     <PanelCloth className="page-ingame page-ingame--error" color="blue">
+    //         <PanelDecorated classNameContent="page-ingame--error__content">
+    //             <p>An unexpected error occurred.</p>
+    //             <p>{"(state=" + props.state + ")"}</p>
+    //         </PanelDecorated>
+    //     </PanelCloth>
+    // );
 }
 
 function GamePlaying(): ReactElement {

@@ -1,38 +1,133 @@
-.button {
+@import "./../../common.less";
 
-  //@base-light:   hsl(325, 42%, 24%);
-  //@base-dark:    hsl(323, 43%, 10%);
-  @base-light:   hsl(0, 43%, 24%);
-  @base-dark:    hsl(314, 41%, 10%);
-
-  @border-light: hsl(25, 10%, 80%);
-  @border-dark:  hsl(25, 10%, 50%);
-
-  border-radius: 4px;
+.button-primary {
+  position:      relative;
   box-sizing:    border-box;
-  padding:       1px;
-  background:    linear-gradient(90deg, @border-dark, @border-light, @border-dark);
+  background:    @gradient-border-primary;
+  box-shadow:    @shadow-object;
+  border-radius: @border-radius-primary;
+  border: 1px solid transparent;
 
-  box-shadow:    0 0 3px rgba(0, 0, 0, 70%),
-                 0 0 10px rgba(0, 0, 0, 50%);
+  font-size:     @font-size-1;
+  font-family:   @font-type-primary-2;
+  font-weight:   @font-weight-1;
 
-  .button__inner {
+  height:        @height-0;
 
-    background:    radial-gradient(ellipse at bottom, @base-light 20%, transparent 60%),
-                   linear-gradient(@base-dark 50%, @base-light);
+  @inset-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 30%),
+                 inset 0 0 3px rgba(0, 0, 0, 40%),
+                 inset 0 0 5px rgba(0, 0, 0, 70%),
+                 inset 0 0 7px rgba(0, 0, 0, 80%);
 
-    border-radius: 3px;
+  &.button--disabled {
+    background: @gradient-border-primary-disabled;
+  }
 
-    box-shadow:    inset 0 0 2px 1px rgba(0, 0, 0, 30%),
-                   inset 0 0 3px rgba(0, 0, 0, 40%),
-                   inset 0 0 5px rgba(0, 0, 0, 70%),
-                   inset 0 0 7px rgba(0, 0, 0, 80%),
-                   inset 0 0 10px 3px @base-light;
+  &:not(.button--disabled) {
+    cursor: pointer;
+  }
 
-    color: wheat;
+  &.button--round {
+    border-radius: 9999px;
+    border: 2px solid transparent;
+  }
 
-    padding: 0.3rem 2rem;
+  .button-primary__inner {
+    position:        relative;
+    width:           100%;
+    height:          100%;
+    box-sizing:      border-box;
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
+    text-shadow:     @shadow-content;
+  }
 
+  .button-primary__inner /deep/ svg {
+    filter: drop-shadow(@shadow-content);
+  }
+
+  &:not(.button--round) .button-primary__inner {
+    border-radius: @border-radius-primary;
+    padding:       0.4rem 1rem;
+  }
+
+  &.button--round .button-primary__inner {
+    border-radius: 9999px;
+    padding:       0.4rem 0.4rem;
+  }
+
+  &.button--red {
+
+    &:not(.button--disabled) .button-primary__inner {
+      background: @gradient-red-primary;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light;
+      color:      @color-red-primary-content;
+
+      &:hover {
+        background: @gradient-red-primary-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-hover;
+      }
+
+      &:active {
+        background: @gradient-red-primary-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-active;
+      }
+    }
+
+    &.button--disabled .button-primary__inner {
+      background: @gradient-red-primary-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-content-disabled;
+      color:      @color-red-primary-content-disabled;
+    }
+  }
+
+  &.button--green {
+    &:not(.button--disabled) .button-primary__inner {
+      background: @gradient-green-primary;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light;
+      color:      @color-green-primary-content;
+
+      &:hover {
+        background: @gradient-green-primary-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-hover;
+      }
+
+      &:active {
+        background: @gradient-green-primary-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-active;
+      }
+    }
+
+    &.button--disabled .button-primary__inner {
+      background: @gradient-green-primary-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-content-disabled;
+      color:      @color-green-primary-content-disabled;
+    }
+  }
+
+  &.button--blue {
+    &:not(.button--disabled) .button-primary__inner {
+      background: @gradient-blue-primary;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light;
+      color:      @color-blue-primary-content;
+
+      &:hover {
+        background: @gradient-blue-primary-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-hover;
+      }
+
+      &:active {
+        background: @gradient-blue-primary-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-active;
+      }
+    }
+
+    &.button--disabled .button-primary__inner {
+      background: @gradient-blue-primary-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-content-disabled;
+      color:      @color-blue-primary-content-disabled;
+    }
   }
 
 }

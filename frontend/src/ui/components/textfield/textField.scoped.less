@@ -1,0 +1,79 @@
+@import "./../common.less";
+
+.text-field {
+  position:      relative;
+  box-sizing:    border-box;
+  background:    @gradient-border-primary;
+  border-radius: @border-radius-primary;
+  box-shadow:    @shadow-object;
+  border: 1px solid transparent;
+
+  height:        @height-1;
+
+  &.text-field--disabled {
+    background: @gradient-border-primary-disabled;
+  }
+
+  &:focus-within {
+    background: @gradient-border-primary-focus;
+  }
+
+  .text-field__inner {
+    position:      relative;
+    width:         100%;
+    height:        100%;
+    box-sizing:    border-box;
+    padding:       0.15rem 0.4rem;
+    border-radius: @border-radius-primary;
+
+    input, input:focus, input:active {
+      position:         relative;
+      margin:           unset;
+      outline:          unset;
+      border:           unset;
+      box-sizing:       border-box;
+      background-color: transparent;
+      font-size:        @font-size-1;
+      font-family:      @font-type-primary-1;
+      font-weight:      @font-weight-1;
+      text-shadow:      @shadow-content;
+    }
+  }
+
+  &.text-field--red .text-field__inner {
+    background: @gradient-red-secondary;
+    box-shadow: inset 0 0 30px @color-red-secondary-shadow, inset 0 0 10px rgba(0, 0, 0, 50%);
+
+    input {
+      color: @color-red-secondary-content;
+    }
+  }
+
+  &.text-field--green .text-field__inner {
+    background: @gradient-green-secondary;
+    box-shadow: inset 0 0 30px @color-green-secondary-shadow, inset 0 0 10px rgba(0, 0, 0, 50%);
+
+    input {
+      color: @color-green-secondary-content;
+    }
+  }
+
+  &.text-field--blue .text-field__inner {
+    background: @gradient-blue-secondary;
+    box-shadow: inset 0 0 30px @color-blue-secondary-shadow, inset 0 0 10px rgba(0, 0, 0, 50%);
+
+    input {
+      color: @color-blue-secondary-content;
+    }
+  }
+
+  &.text-field--paper .text-field__inner {
+    background: @gradient-paper-secondary;
+    box-shadow: inset 0 0 30px @color-paper-secondary-shadow, inset 0 0 10px rgba(0, 0, 0, 50%);
+
+    input {
+      color: @color-paper-secondary-content;
+    }
+  }
+
+}

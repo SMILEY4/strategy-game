@@ -1,5 +1,4 @@
-import {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {CountryWindowContent} from "./CountryWindowContent";
 
@@ -10,53 +9,54 @@ export interface CountryWindowProps {
 
 export function CountryWindow(props: CountryWindowProps): ReactElement {
 
-    return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            classNameContent="country-window__content"
-            withCloseButton
-        >
-            <CountryWindowContent
-                countryId={props.countryId}
-                name={"MyCountry"}
-                settlers={4}
-                provinces={[
-                    {
-                        name: "Bavaria",
-                        id: "46782",
-                        cities: [
-                            {
-                                name: "Augsburg",
-                                id: "26978"
-                            },
-                            {
-                                name: "München",
-                                id: "70340"
-                            },
-                            {
-                                name: "Nürnberg",
-                                id: "24307"
-                            }
-                        ]
-                    },
-                    {
-                        name: "Baden-Württemberg",
-                        id: "14350",
-                        cities: [
-                            {
-                                name: "Stuttgart",
-                                id: "52986"
-                            },
-                            {
-                                name: "Heidelberg",
-                                id: "98673"
-                            }
-                        ]
-                    },
-                ]}
-            />
-        </DecoratedWindow>
-    );
+    return <div>TODO</div>
+    // return (
+    //     <DecoratedWindow
+    //         windowId={props.windowId}
+    //         classNameContent="country-window__content"
+    //         withCloseButton
+    //     >
+    //         <CountryWindowContent
+    //             countryId={props.countryId}
+    //             name={"MyCountry"}
+    //             settlers={4}
+    //             provinces={[
+    //                 {
+    //                     name: "Bavaria",
+    //                     id: "46782",
+    //                     cities: [
+    //                         {
+    //                             name: "Augsburg",
+    //                             id: "26978"
+    //                         },
+    //                         {
+    //                             name: "München",
+    //                             id: "70340"
+    //                         },
+    //                         {
+    //                             name: "Nürnberg",
+    //                             id: "24307"
+    //                         }
+    //                     ]
+    //                 },
+    //                 {
+    //                     name: "Baden-Württemberg",
+    //                     id: "14350",
+    //                     cities: [
+    //                         {
+    //                             name: "Stuttgart",
+    //                             id: "52986"
+    //                         },
+    //                         {
+    //                             name: "Heidelberg",
+    //                             id: "98673"
+    //                         }
+    //                     ]
+    //                 },
+    //             ]}
+    //         />
+    //     </DecoratedWindow>
+    // );
 
 }
 

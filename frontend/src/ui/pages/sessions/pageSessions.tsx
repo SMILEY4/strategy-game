@@ -1,11 +1,5 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import * as gameSession from "../../hooks/gameSessions";
-import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
-import {List} from "../../components/list/List";
-import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
-import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
-import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
 import "./pageSessions.css";
 
 
@@ -41,70 +35,71 @@ export function PageSessions(): ReactElement {
         loadSessions()
     }, [])
 
-    return (
-        <PanelCloth className="page-sessions" color="blue">
-            <PanelDecorated className="page-sessions__panel" classNameContent="page-sessions__content">
-
-                <h1>Sessions</h1>
-
-                <List borderType="silver" className="page-sessions__list">
-                    {sessions.map(sessionId => (
-                        <div key={sessionId} className="page-sessions__list__row">
-                            <div>{sessionId}</div>
-                            <ButtonOutline onClick={() => deleteSession(sessionId)}>Delete</ButtonOutline>
-                            <ButtonOutline onClick={() => connectSession(sessionId)}>Connect</ButtonOutline>
-                        </div>
-                    ))}
-                </List>
-
-                <div className="page-sessions__actions">
-                    <ButtonPrimary onClick={startCreateSession}>Create</ButtonPrimary>
-                    <ButtonPrimary onClick={startJoinSession}>Join</ButtonPrimary>
-                </div>
-
-            </PanelDecorated>
-
-
-            {showJoinSession && (
-                <div className="page-sessions__dialog-surface">
-                    <PanelDecorated className="page-sessions__join" classNameContent="page-sessions__join-content">
-                        <h1>Join</h1>
-                        <TextFieldPrimary
-                            value={sessionIdJoin}
-                            onChange={setSessionIdJoin}
-                            placeholder="Session Id"
-                            type="text"
-                            borderType="silver"
-                        />
-                        <div className="page-sessions__join__actions">
-                            <ButtonOutline onClick={cancelJoinSession}>Cancel</ButtonOutline>
-                            <ButtonPrimary onClick={acceptJoinSession} disabled={!sessionIdJoin}>Join</ButtonPrimary>
-                        </div>
-                    </PanelDecorated>
-                </div>
-            )}
-
-            {showCreateSession && (
-                <div className="page-sessions__dialog-surface">
-                    <PanelDecorated className="page-sessions__create" classNameContent="page-sessions__create-content">
-                        <h1>Create</h1>
-                        <TextFieldPrimary
-                            value={seed}
-                            onChange={setSeed}
-                            placeholder="Seed (Optional)"
-                            type="text"
-                            borderType="silver"
-                        />
-                        <div className="page-sessions__create__actions">
-                            <ButtonOutline onClick={cancelCreateSession}>Cancel</ButtonOutline>
-                            <ButtonPrimary onClick={acceptCreateSession}>Create</ButtonPrimary>
-                        </div>
-                    </PanelDecorated>
-                </div>
-            )}
-
-        </PanelCloth>
-    );
+    return <div>TODO</div>
+    // return (
+    //     <PanelCloth className="page-sessions" color="blue">
+    //         <PanelDecorated className="page-sessions__panel" classNameContent="page-sessions__content">
+    //
+    //             <h1>Sessions</h1>
+    //
+    //             <List borderType="silver" className="page-sessions__list">
+    //                 {sessions.map(sessionId => (
+    //                     <div key={sessionId} className="page-sessions__list__row">
+    //                         <div>{sessionId}</div>
+    //                         <ButtonOutline onClick={() => deleteSession(sessionId)}>Delete</ButtonOutline>
+    //                         <ButtonOutline onClick={() => connectSession(sessionId)}>Connect</ButtonOutline>
+    //                     </div>
+    //                 ))}
+    //             </List>
+    //
+    //             <div className="page-sessions__actions">
+    //                 <ButtonPrimary onClick={startCreateSession}>Create</ButtonPrimary>
+    //                 <ButtonPrimary onClick={startJoinSession}>Join</ButtonPrimary>
+    //             </div>
+    //
+    //         </PanelDecorated>
+    //
+    //
+    //         {showJoinSession && (
+    //             <div className="page-sessions__dialog-surface">
+    //                 <PanelDecorated className="page-sessions__join" classNameContent="page-sessions__join-content">
+    //                     <h1>Join</h1>
+    //                     <TextFieldPrimary
+    //                         value={sessionIdJoin}
+    //                         onChange={setSessionIdJoin}
+    //                         placeholder="Session Id"
+    //                         type="text"
+    //                         borderType="silver"
+    //                     />
+    //                     <div className="page-sessions__join__actions">
+    //                         <ButtonOutline onClick={cancelJoinSession}>Cancel</ButtonOutline>
+    //                         <ButtonPrimary onClick={acceptJoinSession} disabled={!sessionIdJoin}>Join</ButtonPrimary>
+    //                     </div>
+    //                 </PanelDecorated>
+    //             </div>
+    //         )}
+    //
+    //         {showCreateSession && (
+    //             <div className="page-sessions__dialog-surface">
+    //                 <PanelDecorated className="page-sessions__create" classNameContent="page-sessions__create-content">
+    //                     <h1>Create</h1>
+    //                     <TextFieldPrimary
+    //                         value={seed}
+    //                         onChange={setSeed}
+    //                         placeholder="Seed (Optional)"
+    //                         type="text"
+    //                         borderType="silver"
+    //                     />
+    //                     <div className="page-sessions__create__actions">
+    //                         <ButtonOutline onClick={cancelCreateSession}>Cancel</ButtonOutline>
+    //                         <ButtonPrimary onClick={acceptCreateSession}>Create</ButtonPrimary>
+    //                     </div>
+    //                 </PanelDecorated>
+    //             </div>
+    //         )}
+    //
+    //     </PanelCloth>
+    // );
 }
 
 function useSessionData() {

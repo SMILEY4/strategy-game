@@ -1,9 +1,12 @@
 import React, {ReactElement} from "react";
-import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import {useNavigate} from "react-router-dom";
-import "./pageSignupConfirm.css";
-import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1} from "../../components/static/header/Header";
+import {HBox} from "../../components/layout/hbox/HBox";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {Text} from "../../components/static/text/Text";
 
 
 export function PageSignupConfirm(): ReactElement {
@@ -11,15 +14,27 @@ export function PageSignupConfirm(): ReactElement {
     const navigate = useNavigate();
 
     return (
-        <PanelCloth className="page-signup-confirm" color="blue">
-            <PanelDecorated classNameContent="page-signup-confirm__content">
-                <h1>Confirm E-Mail</h1>
-                <p>A confirmation email has been sent to the specified address.</p>
-                <p>Complete the signup by clicking the link in the email.</p>
-                <ButtonOutline onClick={login}>Return to Login</ButtonOutline>
-            </PanelDecorated>
-        </PanelCloth>
-    );
+        <BackgroundImagePanel fillParent centerContent>
+            <DecoratedPanel red>
+                <VBox centerVertical stretch>
+
+                    <Header1>Confirm E-Mail</Header1>
+
+                    <Text>A confirmation email has been sent to the specified address.</Text>
+                    <Text>Complete the signup by clicking the link in the email.</Text>
+
+                    <div/>
+
+                    <HBox centerVertical right>
+                        <ButtonPrimary green onClick={login}>
+                            Return to Login
+                        </ButtonPrimary>
+                    </HBox>
+
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
+    )
 
     function login() {
         navigate("/login")

@@ -1,12 +1,13 @@
 import React, {ReactElement, useState} from "react";
-import {PanelDecorated} from "../../components/objects/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/objects/panels/cloth/PanelCloth";
 import * as user from "../../hooks/user";
 import {useNavigate} from "react-router-dom";
-import {ButtonOutline} from "../../components/button/outline/ButtonOutline";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1} from "../../components/static/header/Header";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {TextField} from "../../components/textfield/TextField";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
-import {TextFieldPrimary} from "../../components/textfield/primary/TextFieldPrimary";
-import "./pageLogin.css";
+import {HBox} from "../../components/layout/hbox/HBox";
 
 
 export function PageLogin(): ReactElement {
@@ -23,39 +24,42 @@ export function PageLogin(): ReactElement {
     const signUp = useSignUp();
 
     return (
-        <PanelCloth className="page-login" color="blue">
-            <PanelDecorated classNameContent="page-login__content">
+        <BackgroundImagePanel fillParent centerContent>
+            <DecoratedPanel red>
+                <VBox centerVertical stretch>
 
-                <h1>Login</h1>
+                    <Header1>Login</Header1>
 
-                <TextFieldPrimary
-                    value={email}
-                    placeholder="Email Address"
-                    type="email"
-                    borderType="silver"
-                    onChange={setEmail}
-                />
+                    <TextField
+                        value={email}
+                        placeholder={"Email"}
+                        type="email"
+                        onChange={setEmail}
+                    />
 
-                <TextFieldPrimary
-                    value={password}
-                    placeholder={"Password"}
-                    type="password"
-                    borderType="silver"
-                    onChange={setPassword}
-                />
+                    <TextField
+                        value={password}
+                        placeholder={"Password"}
+                        type="password"
+                        onChange={setPassword}
+                    />
 
-                {error && (
-                    <div className="login-error">{error}</div>
-                )}
+                    <div/>
 
-                <div className="login-actions">
-                    <ButtonOutline onClick={signUp}>Sign up</ButtonOutline>
-                    <ButtonPrimary onClick={login}>Login</ButtonPrimary>
-                </div>
+                    <HBox centerVertical right>
+                        <ButtonPrimary blue onClick={signUp}>
+                            Sign-Up
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={login}>
+                            Login
+                        </ButtonPrimary>
+                    </HBox>
 
-            </PanelDecorated>
-        </PanelCloth>
-    );
+
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
+    )
 }
 
 

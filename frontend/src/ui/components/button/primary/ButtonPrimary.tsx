@@ -1,15 +1,43 @@
 import {ReactElement} from "react";
-import "./buttonPrimary.scoped.less"
+import {useButton, UseButtonProps} from "../../headless/useButton";
+import {joinClassNames} from "../../utils";
+import "./buttonPrimary.scoped.less";
 
-export interface ButtonPrimaryProps {
+export type ButtonPrimaryColor = "red" | "green" | "blue"
+
+export interface ButtonPrimaryProps extends UseButtonProps {
+    red?: boolean,
+    green?: boolean,
+    blue?: boolean,
+    color?: ButtonPrimaryColor,
+    round?: boolean,
+    className?: string;
+    children?: any;
 }
 
 export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
+
+    const {elementProps, isDisabled} = useButton(props);
+
     return (
-        <div className="button">
-            <div className="button__inner">
-                Button
+        <div {...elementProps} className={joinClassNames([
+            "button-primary",
+            "button--" + getColor(props),
+            isDisabled ? "button--disabled" : null,
+            props.round ? "button--round" : null,
+            props.className,
+        ])}>
+            <div className="button-primary__inner">
+                {props.children}
             </div>
         </div>
-    )
+    );
+
+    function getColor(props: ButtonPrimaryProps): ButtonPrimaryColor {
+        return props.color
+            || (props.red ? "red" : undefined)
+            || (props.green ? "green" : undefined)
+            || (props.blue ? "blue" : undefined)
+            || "red";
+    }
 }

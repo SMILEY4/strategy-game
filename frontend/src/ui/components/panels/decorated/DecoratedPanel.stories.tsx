@@ -17,7 +17,15 @@ export default meta;
 
 export const Red: Story = {
     render: () => (
-        <DecoratedPanel color="red">
+        <DecoratedPanel red>
+            <DummyContent/>
+        </DecoratedPanel>
+    ),
+};
+
+export const RedSimplified: Story = {
+    render: () => (
+        <DecoratedPanel red simpleBorder>
             <DummyContent/>
         </DecoratedPanel>
     ),
@@ -25,7 +33,7 @@ export const Red: Story = {
 
 export const Green: Story = {
     render: () => (
-        <DecoratedPanel color="green">
+        <DecoratedPanel green>
             <DummyContent/>
         </DecoratedPanel>
     ),
@@ -33,7 +41,7 @@ export const Green: Story = {
 
 export const Blue: Story = {
     render: () => (
-        <DecoratedPanel color="blue">
+        <DecoratedPanel blue>
             <DummyContent/>
         </DecoratedPanel>
     ),
@@ -41,7 +49,7 @@ export const Blue: Story = {
 
 export const Paper: Story = {
     render: () => (
-        <DecoratedPanel color="paper">
+        <DecoratedPanel paper>
             <DummyContent/>
         </DecoratedPanel>
     ),
@@ -50,10 +58,10 @@ export const Paper: Story = {
 
 export const Stacked: Story = {
     render: () => (
-        <DecoratedPanel color="red">
-            <DecoratedPanel color="green">
-                <DecoratedPanel color="blue">
-                    <DecoratedPanel color="paper">
+        <DecoratedPanel red>
+            <DecoratedPanel green simpleBorder>
+                <DecoratedPanel blue simpleBorder>
+                    <DecoratedPanel paper simpleBorder>
                         <DummyContent/>
                     </DecoratedPanel>
                 </DecoratedPanel>
@@ -70,7 +78,6 @@ function DummyContent() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "gray"
         }}>
             Content
         </div>

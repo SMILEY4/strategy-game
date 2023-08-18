@@ -43,8 +43,8 @@ export const OnPanel: Story = {
 function DummyContent() {
     return (
         <div style={{
-            width: "200px",
-            height: "200px",
+            width: "100px",
+            height: "100px",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",

@@ -25,17 +25,3 @@ code {
     cursor:          pointer;
     text-decoration: underline;
 }
-
-h1, h2, h3 {
-	font-family: "Alegreya SC", sans-serif;
-}
-
-button {
-    font-family: "Alegreya SC", sans-serif;
-    font-weight: 400;
-}
-
-input, textarea, select {
-    font-family: "Alegreya", sans-serif;
-    font-weight: normal;
-}

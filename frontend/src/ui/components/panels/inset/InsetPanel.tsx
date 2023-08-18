@@ -1,5 +1,5 @@
 import {joinClassNames} from "../../utils";
-import "./insetPanel.less";
+import "./insetPanel.scoped.less";
 
 export interface InsetPanelProps {
     className?: string,
