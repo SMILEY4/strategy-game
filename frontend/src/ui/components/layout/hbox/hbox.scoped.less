@@ -1,12 +1,11 @@
+@import "./../../common.less";
+
+
 .hbox {
   position:       relative;
   display:        flex;
   flex-direction: row;
-  gap:            0.5rem;
-
-  &.hbox-no-gap {
-    gap: 0;
-  }
+  
 
   &.hbox--fill {
     width:  100%;
@@ -53,4 +52,59 @@
     justify-content: space-around;
   }
 
+
+  &.hbox--gap-none {
+    gap: 0;
+  }
+
+  &.hbox--gap-xs {
+    gap: @spacing-xs;
+  }
+
+  &.hbox--gap-s {
+    gap: @spacing-s;
+  }
+
+  &.hbox--gap-m {
+    gap: @spacing-m;
+  }
+
+  &.hbox--gap-l {
+    gap: @spacing-l;
+  }
+
+  &.hbox--gap-xl {
+    gap: @spacing-xl;
+  }
+  &.hbox--gap-xxl {
+    gap: @spacing-xxl;
+  }
+
+
+  &.hbox--padding-none {
+    padding: 0;
+  }
+
+  &.hbox--padding-xs {
+    padding: @spacing-xs;
+  }
+
+  &.hbox--padding-s {
+    padding: @spacing-s;
+  }
+
+  &.hbox--padding-m {
+    padding: @spacing-m;
+  }
+
+  &.hbox--padding-l {
+    padding: @spacing-l;
+  }
+
+  &.hbox--padding-xl {
+    padding: @spacing-xl;
+  }
+  &.hbox--padding-xxl {
+    padding: @spacing-xxl;
+  }
 }

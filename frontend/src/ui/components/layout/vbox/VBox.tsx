@@ -1,8 +1,9 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
+import {BaseBoxProperties} from "../BaseBoxProperties";
 import "./vbox.scoped.less";
 
-export interface VBoxProps {
+export interface VBoxProps extends BaseBoxProperties {
 
     // vertical alignment
     centerVertical?: boolean,
@@ -18,9 +19,6 @@ export interface VBoxProps {
     right?: boolean,
     stretch?: boolean,
 
-    center?: boolean,
-
-    fillParent?: boolean,
     className?: string,
     children?: any,
 }
@@ -32,6 +30,8 @@ export function VBox(props: VBoxProps): ReactElement {
                 "vbox",
                 "vbox-vert-" + vertical(props),
                 "vbox-hor-" + horizontal(props),
+                "vbox--gap-" + BaseBoxProperties.gap(props),
+                "vbox--padding-" + BaseBoxProperties.padding(props),
                 props.fillParent ? "vbox--fill" : null,
                 props.className,
             ])}

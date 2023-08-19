@@ -1,8 +1,9 @@
 import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
+import {BaseBoxProperties} from "../BaseBoxProperties";
 import "./hbox.scoped.less";
 
-export interface HBoxProps {
+export interface HBoxProps extends BaseBoxProperties  {
 
     // vertical alignment
     centerVertical?: boolean,
@@ -18,10 +19,6 @@ export interface HBoxProps {
     spaceAround?: boolean,
     spaceEvenly?: boolean,
 
-    center?: boolean,
-    noGap?: boolean,
-
-    fillParent?: boolean,
     className?: string,
     children?: any,
 }
@@ -33,7 +30,8 @@ export function HBox(props: HBoxProps): ReactElement {
                 "hbox",
                 "hbox-vert-" + vertical(props),
                 "hbox-hor-" + horizontal(props),
-                props.noGap ? "hbox-no-gap": null,
+                "hbox--gap-" + BaseBoxProperties.gap(props),
+                "hbox--padding-" + BaseBoxProperties.padding(props),
                 props.fillParent ? "hbox--fill" : null,
                 props.className,
             ])}

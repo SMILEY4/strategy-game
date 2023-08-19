@@ -9,6 +9,7 @@ import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import "./pageSessions.less";
+import {Spacer} from "../../components/static/spacer/Spacer";
 
 
 export function PageSessions(): ReactElement {
@@ -44,14 +45,18 @@ export function PageSessions(): ReactElement {
     }, []);
 
     return (
-        <BackgroundImagePanel fillParent centerContent image="./../images/image_2.bmp" className="page-sessions">
+        <BackgroundImagePanel fillParent centerContent image="/images/image_2.bmp" className="page-sessions">
             <DecoratedPanel red floating>
-                <VBox fillParent centerVertical stretch>
+                <VBox gap_s fillParent centerVertical stretch>
+
+                    <Spacer size="xs"/>
 
                     <Header1>Game Sessions</Header1>
 
-                    <InsetPanel fillParent className="page-sessions__list__container">
-                        <VBox fillParent top stretch className="page-sessions__list__content">
+                    <Spacer size="m"/>
+
+                    <InsetPanel noPadding fillParent className="page-sessions__list__container">
+                        <VBox padding_s gap_s fillParent top stretch className="page-sessions__list__content">
                             {sessions.map(sessionId => (
                                 <GameSessionEntry
                                     name={sessionId}
@@ -62,9 +67,9 @@ export function PageSessions(): ReactElement {
                         </VBox>
                     </InsetPanel>
 
-                    <div/>
+                    <Spacer size="s"/>
 
-                    <HBox centerVertical right>
+                    <HBox gap_s centerVertical right>
                         <ButtonPrimary green onClick={startCreateSession}>
                             Create
                         </ButtonPrimary>
@@ -102,10 +107,10 @@ export function PageSessions(): ReactElement {
 function GameSessionEntry(props: { name: string, onConnect: () => void, onDelete: () => void }): ReactElement {
     return (
         <DecoratedPanel blue simpleBorder className="game-session-entry">
-            <HBox centerVertical right>
+            <HBox gap_s centerVertical right>
                 <Header3>{props.name}</Header3>
-                <ButtonPrimary red onClick={props.onDelete}>Delete</ButtonPrimary>
                 <ButtonPrimary blue onClick={props.onConnect}>Connect</ButtonPrimary>
+                <ButtonPrimary red onClick={props.onDelete}>Delete</ButtonPrimary>
             </HBox>
         </DecoratedPanel>
     );

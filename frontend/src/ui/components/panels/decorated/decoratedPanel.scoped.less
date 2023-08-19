@@ -3,8 +3,8 @@
 .decorated-panel {
 
   position:         relative;
-  border-radius:    @border-radius-secondary;
   overflow:         hidden;
+  border-radius:    @border-radius-secondary;
 
   @base-shadow:     inset 0 0 10px rgba(0, 0, 0, 50%),
                     0 0 2px rgba(0, 0, 0, 30%),
@@ -14,9 +14,52 @@
                     10px 20px 40px rgba(0, 0, 0, 60%),
                     10px 20px 60px rgba(0, 0, 0, 20%);
 
+  .border {
+    position:       absolute;
+    bottom:         1px;
+    left:           1px;
+    right:          1px;
+    top:            1px;
+    border:         solid 25px;
+    opacity:        30%;
+    pointer-events: none;
+    border-image:   @border-image-primary
+  }
+
+  .background {
+    position:          absolute;
+    bottom:            0;
+    left:              0;
+    right:             0;
+    top:               0;
+    border-radius:     @border-radius-secondary;
+    background-image:  @background-texture;
+    background-size:   cover;
+    background-repeat: repeat;
+    mix-blend-mode:    multiply;
+    opacity:           40%;
+    pointer-events:    none;
+  }
+
+  .content {
+    position:   relative;
+    width:      100%;
+    height:     100%;
+    box-sizing: border-box;
+    padding:    @spacing-l;
+  }
+
   &.decorated-panel--fill-parent {
     width:  100%;
     height: 100%;
+  }
+
+  &.decorated-panel--simplified .content {
+    padding: @spacing-m;
+  }
+
+  &.decorated-panel--simplified .border {
+    border-image: @border-image-secondary
   }
 
   &.panel--red {
@@ -69,52 +112,6 @@
     box-shadow: inset 0 0 30px @color-paper-secondary-shadow,
                 @base-shadow,
                 @shadow-floating;
-  }
-
-  .border {
-    position:       absolute;
-    bottom:         1px;
-    left:           1px;
-    right:          1px;
-    top:            1px;
-    border:         solid 25px;
-    opacity:        30%;
-    pointer-events: none;
-  }
-
-  &:not(.decorated-panel--simplified) .border {
-    border-image: @border-image-primary
-  }
-
-  &.decorated-panel--simplified .border {
-    border-image: @border-image-secondary
-  }
-
-  .background {
-    position:          absolute;
-    bottom:            0;
-    left:              0;
-    right:             0;
-    top:               0;
-    border-radius:     @border-radius-secondary;
-    background-image:  @background-texture;
-    background-size:   cover;
-    background-repeat: repeat;
-    mix-blend-mode:    multiply;
-    opacity:           40%;
-    pointer-events:    none;
-  }
-
-  .content {
-    position:   relative;
-    width:      100%;
-    height:     100%;
-    box-sizing: border-box;
-    padding:    32px;
-  }
-
-  &.decorated-panel--simplified .content {
-    padding: 16px;
   }
 
 }

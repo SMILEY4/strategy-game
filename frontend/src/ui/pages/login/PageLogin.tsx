@@ -8,6 +8,7 @@ import {BackgroundImagePanel} from "../../components/panels/backgroundimage/Back
 import {TextField} from "../../components/textfield/TextField";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../components/layout/hbox/HBox";
+import {Spacer} from "../../components/static/spacer/Spacer";
 
 
 export function PageLogin(): ReactElement {
@@ -24,11 +25,13 @@ export function PageLogin(): ReactElement {
     const signUp = useSignUp();
 
     return (
-        <BackgroundImagePanel fillParent centerContent image="./images/image_1.png">
+        <BackgroundImagePanel fillParent centerContent image="/images/image_1.png">
             <DecoratedPanel red floating>
-                <VBox centerVertical stretch>
+                <VBox gap_s centerVertical stretch>
 
                     <Header1>Login</Header1>
+
+                    <Spacer size="s"/>
 
                     <TextField
                         value={email}
@@ -44,9 +47,9 @@ export function PageLogin(): ReactElement {
                         onChange={setPassword}
                     />
 
-                    <div/>
+                    <Spacer size="s"/>
 
-                    <HBox centerVertical right>
+                    <HBox gap_s centerVertical right>
                         <ButtonPrimary blue onClick={signUp}>
                             Sign-Up
                         </ButtonPrimary>

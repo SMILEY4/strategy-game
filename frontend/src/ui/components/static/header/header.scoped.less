@@ -4,28 +4,74 @@
   text-shadow: @shadow-content;
   padding:     unset;
   margin:      unset;
+
+  &::after,
+  &::before {
+    content: '';
+    display: block;
+    height:  0;
+    width:   0;
+  }
+
 }
 
+
+
 h1.header {
-  font-size:   @font-size-4;
+  font-size:   @spacing-xl;
   font-weight: @font-weight-2;
   font-family: @font-type-primary-2;
+
+  &::before {
+    margin-bottom: -17px;
+  }
+
+  &::after {
+    margin-top: -16px;
+  }
+
 }
 
 h2.header {
-  font-size:   @font-size-3;
+  font-size:   @spacing-l;
   font-weight: @font-weight-2;
   font-family: @font-type-primary-2;
+
+  &::before {
+    margin-bottom: -12px;
+  }
+
+  &::after {
+    margin-top: -11px;
+  }
+
 }
 
 h3.header {
-  font-size:   @font-size-1;
+  font-size:   @spacing-m;
   font-weight: @font-weight-2;
   font-family: @font-type-primary-2;
+
+  &::before {
+    margin-bottom: -5px;
+  }
+
+  &::after {
+    margin-top: -4px;
+  }
 }
 
 h4.header {
-  font-size:   @font-size-1;
+  font-size:   @spacing-m;
   font-weight: @font-weight-2;
   font-family: @font-type-primary-1;
+
+  &::before {
+    margin-bottom: -5px;
+  }
+
+  &::after {
+    margin-top: -4px;
+  }
+
 }

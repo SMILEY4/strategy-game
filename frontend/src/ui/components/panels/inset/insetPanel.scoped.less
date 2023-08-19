@@ -1,25 +1,35 @@
 @import "./../../common.less";
 
+
 .inset-panel {
   position:      relative;
+  box-sizing:    border-box;
+
   border-radius: @border-radius-secondary;
+  border: 1px solid rgba(0, 0, 0, 40%);
   box-shadow:    inset 0 0 60px rgba(0, 0, 0, 30%);
+
+  padding:       @spacing-s;
+
+  &::after {
+    content:        "";
+    position:       absolute;
+    top:            0;
+    bottom:         0;
+    left:           0;
+    right:          0;
+    box-shadow:     inset 0 0 30px rgba(0, 0, 0, 35%),
+                    inset 0 0 4px rgba(0, 0, 0, 20%);
+    pointer-events: none;
+  }
 
   &.inset-panel--fill-parent {
     width:  100%;
     height: 100%;
   }
 
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 35%),
-                inset 0 0 4px rgba(0, 0, 0, 20%);
-    pointer-events: none;
+  &.inset-panel--no-padding {
+    padding: unset;
   }
 
 }

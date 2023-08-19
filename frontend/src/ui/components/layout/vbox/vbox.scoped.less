@@ -1,14 +1,18 @@
+@import "./../../common.less";
+
 .vbox {
   position:       relative;
   display:        flex;
   flex-direction: column;
   gap: 0.5rem;
-
+  
+  
   &.vbox--fill {
     width:  100%;
     height: 100%;
   }
-
+  
+  
   &.vbox-vert-center {
     justify-content: center;
   }
@@ -47,6 +51,62 @@
 
   &.vbox-hor-stretch {
     align-items: stretch;
+  }
+  
+  
+  &.vbox--gap-none {
+    gap: 0;
+  }
+
+  &.vbox--gap-xs {
+    gap: @spacing-xs;
+  }
+
+  &.vbox--gap-s {
+    gap: @spacing-s;
+  }
+
+  &.vbox--gap-m {
+    gap: @spacing-m;
+  }
+
+  &.vbox--gap-l {
+    gap: @spacing-l;
+  }
+
+  &.vbox--gap-xl {
+    gap: @spacing-xl;
+  }
+  &.vbox--gap-xxl {
+    gap: @spacing-xxl;
+  }
+
+
+  &.vbox--padding-none {
+    padding: 0;
+  }
+
+  &.vbox--padding-xs {
+    padding: @spacing-xs;
+  }
+
+  &.vbox--padding-s {
+    padding: @spacing-s;
+  }
+
+  &.vbox--padding-m {
+    padding: @spacing-m;
+  }
+
+  &.vbox--padding-l {
+    padding: @spacing-l;
+  }
+
+  &.vbox--padding-xl {
+    padding: @spacing-xl;
+  }
+  &.vbox--padding-xxl {
+    padding: @spacing-xxl;
   }
 
 }
