@@ -1,5 +1,6 @@
 import {joinClassNames} from "../../utils";
 import "./decoratedPanel.scoped.less";
+import {CSSProperties} from "react";
 
 export type DecoratedPanelColor = "blue" | "red" | "green" | "paper"
 
@@ -13,19 +14,25 @@ export interface DecoratedPanelProps {
     floating?: boolean,
     fillParent?: boolean,
     className?: string,
+    style?: CSSProperties,
     children?: any;
+    elementRef?: any,
 }
 
 export function DecoratedPanel(props: DecoratedPanelProps) {
     return (
-        <div className={joinClassNames([
-            "decorated-panel",
-            "panel--" + getColor(props),
-            props.floating ? "decorated-panel--floating" : null,
-            props.simpleBorder ? "decorated-panel--simplified" : null,
-            props.fillParent ? "decorated-panel--fill-parent" : null,
-            props.className
-        ])}>
+        <div
+            className={joinClassNames([
+                "decorated-panel",
+                "panel--" + getColor(props),
+                props.floating ? "decorated-panel--floating" : null,
+                props.simpleBorder ? "decorated-panel--simplified" : null,
+                props.fillParent ? "decorated-panel--fill-parent" : null,
+                props.className,
+            ])}
+            style={props.style}
+            ref={props.elementRef}
+        >
             <div className="background"/>
             <div className="border"/>
             <div className="content">

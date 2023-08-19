@@ -1,9 +1,13 @@
 import React, {ReactElement} from "react";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import "./devWindow.css";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppConfig} from "../../../../../main";
+import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Header2} from "../../../../components/static/header/Header";
+import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Spacer} from "../../../../components/static/spacer/Spacer";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 
 export interface DevWindowProps {
     windowId: string;
@@ -14,20 +18,25 @@ export function DevWindow(props: DevWindowProps): ReactElement {
     const [enterFullscreen, exitFullscreen] = useFullscreen("root");
     const [looseWGLContext, restoreWGLContext] = useWebGlContext();
 
-    return <div>TODO</div>
-    // return (
-    //     <DecoratedWindow
-    //         windowId={props.windowId}
-    //         classNameContent="dev-window__content"
-    //         withCloseButton
-    //     >
-    //         <h1>Debug</h1>
-    //         <ButtonPrimary onClick={enterFullscreen}>Enter Fullscreen</ButtonPrimary>
-    //         <ButtonPrimary onClick={exitFullscreen}>Exit Fullscreen</ButtonPrimary>
-    //         <ButtonPrimary onClick={looseWGLContext}>Loose WebGL-Context</ButtonPrimary>
-    //         <ButtonPrimary onClick={restoreWGLContext}>Restore WebGL-Context</ButtonPrimary>
-    //     </DecoratedWindow>
-    // );
+    return (
+        <DecoratedWindow
+            windowId={props.windowId}
+            withCloseButton
+            style={{
+                minWidth: "fit-content",
+                minHeight: "150px",
+            }}
+        >
+            <VBox fillParent gap_s top stretch>
+                <Header2 banner>Debug</Header2>
+                <Spacer size="s"/>
+                <ButtonPrimary blue onClick={enterFullscreen}>Enter Fullscreen</ButtonPrimary>
+                <ButtonPrimary blue onClick={exitFullscreen}>Exit Fullscreen</ButtonPrimary>
+                <ButtonPrimary blue onClick={looseWGLContext}>Loose WebGL-Context</ButtonPrimary>
+                <ButtonPrimary blue onClick={restoreWGLContext}>Restore WebGL-Context</ButtonPrimary>
+            </VBox>
+        </DecoratedWindow>
+    );
 }
 
 

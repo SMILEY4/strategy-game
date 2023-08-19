@@ -1,0 +1,50 @@
+@import "./../../common.less";
+
+.decorated-window {
+  position: relative;
+  width:    100%;
+  height:   100%;
+
+  .decorated-window__close {
+    position:         absolute;
+    top:              -4px;
+    right:            -4px;
+    height:           25px;
+    width:            25px;
+    padding:          0;
+
+    display:          flex;
+    justify-content:  center;
+    align-items:      center;
+  }
+
+  .decorated-window__resize-area {
+    width:    20px;
+    height:   20px;
+    position: absolute;
+    bottom:   0;
+    right:    0;
+    cursor:   se-resize;
+    //background-color: rgba(0, 255, 0, 50%);
+  }
+
+  .decorated-window__drag-area {
+    position: absolute;
+    right:    0;
+    top:      0;
+    left:     0;
+    height:   30px;
+    cursor:   move;
+    //background-color: rgba(0, 0, 255, 50%);
+  }
+
+  .decorated-window__content {
+    position:        relative;
+    width:           100%;
+    height:          100%;
+    overflow:        auto;
+    scrollbar-width: thin;
+    scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
+  }
+
+}

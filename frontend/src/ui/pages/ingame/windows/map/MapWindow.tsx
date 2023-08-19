@@ -1,6 +1,10 @@
 import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
-import "./mapWindow.css";
+import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Header2} from "../../../../components/static/header/Header";
+import {Spacer} from "../../../../components/static/spacer/Spacer";
+import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
 export interface MapWindowProps {
     windowId: string;
@@ -17,23 +21,28 @@ export function MapWindow(props: MapWindowProps): ReactElement {
         setResources,
     } = useSetMapModes();
 
-    return <div>TODO</div>;
-    // return (
-    //     <DecoratedWindow
-    //         windowId={props.windowId}
-    //         classNameContent="map-window__content"
-    //         withCloseButton
-    //     >
-    //         <h1>Map</h1>
-    //         <ButtonPrimary onClick={setDefault}>Default</ButtonPrimary>
-    //         <ButtonPrimary onClick={setCountries}>Countries</ButtonPrimary>
-    //         <ButtonPrimary onClick={setProvinces}>Provinces</ButtonPrimary>
-    //         <ButtonPrimary onClick={setCities}>Cities</ButtonPrimary>
-    //         <ButtonPrimary onClick={setTerrain}>Terrain</ButtonPrimary>
-    //         <ButtonPrimary onClick={setResources}>Resources</ButtonPrimary>
-    //     </DecoratedWindow>
-    // );
-
+    return (
+        <DecoratedWindow
+            windowId={props.windowId}
+            withCloseButton
+            className={"window-map"}
+            style={{
+                minWidth: "fit-content",
+                minHeight: "250px",
+            }}
+        >
+            <VBox fillParent gap_s top stretch>
+                <Header2 banner>Map</Header2>
+                <Spacer size="s"/>
+                <ButtonPrimary blue onClick={setDefault}>Default</ButtonPrimary>
+                <ButtonPrimary blue onClick={setCountries}>Countries</ButtonPrimary>
+                <ButtonPrimary blue onClick={setProvinces}>Provinces</ButtonPrimary>
+                <ButtonPrimary blue onClick={setCities}>Cities</ButtonPrimary>
+                <ButtonPrimary blue onClick={setTerrain}>Terrain</ButtonPrimary>
+                <ButtonPrimary blue onClick={setResources}>Resources</ButtonPrimary>
+            </VBox>
+        </DecoratedWindow>
+    );
 }
 
 

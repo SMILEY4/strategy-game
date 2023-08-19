@@ -5,16 +5,35 @@
   padding:     unset;
   margin:      unset;
 
-  &::after,
-  &::before {
+  &:not(.header-banner)::after,
+  &:not(.header-banner)::before {
     content: '';
     display: block;
     height:  0;
     width:   0;
   }
 
-}
+  &.header--banner {
+    position:            relative;
 
+    display:             flex;
+    justify-content:     center;
+    align-items:         center;
+
+    box-sizing:          border-box;
+    padding:             @spacing-xs;
+
+    background:          linear-gradient(90deg, transparent, rgba(0, 0, 0, 30%), transparent);
+
+    border-width:        1px;
+    border-style:        solid;
+    border-image-slice:  1;
+    border-image-source: linear-gradient(90deg, transparent, @color-border-dark, @color-border-light, @color-border-dark, transparent);
+    border-left:         unset;
+    border-right:        unset;
+  }
+
+}
 
 
 h1.header {
@@ -22,11 +41,11 @@ h1.header {
   font-weight: @font-weight-2;
   font-family: @font-type-primary-2;
 
-  &::before {
+  &:not(.header-banner)::before {
     margin-bottom: -17px;
   }
 
-  &::after {
+  &:not(.header-banner)::after {
     margin-top: -16px;
   }
 
@@ -37,11 +56,11 @@ h2.header {
   font-weight: @font-weight-2;
   font-family: @font-type-primary-2;
 
-  &::before {
+  &:not(.header-banner)::before {
     margin-bottom: -12px;
   }
 
-  &::after {
+  &:not(.header-banner)::after {
     margin-top: -11px;
   }
 
@@ -52,11 +71,11 @@ h3.header {
   font-weight: @font-weight-2;
   font-family: @font-type-primary-2;
 
-  &::before {
+  &:not(.header-banner)::before {
     margin-bottom: -5px;
   }
 
-  &::after {
+  &:not(.header-banner)::after {
     margin-top: -4px;
   }
 }
@@ -66,11 +85,11 @@ h4.header {
   font-weight: @font-weight-2;
   font-family: @font-type-primary-1;
 
-  &::before {
+  &:not(.header-banner)::before {
     margin-bottom: -5px;
   }
 
-  &::after {
+  &:not(.header-banner)::after {
     margin-top: -4px;
   }
 
