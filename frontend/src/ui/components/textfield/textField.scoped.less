@@ -6,9 +6,9 @@
   background:    @gradient-border-primary;
   border-radius: @border-radius-primary;
   box-shadow:    @shadow-object;
-  border: 1px solid transparent;
+  border:        1px solid transparent;
 
-  height:        @height-1;
+  height:        @height-0;
 
   &.text-field--disabled {
     background: @gradient-border-primary-disabled;
@@ -28,6 +28,8 @@
 
     input, input:focus, input:active {
       position:         relative;
+      width:            100%;
+      height:           100%;
       margin:           unset;
       outline:          unset;
       border:           unset;

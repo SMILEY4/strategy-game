@@ -19,6 +19,7 @@ export interface HBoxProps {
     spaceEvenly?: boolean,
 
     center?: boolean,
+    noGap?: boolean,
 
     fillParent?: boolean,
     className?: string,
@@ -32,6 +33,7 @@ export function HBox(props: HBoxProps): ReactElement {
                 "hbox",
                 "hbox-vert-" + vertical(props),
                 "hbox-hor-" + horizontal(props),
+                props.noGap ? "hbox-no-gap": null,
                 props.fillParent ? "hbox--fill" : null,
                 props.className,
             ])}

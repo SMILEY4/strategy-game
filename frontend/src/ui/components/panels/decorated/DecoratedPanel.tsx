@@ -10,6 +10,8 @@ export interface DecoratedPanelProps {
     paper?: boolean,
     color?: DecoratedPanelColor;
     simpleBorder?: boolean,
+    floating?: boolean,
+    fillParent?: boolean,
     className?: string,
     children?: any;
 }
@@ -19,7 +21,9 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
         <div className={joinClassNames([
             "decorated-panel",
             "panel--" + getColor(props),
-            props.simpleBorder ? "panel-simplified" : null,
+            props.floating ? "decorated-panel--floating" : null,
+            props.simpleBorder ? "decorated-panel--simplified" : null,
+            props.fillParent ? "decorated-panel--fill-parent" : null,
             props.className
         ])}>
             <div className="background"/>

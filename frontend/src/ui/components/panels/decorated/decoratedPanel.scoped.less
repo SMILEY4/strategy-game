@@ -2,44 +2,73 @@
 
 .decorated-panel {
 
-  position:             relative;
-  border-radius:        @border-radius-secondary;
-  overflow:             hidden;
+  position:         relative;
+  border-radius:    @border-radius-secondary;
+  overflow:         hidden;
 
-  &.panel--red {
-    color:          @color-red-secondary-content;
-    background:     @gradient-red-secondary;
-    box-shadow:     inset 0 0 30px @color-red-secondary-shadow,
-                    inset 0 0 10px rgba(0, 0, 0, 50%),
+  @base-shadow:     inset 0 0 10px rgba(0, 0, 0, 50%),
                     0 0 2px rgba(0, 0, 0, 30%),
                     0 0 5px rgba(0, 0, 0, 40%);
+
+  @shadow-floating: 0 0 20px rgba(0, 0, 0, 40%),
+                    10px 20px 40px rgba(0, 0, 0, 60%),
+                    10px 20px 60px rgba(0, 0, 0, 20%);
+
+  &.decorated-panel--fill-parent {
+    width:  100%;
+    height: 100%;
+  }
+
+  &.panel--red {
+    color:      @color-red-secondary-content;
+    background: @gradient-red-secondary;
+    box-shadow: inset 0 0 30px @color-red-secondary-shadow,
+                @base-shadow;
+  }
+
+  &.panel--red.decorated-panel--floating {
+    box-shadow: inset 0 0 30px @color-red-secondary-shadow,
+                @base-shadow,
+                @shadow-floating;
   }
 
   &.panel--green {
-    color:          @color-green-secondary-content;
-    background:     @gradient-green-secondary;
-    box-shadow:     inset 0 0 30px @color-green-secondary-shadow,
-                    inset 0 0 10px rgba(0, 0, 0, 50%),
-                    0 0 2px rgba(0, 0, 0, 30%),
-                    0 0 5px rgba(0, 0, 0, 40%);
+    color:      @color-green-secondary-content;
+    background: @gradient-green-secondary;
+    box-shadow: inset 0 0 30px @color-green-secondary-shadow,
+                @base-shadow;
+  }
+
+  &.panel--green.decorated-panel--floating {
+    box-shadow: inset 0 0 30px @color-green-secondary-shadow,
+                @base-shadow,
+                @shadow-floating;
   }
 
   &.panel--blue {
-    color:          @color-blue-secondary-content;
-    background:     @gradient-blue-secondary;
-    box-shadow:     inset 0 0 30px @color-blue-secondary-shadow,
-                    inset 0 0 10px rgba(0, 0, 0, 50%),
-                    0 0 2px rgba(0, 0, 0, 30%),
-                    0 0 5px rgba(0, 0, 0, 40%);
+    color:      @color-blue-secondary-content;
+    background: @gradient-blue-secondary;
+    box-shadow: inset 0 0 30px @color-blue-secondary-shadow,
+                @base-shadow;
+  }
+
+  &.panel--blue.decorated-panel--floating {
+    box-shadow: inset 0 0 30px @color-blue-secondary-shadow,
+                @base-shadow,
+                @shadow-floating;
   }
 
   &.panel--paper {
-    color:          @color-paper-secondary-content;
-    background:     @gradient-paper-secondary;
-    box-shadow:     inset 0 0 30px @color-paper-secondary-shadow,
-                    inset 0 0 10px rgba(0, 0, 0, 50%),
-                    0 0 2px rgba(0, 0, 0, 30%),
-                    0 0 5px rgba(0, 0, 0, 40%);
+    color:      @color-paper-secondary-content;
+    background: @gradient-paper-secondary;
+    box-shadow: inset 0 0 30px @color-paper-secondary-shadow,
+                @base-shadow;
+  }
+
+  &.panel--paper.decorated-panel--floating {
+    box-shadow: inset 0 0 30px @color-paper-secondary-shadow,
+                @base-shadow,
+                @shadow-floating;
   }
 
   .border {
@@ -53,11 +82,11 @@
     pointer-events: none;
   }
 
-  &:not(.panel-simplified) .border {
+  &:not(.decorated-panel--simplified) .border {
     border-image: @border-image-primary
   }
 
-  &.panel-simplified .border {
+  &.decorated-panel--simplified .border {
     border-image: @border-image-secondary
   }
 
@@ -69,16 +98,23 @@
     top:               0;
     border-radius:     @border-radius-secondary;
     background-image:  @background-texture;
-    background-size:   200%;
+    background-size:   cover;
     background-repeat: repeat;
     mix-blend-mode:    multiply;
-    opacity:           70%;
+    opacity:           40%;
     pointer-events:    none;
   }
 
   .content {
-    position: relative;
-    padding:  32px;
+    position:   relative;
+    width:      100%;
+    height:     100%;
+    box-sizing: border-box;
+    padding:    32px;
+  }
+
+  &.decorated-panel--simplified .content {
+    padding: 16px;
   }
 
 }

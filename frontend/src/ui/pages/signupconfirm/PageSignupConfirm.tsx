@@ -14,8 +14,8 @@ export function PageSignupConfirm(): ReactElement {
     const navigate = useNavigate();
 
     return (
-        <BackgroundImagePanel fillParent centerContent>
-            <DecoratedPanel red>
+        <BackgroundImagePanel fillParent centerContent image="./../images/image_2.bmp">
+            <DecoratedPanel red floating>
                 <VBox centerVertical stretch>
 
                     <Header1>Confirm E-Mail</Header1>

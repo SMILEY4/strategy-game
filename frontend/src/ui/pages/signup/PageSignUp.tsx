@@ -26,8 +26,8 @@ export function PageSignUp(): ReactElement {
     const login = useLogin();
 
     return (
-        <BackgroundImagePanel fillParent centerContent>
-            <DecoratedPanel red>
+        <BackgroundImagePanel fillParent centerContent image="./images/image_3.bmp">
+            <DecoratedPanel red floating>
                 <VBox centerVertical stretch>
 
                     <Header1>Sign-Up</Header1>

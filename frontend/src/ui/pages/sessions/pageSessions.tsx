@@ -1,6 +1,14 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import * as gameSession from "../../hooks/gameSessions";
-import "./pageSessions.css";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1, Header3} from "../../components/static/header/Header";
+import {HBox} from "../../components/layout/hbox/HBox";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {InsetPanel} from "../../components/panels/inset/InsetPanel";
+import {TextField} from "../../components/textfield/TextField";
+import "./pageSessions.less";
 
 
 export function PageSessions(): ReactElement {
@@ -32,75 +40,152 @@ export function PageSessions(): ReactElement {
     const connectSession = useConnectSession();
 
     useEffect(() => {
-        loadSessions()
-    }, [])
+        loadSessions();
+    }, []);
 
-    return <div>TODO</div>
-    // return (
-    //     <PanelCloth className="page-sessions" color="blue">
-    //         <PanelDecorated className="page-sessions__panel" classNameContent="page-sessions__content">
-    //
-    //             <h1>Sessions</h1>
-    //
-    //             <List borderType="silver" className="page-sessions__list">
-    //                 {sessions.map(sessionId => (
-    //                     <div key={sessionId} className="page-sessions__list__row">
-    //                         <div>{sessionId}</div>
-    //                         <ButtonOutline onClick={() => deleteSession(sessionId)}>Delete</ButtonOutline>
-    //                         <ButtonOutline onClick={() => connectSession(sessionId)}>Connect</ButtonOutline>
-    //                     </div>
-    //                 ))}
-    //             </List>
-    //
-    //             <div className="page-sessions__actions">
-    //                 <ButtonPrimary onClick={startCreateSession}>Create</ButtonPrimary>
-    //                 <ButtonPrimary onClick={startJoinSession}>Join</ButtonPrimary>
-    //             </div>
-    //
-    //         </PanelDecorated>
-    //
-    //
-    //         {showJoinSession && (
-    //             <div className="page-sessions__dialog-surface">
-    //                 <PanelDecorated className="page-sessions__join" classNameContent="page-sessions__join-content">
-    //                     <h1>Join</h1>
-    //                     <TextFieldPrimary
-    //                         value={sessionIdJoin}
-    //                         onChange={setSessionIdJoin}
-    //                         placeholder="Session Id"
-    //                         type="text"
-    //                         borderType="silver"
-    //                     />
-    //                     <div className="page-sessions__join__actions">
-    //                         <ButtonOutline onClick={cancelJoinSession}>Cancel</ButtonOutline>
-    //                         <ButtonPrimary onClick={acceptJoinSession} disabled={!sessionIdJoin}>Join</ButtonPrimary>
-    //                     </div>
-    //                 </PanelDecorated>
-    //             </div>
-    //         )}
-    //
-    //         {showCreateSession && (
-    //             <div className="page-sessions__dialog-surface">
-    //                 <PanelDecorated className="page-sessions__create" classNameContent="page-sessions__create-content">
-    //                     <h1>Create</h1>
-    //                     <TextFieldPrimary
-    //                         value={seed}
-    //                         onChange={setSeed}
-    //                         placeholder="Seed (Optional)"
-    //                         type="text"
-    //                         borderType="silver"
-    //                     />
-    //                     <div className="page-sessions__create__actions">
-    //                         <ButtonOutline onClick={cancelCreateSession}>Cancel</ButtonOutline>
-    //                         <ButtonPrimary onClick={acceptCreateSession}>Create</ButtonPrimary>
-    //                     </div>
-    //                 </PanelDecorated>
-    //             </div>
-    //         )}
-    //
-    //     </PanelCloth>
-    // );
+    return (
+        <BackgroundImagePanel fillParent centerContent image="./../images/image_2.bmp" className="page-sessions">
+            <DecoratedPanel red floating>
+                <VBox fillParent centerVertical stretch>
+
+                    <Header1>Game Sessions</Header1>
+
+                    <InsetPanel fillParent className="page-sessions__list__container">
+                        <VBox fillParent top stretch className="page-sessions__list__content">
+                            {sessions.map(sessionId => (
+                                <GameSessionEntry
+                                    name={sessionId}
+                                    onConnect={() => connectSession(sessionId)}
+                                    onDelete={() => deleteSession(sessionId)}
+                                />
+                            ))}
+                        </VBox>
+                    </InsetPanel>
+
+                    <div/>
+
+                    <HBox centerVertical right>
+                        <ButtonPrimary green onClick={startCreateSession}>
+                            Create
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={startJoinSession}>
+                            Join
+                        </ButtonPrimary>
+                    </HBox>
+
+                </VBox>
+            </DecoratedPanel>
+
+            {showJoinSession && (
+                <ModalJoinGame
+                    sessionId={sessionIdJoin}
+                    onSessionId={setSessionIdJoin}
+                    onCancel={cancelJoinSession}
+                    onAccept={acceptJoinSession}
+                    acceptDisabled={!sessionIdJoin}
+                />
+            )}
+
+            {showCreateSession && (
+                <ModalCreateGame
+                    seed={seed}
+                    onSeed={setSeed}
+                    onCancel={cancelCreateSession}
+                    onAccept={acceptCreateSession}
+                />
+            )}
+
+        </BackgroundImagePanel>
+    );
 }
+
+function GameSessionEntry(props: { name: string, onConnect: () => void, onDelete: () => void }): ReactElement {
+    return (
+        <DecoratedPanel blue simpleBorder className="game-session-entry">
+            <HBox centerVertical right>
+                <Header3>{props.name}</Header3>
+                <ButtonPrimary red onClick={props.onDelete}>Delete</ButtonPrimary>
+                <ButtonPrimary blue onClick={props.onConnect}>Connect</ButtonPrimary>
+            </HBox>
+        </DecoratedPanel>
+    );
+}
+
+function ModalJoinGame(props: {
+    sessionId: string,
+    onSessionId: (id: string) => void,
+    onCancel: () => void,
+    onAccept: () => void,
+    acceptDisabled: boolean
+}): ReactElement {
+    return (
+        <div className="game-session__modal-surface">
+            <DecoratedPanel red className="game-session__modal-join">
+                <VBox centerVertical stretch>
+
+                    <Header1>Join</Header1>
+
+                    <TextField
+                        value={props.sessionId}
+                        placeholder={"Session-Id"}
+                        type="text"
+                        onChange={props.onSessionId}
+                    />
+
+                    <div/>
+
+                    <HBox centerVertical right>
+                        <ButtonPrimary red onClick={props.onCancel}>
+                            Cancel
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={props.onAccept} disabled={props.acceptDisabled}>
+                            Join
+                        </ButtonPrimary>
+                    </HBox>
+
+                </VBox>
+            </DecoratedPanel>
+        </div>
+    );
+}
+
+function ModalCreateGame(props: {
+    seed: string,
+    onSeed: (seed: string) => void,
+    onCancel: () => void,
+    onAccept: () => void,
+}): ReactElement {
+    return (
+        <div className="game-session__modal-surface">
+            <DecoratedPanel red className="game-session__modal-create">
+                <VBox centerVertical stretch>
+
+                    <Header1>Create</Header1>
+
+                    <TextField
+                        value={props.seed}
+                        placeholder={"Seed (Optional)"}
+                        type="text"
+                        onChange={props.onSeed}
+                    />
+
+                    <div/>
+
+                    <HBox centerVertical right>
+                        <ButtonPrimary red onClick={props.onCancel}>
+                            Cancel
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={props.onAccept}>
+                            Create
+                        </ButtonPrimary>
+                    </HBox>
+
+                </VBox>
+            </DecoratedPanel>
+        </div>
+    );
+}
+
 
 function useSessionData() {
     const [sessions, setSessions] = useState<string[]>([]);
