@@ -4,7 +4,7 @@ import "./spacer.scoped.less";
 
 export interface SpacerProps {
     className?: string,
-    size: "none" | "xs" | "s" | "m" | "l" | "xl" | "xxl"
+    size: "none" | "xs" | "s" | "m" | "l" | "xl" | "xxl" | "fill"
 }
 
 export function Spacer(props: SpacerProps): ReactElement {

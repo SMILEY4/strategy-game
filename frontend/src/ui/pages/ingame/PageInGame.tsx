@@ -3,16 +3,19 @@ import {useQuery} from "../../components/headless/useQuery";
 import {AppConfig} from "../../../main";
 import {GameState} from "../../../core/models/gameState";
 import {Canvas} from "./canvas/Canvas";
-import "./pageInGame.css";
 import {MenuBar} from "./menubar/MenuBar";
 import {WindowStack} from "../../components/windows/stack/WindowStack";
 import {GameStore} from "../../../external/state/game/gameStore";
+import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {Text} from "../../components/static/text/Text";
+import "./pageInGame.scoped.less";
 
 const USE_DUMMY_CANVAS = true;
 
 export function PageInGame(): ReactElement {
-    // const currentState = useGameState();
-    // const loadGame = useLoadGame();
+    const currentState = useGameState();
+    const loadGame = useLoadGame();
     //
     // useEffect(() => {
     //     loadGame()
@@ -28,31 +31,29 @@ export function PageInGame(): ReactElement {
 }
 
 function GameLoading(): ReactElement {
-    return <div>TODO</div>
-    // return (
-    //     <PanelCloth className="page-ingame page-ingame--loading" color="blue">
-    //         <PanelDecorated classNameContent="page-ingame--loading__content">
-    //             <p>Loading...</p>
-    //         </PanelDecorated>
-    //     </PanelCloth>
-    // );
+    return (
+        <BackgroundPanel fillParent centerContent>
+            <DecoratedPanel>
+                <Text>Loading ...</Text>
+            </DecoratedPanel>
+        </BackgroundPanel>
+    );
 }
 
 function GameError(props: { state: GameState }): ReactElement {
-    return <div>TODO</div>
-    // return (
-    //     <PanelCloth className="page-ingame page-ingame--error" color="blue">
-    //         <PanelDecorated classNameContent="page-ingame--error__content">
-    //             <p>An unexpected error occurred.</p>
-    //             <p>{"(state=" + props.state + ")"}</p>
-    //         </PanelDecorated>
-    //     </PanelCloth>
-    // );
+    return (
+        <BackgroundPanel fillParent centerContent>
+            <DecoratedPanel>
+                <Text>An unexpected error occurred.</Text>
+                <Text>{"(" + props.state + ")"}</Text>
+            </DecoratedPanel>
+        </BackgroundPanel>
+    );
 }
 
 function GamePlaying(): ReactElement {
     return (
-        <div className="page-ingame page-ingame--playing test">
+        <div className="page-ingame page-ingame--playing">
             {
                 USE_DUMMY_CANVAS
                     ? <div className="dummy-canvas"/>
@@ -75,5 +76,5 @@ function useLoadGame() {
 }
 
 function useGameState() {
-    return GameStore.useState(state => state.currentState)
+    return GameStore.useState(state => state.currentState);
 }

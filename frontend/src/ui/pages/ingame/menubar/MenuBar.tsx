@@ -1,13 +1,16 @@
-import "./menuBar.css";
 import React, {ReactElement} from "react";
-import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
-import {CgDebug} from "react-icons/cg";
-import {FiFlag, FiMap} from "react-icons/fi";
 import {useOpenDevWindow} from "../windows/dev/DevWindow";
 import {useOpenMapWindow} from "../windows/map/MapWindow";
 import {useOpenCountryWindow} from "../windows/country/CountryWindow";
+import "./menubar.scoped.less";
+import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
+import {HBox} from "../../../components/layout/hbox/HBox";
+import {Spacer} from "../../../components/static/spacer/Spacer";
 
-export function MenuBar(): ReactElement {
+import {CgDebug} from "react-icons/cg";
+import {FiFlag, FiMap} from "react-icons/fi";
+
+export function MenuBar(): ReactElement | null {
 
     const openDevMenu = useOpenDevWindow();
     const openMapMenu = useOpenMapWindow();
@@ -21,42 +24,38 @@ export function MenuBar(): ReactElement {
         openDevMenu();
     }
 
-    function onMapMenu() {
+    function onOpenMapMenu() {
         openMapMenu();
     }
 
-    function onCountryMenu() {
+    function onOpenCountryMenu() {
         openCountryMenu("4370345", true);
     }
 
 
-    return <div>TODO</div>
-    // return (
-    //     <MetalBorder type="gold" className="menubar">
-    //         <Inset>
-    //             <div className="menubar__content">
-    //
-    //                 <ButtonPrimary round className="btn-menu" onClick={onOpenDebugMenu}>
-    //                     <CgDebug/>
-    //                 </ButtonPrimary>
-    //
-    //                 <ButtonPrimary round className="btn-menu" onClick={onMapMenu}>
-    //                     <FiMap/>
-    //                 </ButtonPrimary>
-    //
-    //                 <ButtonPrimary round className="btn-menu" onClick={onCountryMenu}>
-    //                     <FiFlag/>
-    //                 </ButtonPrimary>
-    //
-    //                 <div className="menubar__spacer"/>
-    //
-    //                 <ButtonPrimary className="btn-end-turn" onClick={onEndTurn}>
-    //                     End Turn
-    //                 </ButtonPrimary>
-    //
-    //             </div>
-    //         </Inset>
-    //     </MetalBorder>
-    // );
+    return (
+        <div className="menubar">
+            <div className="menubar__inner">
+                <HBox padding_xs gap_xs fillParent className="menubar__content">
+
+                    <ButtonPrimary blue round onClick={onOpenDebugMenu}>
+                        <CgDebug/>
+                    </ButtonPrimary>
+
+                    <ButtonPrimary blue round onClick={onOpenMapMenu}>
+                        <FiMap/>
+                    </ButtonPrimary>
+
+                    <ButtonPrimary blue round onClick={onOpenCountryMenu}>
+                        <FiFlag/>
+                    </ButtonPrimary>
+
+                    <Spacer size="fill"/>
+
+                    <ButtonPrimary green>End Turn</ButtonPrimary>
+                </HBox>
+            </div>
+        </div>
+    );
 
 }
