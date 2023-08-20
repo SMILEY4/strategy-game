@@ -5,92 +5,76 @@
   padding:     unset;
   margin:      unset;
 
-  &:not(.header-banner)::after,
-  &:not(.header-banner)::before {
+  &::after,
+  &::before {
     content: '';
     display: block;
     height:  0;
     width:   0;
   }
 
-  &.header--banner {
-    position:            relative;
-
-    display:             flex;
-    justify-content:     center;
-    align-items:         center;
-
-    box-sizing:          border-box;
-    padding:             @spacing-xs;
-
-    background:          linear-gradient(90deg, transparent, rgba(0, 0, 0, 30%), transparent);
-
-    border-width:        1px;
-    border-style:        solid;
-    border-image-slice:  1;
-    border-image-source: linear-gradient(90deg, transparent, @color-border-dark, @color-border-light, @color-border-dark, transparent);
-    border-left:         unset;
-    border-right:        unset;
+  &.header--centered {
+    text-align: center;
   }
-
 }
 
 
 h1.header {
-  font-size:   @spacing-xl;
+  font-size:   @font-size-xxl;
   font-weight: @font-weight-2;
-  font-family: @font-type-primary-2;
+  font-family: @font-type-primary-special;
 
-  &:not(.header-banner)::before {
-    margin-bottom: -17px;
+  &::before {
+    margin-bottom: @font-crop-special-top-xxl;
   }
 
-  &:not(.header-banner)::after {
-    margin-top: -16px;
+  &::after {
+    margin-bottom: @font-crop-special-bottom-xxl;
   }
 
 }
 
 h2.header {
-  font-size:   @spacing-l;
+  font-size:   @font-size-xl;
   font-weight: @font-weight-2;
-  font-family: @font-type-primary-2;
+  font-family: @font-type-primary-special;
 
-  &:not(.header-banner)::before {
-    margin-bottom: -12px;
+  &::before {
+    margin-bottom: @font-crop-special-top-xl;
   }
 
-  &:not(.header-banner)::after {
-    margin-top: -11px;
+  &::after {
+    margin-bottom: @font-crop-special-bottom-xl;
   }
 
 }
 
 h3.header {
-  font-size:   @spacing-m;
-  font-weight: @font-weight-2;
-  font-family: @font-type-primary-2;
+  font-size:      @font-size-l;
+  font-weight:    @font-weight-2;
+  font-family:    @font-type-primary-special;
+  letter-spacing: 0.07rem;
 
-  &:not(.header-banner)::before {
-    margin-bottom: -5px;
+  &::before {
+    margin-bottom: @font-crop-special-top-l;
   }
 
-  &:not(.header-banner)::after {
-    margin-top: -4px;
+  &::after {
+    margin-bottom: @font-crop-special-bottom-l;
   }
 }
 
 h4.header {
-  font-size:   @spacing-m;
+  font-size:   @font-size-l;
   font-weight: @font-weight-2;
-  font-family: @font-type-primary-1;
+  font-family: @font-type-primary;
 
-  &:not(.header-banner)::before {
-    margin-bottom: -5px;
+  &::before {
+    margin-bottom: @font-crop-primary-top-l;
   }
 
-  &:not(.header-banner)::after {
-    margin-top: -4px;
+  &::after {
+    margin-bottom: @font-crop-primary-bottom-l;
   }
 
 }

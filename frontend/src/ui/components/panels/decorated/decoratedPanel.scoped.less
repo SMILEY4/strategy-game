@@ -34,7 +34,7 @@
     top:               0;
     border-radius:     @border-radius-secondary;
     background-image:  @background-texture;
-    background-size:   cover;
+    background-size:   50%;
     background-repeat: repeat;
     mix-blend-mode:    multiply;
     opacity:           40%;
@@ -61,6 +61,12 @@
   &.decorated-panel--simplified .border {
     border-image: @border-image-secondary;
     border-width:15px;
+  }
+
+  &.decorated-panel--no-padding {
+    .content {
+      padding: unset;
+    }
   }
 
   &.panel--red {

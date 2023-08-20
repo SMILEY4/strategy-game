@@ -13,6 +13,7 @@ export interface DecoratedPanelProps {
     simpleBorder?: boolean,
     floating?: boolean,
     fillParent?: boolean,
+    noPadding?: boolean,
     className?: string,
     style?: CSSProperties,
     children?: any;
@@ -26,6 +27,7 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
                 "decorated-panel",
                 "panel--" + getColor(props),
                 props.floating ? "decorated-panel--floating" : null,
+                props.noPadding ? "decorated-panel--no-padding" : null,
                 props.simpleBorder ? "decorated-panel--simplified" : null,
                 props.fillParent ? "decorated-panel--fill-parent" : null,
                 props.className,

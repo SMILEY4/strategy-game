@@ -2,11 +2,13 @@ import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header2, Header4} from "../../../../components/static/header/Header";
+import {Header1, Header2, Header3} from "../../../../components/static/header/Header";
 import {Spacer} from "../../../../components/static/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Text} from "../../../../components/static/text/Text";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import "./countryWindow.less"
+import {Divider} from "../../../../components/static/divider/Divider";
 
 export interface CountryWindowProps {
     windowId: string;
@@ -26,7 +28,8 @@ export function CountryWindow(props: CountryWindowProps): ReactElement {
         >
             <VBox fillParent gap_s top stretch>
 
-                <Header2 banner>Bavaria</Header2>
+                <Header1 centered>Sampleland</Header1>
+                <Divider/>
 
                 <Spacer size="s"/>
 
@@ -38,7 +41,8 @@ export function CountryWindow(props: CountryWindowProps): ReactElement {
 
                 <Spacer size="s"/>
 
-                <Header4 banner>Cities</Header4>
+                <Header2 centered>Cities</Header2>
+                <Divider/>
 
                 <InsetPanel>
                     <VBox fillParent gap_s top stretch>

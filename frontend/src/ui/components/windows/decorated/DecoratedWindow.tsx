@@ -11,6 +11,7 @@ export interface DecoratedWindowProps {
     withCloseButton?: boolean;
     onClose?: () => void;
     style?: CSSProperties
+    noPadding?: boolean,
     className?: string,
     children?: any;
 }
@@ -32,6 +33,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
     return (
         <DecoratedPanel
             red
+            noPadding={props.noPadding}
             className={joinClassNames(["decorated-window", props.className])}
             elementRef={refWindow}
             style={props.style}
@@ -46,6 +48,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
                     <CgClose/>
                 </ButtonPrimary>
             )}
+
 
             <div className="decorated-window__content">
                 {props.children}
