@@ -33,6 +33,7 @@ export function HBox(props: HBoxProps): ReactElement {
                 "hbox--gap-" + BaseBoxProperties.gap(props),
                 "hbox--padding-" + BaseBoxProperties.padding(props),
                 props.fillParent ? "hbox--fill" : null,
+                props.scrollable ? "hbox--scrollable" : null,
                 props.className,
             ])}
         >

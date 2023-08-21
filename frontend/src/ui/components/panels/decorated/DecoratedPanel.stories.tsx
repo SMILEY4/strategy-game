@@ -1,6 +1,8 @@
 import {DecoratedPanel} from "./DecoratedPanel";
 import {StoryObj} from "@storybook/react";
 import React from "react";
+import {VBox} from "../../layout/vbox/VBox";
+import {Header2} from "../../header/Header";
 
 const meta = {
     title: "Panels/Decorated",
@@ -13,7 +15,6 @@ const meta = {
 };
 type Story = StoryObj<typeof DecoratedPanel>
 export default meta;
-
 
 export const Red: Story = {
     render: () => (
@@ -70,11 +71,11 @@ export const Stacked: Story = {
     ),
 };
 
-function DummyContent() {
+function DummyContent(props: { width?: string, height?: string }) {
     return (
         <div style={{
-            width: "150px",
-            height: "150px",
+            width: props.width || "150px",
+            height: props.height || "150px",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",

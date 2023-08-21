@@ -4,6 +4,8 @@ export interface BaseBoxProperties {
 
     fillParent?: boolean,
 
+    scrollable?: boolean,
+
     gap_none?: boolean
     gap_xs?: boolean,
     gap_s?: boolean,

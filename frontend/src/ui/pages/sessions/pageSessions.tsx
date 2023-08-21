@@ -3,13 +3,13 @@ import * as gameSession from "../../hooks/gameSessions";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
-import {Header1, Header3} from "../../components/static/header/Header";
+import {Header1, Header3} from "../../components/header/Header";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import "./pageSessions.less";
-import {Spacer} from "../../components/static/spacer/Spacer";
+import {Spacer} from "../../components/spacer/Spacer";
 
 
 export function PageSessions(): ReactElement {

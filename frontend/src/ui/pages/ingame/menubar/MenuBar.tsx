@@ -5,7 +5,7 @@ import {useOpenCountryWindow} from "../windows/country/CountryWindow";
 import "./menubar.scoped.less";
 import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../components/layout/hbox/HBox";
-import {Spacer} from "../../../components/static/spacer/Spacer";
+import {Spacer} from "../../../components/spacer/Spacer";
 
 import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiMap} from "react-icons/fi";

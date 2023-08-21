@@ -3,12 +3,12 @@ import * as user from "../../hooks/user";
 import {useNavigate} from "react-router-dom";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
-import {Header1} from "../../components/static/header/Header";
+import {Header1} from "../../components/header/Header";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {TextField} from "../../components/textfield/TextField";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../components/layout/hbox/HBox";
-import {Spacer} from "../../components/static/spacer/Spacer";
+import {Spacer} from "../../components/spacer/Spacer";
 
 
 export function PageLogin(): ReactElement {

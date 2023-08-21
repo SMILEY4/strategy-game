@@ -3,11 +3,11 @@ import {useNavigate} from "react-router-dom";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
-import {Header1} from "../../components/static/header/Header";
+import {Header1} from "../../components/header/Header";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
-import {Text} from "../../components/static/text/Text";
-import {Spacer} from "../../components/static/spacer/Spacer";
+import {Text} from "../../components/text/Text";
+import {Spacer} from "../../components/spacer/Spacer";
 
 
 export function PageSignupConfirm(): ReactElement {

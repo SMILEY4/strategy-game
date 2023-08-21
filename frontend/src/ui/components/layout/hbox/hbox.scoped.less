@@ -5,12 +5,21 @@
   position:       relative;
   display:        flex;
   flex-direction: row;
-  
+  box-sizing: border-box;
+
 
   &.hbox--fill {
     width:  100%;
     height: 100%;
   }
+
+
+  &.hbox--scrollable {
+    overflow:        auto;
+    scrollbar-width: thin;
+    scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
+  }
+
 
   &.hbox-vert-center {
     align-items: center;

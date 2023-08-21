@@ -8,7 +8,7 @@ import {WindowStack} from "../../components/windows/stack/WindowStack";
 import {GameStore} from "../../../external/state/game/gameStore";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
-import {Text} from "../../components/static/text/Text";
+import {Text} from "../../components/text/Text";
 import "./pageInGame.scoped.less";
 
 const USE_DUMMY_CANVAS = true;

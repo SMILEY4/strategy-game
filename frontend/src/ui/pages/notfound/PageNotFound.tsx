@@ -1,10 +1,10 @@
 import React, {ReactElement} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
-import {Header1} from "../../components/static/header/Header";
+import {Header1} from "../../components/header/Header";
 import {VBox} from "../../components/layout/vbox/VBox";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
-import {Text} from "../../components/static/text/Text";
-import {Spacer} from "../../components/static/spacer/Spacer";
+import {Text} from "../../components/text/Text";
+import {Spacer} from "../../components/spacer/Spacer";
 
 
 export function PageNotFound(): ReactElement {

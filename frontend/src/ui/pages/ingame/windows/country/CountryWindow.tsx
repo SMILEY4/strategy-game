@@ -2,13 +2,14 @@ import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header2, Header3} from "../../../../components/static/header/Header";
-import {Spacer} from "../../../../components/static/spacer/Spacer";
+import {Header1, Header2} from "../../../../components/header/Header";
+import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Text} from "../../../../components/static/text/Text";
+import {Text} from "../../../../components/text/Text";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
-import "./countryWindow.less"
-import {Divider} from "../../../../components/static/divider/Divider";
+import {Divider} from "../../../../components/divider/Divider";
+import {Banner} from "../../../../components/banner/Banner";
+import "./countryWindow.less";
 
 export interface CountryWindowProps {
     windowId: string;
@@ -25,83 +26,41 @@ export function CountryWindow(props: CountryWindowProps): ReactElement {
                 minWidth: "fit-content",
                 minHeight: "300px",
             }}
+            noPadding
         >
-            <VBox fillParent gap_s top stretch>
+            <VBox fillParent>
 
-                <Header1 centered>Sampleland</Header1>
-                <Divider/>
+                <Banner spaceAbove>
+                    <Header1 centered>Sampleland</Header1>
+                </Banner>
 
-                <Spacer size="s"/>
+                <VBox className="window-content" scrollable fillParent gap_s top stretch padding_l>
 
-                <InsetPanel>
-                    <Text>Size: 3</Text>
-                    <Text>Population: 43,043</Text>
-                    <Text>Settlers: 4</Text>
-                </InsetPanel>
+                    <InsetPanel>
+                        <Text>Size: 3</Text>
+                        <Text>Population: 43,043</Text>
+                        <Text>Settlers: 4</Text>
+                    </InsetPanel>
 
-                <Spacer size="s"/>
+                    <Spacer size="s"/>
 
-                <Header2 centered>Cities</Header2>
-                <Divider/>
+                    <Header2 centered>Cities</Header2>
+                    <Divider/>
 
-                <InsetPanel>
-                    <VBox fillParent gap_s top stretch>
-                        <DecoratedPanel blue simpleBorder><Text>Augsburg</Text></DecoratedPanel>
-                        <DecoratedPanel blue simpleBorder><Text>Nuremberg</Text></DecoratedPanel>
-                        <DecoratedPanel blue simpleBorder><Text>Munich</Text></DecoratedPanel>
-                    </VBox>
-                </InsetPanel>
+                    <InsetPanel>
+                        <VBox fillParent gap_s top stretch>
+                            <DecoratedPanel blue simpleBorder><Text>Augsburg</Text></DecoratedPanel>
+                            <DecoratedPanel blue simpleBorder><Text>Nuremberg</Text></DecoratedPanel>
+                            <DecoratedPanel blue simpleBorder><Text>Munich</Text></DecoratedPanel>
+                        </VBox>
+                    </InsetPanel>
+
+                </VBox>
 
             </VBox>
+
         </DecoratedWindow>
     );
-    // return (
-    //     <DecoratedWindow
-    //         windowId={props.windowId}
-    //         classNameContent="country-window__content"
-    //         withCloseButton
-    //     >
-    //         <CountryWindowContent
-    //             countryId={props.countryId}
-    //             name={"MyCountry"}
-    //             settlers={4}
-    //             provinces={[
-    //                 {
-    //                     name: "Bavaria",
-    //                     id: "46782",
-    //                     cities: [
-    //                         {
-    //                             name: "Augsburg",
-    //                             id: "26978"
-    //                         },
-    //                         {
-    //                             name: "München",
-    //                             id: "70340"
-    //                         },
-    //                         {
-    //                             name: "Nürnberg",
-    //                             id: "24307"
-    //                         }
-    //                     ]
-    //                 },
-    //                 {
-    //                     name: "Baden-Württemberg",
-    //                     id: "14350",
-    //                     cities: [
-    //                         {
-    //                             name: "Stuttgart",
-    //                             id: "52986"
-    //                         },
-    //                         {
-    //                             name: "Heidelberg",
-    //                             id: "98673"
-    //                         }
-    //                     ]
-    //                 },
-    //             ]}
-    //         />
-    //     </DecoratedWindow>
-    // );
 
 }
 

@@ -6,6 +6,7 @@
   height:   100%;
 
   .decorated-window__close {
+    z-index: 10;
     position:         absolute;
     top:              -4px;
     right:            -4px;
@@ -19,16 +20,18 @@
   }
 
   .decorated-window__resize-area {
-    width:    20px;
-    height:   20px;
+    z-index: 10;
     position: absolute;
     bottom:   0;
     right:    0;
+    width:    20px;
+    height:   20px;
     cursor:   se-resize;
     //background-color: rgba(0, 255, 0, 50%);
   }
 
   .decorated-window__drag-area {
+    z-index: 10;
     position: absolute;
     right:    0;
     top:      0;
@@ -42,9 +45,9 @@
     position:        relative;
     width:           100%;
     height:          100%;
-    overflow:        auto;
-    scrollbar-width: thin;
-    scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
+    //overflow:        auto;
+    //scrollbar-width: thin;
+    //scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
   }
 
 }

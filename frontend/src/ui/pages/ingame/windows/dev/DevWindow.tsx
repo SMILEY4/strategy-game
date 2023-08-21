@@ -4,9 +4,9 @@ import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppConfig} from "../../../../../main";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header2} from "../../../../components/static/header/Header";
+import {Header2} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {Spacer} from "../../../../components/static/spacer/Spacer";
+import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 
 export interface DevWindowProps {

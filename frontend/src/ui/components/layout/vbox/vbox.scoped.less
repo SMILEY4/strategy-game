@@ -4,15 +4,23 @@
   position:       relative;
   display:        flex;
   flex-direction: column;
-  gap: 0.5rem;
-  
-  
+  box-sizing:     border-box;
+
+
   &.vbox--fill {
     width:  100%;
     height: 100%;
   }
-  
-  
+
+
+  &.vbox--scrollable {
+    overflow:        auto;
+    scrollbar-width: thin;
+    scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
+  }
+
+
+
   &.vbox-vert-center {
     justify-content: center;
   }
@@ -52,8 +60,8 @@
   &.vbox-hor-stretch {
     align-items: stretch;
   }
-  
-  
+
+
   &.vbox--gap-none {
     gap: 0;
   }
@@ -77,6 +85,7 @@
   &.vbox--gap-xl {
     gap: @spacing-xl;
   }
+
   &.vbox--gap-xxl {
     gap: @spacing-xxl;
   }
@@ -105,6 +114,7 @@
   &.vbox--padding-xl {
     padding: @spacing-xl;
   }
+
   &.vbox--padding-xxl {
     padding: @spacing-xxl;
   }

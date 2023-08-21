@@ -1,0 +1,47 @@
+@import "./../common.less";
+
+.spacer {
+  position: relative;
+  box-sizing: border-box;
+
+  &.spacer--none {
+    padding-top: 0;
+    padding-left: 0;
+  }
+
+  &.spacer--fill {
+    margin-top: auto;
+    margin-left: auto;
+  }
+
+  &.spacer--xs {
+    padding-top: @spacing-xs;
+    padding-left: @spacing-xs;
+  }
+  
+  &.spacer--s {
+    padding-top: @spacing-s;
+    padding-left: @spacing-s;
+  }
+
+  &.spacer--m {
+    padding-top: @spacing-m;
+    padding-left: @spacing-s;
+  }
+
+  &.spacer--l {
+    padding-top: @spacing-l;
+    padding-left: @spacing-s;
+  }
+
+  &.spacer--xl {
+    padding-top: @spacing-xl;
+    padding-left: @spacing-s;
+  }
+
+  &.spacer--xxl {
+    padding-top: @spacing-xxl;
+    padding-left: @spacing-s;
+  }
+
+}

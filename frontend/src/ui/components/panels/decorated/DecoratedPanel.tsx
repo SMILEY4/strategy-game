@@ -36,10 +36,10 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
             ref={props.elementRef}
         >
             <div className="background"/>
-            <div className="border"/>
             <div className="content">
                 {props.children}
             </div>
+            <div className="border"/>
         </div>
     );
 

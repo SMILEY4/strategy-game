@@ -2,8 +2,8 @@ import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header2} from "../../../../components/static/header/Header";
-import {Spacer} from "../../../../components/static/spacer/Spacer";
+import {Header2} from "../../../../components/header/Header";
+import {Spacer} from "../../../../components/spacer/Spacer";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
 export interface MapWindowProps {

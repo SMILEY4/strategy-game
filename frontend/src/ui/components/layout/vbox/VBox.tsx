@@ -33,6 +33,7 @@ export function VBox(props: VBoxProps): ReactElement {
                 "vbox--gap-" + BaseBoxProperties.gap(props),
                 "vbox--padding-" + BaseBoxProperties.padding(props),
                 props.fillParent ? "vbox--fill" : null,
+                props.scrollable ? "vbox--scrollable" : null,
                 props.className,
             ])}
         >

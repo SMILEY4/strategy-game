@@ -19,11 +19,11 @@
     left:           1px;
     right:          1px;
     top:            1px;
-    opacity:        30%;
     pointer-events: none;
-    border-style: solid;
-    border-width:25px;
-    border-image:   @border-image-primary
+    border-style:   solid;
+    border-width:   35px;
+    border-image:   @border-image-primary;
+    opacity:        50%; //30%;
   }
 
   .background {
@@ -33,7 +33,7 @@
     right:             0;
     top:               0;
     border-radius:     @border-radius-secondary;
-    background-image:  @background-texture;
+    background-image:  @background-texture-paper;
     background-size:   50%;
     background-repeat: repeat;
     mix-blend-mode:    multiply;
@@ -54,19 +54,20 @@
     height: 100%;
   }
 
-  &.decorated-panel--simplified .content {
+  &.decorated-panel--simplified > .content {
     padding: @spacing-m;
   }
 
-  &.decorated-panel--simplified .border {
-    border-image: @border-image-secondary;
-    border-width:15px;
+  &.decorated-panel--simplified > .border {
+    border-image:  unset;
+    border-width:  1px;
+    border-radius: @border-radius-secondary;
+    border-color:  @color-decorative-gold;
+    opacity:       100%;
   }
 
-  &.decorated-panel--no-padding {
-    .content {
-      padding: unset;
-    }
+  &.decorated-panel--no-padding > .content {
+    padding: unset;
   }
 
   &.panel--red {
