@@ -5,6 +5,7 @@ export interface BaseBoxProperties {
     fillParent?: boolean,
 
     scrollable?: boolean,
+    stableScrollbar?: boolean,
 
     gap_none?: boolean
     gap_xs?: boolean,

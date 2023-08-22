@@ -31,7 +31,7 @@ export function MapWindow(props: MapWindowProps): ReactElement {
                 minHeight: "250px",
             }}
         >
-            <VBox fillParent gap_s top stretch>
+            <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Map</Header1>
                 <Spacer size="s"/>
                 <ButtonPrimary blue onClick={setDefault}>Default</ButtonPrimary>

@@ -26,7 +26,7 @@ export function DevWindow(props: DevWindowProps): ReactElement {
                 minHeight: "150px",
             }}
         >
-            <VBox fillParent gap_s top stretch>
+            <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Debug</Header1>
                 <Spacer size="s"/>
                 <ButtonPrimary blue onClick={enterFullscreen}>Enter Fullscreen</ButtonPrimary>

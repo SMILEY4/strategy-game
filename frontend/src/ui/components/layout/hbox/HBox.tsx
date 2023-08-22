@@ -34,6 +34,7 @@ export function HBox(props: HBoxProps): ReactElement {
                 "hbox--padding-" + BaseBoxProperties.padding(props),
                 props.fillParent ? "hbox--fill" : null,
                 props.scrollable ? "hbox--scrollable" : null,
+                props.stableScrollbar ? "hbox--stable-scrollbar" : null,
                 props.className,
             ])}
         >

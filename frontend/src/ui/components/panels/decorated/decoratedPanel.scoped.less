@@ -71,6 +71,15 @@
     padding: unset;
   }
 
+  &.decorated-panel--small-padding:not(.decorated-panel--no-padding):not(.decorated-panel--simplified) > .content {
+    padding: @spacing-m;
+  }
+
+  &.decorated-panel--small-padding.decorated-panel--simplified:not(.decorated-panel--no-padding) > .content {
+    padding: @spacing-s;
+  }
+
+
   &.panel--red {
     color:      @color-red-secondary-content;
     background: @gradient-red-secondary;

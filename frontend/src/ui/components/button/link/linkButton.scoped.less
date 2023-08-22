@@ -1,6 +1,6 @@
-@import "./../common.less";
+@import "./../../common.less";
 
-.text {
+.link-button {
   padding:     unset;
   margin:      unset;
   text-shadow: @shadow-content;
@@ -9,20 +9,24 @@
   font-weight: @font-weight-1;
   font-family: @font-type-primary;
 
-  &.text--fill-parent {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+
+  &.link-button--fill-parent {
     width: 100%;
     height: 100%;
   }
 
-  &.text--left {
+  &.link-button--left {
     text-align: left;
   }
 
-  &.text--center {
+  &.link-button--center {
     text-align: center;
   }
 
-  &.text--right {
+  &.link-button--right {
     text-align: right;
   }
 

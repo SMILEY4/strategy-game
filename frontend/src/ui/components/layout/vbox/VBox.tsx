@@ -34,6 +34,7 @@ export function VBox(props: VBoxProps): ReactElement {
                 "vbox--padding-" + BaseBoxProperties.padding(props),
                 props.fillParent ? "vbox--fill" : null,
                 props.scrollable ? "vbox--scrollable" : null,
+                props.stableScrollbar ? "vbox--stable-scrollbar" : null,
                 props.className,
             ])}
         >
