@@ -20,44 +20,45 @@
   }
 
   .banner__inner::before {
-    content:           "";
-    position:          absolute;
-    bottom:            0;
-    left:              0;
-    right:             0;
-    top:               0;
-    border-radius:     @border-radius-secondary;
-    background-image:  @background-texture-stone;
-    background-size:   400%;
-    background-repeat: repeat;
-    mix-blend-mode:    multiply;
-    opacity:           40%;
-    pointer-events:    none;
+    content:             "";
+    position:            absolute;
+    bottom:              0;
+    left:                0;
+    right:               0;
+    top:                 0;
+    border-radius:       @border-radius-secondary;
+    background-image:    @background-texture-stone;
+    background-size:     400%;
+    background-position: 50%;
+    background-repeat:   repeat;
+    mix-blend-mode:      multiply;
+    opacity:             40%;
+    pointer-events:      none;
   }
 
   .banner__shadow {
-    position:   absolute;
-    bottom:     0;
-    top:        0;
-    left:       6px;
-    right:      6px;
-    pointer-events:    none;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 60%),
-                0 0 12px rgba(0, 0, 0, 50%),
-                0 0 20px rgba(0, 0, 0, 40%);
+    position:       absolute;
+    bottom:         0;
+    top:            0;
+    left:           6px;
+    right:          6px;
+    pointer-events: none;
+    box-shadow:     0 0 4px rgba(0, 0, 0, 60%),
+                    0 0 12px rgba(0, 0, 0, 50%),
+                    0 0 20px rgba(0, 0, 0, 40%);
   }
 
 
   .banner__edge-shadow {
-    position:   absolute;
-    bottom:     0;
-    top:        0;
-    left:       0;
-    right:      0;
-    pointer-events:    none;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 50%), transparent 10px),
-                linear-gradient(-90deg, rgba(0, 0, 0, 50%), transparent 10px),
-                linear-gradient(180deg, rgba(0, 0, 0, 50%), transparent 10px);
+    position:       absolute;
+    bottom:         0;
+    top:            0;
+    left:           0;
+    right:          0;
+    pointer-events: none;
+    background:     linear-gradient(90deg, rgba(0, 0, 0, 50%), transparent 10px),
+                    linear-gradient(-90deg, rgba(0, 0, 0, 50%), transparent 10px),
+                    linear-gradient(180deg, rgba(0, 0, 0, 50%), transparent 10px);
 
   }
 

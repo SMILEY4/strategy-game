@@ -4,10 +4,9 @@ import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppConfig} from "../../../../../main";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header2} from "../../../../components/header/Header";
+import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 
 export interface DevWindowProps {
     windowId: string;
@@ -28,7 +27,7 @@ export function DevWindow(props: DevWindowProps): ReactElement {
             }}
         >
             <VBox fillParent gap_s top stretch>
-                <Header2 banner>Debug</Header2>
+                <Header1>Debug</Header1>
                 <Spacer size="s"/>
                 <ButtonPrimary blue onClick={enterFullscreen}>Enter Fullscreen</ButtonPrimary>
                 <ButtonPrimary blue onClick={exitFullscreen}>Exit Fullscreen</ButtonPrimary>

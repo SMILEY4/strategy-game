@@ -2,7 +2,7 @@ import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header2} from "../../../../components/header/Header";
+import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
@@ -32,7 +32,7 @@ export function MapWindow(props: MapWindowProps): ReactElement {
             }}
         >
             <VBox fillParent gap_s top stretch>
-                <Header2 banner>Map</Header2>
+                <Header1>Map</Header1>
                 <Spacer size="s"/>
                 <ButtonPrimary blue onClick={setDefault}>Default</ButtonPrimary>
                 <ButtonPrimary blue onClick={setCountries}>Countries</ButtonPrimary>

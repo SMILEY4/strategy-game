@@ -8,7 +8,11 @@ export interface DividerProps {
 
 export function Divider(props: DividerProps): ReactElement {
     return (
-        <div className={joinClassNames(["divider", props.className])}/>
+        <div className={joinClassNames(["divider", props.className])}>
+            <div className="divider__arm-left"/>
+            <div className="divider__center"/>
+            <div className="divider__arm-right"/>
+        </div>
     );
 
 }
