@@ -11,6 +11,7 @@ export interface ButtonPrimaryProps extends UseButtonProps {
     blue?: boolean,
     color?: ButtonPrimaryColor,
     round?: boolean,
+    square?: boolean,
     small?: boolean,
     className?: string;
     children?: any;
@@ -26,6 +27,7 @@ export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
             "button--" + getColor(props),
             isDisabled ? "button--disabled" : null,
             props.round ? "button--round" : null,
+            props.square ? "button--square" : null,
             props.small ? "button--small" : null,
             props.className,
         ])}>

@@ -24,17 +24,20 @@ export interface VBoxProps extends BaseBoxProperties {
 }
 
 export function VBox(props: VBoxProps): ReactElement {
+    const gap = BaseBoxProperties.gap(props)
+    const padding = BaseBoxProperties.padding(props)
     return (
         <div
             className={joinClassNames([
                 "vbox",
                 "vbox-vert-" + vertical(props),
                 "vbox-hor-" + horizontal(props),
-                "vbox--gap-" + BaseBoxProperties.gap(props),
-                "vbox--padding-" + BaseBoxProperties.padding(props),
+                gap ? "vbox--gap-" + gap : null,
+                padding ? "vbox--padding-" + padding : null,
                 props.fillParent ? "vbox--fill" : null,
                 props.scrollable ? "vbox--scrollable" : null,
                 props.stableScrollbar ? "vbox--stable-scrollbar" : null,
+                props.wrap ? "vbox--wrap" : null,
                 props.className,
             ])}
         >

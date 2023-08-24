@@ -16,12 +16,31 @@ export namespace MockData {
                             cityName: "Stuttgart",
                             isCountryCapitol: false,
                             isProvinceCapitol: true,
+                            resources: [
+                                {
+                                    icon: "/resource_icon_food.png",
+                                    value: -4.345
+                                },
+                                {
+                                    icon: "/resource_icon_metal.png",
+                                    value: +11.784
+                                },
+                                {
+                                    icon: "/resource_icon_stone.png",
+                                    value: 9.438
+                                },
+                                {
+                                    icon: "/resource_icon_tools.png",
+                                    value: 0
+                                }
+                            ]
                         },
                         {
                             cityId: "3",
                             cityName: "Heidelberg",
                             isCountryCapitol: false,
                             isProvinceCapitol: false,
+                            resources: []
                         },
                     ],
                 },
@@ -34,12 +53,14 @@ export namespace MockData {
                             cityName: "München",
                             isCountryCapitol: false,
                             isProvinceCapitol: true,
+                            resources: []
                         },
                         {
                             cityId: "6",
                             cityName: "Nürnberg",
                             isCountryCapitol: true,
                             isProvinceCapitol: false,
+                            resources: []
 
                         },
                         {
@@ -47,12 +68,14 @@ export namespace MockData {
                             cityName: "Augsburg",
                             isCountryCapitol: false,
                             isProvinceCapitol: false,
+                            resources: []
                         },
                         {
                             cityId: "8",
                             cityName: "Würzburg",
                             isCountryCapitol: false,
                             isProvinceCapitol: false,
+                            resources: []
                         },
                     ],
                 },
@@ -65,18 +88,21 @@ export namespace MockData {
                             cityName: "Dresden",
                             isCountryCapitol: false,
                             isProvinceCapitol: true,
+                            resources: []
                         },
                         {
                             cityId: "11",
                             cityName: "Leipzig",
                             isCountryCapitol: false,
                             isProvinceCapitol: false,
+                            resources: []
                         },
                         {
                             cityId: "12",
                             cityName: "Chemnitz",
                             isCountryCapitol: false,
                             isProvinceCapitol: false,
+                            resources: []
                         },
                     ],
                 },

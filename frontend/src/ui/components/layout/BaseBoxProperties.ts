@@ -7,6 +7,8 @@ export interface BaseBoxProperties {
     scrollable?: boolean,
     stableScrollbar?: boolean,
 
+    wrap?: boolean,
+
     gap_none?: boolean
     gap_xs?: boolean,
     gap_s?: boolean,
@@ -29,7 +31,7 @@ export namespace BaseBoxProperties {
 
     export type BoxGap = "none" | "xs" | "s" | "m" | "l" | "xl" | "xxl"
 
-    export function gap(props: BaseBoxProperties): BoxGap {
+    export function gap(props: BaseBoxProperties): BoxGap | null {
         if(props.gap_xs) return "xs"
         if(props.gap_s) return "s"
         if(props.gap_m) return "m"
@@ -37,12 +39,12 @@ export namespace BaseBoxProperties {
         if(props.gap_xl) return "xl"
         if(props.gap_xxl) return "xxl"
         if(props.gap_none) return "none"
-        return "none"
+        return null
     }
 
     export type BoxPadding = "none" | "xs" | "s" | "m" | "l" | "xl" | "xxl"
 
-    export function padding(props: BaseBoxProperties): BoxPadding {
+    export function padding(props: BaseBoxProperties): BoxPadding | null {
         if(props.padding_xs) return "xs"
         if(props.padding_s) return "s"
         if(props.padding_m) return "m"
@@ -50,7 +52,7 @@ export namespace BaseBoxProperties {
         if(props.padding_xl) return "xl"
         if(props.padding_xxl) return "xxl"
         if(props.padding_none) return "none"
-        return "none"
+        return null
     }
 
 }

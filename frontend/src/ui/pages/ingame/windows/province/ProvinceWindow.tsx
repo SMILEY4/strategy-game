@@ -15,6 +15,7 @@ import {LinkButton} from "../../../../components/button/link/LinkButton";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {MockData} from "../../mockData";
 import {useOpenCityWindow} from "../city/CityMenu";
+import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 
 
 export function useOpenProvinceWindow() {
@@ -81,14 +82,8 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
 
                     <InsetPanel>
-                        <HBox gap_s centerVertical>
-                            <Text fillParent align="right">Id:</Text>
-                            <Text fillParent align="left">{data.provinceId}</Text>
-                        </HBox>
-                        <HBox gap_s centerVertical>
-                            <Text fillParent align="right">Country:</Text>
-                            <LinkButton fillParent align="left" onClick={() => openCountryWindow(data.countryId, true)}>{data.countryName}</LinkButton>
-                        </HBox>
+                        <KeyTextValuePair name={"Id"} value={data.provinceId}/>
+                        <KeyLinkValuePair name={"Country"} value={data.countryName} onClick={() => openCountryWindow(data.countryId, true)}/>
                     </InsetPanel>
 
                     <Spacer size="m"/>

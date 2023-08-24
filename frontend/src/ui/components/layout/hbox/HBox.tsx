@@ -24,17 +24,20 @@ export interface HBoxProps extends BaseBoxProperties  {
 }
 
 export function HBox(props: HBoxProps): ReactElement {
+    const gap = BaseBoxProperties.gap(props)
+    const padding = BaseBoxProperties.padding(props)
     return (
         <div
             className={joinClassNames([
                 "hbox",
                 "hbox-vert-" + vertical(props),
                 "hbox-hor-" + horizontal(props),
-                "hbox--gap-" + BaseBoxProperties.gap(props),
-                "hbox--padding-" + BaseBoxProperties.padding(props),
+                gap ? "hbox--gap-" + gap : null,
+                padding ? "hbox--padding-" + padding : null,
                 props.fillParent ? "hbox--fill" : null,
                 props.scrollable ? "hbox--scrollable" : null,
                 props.stableScrollbar ? "hbox--stable-scrollbar" : null,
+                props.wrap ? "hbox--wrap" : null,
                 props.className,
             ])}
         >

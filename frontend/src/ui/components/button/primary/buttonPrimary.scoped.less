@@ -67,6 +67,18 @@
 
   }
 
+  &.button--square {
+    aspect-ratio:    1/1;
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
+  }
+
+  &.button--square .button-primary__inner {
+    padding: @spacing-xs;
+  }
+
+
   &.button--disabled {
     background: @gradient-border-primary-disabled;
     cursor:     default;
