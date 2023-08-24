@@ -1,8 +1,8 @@
-import React, {ReactElement} from "react";
+import React, {ReactElement, useState} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header2} from "../../../../components/header/Header";
+import {Header1, Header2, Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Text} from "../../../../components/text/Text";
@@ -17,6 +17,17 @@ import "./cityMenu.less";
 import {joinClassNames} from "../../../../components/utils";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {CgClose, FiPlus} from "react-icons/all";
+import {
+    autoUpdate,
+    flip,
+    FloatingPortal,
+    offset,
+    shift,
+    useFloating,
+    useHover,
+    useInteractions,
+    useRole,
+} from "@floating-ui/react";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -125,7 +136,7 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
                         <HBox gap_xs spaceBetween centerVertical className="production_queue__progress">
                             <div
                                 className="production_queue__progress-bar"
-                                style={{right: (100 - 50) + "%",}}
+                                style={{right: (100 - 50) + "%"}}
                             />
                             <Text>Farm</Text>
                             <Text>70%</Text>
@@ -165,21 +176,51 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
 
 
 function ResourceBox(props: { icon: string, value: number }) {
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    const {refs, floatingStyles, context} = useFloating({
+        open: isOpen,
+        onOpenChange: setIsOpen,
+        middleware: [offset(10), flip(), shift()],
+        whileElementsMounted: autoUpdate,
+    });
+
+    const hover = useHover(context, {move: false});
+    const role = useRole(context, {role: "tooltip"});
+
+    const {getReferenceProps, getFloatingProps} = useInteractions([hover, role]);
+
+
     return (
-        <InsetPanel className="resource-box">
-            <div
-                className="resource-box__icon"
-                style={{backgroundImage: "url('" + props.icon + "')"}}
-            />
-            <Text
-                className={joinClassNames([
-                    "resource-box__text",
-                    "resource-box__text--" + getValueType(props.value),
-                ])}
-            >
-                {formatValue(props.value)}
-            </Text>
-        </InsetPanel>
+        <>
+            <InsetPanel className="resource-box">
+                <div
+                    ref={refs.setReference}
+                    {...getReferenceProps()}
+                    className="resource-box__icon"
+                    style={{backgroundImage: "url('" + props.icon + "')"}}
+                />
+                <Text
+                    className="resource-box__text"
+                    type={getValueType(props.value)}
+                >
+                    {formatValue(props.value)}
+                </Text>
+            </InsetPanel>
+            {isOpen && (
+                <FloatingPortal id="root">
+                    <div
+                        ref={refs.setFloating}
+                        style={floatingStyles}
+                        className={"resource-tooltip-wrapper"}
+                        {...getFloatingProps()}
+                    >
+                        <ResourceTooltipContent/>
+                    </div>
+                </FloatingPortal>
+            )}
+        </>
     );
 
     function formatValue(value: number): string {
@@ -193,16 +234,32 @@ function ResourceBox(props: { icon: string, value: number }) {
         return "0";
     }
 
-    function getValueType(value: number): "positive" | "negative" | "neutral" {
+    function getValueType(value: number): "positive" | "negative" | undefined {
         if (value > 0) {
             return "positive";
         }
         if (value < 0) {
             return "negative";
         }
-        return "neutral";
+        return undefined;
     }
 
+}
+
+
+function ResourceTooltipContent() {
+    return (
+        <div className={"resource-tooltip"}>
+            <VBox padding_m gap_s fillParent className={"resource-tooltip_inner"}>
+                <Header4>Food</Header4>
+                <Text type="positive">+4 Farm</Text>
+                <Text type="negative">-2 Cattle Farms</Text>
+                <Text type="positive">+4 Cattle Farms</Text>
+                <Text type="negative">-2 Stables</Text>
+                <Text type="negative">-5 Population</Text>
+            </VBox>
+        </div>
+    );
 }
 
 
@@ -216,3 +273,6 @@ function ContentBox(props: { iconFilename: string }) {
         />
     );
 }
+
+
+

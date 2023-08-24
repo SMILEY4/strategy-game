@@ -5,6 +5,7 @@ import "./text.scoped.less"
 export interface TextProps {
     fillParent?: boolean,
     align?: "left" | "center" | "right"
+    type?: "positive" | "negative"
     className?: string,
     children?: any;
 }
@@ -16,6 +17,7 @@ export function Text(props: TextProps): ReactElement {
                 "text",
                 props.fillParent ? "text--fill-parent" : null,
                 "text--" + (props.align || "left"),
+                props.type ? "text--" + props.type : null,
                 props.className,
             ])}
         >
