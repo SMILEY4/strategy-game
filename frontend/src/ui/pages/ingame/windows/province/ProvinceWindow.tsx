@@ -5,17 +5,15 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1, Header2} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Text} from "../../../../components/text/Text";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
-import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
-import {HBox} from "../../../../components/layout/hbox/HBox";
-import {RiVipCrown2Fill, RiVipCrown2Line} from "react-icons/all";
-import {LinkButton} from "../../../../components/button/link/LinkButton";
 import {useOpenCountryWindow} from "../country/CountryWindow";
-import {MockData} from "../../mockData";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
+import {NewMockData} from "../../newMockData";
+import {ProvinceData} from "../../../../models/province/provinceData";
+import {ProvinceIdentifier} from "../../../../models/province/provinceIdentifier";
+import {CityEntry} from "../common/CityEntry";
 
 
 export function useOpenProvinceWindow() {
@@ -40,25 +38,9 @@ export interface ProvinceWindowProps {
     provinceId: string,
 }
 
-
-interface ProvinceWindowData {
-    provinceId: string,
-    provinceName: string,
-    countryId: string,
-    countryName: string,
-    cities: CityData[]
-}
-
-interface CityData {
-    cityId: string,
-    cityName: string
-    isCountryCapitol: boolean,
-    isProvinceCapitol: boolean,
-}
-
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
-    const data: ProvinceWindowData = MockData.getProvinceData(props.provinceId) as ProvinceWindowData;
+    const data: ProvinceData = NewMockData.getProvinceData(props.provinceId);
 
     const openCountryWindow = useOpenCountryWindow();
     const openCityWindow = useOpenCityWindow();
@@ -74,46 +56,60 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
             noPadding
         >
             <VBox fillParent>
-
-                <Banner spaceAbove>
-                    <Header1 centered>{data.provinceName}</Header1>
-                </Banner>
-
+                <ProvinceBanner identifier={data.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-
-                    <InsetPanel>
-                        <KeyTextValuePair name={"Id"} value={data.provinceId}/>
-                        <KeyLinkValuePair name={"Country"} value={data.countryName} onClick={() => openCountryWindow(data.countryId, true)}/>
-                    </InsetPanel>
-
-                    <Spacer size="m"/>
-                    <Header2 centered>Cities</Header2>
-                    <Divider/>
-
-                    <InsetPanel>
-                        <VBox fillParent gap_s top stretch>
-                            {data.cities.map(city => <City key={city.cityId} data={city} onOpen={() => openCityWindow(city.cityId)}/>)}
-                        </VBox>
-                    </InsetPanel>
-
+                    <ProvinceBaseInformation
+                        data={data}
+                        openCountry={() => openCountryWindow(data.country.id, true)}
+                    />
+                    <ProvinceCities
+                        data={data}
+                        openCity={openCityWindow}
+                    />
                 </VBox>
-
             </VBox>
-
         </DecoratedWindow>
     );
 
 }
 
 
-function City(props: { data: CityData, onOpen: () => void }) {
+function ProvinceBanner(props: { identifier: ProvinceIdentifier }): ReactElement {
     return (
-        <DecoratedPanel paddingSmall blue simpleBorder>
-            <HBox centerVertical gap_s>
-                <LinkButton onClick={props.onOpen}>{props.data.cityName}</LinkButton>
-                {props.data.isCountryCapitol && <RiVipCrown2Fill/>}
-                {props.data.isProvinceCapitol && <RiVipCrown2Line/>}
-            </HBox>
-        </DecoratedPanel>
+        <Banner spaceAbove>
+            <Header1 centered>{props.identifier.name}</Header1>
+        </Banner>
+    );
+}
+
+function ProvinceBaseInformation(props: { data: ProvinceData, openCountry: () => void }): ReactElement {
+    return (
+        <InsetPanel>
+            <KeyTextValuePair name={"Id"} value={props.data.identifier.name}/>
+            <KeyLinkValuePair name={"Country"} value={props.data.country.name} onClick={props.openCountry}/>
+        </InsetPanel>
+    );
+}
+
+function ProvinceCities(props: { data: ProvinceData, openCity: (id: string) => void }): ReactElement {
+    return (
+        <>
+            <Spacer size="m"/>
+            <Header2 centered>Cities</Header2>
+            <Divider/>
+
+            <InsetPanel>
+                <VBox fillParent gap_s top stretch>
+                    {props.data.cities.map(city => {
+                        return (
+                            <CityEntry
+                                data={city}
+                                onOpen={() => props.openCity(city.identifier.id)}
+                            />
+                        );
+                    })}
+                </VBox>
+            </InsetPanel>
+        </>
     );
 }

@@ -1,8 +1,8 @@
-import React, {ReactElement, useState} from "react";
+import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header2, Header4} from "../../../../components/header/Header";
+import {Header1, Header2} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Text} from "../../../../components/text/Text";
@@ -10,24 +10,16 @@ import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {useOpenProvinceWindow} from "../province/ProvinceWindow";
-import {MockData} from "../../mockData";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import "./cityMenu.less";
-import {joinClassNames} from "../../../../components/utils";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {CgClose, FiPlus} from "react-icons/all";
-import {
-    autoUpdate,
-    flip,
-    FloatingPortal,
-    offset,
-    shift,
-    useFloating,
-    useHover,
-    useInteractions,
-    useRole,
-} from "@floating-ui/react";
+import {CityIdentifier} from "../../../../models/city/cityIdentifier";
+import {CityData} from "../../../../models/city/cityData";
+import {formatPercentage} from "../../../../components/utils";
+import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
+import {NewMockData} from "../../newMockData";
+import "./cityMenu.less";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -51,25 +43,10 @@ export interface CountryWindowProps {
     cityId: string,
 }
 
-interface CityWindowData {
-    cityId: string,
-    cityName: string
-    isCountryCapitol: boolean,
-    isProvinceCapitol: boolean,
-    provinceId: string,
-    provinceName: string,
-    countryId: string,
-    countryName: string,
-    resources: ({
-        icon: string,
-        value: number,
-    })[]
-}
-
 
 export function CityWindow(props: CountryWindowProps): ReactElement {
 
-    const data: CityWindowData = MockData.getCityData(props.cityId) as CityWindowData;
+    const data = NewMockData.getCityData(props.cityId);
 
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
@@ -85,183 +62,154 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
             noPadding
         >
             <VBox fillParent>
-
-                <Banner spaceAbove>
-                    <Header1 centered>{data.cityName}</Header1>
-                </Banner>
-
+                <CityBanner identifier={data.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-
-                    <InsetPanel>
-                        <KeyTextValuePair name={"Id"} value={data.cityId}/>
-                        <KeyLinkValuePair name={"Country"} value={data.countryName}
-                                          onClick={() => openCountryWindow(data.countryId, true)}/>
-                        <KeyLinkValuePair name={"Province"} value={data.provinceName}
-                                          onClick={() => openProvinceWindow(data.provinceId)}/>
-                    </InsetPanel>
-
-
-                    <Spacer size="m"/>
-                    <Header2 centered>Population</Header2>
-                    <Divider/>
-
-                    <InsetPanel>
-                        <KeyTextValuePair name={"Size"} value={"3"}/>
-                        <KeyTextValuePair name={"Growth Progress"} value={"+40%"}/>
-                    </InsetPanel>
-
-
-                    <Spacer size="m"/>
-                    <Header2 centered>Resources</Header2>
-                    <Divider/>
-
-                    <HBox gap_s top left wrap>
-                        {data.resources.map(resource => (
-                            <ResourceBox
-                                key={resource.icon}
-                                icon={resource.icon}
-                                value={resource.value}
-                            />
-                        ))}
-                    </HBox>
-
-                    <Spacer size="m"/>
-                    <Header2 centered>Contents</Header2>
-                    <Divider/>
-
-                    <HBox centerVertical left gap_s>
-                        <ButtonPrimary square>
-                            <FiPlus/>
-                        </ButtonPrimary>
-                        <HBox gap_xs spaceBetween centerVertical className="production_queue__progress">
-                            <div
-                                className="production_queue__progress-bar"
-                                style={{right: (100 - 50) + "%"}}
-                            />
-                            <Text>Farm</Text>
-                            <Text>70%</Text>
-                        </HBox>
-                        <ButtonPrimary square round small>
-                            <CgClose/>
-                        </ButtonPrimary>
-                    </HBox>
-
-                    <Spacer size={"xs"}/>
-
-                    <HBox gap_s centerVertical left>
-                        <Text>Buildings: 3/4</Text>
-                    </HBox>
-
-                    <HBox gap_s top left wrap>
-                        <ContentBox iconFilename="Woodcutter.png"/>
-                        <ContentBox iconFilename="farm.png"/>
-                        <ContentBox iconFilename="farm.png"/>
-                        <ContentBox iconFilename="Woodcutter.png"/>
-                        <ContentBox iconFilename="Woodcutter.png"/>
-                        <ContentBox iconFilename="farm.png"/>
-                        <ContentBox iconFilename="Woodcutter.png"/>
-                        <ContentBox iconFilename="farm.png"/>
-                        <ContentBox iconFilename="farm.png"/>
-                    </HBox>
-
-
+                    <CityBaseDataSection
+                        data={data}
+                        openCountry={() => openCountryWindow(data.country.id, true)}
+                        openProvince={() => openProvinceWindow(data.province.id)}
+                    />
+                    <CityPopulationSection data={data}/>
+                    <CityResourceSection data={data}/>
+                    <CityContentSection data={data}/>
                 </VBox>
-
             </VBox>
-
         </DecoratedWindow>
     );
-
 }
 
 
-function ResourceBox(props: { icon: string, value: number }) {
+function CityBanner(props: { identifier: CityIdentifier }): ReactElement {
+    return (
+        <Banner spaceAbove>
+            <Header1 centered>{props.identifier.name}</Header1>
+        </Banner>
+    );
+}
 
-    const [isOpen, setIsOpen] = useState(false);
+function CityBaseDataSection(props: {
+    data: CityData,
+    openCountry: () => void,
+    openProvince: () => void
+}): ReactElement {
+    return (
+        <InsetPanel>
+            <KeyTextValuePair
+                name={"Id"}
+                value={props.data.identifier.id}
+            />
+            <KeyLinkValuePair
+                name={"Country"}
+                value={props.data.country.name}
+                onClick={props.openCountry}
+            />
+            <KeyLinkValuePair
+                name={"Province"}
+                value={props.data.province.name}
+                onClick={props.openProvince}
+            />
+        </InsetPanel>
+    );
+}
 
-    const {refs, floatingStyles, context} = useFloating({
-        open: isOpen,
-        onOpenChange: setIsOpen,
-        middleware: [offset(10), flip(), shift()],
-        whileElementsMounted: autoUpdate,
-    });
 
-    const hover = useHover(context, {move: false});
-    const role = useRole(context, {role: "tooltip"});
-
-    const {getReferenceProps, getFloatingProps} = useInteractions([hover, role]);
-
-
+function CityPopulationSection(props: { data: CityData }): ReactElement {
     return (
         <>
-            <InsetPanel className="resource-box">
-                <div
-                    ref={refs.setReference}
-                    {...getReferenceProps()}
-                    className="resource-box__icon"
-                    style={{backgroundImage: "url('" + props.icon + "')"}}
+            <Spacer size="m"/>
+            <Header2 centered>Population</Header2>
+            <Divider/>
+            <InsetPanel>
+                <KeyTextValuePair
+                    name={"Size"}
+                    value={props.data.population.size}
                 />
-                <Text
-                    className="resource-box__text"
-                    type={getValueType(props.value)}
-                >
-                    {formatValue(props.value)}
-                </Text>
+                <KeyTextValuePair
+                    name={"Growth Progress"}
+                    value={formatPercentage(props.data.population.progress, true)}
+                />
             </InsetPanel>
-            {isOpen && (
-                <FloatingPortal id="root">
-                    <div
-                        ref={refs.setFloating}
-                        style={floatingStyles}
-                        className={"resource-tooltip-wrapper"}
-                        {...getFloatingProps()}
-                    >
-                        <ResourceTooltipContent/>
-                    </div>
-                </FloatingPortal>
-            )}
         </>
     );
-
-    function formatValue(value: number): string {
-        const simpleValue = Math.round(value * 100) / 100;
-        if (simpleValue < 0) {
-            return "" + simpleValue;
-        }
-        if (simpleValue > 0) {
-            return "+" + simpleValue;
-        }
-        return "0";
-    }
-
-    function getValueType(value: number): "positive" | "negative" | undefined {
-        if (value > 0) {
-            return "positive";
-        }
-        if (value < 0) {
-            return "negative";
-        }
-        return undefined;
-    }
-
 }
 
 
-function ResourceTooltipContent() {
+function CityResourceSection(props: { data: CityData }): ReactElement {
     return (
-        <div className={"resource-tooltip"}>
-            <VBox padding_m gap_s fillParent className={"resource-tooltip_inner"}>
-                <Header4>Food</Header4>
-                <Text type="positive">+4 Farm</Text>
-                <Text type="negative">-2 Cattle Farms</Text>
-                <Text type="positive">+4 Cattle Farms</Text>
-                <Text type="negative">-2 Stables</Text>
-                <Text type="negative">-5 Population</Text>
-            </VBox>
-        </div>
+        <>
+            <Spacer size="m"/>
+            <Header2 centered>Resources</Header2>
+            <Divider/>
+
+            <HBox gap_s top left wrap>
+                {props.data.resources.map(resource => (
+                    <ResourceBalanceBox data={resource}/>
+                ))}
+            </HBox>
+        </>
     );
 }
 
+
+function CityContentSection(props: { data: CityData }): ReactElement {
+    return (
+        <>
+            <Spacer size="m"/>
+            <Header2 centered>Contents</Header2>
+            <Divider/>
+
+            <CityProductionQueue data={props.data}/>
+
+            <Spacer size={"xs"}/>
+
+            <CityContentList data={props.data}/>
+        </>
+    );
+}
+
+
+function CityProductionQueue(props: { data: CityData }): ReactElement {
+    return (
+        <HBox centerVertical left gap_s>
+            <ButtonPrimary square>
+                <FiPlus/>
+            </ButtonPrimary>
+            <HBox gap_xs spaceBetween centerVertical className="production_queue__progress">
+                <div
+                    className="production_queue__progress-bar"
+                    style={{right: (100 - 50) + "%"}}
+                />
+                <Text>Farm</Text>
+                <Text>70%</Text>
+            </HBox>
+            <ButtonPrimary square round small>
+                <CgClose/>
+            </ButtonPrimary>
+        </HBox>
+    );
+}
+
+function CityContentList(props: { data: CityData }): ReactElement {
+    return (
+        <>
+            <HBox gap_s centerVertical left>
+                <Text>Buildings: 3/4</Text>
+            </HBox>
+
+            <HBox gap_s top left wrap>
+                <ContentBox iconFilename="Woodcutter.png"/>
+                <ContentBox iconFilename="farm.png"/>
+                <ContentBox iconFilename="farm.png"/>
+                <ContentBox iconFilename="Woodcutter.png"/>
+                <ContentBox iconFilename="Woodcutter.png"/>
+                <ContentBox iconFilename="farm.png"/>
+                <ContentBox iconFilename="Woodcutter.png"/>
+                <ContentBox iconFilename="farm.png"/>
+                <ContentBox iconFilename="farm.png"/>
+            </HBox>
+        </>
+    );
+}
 
 function ContentBox(props: { iconFilename: string }) {
     return (

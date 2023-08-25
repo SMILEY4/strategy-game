@@ -4,8 +4,8 @@ body {
     margin:                  0;
     -webkit-font-smoothing:  antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-family: "Alegreya", sans-serif;
-    font-size:  16px;
+    font-family:             "Alegreya", sans-serif;
+    font-size:               16px;
 }
 
 code {
@@ -14,11 +14,14 @@ code {
 }
 
 #root {
-    width:       100vw;
-    height:      100vh;
-    min-width:   100vw;
-    min-height:  100vh;
-    position:    relative;
+    position:   relative;
+    width:      100vw;
+    height:     100vh;
+    min-width:  100vw;
+    min-height: 100vh;
+    max-width:  100vw;
+    max-height: 100vh;
+    overflow:   hidden;
 }
 
 .clickable {

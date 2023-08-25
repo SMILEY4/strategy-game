@@ -6,3 +6,13 @@ export function joinClassNames(classNames: (string | null | undefined)[]): strin
         return undefined;
     }
 }
+
+export function formatPercentage(value: number, addPlus: boolean): string {
+    const percValue = value * 100;
+    const shortValue = Math.round(percValue * 100) / 100;
+    if (addPlus && shortValue > 0) {
+        return "+" + shortValue + "%";
+    } else {
+        return "" + shortValue + "%";
+    }
+}

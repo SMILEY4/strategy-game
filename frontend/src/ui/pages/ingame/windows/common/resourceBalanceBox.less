@@ -1,0 +1,44 @@
+@import "./../../../../components/common.less";
+
+.resource-box {
+
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  flex-grow:      0;
+  flex-shrink:    0;
+  width:          60px;
+
+  .resource-box__icon {
+    width:           30px;
+    height:          30px;
+    background-size: contain;
+  }
+
+  .resource-box__text--neutral {
+  }
+
+}
+
+
+.resource-tooltip-wrapper {
+  position: relative;
+  z-index: 200;
+}
+
+.resource-tooltip {
+  position:      relative;
+  border:        1px solid transparent;
+  background:    @gradient-border-primary;
+  border-radius: @border-radius-secondary;
+  box-sizing:    border-box;
+  color:         @color-red-secondary-content;
+
+  .resource-tooltip_inner {
+    position:      relative;
+    white-space:   nowrap;
+    background:    @gradient-tooltip;;
+    border-radius: @border-radius-secondary;
+    box-shadow:    @shadow-inset-back;
+  }
+}
