@@ -10,10 +10,10 @@ import {Banner} from "../../../../components/banner/Banner";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {NewMockData} from "../../newMockData";
 import {ProvinceData} from "../../../../models/province/provinceData";
 import {ProvinceIdentifier} from "../../../../models/province/provinceIdentifier";
 import {CityEntry} from "../common/CityEntry";
+import {MockData} from "../../mockData";
 
 
 export function useOpenProvinceWindow() {
@@ -40,7 +40,7 @@ export interface ProvinceWindowProps {
 
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
-    const data: ProvinceData = NewMockData.getProvinceData(props.provinceId);
+    const data: ProvinceData = MockData.getProvinceData(props.provinceId);
 
     const openCountryWindow = useOpenCountryWindow();
     const openCityWindow = useOpenCityWindow();

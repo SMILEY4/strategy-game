@@ -18,8 +18,9 @@ import {CityIdentifier} from "../../../../models/city/cityIdentifier";
 import {CityData} from "../../../../models/city/cityData";
 import {formatPercentage} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
-import {NewMockData} from "../../newMockData";
+import {ProductionQueueEntry} from "../../../../models/city/productionQueueEntry";
 import "./cityMenu.less";
+import {MockData} from "../../mockData";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -46,7 +47,7 @@ export interface CountryWindowProps {
 
 export function CityWindow(props: CountryWindowProps): ReactElement {
 
-    const data = NewMockData.getCityData(props.cityId);
+    const data = MockData.getCityData(props.cityId);
 
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
@@ -169,6 +170,10 @@ function CityContentSection(props: { data: CityData }): ReactElement {
 
 
 function CityProductionQueue(props: { data: CityData }): ReactElement {
+    const entry: ProductionQueueEntry = props.data.productionQueue.length === 0
+        ? {name: "-", progress: 0}
+        : props.data.productionQueue[0];
+
     return (
         <HBox centerVertical left gap_s>
             <ButtonPrimary square>
@@ -177,10 +182,10 @@ function CityProductionQueue(props: { data: CityData }): ReactElement {
             <HBox gap_xs spaceBetween centerVertical className="production_queue__progress">
                 <div
                     className="production_queue__progress-bar"
-                    style={{right: (100 - 50) + "%"}}
+                    style={{right: (100 - entry.progress * 100) + "%"}}
                 />
-                <Text>Farm</Text>
-                <Text>70%</Text>
+                <Text>{entry.name}</Text>
+                <Text>{formatPercentage(entry.progress, false)}</Text>
             </HBox>
             <ButtonPrimary square round small>
                 <CgClose/>
@@ -193,19 +198,13 @@ function CityContentList(props: { data: CityData }): ReactElement {
     return (
         <>
             <HBox gap_s centerVertical left>
-                <Text>Buildings: 3/4</Text>
+                <Text>{"Slots: " + props.data.content.length + "/" + props.data.maxContentSlots}</Text>
             </HBox>
 
             <HBox gap_s top left wrap>
-                <ContentBox iconFilename="Woodcutter.png"/>
-                <ContentBox iconFilename="farm.png"/>
-                <ContentBox iconFilename="farm.png"/>
-                <ContentBox iconFilename="Woodcutter.png"/>
-                <ContentBox iconFilename="Woodcutter.png"/>
-                <ContentBox iconFilename="farm.png"/>
-                <ContentBox iconFilename="Woodcutter.png"/>
-                <ContentBox iconFilename="farm.png"/>
-                <ContentBox iconFilename="farm.png"/>
+                {props.data.content.map(content => (
+                    <ContentBox iconFilename={content.icon}/>
+                ))}
             </HBox>
         </>
     );
@@ -221,6 +220,3 @@ function ContentBox(props: { iconFilename: string }) {
         />
     );
 }
-
-
-
