@@ -44,35 +44,4 @@
   flex-grow:     1;
   padding-left:  @spacing-m;
   padding-right: @spacing-m;
-
-  border:        @border-inset;
-  border-radius: @border-radius-secondary;
-  box-shadow:    @shadow-inset-back;
-
-  .text {
-    position: relative;
-  }
-
-  &::after {
-    content:        "";
-    position:       absolute;
-    top:            0;
-    bottom:         0;
-    left:           0;
-    right:          0;
-    box-shadow:     @shadow-inset-front;
-    pointer-events: none;
-  }
-
-  .production_queue__progress-bar {
-    content:       "";
-    position:      absolute;
-    top:           0;
-    bottom:        0;
-    left:          0;
-    background:    @gradient-blue-primary;
-    border-radius: @border-radius-secondary;
-    box-shadow:    inset 0 0 4px rgba(0, 0, 0, 50%);
-  }
-
 }

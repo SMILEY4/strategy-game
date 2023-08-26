@@ -14,7 +14,7 @@ import {CountryData} from "../../../../models/country/countryData";
 import {CountryIdentifier} from "../../../../models/country/countryIdentifier";
 import {ProvinceEntry} from "../common/ProvinceEntry";
 import {CityEntry} from "../common/CityEntry";
-import {MockData} from "../../mockData";
+import {useCountry} from "../../../../hooks/country";
 
 
 export function useOpenCountryWindow() {
@@ -41,8 +41,7 @@ export interface CountryWindowProps {
 
 export function CountryWindow(props: CountryWindowProps): ReactElement {
 
-    const data: CountryData = MockData.getCountryData(props.countryId);
-
+    const country = useCountry(props.countryId)
     const openProvinceWindow = useOpenProvinceWindow();
     const openCityWindow = useOpenCityWindow();
 
@@ -57,11 +56,11 @@ export function CountryWindow(props: CountryWindowProps): ReactElement {
             noPadding
         >
             <VBox fillParent>
-                <CountryBanner identifier={data.identifier}/>
+                <CountryBanner identifier={country.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <CountryBaseInformation data={data}/>
+                    <CountryBaseInformation data={country}/>
                     <CountryProvincesAndCities
-                        data={data}
+                        data={country}
                         openProvinceWindow={openProvinceWindow}
                         openCityWindow={openCityWindow}
                     />

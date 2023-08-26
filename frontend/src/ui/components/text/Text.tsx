@@ -6,6 +6,7 @@ export interface TextProps {
     fillParent?: boolean,
     align?: "left" | "center" | "right"
     type?: "positive" | "negative"
+    relative?: boolean,
     className?: string,
     children?: any;
 }
@@ -16,6 +17,7 @@ export function Text(props: TextProps): ReactElement {
             className={joinClassNames([
                 "text",
                 props.fillParent ? "text--fill-parent" : null,
+                props.relative ? "text--relative" : null,
                 "text--" + (props.align || "left"),
                 props.type ? "text--" + props.type : null,
                 props.className,

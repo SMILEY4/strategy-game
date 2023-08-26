@@ -14,6 +14,7 @@ import {ProvinceData} from "../../../../models/province/provinceData";
 import {ProvinceIdentifier} from "../../../../models/province/provinceIdentifier";
 import {CityEntry} from "../common/CityEntry";
 import {MockData} from "../../mockData";
+import {useProvince} from "../../../../hooks/province";
 
 
 export function useOpenProvinceWindow() {
@@ -40,8 +41,7 @@ export interface ProvinceWindowProps {
 
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
-    const data: ProvinceData = MockData.getProvinceData(props.provinceId);
-
+    const province = useProvince(props.provinceId)
     const openCountryWindow = useOpenCountryWindow();
     const openCityWindow = useOpenCityWindow();
 
@@ -56,14 +56,14 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
             noPadding
         >
             <VBox fillParent>
-                <ProvinceBanner identifier={data.identifier}/>
+                <ProvinceBanner identifier={province.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
                     <ProvinceBaseInformation
-                        data={data}
-                        openCountry={() => openCountryWindow(data.country.id, true)}
+                        data={province}
+                        openCountry={() => openCountryWindow(province.country.id, true)}
                     />
                     <ProvinceCities
-                        data={data}
+                        data={province}
                         openCity={openCityWindow}
                     />
                 </VBox>

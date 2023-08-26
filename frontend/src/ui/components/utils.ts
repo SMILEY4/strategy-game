@@ -7,6 +7,10 @@ export function joinClassNames(classNames: (string | null | undefined)[]): strin
     }
 }
 
+/**
+ * @param value value usually between 0 and 1
+ * @param addPlus whether to add a plus in front of positive percentage values
+ */
 export function formatPercentage(value: number, addPlus: boolean): string {
     const percValue = value * 100;
     const shortValue = Math.round(percValue * 100) / 100;

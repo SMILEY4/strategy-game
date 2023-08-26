@@ -19,8 +19,9 @@ import {CityData} from "../../../../models/city/cityData";
 import {formatPercentage} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 import {ProductionQueueEntry} from "../../../../models/city/productionQueueEntry";
+import {useCancelCurrentProductionQueueEntry, useCity} from "../../../../hooks/city";
 import "./cityMenu.less";
-import {MockData} from "../../mockData";
+import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -47,8 +48,7 @@ export interface CountryWindowProps {
 
 export function CityWindow(props: CountryWindowProps): ReactElement {
 
-    const data = MockData.getCityData(props.cityId);
-
+    const city = useCity(props.cityId)
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
 
@@ -63,16 +63,16 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
             noPadding
         >
             <VBox fillParent>
-                <CityBanner identifier={data.identifier}/>
+                <CityBanner identifier={city.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
                     <CityBaseDataSection
-                        data={data}
-                        openCountry={() => openCountryWindow(data.country.id, true)}
-                        openProvince={() => openProvinceWindow(data.province.id)}
+                        data={city}
+                        openCountry={() => openCountryWindow(city.country.id, true)}
+                        openProvince={() => openProvinceWindow(city.province.id)}
                     />
-                    <CityPopulationSection data={data}/>
-                    <CityResourceSection data={data}/>
-                    <CityContentSection data={data}/>
+                    <CityPopulationSection data={city}/>
+                    <CityResourceSection data={city}/>
+                    <CityContentSection data={city}/>
                 </VBox>
             </VBox>
         </DecoratedWindow>
@@ -173,21 +173,16 @@ function CityProductionQueue(props: { data: CityData }): ReactElement {
     const entry: ProductionQueueEntry = props.data.productionQueue.length === 0
         ? {name: "-", progress: 0}
         : props.data.productionQueue[0];
-
+    const cancelCurrent = useCancelCurrentProductionQueueEntry(props.data.identifier.id)
     return (
         <HBox centerVertical left gap_s>
             <ButtonPrimary square>
                 <FiPlus/>
             </ButtonPrimary>
-            <HBox gap_xs spaceBetween centerVertical className="production_queue__progress">
-                <div
-                    className="production_queue__progress-bar"
-                    style={{right: (100 - entry.progress * 100) + "%"}}
-                />
-                <Text>{entry.name}</Text>
-                <Text>{formatPercentage(entry.progress, false)}</Text>
-            </HBox>
-            <ButtonPrimary square round small>
+            <ProgressBar progress={entry.progress} className="production_queue__progress">
+                <Text relative>{entry.name}</Text>
+            </ProgressBar>
+            <ButtonPrimary square round small onClick={cancelCurrent}>
                 <CgClose/>
             </ButtonPrimary>
         </HBox>
@@ -200,7 +195,6 @@ function CityContentList(props: { data: CityData }): ReactElement {
             <HBox gap_s centerVertical left>
                 <Text>{"Slots: " + props.data.content.length + "/" + props.data.maxContentSlots}</Text>
             </HBox>
-
             <HBox gap_s top left wrap>
                 {props.data.content.map(content => (
                     <ContentBox iconFilename={content.icon}/>
