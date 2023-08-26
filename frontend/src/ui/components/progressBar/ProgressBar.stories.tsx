@@ -16,13 +16,22 @@ const meta = {
 type Story = StoryObj<ProgressBarProps>
 export default meta;
 
-0
+0;
 export const Default: Story = {
-    render: () => (
+    args: {
+        progress: 0.7,
+    },
+    argTypes: {
+        progress: {
+            options: ["red", "green", "blue", "paper"],
+            control: {type: "range", min: 0, max: 1, step: 0.05},
+        },
+    },
+    render: (args) => (
         <DecoratedPanel red>
-        <ProgressBar progress={0.9}>
-            <Text relative>Progress</Text>
-        </ProgressBar>
+            <ProgressBar progress={args.progress}>
+                <Text relative>Progress</Text>
+            </ProgressBar>
         </DecoratedPanel>
     ),
 };

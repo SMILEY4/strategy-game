@@ -22,6 +22,7 @@ import {ProductionQueueEntry} from "../../../../models/city/productionQueueEntry
 import {useCancelCurrentProductionQueueEntry, useCity} from "../../../../hooks/city";
 import "./cityMenu.less";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
+import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -174,9 +175,10 @@ function CityProductionQueue(props: { data: CityData }): ReactElement {
         ? {name: "-", progress: 0}
         : props.data.productionQueue[0];
     const cancelCurrent = useCancelCurrentProductionQueueEntry(props.data.identifier.id)
+    const openProductionWindow = useOpenCityProductionWindow()
     return (
         <HBox centerVertical left gap_s>
-            <ButtonPrimary square>
+            <ButtonPrimary square onClick={() => openProductionWindow()}>
                 <FiPlus/>
             </ButtonPrimary>
             <ProgressBar progress={entry.progress} className="production_queue__progress">

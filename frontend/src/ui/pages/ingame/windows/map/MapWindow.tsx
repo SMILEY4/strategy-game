@@ -5,6 +5,7 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 
 export interface MapWindowProps {
     windowId: string;

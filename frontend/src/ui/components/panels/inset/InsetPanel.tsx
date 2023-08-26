@@ -4,6 +4,7 @@ import "./insetPanel.scoped.less";
 export interface InsetPanelProps {
     noPadding?: boolean,
     fillParent?: boolean,
+    hideOverflow?: boolean
     className?: string,
     children?: any;
 }
@@ -14,6 +15,7 @@ export function InsetPanel(props: InsetPanelProps) {
             "inset-panel",
             props.fillParent ? "inset-panel--fill-parent" : null,
             props.noPadding ? "inset-panel--no-padding": null,
+            props.hideOverflow ? "inset-panel--hide-overflow" : null,
             props.className,
         ])}>
             {props.children}

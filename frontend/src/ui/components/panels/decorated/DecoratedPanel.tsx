@@ -17,6 +17,7 @@ export interface DecoratedPanelProps {
     paddingSmall?: boolean,
     className?: string,
     style?: CSSProperties,
+    background?: any,
     children?: any;
     elementRef?: any,
 }
@@ -38,6 +39,7 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
             ref={props.elementRef}
         >
             <div className="background"/>
+            {props.background}
             <div className="content">
                 {props.children}
             </div>
