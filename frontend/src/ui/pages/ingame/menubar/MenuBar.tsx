@@ -9,50 +9,35 @@ import "./menubar.scoped.less";
 
 import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiMap} from "react-icons/fi";
+import {useEndTurn} from "../../../hooks/turn";
 
 export function MenuBar(): ReactElement | null {
 
     const openDevMenu = useOpenDevWindow();
     const openMapMenu = useOpenMapWindow();
     const openCountryMenu = useOpenCountryWindow();
-
-    function onEndTurn() {
-        console.log("menubar: end turn");
-    }
-
-    function onOpenDebugMenu() {
-        openDevMenu();
-    }
-
-    function onOpenMapMenu() {
-        openMapMenu();
-    }
-
-    function onOpenCountryMenu() {
-        openCountryMenu("4370345", true);
-    }
-
+    const [endTurnDisabled, endTurn] = useEndTurn()
 
     return (
         <div className="menubar">
             <div className="menubar__inner">
                 <HBox padding_xs gap_xs fillParent className="menubar__content">
 
-                    <ButtonPrimary blue round onClick={onOpenDebugMenu}>
+                    <ButtonPrimary blue round onClick={openDevMenu}>
                         <CgDebug/>
                     </ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={onOpenMapMenu}>
+                    <ButtonPrimary blue round onClick={openMapMenu}>
                         <FiMap/>
                     </ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={onOpenCountryMenu}>
+                    <ButtonPrimary blue round onClick={() => openCountryMenu("4370345", true)}>
                         <FiFlag/>
                     </ButtonPrimary>
 
                     <Spacer size="fill"/>
 
-                    <ButtonPrimary green>End Turn</ButtonPrimary>
+                    <ButtonPrimary green disabled={endTurnDisabled} onClick={endTurn}>End Turn</ButtonPrimary>
                 </HBox>
             </div>
         </div>

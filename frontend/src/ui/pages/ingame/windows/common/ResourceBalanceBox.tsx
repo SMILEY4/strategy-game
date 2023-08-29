@@ -1,59 +1,24 @@
-import React, {useState} from "react";
-import {
-    autoUpdate,
-    flip,
-    FloatingPortal,
-    shift,
-    useFloating,
-    useHover,
-    useInteractions,
-    useRole,
-} from "@floating-ui/react";
+import React from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Text} from "../../../../components/text/Text";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header4} from "../../../../components/header/Header";
 import {ResourceBalanceData} from "../../../../models/resourceBalanceData";
+import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
+import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
 import "./resourceBalanceBox.less";
 
 
 export function ResourceBalanceBox(props: { data: ResourceBalanceData }) {
-
-    const [isOpen, setIsOpen] = useState(false);
-
-    const {refs, floatingStyles, context} = useFloating({
-        open: isOpen,
-        onOpenChange: setIsOpen,
-        middleware: [flip({padding: 20}), shift()],
-        whileElementsMounted: autoUpdate,
-    });
-
-    const hover = useHover(context, {move: false});
-    const role = useRole(context, {role: "tooltip"});
-
-    const {getReferenceProps, getFloatingProps} = useInteractions([hover, role]);
-
     return (
         <>
             <InsetPanel className="resource-box">
-                <div
-                    className="resource-box__icon"
-                    style={{backgroundImage: "url('" + props.data.icon + "')"}}
-                    ref={refs.setReference}
-                    {...getReferenceProps()}
-                />
-                {isOpen && (
-                    <FloatingPortal id="root">
-                        <div
-                            ref={refs.setFloating}
-                            style={floatingStyles}
-                            className={"resource-tooltip-wrapper"}
-                            {...getFloatingProps()}
-                        >
-                            <ResourceTooltipContent data={props.data}/>
-                        </div>
-                    </FloatingPortal>
-                )}
+                <ResourceBalanceTooltip data={props.data}>
+                    <div
+                        className="resource-box__icon"
+                        style={{backgroundImage: "url('" + props.data.icon + "')"}}
+                    />
+                </ResourceBalanceTooltip>
                 <Text
                     className="resource-box__text"
                     type={getValueType(props.data.value)}
@@ -87,16 +52,22 @@ export function ResourceBalanceBox(props: { data: ResourceBalanceData }) {
 
 }
 
-
-function ResourceTooltipContent(props: { data: ResourceBalanceData }) {
+function ResourceBalanceTooltip(props: { data: ResourceBalanceData, children?: any }) {
     return (
-        <div className={"resource-tooltip"}>
-            <VBox padding_m gap_s fillParent className={"resource-tooltip_inner"}>
-                <Header4>{props.data.name}</Header4>
-                {props.data.contributions.map(contribution => (
-                    <Text type={contribution.value < 0 ? "negative" : "positive"}>{contribution.reason}</Text>
-                ))}
-            </VBox>
-        </div>
+        <TooltipContext>
+            <TooltipTrigger>
+                {props.children}
+            </TooltipTrigger>
+            <TooltipContent>
+                <TooltipPanel>
+                    <VBox padding_m gap_s fillParent>
+                        <Header4>{props.data.name}</Header4>
+                        {props.data.contributions.map(contribution => (
+                            <Text type={contribution.value < 0 ? "negative" : "positive"}>{contribution.reason}</Text>
+                        ))}
+                    </VBox>
+                </TooltipPanel>
+            </TooltipContent>
+        </TooltipContext>
     );
 }

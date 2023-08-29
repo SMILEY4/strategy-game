@@ -13,7 +13,6 @@ import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalu
 import {ProvinceData} from "../../../../models/province/provinceData";
 import {ProvinceIdentifier} from "../../../../models/province/provinceIdentifier";
 import {CityEntry} from "../common/CityEntry";
-import {MockData} from "../../mockData";
 import {useProvince} from "../../../../hooks/province";
 
 
@@ -58,11 +57,11 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
             <VBox fillParent>
                 <ProvinceBanner identifier={province.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <ProvinceBaseInformation
+                    <ProvinceBaseInformationSection
                         data={province}
                         openCountry={() => openCountryWindow(province.country.id, true)}
                     />
-                    <ProvinceCities
+                    <ProvinceCitiesSection
                         data={province}
                         openCity={openCityWindow}
                     />
@@ -82,7 +81,7 @@ function ProvinceBanner(props: { identifier: ProvinceIdentifier }): ReactElement
     );
 }
 
-function ProvinceBaseInformation(props: { data: ProvinceData, openCountry: () => void }): ReactElement {
+function ProvinceBaseInformationSection(props: { data: ProvinceData, openCountry: () => void }): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair name={"Id"} value={props.data.identifier.name}/>
@@ -91,7 +90,7 @@ function ProvinceBaseInformation(props: { data: ProvinceData, openCountry: () =>
     );
 }
 
-function ProvinceCities(props: { data: ProvinceData, openCity: (id: string) => void }): ReactElement {
+function ProvinceCitiesSection(props: { data: ProvinceData, openCity: (id: string) => void }): ReactElement {
     return (
         <>
             <Spacer size="m"/>

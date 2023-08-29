@@ -9,38 +9,39 @@ import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedP
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import "./cityProductionWindow.less";
 import {ProductionEntry} from "../../../../models/productionEntry";
 import {joinClassNames} from "../../../../components/utils";
+import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
+import "./cityProductionWindow.less";
+import {useAddProductionEntry, useAvailableProductionEntries} from "../../../../hooks/city";
+
+export function useOpenCityProductionWindow() {
+    const WINDOW_ID = "city-production";
+    const addWindow = useOpenWindow();
+    return (cityId: string) => {
+        addWindow({
+            id: WINDOW_ID,
+            className: "city-production",
+            left: 350,
+            top: 350,
+            width: 350,
+            height: 400,
+            content: <CityProductionWindow windowId={WINDOW_ID} cityId={cityId}/>,
+        });
+    };
+}
+
 
 export interface CityProductionWindowProps {
     windowId: string;
+    cityId: string;
 }
 
 export function CityProductionWindow(props: CityProductionWindowProps): ReactElement {
 
-    const entries: ProductionEntry[] = [
-        {
-            name: "Farm",
-            icon: "farm.png",
-            disabled: false
-        },
-        {
-            name: "Woodcutter",
-            icon: "Woodcutter.png",
-            disabled: false
-        },
-        {
-            name: "Farm II",
-            icon: "farm.png",
-            disabled: true
-        },
-        {
-            name: "Woodcutter II",
-            icon: "Woodcutter.png",
-            disabled: true
-        },
-    ];
+    const entries = useAvailableProductionEntries(props.cityId);
+    const addEntry = useAddProductionEntry(props.cityId);
+
 
     return (
         <DecoratedWindow
@@ -58,7 +59,7 @@ export function CityProductionWindow(props: CityProductionWindowProps): ReactEle
                 <InsetPanel fillParent hideOverflow noPadding>
                     <VBox top stretch gap_xs padding_s scrollable fillParent>
                         {entries.map(entry => (
-                            <ConstructionEntry entry={entry}/>
+                            <ConstructionEntry entry={entry} onAdd={() => addEntry(entry)}/>
                         ))}
                     </VBox>
                 </InsetPanel>
@@ -68,43 +69,30 @@ export function CityProductionWindow(props: CityProductionWindowProps): ReactEle
 }
 
 
-function ConstructionEntry(props: { entry: ProductionEntry }) {
+function ConstructionEntry(props: { entry: ProductionEntry, onAdd: () => undefined }) {
     return (
         <DecoratedPanel
             className={joinClassNames([
                 "production-entry",
                 props.entry.disabled ? "production-entry--disabled" : null,
             ])}
-            simpleBorder
-            paddingSmall
-            blue
             background={
                 <div
                     className={"construction-entry-background"}
                     style={{backgroundImage: "url('/icons/buildings/" + props.entry.icon + "')"}}
                 />
             }
+            simpleBorder paddingSmall blue
         >
             <HBox centerVertical spaceBetween>
-                <Text>{props.entry.name}</Text>
-                <ButtonPrimary blue small disabled={props.entry.disabled}>Add</ButtonPrimary>
+                <BuildingInfoTooltip>
+                    <Text>{props.entry.name}</Text>
+                </BuildingInfoTooltip>
+                <BuildingInfoTooltip>
+                    <ButtonPrimary blue small disabled={props.entry.disabled} onClick={props.onAdd}>Add</ButtonPrimary>
+                </BuildingInfoTooltip>
             </HBox>
         </DecoratedPanel>
     );
 }
 
-export function useOpenCityProductionWindow() {
-    const WINDOW_ID = "city-production";
-    const addWindow = useOpenWindow();
-    return () => {
-        addWindow({
-            id: WINDOW_ID,
-            className: "city-production",
-            left: 350,
-            top: 350,
-            width: 350,
-            height: 400,
-            content: <CityProductionWindow windowId={WINDOW_ID}/>,
-        });
-    };
-}

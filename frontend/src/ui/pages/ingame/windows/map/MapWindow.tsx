@@ -5,7 +5,31 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {
+    useMapModeCities,
+    useMapModeCountries,
+    useMapModeDefault,
+    useMapModeProvinces,
+    useMapModeResources,
+    useMapModeTerrain,
+} from "../../../../hooks/mapModes";
+
+
+export function useOpenMapWindow() {
+    const WINDOW_ID = "menubar-window";
+    const addWindow = useOpenWindow();
+    return () => {
+        addWindow({
+            id: WINDOW_ID,
+            className: "map-window",
+            left: 75,
+            top: 60,
+            width: 350,
+            height: 400,
+            content: <MapWindow windowId={WINDOW_ID}/>,
+        });
+    };
+}
 
 export interface MapWindowProps {
     windowId: string;
@@ -13,14 +37,12 @@ export interface MapWindowProps {
 
 export function MapWindow(props: MapWindowProps): ReactElement {
 
-    const {
-        setDefault,
-        setCountries,
-        setProvinces,
-        setCities,
-        setTerrain,
-        setResources,
-    } = useSetMapModes();
+    const setDefault = useMapModeDefault();
+    const setCountries = useMapModeCountries();
+    const setProvinces = useMapModeProvinces();
+    const setCities = useMapModeCities();
+    const setTerrain = useMapModeTerrain();
+    const setResources = useMapModeResources();
 
     return (
         <DecoratedWindow
@@ -46,31 +68,3 @@ export function MapWindow(props: MapWindowProps): ReactElement {
     );
 }
 
-
-export function useOpenMapWindow() {
-    const WINDOW_ID = "menubar-window";
-    const addWindow = useOpenWindow();
-    return () => {
-        addWindow({
-            id: WINDOW_ID,
-            className: "map-window",
-            left: 75,
-            top: 60,
-            width: 350,
-            height: 400,
-            content: <MapWindow windowId={WINDOW_ID}/>,
-        });
-    };
-}
-
-// TODO
-function useSetMapModes() {
-    return {
-        setDefault: () => alert("todo: set map mode"),
-        setCountries: () => alert("todo: set map mode"),
-        setProvinces: () => alert("todo: set map mode"),
-        setCities: () => alert("todo: set map mode"),
-        setTerrain: () => alert("todo: set map mode"),
-        setResources: () => alert("todo: set map mode"),
-    };
-}

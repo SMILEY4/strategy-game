@@ -23,6 +23,7 @@ import {useCancelCurrentProductionQueueEntry, useCity} from "../../../../hooks/c
 import "./cityMenu.less";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
+import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -49,7 +50,7 @@ export interface CountryWindowProps {
 
 export function CityWindow(props: CountryWindowProps): ReactElement {
 
-    const city = useCity(props.cityId)
+    const city = useCity(props.cityId);
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
 
@@ -174,8 +175,8 @@ function CityProductionQueue(props: { data: CityData }): ReactElement {
     const entry: ProductionQueueEntry = props.data.productionQueue.length === 0
         ? {name: "-", progress: 0}
         : props.data.productionQueue[0];
-    const cancelCurrent = useCancelCurrentProductionQueueEntry(props.data.identifier.id)
-    const openProductionWindow = useOpenCityProductionWindow()
+    const cancelCurrent = useCancelCurrentProductionQueueEntry(props.data.identifier.id);
+    const openProductionWindow = useOpenCityProductionWindow();
     return (
         <HBox centerVertical left gap_s>
             <ButtonPrimary square onClick={() => openProductionWindow()}>
@@ -208,11 +209,13 @@ function CityContentList(props: { data: CityData }): ReactElement {
 
 function ContentBox(props: { iconFilename: string }) {
     return (
-        <div
-            className="city-content-box"
-            style={{
-                backgroundImage: "url('/icons/buildings/" + props.iconFilename + "')",
-            }}
-        />
+        <BuildingInfoTooltip>
+            <div
+                className="city-content-box"
+                style={{
+                    backgroundImage: "url('/icons/buildings/" + props.iconFilename + "')",
+                }}
+            />
+        </BuildingInfoTooltip>
     );
 }

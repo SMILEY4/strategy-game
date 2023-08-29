@@ -7,6 +7,23 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
+import {useWebGlContext} from "../../../../hooks/debug";
+
+export function useOpenDevWindow() {
+    const WINDOW_ID = "menubar-window";
+    const addWindow = useOpenWindow();
+    return () => {
+        addWindow({
+            id: WINDOW_ID,
+            className: "dev-window",
+            left: 25,
+            top: 60,
+            width: 350,
+            height: 310,
+            content: <DevWindow windowId={WINDOW_ID}/>,
+        });
+    };
+}
 
 export interface DevWindowProps {
     windowId: string;
@@ -38,27 +55,3 @@ export function DevWindow(props: DevWindowProps): ReactElement {
     );
 }
 
-
-export function useOpenDevWindow() {
-    const WINDOW_ID = "menubar-window";
-    const addWindow = useOpenWindow();
-    return () => {
-        addWindow({
-            id: WINDOW_ID,
-            className: "dev-window",
-            left: 25,
-            top: 60,
-            width: 350,
-            height: 310,
-            content: <DevWindow windowId={WINDOW_ID}/>,
-        });
-    };
-}
-
-
-function useWebGlContext() {
-    return [
-        () => AppConfig.debugLooseWebglContext(),
-        () => AppConfig.debugRestoreWebglContext(),
-    ];
-}

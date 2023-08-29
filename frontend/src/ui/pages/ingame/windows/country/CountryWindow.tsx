@@ -41,7 +41,7 @@ export interface CountryWindowProps {
 
 export function CountryWindow(props: CountryWindowProps): ReactElement {
 
-    const country = useCountry(props.countryId)
+    const country = useCountry(props.countryId);
     const openProvinceWindow = useOpenProvinceWindow();
     const openCityWindow = useOpenCityWindow();
 
@@ -104,26 +104,22 @@ function CountryProvincesAndCities(props: {
 
             <InsetPanel>
                 <VBox fillParent gap_s top stretch>
-                    {props.data.provinces.map(province => {
-                        return (
-                            <ProvinceEntry
-                                key={province.identifier.id}
-                                data={province}
-                                onOpenProvince={() => props.openProvinceWindow(province.identifier.id)}
-                                onOpenCity={cityId => props.openCityWindow(cityId)}
-                            >
-                                {province.cities.map(city => {
-                                    return (
-                                        <CityEntry
-                                            key={city.identifier.id}
-                                            data={city}
-                                            onOpen={() => props.openCityWindow(city.identifier.id)}
-                                        />
-                                    )
-                                })}
-                            </ProvinceEntry>
-                        );
-                    })}
+                    {props.data.provinces.map(province => (
+                        <ProvinceEntry
+                            key={province.identifier.id}
+                            data={province}
+                            onOpenProvince={() => props.openProvinceWindow(province.identifier.id)}
+                            onOpenCity={cityId => props.openCityWindow(cityId)}
+                        >
+                            {province.cities.map(city => (
+                                <CityEntry
+                                    key={city.identifier.id}
+                                    data={city}
+                                    onOpen={() => props.openCityWindow(city.identifier.id)}
+                                />
+                            ))}
+                        </ProvinceEntry>
+                    ))}
                 </VBox>
             </InsetPanel>
         </>
