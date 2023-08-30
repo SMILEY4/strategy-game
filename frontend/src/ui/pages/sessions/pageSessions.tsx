@@ -8,8 +8,8 @@ import {HBox} from "../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
-import "./pageSessions.less";
 import {Spacer} from "../../components/spacer/Spacer";
+import "./pageSessions.less";
 
 
 export function PageSessions(): ReactElement {

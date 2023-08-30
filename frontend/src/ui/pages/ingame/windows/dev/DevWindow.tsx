@@ -1,7 +1,6 @@
 import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
-import {AppConfig} from "../../../../../main";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
@@ -18,8 +17,8 @@ export function useOpenDevWindow() {
             className: "dev-window",
             left: 25,
             top: 60,
-            width: 350,
-            height: 310,
+            bottom: 25,
+            width: 360,
             content: <DevWindow windowId={WINDOW_ID}/>,
         });
     };

@@ -27,17 +27,17 @@ import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
-    return (cityId: string) => {
+    return (cityId: string, keepPosition: boolean) => {
         const WINDOW_ID = "menubar-window";
         addWindow({
             id: WINDOW_ID,
             className: "city-window",
-            left: 125,
+            left: 25,
             top: 60,
+            bottom: 25,
             width: 360,
-            height: 400,
             content: <CityWindow windowId={WINDOW_ID} cityId={cityId}/>,
-        });
+        }, keepPosition);
     };
 }
 
@@ -70,7 +70,7 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
                     <CityBaseDataSection
                         data={city}
                         openCountry={() => openCountryWindow(city.country.id, true)}
-                        openProvince={() => openProvinceWindow(city.province.id)}
+                        openProvince={() => openProvinceWindow(city.province.id, true)}
                     />
                     <CityPopulationSection data={city}/>
                     <CityResourceSection data={city}/>
@@ -179,7 +179,7 @@ function CityProductionQueue(props: { data: CityData }): ReactElement {
     const openProductionWindow = useOpenCityProductionWindow();
     return (
         <HBox centerVertical left gap_s>
-            <ButtonPrimary square onClick={() => openProductionWindow()}>
+            <ButtonPrimary square onClick={() => openProductionWindow(props.data.identifier.id)}>
                 <FiPlus/>
             </ButtonPrimary>
             <ProgressBar progress={entry.progress} className="production_queue__progress">

@@ -19,17 +19,17 @@ import {useCountry} from "../../../../hooks/country";
 
 export function useOpenCountryWindow() {
     const addWindow = useOpenWindow();
-    return (countryId: string, isPlayerCountry: boolean) => {
-        const WINDOW_ID = isPlayerCountry ? "menubar-window" : "country-window." + countryId;
+    return (countryId: string, keepPosition: boolean) => {
+        const WINDOW_ID = "menubar-window";
         addWindow({
             id: WINDOW_ID,
             className: "country-window",
-            left: isPlayerCountry ? 125 : 30,
+            left: 25,
             top: 60,
+            bottom: 25,
             width: 360,
-            height: 400,
             content: <CountryWindow windowId={WINDOW_ID} countryId={countryId}/>,
-        });
+        }, keepPosition);
     };
 }
 
@@ -61,8 +61,8 @@ export function CountryWindow(props: CountryWindowProps): ReactElement {
                     <CountryBaseInformation data={country}/>
                     <CountryProvincesAndCities
                         data={country}
-                        openProvinceWindow={openProvinceWindow}
-                        openCityWindow={openCityWindow}
+                        openProvinceWindow={(id) => openProvinceWindow(id, true)}
+                        openCityWindow={(id) => openCityWindow(id, true)}
                     />
                 </VBox>
             </VBox>

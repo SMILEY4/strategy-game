@@ -1,6 +1,4 @@
-import React, {ReactElement, useState} from "react";
-import * as user from "../../hooks/user";
-import {useNavigate} from "react-router-dom";
+import React, {ReactElement} from "react";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
 import {Header1} from "../../components/header/Header";
@@ -9,20 +7,21 @@ import {TextField} from "../../components/textfield/TextField";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {Spacer} from "../../components/spacer/Spacer";
+import {useLogin} from "../../hooks/login";
+import {useGotoSignup} from "../../hooks/navigate";
 
 
 export function PageLogin(): ReactElement {
 
     const {
         email,
-        password,
-        error,
         setEmail,
+        password,
         setPassword,
-        setError,
-    } = useLoginData();
-    const login = useLogin(email, password, setError);
-    const signUp = useSignUp();
+        login,
+        error,
+    } = useLogin();
+    const gotoSignup = useGotoSignup();
 
     return (
         <BackgroundImagePanel fillParent centerContent image="/images/image_1.png">
@@ -50,7 +49,7 @@ export function PageLogin(): ReactElement {
                     <Spacer size="s"/>
 
                     <HBox gap_s centerVertical right>
-                        <ButtonPrimary blue onClick={signUp}>
+                        <ButtonPrimary blue onClick={gotoSignup}>
                             Sign-Up
                         </ButtonPrimary>
                         <ButtonPrimary green onClick={login}>
@@ -62,49 +61,5 @@ export function PageLogin(): ReactElement {
                 </VBox>
             </DecoratedPanel>
         </BackgroundImagePanel>
-    )
-}
-
-
-function useLoginData() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
-    return {
-        email: email,
-        setEmail: (value: string) => {
-            setEmail(value);
-            setError(null);
-        },
-        password: password,
-        setPassword: (value: string) => {
-            setPassword(value);
-            setError(null);
-        },
-        error: error,
-        setError: setError,
-    };
-}
-
-function useLogin(email: string, password: string, setError: (error: string) => void) {
-    const login = user.useLogin();
-    const loginRedirect = user.useLoginPostRedirect("/sessions");
-    return () => {
-        if (!email) {
-            setError("Email address is missing!");
-        }
-        if (!password) {
-            setError("Password is missing!");
-        }
-        login(email, password)
-            .then(() => loginRedirect())
-            .catch(e => setError("Error: " + e));
-    };
-}
-
-function useSignUp() {
-    const navigate = useNavigate();
-    return () => {
-        navigate("/signup");
-    };
+    );
 }

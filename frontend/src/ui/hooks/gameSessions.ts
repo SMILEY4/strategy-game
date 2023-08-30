@@ -1,7 +1,7 @@
 import {AppConfig} from "../../main";
 import {UnauthorizedError} from "../../core/models/errors/UnauthorizedError";
-import {useHandleUnauthorized} from "./user";
 import {useNavigate} from "react-router-dom";
+import {useHandleUnauthorized} from "./authentication";
 
 export function useLoadGameSessions() {
     const action = AppConfig.di.get(AppConfig.DIQ.GameListAction);

@@ -1,23 +1,23 @@
 export function useMapModeDefault() {
-    return () => undefined
+    return () => undefined // todo
 }
 
 export function useMapModeCountries() {
-    return () => undefined
+    return () => undefined // todo
 }
 
 export function useMapModeProvinces() {
-    return () => undefined
+    return () => undefined // todo
 }
 
 export function useMapModeCities() {
-    return () => undefined
+    return () => undefined // todo
 }
 
 export function useMapModeTerrain() {
-    return () => undefined
+    return () => undefined // todo
 }
 
 export function useMapModeResources() {
-    return () => undefined
+    return () => undefined // todo
 }

@@ -1,6 +1,4 @@
-import React, {ReactElement, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import * as user from "../../hooks/user";
+import React, {ReactElement} from "react";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
@@ -9,22 +7,23 @@ import {TextField} from "../../components/textfield/TextField";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../components/spacer/Spacer";
+import {useSignup} from "../../hooks/signup";
+import {useGotoLogin} from "../../hooks/navigate";
 
 
 export function PageSignUp(): ReactElement {
 
     const {
         username,
-        email,
-        password,
-        error,
         setUsername,
+        email,
         setEmail,
+        password,
         setPassword,
-        setError,
-    } = useSignUpData();
-    const signUp = useSignUp(email, password, username, setError);
-    const login = useLogin();
+        signUp,
+        error,
+    } = useSignup();
+    const gotoLogin = useGotoLogin();
 
     return (
         <BackgroundImagePanel fillParent centerContent image="/images/image_3.bmp">
@@ -59,7 +58,7 @@ export function PageSignUp(): ReactElement {
                     <Spacer size="s"/>
 
                     <HBox gap_s centerVertical right>
-                        <ButtonPrimary blue onClick={login}>
+                        <ButtonPrimary blue onClick={gotoLogin}>
                             Login
                         </ButtonPrimary>
                         <ButtonPrimary green onClick={signUp}>
@@ -67,63 +66,8 @@ export function PageSignUp(): ReactElement {
                         </ButtonPrimary>
                     </HBox>
 
-
                 </VBox>
             </DecoratedPanel>
         </BackgroundImagePanel>
-    )
-}
-
-function useSignUpData() {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
-    return {
-        username: username,
-        email: email,
-        password: password,
-        error: error,
-        setUsername: (value: string) => {
-            setUsername(value);
-            setError(null);
-        },
-        setEmail: (value: string) => {
-            setEmail(value);
-            setError(null);
-        },
-        setPassword: (value: string) => {
-            setPassword(value);
-            setError(null);
-        },
-        setError: setError,
-    };
-
-}
-
-
-function useSignUp(email: string, password: string, username: string, setError: (error: string) => void) {
-    const signup = user.useSignup();
-    const navigate = useNavigate();
-    return () => {
-        if (!email) {
-            setError("Email address is missing!");
-        }
-        if (!password) {
-            setError("Password is missing!");
-        }
-        if (!username) {
-            setError("Username is missing!");
-        }
-        return signup(email, password, username)
-            .then(() => navigate("/signup/confirm"))
-            .catch(e => setError("Error: " + e));
-    };
-}
-
-function useLogin() {
-    const navigate = useNavigate();
-    return () => {
-        navigate("/login");
-    };
+    );
 }

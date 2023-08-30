@@ -18,17 +18,17 @@ import {useProvince} from "../../../../hooks/province";
 
 export function useOpenProvinceWindow() {
     const addWindow = useOpenWindow();
-    return (provinceId: string) => {
+    return (provinceId: string, keepPosition: boolean) => {
         const WINDOW_ID = "menubar-window";
         addWindow({
             id: WINDOW_ID,
             className: "province-window",
-            left: 125,
+            left: 25,
             top: 60,
+            bottom: 25,
             width: 360,
-            height: 400,
             content: <ProvinceWindow windowId={WINDOW_ID} provinceId={provinceId}/>,
-        });
+        }, keepPosition);
     };
 }
 
@@ -63,7 +63,7 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
                     />
                     <ProvinceCitiesSection
                         data={province}
-                        openCity={openCityWindow}
+                        openCity={(id) => openCityWindow(id, true)}
                     />
                 </VBox>
             </VBox>

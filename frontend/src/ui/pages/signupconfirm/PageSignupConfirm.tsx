@@ -1,5 +1,4 @@
 import React, {ReactElement} from "react";
-import {useNavigate} from "react-router-dom";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
@@ -8,11 +7,12 @@ import {HBox} from "../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {Text} from "../../components/text/Text";
 import {Spacer} from "../../components/spacer/Spacer";
+import {useGotoLogin} from "../../hooks/navigate";
 
 
 export function PageSignupConfirm(): ReactElement {
 
-    const navigate = useNavigate();
+    const gotoLogin = useGotoLogin();
 
     return (
         <BackgroundImagePanel fillParent centerContent image="/images/image_2.bmp">
@@ -29,7 +29,7 @@ export function PageSignupConfirm(): ReactElement {
                     <Spacer size="s"/>
 
                     <HBox centerVertical right>
-                        <ButtonPrimary green onClick={login}>
+                        <ButtonPrimary green onClick={gotoLogin}>
                             Return to Login
                         </ButtonPrimary>
                     </HBox>
@@ -37,9 +37,6 @@ export function PageSignupConfirm(): ReactElement {
                 </VBox>
             </DecoratedPanel>
         </BackgroundImagePanel>
-    )
+    );
 
-    function login() {
-        navigate("/login")
-    }
 }

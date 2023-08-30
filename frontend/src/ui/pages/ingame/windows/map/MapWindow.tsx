@@ -22,10 +22,10 @@ export function useOpenMapWindow() {
         addWindow({
             id: WINDOW_ID,
             className: "map-window",
-            left: 75,
+            left: 25,
             top: 60,
-            width: 350,
-            height: 400,
+            bottom: 25,
+            width: 360,
             content: <MapWindow windowId={WINDOW_ID}/>,
         });
     };

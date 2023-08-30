@@ -23,7 +23,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
         resizerProps,
         refWindow,
         closeWindow,
-    } = useWindow(props.windowId, {minWidth: 100, minHeight: 100});
+    } = useWindow(props.windowId);
 
     function handleClose() {
         props.onClose && props.onClose();
@@ -48,7 +48,6 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
                     <CgClose/>
                 </ButtonPrimary>
             )}
-
 
             <div className="decorated-window__content">
                 {props.children}
