@@ -1,14 +1,12 @@
-import React, {ReactElement} from "react";
+import React, {ReactElement, useEffect} from "react";
 import {useQuery} from "../../components/headless/useQuery";
-import {AppConfig} from "../../../main";
-import {GameState} from "../../../core/models/gameState";
 import {Canvas} from "./canvas/Canvas";
 import {MenuBar} from "./menubar/MenuBar";
 import {WindowStack} from "../../components/windows/stack/WindowStack";
-import {GameStore} from "../../../external/state/game/gameStore";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../components/text/Text";
+import {useConnectGameSession, useGameState} from "../../hooks/gamesession/gameSessions";
 import "./pageInGame.scoped.less";
 
 const USE_DUMMY_CANVAS = true;
@@ -16,18 +14,18 @@ const USE_DUMMY_CANVAS = true;
 export function PageInGame(): ReactElement {
     const currentState = useGameState();
     const loadGame = useLoadGame();
-    //
-    // useEffect(() => {
-    //     loadGame()
-    // }, [])
-    //
-    // if (currentState === GameState.LOADING) {
-    //     return <GameLoading/>;
-    // } else if (currentState === GameState.PLAYING || currentState === GameState.SUBMITTED) {
-    return <GamePlaying/>;
-    // } else {
-    //     return <GameError state={currentState}/>;
-    // }
+
+    useEffect(() => {
+        loadGame();
+    }, []);
+
+    if (currentState === "loading") {
+        return <GameLoading/>;
+    } else if (currentState === "playing") {
+        return <GamePlaying/>;
+    } else {
+        return <GameError/>;
+    }
 }
 
 function GameLoading(): ReactElement {
@@ -40,12 +38,11 @@ function GameLoading(): ReactElement {
     );
 }
 
-function GameError(props: { state: GameState }): ReactElement {
+function GameError(): ReactElement {
     return (
         <BackgroundPanel fillParent centerContent>
             <DecoratedPanel>
                 <Text>An unexpected error occurred.</Text>
-                <Text>{"(" + props.state + ")"}</Text>
             </DecoratedPanel>
         </BackgroundPanel>
     );
@@ -67,14 +64,10 @@ function GamePlaying(): ReactElement {
 
 
 function useLoadGame() {
-    const actionConnect = AppConfig.di.get(AppConfig.DIQ.GameConnectAction);
+    const connect = useConnectGameSession();
     const queryParams = useQuery();
     return () => {
         const paramGameId = queryParams.get("id")!!;
-        actionConnect.perform(paramGameId);
+        connect(paramGameId);
     };
-}
-
-function useGameState() {
-    return GameStore.useState(state => state.currentState);
 }

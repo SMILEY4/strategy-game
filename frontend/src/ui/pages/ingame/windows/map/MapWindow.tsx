@@ -12,7 +12,7 @@ import {
     useMapModeProvinces,
     useMapModeResources,
     useMapModeTerrain,
-} from "../../../../hooks/mapModes";
+} from "../../../../hooks/game/mapModes";
 
 
 export function useOpenMapWindow() {

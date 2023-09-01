@@ -6,6 +6,7 @@ export interface TextProps {
     fillParent?: boolean,
     align?: "left" | "center" | "right"
     type?: "positive" | "negative"
+    noShadow?: boolean,
     relative?: boolean,
     className?: string,
     children?: any;
@@ -18,6 +19,7 @@ export function Text(props: TextProps): ReactElement {
                 "text",
                 props.fillParent ? "text--fill-parent" : null,
                 props.relative ? "text--relative" : null,
+                props.noShadow ? "text--no-shadow" : null,
                 "text--" + (props.align || "left"),
                 props.type ? "text--" + props.type : null,
                 props.className,

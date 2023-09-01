@@ -5,17 +5,23 @@ import {useOpenCountryWindow} from "../windows/country/CountryWindow";
 import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../components/layout/hbox/HBox";
 import {Spacer} from "../../../components/spacer/Spacer";
-import "./menubar.scoped.less";
-
 import {CgDebug} from "react-icons/cg";
-import {FiFlag, FiMap} from "react-icons/fi";
-import {useEndTurn} from "../../../hooks/turn";
+import {FiFlag, FiHexagon, FiMap} from "react-icons/fi";
+import {useEndTurn} from "../../../hooks/game/turn";
+import {usePlayerCountry} from "../../../hooks/game/country";
+import {useOpenCommandLogWindow} from "../windows/commandLog/CommandLogWindow";
+import "./menubar.scoped.less";
+import {PiScrollBold} from "react-icons/pi";
+import {useOpenTileWindow} from "../windows/tile/TileWindow";
 
-export function MenuBar(): ReactElement | null {
+export function MenuBar(): ReactElement {
 
+    const country = usePlayerCountry()
     const openDevMenu = useOpenDevWindow();
     const openMapMenu = useOpenMapWindow();
     const openCountryMenu = useOpenCountryWindow();
+    const openCommandLogMenu = useOpenCommandLogWindow();
+    const openTileMenu = useOpenTileWindow();
     const [endTurnDisabled, endTurn] = useEndTurn()
 
     return (
@@ -31,8 +37,17 @@ export function MenuBar(): ReactElement | null {
                         <FiMap/>
                     </ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={() => openCountryMenu("4370345", true)}>
+                    <ButtonPrimary blue round onClick={() => openCountryMenu(country.identifier.id, true)}>
                         <FiFlag/>
+                    </ButtonPrimary>
+
+                    <ButtonPrimary blue round onClick={openCommandLogMenu}>
+                        <PiScrollBold/>
+                    </ButtonPrimary>
+
+                    {/*TODO: temporary, until tiles are clickable*/}
+                    <ButtonPrimary blue round onClick={() => openTileMenu({id: "12345", q: -32, r: 16})}>
+                        <FiHexagon/>
                     </ButtonPrimary>
 
                     <Spacer size="fill"/>

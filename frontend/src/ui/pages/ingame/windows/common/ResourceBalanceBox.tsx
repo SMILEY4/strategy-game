@@ -3,13 +3,13 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Text} from "../../../../components/text/Text";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header4} from "../../../../components/header/Header";
-import {ResourceBalanceData} from "../../../../models/resourceBalanceData";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
 import "./resourceBalanceBox.less";
+import {ResourceBalance} from "../../../../../models/resource";
 
 
-export function ResourceBalanceBox(props: { data: ResourceBalanceData }) {
+export function ResourceBalanceBox(props: { data: ResourceBalance }) {
     return (
         <>
             <InsetPanel className="resource-box">
@@ -52,7 +52,7 @@ export function ResourceBalanceBox(props: { data: ResourceBalanceData }) {
 
 }
 
-function ResourceBalanceTooltip(props: { data: ResourceBalanceData, children?: any }) {
+function ResourceBalanceTooltip(props: { data: ResourceBalance, children?: any }) {
     return (
         <TooltipContext>
             <TooltipTrigger>

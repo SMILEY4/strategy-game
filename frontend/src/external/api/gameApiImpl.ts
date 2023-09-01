@@ -1,5 +1,5 @@
-import {HttpClient} from "./clients/httpClient";
-import {WebsocketClient} from "./clients/websocketClient";
+import {HttpClient} from "../../shared/httpClient";
+import {WebsocketClient} from "../../shared/websocketClient";
 import {MessageHandler} from "./messageHandler";
 import {GameApi} from "../../core/required/gameApi";
 import {GameConfig} from "../../core/models/gameConfig";

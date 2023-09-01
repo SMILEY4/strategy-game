@@ -1,11 +1,11 @@
-import {ReducedCityData} from "../../../../models/city/reducedCityData";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
-import {RiVipCrown2Fill, RiVipCrown2Line} from "react-icons/all";
+import {RiVipCrown2Fill, RiVipCrown2Line} from "react-icons/ri";
 import React from "react";
+import {CityReduced} from "../../../../../models/city";
 
-export function CityEntry(props: { data: ReducedCityData, onOpen: () => void }) {
+export function CityEntry(props: { data: CityReduced, onOpen: () => void }) {
     return (
         <DecoratedPanel paddingSmall blue simpleBorder>
             <HBox centerVertical gap_s>

@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {useGotoLoginRedirect} from "../../hooks/navigate";
-import {useAuthenticated} from "../../hooks/authentication";
+import {useAuthenticated} from "../../hooks/user/authentication";
 
 export function RequireAuth(props: { loginUrl: string, children: any }) {
 

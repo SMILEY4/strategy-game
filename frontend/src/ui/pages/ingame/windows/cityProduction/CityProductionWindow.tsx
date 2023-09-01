@@ -9,11 +9,11 @@ import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedP
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {ProductionEntry} from "../../../../models/productionEntry";
 import {joinClassNames} from "../../../../components/utils";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import "./cityProductionWindow.less";
-import {useAddProductionEntry, useAvailableProductionEntries} from "../../../../hooks/city";
+import {useAddProductionEntry, useAvailableProductionEntries} from "../../../../hooks/game/city";
+import {ProductionEntry} from "../../../../../models/city";
 
 export function useOpenCityProductionWindow() {
     const WINDOW_ID = "city-production";
@@ -69,7 +69,7 @@ export function CityProductionWindow(props: CityProductionWindowProps): ReactEle
 }
 
 
-function ConstructionEntry(props: { entry: ProductionEntry, onAdd: () => undefined }) {
+function ConstructionEntry(props: { entry: ProductionEntry, onAdd: () => void }) {
     return (
         <DecoratedPanel
             className={joinClassNames([

@@ -13,17 +13,17 @@ import {useOpenProvinceWindow} from "../province/ProvinceWindow";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {CgClose, FiPlus} from "react-icons/all";
-import {CityIdentifier} from "../../../../models/city/cityIdentifier";
-import {CityData} from "../../../../models/city/cityData";
+import {FiPlus} from "react-icons/fi";
+import {CgClose} from "react-icons/cg";
 import {formatPercentage} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
-import {ProductionQueueEntry} from "../../../../models/city/productionQueueEntry";
-import {useCancelCurrentProductionQueueEntry, useCity} from "../../../../hooks/city";
-import "./cityMenu.less";
+import {useCancelCurrentProductionQueueEntry, useCity, useUpgradeSettlementTier} from "../../../../hooks/game/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
+import {City, CityIdentifier, ProductionQueueEntry} from "../../../../../models/city";
+import "./cityMenu.less";
+import {useOpenTileWindow} from "../tile/TileWindow";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -53,6 +53,8 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
     const city = useCity(props.cityId);
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
+    const openTileWindow = useOpenTileWindow();
+    const upgradeSettlementTier = useUpgradeSettlementTier();
 
     return (
         <DecoratedWindow
@@ -66,12 +68,16 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
         >
             <VBox fillParent>
                 <CityBanner identifier={city.identifier}/>
-                <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
+                <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
                     <CityBaseDataSection
                         data={city}
                         openCountry={() => openCountryWindow(city.country.id, true)}
                         openProvince={() => openProvinceWindow(city.province.id, true)}
+                        openTile={() => openTileWindow(city.tile)}
                     />
+                    <ButtonPrimary blue onClick={() => upgradeSettlementTier(city.identifier)}>
+                        Upgrade Tier
+                    </ButtonPrimary>
                     <CityPopulationSection data={city}/>
                     <CityResourceSection data={city}/>
                     <CityContentSection data={city}/>
@@ -91,9 +97,10 @@ function CityBanner(props: { identifier: CityIdentifier }): ReactElement {
 }
 
 function CityBaseDataSection(props: {
-    data: CityData,
+    data: City,
     openCountry: () => void,
-    openProvince: () => void
+    openProvince: () => void,
+    openTile: () => void,
 }): ReactElement {
     return (
         <InsetPanel>
@@ -111,12 +118,17 @@ function CityBaseDataSection(props: {
                 value={props.data.province.name}
                 onClick={props.openProvince}
             />
+            <KeyLinkValuePair
+                name={"Tile"}
+                value={props.data.tile.q + ", " + props.data.tile.r}
+                onClick={props.openTile}
+            />
         </InsetPanel>
     );
 }
 
 
-function CityPopulationSection(props: { data: CityData }): ReactElement {
+function CityPopulationSection(props: { data: City }): ReactElement {
     return (
         <>
             <Spacer size="m"/>
@@ -137,7 +149,7 @@ function CityPopulationSection(props: { data: CityData }): ReactElement {
 }
 
 
-function CityResourceSection(props: { data: CityData }): ReactElement {
+function CityResourceSection(props: { data: City }): ReactElement {
     return (
         <>
             <Spacer size="m"/>
@@ -154,7 +166,7 @@ function CityResourceSection(props: { data: CityData }): ReactElement {
 }
 
 
-function CityContentSection(props: { data: CityData }): ReactElement {
+function CityContentSection(props: { data: City }): ReactElement {
     return (
         <>
             <Spacer size="m"/>
@@ -171,7 +183,7 @@ function CityContentSection(props: { data: CityData }): ReactElement {
 }
 
 
-function CityProductionQueue(props: { data: CityData }): ReactElement {
+function CityProductionQueue(props: { data: City }): ReactElement {
     const entry: ProductionQueueEntry = props.data.productionQueue.length === 0
         ? {name: "-", progress: 0}
         : props.data.productionQueue[0];
@@ -192,7 +204,7 @@ function CityProductionQueue(props: { data: CityData }): ReactElement {
     );
 }
 
-function CityContentList(props: { data: CityData }): ReactElement {
+function CityContentList(props: { data: City }): ReactElement {
     return (
         <>
             <HBox gap_s centerVertical left>

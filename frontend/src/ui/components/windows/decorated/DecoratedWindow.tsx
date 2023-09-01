@@ -3,7 +3,7 @@ import {useWindow} from "../../headless/useWindowData";
 import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
 import {joinClassNames} from "../../utils";
 import {ButtonPrimary} from "../../button/primary/ButtonPrimary";
-import {CgClose} from "react-icons/all";
+import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less"
 
 export interface DecoratedWindowProps {

@@ -1,5 +1,5 @@
 import {UserApi} from "../../core/required/userApi";
-import {HttpClient} from "./clients/httpClient";
+import {HttpClient} from "../../shared/httpClient";
 import {AuthProvider} from "./clients/authProvider";
 import {AuthData} from "./models/authData";
 

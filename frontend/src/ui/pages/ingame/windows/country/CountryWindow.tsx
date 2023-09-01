@@ -10,11 +10,10 @@ import {Banner} from "../../../../components/banner/Banner";
 import {useOpenProvinceWindow} from "../province/ProvinceWindow";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {CountryData} from "../../../../models/country/countryData";
-import {CountryIdentifier} from "../../../../models/country/countryIdentifier";
 import {ProvinceEntry} from "../common/ProvinceEntry";
 import {CityEntry} from "../common/CityEntry";
-import {useCountry} from "../../../../hooks/country";
+import {useCountry} from "../../../../hooks/game/country";
+import {Country, CountryIdentifier} from "../../../../../models/country";
 
 
 export function useOpenCountryWindow() {
@@ -80,7 +79,7 @@ function CountryBanner(props: { identifier: CountryIdentifier }): ReactElement {
     );
 }
 
-function CountryBaseInformation(props: { data: CountryData }): ReactElement {
+function CountryBaseInformation(props: { data: Country }): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair name={"Id"} value={props.data.identifier.id}/>
@@ -92,7 +91,7 @@ function CountryBaseInformation(props: { data: CountryData }): ReactElement {
 
 
 function CountryProvincesAndCities(props: {
-    data: CountryData,
+    data: Country,
     openProvinceWindow: (id: string) => void,
     openCityWindow: (id: string) => void,
 }): ReactElement {

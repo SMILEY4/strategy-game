@@ -6,7 +6,7 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import {useWebGlContext} from "../../../../hooks/debug";
+import {useWebGlContext} from "../../../../hooks/game/debug";
 
 export function useOpenDevWindow() {
     const WINDOW_ID = "menubar-window";

@@ -10,10 +10,9 @@ import {Banner} from "../../../../components/banner/Banner";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {ProvinceData} from "../../../../models/province/provinceData";
-import {ProvinceIdentifier} from "../../../../models/province/provinceIdentifier";
 import {CityEntry} from "../common/CityEntry";
-import {useProvince} from "../../../../hooks/province";
+import {useProvince} from "../../../../hooks/game/province";
+import {Province, ProvinceIdentifier} from "../../../../../models/province";
 
 
 export function useOpenProvinceWindow() {
@@ -81,7 +80,7 @@ function ProvinceBanner(props: { identifier: ProvinceIdentifier }): ReactElement
     );
 }
 
-function ProvinceBaseInformationSection(props: { data: ProvinceData, openCountry: () => void }): ReactElement {
+function ProvinceBaseInformationSection(props: { data: Province, openCountry: () => void }): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair name={"Id"} value={props.data.identifier.name}/>
@@ -90,7 +89,7 @@ function ProvinceBaseInformationSection(props: { data: ProvinceData, openCountry
     );
 }
 
-function ProvinceCitiesSection(props: { data: ProvinceData, openCity: (id: string) => void }): ReactElement {
+function ProvinceCitiesSection(props: { data: Province, openCity: (id: string) => void }): ReactElement {
     return (
         <>
             <Spacer size="m"/>

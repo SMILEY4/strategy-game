@@ -1,6 +1,6 @@
 import {WindowData, WindowStore} from "./windowStore";
-import {useDraggable} from "../../../uiOLD/components/primitives/useDraggable";
 import {MouseEvent, useRef} from "react";
+import {useDraggable} from "./useDraggable";
 
 const FRAME_STACK_ID = "window-stack";
 

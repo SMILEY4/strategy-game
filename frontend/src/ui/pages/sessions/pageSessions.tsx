@@ -1,5 +1,5 @@
 import React, {ReactElement, useEffect, useState} from "react";
-import * as gameSession from "../../hooks/gameSessions";
+import * as gameSession from "../../hooks/gamesession/gameSessions";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
@@ -38,7 +38,7 @@ export function PageSessions(): ReactElement {
     } = useJoinSession(loadSessions);
 
     const deleteSession = useDeleteSession(loadSessions);
-    const connectSession = useConnectSession();
+    const connectSession = useStartSession();
 
     useEffect(() => {
         loadSessions();
@@ -278,9 +278,9 @@ function useDeleteSession(reloadSessions: () => void) {
     };
 }
 
-function useConnectSession() {
-    const connectGameSession = gameSession.useConnectGameSession();
+function useStartSession() {
+    const startGameSession = gameSession.useStartGameSession();
     return (id: string) => {
-        connectGameSession(id);
+        startGameSession(id);
     };
 }

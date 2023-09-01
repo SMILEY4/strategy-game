@@ -49,8 +49,8 @@ import SHADER_SRC_LINE_FRAG from "./core/rendering/lines/lineShader.fsh?raw";
 import {GamePreviewCityCreation} from "./core/game/gamePreviewCityCreation";
 import {App} from "./ui/pages/App";
 import {GameDeleteAction} from "./core/gamesession/gameDeleteAction";
-import {HttpClient} from "./external/api/clients/httpClient";
-import {WebsocketClient} from "./external/api/clients/websocketClient";
+import {HttpClient} from "./shared/httpClient";
+import {WebsocketClient} from "./shared/websocketClient";
 import {AuthProvider} from "./external/api/clients/authProvider";
 import {GameApiImpl} from "./external/api/gameApiImpl";
 

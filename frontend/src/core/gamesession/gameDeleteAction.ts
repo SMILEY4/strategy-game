@@ -1,5 +1,5 @@
 import {UnauthorizedError} from "../models/errors/UnauthorizedError";
-import {ResponseError} from "../../external/api/clients/httpClient";
+import {ResponseError} from "../../shared/httpClient";
 import {GameApi} from "../required/gameApi";
 
 /**
