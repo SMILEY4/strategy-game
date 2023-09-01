@@ -39,8 +39,8 @@ export function TileWindow(props: TileWindowProps): ReactElement {
         identifier: props.identifier,
         terrainType: "Forest",
     };
-    const placeScout = usePlaceScout()
-    const createSettlement = useCreateSettlement()
+    const placeScout = usePlaceScout();
+    const [validCreateSettlement, createSettlement] = useCreateSettlement(tile.identifier);
 
     return (
         <DecoratedWindow
@@ -60,7 +60,11 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                     <ButtonPrimary blue onClick={() => placeScout(tile.identifier)}>
                         Place Scout
                     </ButtonPrimary>
-                    <ButtonPrimary blue onClick={() => createSettlement(tile.identifier, "name", false)}>
+                    <ButtonPrimary
+                        blue
+                        disabled={!validCreateSettlement}
+                        onClick={() => createSettlement("name", false)}
+                    >
                         Found Settlement
                     </ButtonPrimary>
                 </VBox>

@@ -28,7 +28,6 @@ export class CommandService {
         });
     }
 
-
     cancelProductionQueueEntry(cityId: string) {
         this.gameRepository.addCommand({
             type: "production-queue-entry.cancel", // todo
@@ -40,6 +39,5 @@ export class CommandService {
             type: "scout.place", // todo
         });
     }
-
 
 }

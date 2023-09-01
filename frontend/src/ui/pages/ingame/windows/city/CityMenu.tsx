@@ -54,7 +54,7 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();
-    const upgradeSettlementTier = useUpgradeSettlementTier();
+    const [canUpgradeTier, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier);
 
     return (
         <DecoratedWindow
@@ -75,7 +75,7 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
                         openProvince={() => openProvinceWindow(city.province.id, true)}
                         openTile={() => openTileWindow(city.tile)}
                     />
-                    <ButtonPrimary blue onClick={() => upgradeSettlementTier(city.identifier)}>
+                    <ButtonPrimary blue disabled={!canUpgradeTier} onClick={() => upgradeSettlementTier()}>
                         Upgrade Tier
                     </ButtonPrimary>
                     <CityPopulationSection data={city}/>

@@ -13,19 +13,27 @@ export function useCity(cityId: string): City {
 }
 
 
-export function useCreateSettlement() {
+export function useCreateSettlement(tile: TileIdentifier): [boolean, (name: string, withNewProvince: boolean) => void] {
     const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
-    return (tile: TileIdentifier, name: string, withNewProvince: boolean) => {
+    const possible = true // todo: validate
+
+    function perform(name: string, withNewProvince: boolean) {
         commandService.createSettlement(tile, name, withNewProvince)
     }
+
+    return [possible, perform]
 }
 
 
-export function useUpgradeSettlementTier() {
+export function useUpgradeSettlementTier(city: CityIdentifier): [boolean, () => void] {
     const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
-    return (cityId: CityIdentifier) => {
-        commandService.upgradeSettlementTier(cityId)
+    const possible = true // todo: validate
+
+    function perform() {
+        commandService.upgradeSettlementTier(city)
     }
+
+    return [possible, perform]
 }
 
 
