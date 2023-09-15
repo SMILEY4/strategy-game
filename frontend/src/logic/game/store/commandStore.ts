@@ -13,6 +13,7 @@ export namespace CommandStore {
     interface StateActions {
         set: (commands: Command[]) => void;
         add: (command: Command) => void;
+        remove: (id: string) => void;
     }
 
 
@@ -28,6 +29,9 @@ export namespace CommandStore {
             })),
             add: (command: Command) => set(state => ({
                 commands: [...state.commands, command],
+            })),
+            remove: (id: string) => set(state => ({
+                commands: state.commands.filter(c => c.id !== id),
             })),
         };
     }

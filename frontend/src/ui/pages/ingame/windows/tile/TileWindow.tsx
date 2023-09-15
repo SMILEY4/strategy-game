@@ -15,6 +15,7 @@ import {LinkButton} from "../../../../components/button/link/LinkButton";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
+import {Spacer} from "../../../../components/spacer/Spacer";
 
 
 export function useOpenTileWindow() {
@@ -65,7 +66,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
     const openCountry = useOpenCountryWindow();
     const openSettlementCreation = useOpenSettlementCreationWindow()
     const placeScout = usePlaceScout();
-    const [validCreateSettlement, _] = useCreateSettlement(tile, null, null);
+    const [validCreateSettlement, validCreateColony, createSettlement] = useCreateSettlement(tile.identifier);
 
     return (
         <DecoratedWindow
@@ -86,8 +87,16 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                         openCountry={() => openCountry(tile.owner!!.country.id, true)}
                         openCity={() => openCity(tile.owner!!.city!!.id, true)}
                     />
+                    <Spacer size="s"/>
                     <ButtonPrimary blue onClick={() => placeScout(tile.identifier)}>
                         Place Scout
+                    </ButtonPrimary>
+                    <ButtonPrimary
+                        blue
+                        disabled={!validCreateColony}
+                        onClick={() => createSettlement("placeholdername", true)}
+                    >
+                        Found Colony
                     </ButtonPrimary>
                     <ButtonPrimary
                         blue

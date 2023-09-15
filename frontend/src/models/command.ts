@@ -5,5 +5,6 @@ export type CommandType = "production-queue-entry.add"
     | "settlement.upgrade"
 
 export interface Command {
+    id: string,
     type: CommandType,
 }

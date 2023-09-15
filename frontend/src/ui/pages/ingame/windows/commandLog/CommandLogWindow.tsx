@@ -7,7 +7,10 @@ import {Spacer} from "../../../../components/spacer/Spacer";
 import {Command} from "../../../../../models/command";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../../../components/text/Text";
-import {useCommands} from "../../../../hooks/game/commands";
+import {useCommandCancel, useCommands} from "../../../../hooks/game/commands";
+import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {CgClose} from "react-icons/cg";
+import {HBox} from "../../../../components/layout/hbox/HBox";
 
 
 export function useOpenCommandLogWindow() {
@@ -33,6 +36,7 @@ export interface CommandLogWindowProps {
 export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 
     const commands = useCommands();
+    const cancel = useCommandCancel();
 
     return (
         <DecoratedWindow
@@ -48,17 +52,22 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
                 <Header1>Commands</Header1>
                 <Spacer size="s"/>
                 {commands.map(command => (
-                    <CommandEntry command={command}/>
+                    <CommandEntry command={command} onCancel={() => cancel(command.id)}/>
                 ))}
             </VBox>
         </DecoratedWindow>
     );
 }
 
-export function CommandEntry(props: { command: Command }): ReactElement {
+export function CommandEntry(props: { command: Command, onCancel: () => void }): ReactElement {
     return (
         <DecoratedPanel paper simpleBorder>
-            <Text noShadow>{props.command.type}</Text>
+            <HBox centerVertical spaceBetween>
+                <Text noShadow>{props.command.type}</Text>
+                <ButtonPrimary red round small onClick={props.onCancel}>
+                    <CgClose/>
+                </ButtonPrimary>
+            </HBox>
         </DecoratedPanel>
     );
 }

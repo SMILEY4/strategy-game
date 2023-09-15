@@ -13,6 +13,10 @@ export class GameRepository {
         CommandStore.useState.getState().set(commands);
     }
 
+    removeCommand(id: string) {
+        CommandStore.useState.getState().remove(id);
+    }
+
     getCountry(id: string): Country | null {
         const elements = CountriesStore.useState.getState().countries.filter(c => c.identifier.id === id)
         if (elements) {
