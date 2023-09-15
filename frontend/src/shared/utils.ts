@@ -32,6 +32,18 @@ export function getMax<T>(array: T[], value: (e: T) => number): T | null {
     return maxElement;
 }
 
+export function getMaxOrDefault<T>(array: T[], value: (e: T) => number, defaultValue: T): T {
+    let maxElement: T = defaultValue;
+    let maxValue = Number.MIN_VALUE;
+    array.forEach(e => {
+        const v = value(e);
+        if (v > maxValue) {
+            maxValue = v;
+            maxElement = e;
+        }
+    });
+    return maxElement
+}
 
 export function getMin<T>(array: T[], value: (e: T) => number): T | null {
     let minElement: T | null = null;

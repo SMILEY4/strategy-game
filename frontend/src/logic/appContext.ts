@@ -12,6 +12,7 @@ import {WebsocketMessageHandler} from "../shared/websocketMessageHandler";
 import {GameService} from "./game/gameService";
 import {CommandService} from "./game/commandService";
 import {GameRepository} from "./game/gameRepository";
+import {CityCreationService} from "./game/cityCreationService";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -32,6 +33,7 @@ export namespace AppCtx {
         GameRepository: qualifier<GameRepository>("GameRepository"),
         GameService: qualifier<GameService>("GameService"),
         CommandService: qualifier<CommandService>("CommandService"),
+        CityCreationService: qualifier<CityCreationService>("CityCreationService"),
     };
 
     const diContainer = createDiContainer();
@@ -62,6 +64,10 @@ export namespace AppCtx {
     diContainer.bind(DIQ.GameRepository, ctx => new GameRepository())
     diContainer.bind(DIQ.GameService, ctx => new GameService())
     diContainer.bind(DIQ.CommandService, ctx => new CommandService(
+        ctx.get(DIQ.GameRepository)
+    ))
+
+    diContainer.bind(DIQ.CityCreationService, ctx => new CityCreationService(
         ctx.get(DIQ.GameRepository)
     ))
 

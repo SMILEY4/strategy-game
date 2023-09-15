@@ -1,7 +1,7 @@
 import {CitiesStore} from "../../../logic/game/store/citiesStore";
 import {City, CityIdentifier, ProductionEntry} from "../../../models/city";
 import {AppCtx} from "../../../logic/appContext";
-import {TileIdentifier} from "../../../models/tile";
+import {Tile, TileIdentifier} from "../../../models/tile";
 
 export function useCity(cityId: string): City {
     const city = CitiesStore.useState(state => state.cities.find(c => c.identifier.id === cityId));
@@ -13,12 +13,12 @@ export function useCity(cityId: string): City {
 }
 
 
-export function useCreateSettlement(tile: TileIdentifier): [boolean, (name: string, withNewProvince: boolean) => void] {
-    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
-    const possible = true // todo: validate
+export function useCreateSettlement(tile: Tile, name: string | null, withNewProvince: boolean | null): [boolean, (name: string, withNewProvince: boolean) => void] {
+    const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
+    const possible = creationService.validate(tile, name, withNewProvince)
 
-    function perform(name: string, withNewProvince: boolean) {
-        commandService.createSettlement(tile, name, withNewProvince)
+    function perform() {
+        creationService.create(tile, name!!, withNewProvince!!)
     }
 
     return [possible, perform]

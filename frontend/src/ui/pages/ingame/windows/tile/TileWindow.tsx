@@ -5,11 +5,16 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Banner} from "../../../../components/banner/Banner";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
+import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {Tile, TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {usePlaceScout} from "../../../../hooks/game/scout";
 import {useCreateSettlement} from "../../../../hooks/game/city";
+import {HBox} from "../../../../components/layout/hbox/HBox";
+import {LinkButton} from "../../../../components/button/link/LinkButton";
+import {useOpenCityWindow} from "../city/CityMenu";
+import {useOpenCountryWindow} from "../country/CountryWindow";
+import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
 
 
 export function useOpenTileWindow() {
@@ -37,10 +42,30 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 
     const tile: Tile = {
         identifier: props.identifier,
-        terrainType: "Forest",
+        terrainType: "land",
+        owner: null,
+        // owner: {
+        //     country: {
+        //         id: "germany",
+        //         name: "Germany"
+        //     },
+        //     province: {
+        //         id: "baden-wurttemberg",
+        //         name: "Baden-Württemberg"
+        //     },
+        //     city: {
+        //         id: "stuttgart",
+        //         name: "Stuttgart"
+        //     }
+        // },
+        influences: []
     };
+
+    const openCity = useOpenCityWindow();
+    const openCountry = useOpenCountryWindow();
+    const openSettlementCreation = useOpenSettlementCreationWindow()
     const placeScout = usePlaceScout();
-    const [validCreateSettlement, createSettlement] = useCreateSettlement(tile.identifier);
+    const [validCreateSettlement, _] = useCreateSettlement(tile, null, null);
 
     return (
         <DecoratedWindow
@@ -56,14 +81,18 @@ export function TileWindow(props: TileWindowProps): ReactElement {
             <VBox fillParent>
                 <TileBanner data={tile}/>
                 <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <TileBaseDataSection data={tile}/>
+                    <TileBaseDataSection
+                        data={tile}
+                        openCountry={() => openCountry(tile.owner!!.country.id, true)}
+                        openCity={() => openCity(tile.owner!!.city!!.id, true)}
+                    />
                     <ButtonPrimary blue onClick={() => placeScout(tile.identifier)}>
                         Place Scout
                     </ButtonPrimary>
                     <ButtonPrimary
                         blue
                         disabled={!validCreateSettlement}
-                        onClick={() => createSettlement("name", false)}
+                        onClick={() => openSettlementCreation(tile)}
                     >
                         Found Settlement
                     </ButtonPrimary>
@@ -81,7 +110,7 @@ function TileBanner(props: { data: Tile }): ReactElement {
     );
 }
 
-function TileBaseDataSection(props: { data: Tile }): ReactElement {
+function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openCity: () => void }): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair
@@ -96,6 +125,16 @@ function TileBaseDataSection(props: { data: Tile }): ReactElement {
                 name={"Terrain"}
                 value={props.data.terrainType}
             />
+            {props.data.owner && (
+                <KeyValuePair name={"Owned By"}>
+                    <HBox gap_xs>
+                        <LinkButton fillParent align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        (
+                        <LinkButton fillParent align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>
+                        )
+                    </HBox>
+                </KeyValuePair>
+            )}
         </InsetPanel>
     );
 }
