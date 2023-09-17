@@ -13,45 +13,49 @@ export function useCity(cityId: string): City {
 }
 
 
-export function useCreateSettlement(tile: Tile, name: string | null, withNewProvince: boolean | null): [boolean, boolean, (name: string, withNewProvince: boolean) => void] {
+export function useCreateSettlement(tile: Tile, name: string | null, asColony: boolean): [boolean, () => void] {
     const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
 
-    const possibleSettlement = creationService.validate(tile, name, withNewProvince)
-    const possibleColony = creationService.validate(tile, name, withNewProvince)
+    const possible = useValidateCreateSettlement(tile, name, asColony)
 
     function perform() {
-        creationService.create(tile, name!!, withNewProvince!!)
+        creationService.create(tile, name!!, asColony!!)
     }
 
-    return [possibleSettlement, possibleColony, perform]
+    return [possible, perform]
+}
+
+export function useValidateCreateSettlement(tile: Tile, name: string | null, asColony: boolean): boolean {
+    const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
+    return creationService.validate(tile, name, asColony);
 }
 
 
-export function useUpgradeSettlementTier(city: CityIdentifier): [boolean, () => void] {
+export function useUpgradeSettlementTier(city: CityIdentifier, currentTier: number): [boolean, () => void] {
     const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
 
     const possible = true // todo: validate
 
     function perform() {
-        commandService.upgradeSettlementTier(city)
+        commandService.upgradeSettlementTier(city, currentTier, currentTier+1)
     }
 
     return [possible, perform]
 }
 
 
-export function useCancelCurrentProductionQueueEntry(cityId: string) {
+export function useCancelProductionQueueEntry(city: CityIdentifier) {
     const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
-    return () => {
-        commandService.cancelProductionQueueEntry(cityId);
+    return (entryId: string) => {
+        commandService.cancelProductionQueueEntry(city, entryId);
     };
 }
 
 
-export function useAddProductionEntry(cityId: string) {
+export function useAddProductionEntry(city: CityIdentifier) {
     const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
     return (entry: ProductionEntry) => {
-        commandService.addProductionQueueEntry(cityId, entry);
+        commandService.addProductionQueueEntry(city, entry);
     };
 }
 
@@ -61,27 +65,17 @@ export function useAddProductionEntry(cityId: string) {
 export function useAvailableProductionEntries(cityId: string): ProductionEntry[] {
     return [
         {
-            name: "Farm",
+            name: "FARM",
             icon: "farm.png",
             disabled: false,
         },
         {
-            name: "Woodcutter",
+            name: "WOODCUTTER",
             icon: "Woodcutter.png",
             disabled: false,
         },
         {
-            name: "Farm II",
-            icon: "farm.png",
-            disabled: true,
-        },
-        {
-            name: "Woodcutter II",
-            icon: "Woodcutter.png",
-            disabled: true,
-        },
-        {
-            name: "Settler",
+            name: "SETTLER",
             icon: "Woodcutter.png",
             disabled: false,
         },

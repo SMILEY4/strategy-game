@@ -1,7 +1,6 @@
 import {AuthProvider} from "../authProvider";
 import {HttpClient} from "../../shared/httpClient";
 import {WebsocketClient} from "../../shared/websocketClient";
-import {MessageHandler} from "../../external/api/messageHandler";
 import {WebsocketMessageHandler} from "../../shared/websocketMessageHandler";
 import {GameConfig} from "../../core/models/gameConfig";
 
@@ -62,6 +61,10 @@ export class GameSessionClient {
 
     disconnect(): void {
         this.wsClient.close();
+    }
+
+    sendMessage(type: string, payload: any): void {
+        this.wsClient.send(type, payload)
     }
 
     config(): Promise<GameConfig> {

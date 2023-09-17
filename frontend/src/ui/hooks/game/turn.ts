@@ -8,7 +8,7 @@ export function useEndTurn(): [boolean, () => void] {
 
     function endTurn() {
         gameService.endTurn();
-        // setDisabled(true)
+        // setDisabled(true) // todo
     }
 
     return [disabled, endTurn];

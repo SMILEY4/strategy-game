@@ -3,6 +3,7 @@ import {HBox} from "../layout/hbox/HBox";
 import {Text} from "../text/Text";
 import {joinClassNames} from "../utils";
 import {LinkButton} from "../button/link/LinkButton";
+import "./keyValuePair.less"
 
 export interface KeyValuePairProps {
     name: string,

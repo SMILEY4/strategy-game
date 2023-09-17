@@ -41,10 +41,48 @@ export namespace CitiesStore {
                     size: 3,
                     progress: 0.4,
                 },
-                resources: [],
+                resources: [
+                    {
+                        name: "Food",
+                        icon: "/resource_icon_food.png",
+                        value: 3,
+                        contributions: [
+                            { reason: "Farm", value: 2 },
+                            { reason: "Magic", value: 5 },
+                            { reason: "Population", value: -4 }
+                        ]
+                    },
+                    {
+                        name: "Wood",
+                        icon: "/resource_icon_wood.png",
+                        value: -1,
+                        contributions: [
+                            { reason: "Woodcutter", value: 1 },
+                            { reason: "Toolmaker", value: -2 },
+                        ]
+                    },
+                    {
+                        name: "Tools",
+                        icon: "/resource_icon_tools.png",
+                        value: 2,
+                        contributions: [
+                            { reason: "Toolmaker", value: 2 },
+                        ]
+                    },
+                ],
                 productionQueue: [],
                 maxContentSlots: 3,
-                content: [],
+                content: [
+                    {
+                        icon: "farm.png"
+                    },
+                    {
+                        icon: "farm.png"
+                    },
+                    {
+                        icon: "Woodcutter.png"
+                    }
+                ],
             },
             {
                 identifier: {

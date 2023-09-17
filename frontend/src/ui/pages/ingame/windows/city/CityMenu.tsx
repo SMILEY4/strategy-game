@@ -17,7 +17,7 @@ import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
 import {formatPercentage} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
-import {useCancelCurrentProductionQueueEntry, useCity, useUpgradeSettlementTier} from "../../../../hooks/game/city";
+import {useCancelProductionQueueEntry, useCity, useUpgradeSettlementTier} from "../../../../hooks/game/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
@@ -54,7 +54,7 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();
-    const [canUpgradeTier, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier);
+    const [canUpgradeTier, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier, city.population.size);
 
     return (
         <DecoratedWindow
@@ -185,19 +185,23 @@ function CityContentSection(props: { data: City }): ReactElement {
 
 function CityProductionQueue(props: { data: City }): ReactElement {
     const entry: ProductionQueueEntry = props.data.productionQueue.length === 0
-        ? {name: "-", progress: 0}
+        ? {id: "-", name: "-", progress: 0}
         : props.data.productionQueue[0];
-    const cancelCurrent = useCancelCurrentProductionQueueEntry(props.data.identifier.id);
+    const cancelEntry = useCancelProductionQueueEntry(props.data.identifier);
     const openProductionWindow = useOpenCityProductionWindow();
     return (
         <HBox centerVertical left gap_s>
-            <ButtonPrimary square onClick={() => openProductionWindow(props.data.identifier.id)}>
+            <ButtonPrimary square onClick={() => openProductionWindow(props.data.identifier)}>
                 <FiPlus/>
             </ButtonPrimary>
             <ProgressBar progress={entry.progress} className="production_queue__progress">
                 <Text relative>{entry.name}</Text>
             </ProgressBar>
-            <ButtonPrimary square round small onClick={cancelCurrent}>
+            <ButtonPrimary
+                square round small
+                disabled={props.data.productionQueue.length === 0}
+                onClick={() => cancelEntry(entry.id)}
+            >
                 <CgClose/>
             </ButtonPrimary>
         </HBox>

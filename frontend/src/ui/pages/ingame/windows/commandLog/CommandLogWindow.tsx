@@ -2,9 +2,14 @@ import React, {ReactElement} from "react";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1} from "../../../../components/header/Header";
+import {Header1, Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import {Command} from "../../../../../models/command";
+import {
+    Command,
+    CreateSettlementCommand,
+    PlaceScoutCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
+    UpgradeSettlementCommand,
+} from "../../../../../models/command";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../../../components/text/Text";
 import {useCommandCancel, useCommands} from "../../../../hooks/game/commands";
@@ -63,11 +68,77 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
     return (
         <DecoratedPanel paper simpleBorder>
             <HBox centerVertical spaceBetween>
-                <Text noShadow>{props.command.type}</Text>
+                <VBox stretch>
+                    {renderCommand(props.command)}
+                </VBox>
                 <ButtonPrimary red round small onClick={props.onCancel}>
                     <CgClose/>
                 </ButtonPrimary>
             </HBox>
         </DecoratedPanel>
     );
+
+    function renderCommand(command: Command): any {
+        if(command.type === "settlement.create") {
+            const cmd = command as CreateSettlementCommand
+            return (
+                <>
+                    <Header4 onLight>{"Create " + (cmd.asColony ? "Colony" : "Settlement")}</Header4>
+                    <Spacer size="s"/>
+                    <Text onLight>with name <i>{cmd.name}</i></Text>
+                    <Text onLight>at <i>{cmd.tile.q + ", " + cmd.tile.r}</i></Text>
+                </>
+            )
+        }
+        if(command.type === "settlement.upgrade") {
+            const cmd = command as UpgradeSettlementCommand
+            return (
+                <>
+                    <Header4 onLight>{"Upgrade Settlement"}</Header4>
+                    <Spacer size="s"/>
+                    <Text onLight>with name <i>{cmd.settlement.name}</i></Text>
+                    <Text onLight>from tier <i>{cmd.currTier}</i> to <i>{cmd.tgtTier}</i></Text>
+                </>
+            )
+        }
+        if(command.type === "production-queue-entry.add") {
+            const cmd = command as ProductionQueueAddCommand
+            return (
+                <>
+                    <Header4 onLight>{"Add to production queue"}</Header4>
+                    <Spacer size="s"/>
+                    <Text onLight>construct <i>{cmd.entry.name}</i></Text>
+                    <Text onLight>in city <i>{cmd.city.name}</i></Text>
+                </>
+            )
+        }
+        if(command.type === "production-queue-entry.cancel") {
+            const cmd = command as ProductionQueueCancelCommand
+            return (
+                <>
+                    <Header4 onLight>{"Cancel production queue entry"}</Header4>
+                    <Spacer size="s"/>
+                    <Text onLight>in city <i>{cmd.city.name}</i></Text>
+                </>
+            )
+        }
+        if(command.type === "scout.place") {
+            const cmd = command as PlaceScoutCommand
+            return (
+                <>
+                    <Header4 onLight>Place Scout</Header4>
+                    <Spacer size="s"/>
+                    <Text onLight>{"at " + cmd.tile.q + ", " + cmd.tile.r}</Text>
+                </>
+            )
+        }
+        return (
+            <>
+                <Header4 onLight>{command.type}</Header4>
+                <Spacer size="s"/>
+                <Text onLight>{command.id}</Text>
+            </>
+        );
+    }
+
 }

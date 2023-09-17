@@ -43,6 +43,7 @@ export class WebsocketClient {
                 type: type,
                 payload: payload
             };
+            console.log("Sending message", message)
             this.websocket.send(JSON.stringify(message, null, "   "));
         }
     }

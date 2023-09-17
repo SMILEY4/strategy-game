@@ -34,6 +34,8 @@ export namespace AppCtx {
         GameService: qualifier<GameService>("GameService"),
         CommandService: qualifier<CommandService>("CommandService"),
         CityCreationService: qualifier<CityCreationService>("CityCreationService"),
+        GameSessionClient: qualifier<GameSessionClient>("GameSessionClient"),
+
     };
 
     const diContainer = createDiContainer();
@@ -51,23 +53,27 @@ export namespace AppCtx {
             ctx.get(DIQ.HttpClient),
         ),
     ));
-
+    diContainer.bind(DIQ.GameSessionClient, ctx => new GameSessionClient(
+        ctx.get(DIQ.AuthProvider),
+        ctx.get(DIQ.HttpClient),
+        ctx.get(DIQ.WebsocketClient),
+        ctx.get(DIQ.WebsocketMessageHandler),
+    ))
     diContainer.bind(DIQ.GameSessionService, ctx => new GameSessionService(
-        new GameSessionClient(
-            ctx.get(DIQ.AuthProvider),
-            ctx.get(DIQ.HttpClient),
-            ctx.get(DIQ.WebsocketClient),
-            ctx.get(DIQ.WebsocketMessageHandler),
-        ),
+        ctx.get(DIQ.GameSessionClient),
         new GameSessionRepository(),
     ));
     diContainer.bind(DIQ.GameRepository, ctx => new GameRepository())
-    diContainer.bind(DIQ.GameService, ctx => new GameService())
+    diContainer.bind(DIQ.GameService, ctx => new GameService(
+        ctx.get(DIQ.GameRepository),
+        ctx.get(DIQ.GameSessionClient)
+    ))
     diContainer.bind(DIQ.CommandService, ctx => new CommandService(
         ctx.get(DIQ.GameRepository)
     ))
 
     diContainer.bind(DIQ.CityCreationService, ctx => new CityCreationService(
+        ctx.get(DIQ.CommandService),
         ctx.get(DIQ.GameRepository)
     ))
 

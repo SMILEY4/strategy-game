@@ -13,12 +13,12 @@ import {joinClassNames} from "../../../../components/utils";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import "./cityProductionWindow.less";
 import {useAddProductionEntry, useAvailableProductionEntries} from "../../../../hooks/game/city";
-import {ProductionEntry} from "../../../../../models/city";
+import {CityIdentifier, ProductionEntry} from "../../../../../models/city";
 
 export function useOpenCityProductionWindow() {
     const WINDOW_ID = "city-production";
     const addWindow = useOpenWindow();
-    return (cityId: string) => {
+    return (city: CityIdentifier) => {
         addWindow({
             id: WINDOW_ID,
             className: "city-production",
@@ -26,7 +26,7 @@ export function useOpenCityProductionWindow() {
             top: 350,
             width: 350,
             height: 400,
-            content: <CityProductionWindow windowId={WINDOW_ID} cityId={cityId}/>,
+            content: <CityProductionWindow windowId={WINDOW_ID} city={city}/>,
         });
     };
 }
@@ -34,13 +34,13 @@ export function useOpenCityProductionWindow() {
 
 export interface CityProductionWindowProps {
     windowId: string;
-    cityId: string;
+    city: CityIdentifier;
 }
 
 export function CityProductionWindow(props: CityProductionWindowProps): ReactElement {
 
-    const entries = useAvailableProductionEntries(props.cityId);
-    const addEntry = useAddProductionEntry(props.cityId);
+    const entries = useAvailableProductionEntries(props.city.id);
+    const addEntry = useAddProductionEntry(props.city);
 
 
     return (

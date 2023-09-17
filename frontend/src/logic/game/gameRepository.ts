@@ -9,12 +9,16 @@ export class GameRepository {
         CommandStore.useState.getState().add(command);
     }
 
-    setCommands(commands: Command[]) {
-        CommandStore.useState.getState().set(commands);
-    }
-
     removeCommand(id: string) {
         CommandStore.useState.getState().remove(id);
+    }
+
+    clearCommands() {
+        CommandStore.useState.getState().set([]);
+    }
+
+    getCommands(): Command[] {
+        return CommandStore.useState.getState().commands
     }
 
     getCountry(id: string): Country | null {

@@ -63,7 +63,9 @@ function ResourceBalanceTooltip(props: { data: ResourceBalance, children?: any }
                     <VBox padding_m gap_s fillParent>
                         <Header4>{props.data.name}</Header4>
                         {props.data.contributions.map(contribution => (
-                            <Text type={contribution.value < 0 ? "negative" : "positive"}>{contribution.reason}</Text>
+                            <Text type={contribution.value < 0 ? "negative" : "positive"}>
+                                {(contribution.value < 0 ? "" : "+") + contribution.value + " " + contribution.reason}
+                            </Text>
                         ))}
                     </VBox>
                 </TooltipPanel>

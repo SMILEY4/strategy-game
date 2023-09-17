@@ -9,13 +9,13 @@ import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/Ke
 import {Tile, TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {usePlaceScout} from "../../../../hooks/game/scout";
-import {useCreateSettlement} from "../../../../hooks/game/city";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
+import {useCreateSettlement, useValidateCreateSettlement} from "../../../../hooks/game/city";
 
 
 export function useOpenTileWindow() {
@@ -44,29 +44,31 @@ export function TileWindow(props: TileWindowProps): ReactElement {
     const tile: Tile = {
         identifier: props.identifier,
         terrainType: "land",
-        owner: null,
-        // owner: {
-        //     country: {
-        //         id: "germany",
-        //         name: "Germany"
-        //     },
-        //     province: {
-        //         id: "baden-wurttemberg",
-        //         name: "Baden-Württemberg"
-        //     },
-        //     city: {
-        //         id: "stuttgart",
-        //         name: "Stuttgart"
-        //     }
-        // },
+        // owner: null,
+        owner: {
+            country: {
+                id: "germany",
+                name: "Germany"
+            },
+            province: {
+                id: "baden-wurttemberg",
+                name: "Baden-Württemberg"
+            },
+            city: null
+            // city: {
+            //     id: "stuttgart",
+            //     name: "Stuttgart"
+            // }
+        },
         influences: []
     };
 
     const openCity = useOpenCityWindow();
     const openCountry = useOpenCountryWindow();
     const openSettlementCreation = useOpenSettlementCreationWindow()
+    const validCreateSettlement = useValidateCreateSettlement(tile, "placeholder", false)
+    const validCreateColony = useValidateCreateSettlement(tile, "placeholder", true)
     const placeScout = usePlaceScout();
-    const [validCreateSettlement, validCreateColony, createSettlement] = useCreateSettlement(tile.identifier);
 
     return (
         <DecoratedWindow
@@ -94,14 +96,14 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                     <ButtonPrimary
                         blue
                         disabled={!validCreateColony}
-                        onClick={() => createSettlement("placeholdername", true)}
+                        onClick={() => openSettlementCreation(tile, true)}
                     >
                         Found Colony
                     </ButtonPrimary>
                     <ButtonPrimary
                         blue
                         disabled={!validCreateSettlement}
-                        onClick={() => openSettlementCreation(tile)}
+                        onClick={() => openSettlementCreation(tile, false)}
                     >
                         Found Settlement
                     </ButtonPrimary>
@@ -134,13 +136,20 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
                 name={"Terrain"}
                 value={props.data.terrainType}
             />
-            {props.data.owner && (
+            {(props.data.owner && props.data.owner.city !== null) && (
                 <KeyValuePair name={"Owned By"}>
-                    <HBox gap_xs>
-                        <LinkButton fillParent align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                    <HBox gap_xs left>
+                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
                         (
-                        <LinkButton fillParent align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>
+                        <LinkButton align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>
                         )
+                    </HBox>
+                </KeyValuePair>
+            )}
+            {(props.data.owner && props.data.owner.city === null) && (
+                <KeyValuePair name={"Owned By"}>
+                    <HBox gap_xs left>
+                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
                     </HBox>
                 </KeyValuePair>
             )}

@@ -26,6 +26,7 @@ export interface City {
 }
 
 export interface ProductionQueueEntry {
+    id: string,
     name: string,
     progress: number
 }
@@ -35,7 +36,7 @@ export interface CityContentEntry {
 }
 
 export interface ProductionEntry {
-    name: string,
+    name: "SETTLER" | "FARM" | "WOODCUTTER",
     icon: string,
     disabled: boolean,
 }

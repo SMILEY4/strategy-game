@@ -51,6 +51,7 @@ dependencies {
 
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
+    implementation("org.hdrhistogram:HdrHistogram:2.1.12")
 
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")

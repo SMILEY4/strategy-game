@@ -47,7 +47,7 @@ export class GameSessionService {
             .then(() => this.repository.setGameState("loading"))
             .then(() => this.client.config())
             .then(config => this.repository.setGameConfig(config))
-            // .then(() => this.client.connect(gameId)) // todo -> temp
+            .then(() => this.client.connect(gameId))
             .then(() => this.repository.setGameState("playing"))
             .catch(() => this.repository.setGameState("error"));
     }
