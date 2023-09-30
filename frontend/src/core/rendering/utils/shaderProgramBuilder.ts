@@ -89,7 +89,6 @@ export namespace ShaderProgramBuilder {
                 errors: []
             };
         }
-
     }
 
 

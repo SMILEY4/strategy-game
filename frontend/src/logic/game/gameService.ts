@@ -19,7 +19,6 @@ export class GameService {
         this.gameSessionClient = gameSessionClient;
     }
 
-
     endTurn() {
         const commands = this.gameRepository.getCommands();
         this.gameSessionClient.sendMessage(

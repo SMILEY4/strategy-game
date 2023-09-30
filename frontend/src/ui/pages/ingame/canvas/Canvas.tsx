@@ -1,6 +1,7 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
 import {AppConfig} from "../../../../main";
 import "./canvas.css";
+import {AppCtx} from "../../../../logic/appContext";
 
 
 export function Canvas() {
@@ -11,13 +12,7 @@ export function Canvas() {
     const mouseDownInCanvas = useRef<boolean>(false);
     const timestampMouseDown = useRef<number>(0);
 
-    const actionMouseMove = AppConfig.di.get(AppConfig.DIQ.InputMouseMoveAction);
-    const actionMouseScroll = AppConfig.di.get(AppConfig.DIQ.InputMouseScrollAction);
-    const actionMouseClick = AppConfig.di.get(AppConfig.DIQ.InputClickAction);
-    const actionGameInit = AppConfig.di.get(AppConfig.DIQ.GameInitAction);
-    const actionGameUpdate = AppConfig.di.get(AppConfig.DIQ.GameUpdateAction);
-    const actionGameDispose = AppConfig.di.get(AppConfig.DIQ.GameDisposeAction);
-
+    const gameLoopService = AppCtx.di.get(AppCtx.DIQ.GameLoopService)
 
     useEffect(() => {
         if (canvasRef.current) {
@@ -78,7 +73,7 @@ export function Canvas() {
     }
 
     function mouseMove(e: MouseEvent) {
-        actionMouseMove.perform(
+        gameLoopService.mouseMove(
             e.movementX,
             e.movementY,
             e.clientX,
@@ -103,25 +98,25 @@ export function Canvas() {
     }
 
     function scroll(e: WheelEvent) {
-        actionMouseScroll.perform(e.deltaY);
+        gameLoopService.mouseScroll(e.deltaY);
     }
 
     function click(duration: number, e: MouseEvent) {
         if (duration < 150) {
-            actionMouseClick.perform(e.clientX, e.clientY);
+            gameLoopService.mouseClick(e.clientX, e.clientY);
         }
     }
 
     function onInitialize(canvas: HTMLCanvasElement) {
-        actionGameInit.perform(canvas);
+        gameLoopService.initialize(canvas)
     }
 
     function onRender() {
-        actionGameUpdate.perform();
+        gameLoopService.update();
     }
 
     function onDispose() {
-        actionGameDispose.perform();
+        gameLoopService.dispose();
     }
 
     return (

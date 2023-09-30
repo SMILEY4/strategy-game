@@ -10,7 +10,8 @@ export interface TileIdentifier {
 
 export interface Tile {
     identifier: TileIdentifier,
-    terrainType: string,
+    terrainType: "LAND" | "WATER" | "MOUNTAIN" | null,
+    visibility: "UNKNOWN" | "DISCOVERED" | "VISIBLE"
     owner: {
         country: CountryIdentifier,
         province: ProvinceIdentifier,
@@ -21,5 +22,7 @@ export interface Tile {
 
 export interface TileInfluence {
     country: CountryIdentifier,
+    province: ProvinceIdentifier,
+    city: CityIdentifier,
     amount: number
 }

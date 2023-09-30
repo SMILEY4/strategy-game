@@ -49,7 +49,6 @@ export enum ShaderUniformType {
     BOOL_VEC2,
     BOOL_VEC3,
     BOOL_VEC4,
-
 }
 
 export interface ShaderUniformData {

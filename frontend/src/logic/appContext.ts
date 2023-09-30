@@ -13,6 +13,10 @@ import {GameService} from "./game/gameService";
 import {CommandService} from "./game/commandService";
 import {GameRepository} from "./game/gameRepository";
 import {CityCreationService} from "./game/cityCreationService";
+import {GameSessionMessageHandler} from "./gamesession/gameSessionMessageHandler";
+import {NextTurnService} from "./game/nextTurnService";
+import {GameLoopService} from "./game/gameLoopService";
+import {GameRenderer} from "./renderer/gameRenderer";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -35,16 +39,21 @@ export namespace AppCtx {
         CommandService: qualifier<CommandService>("CommandService"),
         CityCreationService: qualifier<CityCreationService>("CityCreationService"),
         GameSessionClient: qualifier<GameSessionClient>("GameSessionClient"),
-
+        NextTurnService: qualifier<NextTurnService>("NextTurnService"),
+        GameLoopService: qualifier<GameLoopService>("GameLoopService"),
+        GameRenderer: qualifier<GameRenderer>("GameRenderer"),
     };
 
     const diContainer = createDiContainer();
-
     diContainer.bind(DIQ.HttpClient, ctx => new HttpClient(API_BASE_URL));
     diContainer.bind(DIQ.WebsocketClient, ctx => new WebsocketClient(API_WS_BASE_URL));
-    diContainer.bind(DIQ.WebsocketMessageHandler, ctx => WebsocketMessageHandler.NOOP);
+    diContainer.bind(DIQ.WebsocketMessageHandler, ctx => new GameSessionMessageHandler(ctx.get(DIQ.NextTurnService)));
     diContainer.bind(DIQ.AuthProvider, ctx => new AuthProvider(ctx.get(DIQ.UserRepository)));
 
+    diContainer.bind(DIQ.NextTurnService, ctx => new NextTurnService(
+        ctx.get(DIQ.GameRepository),
+        ctx.get(DIQ.GameLoopService),
+    ));
     diContainer.bind(DIQ.UserRepository, ctx => new UserRepository());
     diContainer.bind(DIQ.UserService, ctx => new UserService(
         ctx.get(DIQ.UserRepository),
@@ -58,24 +67,31 @@ export namespace AppCtx {
         ctx.get(DIQ.HttpClient),
         ctx.get(DIQ.WebsocketClient),
         ctx.get(DIQ.WebsocketMessageHandler),
-    ))
+    ));
     diContainer.bind(DIQ.GameSessionService, ctx => new GameSessionService(
         ctx.get(DIQ.GameSessionClient),
         new GameSessionRepository(),
     ));
-    diContainer.bind(DIQ.GameRepository, ctx => new GameRepository())
+    diContainer.bind(DIQ.GameRepository, ctx => new GameRepository());
     diContainer.bind(DIQ.GameService, ctx => new GameService(
         ctx.get(DIQ.GameRepository),
-        ctx.get(DIQ.GameSessionClient)
-    ))
+        ctx.get(DIQ.GameSessionClient),
+    ));
     diContainer.bind(DIQ.CommandService, ctx => new CommandService(
-        ctx.get(DIQ.GameRepository)
-    ))
+        ctx.get(DIQ.GameRepository),
+    ));
 
     diContainer.bind(DIQ.CityCreationService, ctx => new CityCreationService(
         ctx.get(DIQ.CommandService),
+        ctx.get(DIQ.GameRepository),
+    ));
+    diContainer.bind(DIQ.GameLoopService, ctx => new GameLoopService(
+        ctx.get(DIQ.GameRenderer),
+        ctx.get(DIQ.GameRepository),
+    ));
+    diContainer.bind(DIQ.GameRenderer, ctx => new GameRenderer(
         ctx.get(DIQ.GameRepository)
-    ))
+    ));
 
     diContainer.createEager();
     export const di = diContainer.getContext();

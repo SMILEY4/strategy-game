@@ -9,7 +9,7 @@ import {Text} from "../../components/text/Text";
 import {useConnectGameSession, useGameState} from "../../hooks/gamesession/gameSessions";
 import "./pageInGame.scoped.less";
 
-const USE_DUMMY_CANVAS = true;
+const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
     const currentState = useGameState();
