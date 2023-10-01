@@ -4,7 +4,6 @@ import {RenderWorldFactory} from "./world/renderFactory";
 import {RenderWorld} from "./world/renderWorld";
 import {Camera} from "./common/camera";
 import {GLRenderer} from "./common/glRenderer";
-import {RenderChunkFactoryV2} from "./world/renderChunkFactoryV2";
 import {RenderChunkFactory} from "./world/renderChunkFactory";
 
 export class GameRenderer {
@@ -38,7 +37,7 @@ export class GameRenderer {
                     chunk.dispose();
                 });
             });
-            this.world?.getLayers()[0].setChunks(RenderChunkFactoryV2.create(this.gl, this.gameRepository.getTiles()));
+            this.world?.getLayers()[0].setChunks(RenderChunkFactory.create(this.gl, this.gameRepository.getTiles()));
         }
     }
 
