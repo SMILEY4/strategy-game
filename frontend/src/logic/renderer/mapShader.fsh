@@ -12,9 +12,7 @@ out vec4 outColor;
 
 void main() {
     vec4 baseColor = texture(u_texture, v_textureCoordinates);
-
     int visibility = v_terrain.x;
-
     if (visibility == 0) { // unknown
         outColor = vec4(baseColor.rgb * 0.2, 1.0);
     }

@@ -1,6 +1,6 @@
 export namespace GLError {
 
-    export let enabled: boolean = true
+    export let enabled: boolean = false
 
     export function check(gl: WebGL2RenderingContext): boolean {
         if(!GLError.enabled) {

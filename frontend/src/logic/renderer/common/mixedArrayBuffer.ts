@@ -123,13 +123,17 @@ export class MixedArrayBufferCursor {
         this.pattern = buffer.getPattern();
     }
 
-    public append(value: number) {
-        const type = this.pattern[this.index % this.pattern.length];
-        const amountBytes = MixedArrayBuffer.getBytes(type);
-        const index = this.bytePosition / amountBytes;
-        this.buffer.set(index, type, value);
-        this.bytePosition += amountBytes;
-        this.index += 1;
+    public append(value: number | number[]) {
+        if (Array.isArray(value)) {
+            value.forEach(v => this.append(v));
+        } else {
+            const type = this.pattern[this.index % this.pattern.length];
+            const amountBytes = MixedArrayBuffer.getBytes(type);
+            const index = this.bytePosition / amountBytes;
+            this.buffer.set(index, type, value);
+            this.bytePosition += amountBytes;
+            this.index += 1;
+        }
     }
 
     public reset() {

@@ -201,9 +201,7 @@ export class GLProgram {
                     offset,
                 );
             }
-            if(GLError.check(this.gl))  {
-                console.warn(name, type, GLProgram.shaderAttributeTypeToGLType(type), stride, offset)
-            }
+            GLError.check(this.gl)
         } else {
             console.error("Could not set attribute '" + name + "'. Location not found.");
         }
