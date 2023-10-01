@@ -5,6 +5,7 @@ import {GLBuffer, GLBufferType, GLBufferUsage} from "../common/glBuffer";
 import {TilemapUtils} from "../../../core/tilemap/tilemapUtils";
 import {RenderChunk} from "./renderChunk";
 import {BufferPackager} from "../common/bufferPackager";
+import {MixedArrayBufferType} from "../common/mixedArrayBuffer";
 
 /*
 Vertices of hex-tiles are constructed as following:
@@ -21,7 +22,7 @@ export namespace RenderChunkFactory {
 
     const valuesPerVertex = 2 + 4 + 2 + 2;
     const verticesPerTile = 13;
-    const chunkSize = 11;
+    const chunkSize = 21;
 
     interface IntermediateChunk {
         key: string,
@@ -31,6 +32,20 @@ export namespace RenderChunkFactory {
         indices: number[]
         indexOffset: number
     }
+
+    /*
+     * IDEA:
+     *
+     * - iterate over all tiles
+     *      - create chunks (no vertices yet)
+     *      - count amount tiles for each chunk
+     * - iterate over all chunks
+     *      - create ArrayBuffers of correct size (vertices + indices)
+     * - iterate over all tiles
+     *      - find chunk
+     *      - vertices: set data in correct buffer view at correct index
+     *      - indices: set index-data
+     */
 
     export function createChunks(gl: WebGL2RenderingContext, tiles: Tile[]): RenderChunk[] {
         const chunks = new Map<string, IntermediateChunk>();
@@ -47,16 +62,16 @@ export namespace RenderChunkFactory {
             chunk.cq,
             chunk.cr,
             GLBuffer.createRaw(gl, GLBufferType.ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, BufferPackager.pack(chunk.vertices, [
-                {type: "float"},
-                {type: "float"},
-                {type: "float"},
-                {type: "float"},
-                {type: "float"},
-                {type: "float"},
-                {type: "float"},
-                {type: "float"},
-                {type: "int"},
-                {type: "int"}
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.FLOAT,
+                MixedArrayBufferType.INT,
+                MixedArrayBufferType.INT,
             ]), chunk.vertices.length, "chunk.vertices"),
             GLBuffer.create(gl, GLBufferType.ELEMENT_ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, chunk.indices, "chunk.indices"),
         ));
