@@ -117,8 +117,9 @@ export class ProgramMetadata {
     }
 
     public setAttribute(name: string, buffer: GLBuffer) {
-        this.setAttributes([name], buffer)
+        this.setAttributes([name], buffer);
     }
+
 
     public setAttributes(names: string[], buffer: GLBuffer) {
         buffer.use();

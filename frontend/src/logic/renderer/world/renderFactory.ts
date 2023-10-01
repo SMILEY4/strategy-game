@@ -46,7 +46,7 @@ export namespace RenderWorldFactory {
                 },
                 {
                     name: "in_terrain",
-                    type: ShaderAttributeType.FLOAT,
+                    type: ShaderAttributeType.INT,
                     amountComponents: 2,
                 },
             ]),

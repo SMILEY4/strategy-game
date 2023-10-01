@@ -4,6 +4,7 @@ import {Tile} from "../../../models/tile";
 import {GLBuffer, GLBufferType, GLBufferUsage} from "../common/glBuffer";
 import {TilemapUtils} from "../../../core/tilemap/tilemapUtils";
 import {RenderChunk} from "./renderChunk";
+import {BufferPackager} from "../common/bufferPackager";
 
 /*
 Vertices of hex-tiles are constructed as following:
@@ -45,7 +46,18 @@ export namespace RenderChunkFactory {
         return Array.from(chunks.values()).map(chunk => new RenderChunk(
             chunk.cq,
             chunk.cr,
-            GLBuffer.create(gl, GLBufferType.ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, chunk.vertices, "chunk.vertices"),
+            GLBuffer.createRaw(gl, GLBufferType.ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, BufferPackager.pack(chunk.vertices, [
+                {type: "float"},
+                {type: "float"},
+                {type: "float"},
+                {type: "float"},
+                {type: "float"},
+                {type: "float"},
+                {type: "float"},
+                {type: "float"},
+                {type: "int"},
+                {type: "int"}
+            ]), chunk.vertices.length, "chunk.vertices"),
             GLBuffer.create(gl, GLBufferType.ELEMENT_ARRAY_BUFFER, GLBufferUsage.STATIC_DRAW, chunk.indices, "chunk.indices"),
         ));
     }

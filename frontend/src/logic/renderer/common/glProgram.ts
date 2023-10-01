@@ -176,6 +176,9 @@ export class GLProgram {
         offset: number,
         location?: GLint,
     ) {
+        // todo: this could be moved to setup-step of buffer (-> only call once)
+        // https://medium.com/@david.komer/dude-wheres-my-data-vao-s-in-webgl-896631783895
+        // https://github.com/stackgl/gl-vao
         const loc = location === undefined ? this.getAttributeLocation(name) : location;
         if (loc != null) {
             this.gl.enableVertexAttribArray(loc);

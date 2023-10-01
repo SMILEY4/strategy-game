@@ -25,6 +25,13 @@ export class GLBuffer {
         return buffer;
     }
 
+    public static createRaw(gl: WebGL2RenderingContext, type: GLBufferType, usage: GLBufferUsage, data: ArrayBuffer, size: number, debugName?: string): GLBuffer {
+        const handle = GLBuffer.generateHandle(gl)
+        const buffer =  new GLBuffer(gl, handle, type, debugName)
+        buffer.setDataRaw(type, usage, data, size)
+        return buffer;
+    }
+
     private static generateHandle(gl: WebGL2RenderingContext): WebGLBuffer {
         const handle = gl.createBuffer();
         if (handle === null) {
@@ -51,13 +58,32 @@ export class GLBuffer {
      * replace the data of this buffer with the given data.
      */
     public setData(type: GLBufferType, usage: GLBufferUsage, array: number[]): GLBuffer {
+        const data = GLBuffer.packageData(type, array);
+        return this.setDataRaw(type, usage, data, array.length);
+        // if (this.handle) {
+        //     const typeId = GLBuffer.convertBufferType(type);
+        //     const usageId = GLBuffer.convertBufferUsage(usage);
+        //     const data = GLBuffer.packageData(type, array);
+        //     this.gl.bindBuffer(typeId, this.handle);
+        //     this.gl.bufferData(typeId, data, usageId);
+        //     this.size = data.length;
+        //     GLError.check(this.gl)
+        //     return this;
+        // } else {
+        //     throw new Error("Could not set data for buffer '" + this.debugName + "'. Buffer has not been created yet.");
+        // }
+    }
+
+    /**
+     * replace the data of this buffer with the given data.
+     */
+    public setDataRaw(type: GLBufferType, usage: GLBufferUsage, data: ArrayBuffer, size: number): GLBuffer {
         if (this.handle) {
             const typeId = GLBuffer.convertBufferType(type);
             const usageId = GLBuffer.convertBufferUsage(usage);
-            const data = GLBuffer.packageData(type, array);
             this.gl.bindBuffer(typeId, this.handle);
             this.gl.bufferData(typeId, data, usageId);
-            this.size = data.length;
+            this.size = size;
             GLError.check(this.gl)
             return this;
         } else {
