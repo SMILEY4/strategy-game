@@ -28,7 +28,7 @@ export namespace ProgramMetadata {
     export interface AttributesData {
         name: string,
         type: ShaderAttributeType,
-        amountComponents: number,
+        amountComponents: 1 | 2 | 3 | 4,
     }
 }
 
@@ -39,7 +39,7 @@ export class ProgramMetadata {
             name: name,
             type: type,
             amountComponents: amountComponents,
-            stride: amountComponents * this.shaderAttributeTypeToBytes(type),
+            stride: amountComponents * GLProgram.shaderAttributeTypeToBytes(type),
             normalized: false,
             offset: 0,
         };
@@ -47,7 +47,7 @@ export class ProgramMetadata {
 
     public static createAttributes(attributes: AttributesData[]): Attribute[] {
         const strideBytes = attributes
-            .map(a => a.amountComponents * this.shaderAttributeTypeToBytes(a.type))
+            .map(a => a.amountComponents * GLProgram.shaderAttributeTypeToBytes(a.type))
             .reduce((a, b) => a + b, 0);
         let offsetBytes = 0;
         return attributes.map(a => {
@@ -59,7 +59,7 @@ export class ProgramMetadata {
                 normalized: false,
                 offset: offsetBytes,
             };
-            offsetBytes += a.amountComponents * this.shaderAttributeTypeToBytes(a.type);
+            offsetBytes += a.amountComponents * GLProgram.shaderAttributeTypeToBytes(a.type);
             return attribute;
         });
     }
@@ -112,7 +112,7 @@ export class ProgramMetadata {
         if (data !== undefined && location !== undefined) {
             this.program.setUniform(name, data.type, value, location);
         } else {
-            console.error("Could not set uniform", "no metadata for name '" + name + "' found.");
+            console.error("Could not set uniform: no metadata for name '" + name + "' found.");
         }
     }
 
@@ -132,23 +132,6 @@ export class ProgramMetadata {
             }
         });
 
-    }
-
-    private static shaderAttributeTypeToBytes(type: ShaderAttributeType): number {
-        switch (type) {
-            case ShaderAttributeType.BYTE:
-                return 1;
-            case ShaderAttributeType.SHORT:
-                return 2;
-            case ShaderAttributeType.U_BYTE:
-                return 1;
-            case ShaderAttributeType.U_SHORT:
-                return 2;
-            case ShaderAttributeType.FLOAT:
-                return 4;
-            case ShaderAttributeType.HALF_FLOAT:
-                return 2;
-        }
     }
 
 }

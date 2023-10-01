@@ -1,4 +1,5 @@
 import {GLBuffer} from "./glBuffer";
+import {GLError} from "./glError";
 
 export class GLRenderer {
 
@@ -14,6 +15,7 @@ export class GLRenderer {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        GLError.check(this.gl)
     }
 
     drawMesh(indexBuffer: GLBuffer) {
@@ -24,6 +26,7 @@ export class GLRenderer {
             this.gl.UNSIGNED_SHORT,
             0,
         );
+        GLError.check(this.gl)
     }
 
 }

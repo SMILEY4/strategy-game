@@ -1,8 +1,12 @@
+import {GLError} from "./glError";
+
 export enum ShaderAttributeType {
     BYTE, // 8-bit integer [-128, 127]
     SHORT, // 16-bit integer [-32768, 32767]
+    INT, // 32-bit integer
     U_BYTE, // unsigned 8-bit integer [0, 255]
     U_SHORT, // unsigned 16-bit integer [0, 65535]
+    U_INT, // unsigned 32-bit integer
     FLOAT, // 32-bit IEEE floating point number
     HALF_FLOAT, // 16-bit IEEE floating point number
 }
@@ -147,6 +151,7 @@ export class GLProgram {
      */
     public use() {
         this.gl.useProgram(this.handle);
+        GLError.check(this.gl)
     }
 
     /**
@@ -155,6 +160,7 @@ export class GLProgram {
     public dispose() {
         if (this.handle) {
             this.gl.deleteProgram(this.handle);
+            GLError.check(this.gl)
         }
     }
 
@@ -173,14 +179,28 @@ export class GLProgram {
         const loc = location === undefined ? this.getAttributeLocation(name) : location;
         if (loc != null) {
             this.gl.enableVertexAttribArray(loc);
-            this.gl.vertexAttribPointer(
-                loc,
-                amountComponents,
-                GLProgram.shaderAttributeTypeToGLType(type),
-                normalized,
-                stride,
-                offset,
-            );
+            GLError.check(this.gl)
+            if(GLProgram.shaderAttributeTypeIsInteger(type)) {
+                this.gl.vertexAttribIPointer(
+                    loc,
+                    amountComponents,
+                    GLProgram.shaderAttributeTypeToGLType(type),
+                    stride,
+                    offset,
+                );
+            } else {
+                this.gl.vertexAttribPointer(
+                    loc,
+                    amountComponents,
+                    GLProgram.shaderAttributeTypeToGLType(type),
+                    normalized,
+                    stride,
+                    offset,
+                );
+            }
+            if(GLError.check(this.gl))  {
+                console.warn(name, type, GLProgram.shaderAttributeTypeToGLType(type), stride, offset)
+            }
         } else {
             console.error("Could not set attribute '" + name + "'. Location not found.");
         }
@@ -266,6 +286,7 @@ export class GLProgram {
                 this.gl.uniformMatrix4fv(loc, false, valuesArray);
                 break;
         }
+        GLError.check(this.gl)
     }
 
     /**
@@ -273,6 +294,7 @@ export class GLProgram {
      */
     public getAttributeLocation(name: string): GLint | null {
         const location: GLint = this.gl.getAttribLocation(this.handle, name);
+        GLError.check(this.gl)
         if (location >= 0) {
             return location;
         } else {
@@ -284,23 +306,29 @@ export class GLProgram {
      * Get the location of the uniform with the given name
      */
     public getUniformLocation(name: string): WebGLUniformLocation | null {
-        return this.gl.getUniformLocation(this.handle, name);
+        const location =  this.gl.getUniformLocation(this.handle, name);
+        GLError.check(this.gl)
+        return location;
     }
 
     public getDebugName(): string {
         return this.debugName;
     }
 
-    private static shaderAttributeTypeToGLType(type: ShaderAttributeType): GLenum {
+    public static shaderAttributeTypeToGLType(type: ShaderAttributeType): GLenum {
         switch (type) {
             case ShaderAttributeType.BYTE:
                 return WebGL2RenderingContext.BYTE;
             case ShaderAttributeType.SHORT:
                 return WebGL2RenderingContext.SHORT;
+            case ShaderAttributeType.INT:
+                return WebGL2RenderingContext.INT;
             case ShaderAttributeType.U_BYTE:
                 return WebGL2RenderingContext.UNSIGNED_BYTE;
             case ShaderAttributeType.U_SHORT:
                 return WebGL2RenderingContext.UNSIGNED_SHORT;
+            case ShaderAttributeType.U_INT:
+                return WebGL2RenderingContext.UNSIGNED_INT;
             case ShaderAttributeType.FLOAT:
                 return WebGL2RenderingContext.FLOAT;
             case ShaderAttributeType.HALF_FLOAT:
@@ -309,21 +337,34 @@ export class GLProgram {
     }
 
 
-    private static shaderAttributeTypeToBytes(type: ShaderAttributeType): number {
+    public static shaderAttributeTypeToBytes(type: ShaderAttributeType): number {
         switch (type) {
             case ShaderAttributeType.BYTE:
                 return 1;
             case ShaderAttributeType.SHORT:
                 return 2;
+            case ShaderAttributeType.INT:
+                return 4;
             case ShaderAttributeType.U_BYTE:
                 return 1;
             case ShaderAttributeType.U_SHORT:
                 return 2;
+            case ShaderAttributeType.U_INT:
+                return 4;
             case ShaderAttributeType.FLOAT:
                 return 4;
             case ShaderAttributeType.HALF_FLOAT:
                 return 2;
         }
+    }
+
+    public static shaderAttributeTypeIsInteger(type: ShaderAttributeType): boolean {
+        return type === ShaderAttributeType.BYTE
+            || type === ShaderAttributeType.SHORT
+            || type === ShaderAttributeType.INT
+            || type === ShaderAttributeType.U_BYTE
+            || type === ShaderAttributeType.U_SHORT
+            || type === ShaderAttributeType.U_INT;
     }
 
 }

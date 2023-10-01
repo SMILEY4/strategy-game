@@ -23,6 +23,10 @@ export namespace RenderWorldFactory {
                     name: "u_viewProjection",
                     type: ShaderUniformType.MAT3,
                 },
+                {
+                    name: "u_texture",
+                    type: ShaderUniformType.SAMPLER_2D,
+                },
             ],
             attributes: ProgramMetadata.createAttributes([
                 {

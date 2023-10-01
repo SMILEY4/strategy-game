@@ -1,3 +1,5 @@
+import {GLError} from "./glError";
+
 export enum GLBufferType {
     ARRAY_BUFFER,
     ELEMENT_ARRAY_BUFFER,
@@ -56,6 +58,7 @@ export class GLBuffer {
             this.gl.bindBuffer(typeId, this.handle);
             this.gl.bufferData(typeId, data, usageId);
             this.size = data.length;
+            GLError.check(this.gl)
             return this;
         } else {
             throw new Error("Could not set data for buffer '" + this.debugName + "'. Buffer has not been created yet.");
@@ -68,6 +71,7 @@ export class GLBuffer {
      */
     public use() {
         this.gl.bindBuffer(GLBuffer.convertBufferType(this.type), this.handle);
+        GLError.check(this.gl)
     }
 
 
@@ -76,6 +80,7 @@ export class GLBuffer {
      */
     public dispose() {
         this.gl.deleteBuffer(this.handle);
+        GLError.check(this.gl)
     }
 
 
