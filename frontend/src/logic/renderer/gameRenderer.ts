@@ -37,7 +37,11 @@ export class GameRenderer {
                     chunk.dispose();
                 });
             });
-            this.world?.getLayers()[0].setChunks(RenderChunkFactory.create(this.gl, this.gameRepository.getTiles()));
+            this.world?.getLayers()[0].setChunks(RenderChunkFactory.create(
+                this.gl,
+                this.gameRepository.getTiles(),
+                this.world?.getLayers()[0].getShaderAttributes()
+            ));
         }
     }
 

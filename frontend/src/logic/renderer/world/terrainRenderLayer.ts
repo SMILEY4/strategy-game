@@ -1,4 +1,4 @@
-import {GLProgram} from "../common/glProgram";
+import {AttributeInfo, GLProgram} from "../common/glProgram";
 import {GLRenderer} from "../common/glRenderer";
 import {ProgramMetadata} from "../common/programMetadata";
 import {Camera} from "../common/camera";
@@ -24,10 +24,7 @@ export class TerrainRenderLayer extends BaseRenderLayer {
         this.programMeta.setUniform("u_viewProjection", camera.getViewProjectionMatrixOrThrow());
         this.programMeta.setUniform("u_texture", 0);
         this.getChunks().forEach(chunk => {
-            this.programMeta.setAttributes(
-                ["in_worldPosition", "in_tilePosition", "in_textureCoordinates", "in_terrain"],
-                chunk.getVertexBuffer()
-            );
+            chunk.getVertexBuffer().use();
             renderer.drawMesh(chunk.getIndexBuffer());
         });
     }
@@ -35,6 +32,10 @@ export class TerrainRenderLayer extends BaseRenderLayer {
     public dispose(): void {
         super.dispose();
         this.program.dispose();
+    }
+
+    public getShaderAttributes(): AttributeInfo[] {
+        return this.program.getAttributes();
     }
 
 }

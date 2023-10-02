@@ -1,5 +1,5 @@
 import {TerrainRenderLayer} from "./terrainRenderLayer";
-import {GLProgram, ShaderAttributeType, ShaderUniformType} from "../common/glProgram";
+import {GLProgram, ShaderUniformType} from "../common/glProgram";
 import {ProgramMetadata} from "../common/programMetadata";
 import {RenderWorld} from "./renderWorld";
 
@@ -28,30 +28,8 @@ export namespace RenderWorldFactory {
                     type: ShaderUniformType.SAMPLER_2D,
                 },
             ],
-            attributes: ProgramMetadata.createAttributes([
-                {
-                    name: "in_worldPosition",
-                    type: ShaderAttributeType.FLOAT,
-                    amountComponents: 2,
-                },
-                {
-                    name: "in_tilePosition",
-                    type: ShaderAttributeType.FLOAT,
-                    amountComponents: 4,
-                },
-                {
-                    name: "in_textureCoordinates",
-                    type: ShaderAttributeType.FLOAT,
-                    amountComponents: 2,
-                },
-                {
-                    name: "in_terrain",
-                    type: ShaderAttributeType.INT,
-                    amountComponents: 2,
-                },
-            ]),
         });
-        const tileset = GLTexture.createFromPath(gl, "/tileset.png", "tileset.terrain")
+        const tileset = GLTexture.createFromPath(gl, "/tileset.png", "tileset.terrain");
         return new TerrainRenderLayer(program, programMeta, tileset);
     }
 

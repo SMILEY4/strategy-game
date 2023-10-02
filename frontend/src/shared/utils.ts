@@ -1,3 +1,7 @@
+export function isPresent<T>(value: T  | null | undefined ): boolean{
+    return !(value === undefined || value === null);
+}
+
 export function orDefault<T>(value: T | null | undefined, defaultValue: T): T {
     if (value == null || value == undefined) {
         return defaultValue;

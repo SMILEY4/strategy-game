@@ -1,6 +1,6 @@
 export namespace GLError {
 
-    export let enabled: boolean = false
+    export let enabled: boolean = true
 
     export function check(gl: WebGL2RenderingContext): boolean {
         if(!GLError.enabled) {
@@ -8,7 +8,7 @@ export namespace GLError {
         }
         const error = gl.getError()
         if(error !== WebGL2RenderingContext.NO_ERROR) {
-            console.error("GL_ERROR", glErrorToString(error), "(" + error + ")")
+            console.error("webgl-error:", glErrorToString(error))
             return true;
         } else {
             return false;

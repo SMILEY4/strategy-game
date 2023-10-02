@@ -1,15 +1,6 @@
 import {GLError} from "./glError";
+import {orNull} from "../../../shared/utils";
 
-export enum ShaderAttributeType {
-    BYTE, // 8-bit integer [-128, 127]
-    SHORT, // 16-bit integer [-32768, 32767]
-    INT, // 32-bit integer
-    U_BYTE, // unsigned 8-bit integer [0, 255]
-    U_SHORT, // unsigned 16-bit integer [0, 65535]
-    U_INT, // unsigned 32-bit integer
-    FLOAT, // 32-bit IEEE floating point number
-    HALF_FLOAT, // 16-bit IEEE floating point number
-}
 
 export enum ShaderUniformType {
     FLOAT,
@@ -44,7 +35,22 @@ export enum ShaderUniformType {
     BOOL_VEC4,
 }
 
-export type UniformValueType = number | number[] | Float32Array
+export type UniformValueType = number | number[] | Float32Array;
+
+export interface UniformInfo {
+    name: string,
+    glType: number,
+    type: ShaderUniformType,
+    size: number,
+    location: WebGLUniformLocation
+}
+
+export interface AttributeInfo {
+    name: string,
+    glType: number,
+    size: number,
+    location: GLint
+}
 
 interface ShaderReport {
     source: string[],
@@ -137,13 +143,62 @@ export class GLProgram {
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLProgram;
+    private readonly uniforms: UniformInfo[] = [];
+    private readonly attributes: AttributeInfo[] = [];
     private readonly debugName: string;
-
 
     constructor(gl: WebGL2RenderingContext, handle: WebGLProgram, debugName?: string) {
         this.gl = gl;
         this.handle = handle;
         this.debugName = debugName ? debugName : "noname";
+
+        this.use();
+        this.uniforms = this.getUniformInformation();
+        this.attributes = this.getAttributeInformation();
+    }
+
+
+    private getUniformInformation(): UniformInfo[] {
+        const uniforms: UniformInfo[] = [];
+        const numUniforms = this.gl.getProgramParameter(this.handle, this.gl.ACTIVE_UNIFORMS);
+        for (let i = 0; i < numUniforms; i++) {
+            const uniform = this.gl.getActiveUniform(this.handle, i);
+            if (uniform) {
+                const location = this.getUniformLocation(uniform.name);
+                if (location === null) {
+                    throw new Error("Could not get location for uniform " + uniform.name);
+                }
+                uniforms.push({
+                    name: uniform.name,
+                    type: ShaderUniformType.SAMPLER_2D,
+                    glType: uniform.type,
+                    size: uniform.size,
+                    location: location,
+                });
+            }
+        }
+        return uniforms;
+    }
+
+    private getAttributeInformation(): AttributeInfo[] {
+        const attributes: AttributeInfo[] = [];
+        const numAttribute = this.gl.getProgramParameter(this.handle, this.gl.ACTIVE_ATTRIBUTES);
+        for (let i = 0; i < numAttribute; i++) {
+            const attribute = this.gl.getActiveAttrib(this.handle, i);
+            if (attribute) {
+                const location = this.getAttributeLocation(attribute.name);
+                if (location === null) {
+                    throw new Error("Could not get location for attribute " + attribute.name);
+                }
+                attributes.push({
+                    name: attribute.name,
+                    glType: attribute.type,
+                    size: attribute.size,
+                    location: location,
+                });
+            }
+        }
+        return attributes;
     }
 
     /**
@@ -151,7 +206,7 @@ export class GLProgram {
      */
     public use() {
         this.gl.useProgram(this.handle);
-        GLError.check(this.gl)
+        GLError.check(this.gl);
     }
 
     /**
@@ -160,50 +215,7 @@ export class GLProgram {
     public dispose() {
         if (this.handle) {
             this.gl.deleteProgram(this.handle);
-            GLError.check(this.gl)
-        }
-    }
-
-    /**
-     * Set the value of the attribute with the given name. This program and the buffer with the data must be bound first.
-     */
-    public setAttribute(
-        name: string,
-        type: ShaderAttributeType,
-        amountComponents: number,
-        normalized: boolean,
-        stride: number,
-        offset: number,
-        location?: GLint,
-    ) {
-        // todo: this could be moved to setup-step of buffer (-> only call once)
-        // https://medium.com/@david.komer/dude-wheres-my-data-vao-s-in-webgl-896631783895
-        // https://github.com/stackgl/gl-vao
-        const loc = location === undefined ? this.getAttributeLocation(name) : location;
-        if (loc != null) {
-            this.gl.enableVertexAttribArray(loc);
-            GLError.check(this.gl)
-            if(GLProgram.shaderAttributeTypeIsInteger(type)) {
-                this.gl.vertexAttribIPointer(
-                    loc,
-                    amountComponents,
-                    GLProgram.shaderAttributeTypeToGLType(type),
-                    stride,
-                    offset,
-                );
-            } else {
-                this.gl.vertexAttribPointer(
-                    loc,
-                    amountComponents,
-                    GLProgram.shaderAttributeTypeToGLType(type),
-                    normalized,
-                    stride,
-                    offset,
-                );
-            }
-            GLError.check(this.gl)
-        } else {
-            console.error("Could not set attribute '" + name + "'. Location not found.");
+            GLError.check(this.gl);
         }
     }
 
@@ -287,7 +299,16 @@ export class GLProgram {
                 this.gl.uniformMatrix4fv(loc, false, valuesArray);
                 break;
         }
-        GLError.check(this.gl)
+        GLError.check(this.gl);
+    }
+
+    /**
+     * Get the location of the uniform with the given name
+     */
+    public getUniformLocation(name: string): WebGLUniformLocation | null {
+        const location = this.gl.getUniformLocation(this.handle, name);
+        GLError.check(this.gl);
+        return location;
     }
 
     /**
@@ -295,7 +316,7 @@ export class GLProgram {
      */
     public getAttributeLocation(name: string): GLint | null {
         const location: GLint = this.gl.getAttribLocation(this.handle, name);
-        GLError.check(this.gl)
+        GLError.check(this.gl);
         if (location >= 0) {
             return location;
         } else {
@@ -303,69 +324,24 @@ export class GLProgram {
         }
     }
 
-    /**
-     * Get the location of the uniform with the given name
-     */
-    public getUniformLocation(name: string): WebGLUniformLocation | null {
-        const location =  this.gl.getUniformLocation(this.handle, name);
-        GLError.check(this.gl)
-        return location;
+    public getUniforms(): UniformInfo[] {
+        return this.uniforms;
+    }
+
+    public getUniform(name: string): UniformInfo | null {
+        return orNull(this.uniforms.find(u => u.name === name));
+    }
+
+    public getAttributes(): AttributeInfo[] {
+        return this.attributes;
+    }
+
+    public getAttribute(name: string): AttributeInfo | null {
+        return orNull(this.attributes.find(a => a.name === name));
     }
 
     public getDebugName(): string {
         return this.debugName;
-    }
-
-    public static shaderAttributeTypeToGLType(type: ShaderAttributeType): GLenum {
-        switch (type) {
-            case ShaderAttributeType.BYTE:
-                return WebGL2RenderingContext.BYTE;
-            case ShaderAttributeType.SHORT:
-                return WebGL2RenderingContext.SHORT;
-            case ShaderAttributeType.INT:
-                return WebGL2RenderingContext.INT;
-            case ShaderAttributeType.U_BYTE:
-                return WebGL2RenderingContext.UNSIGNED_BYTE;
-            case ShaderAttributeType.U_SHORT:
-                return WebGL2RenderingContext.UNSIGNED_SHORT;
-            case ShaderAttributeType.U_INT:
-                return WebGL2RenderingContext.UNSIGNED_INT;
-            case ShaderAttributeType.FLOAT:
-                return WebGL2RenderingContext.FLOAT;
-            case ShaderAttributeType.HALF_FLOAT:
-                return WebGL2RenderingContext.HALF_FLOAT;
-        }
-    }
-
-
-    public static shaderAttributeTypeToBytes(type: ShaderAttributeType): number {
-        switch (type) {
-            case ShaderAttributeType.BYTE:
-                return 1;
-            case ShaderAttributeType.SHORT:
-                return 2;
-            case ShaderAttributeType.INT:
-                return 4;
-            case ShaderAttributeType.U_BYTE:
-                return 1;
-            case ShaderAttributeType.U_SHORT:
-                return 2;
-            case ShaderAttributeType.U_INT:
-                return 4;
-            case ShaderAttributeType.FLOAT:
-                return 4;
-            case ShaderAttributeType.HALF_FLOAT:
-                return 2;
-        }
-    }
-
-    public static shaderAttributeTypeIsInteger(type: ShaderAttributeType): boolean {
-        return type === ShaderAttributeType.BYTE
-            || type === ShaderAttributeType.SHORT
-            || type === ShaderAttributeType.INT
-            || type === ShaderAttributeType.U_BYTE
-            || type === ShaderAttributeType.U_SHORT
-            || type === ShaderAttributeType.U_INT;
     }
 
 }

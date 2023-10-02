@@ -1,4 +1,5 @@
 import {GLError} from "./glError";
+import {isPresent} from "../../../shared/utils";
 
 export enum GLBufferType {
     ARRAY_BUFFER,
@@ -11,33 +12,88 @@ export enum GLBufferUsage {
     STREAM_DRAW
 }
 
+export enum GLBufferAttributeType {
+    BYTE, // 8-bit integer [-128, 127]
+    SHORT, // 16-bit integer [-32768, 32767]
+    INT, // 32-bit integer
+    U_BYTE, // unsigned 8-bit integer [0, 255]
+    U_SHORT, // unsigned 16-bit integer [0, 65535]
+    U_INT, // unsigned 32-bit integer
+    FLOAT, // 32-bit IEEE floating point number
+    HALF_FLOAT, // 16-bit IEEE floating point number 
+}
+
+export interface GLBufferAttribute {
+    name: string,
+    location: GLint
+    type: GLBufferAttributeType,
+    amountComponents: 1 | 2 | 3 | 4,
+    normalized?: boolean,
+    stride?: number,
+    offset?: number
+}
+
+export interface GLBufferInformation {
+    type: GLBufferType,
+    usage: GLBufferUsage,
+    attributes: GLBufferAttribute[]
+    debugName?: string,
+}
+
+
 export class GLBuffer {
 
-    public static createEmpty(gl: WebGL2RenderingContext, type: GLBufferType, usage: GLBufferUsage, debugName?: string): GLBuffer {
-        const handle = GLBuffer.generateHandle(gl)
-        return new GLBuffer(gl, handle, type, debugName)
-    }
-
-    public static create(gl: WebGL2RenderingContext, type: GLBufferType, usage: GLBufferUsage, array: number[], debugName?: string): GLBuffer {
-        const handle = GLBuffer.generateHandle(gl)
-        const buffer =  new GLBuffer(gl, handle, type, debugName)
-        buffer.setData(type, usage, array)
+    public static create(gl: WebGL2RenderingContext, array: number[], information: GLBufferInformation): GLBuffer {
+        const buffer = GLBuffer.createEmpty(gl, information);
+        buffer.setData(information.usage, array);
         return buffer;
     }
 
-    public static createRaw(gl: WebGL2RenderingContext, type: GLBufferType, usage: GLBufferUsage, data: ArrayBuffer, size: number, debugName?: string): GLBuffer {
-        const handle = GLBuffer.generateHandle(gl)
-        const buffer =  new GLBuffer(gl, handle, type, debugName)
-        buffer.setDataRaw(type, usage, data, size)
+    public static createRaw(gl: WebGL2RenderingContext, data: ArrayBuffer, size: number, information: GLBufferInformation): GLBuffer {
+        const buffer = GLBuffer.createEmpty(gl, information);
+        buffer.setDataRaw(information.usage, data, size);
+        return buffer;
+    }
+
+    public static createEmpty(gl: WebGL2RenderingContext, information: GLBufferInformation): GLBuffer {
+        const handle = GLBuffer.generateHandle(gl);
+        const buffer = new GLBuffer(gl, handle, information.type, information.debugName);
+        GLBuffer.setupAttributes(gl, buffer, information.attributes);
         return buffer;
     }
 
     private static generateHandle(gl: WebGL2RenderingContext): WebGLBuffer {
         const handle = gl.createBuffer();
+        GLError.check(gl);
         if (handle === null) {
             throw new Error("Could not create buffer.");
         }
         return handle;
+    }
+
+    private static setupAttributes(gl: WebGL2RenderingContext, buffer: GLBuffer, attributes: GLBufferAttribute[]) {
+        buffer.use();
+        GLError.check(gl);
+        const stride = GLBuffer.calculateStride(attributes);
+        let offsetBytes = 0;
+        attributes.forEach(attribute => {
+            buffer.setAttribute({
+                name: attribute.name,
+                location: attribute.location,
+                type: attribute.type,
+                amountComponents: attribute.amountComponents,
+                normalized: isPresent(attribute.normalized) ? attribute.normalized : false,
+                stride: isPresent(attribute.stride) ? attribute.stride : stride,
+                offset: isPresent(attribute.offset) ? attribute.offset : 0,
+            });
+            offsetBytes += GLBuffer.attributeTypeToBytes(attribute.type) * attribute.amountComponents;
+        });
+    }
+
+    private static calculateStride(attributes: GLBufferAttribute[]): number {
+        return attributes
+            .map(a => a.amountComponents * GLBuffer.attributeTypeToBytes(a.type))
+            .reduce((a, b) => a + b, 0);
     }
 
 
@@ -57,26 +113,56 @@ export class GLBuffer {
     /**
      * replace the data of this buffer with the given data.
      */
-    public setData(type: GLBufferType, usage: GLBufferUsage, array: number[]): GLBuffer {
-        const data = GLBuffer.packageData(type, array);
-        return this.setDataRaw(type, usage, data, array.length);
+    public setData(usage: GLBufferUsage, array: number[]): GLBuffer {
+        const data = GLBuffer.packageData(this.type, array);
+        return this.setDataRaw(usage, data, array.length);
     }
 
     /**
      * replace the data of this buffer with the given data.
      */
-    public setDataRaw(type: GLBufferType, usage: GLBufferUsage, data: ArrayBuffer, size: number): GLBuffer {
+    public setDataRaw(usage: GLBufferUsage, data: ArrayBuffer, size: number): GLBuffer {
         if (this.handle) {
-            const typeId = GLBuffer.convertBufferType(type);
+            const typeId = GLBuffer.convertBufferType(this.type);
             const usageId = GLBuffer.convertBufferUsage(usage);
             this.gl.bindBuffer(typeId, this.handle);
             this.gl.bufferData(typeId, data, usageId);
             this.size = size;
-            GLError.check(this.gl)
+            GLError.check(this.gl);
             return this;
         } else {
             throw new Error("Could not set data for buffer '" + this.debugName + "'. Buffer has not been created yet.");
         }
+    }
+
+    /**
+     * Set the value of the attribute with the given name. This buffer must be bound first.
+     */
+    public setAttribute(attribute: GLBufferAttribute) {
+        if (!isPresent(attribute.offset) || !isPresent(attribute.stride) || !isPresent(attribute.normalized)) {
+            throw new Error("Cannot set attribute: validation failed!");
+        }
+        this.gl.enableVertexAttribArray(attribute.location);
+        GLError.check(this.gl);
+        if (GLBuffer.attributeTypeIsInteger(attribute.type)) {
+            this.gl.vertexAttribIPointer(
+                attribute.location,
+                attribute.amountComponents,
+                GLBuffer.attributeTypeToGLType(attribute.type),
+                attribute.stride!,
+                attribute.offset!,
+            );
+        } else {
+            this.gl.vertexAttribPointer(
+                attribute.location,
+                attribute.amountComponents,
+                GLBuffer.attributeTypeToGLType(attribute.type),
+                attribute.normalized!,
+                attribute.stride!,
+                attribute.offset!,
+            );
+        }
+        GLError.check(this.gl);
     }
 
 
@@ -85,7 +171,7 @@ export class GLBuffer {
      */
     public use() {
         this.gl.bindBuffer(GLBuffer.convertBufferType(this.type), this.handle);
-        GLError.check(this.gl)
+        GLError.check(this.gl);
     }
 
 
@@ -94,7 +180,7 @@ export class GLBuffer {
      */
     public dispose() {
         this.gl.deleteBuffer(this.handle);
-        GLError.check(this.gl)
+        GLError.check(this.gl);
     }
 
 
@@ -141,6 +227,57 @@ export class GLBuffer {
                 return WebGL2RenderingContext.DYNAMIC_DRAW;
             case GLBufferUsage.STREAM_DRAW:
                 return WebGL2RenderingContext.STREAM_DRAW;
+        }
+    }
+
+    public static attributeTypeIsInteger(type: GLBufferAttributeType): boolean {
+        return type === GLBufferAttributeType.BYTE
+            || type === GLBufferAttributeType.SHORT
+            || type === GLBufferAttributeType.INT
+            || type === GLBufferAttributeType.U_BYTE
+            || type === GLBufferAttributeType.U_SHORT
+            || type === GLBufferAttributeType.U_INT;
+    }
+
+    public static attributeTypeToGLType(type: GLBufferAttributeType): GLenum {
+        switch (type) {
+            case GLBufferAttributeType.BYTE:
+                return WebGL2RenderingContext.BYTE;
+            case GLBufferAttributeType.SHORT:
+                return WebGL2RenderingContext.SHORT;
+            case GLBufferAttributeType.INT:
+                return WebGL2RenderingContext.INT;
+            case GLBufferAttributeType.U_BYTE:
+                return WebGL2RenderingContext.UNSIGNED_BYTE;
+            case GLBufferAttributeType.U_SHORT:
+                return WebGL2RenderingContext.UNSIGNED_SHORT;
+            case GLBufferAttributeType.U_INT:
+                return WebGL2RenderingContext.UNSIGNED_INT;
+            case GLBufferAttributeType.FLOAT:
+                return WebGL2RenderingContext.FLOAT;
+            case GLBufferAttributeType.HALF_FLOAT:
+                return WebGL2RenderingContext.HALF_FLOAT;
+        }
+    }
+
+    public static attributeTypeToBytes(type: GLBufferAttributeType): number {
+        switch (type) {
+            case GLBufferAttributeType.BYTE:
+                return 1;
+            case GLBufferAttributeType.SHORT:
+                return 2;
+            case GLBufferAttributeType.INT:
+                return 4;
+            case GLBufferAttributeType.U_BYTE:
+                return 1;
+            case GLBufferAttributeType.U_SHORT:
+                return 2;
+            case GLBufferAttributeType.U_INT:
+                return 4;
+            case GLBufferAttributeType.FLOAT:
+                return 4;
+            case GLBufferAttributeType.HALF_FLOAT:
+                return 2;
         }
     }
 

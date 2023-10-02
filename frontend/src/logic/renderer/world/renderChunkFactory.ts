@@ -3,8 +3,9 @@
 import {Tile} from "../../../models/tile";
 import {RenderChunk} from "./renderChunk";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../common/mixedArrayBuffer";
-import {GLBuffer, GLBufferType, GLBufferUsage} from "../common/glBuffer";
+import {GLBuffer, GLBufferAttributeType, GLBufferType, GLBufferUsage} from "../common/glBuffer";
 import {TilemapUtils} from "../../../core/tilemap/tilemapUtils";
+import {AttributeInfo} from "../common/glProgram";
 
 /*
 Vertices of hex-tiles are constructed as following:
@@ -52,7 +53,7 @@ export namespace RenderChunkFactory {
         cursorVertices: MixedArrayBufferCursor | null,
     }
 
-    export function create(gl: WebGL2RenderingContext, tiles: Tile[]): RenderChunk[] {
+    export function create(gl: WebGL2RenderingContext, tiles: Tile[], attributes: AttributeInfo[]): RenderChunk[] {
         const chunks = createChunks(tiles);
         createBuffers(chunks);
         populateBuffers(tiles, chunks);
@@ -62,19 +63,50 @@ export namespace RenderChunkFactory {
                 chunk.cr,
                 GLBuffer.createRaw(
                     gl,
-                    GLBufferType.ARRAY_BUFFER,
-                    GLBufferUsage.STATIC_DRAW,
                     chunk.vertices?.getRawBuffer()!,
                     chunk.amountTiles * verticesPerTile * valuesPerVertex,
-                    "chunk.vertices"
+                    {
+                        type: GLBufferType.ARRAY_BUFFER,
+                        usage: GLBufferUsage.STATIC_DRAW,
+                        attributes: [
+                            {
+                                name: "in_worldPosition",
+                                type: GLBufferAttributeType.FLOAT,
+                                amountComponents: 2,
+                                location: attributes.find(a => a.name === "in_worldPosition")!.location
+                            },
+                            {
+                                name: "in_tilePosition",
+                                type: GLBufferAttributeType.FLOAT,
+                                amountComponents: 4,
+                                location: attributes.find(a => a.name === "in_tilePosition")!.location
+                            },
+                            {
+                                name: "in_textureCoordinates",
+                                type: GLBufferAttributeType.FLOAT,
+                                amountComponents: 2,
+                                location: attributes.find(a => a.name === "in_textureCoordinates")!.location
+                            },
+                            {
+                                name: "in_terrain",
+                                type: GLBufferAttributeType.INT,
+                                amountComponents: 2,
+                                location: attributes.find(a => a.name === "in_terrain")!.location
+                            },
+                        ],
+                        debugName: "chunk.vertices"
+                    },
                 ),
                 GLBuffer.createRaw(
                     gl,
-                    GLBufferType.ELEMENT_ARRAY_BUFFER,
-                    GLBufferUsage.STATIC_DRAW,
                     chunk.indices?.getRawBuffer()!,
                     chunk.amountTiles * indicesPerTile,
-                    "chunk.indices"
+                    {
+                        type: GLBufferType.ELEMENT_ARRAY_BUFFER,
+                        usage: GLBufferUsage.STATIC_DRAW,
+                        attributes: [],
+                        debugName: "chunk.indices"
+                    },
                 ),
             );
         });
@@ -82,7 +114,7 @@ export namespace RenderChunkFactory {
 
     function createChunks(tiles: Tile[]): Map<string, IntermediateChunk> {
         const chunks = new Map<string, IntermediateChunk>();
-        for(let i=0, n=tiles.length; i<n; i++) {
+        for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
             const chunk = getChunkOrCreate(tile, chunks);
             chunk.amountTiles += 1;
@@ -114,11 +146,11 @@ export namespace RenderChunkFactory {
         chunks.forEach(chunk => {
             chunk.indices = new MixedArrayBuffer(
                 MixedArrayBuffer.getTotalRequiredBytes(chunk.amountTiles * indicesPerTile, PATTERN_INDEX),
-                PATTERN_INDEX
+                PATTERN_INDEX,
             );
             chunk.vertices = new MixedArrayBuffer(
                 MixedArrayBuffer.getTotalRequiredBytes(chunk.amountTiles * verticesPerTile * valuesPerVertex, PATTERN_VERTEX),
-                PATTERN_VERTEX
+                PATTERN_VERTEX,
             );
             chunk.cursorIndices = new MixedArrayBufferCursor(chunk.indices);
             chunk.cursorVertices = new MixedArrayBufferCursor(chunk.vertices);
@@ -127,7 +159,7 @@ export namespace RenderChunkFactory {
 
 
     function populateBuffers(tiles: Tile[], chunks: Map<string, IntermediateChunk>) {
-        for(let i=0, n=tiles.length; i<n; i++) {
+        for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
             const chunkQ = Math.floor((tile.identifier.q + (tile.identifier.r / 2)) / chunkSize);
             const chunkR = Math.floor(tile.identifier.r / chunkSize);
