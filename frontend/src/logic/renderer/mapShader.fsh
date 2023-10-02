@@ -11,16 +11,15 @@ uniform sampler2D u_texture;
 out vec4 outColor;
 
 void main() {
-    outColor = vec4(1.0);
-//    vec4 baseColor = texture(u_texture, v_textureCoordinates);
-//    int visibility = v_terrain.x;
-//    if (visibility == 0) { // unknown
-//        outColor = vec4(baseColor.rgb * 0.2, 1.0);
-//    }
-//    if (visibility == 1) { // discovered
-//        outColor = vec4(baseColor.rgb * 0.5, 1.0);
-//    }
-//    if (visibility == 2) { // visible
-//        outColor = vec4(baseColor.rgb, 1.0);
-//    }
+    vec4 baseColor = texture(u_texture, v_textureCoordinates);
+    int visibility = v_terrain.x;
+    if (visibility == 0) { // unknown
+        outColor = vec4(baseColor.rgb * 0.2, 1.0);
+    }
+    if (visibility == 1) { // discovered
+        outColor = vec4(baseColor.rgb * 0.5, 1.0);
+    }
+    if (visibility == 2) { // visible
+        outColor = vec4(baseColor.rgb, 1.0);
+    }
 }

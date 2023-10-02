@@ -6,6 +6,7 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {GLBuffer, GLBufferAttributeType, GLBufferType, GLBufferUsage} from "../common/glBuffer";
 import {TilemapUtils} from "../../../core/tilemap/tilemapUtils";
 import {AttributeInfo} from "../common/glProgram";
+import {GLVertexArray} from "../common/glVertexArray";
 
 /*
 Vertices of hex-tiles are constructed as following:
@@ -61,41 +62,36 @@ export namespace RenderChunkFactory {
             return new RenderChunk(
                 chunk.cq,
                 chunk.cr,
-                GLBuffer.createRaw(
+                GLVertexArray.create(
                     gl,
+                    [
+                        {
+                            name: "in_worldPosition",
+                            type: GLBufferAttributeType.FLOAT,
+                            amountComponents: 2,
+                            location: attributes.find(a => a.name === "in_worldPosition")!.location,
+                        },
+                        {
+                            name: "in_tilePosition",
+                            type: GLBufferAttributeType.FLOAT,
+                            amountComponents: 4,
+                            location: attributes.find(a => a.name === "in_tilePosition")!.location,
+                        },
+                        {
+                            name: "in_textureCoordinates",
+                            type: GLBufferAttributeType.FLOAT,
+                            amountComponents: 2,
+                            location: attributes.find(a => a.name === "in_textureCoordinates")!.location,
+                        },
+                        {
+                            name: "in_terrain",
+                            type: GLBufferAttributeType.INT,
+                            amountComponents: 2,
+                            location: attributes.find(a => a.name === "in_terrain")!.location,
+                        },
+                    ],
                     chunk.vertices?.getRawBuffer()!,
                     chunk.amountTiles * verticesPerTile * valuesPerVertex,
-                    {
-                        type: GLBufferType.ARRAY_BUFFER,
-                        usage: GLBufferUsage.STATIC_DRAW,
-                        attributes: [
-                            {
-                                name: "in_worldPosition",
-                                type: GLBufferAttributeType.FLOAT,
-                                amountComponents: 2,
-                                location: attributes.find(a => a.name === "in_worldPosition")!.location
-                            },
-                            {
-                                name: "in_tilePosition",
-                                type: GLBufferAttributeType.FLOAT,
-                                amountComponents: 4,
-                                location: attributes.find(a => a.name === "in_tilePosition")!.location
-                            },
-                            {
-                                name: "in_textureCoordinates",
-                                type: GLBufferAttributeType.FLOAT,
-                                amountComponents: 2,
-                                location: attributes.find(a => a.name === "in_textureCoordinates")!.location
-                            },
-                            {
-                                name: "in_terrain",
-                                type: GLBufferAttributeType.INT,
-                                amountComponents: 2,
-                                location: attributes.find(a => a.name === "in_terrain")!.location
-                            },
-                        ],
-                        debugName: "chunk.vertices"
-                    },
                 ),
                 GLBuffer.createRaw(
                     gl,
@@ -105,7 +101,7 @@ export namespace RenderChunkFactory {
                         type: GLBufferType.ELEMENT_ARRAY_BUFFER,
                         usage: GLBufferUsage.STATIC_DRAW,
                         attributes: [],
-                        debugName: "chunk.indices"
+                        debugName: "chunk.indices",
                     },
                 ),
             );

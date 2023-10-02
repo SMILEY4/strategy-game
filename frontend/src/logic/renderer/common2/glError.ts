@@ -1,14 +1,14 @@
 export namespace GLError {
 
-    export let enabled: boolean = true
+    export let enabled: boolean = true;
 
-    export function check(gl: WebGL2RenderingContext): boolean {
-        if(!GLError.enabled) {
+    export function check(gl: WebGL2RenderingContext, operation: string, message?: string): boolean {
+        if (!GLError.enabled) {
             return false;
         }
-        const error = gl.getError()
-        if(error !== WebGL2RenderingContext.NO_ERROR) {
-            console.error("webgl-error:", glErrorToString(error))
+        const error = gl.getError();
+        if (error !== WebGL2RenderingContext.NO_ERROR) {
+            console.error("webgl-error:", glErrorToString(error), "when calling", operation, " - ", message || "");
             return true;
         } else {
             return false;

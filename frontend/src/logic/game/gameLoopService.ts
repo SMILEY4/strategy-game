@@ -13,10 +13,12 @@ export class GameLoopService {
 
 
     initialize(canvas: HTMLCanvasElement) {
+        console.log("init renderer")
         this.renderer.initialize(canvas);
     }
 
     onGameStateUpdate() {
+        console.log("game state update")
         this.renderer.updateWorld();
     }
 

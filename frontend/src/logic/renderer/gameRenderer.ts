@@ -40,14 +40,21 @@ export class GameRenderer {
             this.world?.getLayers()[0].setChunks(RenderChunkFactory.create(
                 this.gl,
                 this.gameRepository.getTiles(),
-                this.world?.getLayers()[0].getShaderAttributes()
+                this.world?.getLayers()[0].getShaderAttributes(),
             ));
         }
     }
 
+    private firstFrame = true;
+
     public render() {
         if (this.world && this.worldRenderer && this.gl) {
-            this.worldRenderer.render(this.world, this.getRenderCamera());
+            if (this.firstFrame) {
+                console.log("render")
+                this.worldRenderer.render(this.world, this.getRenderCamera());
+                console.log("render done")
+                this.firstFrame = false;
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-import {GLError} from "./glError";
+import {GLError} from "../common2/glError";
 
 export class GLTexture {
 
@@ -20,7 +20,7 @@ export class GLTexture {
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
             gl.generateMipmap(gl.TEXTURE_2D);
         });
-        GLError.check(gl)
+        GLError.check(gl, "[...]", "creating texture from file")
         return new GLTexture(gl, handle, debugName);
     }
 
@@ -31,7 +31,7 @@ export class GLTexture {
         const handle = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, handle);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-        GLError.check(gl)
+        GLError.check(gl, "[...]", "creating texture from pixel-data")
         return new GLTexture(gl, handle, debugName);
     }
 
@@ -47,7 +47,7 @@ export class GLTexture {
         gl.generateMipmap(gl.TEXTURE_2D);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        GLError.check(gl)
+        GLError.check(gl, "[...]", "creating texture from canvas")
         return new GLTexture(gl, handle, debugName);
     }
 
@@ -69,7 +69,7 @@ export class GLTexture {
     public bind(textureUnit: number) {
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.handle);
-        GLError.check(this.gl)
+        GLError.check(this.gl, "activeTexture,bindTexture", "binding texture")
     }
 
 
@@ -79,7 +79,7 @@ export class GLTexture {
     public dispose() {
         if (this.handle) {
             this.gl.deleteTexture(this.handle);
-            GLError.check(this.gl)
+            GLError.check(this.gl, "deleteTexture", "disposing texture")
         }
     }
 

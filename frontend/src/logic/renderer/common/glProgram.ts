@@ -1,4 +1,4 @@
-import {GLError} from "./glError";
+import {GLError} from "../common2/glError";
 import {orNull} from "../../../shared/utils";
 
 
@@ -206,7 +206,7 @@ export class GLProgram {
      */
     public use() {
         this.gl.useProgram(this.handle);
-        GLError.check(this.gl);
+        GLError.check(this.gl, "useProgram", "binding program");
     }
 
     /**
@@ -215,7 +215,7 @@ export class GLProgram {
     public dispose() {
         if (this.handle) {
             this.gl.deleteProgram(this.handle);
-            GLError.check(this.gl);
+            GLError.check(this.gl, "deleteProgram", "disposing program");
         }
     }
 
@@ -299,7 +299,7 @@ export class GLProgram {
                 this.gl.uniformMatrix4fv(loc, false, valuesArray);
                 break;
         }
-        GLError.check(this.gl);
+        GLError.check(this.gl, "uniform[...]", "setting program uniform value");
     }
 
     /**
@@ -307,7 +307,7 @@ export class GLProgram {
      */
     public getUniformLocation(name: string): WebGLUniformLocation | null {
         const location = this.gl.getUniformLocation(this.handle, name);
-        GLError.check(this.gl);
+        GLError.check(this.gl, "getUniformLocation", "getting program uniform location");
         return location;
     }
 
@@ -316,7 +316,7 @@ export class GLProgram {
      */
     public getAttributeLocation(name: string): GLint | null {
         const location: GLint = this.gl.getAttribLocation(this.handle, name);
-        GLError.check(this.gl);
+        GLError.check(this.gl, "getAttribLocation", "getting program attribute location");
         if (location >= 0) {
             return location;
         } else {

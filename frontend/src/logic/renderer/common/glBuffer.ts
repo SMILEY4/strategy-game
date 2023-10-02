@@ -1,4 +1,4 @@
-import {GLError} from "./glError";
+import {GLError} from "../common2/glError";
 import {isPresent} from "../../../shared/utils";
 
 export enum GLBufferType {
@@ -64,7 +64,7 @@ export class GLBuffer {
 
     private static generateHandle(gl: WebGL2RenderingContext): WebGLBuffer {
         const handle = gl.createBuffer();
-        GLError.check(gl);
+        GLError.check(gl, "createBuffer", "generating buffer-handle");
         if (handle === null) {
             throw new Error("Could not create buffer.");
         }
@@ -73,7 +73,6 @@ export class GLBuffer {
 
     private static setupAttributes(gl: WebGL2RenderingContext, buffer: GLBuffer, attributes: GLBufferAttribute[]) {
         buffer.use();
-        GLError.check(gl);
         const stride = GLBuffer.calculateStride(attributes);
         let offsetBytes = 0;
         attributes.forEach(attribute => {
@@ -128,7 +127,7 @@ export class GLBuffer {
             this.gl.bindBuffer(typeId, this.handle);
             this.gl.bufferData(typeId, data, usageId);
             this.size = size;
-            GLError.check(this.gl);
+            GLError.check(this.gl, "bindBuffer,bufferData", "setting buffer data");
             return this;
         } else {
             throw new Error("Could not set data for buffer '" + this.debugName + "'. Buffer has not been created yet.");
@@ -143,7 +142,7 @@ export class GLBuffer {
             throw new Error("Cannot set attribute: validation failed!");
         }
         this.gl.enableVertexAttribArray(attribute.location);
-        GLError.check(this.gl);
+        GLError.check(this.gl, "enableVertexAttribArray", "setting buffer attribute");
         if (GLBuffer.attributeTypeIsInteger(attribute.type)) {
             this.gl.vertexAttribIPointer(
                 attribute.location,
@@ -162,7 +161,7 @@ export class GLBuffer {
                 attribute.offset!,
             );
         }
-        GLError.check(this.gl);
+        GLError.check(this.gl, "enableVertexAttribArray", "setting buffer attribute");
     }
 
 
@@ -171,7 +170,7 @@ export class GLBuffer {
      */
     public use() {
         this.gl.bindBuffer(GLBuffer.convertBufferType(this.type), this.handle);
-        GLError.check(this.gl);
+        GLError.check(this.gl, "bindBuffer", "binding buffer");
     }
 
 
@@ -180,7 +179,7 @@ export class GLBuffer {
      */
     public dispose() {
         this.gl.deleteBuffer(this.handle);
-        GLError.check(this.gl);
+        GLError.check(this.gl, "deleteBuffer", "disposing buffer");
     }
 
 
@@ -200,7 +199,7 @@ export class GLBuffer {
     }
 
 
-    private static packageData(type: GLBufferType, data: number[]) {
+    public static packageData(type: GLBufferType, data: number[]) {
         switch (type) {
             case GLBufferType.ARRAY_BUFFER:
                 return new Float32Array(data);
@@ -209,7 +208,7 @@ export class GLBuffer {
         }
     }
 
-    private static convertBufferType(type: GLBufferType): number {
+    public static convertBufferType(type: GLBufferType): number {
         switch (type) {
             case GLBufferType.ARRAY_BUFFER:
                 return WebGL2RenderingContext.ARRAY_BUFFER;
@@ -219,7 +218,7 @@ export class GLBuffer {
         }
     }
 
-    private static convertBufferUsage(type: GLBufferUsage): number {
+    public static convertBufferUsage(type: GLBufferUsage): number {
         switch (type) {
             case GLBufferUsage.STATIC_DRAW:
                 return WebGL2RenderingContext.STATIC_DRAW;

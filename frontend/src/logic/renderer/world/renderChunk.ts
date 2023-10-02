@@ -1,13 +1,14 @@
 import {GLBuffer} from "../common/glBuffer";
+import {GLVertexArray} from "../common/glVertexArray";
 
 export class RenderChunk {
 
     private readonly chunkQ: number;
     private readonly chunkR: number;
-    private readonly vertexBuffer: GLBuffer;
+    private readonly vertexBuffer: GLVertexArray;
     private readonly indexBuffer: GLBuffer;
 
-    constructor(chunkQ: number, chunkR: number, vertexBuffer: GLBuffer, indexBuffer: GLBuffer) {
+    constructor(chunkQ: number, chunkR: number, vertexBuffer: GLVertexArray, indexBuffer: GLBuffer) {
         this.chunkQ = chunkQ;
         this.chunkR = chunkR;
         this.vertexBuffer = vertexBuffer;
@@ -22,7 +23,7 @@ export class RenderChunk {
         return this.chunkR;
     }
 
-    getVertexBuffer(): GLBuffer {
+    getVertexBuffer(): GLVertexArray {
         return this.vertexBuffer;
     }
 
