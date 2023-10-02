@@ -1,31 +1,30 @@
-import {AttributeInfo, GLProgram} from "../common/glProgram";
 import {GLRenderer} from "../common/glRenderer";
-import {ProgramMetadata} from "../common/programMetadata";
 import {Camera} from "../common/camera";
 import {BaseRenderLayer} from "./baseRenderLayer";
 import {GLTexture} from "../common/glTexture";
+import {GLProgram} from "../common2/glProgram";
+import {GLUniformType} from "../common2/glTypes";
+import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export class TerrainRenderLayer extends BaseRenderLayer {
 
     private readonly program: GLProgram;
-    private readonly programMeta: ProgramMetadata;
     private readonly tileset: GLTexture;
 
-    constructor(program: GLProgram, programMeta: ProgramMetadata, tileset: GLTexture) {
+    constructor(program: GLProgram, tileset: GLTexture) {
         super();
         this.program = program;
-        this.programMeta = programMeta;
         this.tileset = tileset;
     }
 
     public render(camera: Camera, renderer: GLRenderer): void {
-        this.tileset.bind(0)
+        this.tileset.bind(0);
         this.program.use();
-        this.programMeta.setUniform("u_viewProjection", camera.getViewProjectionMatrixOrThrow());
-        this.programMeta.setUniform("u_texture", 0);
+        this.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
+        this.program.setUniform("u_texture", GLUniformType.SAMPLER_2D, this.tileset.getLastTextureUnit());
         this.getChunks().forEach(chunk => {
-            chunk.getVertexBuffer().use();
-            renderer.drawMesh(chunk.getIndexBuffer());
+            chunk.getVertexArray().bind();
+            renderer.drawMesh(chunk.getMeshSize());
         });
     }
 
@@ -34,8 +33,8 @@ export class TerrainRenderLayer extends BaseRenderLayer {
         this.program.dispose();
     }
 
-    public getShaderAttributes(): AttributeInfo[] {
-        return this.program.getAttributes();
+    public getShaderAttributes(): GLProgramAttribute[] {
+        return this.program.getInformation().attributes;
     }
 
 }

@@ -55,6 +55,7 @@ export class GLTexture {
     private readonly gl: WebGL2RenderingContext;
     private readonly debugName: string;
     private readonly handle: WebGLTexture | null = null;
+    private lastTextureUnit: number = -1;
 
     private constructor(gl: WebGL2RenderingContext, handle: WebGLTexture | null, debugName?: string) {
         this.gl = gl;
@@ -70,8 +71,12 @@ export class GLTexture {
         this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.handle);
         GLError.check(this.gl, "activeTexture,bindTexture", "binding texture")
+        this.lastTextureUnit = textureUnit;
     }
 
+    public getLastTextureUnit():  number {
+        return this.lastTextureUnit;
+    }
 
     /**
      * Deletes this texture

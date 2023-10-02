@@ -1,5 +1,5 @@
-import {GLBuffer} from "./glBuffer";
 import {GLError} from "../common2/glError";
+import {GLIndexBuffer} from "../common2/glIndexBuffer";
 
 export class GLRenderer {
 
@@ -15,18 +15,17 @@ export class GLRenderer {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        GLError.check(this.gl, "[gl-setup]", "preparing current frame")
+        GLError.check(this.gl, "[gl-setup]", "preparing current frame");
     }
 
-    drawMesh(indexBuffer: GLBuffer) {
-        indexBuffer.use();
+    drawMesh(size: number) {
         this.gl.drawElements(
             this.gl.TRIANGLES,
-            indexBuffer.getSize(),
+            size,
             this.gl.UNSIGNED_SHORT,
             0,
         );
-        GLError.check(this.gl, "drawElements", "drawing mesh")
+        GLError.check(this.gl, "drawElements", "drawing mesh");
     }
 
 }

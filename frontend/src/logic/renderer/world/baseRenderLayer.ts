@@ -2,6 +2,8 @@ import {RenderChunk} from "./renderChunk";
 import {GLRenderer} from "../common/glRenderer";
 import {Camera} from "../common/camera";
 import {AttributeInfo} from "../common/glProgram";
+import {GLProgram} from "../common2/glProgram";
+import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export abstract class BaseRenderLayer {
 
@@ -17,7 +19,7 @@ export abstract class BaseRenderLayer {
 
     abstract render(camera: Camera, renderer: GLRenderer): void;
 
-    abstract getShaderAttributes(): AttributeInfo[]
+    abstract getShaderAttributes(): GLProgramAttribute[]
 
     public dispose() {
         this.getChunks().forEach(chunk => chunk.dispose())

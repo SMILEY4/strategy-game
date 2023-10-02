@@ -1,7 +1,8 @@
-import {GLShaderType} from "./glTypes";
+import {GLShaderType, GLUniformType, GLUniformValueType} from "./glTypes";
 import {GLError} from "./glError";
+import {GLDisposable} from "./glDisposable";
 
-export class GLProgram {
+export class GLProgram implements GLDisposable {
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLProgram;
@@ -11,6 +12,100 @@ export class GLProgram {
         this.gl = gl;
         this.handle = handle;
         this.information = information;
+    }
+
+    public getInformation(): GLProgram.GLProgramInformation {
+        return this.information;
+    }
+
+    public use() {
+        this.gl.useProgram(this.handle);
+        GLError.check(this.gl, "useProgram", "using program");
+    }
+
+    public dispose() {
+        this.gl.deleteProgram(this.handle);
+        GLError.check(this.gl, "deleteProgram", "disposing program");
+    }
+
+    public setUniform(name: string, type: GLUniformType, values: GLUniformValueType) {
+        const location = this.information.uniforms.find(u => u.name === name)!.location;
+        this.setUniformValue(location, type, values);
+    }
+
+    private setUniformValue(location: WebGLUniformLocation, type: GLUniformType, values: GLUniformValueType) {
+        const valuesArray: number[] | Float32Array = Array.isArray(values) ? values : (values instanceof Float32Array ? values : [values]);
+        switch (type) {
+            case GLUniformType.FLOAT:
+                this.gl.uniform1f(location, valuesArray[0]);
+                break;
+            case GLUniformType.FLOAT_ARRAY:
+                this.gl.uniform1fv(location, valuesArray);
+                break;
+            case GLUniformType.VEC2:
+                this.gl.uniform2f(location, valuesArray[0], valuesArray[1]);
+                break;
+            case GLUniformType.VEC2_ARRAY:
+                this.gl.uniform2fv(location, valuesArray);
+                break;
+            case GLUniformType.VEC3:
+                this.gl.uniform3f(location, valuesArray[0], valuesArray[1], valuesArray[2]);
+                break;
+            case GLUniformType.VEC3_ARRAY:
+                this.gl.uniform3fv(location, valuesArray);
+                break;
+            case GLUniformType.VEC4:
+                this.gl.uniform4f(location, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
+                break;
+            case GLUniformType.VEC4_ARRAY:
+                this.gl.uniform4fv(location, valuesArray);
+                break;
+            case GLUniformType.BOOL:
+            case GLUniformType.SAMPLER_2D:
+            case GLUniformType.SAMPLER_CUBE:
+            case GLUniformType.INT:
+                this.gl.uniform1i(location, valuesArray[0]);
+                break;
+            case GLUniformType.SAMPLER_2D_ARRAY:
+            case GLUniformType.SAMPLER_CUBE_ARRAY:
+            case GLUniformType.INT_ARRAY:
+                this.gl.uniform1iv(location, valuesArray);
+                break;
+            case GLUniformType.BOOL_VEC2:
+            case GLUniformType.INT_VEC2:
+                this.gl.uniform2i(location, valuesArray[0], valuesArray[1]);
+                break;
+            case GLUniformType.INT_VEC2_ARRAY:
+                this.gl.uniform2iv(location, valuesArray);
+                break;
+            case GLUniformType.BOOL_VEC3:
+            case GLUniformType.INT_VEC3:
+                this.gl.uniform3i(location, valuesArray[0], valuesArray[1], valuesArray[2]);
+                break;
+            case GLUniformType.INT_VEC3_ARRAY:
+                this.gl.uniform3iv(location, valuesArray);
+                break;
+            case GLUniformType.BOOL_VEC4:
+            case GLUniformType.INT_VEC4:
+                this.gl.uniform4i(location, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
+                break;
+            case GLUniformType.INT_VEC4_ARRAY:
+                this.gl.uniform4iv(location, valuesArray);
+                break;
+            case GLUniformType.MAT2:
+            case GLUniformType.MAT2_ARRAY:
+                this.gl.uniformMatrix2fv(location, false, valuesArray);
+                break;
+            case GLUniformType.MAT3:
+            case GLUniformType.MAT3_ARRAY:
+                this.gl.uniformMatrix3fv(location, false, valuesArray);
+                break;
+            case GLUniformType.MAT4:
+            case GLUniformType.MAT4_ARRAY:
+                this.gl.uniformMatrix4fv(location, false, valuesArray);
+                break;
+        }
+        GLError.check(this.gl, "uniform[...]", "setting program uniform value");
     }
 
 }

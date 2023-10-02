@@ -3,10 +3,12 @@
 import {Tile} from "../../../models/tile";
 import {RenderChunk} from "./renderChunk";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../common/mixedArrayBuffer";
-import {GLBuffer, GLBufferAttributeType, GLBufferType, GLBufferUsage} from "../common/glBuffer";
 import {TilemapUtils} from "../../../core/tilemap/tilemapUtils";
-import {AttributeInfo} from "../common/glProgram";
-import {GLVertexArray} from "../common/glVertexArray";
+import {GLVertexArray} from "../common2/glVertexArray";
+import {GLVertexBuffer} from "../common2/glVertexBuffer";
+import {GLIndexBuffer} from "../common2/glIndexBuffer";
+import {GLProgram} from "../common2/glProgram";
+import {GLAttributeType} from "../common2/glTypes";
 
 /*
 Vertices of hex-tiles are constructed as following:
@@ -21,6 +23,7 @@ Vertices of hex-tiles are constructed as following:
 
 export namespace RenderChunkFactory {
 
+    import GLProgramAttribute = GLProgram.GLProgramAttribute;
     const PATTERN_INDEX = [
         MixedArrayBufferType.U_SHORT,
     ];
@@ -54,11 +57,17 @@ export namespace RenderChunkFactory {
         cursorVertices: MixedArrayBufferCursor | null,
     }
 
-    export function create(gl: WebGL2RenderingContext, tiles: Tile[], attributes: AttributeInfo[]): RenderChunk[] {
+    export function create(gl: WebGL2RenderingContext, tiles: Tile[], attributes: GLProgramAttribute[]): RenderChunk[] {
         const chunks = createChunks(tiles);
         createBuffers(chunks);
         populateBuffers(tiles, chunks);
         return Array.from(chunks.values()).map(chunk => {
+            const vertexBuffer = GLVertexBuffer.create(gl, chunk.vertices?.getRawBuffer()!);
+            const indexBuffer = GLIndexBuffer.create(
+                gl,
+                chunk.indices?.getRawBuffer()!,
+                chunk.amountTiles * indicesPerTile,
+            );
             return new RenderChunk(
                 chunk.cq,
                 chunk.cr,
@@ -66,44 +75,34 @@ export namespace RenderChunkFactory {
                     gl,
                     [
                         {
-                            name: "in_worldPosition",
-                            type: GLBufferAttributeType.FLOAT,
-                            amountComponents: 2,
+                            buffer: vertexBuffer,
                             location: attributes.find(a => a.name === "in_worldPosition")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
                         },
                         {
-                            name: "in_tilePosition",
-                            type: GLBufferAttributeType.FLOAT,
-                            amountComponents: 4,
+                            buffer: vertexBuffer,
                             location: attributes.find(a => a.name === "in_tilePosition")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 4,
                         },
                         {
-                            name: "in_textureCoordinates",
-                            type: GLBufferAttributeType.FLOAT,
-                            amountComponents: 2,
+                            buffer: vertexBuffer,
                             location: attributes.find(a => a.name === "in_textureCoordinates")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
                         },
                         {
-                            name: "in_terrain",
-                            type: GLBufferAttributeType.INT,
-                            amountComponents: 2,
+                            buffer: vertexBuffer,
                             location: attributes.find(a => a.name === "in_terrain")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 2,
                         },
                     ],
-                    chunk.vertices?.getRawBuffer()!,
-                    chunk.amountTiles * verticesPerTile * valuesPerVertex,
+                    indexBuffer,
                 ),
-                GLBuffer.createRaw(
-                    gl,
-                    chunk.indices?.getRawBuffer()!,
-                    chunk.amountTiles * indicesPerTile,
-                    {
-                        type: GLBufferType.ELEMENT_ARRAY_BUFFER,
-                        usage: GLBufferUsage.STATIC_DRAW,
-                        attributes: [],
-                        debugName: "chunk.indices",
-                    },
-                ),
+                indexBuffer.getSize(),
+                [vertexBuffer, indexBuffer]
             );
         });
     }

@@ -1,6 +1,7 @@
 import {GLError} from "./glError";
+import {GLDisposable} from "./glDisposable";
 
-export class GLVertexBuffer {
+export class GLVertexBuffer implements GLDisposable {
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLBuffer;
@@ -13,6 +14,11 @@ export class GLVertexBuffer {
     public bind() {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.handle);
         GLError.check(this.gl, "bindBuffer", "binding vertex buffer.")
+    }
+
+    public dispose() {
+        this.gl.deleteBuffer(this.handle);
+        GLError.check(this.gl, "deleteBuffer", "disposing vertex buffer");
     }
 
 }

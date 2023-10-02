@@ -4,8 +4,8 @@
 uniform mat3 u_viewProjection;
 in vec2 in_worldPosition;
 in vec4 in_tilePosition;
-in ivec2 in_terrain;
 in vec2 in_textureCoordinates;
+in ivec2 in_terrain;
 
 flat out vec4 v_tilePosition;
 flat out ivec2 v_terrain;

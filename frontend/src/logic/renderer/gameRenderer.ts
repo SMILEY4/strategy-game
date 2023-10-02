@@ -50,10 +50,8 @@ export class GameRenderer {
     public render() {
         if (this.world && this.worldRenderer && this.gl) {
             if (this.firstFrame) {
-                console.log("render")
                 this.worldRenderer.render(this.world, this.getRenderCamera());
-                console.log("render done")
-                this.firstFrame = false;
+                // this.firstFrame = false;
             }
         }
     }

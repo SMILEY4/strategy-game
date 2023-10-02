@@ -14,8 +14,7 @@ export class GLShaderType {
 }
 
 
-export type AttributeComponentAmount = 1 | 2 | 3 | 4;
-
+export type GLAttributeComponentAmount = 1 | 2 | 3 | 4;
 
 export class GLAttributeType {
 
@@ -37,4 +36,43 @@ export class GLAttributeType {
         this.isInteger = isInteger;
         this.glEnum = glEnum;
     }
+}
+
+export type GLUniformValueType = number | number[] | Float32Array;
+
+export class GLUniformType {
+    public static FLOAT = new GLUniformType();
+    public static FLOAT_ARRAY = new GLUniformType();
+    public static VEC2 = new GLUniformType();
+    public static VEC2_ARRAY = new GLUniformType();
+    public static VEC3 = new GLUniformType();
+    public static VEC3_ARRAY = new GLUniformType();
+    public static VEC4 = new GLUniformType();
+    public static VEC4_ARRAY = new GLUniformType();
+    public static INT = new GLUniformType();
+    public static INT_ARRAY = new GLUniformType();
+    public static INT_VEC2 = new GLUniformType();
+    public static INT_VEC2_ARRAY = new GLUniformType();
+    public static INT_VEC3 = new GLUniformType();
+    public static INT_VEC3_ARRAY = new GLUniformType();
+    public static INT_VEC4 = new GLUniformType();
+    public static INT_VEC4_ARRAY = new GLUniformType();
+    public static SAMPLER_2D = new GLUniformType();
+    public static SAMPLER_2D_ARRAY = new GLUniformType();
+    public static SAMPLER_CUBE = new GLUniformType();
+    public static SAMPLER_CUBE_ARRAY = new GLUniformType();
+    public static MAT2 = new GLUniformType();
+    public static MAT2_ARRAY = new GLUniformType();
+    public static MAT3 = new GLUniformType();
+    public static MAT3_ARRAY = new GLUniformType();
+    public static MAT4 = new GLUniformType();
+    public static MAT4_ARRAY = new GLUniformType();
+    public static BOOL = new GLUniformType();
+    public static BOOL_VEC2 = new GLUniformType();
+    public static BOOL_VEC3 = new GLUniformType();
+    public static BOOL_VEC4 = new GLUniformType();
+
+    constructor() {
+    }
+
 }
