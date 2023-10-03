@@ -1,22 +1,29 @@
-import {AuthProvider} from "../authProvider";
 import {HttpClient} from "../../shared/httpClient";
 import {WebsocketClient} from "../../shared/websocketClient";
-import {WebsocketMessageHandler} from "../../shared/websocketMessageHandler";
-import {GameConfig} from "../../models/gameConfig";
+import {MessageHandler} from "./messageHandler";
+import {GameApi} from "../../_old_core/required/gameApi";
+import {GameConfig} from "../../_old_core/models/gameConfig";
+import {TilePosition} from "../../_old_core/models/tilePosition";
+import {CityCreationPreview} from "../../_old_core/models/CityCreationPreview";
+import {Command} from "../../_old_core/models/command";
+import {PayloadSubmitTurn} from "./models/payloadSubmitTurn";
+import {AuthProvider} from "./clients/authProvider";
 
-export class GameSessionClient {
+export class GameApiImpl implements GameApi {
 
     private readonly authProvider: AuthProvider;
     private readonly httpClient: HttpClient;
     private readonly wsClient: WebsocketClient;
-    private readonly messageHandler: WebsocketMessageHandler;
+    private readonly messageHandler: MessageHandler;
 
-    constructor(authProvider: AuthProvider, httpClient: HttpClient, wsClient: WebsocketClient, messageHandler: WebsocketMessageHandler) {
+
+    constructor(authProvider: AuthProvider, httpClient: HttpClient, wsClient: WebsocketClient, messageHandler: MessageHandler) {
         this.authProvider = authProvider;
         this.httpClient = httpClient;
         this.wsClient = wsClient;
         this.messageHandler = messageHandler;
     }
+
 
     list(): Promise<string[]> {
         return this.httpClient.get<string[]>({
@@ -63,10 +70,6 @@ export class GameSessionClient {
         this.wsClient.close();
     }
 
-    sendMessage(type: string, payload: any): void {
-        this.wsClient.send(type, payload)
-    }
-
     config(): Promise<GameConfig> {
         return this.httpClient.get<GameConfig>({
             url: "/api/session/config",
@@ -75,6 +78,26 @@ export class GameSessionClient {
         });
     }
 
+    previewCityCreation(gameId: string, pos: TilePosition, isProvinceCapital: boolean): Promise<CityCreationPreview> {
+        return this.httpClient.post<CityCreationPreview>({
+            url: "/api/game/" + gameId + "/preview/city",
+            body: {
+                tile: {
+                    q: pos.q,
+                    r: pos.r,
+                },
+                isProvinceCapital: isProvinceCapital,
+            },
+            requireAuth: true,
+            token: this.authProvider.getToken(),
+        });
+    }
+
+    submitTurn(commands: Command[]): void {
+        this.sendMessage("submit-turn", PayloadSubmitTurn.buildSubmitTurnPayload(commands));
+    }
+
+
     private getWebsocketTicket(): Promise<string> {
         return this.httpClient.get<string>({
             url: "/api/session/wsticket",
@@ -82,6 +105,10 @@ export class GameSessionClient {
             token: this.authProvider.getToken(),
             responseType: "text",
         });
+    }
+
+    private sendMessage(type: string, payload: any) {
+        this.wsClient.send(type, payload);
     }
 
 }

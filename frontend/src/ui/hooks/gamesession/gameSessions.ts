@@ -1,4 +1,4 @@
-import {UnauthorizedError} from "../../../core/models/errors/UnauthorizedError";
+import {UnauthorizedError} from "../../../_old_core/models/errors/UnauthorizedError";
 import {useNavigate} from "react-router-dom";
 import {useHandleUnauthorized} from "../user/authentication";
 import {AppCtx} from "../../../logic/appContext";

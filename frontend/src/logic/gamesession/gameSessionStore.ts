@@ -1,6 +1,6 @@
 import create from "zustand";
-import {GameConfig} from "../../core/models/gameConfig";
 import {SetState} from "../../shared/zustandUtils";
+import {GameConfig} from "../../models/gameConfig";
 
 
 export namespace GameSessionStore {

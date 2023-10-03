@@ -3,7 +3,7 @@
 import {Tile} from "../../../models/tile";
 import {RenderChunk} from "./renderChunk";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../common/mixedArrayBuffer";
-import {TilemapUtils} from "../../../core/tilemap/tilemapUtils";
+import {TilemapUtils} from "../../../_old_core/tilemap/tilemapUtils";
 import {GLVertexArray} from "../common/glVertexArray";
 import {GLVertexBuffer} from "../common/glVertexBuffer";
 import {GLIndexBuffer} from "../common/glIndexBuffer";

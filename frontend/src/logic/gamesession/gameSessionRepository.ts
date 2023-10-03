@@ -1,5 +1,5 @@
-import {GameConfig} from "../../core/models/gameConfig";
 import {GameSessionStore} from "./gameSessionStore";
+import {GameConfig} from "../../models/gameConfig";
 
 export class GameSessionRepository {
 
