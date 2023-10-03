@@ -1,3 +1,5 @@
+import {GLTexture} from "./glTexture";
+
 export class GLShaderType {
 
     public static VERTEX = new GLShaderType(WebGL2RenderingContext.VERTEX_SHADER, "vertex");
@@ -38,7 +40,7 @@ export class GLAttributeType {
     }
 }
 
-export type GLUniformValueType = number | number[] | Float32Array;
+export type GLUniformValueType = number | number[] | Float32Array | GLTexture;
 
 export class GLUniformType {
     public static FLOAT = new GLUniformType();

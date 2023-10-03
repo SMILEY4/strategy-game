@@ -1,107 +1,97 @@
-import {GLError} from "../common2/glError";
-import {GLBuffer} from "./glBuffer";
+import {GLError} from "./glError";
+import {GLVertexBuffer} from "./glVertexBuffer";
+import {GLAttributeComponentAmount, GLAttributeType} from "./glTypes";
 import {isPresent} from "../../../shared/utils";
+import {GLIndexBuffer} from "./glIndexBuffer";
+import {GLDisposable} from "./glDisposable";
 
-export enum GLBufferAttributeType {
-    BYTE, // 8-bit integer [-128, 127]
-    SHORT, // 16-bit integer [-32768, 32767]
-    INT, // 32-bit integer
-    U_BYTE, // unsigned 8-bit integer [0, 255]
-    U_SHORT, // unsigned 16-bit integer [0, 65535]
-    U_INT, // unsigned 32-bit integer
-    FLOAT, // 32-bit IEEE floating point number
-    HALF_FLOAT, // 16-bit IEEE floating point number
+export class GLVertexArray implements GLDisposable {
+
+    private readonly gl: WebGL2RenderingContext;
+    private readonly handle: WebGLVertexArrayObject;
+
+    constructor(gl: WebGL2RenderingContext, handle: WebGLVertexArrayObject) {
+        this.gl = gl;
+        this.handle = handle;
+    }
+
+    public bind() {
+        this.gl.bindVertexArray(this.handle)
+        GLError.check(this.gl, "bindVertexArray", "binding vertex array object")
+    }
+
+    public dispose() {
+        this.gl.deleteVertexArray(this.handle);
+        GLError.check(this.gl, "deleteVertexArray", "disposing vertex array object")
+    }
+
 }
 
-export interface GLVertexAttribute {
-    name: string,
-    location: GLint
-    type: GLBufferAttributeType,
-    amountComponents: 1 | 2 | 3 | 4,
-    normalized?: boolean,
-    stride?: number,
-    offset?: number
-}
 
-export class GLVertexArray {
+export namespace GLVertexArray {
 
-    public static create(gl: WebGL2RenderingContext, attributes: GLVertexAttribute[], data: ArrayBuffer, size: number) {
+    export interface AttributeConfig {
+        buffer: GLVertexBuffer;
+        location: GLuint,
+        type: GLAttributeType,
+        amountComponents: GLAttributeComponentAmount,
+        normalized?: boolean
+        stride?: number
+        offset?: number
+    }
 
+    export function create(gl: WebGL2RenderingContext, attributes: AttributeConfig[], indexBuffer?: GLIndexBuffer) {
+        // create new handle
         const vao = gl.createVertexArray();
-        GLError.check(gl, "createVertexArray", "creating vertex array");
+        GLError.check(gl, "createVertexArray", "creating vertex array object");
         if (vao === null) {
             throw new Error("Could not create vertex array.");
         }
-
+        // bind vertex array
         gl.bindVertexArray(vao);
-        GLError.check(gl, "bindVertexArray", "binding vertex array (during creation)");
-
-        GLVertexArray.setupAttributes(gl, attributes);
-        GLVertexArray.setData(gl, data);
-        return new GLVertexArray(gl, vao, size);
-    }
-
-    private static setData(gl: WebGL2RenderingContext, data: ArrayBuffer) {
-        gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-        GLError.check(gl, "bufferData", "set vertex array data");
-    }
-
-    private static setupAttributes(gl: WebGL2RenderingContext, attributes: GLVertexAttribute[]) {
-        const stride = GLVertexArray.calculateStride(attributes);
-        let offsetBytes = 0;
+        GLError.check(gl, "bindVertexArray", "binding vertex array object for creation");
+        // configure index buffer (optional)
+        indexBuffer?.bind();
+        // configure attributes
+        const stride = calculateStride(attributes);
+        let offset = 0;
         attributes.forEach(attribute => {
-
-            gl.enableVertexAttribArray(attribute.location);
-            GLError.check(gl, "enableVertexAttribArray", "");
-
-            if (GLBuffer.attributeTypeIsInteger(attribute.type)) {
+            attribute.buffer.bind();
+            if (attribute.type.isInteger) {
                 gl.vertexAttribIPointer(
                     attribute.location,
                     attribute.amountComponents,
-                    GLBuffer.attributeTypeToGLType(attribute.type),
+                    attribute.type.glEnum,
                     isPresent(attribute.stride) ? attribute.stride! : stride,
-                    isPresent(attribute.offset) ? attribute.offset! : 0,
+                    isPresent(attribute.offset) ? attribute.offset! : offset,
                 );
                 GLError.check(gl, "vertexAttribIPointer");
             } else {
                 gl.vertexAttribPointer(
                     attribute.location,
                     attribute.amountComponents,
-                    GLBuffer.attributeTypeToGLType(attribute.type),
+                    attribute.type.glEnum,
                     isPresent(attribute.normalized) ? attribute.normalized! : false,
                     isPresent(attribute.stride) ? attribute.stride! : stride,
-                    isPresent(attribute.offset) ? attribute.offset! : 0,
+                    isPresent(attribute.offset) ? attribute.offset! : offset,
                 );
-                GLError.check(gl, "vertexAttribIPointer");
+                GLError.check(gl, "vertexAttribPointer");
             }
+            gl.enableVertexAttribArray(attribute.location);
+            GLError.check(gl, "enableVertexAttribArray", "enabling attribute " + attribute.location);
 
-            offsetBytes += GLBuffer.attributeTypeToBytes(attribute.type) * attribute.amountComponents;
+            offset += attribute.type.bytes * attribute.amountComponents;
         });
+        // unbind vertex array
+        gl.bindVertexArray(null);
+        GLError.check(gl, "bindVertexArray", "un-binding vertex array object for creation");
+        return new GLVertexArray(gl, vao);
     }
 
-    private static calculateStride(attributes: GLVertexAttribute[]): number {
+    function calculateStride(attributes: AttributeConfig[]): number {
         return attributes
-            .map(a => a.amountComponents * GLBuffer.attributeTypeToBytes(a.type))
+            .map(a => a.amountComponents * a.type.bytes)
             .reduce((a, b) => a + b, 0);
-    }
-
-
-    private readonly gl: WebGL2RenderingContext;
-    private readonly handle: WebGLVertexArrayObject;
-    private readonly size: number;
-
-    constructor(gl: WebGL2RenderingContext, handle: WebGLVertexArrayObject, size: number) {
-        this.gl = gl;
-        this.handle = handle;
-        this.size = size;
-    }
-
-    public use() {
-        this.gl.bindVertexArray(this.handle);
-    }
-
-    public dispose() {
-        this.gl.deleteVertexArray(this.handle);
     }
 
 }

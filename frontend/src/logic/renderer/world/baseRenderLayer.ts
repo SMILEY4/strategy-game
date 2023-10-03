@@ -1,8 +1,7 @@
 import {RenderChunk} from "./renderChunk";
 import {GLRenderer} from "../common/glRenderer";
 import {Camera} from "../common/camera";
-import {AttributeInfo} from "../common/glProgram";
-import {GLProgram} from "../common2/glProgram";
+import {GLProgram} from "../common/glProgram";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export abstract class BaseRenderLayer {

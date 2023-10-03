@@ -1,347 +1,262 @@
-import {GLError} from "../common2/glError";
-import {orNull} from "../../../shared/utils";
+import {GLShaderType, GLUniformType, GLUniformValueType} from "./glTypes";
+import {GLError} from "./glError";
+import {GLDisposable} from "./glDisposable";
+import {GLTexture} from "./glTexture";
 
-
-export enum ShaderUniformType {
-    FLOAT,
-    FLOAT_ARRAY,
-    VEC2,
-    VEC2_ARRAY,
-    VEC3,
-    VEC3_ARRAY,
-    VEC4,
-    VEC4_ARRAY,
-    INT,
-    INT_ARRAY,
-    INT_VEC2,
-    INT_VEC2_ARRAY,
-    INT_VEC3,
-    INT_VEC3_ARRAY,
-    INT_VEC4,
-    INT_VEC4_ARRAY,
-    SAMPLER_2D,
-    SAMPLER_2D_ARRAY,
-    SAMPLER_CUBE,
-    SAMPLER_CUBE_ARRAY,
-    MAT2,
-    MAT2_ARRAY,
-    MAT3,
-    MAT3_ARRAY,
-    MAT4,
-    MAT4_ARRAY,
-    BOOL,
-    BOOL_VEC2,
-    BOOL_VEC3,
-    BOOL_VEC4,
-}
-
-export type UniformValueType = number | number[] | Float32Array;
-
-export interface UniformInfo {
-    name: string,
-    glType: number,
-    type: ShaderUniformType,
-    size: number,
-    location: WebGLUniformLocation
-}
-
-export interface AttributeInfo {
-    name: string,
-    glType: number,
-    size: number,
-    location: GLint
-}
-
-interface ShaderReport {
-    source: string[],
-    errors: ({
-        lineNumber: number,
-        line: string
-        error: string
-    })[]
-}
-
-export class GLProgram {
-
-    public static create(gl: WebGL2RenderingContext, srcVertex: string, srcFragment: string, debugName?: string): GLProgram {
-        const shaderVertex = this.createShader(gl, "vertex", srcVertex, debugName);
-        const shaderFragment = this.createShader(gl, "fragment", srcFragment, debugName);
-        const program = this.createShaderProgram(gl, shaderVertex, shaderFragment);
-        return new GLProgram(gl, program, debugName);
-    }
-
-    private static createShader(gl: WebGL2RenderingContext, type: "vertex" | "fragment", source: string, debugName: string | undefined): WebGLShader {
-        // create a new shader handle
-        const shader = gl.createShader(type === "vertex" ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
-        if (!shader) {
-            throw new Error("Could not create " + type + " shader");
-        }
-        // upload and compile shader-source
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-        // check status if successful
-        if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            return shader;
-        } else {
-            const errorReport = GLProgram.getErrorReport(gl, shader, source);
-            gl.deleteShader(shader);
-            console.warn("Error during " + type + " shader creation (name=" + debugName + ")", errorReport);
-            throw new Error("Failed to create shader (name=" + debugName + ")");
-        }
-    }
-
-    private static createShaderProgram(gl: WebGL2RenderingContext, shaderVertex: WebGLShader, vertexFragment: WebGLShader): WebGLProgram {
-        // create a new program handle
-        const program = gl.createProgram();
-        if (!program) {
-            throw new Error("Could not create shader program");
-        }
-        // attach the vertex and fragment shaders to the created program
-        gl.attachShader(program, shaderVertex);
-        gl.attachShader(program, vertexFragment);
-        // complete shader program creation
-        gl.linkProgram(program);
-        // check status if successful
-        if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            return program;
-        } else {
-            gl.deleteProgram(program);
-            throw new Error("Error during shader-program creation");
-        }
-    }
-
-    private static getErrorReport(gl: WebGL2RenderingContext, shader: WebGLShader, source: string): ShaderReport {
-        const glErrorMsg = gl.getShaderInfoLog(shader);
-        if (glErrorMsg) {
-            const codeLines = source.split(/\r\n|\n\r|\n|\r/);
-            const errors = glErrorMsg
-                .split(/\r\n|\n\r|\n|\r/)
-                .map(e => e.trim())
-                .filter(e => e.length > 0)
-                .map(e => {
-                    const parts = e.split(":");
-                    const lineNumber = parseInt(parts[2]);
-                    const details = parts.splice(3, parts.length).join().trim();
-                    return {
-                        lineNumber: lineNumber,
-                        line: codeLines[lineNumber].trim(),
-                        error: details,
-                    };
-                });
-            return {
-                source: codeLines.map((l, i) => i + ":   " + l),
-                errors: errors,
-            };
-        } else {
-            return {
-                source: source.split(/\r\n|\n\r|\n|\r/).map((l, i) => i + ":   " + l),
-                errors: [],
-            };
-        }
-    }
-
+export class GLProgram implements GLDisposable {
 
     private readonly gl: WebGL2RenderingContext;
     private readonly handle: WebGLProgram;
-    private readonly uniforms: UniformInfo[] = [];
-    private readonly attributes: AttributeInfo[] = [];
-    private readonly debugName: string;
+    private readonly information: GLProgram.GLProgramInformation;
 
-    constructor(gl: WebGL2RenderingContext, handle: WebGLProgram, debugName?: string) {
+    constructor(gl: WebGL2RenderingContext, handle: WebGLProgram, information: GLProgram.GLProgramInformation) {
         this.gl = gl;
         this.handle = handle;
-        this.debugName = debugName ? debugName : "noname";
-
-        this.use();
-        this.uniforms = this.getUniformInformation();
-        this.attributes = this.getAttributeInformation();
+        this.information = information;
     }
 
-
-    private getUniformInformation(): UniformInfo[] {
-        const uniforms: UniformInfo[] = [];
-        const numUniforms = this.gl.getProgramParameter(this.handle, this.gl.ACTIVE_UNIFORMS);
-        for (let i = 0; i < numUniforms; i++) {
-            const uniform = this.gl.getActiveUniform(this.handle, i);
-            if (uniform) {
-                const location = this.getUniformLocation(uniform.name);
-                if (location === null) {
-                    throw new Error("Could not get location for uniform " + uniform.name);
-                }
-                uniforms.push({
-                    name: uniform.name,
-                    type: ShaderUniformType.SAMPLER_2D,
-                    glType: uniform.type,
-                    size: uniform.size,
-                    location: location,
-                });
-            }
-        }
-        return uniforms;
+    public getInformation(): GLProgram.GLProgramInformation {
+        return this.information;
     }
 
-    private getAttributeInformation(): AttributeInfo[] {
-        const attributes: AttributeInfo[] = [];
-        const numAttribute = this.gl.getProgramParameter(this.handle, this.gl.ACTIVE_ATTRIBUTES);
-        for (let i = 0; i < numAttribute; i++) {
-            const attribute = this.gl.getActiveAttrib(this.handle, i);
-            if (attribute) {
-                const location = this.getAttributeLocation(attribute.name);
-                if (location === null) {
-                    throw new Error("Could not get location for attribute " + attribute.name);
-                }
-                attributes.push({
-                    name: attribute.name,
-                    glType: attribute.type,
-                    size: attribute.size,
-                    location: location,
-                });
-            }
-        }
-        return attributes;
-    }
-
-    /**
-     * Binds this program
-     */
     public use() {
         this.gl.useProgram(this.handle);
-        GLError.check(this.gl, "useProgram", "binding program");
+        GLError.check(this.gl, "useProgram", "using program");
     }
 
-    /**
-     * Delete this program
-     */
     public dispose() {
-        if (this.handle) {
-            this.gl.deleteProgram(this.handle);
-            GLError.check(this.gl, "deleteProgram", "disposing program");
+        this.gl.deleteProgram(this.handle);
+        GLError.check(this.gl, "deleteProgram", "disposing program");
+    }
+
+    public setUniform(name: string, type: GLUniformType, values: GLUniformValueType) {
+        const location = this.information.uniforms.find(u => u.name === name)!.location;
+        this.setUniformValue(location, type, values);
+    }
+
+    private uniformValueAsArray(values: GLUniformValueType): number[] | Float32Array {
+        if (Array.isArray(values)) {
+            return values;
+        } else if (values instanceof Float32Array) {
+            return values;
+        } else if (values instanceof GLTexture) {
+            return [values.getLastBoundTextureUnit()];
+        } else {
+            return [values];
         }
     }
 
-    /**
-     * Sets the uniform with the given name to the given value(s). Program must be bound first.
-     */
-    public setUniform(name: string, type: ShaderUniformType, values: UniformValueType, location?: WebGLUniformLocation) {
-        const loc = location === undefined ? this.getUniformLocation(name) : location;
-        if (loc === null || loc === undefined) {
-            console.error("Could not set uniform '" + name + "'. Location not found.");
-            return;
-        }
-        const valuesArray: number[] | Float32Array = Array.isArray(values) ? values : (values instanceof Float32Array ? values : [values]);
+    private setUniformValue(location: WebGLUniformLocation, type: GLUniformType, values: GLUniformValueType) {
+        const valuesArray: number[] | Float32Array = this.uniformValueAsArray(values);
         switch (type) {
-            case ShaderUniformType.FLOAT:
-                this.gl.uniform1f(loc, valuesArray[0]);
+            case GLUniformType.FLOAT:
+                this.gl.uniform1f(location, valuesArray[0]);
                 break;
-            case ShaderUniformType.FLOAT_ARRAY:
-                this.gl.uniform1fv(loc, valuesArray);
+            case GLUniformType.FLOAT_ARRAY:
+                this.gl.uniform1fv(location, valuesArray);
                 break;
-            case ShaderUniformType.VEC2:
-                this.gl.uniform2f(loc, valuesArray[0], valuesArray[1]);
+            case GLUniformType.VEC2:
+                this.gl.uniform2f(location, valuesArray[0], valuesArray[1]);
                 break;
-            case ShaderUniformType.VEC2_ARRAY:
-                this.gl.uniform2fv(loc, valuesArray);
+            case GLUniformType.VEC2_ARRAY:
+                this.gl.uniform2fv(location, valuesArray);
                 break;
-            case ShaderUniformType.VEC3:
-                this.gl.uniform3f(loc, valuesArray[0], valuesArray[1], valuesArray[2]);
+            case GLUniformType.VEC3:
+                this.gl.uniform3f(location, valuesArray[0], valuesArray[1], valuesArray[2]);
                 break;
-            case ShaderUniformType.VEC3_ARRAY:
-                this.gl.uniform3fv(loc, valuesArray);
+            case GLUniformType.VEC3_ARRAY:
+                this.gl.uniform3fv(location, valuesArray);
                 break;
-            case ShaderUniformType.VEC4:
-                this.gl.uniform4f(loc, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
+            case GLUniformType.VEC4:
+                this.gl.uniform4f(location, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
                 break;
-            case ShaderUniformType.VEC4_ARRAY:
-                this.gl.uniform4fv(loc, valuesArray);
+            case GLUniformType.VEC4_ARRAY:
+                this.gl.uniform4fv(location, valuesArray);
                 break;
-            case ShaderUniformType.BOOL:
-            case ShaderUniformType.SAMPLER_2D:
-            case ShaderUniformType.SAMPLER_CUBE:
-            case ShaderUniformType.INT:
-                this.gl.uniform1i(loc, valuesArray[0]);
+            case GLUniformType.BOOL:
+            case GLUniformType.SAMPLER_2D:
+            case GLUniformType.SAMPLER_CUBE:
+            case GLUniformType.INT:
+                this.gl.uniform1i(location, valuesArray[0]);
                 break;
-            case ShaderUniformType.SAMPLER_2D_ARRAY:
-            case ShaderUniformType.SAMPLER_CUBE_ARRAY:
-            case ShaderUniformType.INT_ARRAY:
-                this.gl.uniform1iv(loc, valuesArray);
+            case GLUniformType.SAMPLER_2D_ARRAY:
+            case GLUniformType.SAMPLER_CUBE_ARRAY:
+            case GLUniformType.INT_ARRAY:
+                this.gl.uniform1iv(location, valuesArray);
                 break;
-            case ShaderUniformType.BOOL_VEC2:
-            case ShaderUniformType.INT_VEC2:
-                this.gl.uniform2i(loc, valuesArray[0], valuesArray[1]);
+            case GLUniformType.BOOL_VEC2:
+            case GLUniformType.INT_VEC2:
+                this.gl.uniform2i(location, valuesArray[0], valuesArray[1]);
                 break;
-            case ShaderUniformType.INT_VEC2_ARRAY:
-                this.gl.uniform2iv(loc, valuesArray);
+            case GLUniformType.INT_VEC2_ARRAY:
+                this.gl.uniform2iv(location, valuesArray);
                 break;
-            case ShaderUniformType.BOOL_VEC3:
-            case ShaderUniformType.INT_VEC3:
-                this.gl.uniform3i(loc, valuesArray[0], valuesArray[1], valuesArray[2]);
+            case GLUniformType.BOOL_VEC3:
+            case GLUniformType.INT_VEC3:
+                this.gl.uniform3i(location, valuesArray[0], valuesArray[1], valuesArray[2]);
                 break;
-            case ShaderUniformType.INT_VEC3_ARRAY:
-                this.gl.uniform3iv(loc, valuesArray);
+            case GLUniformType.INT_VEC3_ARRAY:
+                this.gl.uniform3iv(location, valuesArray);
                 break;
-            case ShaderUniformType.BOOL_VEC4:
-            case ShaderUniformType.INT_VEC4:
-                this.gl.uniform4i(loc, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
+            case GLUniformType.BOOL_VEC4:
+            case GLUniformType.INT_VEC4:
+                this.gl.uniform4i(location, valuesArray[0], valuesArray[1], valuesArray[2], valuesArray[3]);
                 break;
-            case ShaderUniformType.INT_VEC4_ARRAY:
-                this.gl.uniform4iv(loc, valuesArray);
+            case GLUniformType.INT_VEC4_ARRAY:
+                this.gl.uniform4iv(location, valuesArray);
                 break;
-            case ShaderUniformType.MAT2:
-            case ShaderUniformType.MAT2_ARRAY:
-                this.gl.uniformMatrix2fv(loc, false, valuesArray);
+            case GLUniformType.MAT2:
+            case GLUniformType.MAT2_ARRAY:
+                this.gl.uniformMatrix2fv(location, false, valuesArray);
                 break;
-            case ShaderUniformType.MAT3:
-            case ShaderUniformType.MAT3_ARRAY:
-                this.gl.uniformMatrix3fv(loc, false, valuesArray);
+            case GLUniformType.MAT3:
+            case GLUniformType.MAT3_ARRAY:
+                this.gl.uniformMatrix3fv(location, false, valuesArray);
                 break;
-            case ShaderUniformType.MAT4:
-            case ShaderUniformType.MAT4_ARRAY:
-                this.gl.uniformMatrix4fv(loc, false, valuesArray);
+            case GLUniformType.MAT4:
+            case GLUniformType.MAT4_ARRAY:
+                this.gl.uniformMatrix4fv(location, false, valuesArray);
                 break;
         }
         GLError.check(this.gl, "uniform[...]", "setting program uniform value");
     }
 
-    /**
-     * Get the location of the uniform with the given name
-     */
-    public getUniformLocation(name: string): WebGLUniformLocation | null {
-        const location = this.gl.getUniformLocation(this.handle, name);
-        GLError.check(this.gl, "getUniformLocation", "getting program uniform location");
-        return location;
+}
+
+
+export namespace GLProgram {
+
+    export interface GLProgramInformation {
+        attributes: GLProgramAttribute[],
+        uniforms: GLProgramUniform[],
     }
 
-    /**
-     * Get the location of the attribute with the given name
-     */
-    public getAttributeLocation(name: string): GLint | null {
-        const location: GLint = this.gl.getAttribLocation(this.handle, name);
-        GLError.check(this.gl, "getAttribLocation", "getting program attribute location");
-        if (location >= 0) {
-            return location;
+    export interface GLProgramAttribute {
+        name: string,
+        location: GLint
+    }
+
+    export interface GLProgramUniform {
+        name: string,
+        location: WebGLUniformLocation
+    }
+
+    export function create(gl: WebGL2RenderingContext, srcVertex: string, srcFragment: string) {
+        const shaderVertex = createShader(gl, GLShaderType.VERTEX, srcVertex);
+        const shaderFragment = createShader(gl, GLShaderType.FRAGMENT, srcFragment);
+        const program = createProgram(gl, shaderVertex, shaderFragment);
+        const uniforms = getUniforms(gl, program);
+        const attributes = getAttributes(gl, program);
+        const information = {uniforms: uniforms, attributes: attributes};
+        return new GLProgram(gl, program, information);
+    }
+
+
+    function createShader(gl: WebGL2RenderingContext, type: GLShaderType, source: string): WebGLShader {
+        // create a new shader handle
+        const shader = gl.createShader(type.glEnum);
+        GLError.check(gl, "createShader", "creating shader (" + type.displayString + ")");
+        if (!shader) {
+            throw new Error("Could not create shader (" + type.displayString + ")");
+        }
+
+        // upload shader source code
+        gl.shaderSource(shader, source);
+        GLError.check(gl, "shaderSource", "uploading shader source (" + type.displayString + ")");
+
+        // compile shader
+        gl.compileShader(shader);
+        GLError.check(gl, "compileShader", "compiling shader (" + type.displayString + ")");
+
+        // check status if successful
+        if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            return shader;
         } else {
-            return null;
+            gl.deleteShader(shader);
+            GLError.check(gl, "deleteShader", "deleting failed shader (" + type.displayString + ")");
+            throw new Error("Failed to create shader (" + type.displayString + ")");
         }
     }
 
-    public getUniforms(): UniformInfo[] {
-        return this.uniforms;
+    function createProgram(gl: WebGL2RenderingContext, shaderVertex: WebGLShader, shaderFragment: WebGLShader): WebGLProgram {
+        // create new program handle
+        const program = gl.createProgram();
+        GLError.check(gl, "createProgram", "creating program");
+        if (!program) {
+            throw new Error("Could not create program");
+        }
+
+        // attach vertex and fragment shaders to program
+        gl.attachShader(program, shaderVertex);
+        GLError.check(gl, "attachShader", "attaching vertex shader");
+        gl.attachShader(program, shaderFragment);
+        GLError.check(gl, "attachShader", "attaching fragment shader");
+
+        //complete program creation
+        gl.linkProgram(program);
+        GLError.check(gl, "linkProgram", "linking program");
+
+        // check status if successful
+        if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            return program;
+        } else {
+            gl.deleteProgram(program);
+            GLError.check(gl, "deleteProgram", "deleting failed program");
+            throw new Error("Error during shader-program creation");
+        }
     }
 
-    public getUniform(name: string): UniformInfo | null {
-        return orNull(this.uniforms.find(u => u.name === name));
+    function getUniforms(gl: WebGL2RenderingContext, program: WebGLProgram): GLProgramUniform[] {
+        const uniforms: GLProgramUniform[] = [];
+
+        const amount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+        GLError.check(gl, "getProgramParameter", "get amount of (active) uniforms");
+
+        for (let i = 0; i < amount; i++) {
+            const uniform = gl.getActiveUniform(program, i);
+            GLError.check(gl, "getActiveUniform", "get information about (active) uniform");
+
+            if (uniform) {
+                const location = gl.getUniformLocation(program, uniform.name);
+                GLError.check(gl, "getUniformLocation", "getting program uniform location");
+                if (location === null) {
+                    throw new Error("Could not get location for uniform " + uniform.name);
+                }
+                uniforms.push({
+                    name: uniform.name,
+                    location: location,
+                });
+            }
+
+        }
+
+        return uniforms;
     }
 
-    public getAttributes(): AttributeInfo[] {
-        return this.attributes;
-    }
+    function getAttributes(gl: WebGL2RenderingContext, program: WebGLProgram): GLProgramAttribute[] {
+        const attributes: GLProgramAttribute[] = [];
 
-    public getAttribute(name: string): AttributeInfo | null {
-        return orNull(this.attributes.find(a => a.name === name));
-    }
+        const amount = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+        GLError.check(gl, "getProgramParameter", "get amount of (active) attributes");
 
-    public getDebugName(): string {
-        return this.debugName;
+        for (let i = 0; i < amount; i++) {
+            const attribute = gl.getActiveAttrib(program, i);
+            GLError.check(gl, "getActiveAttrib", "get information about (active) attribute");
+
+            if (attribute) {
+                const location = gl.getAttribLocation(program, attribute.name);
+                GLError.check(gl, "getAttribLocation", "getting program attribute location");
+                if (location === null) {
+                    throw new Error("Could not get attribute for uniform " + attribute.name);
+                }
+                attributes.push({
+                    name: attribute.name,
+                    location: location,
+                });
+            }
+        }
+
+        return attributes;
     }
 
 }

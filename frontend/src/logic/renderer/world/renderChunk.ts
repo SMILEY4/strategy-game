@@ -1,7 +1,7 @@
-import {GLVertexArray} from "../common2/glVertexArray";
-import {GLIndexBuffer} from "../common2/glIndexBuffer";
-import {GLVertexBuffer} from "../common2/glVertexBuffer";
-import {GLDisposable} from "../common2/glDisposable";
+import {GLVertexArray} from "../common/glVertexArray";
+import {GLIndexBuffer} from "../common/glIndexBuffer";
+import {GLVertexBuffer} from "../common/glVertexBuffer";
+import {GLDisposable} from "../common/glDisposable";
 
 export class RenderChunk {
 

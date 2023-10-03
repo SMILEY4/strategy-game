@@ -4,11 +4,11 @@ import {Tile} from "../../../models/tile";
 import {RenderChunk} from "./renderChunk";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../common/mixedArrayBuffer";
 import {TilemapUtils} from "../../../core/tilemap/tilemapUtils";
-import {GLVertexArray} from "../common2/glVertexArray";
-import {GLVertexBuffer} from "../common2/glVertexBuffer";
-import {GLIndexBuffer} from "../common2/glIndexBuffer";
-import {GLProgram} from "../common2/glProgram";
-import {GLAttributeType} from "../common2/glTypes";
+import {GLVertexArray} from "../common/glVertexArray";
+import {GLVertexBuffer} from "../common/glVertexBuffer";
+import {GLIndexBuffer} from "../common/glIndexBuffer";
+import {GLProgram} from "../common/glProgram";
+import {GLAttributeType} from "../common/glTypes";
 
 /*
 Vertices of hex-tiles are constructed as following:

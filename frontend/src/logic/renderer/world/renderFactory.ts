@@ -3,8 +3,8 @@ import {RenderWorld} from "./renderWorld";
 
 import SHADER_SRC_TILEMAP_VERT from "../../../logic/renderer/mapShader.vsh?raw";
 import SHADER_SRC_TILEMAP_FRAG from "../../../logic/renderer/mapShader.fsh?raw";
+import {GLProgram} from "../common/glProgram";
 import {GLTexture} from "../common/glTexture";
-import {GLProgram} from "../common2/glProgram";
 
 export namespace RenderWorldFactory {
 
@@ -16,7 +16,7 @@ export namespace RenderWorldFactory {
 
     function createTerrainLayer(gl: WebGL2RenderingContext): TerrainRenderLayer {
         const program = GLProgram.create(gl, SHADER_SRC_TILEMAP_VERT, SHADER_SRC_TILEMAP_FRAG);
-        const tileset = GLTexture.createFromPath(gl, "/tileset.png", "tileset.terrain");
+        const tileset = GLTexture.createFromPath(gl, "/tileset.png");
         return new TerrainRenderLayer(program, tileset);
     }
 

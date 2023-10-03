@@ -1,5 +1,5 @@
-import {GLError} from "../common2/glError";
-import {GLIndexBuffer} from "../common2/glIndexBuffer";
+import {GLError} from "./glError";
+import {GLIndexBuffer} from "./glIndexBuffer";
 
 export class GLRenderer {
 
