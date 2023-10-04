@@ -1,28 +1,47 @@
-import {UserRepository} from "./userRepository";
 import {UserClient} from "./userClient";
+import {UserStateAccess} from "../../state/access/UserStateAccess";
+import jwt_decode from "jwt-decode";
 
 export class UserService {
 
-    private readonly repository: UserRepository;
     private readonly client: UserClient;
 
-    constructor(repository: UserRepository, client: UserClient) {
-        this.repository = repository;
+    constructor(client: UserClient) {
         this.client = client;
-    }
-
-
-    isAuthenticated(): boolean {
-        return this.repository.isAuthenticated();
     }
 
     login(email: string, password: string): Promise<void> {
         return this.client.login(email, password)
-            .then(data => this.repository.setAuthToken(data.idToken));
+            .then(data => UserStateAccess.setAuthToken(data.idToken));
     }
 
     signup(email: string, password: string, username: string): Promise<void> {
         return this.client.signUp(email, password, username);
+    }
+
+    isAuthenticated(): boolean {
+        const token = UserStateAccess.getAuthTokenOrNull();
+        if (token) {
+            return this.getTokenExpiration(token) > Date.now();
+        } else {
+            return false;
+        }
+    }
+
+    private getTokenExpiration(token: string): number {
+        return this.expirationFromToken(token);
+    }
+
+    private expirationFromToken(token: string): number {
+        return (jwt_decode(token) as any).exp * 1000;
+    }
+
+    private userIdFromToken(token: string | null): string {
+        if (token) {
+            return (jwt_decode(token) as any).sub;
+        } else {
+            return "";
+        }
     }
 
 }

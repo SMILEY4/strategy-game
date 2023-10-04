@@ -1,5 +1,4 @@
 import {CityIdentifier, ProductionEntry} from "../../models/city";
-import {GameRepository} from "./gameRepository";
 import {TileIdentifier} from "../../models/tile";
 import {UID} from "../../shared/uid";
 import {
@@ -9,17 +8,12 @@ import {
     ProductionQueueCancelCommand,
     UpgradeSettlementCommand,
 } from "../../models/command";
+import {CommandStateAccess} from "../../state/access/CommandStateAccess";
 
 export class CommandService {
 
-    private readonly gameRepository: GameRepository;
-
-    constructor(gameRepository: GameRepository) {
-        this.gameRepository = gameRepository;
-    }
-
     cancelCommand(id: string) {
-        this.gameRepository.removeCommand(id);
+        CommandStateAccess.removeCommand(id);
     }
 
     createSettlement(tile: TileIdentifier, name: string, asColony: boolean) {
@@ -30,7 +24,7 @@ export class CommandService {
             name: name,
             asColony,
         };
-        this.gameRepository.addCommand(command);
+        CommandStateAccess.addCommand(command);
     }
 
     upgradeSettlementTier(settlement: CityIdentifier, currTier: number, tgtTier: number) {
@@ -41,7 +35,7 @@ export class CommandService {
             currTier: currTier,
             tgtTier: tgtTier,
         };
-        this.gameRepository.addCommand(command);
+        CommandStateAccess.addCommand(command);
     }
 
     addProductionQueueEntry(city: CityIdentifier, entry: ProductionEntry) {
@@ -51,7 +45,7 @@ export class CommandService {
             city: city,
             entry: entry,
         };
-        this.gameRepository.addCommand(command);
+        CommandStateAccess.addCommand(command);
     }
 
     cancelProductionQueueEntry(city: CityIdentifier, entryId: string) {
@@ -59,9 +53,9 @@ export class CommandService {
             id: UID.generate(),
             type: "production-queue-entry.cancel",
             city: city,
-            entryId: entryId
+            entryId: entryId,
         };
-        this.gameRepository.addCommand(command);
+        CommandStateAccess.addCommand(command);
     }
 
     placeScout(tile: TileIdentifier) {
@@ -70,7 +64,7 @@ export class CommandService {
             type: "scout.place",
             tile: tile,
         };
-        this.gameRepository.addCommand(command);
+        CommandStateAccess.addCommand(command);
     }
 
 }

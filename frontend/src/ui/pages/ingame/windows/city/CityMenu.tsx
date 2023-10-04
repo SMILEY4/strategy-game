@@ -17,13 +17,14 @@ import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
 import {formatPercentage} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
-import {useCancelProductionQueueEntry, useCity, useUpgradeSettlementTier} from "../../../../hooks/game/city";
+import {useCancelProductionQueueEntry, useUpgradeSettlementTier} from "../../../../hooks/game/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import {City, CityIdentifier, ProductionQueueEntry} from "../../../../../models/city";
 import "./cityMenu.less";
 import {useOpenTileWindow} from "../tile/TileWindow";
+import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -50,7 +51,7 @@ export interface CountryWindowProps {
 
 export function CityWindow(props: CountryWindowProps): ReactElement {
 
-    const city = useCity(props.cityId);
+    const city = GameStateAccess.useCityById(props.cityId);
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();

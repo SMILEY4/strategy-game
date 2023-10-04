@@ -1,18 +1,16 @@
 import {Tile, TileIdentifier} from "../../models/tile";
 import {Country} from "../../models/country";
 import {getMaxOrDefault} from "../../shared/utils";
-import {GameRepository} from "./gameRepository";
 import {CommandService} from "./commandService";
+import {GameStateAccess} from "../../state/access/GameStateAccess";
 
 export class CityCreationService {
 
     readonly cityTileMaxForeignInfluence = 3; // todo
     readonly commandService: CommandService;
-    readonly gameRepository: GameRepository;
 
-    constructor(commandService: CommandService, gameRepository: GameRepository) {
+    constructor(commandService: CommandService) {
         this.commandService = commandService;
-        this.gameRepository = gameRepository;
     }
 
 
@@ -21,7 +19,7 @@ export class CityCreationService {
         if (name !== null && !name) {
             return false;
         }
-        if (tile.terrainType !== "land") {
+        if (tile.terrainType !== "LAND") {
             return false;
         }
         if (this.isOccupied(tile)) {
@@ -47,12 +45,12 @@ export class CityCreationService {
     }
 
     create(tile: Tile, name: string, asColony: boolean) {
-        this.commandService.createSettlement(tile.identifier, name, asColony)
+        this.commandService.createSettlement(tile.identifier, name, asColony);
     }
 
     getPlayerCountry(): Country {
         const playerCountryId = "germany"; // todo
-        return this.gameRepository.getCountry(playerCountryId)!!;
+        return GameStateAccess.getCountry(playerCountryId)!!;
     }
 
     isOccupied(tile: Tile): boolean {

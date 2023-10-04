@@ -1,4 +1,3 @@
-import {GameRepository} from "./gameRepository";
 import {GameSessionClient} from "../gamesession/gameSessionClient";
 import {
     Command,
@@ -8,26 +7,25 @@ import {
     ProductionQueueCancelCommand,
     UpgradeSettlementCommand,
 } from "../../models/command";
+import {CommandStateAccess} from "../../state/access/CommandStateAccess";
 
 export class GameService {
 
-    private readonly gameRepository: GameRepository;
     private readonly gameSessionClient: GameSessionClient;
 
-    constructor(gameRepository: GameRepository, gameSessionClient: GameSessionClient) {
-        this.gameRepository = gameRepository;
+    constructor(gameSessionClient: GameSessionClient) {
         this.gameSessionClient = gameSessionClient;
     }
 
     endTurn() {
-        const commands = this.gameRepository.getCommands();
+        const commands = CommandStateAccess.getCommands();
         this.gameSessionClient.sendMessage(
             "submit-turn",
             {
                 commands: commands.map(c => this.buildPayloadCommand(c)),
             },
         );
-        this.gameRepository.clearCommands();
+        CommandStateAccess.setCommands([]);
     }
 
     private buildPayloadCommand(command: Command): object {
@@ -51,7 +49,7 @@ export class GameService {
             return {
                 type: "production-queue-remove-entry",
                 cityId: cmd.city.id,
-                queueEntryId: cmd.entryId
+                queueEntryId: cmd.entryId,
             };
         }
         if (command.type === "settlement.create") {

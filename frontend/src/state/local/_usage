@@ -1,0 +1,13 @@
+LOCAL STATE
+
+- contains general state that does not need to be synced with game state (e.g. user authentication)
+- contains all modifications applied by the player to the game state
+    - e.g. commands
+    - NOT the game state itself (e.g. list of tiles)
+
+=> optimized for many writes / modifications
+    - small
+    - updated/modified regularly
+    - flat structure
+    - split into different states to reduce unwanted updates
+   (- does not need to be read-efficient, since data to filter is relatively small)

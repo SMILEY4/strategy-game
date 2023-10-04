@@ -1,35 +1,28 @@
 import {SetState} from "../../../shared/zustandUtils";
 import create from "zustand";
-import {Tile} from "../../../models/tile";
+import {Command} from "../../../models/command";
 
-
-export namespace TileStore {
+export namespace LocalCommandStateStore {
 
     interface StateValues {
-        tiles: Map<string, Tile>
-    }
-
-    interface StateActions {
-        set: (tiles: Tile[]) => void;
+        commands: Command[];
     }
 
     const initialStateValues: StateValues = {
-        tiles: new Map<string, Tile>()
+        commands: [],
     };
 
+    interface StateActions {
+        set: (commands: Command[]) => void;
+    }
 
     function stateActions(set: SetState<State>): StateActions {
         return {
-            set: (tiles: Tile[]) => set(() => ({
-                tiles: buildMap(tiles)
+            set: (commands: Command[]) => set(() => ({
+                commands: commands,
             })),
         };
     }
-
-    function buildMap(tiles: Tile[]): Map<string, Tile> {
-        return null as any;
-    }
-
 
     export interface State extends StateValues, StateActions {
     }

@@ -1,16 +1,14 @@
 import {GameSessionClient} from "./gameSessionClient";
 import {handleResponseError} from "../../shared/httpClient";
 import {UnauthorizedError} from "../../_old_core/models/errors/UnauthorizedError";
-import {GameSessionRepository} from "./gameSessionRepository";
+import {GameSessionStateAccess} from "../../state/access/GameSessionStateAccess";
 
 export class GameSessionService {
 
     private readonly client: GameSessionClient;
-    private readonly repository: GameSessionRepository;
 
-    constructor(client: GameSessionClient, repository: GameSessionRepository) {
+    constructor(client: GameSessionClient) {
         this.client = client;
-        this.repository = repository;
     }
 
 
@@ -44,12 +42,13 @@ export class GameSessionService {
 
     connectSession(gameId: string): Promise<void> {
         return Promise.resolve()
-            .then(() => this.repository.setGameState("loading"))
+            .then(() => GameSessionStateAccess.setGameState("loading"))
             .then(() => this.client.config())
-            .then(config => this.repository.setGameConfig(config))
+            .then(config => GameSessionStateAccess.setGameConfig(config))
             .then(() => this.client.connect(gameId))
-            .then(() => this.repository.setGameState("playing"))
-            .catch(() => this.repository.setGameState("error"));
+            .then(() => GameSessionStateAccess.setGameState("playing"))
+            .catch(() => GameSessionStateAccess.setGameState("error"));
     }
+
 
 }

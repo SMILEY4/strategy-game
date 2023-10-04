@@ -2,34 +2,24 @@ import {SetState} from "../../../shared/zustandUtils";
 import create from "zustand";
 import {CameraData} from "../../../models/cameraData";
 
+export namespace LocalCameraStore {
 
-export namespace CameraStore {
-
-
-    interface StateValues {
-        camera: CameraData;
+    interface StateValues extends CameraData {
     }
 
+    const initialStateValues: StateValues = {
+        x: 0,
+        y: 0,
+        zoom: 1,
+    };
 
     interface StateActions {
         set: (camera: CameraData) => void;
     }
 
-
-    const initialStateValues: StateValues = {
-        camera: {
-            x: 0,
-            y: 0,
-            zoom: 1
-        },
-    };
-
-
     function stateActions(set: SetState<State>): StateActions {
         return {
-            set: (camera: CameraData) => set(() => ({
-                camera: camera,
-            })),
+            set: (camera: CameraData) => set(() => camera),
         };
     }
 

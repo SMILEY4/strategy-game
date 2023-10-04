@@ -13,6 +13,7 @@ import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalu
 import {CityEntry} from "../common/CityEntry";
 import {useProvince} from "../../../../hooks/game/province";
 import {Province, ProvinceIdentifier} from "../../../../../models/province";
+import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 
 
 export function useOpenProvinceWindow() {
@@ -39,7 +40,7 @@ export interface ProvinceWindowProps {
 
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
-    const province = useProvince(props.provinceId)
+    const province = GameStateAccess.useProvinceById(props.provinceId)
     const openCountryWindow = useOpenCountryWindow();
     const openCityWindow = useOpenCityWindow();
 

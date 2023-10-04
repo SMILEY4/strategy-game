@@ -1,17 +1,14 @@
 import {createDiContainer, qualifier} from "../shared/di";
 import {UserService} from "./user/userService";
-import {UserRepository} from "./user/userRepository";
 import {UserClient} from "./user/userClient";
 import {AuthProvider} from "./authProvider";
 import {HttpClient} from "../shared/httpClient";
 import {GameSessionService} from "./gamesession/gameSessionService";
 import {GameSessionClient} from "./gamesession/gameSessionClient";
-import {GameSessionRepository} from "./gamesession/gameSessionRepository";
 import {WebsocketClient} from "../shared/websocketClient";
 import {WebsocketMessageHandler} from "../shared/websocketMessageHandler";
 import {GameService} from "./game/gameService";
 import {CommandService} from "./game/commandService";
-import {GameRepository} from "./game/gameRepository";
 import {CityCreationService} from "./game/cityCreationService";
 import {GameSessionMessageHandler} from "./gamesession/gameSessionMessageHandler";
 import {NextTurnService} from "./game/nextTurnService";
@@ -31,10 +28,8 @@ export namespace AppCtx {
         WebsocketClient: qualifier<WebsocketClient>("WebsocketClient"),
         WebsocketMessageHandler: qualifier<WebsocketMessageHandler>("WebsocketMessageHandler"),
         AuthProvider: qualifier<AuthProvider>("AuthProvider"),
-        UserRepository: qualifier<UserRepository>("UserRepository"),
         UserService: qualifier<UserService>("UserService"),
         GameSessionService: qualifier<GameSessionService>("GameSessionService"),
-        GameRepository: qualifier<GameRepository>("GameRepository"),
         GameService: qualifier<GameService>("GameService"),
         CommandService: qualifier<CommandService>("CommandService"),
         CityCreationService: qualifier<CityCreationService>("CityCreationService"),
@@ -48,15 +43,12 @@ export namespace AppCtx {
     diContainer.bind(DIQ.HttpClient, ctx => new HttpClient(API_BASE_URL));
     diContainer.bind(DIQ.WebsocketClient, ctx => new WebsocketClient(API_WS_BASE_URL));
     diContainer.bind(DIQ.WebsocketMessageHandler, ctx => new GameSessionMessageHandler(ctx.get(DIQ.NextTurnService)));
-    diContainer.bind(DIQ.AuthProvider, ctx => new AuthProvider(ctx.get(DIQ.UserRepository)));
+    diContainer.bind(DIQ.AuthProvider, ctx => new AuthProvider());
 
     diContainer.bind(DIQ.NextTurnService, ctx => new NextTurnService(
-        ctx.get(DIQ.GameRepository),
         ctx.get(DIQ.GameLoopService),
     ));
-    diContainer.bind(DIQ.UserRepository, ctx => new UserRepository());
     diContainer.bind(DIQ.UserService, ctx => new UserService(
-        ctx.get(DIQ.UserRepository),
         new UserClient(
             ctx.get(DIQ.AuthProvider),
             ctx.get(DIQ.HttpClient),
@@ -70,28 +62,19 @@ export namespace AppCtx {
     ));
     diContainer.bind(DIQ.GameSessionService, ctx => new GameSessionService(
         ctx.get(DIQ.GameSessionClient),
-        new GameSessionRepository(),
     ));
-    diContainer.bind(DIQ.GameRepository, ctx => new GameRepository());
     diContainer.bind(DIQ.GameService, ctx => new GameService(
-        ctx.get(DIQ.GameRepository),
         ctx.get(DIQ.GameSessionClient),
     ));
-    diContainer.bind(DIQ.CommandService, ctx => new CommandService(
-        ctx.get(DIQ.GameRepository),
-    ));
+    diContainer.bind(DIQ.CommandService, ctx => new CommandService());
 
     diContainer.bind(DIQ.CityCreationService, ctx => new CityCreationService(
         ctx.get(DIQ.CommandService),
-        ctx.get(DIQ.GameRepository),
     ));
     diContainer.bind(DIQ.GameLoopService, ctx => new GameLoopService(
         ctx.get(DIQ.GameRenderer),
-        ctx.get(DIQ.GameRepository),
     ));
-    diContainer.bind(DIQ.GameRenderer, ctx => new GameRenderer(
-        ctx.get(DIQ.GameRepository)
-    ));
+    diContainer.bind(DIQ.GameRenderer, ctx => new GameRenderer());
 
     diContainer.createEager();
     export const di = diContainer.getContext();

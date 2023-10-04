@@ -1,16 +1,9 @@
-import {UserRepository} from "./user/userRepository";
+import {UserStateAccess} from "../state/access/UserStateAccess";
 
 export class AuthProvider {
 
-    private readonly userRepository: UserRepository;
-
-
-    constructor(userRepository: UserRepository) {
-        this.userRepository = userRepository;
-    }
-
     getToken(): string | null {
-        return this.userRepository.getAuthTokenOrNull();
+        return UserStateAccess.getAuthTokenOrNull();
     }
 
 }

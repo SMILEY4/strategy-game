@@ -1,23 +1,17 @@
-import {GameRepository} from "../game/gameRepository";
 import {WorldRenderer} from "./world/worldRenderer";
 import {RenderWorldFactory} from "./world/renderFactory";
 import {RenderWorld} from "./world/renderWorld";
 import {Camera} from "./common/camera";
 import {GLRenderer} from "./common/glRenderer";
 import {RenderChunkFactory} from "./world/renderChunkFactory";
+import {CameraStateAccess} from "../../state/access/CameraStateAccess";
+import {GameStateAccess} from "../../state/access/GameStateAccess";
 
 export class GameRenderer {
-
-    private readonly gameRepository: GameRepository;
 
     private gl: WebGL2RenderingContext | null = null;
     private worldRenderer: WorldRenderer | null = null;
     private world: RenderWorld | null = null;
-
-
-    constructor(gameRepository: GameRepository) {
-        this.gameRepository = gameRepository;
-    }
 
     public initialize(canvas: HTMLCanvasElement) {
         const gl = canvas.getContext("webgl2");
@@ -39,7 +33,7 @@ export class GameRenderer {
             });
             this.world?.getLayers()[0].setChunks(RenderChunkFactory.create(
                 this.gl,
-                this.gameRepository.getTiles(),
+                GameStateAccess.getTiles(),
                 this.world?.getLayers()[0].getShaderAttributes(),
             ));
         }
@@ -62,7 +56,7 @@ export class GameRenderer {
     }
 
     private getRenderCamera(): Camera {
-        const data = this.gameRepository.getCamera();
+        const data = CameraStateAccess.getCamera();
         const camera = new Camera();
         camera.setPosition(data.x, data.y);
         camera.setZoom(data.zoom);

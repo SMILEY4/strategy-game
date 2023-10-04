@@ -7,15 +7,18 @@ import {Spacer} from "../../../../components/spacer/Spacer";
 import {
     Command,
     CreateSettlementCommand,
-    PlaceScoutCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
+    PlaceScoutCommand,
+    ProductionQueueAddCommand,
+    ProductionQueueCancelCommand,
     UpgradeSettlementCommand,
 } from "../../../../../models/command";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../../../components/text/Text";
-import {useCommandCancel, useCommands} from "../../../../hooks/game/commands";
+import {useCommandCancel} from "../../../../hooks/game/commands";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {CgClose} from "react-icons/cg";
 import {HBox} from "../../../../components/layout/hbox/HBox";
+import {CommandStateAccess} from "../../../../../state/access/CommandStateAccess";
 
 
 export function useOpenCommandLogWindow() {
@@ -40,7 +43,7 @@ export interface CommandLogWindowProps {
 
 export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 
-    const commands = useCommands();
+    const commands = CommandStateAccess.useCommands();
     const cancel = useCommandCancel();
 
     return (
@@ -79,8 +82,8 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
     );
 
     function renderCommand(command: Command): any {
-        if(command.type === "settlement.create") {
-            const cmd = command as CreateSettlementCommand
+        if (command.type === "settlement.create") {
+            const cmd = command as CreateSettlementCommand;
             return (
                 <>
                     <Header4 onLight>{"Create " + (cmd.asColony ? "Colony" : "Settlement")}</Header4>
@@ -88,10 +91,10 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                     <Text onLight>with name <i>{cmd.name}</i></Text>
                     <Text onLight>at <i>{cmd.tile.q + ", " + cmd.tile.r}</i></Text>
                 </>
-            )
+            );
         }
-        if(command.type === "settlement.upgrade") {
-            const cmd = command as UpgradeSettlementCommand
+        if (command.type === "settlement.upgrade") {
+            const cmd = command as UpgradeSettlementCommand;
             return (
                 <>
                     <Header4 onLight>{"Upgrade Settlement"}</Header4>
@@ -99,10 +102,10 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                     <Text onLight>with name <i>{cmd.settlement.name}</i></Text>
                     <Text onLight>from tier <i>{cmd.currTier}</i> to <i>{cmd.tgtTier}</i></Text>
                 </>
-            )
+            );
         }
-        if(command.type === "production-queue-entry.add") {
-            const cmd = command as ProductionQueueAddCommand
+        if (command.type === "production-queue-entry.add") {
+            const cmd = command as ProductionQueueAddCommand;
             return (
                 <>
                     <Header4 onLight>{"Add to production queue"}</Header4>
@@ -110,27 +113,27 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                     <Text onLight>construct <i>{cmd.entry.name}</i></Text>
                     <Text onLight>in city <i>{cmd.city.name}</i></Text>
                 </>
-            )
+            );
         }
-        if(command.type === "production-queue-entry.cancel") {
-            const cmd = command as ProductionQueueCancelCommand
+        if (command.type === "production-queue-entry.cancel") {
+            const cmd = command as ProductionQueueCancelCommand;
             return (
                 <>
                     <Header4 onLight>{"Cancel production queue entry"}</Header4>
                     <Spacer size="s"/>
                     <Text onLight>in city <i>{cmd.city.name}</i></Text>
                 </>
-            )
+            );
         }
-        if(command.type === "scout.place") {
-            const cmd = command as PlaceScoutCommand
+        if (command.type === "scout.place") {
+            const cmd = command as PlaceScoutCommand;
             return (
                 <>
                     <Header4 onLight>Place Scout</Header4>
                     <Spacer size="s"/>
                     <Text onLight>{"at " + cmd.tile.q + ", " + cmd.tile.r}</Text>
                 </>
-            )
+            );
         }
         return (
             <>

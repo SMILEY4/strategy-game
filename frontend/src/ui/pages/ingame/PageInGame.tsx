@@ -6,13 +6,14 @@ import {WindowStack} from "../../components/windows/stack/WindowStack";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../components/text/Text";
-import {useConnectGameSession, useGameState} from "../../hooks/gamesession/gameSessions";
+import {useConnectGameSession} from "../../hooks/gamesession/gameSessions";
 import "./pageInGame.scoped.less";
+import {GameSessionStateAccess} from "../../../state/access/GameSessionStateAccess";
 
 const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
-    const currentState = useGameState();
+    const currentState = GameSessionStateAccess.useGameState();
     const loadGame = useLoadGame();
 
     useEffect(() => {

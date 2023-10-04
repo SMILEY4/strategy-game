@@ -1,0 +1,4 @@
+MERGED "STATE"
+
+- does not store anything
+- merges local state and remote state and provides clean interface to current state with all modifications applied

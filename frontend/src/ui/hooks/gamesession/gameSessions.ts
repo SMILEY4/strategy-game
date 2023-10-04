@@ -2,7 +2,6 @@ import {UnauthorizedError} from "../../../_old_core/models/errors/UnauthorizedEr
 import {useNavigate} from "react-router-dom";
 import {useHandleUnauthorized} from "../user/authentication";
 import {AppCtx} from "../../../logic/appContext";
-import {GameSessionStore} from "../../../logic/gamesession/gameSessionStore";
 
 export function useLoadGameSessions() {
     const gameSessionService = AppCtx.di.get(AppCtx.DIQ.GameSessionService);
@@ -65,8 +64,4 @@ export function useConnectGameSession() {
                 handleUnauthorized();
             }));
     };
-}
-
-export function useGameState(): "none" | "loading" | "playing" | "error" {
-    return GameSessionStore.useState(state => state.state);
 }

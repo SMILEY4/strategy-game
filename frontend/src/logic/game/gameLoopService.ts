@@ -1,24 +1,22 @@
 import {GameRenderer} from "../renderer/gameRenderer";
-import {GameRepository} from "./gameRepository";
+import {CameraStateAccess} from "../../state/access/CameraStateAccess";
 
 export class GameLoopService {
 
     private readonly renderer: GameRenderer;
-    private readonly gameRepository: GameRepository;
 
-    constructor(renderer: GameRenderer, gameRepository: GameRepository) {
+    constructor(renderer: GameRenderer) {
         this.renderer = renderer;
-        this.gameRepository = gameRepository;
     }
 
 
     initialize(canvas: HTMLCanvasElement) {
-        console.log("init renderer")
+        console.log("init renderer");
         this.renderer.initialize(canvas);
     }
 
     onGameStateUpdate() {
-        console.log("game state update")
+        console.log("game state update");
         this.renderer.updateWorld();
     }
 
@@ -35,8 +33,8 @@ export class GameLoopService {
 
     mouseMove(dx: number, dy: number, x: number, y: number, leftBtnDown: boolean) {
         if (leftBtnDown) {
-            const camera = this.gameRepository.getCamera();
-            this.gameRepository.setCamera({
+            const camera = CameraStateAccess.getCamera();
+            CameraStateAccess.setCamera({
                 x: camera.x + dx / camera.zoom,
                 y: camera.y - dy / camera.zoom,
                 zoom: camera.zoom,
@@ -45,10 +43,10 @@ export class GameLoopService {
     }
 
     mouseScroll(d: number) {
-        const camera = this.gameRepository.getCamera();
+        const camera = CameraStateAccess.getCamera();
         const dz = d > 0 ? 0.1 : -0.1;
         const zoom = Math.max(0.01, camera.zoom - dz);
-        this.gameRepository.setCamera({
+        CameraStateAccess.setCamera({
             x: camera.x,
             y: camera.y,
             zoom: zoom,
