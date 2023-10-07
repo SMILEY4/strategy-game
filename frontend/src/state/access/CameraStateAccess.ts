@@ -1,5 +1,5 @@
-import {CameraData} from "../local/camera/cameraData";
 import {LocalCameraStore} from "../local/camera/LocalCameraStore";
+import {CameraData} from "../../models/cameraData";
 
 export namespace CameraStateAccess {
 

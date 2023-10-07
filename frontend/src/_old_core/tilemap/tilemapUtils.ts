@@ -77,5 +77,28 @@ export namespace TilemapUtils {
         ];
     }
 
+export function pixelToHex(layout: TilemapUtils.HexLayout, pos: [number, number]): [number, number] {
+        const M = layout.orientation;
+        const pt = [
+            (pos[0] - layout.origin[0]) / layout.size[0],
+            (pos[1] - layout.origin[1]) / layout.size[1],
+        ];
+        const fq = M.b0 * pt[0] + M.b1 * pt[1];
+        const fr = M.b2 * pt[0] + M.b3 * pt[1];
+        const fs = -fq - fr;
+        let q = Math.round(fq);
+        let r = Math.round(fr);
+        let s = Math.round(fs);
+        const qDiff = Math.abs(q - fq);
+        const rDiff = Math.abs(r - fr);
+        const sDiff = Math.abs(s - fs);
+        if (qDiff > rDiff && qDiff > sDiff) {
+            q = -r - s;
+        } else if (rDiff > sDiff) {
+            r = -q - s;
+        }
+        return [q, r];
+    }
+
 
 }

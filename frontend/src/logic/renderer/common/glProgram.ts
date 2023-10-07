@@ -30,8 +30,10 @@ export class GLProgram implements GLDisposable {
     }
 
     public setUniform(name: string, type: GLUniformType, values: GLUniformValueType) {
-        const location = this.information.uniforms.find(u => u.name === name)!.location;
-        this.setUniformValue(location, type, values);
+        const information = this.information.uniforms.find(u => u.name === name);
+        if (information) {
+            this.setUniformValue(information.location, type, values);
+        }
     }
 
     private uniformValueAsArray(values: GLUniformValueType): number[] | Float32Array {

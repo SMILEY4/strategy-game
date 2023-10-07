@@ -1,15 +1,14 @@
-import {Tile} from "../../models/tile";
 import {Country} from "../../models/country";
 import {Province} from "../../models/province";
 import {City} from "../../models/city";
-import {RemoteGameStateStore} from "./RemoteGameStore";
+import {TileContainer} from "../../models/tileContainer";
 
 
 export interface RemoteGameState {
     countries: Country[],
     provinces: Province[],
     cities: City[]
-    tiles: Tile[];
+    tiles: TileContainer;
 }
 
 export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {
@@ -43,8 +42,8 @@ export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {
                             },
                             isProvinceCapitol: false,
                             isCountryCapitol: false,
-                        }
-                    ]
+                        },
+                    ],
                 },
                 {
                     identifier: {
@@ -75,11 +74,11 @@ export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {
                             },
                             isProvinceCapitol: false,
                             isCountryCapitol: false,
-                        }
-                    ]
-                }
+                        },
+                    ],
+                },
             ],
-        }
+        },
     ],
     provinces: [
         {
@@ -107,8 +106,8 @@ export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {
                     },
                     isProvinceCapitol: false,
                     isCountryCapitol: false,
-                }
-            ]
+                },
+            ],
         },
         {
             identifier: {
@@ -143,11 +142,11 @@ export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {
                     },
                     isProvinceCapitol: false,
                     isCountryCapitol: false,
-                }
-            ]
-        }
+                },
+            ],
+        },
     ],
-    cities:  [
+    cities: [
         {
             identifier: {
                 id: "stuttgart",
@@ -178,41 +177,41 @@ export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {
                     icon: "/resource_icon_food.png",
                     value: 3,
                     contributions: [
-                        { reason: "Farm", value: 2 },
-                        { reason: "Magic", value: 5 },
-                        { reason: "Population", value: -4 }
-                    ]
+                        {reason: "Farm", value: 2},
+                        {reason: "Magic", value: 5},
+                        {reason: "Population", value: -4},
+                    ],
                 },
                 {
                     name: "Wood",
                     icon: "/resource_icon_wood.png",
                     value: -1,
                     contributions: [
-                        { reason: "Woodcutter", value: 1 },
-                        { reason: "Toolmaker", value: -2 },
-                    ]
+                        {reason: "Woodcutter", value: 1},
+                        {reason: "Toolmaker", value: -2},
+                    ],
                 },
                 {
                     name: "Tools",
                     icon: "/resource_icon_tools.png",
                     value: 2,
                     contributions: [
-                        { reason: "Toolmaker", value: 2 },
-                    ]
+                        {reason: "Toolmaker", value: 2},
+                    ],
                 },
             ],
             productionQueue: [],
             maxContentSlots: 3,
             content: [
                 {
-                    icon: "farm.png"
+                    icon: "farm.png",
                 },
                 {
-                    icon: "farm.png"
+                    icon: "farm.png",
                 },
                 {
-                    icon: "Woodcutter.png"
-                }
+                    icon: "Woodcutter.png",
+                },
             ],
         },
         {
@@ -332,5 +331,5 @@ export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {
             content: [],
         },
     ],
-    tiles: []
-}
+    tiles: TileContainer.create([], 11),
+};

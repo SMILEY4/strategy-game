@@ -3,6 +3,7 @@ import {Tile} from "../../models/tile";
 import {orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
+import {TileContainer} from "../../models/tileContainer";
 
 export class NextTurnService {
 
@@ -17,7 +18,7 @@ export class NextTurnService {
         console.log("handle next turn");
         GameStateAccess.setGameState({
             ...GameStateAccess.getGameState(),
-            tiles: this.buildTiles(game),
+            tiles: TileContainer.create(this.buildTiles(game), 11),
         });
         this.gameLoopService.onGameStateUpdate();
     }

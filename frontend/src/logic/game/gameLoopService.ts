@@ -1,22 +1,27 @@
 import {GameRenderer} from "../renderer/gameRenderer";
 import {CameraStateAccess} from "../../state/access/CameraStateAccess";
+import {TilePicker} from "./tilePicker";
+import {CanvasHandle} from "./canvasHandle";
+import {GameStateAccess} from "../../state/access/GameStateAccess";
 
 export class GameLoopService {
 
+    private canvasHandle: CanvasHandle;
     private readonly renderer: GameRenderer;
+    private readonly tilePicker;
 
-    constructor(renderer: GameRenderer) {
+    constructor(canvasHandle: CanvasHandle, renderer: GameRenderer) {
+        this.canvasHandle = canvasHandle;
         this.renderer = renderer;
+        this.tilePicker = new TilePicker(canvasHandle);
     }
 
-
     initialize(canvas: HTMLCanvasElement) {
-        console.log("init renderer");
-        this.renderer.initialize(canvas);
+        this.canvasHandle.set(canvas);
+        this.renderer.initialize();
     }
 
     onGameStateUpdate() {
-        console.log("game state update");
         this.renderer.updateWorld();
     }
 
@@ -29,6 +34,8 @@ export class GameLoopService {
     }
 
     mouseClick(x: number, y: number) {
+        const tile = this.tilePicker.tileAt(x, y);
+        GameStateAccess.setSelectedTile(tile?.identifier || null);
     }
 
     mouseMove(dx: number, dy: number, x: number, y: number, leftBtnDown: boolean) {
@@ -39,6 +46,11 @@ export class GameLoopService {
                 y: camera.y - dy / camera.zoom,
                 zoom: camera.zoom,
             });
+        } else {
+            const tile = this.tilePicker.tileAt(x, y);
+            if (tile?.identifier.id !== GameStateAccess.getHoverTile()?.id) {
+                GameStateAccess.setHoverTile(tile?.identifier || null);
+            }
         }
     }
 

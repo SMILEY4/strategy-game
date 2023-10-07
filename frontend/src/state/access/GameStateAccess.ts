@@ -1,9 +1,11 @@
 import {RemoteGameState} from "../remote/RemoteGameState";
 import {RemoteGameStateStore} from "../remote/RemoteGameStore";
-import {Tile} from "../../models/tile";
+import {Tile, TileIdentifier} from "../../models/tile";
 import {Country} from "../../models/country";
 import {Province} from "../../models/province";
 import {City} from "../../models/city";
+import {TileContainer} from "../../models/tileContainer";
+import {LocalGameStore} from "../local/game/LocalGameStore";
 
 export namespace GameStateAccess {
 
@@ -16,7 +18,27 @@ export namespace GameStateAccess {
     }
 
     export function getTiles(): Tile[] {
+        return getTileContainer().getTiles();
+    }
+
+    export function getTileContainer(): TileContainer {
         return getGameState().tiles;
+    }
+
+    export function setSelectedTile(tile: TileIdentifier | null) {
+        LocalGameStore.useState.getState().setSelectedTile(tile);
+    }
+
+    export function getSelectedTile(): TileIdentifier | null {
+        return LocalGameStore.useState.getState().selectedTile;
+    }
+
+    export function setHoverTile(tile: TileIdentifier | null) {
+        LocalGameStore.useState.getState().setHoverTile(tile);
+    }
+
+    export function getHoverTile(): TileIdentifier | null {
+        return LocalGameStore.useState.getState().hoverTile;
     }
 
     export function getCountry(id: string): Country | null {

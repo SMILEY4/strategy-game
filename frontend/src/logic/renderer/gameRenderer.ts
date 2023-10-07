@@ -6,47 +6,45 @@ import {GLRenderer} from "./common/glRenderer";
 import {RenderChunkFactory} from "./world/renderChunkFactory";
 import {CameraStateAccess} from "../../state/access/CameraStateAccess";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
+import {CanvasHandle} from "../game/canvasHandle";
 
 export class GameRenderer {
 
-    private gl: WebGL2RenderingContext | null = null;
+    private canvasHandle: CanvasHandle;
     private worldRenderer: WorldRenderer | null = null;
     private world: RenderWorld | null = null;
 
-    public initialize(canvas: HTMLCanvasElement) {
-        const gl = canvas.getContext("webgl2");
-        if (!gl) {
-            throw Error("webgl2 not supported");
-        }
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        this.gl = gl;
+    constructor(canvasHandle: CanvasHandle) {
+        this.canvasHandle = canvasHandle;
+    }
+
+    public initialize() {
+        const gl = this.canvasHandle.getGL();
         this.worldRenderer = new WorldRenderer(new GLRenderer(gl));
-        this.world = RenderWorldFactory.createWorld(this.gl);
+        this.world = RenderWorldFactory.createWorld(gl);
     }
 
     public updateWorld() {
-        if (this.gl) {
+        const gl = this.canvasHandle.getGL();
+        if (gl) {
             this.world?.getLayers().forEach(layer => {
                 layer.getChunks().forEach(chunk => {
                     chunk.dispose();
                 });
             });
             this.world?.getLayers()[0].setChunks(RenderChunkFactory.create(
-                this.gl,
+                gl,
                 GameStateAccess.getTiles(),
                 this.world?.getLayers()[0].getShaderAttributes(),
             ));
         }
     }
 
-    private firstFrame = true;
 
     public render() {
-        if (this.world && this.worldRenderer && this.gl) {
-            if (this.firstFrame) {
-                this.worldRenderer.render(this.world, this.getRenderCamera());
-                // this.firstFrame = false;
-            }
+        const gl = this.canvasHandle.getGL();
+        if (this.world && this.worldRenderer && gl) {
+            this.worldRenderer.render(this.world, this.getRenderCamera());
         }
     }
 
@@ -57,11 +55,7 @@ export class GameRenderer {
 
     private getRenderCamera(): Camera {
         const data = CameraStateAccess.getCamera();
-        const camera = new Camera();
-        camera.setPosition(data.x, data.y);
-        camera.setZoom(data.zoom);
-        camera.updateViewProjectionMatrix(this.gl?.canvas.width!, this.gl?.canvas.height!);
-        return camera;
+        return Camera.create(data, this.canvasHandle.getCanvasWidth(), this.canvasHandle.getCanvasHeight());
     }
 
 }

@@ -36,14 +36,17 @@ export namespace RenderChunkFactory {
         MixedArrayBufferType.FLOAT,
         MixedArrayBufferType.FLOAT,
         MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
         MixedArrayBufferType.INT,
         MixedArrayBufferType.INT,
     ];
 
     const indicesPerTile = 18;
     const verticesPerTile = 13;
-    const valuesPerVertex = 10;
-    const chunkSize = 11;
+    const valuesPerVertex = PATTERN_VERTEX.length;
+    const chunkSize = 1100;
 
     interface IntermediateChunk {
         key: string,
@@ -88,6 +91,12 @@ export namespace RenderChunkFactory {
                         },
                         {
                             buffer: vertexBuffer,
+                            location: attributes.find(a => a.name === "in_cornerData")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 3,
+                        },
+                        {
+                            buffer: vertexBuffer,
                             location: attributes.find(a => a.name === "in_textureCoordinates")!.location,
                             type: GLAttributeType.FLOAT,
                             amountComponents: 2,
@@ -102,7 +111,7 @@ export namespace RenderChunkFactory {
                     indexBuffer,
                 ),
                 indexBuffer.getSize(),
-                [vertexBuffer, indexBuffer]
+                [vertexBuffer, indexBuffer],
             );
         });
     }
@@ -229,6 +238,10 @@ export namespace RenderChunkFactory {
         cursor.append(tile.identifier.r);
         cursor.append(chunk.cq);
         cursor.append(chunk.cr);
+        // 3x corner data
+        cursor.append(1);
+        cursor.append(0);
+        cursor.append(0);
         // 2x texture coordinates
         cursor.append(texCoords);
         // 2x terrain (visibility,type)
@@ -249,6 +262,16 @@ export namespace RenderChunkFactory {
         cursor.append(tile.identifier.r);
         cursor.append(chunk.cq);
         cursor.append(chunk.cr);
+        // 3x corner data
+        if (cornerIndex % 2 === 0) {
+            cursor.append(0);
+            cursor.append(1);
+            cursor.append(0);
+        } else {
+            cursor.append(0);
+            cursor.append(0);
+            cursor.append(1);
+        }
         // 2x texture coordinates
         cursor.append(texCoords);
         // 2x terrain (visibility,type)

@@ -14,6 +14,7 @@ import {GameSessionMessageHandler} from "./gamesession/gameSessionMessageHandler
 import {NextTurnService} from "./game/nextTurnService";
 import {GameLoopService} from "./game/gameLoopService";
 import {GameRenderer} from "./renderer/gameRenderer";
+import {CanvasHandle} from "./game/canvasHandle";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
@@ -37,13 +38,19 @@ export namespace AppCtx {
         NextTurnService: qualifier<NextTurnService>("NextTurnService"),
         GameLoopService: qualifier<GameLoopService>("GameLoopService"),
         GameRenderer: qualifier<GameRenderer>("GameRenderer"),
+        CanvasHandle: qualifier<CanvasHandle>("CanvasHandle"),
+
     };
 
     const diContainer = createDiContainer();
     diContainer.bind(DIQ.HttpClient, ctx => new HttpClient(API_BASE_URL));
     diContainer.bind(DIQ.WebsocketClient, ctx => new WebsocketClient(API_WS_BASE_URL));
-    diContainer.bind(DIQ.WebsocketMessageHandler, ctx => new GameSessionMessageHandler(ctx.get(DIQ.NextTurnService)));
+    diContainer.bind(DIQ.WebsocketMessageHandler, ctx => new GameSessionMessageHandler(
+        ctx.get(DIQ.NextTurnService)
+    ));
     diContainer.bind(DIQ.AuthProvider, ctx => new AuthProvider());
+
+    diContainer.bind(DIQ.CanvasHandle, ctx => new CanvasHandle());
 
     diContainer.bind(DIQ.NextTurnService, ctx => new NextTurnService(
         ctx.get(DIQ.GameLoopService),
@@ -72,9 +79,12 @@ export namespace AppCtx {
         ctx.get(DIQ.CommandService),
     ));
     diContainer.bind(DIQ.GameLoopService, ctx => new GameLoopService(
+        ctx.get(DIQ.CanvasHandle),
         ctx.get(DIQ.GameRenderer),
     ));
-    diContainer.bind(DIQ.GameRenderer, ctx => new GameRenderer());
+    diContainer.bind(DIQ.GameRenderer, ctx => new GameRenderer(
+        ctx.get(DIQ.CanvasHandle),
+    ));
 
     diContainer.createEager();
     export const di = diContainer.getContext();
