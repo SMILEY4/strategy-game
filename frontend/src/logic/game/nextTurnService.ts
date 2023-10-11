@@ -25,6 +25,9 @@ export class NextTurnService {
 
     private buildTiles(game: GameStateUpdate): Tile[] {
         return game.game.tiles.map(msgTile => {
+            if(msgTile.dataTier0.position.q === -5 && msgTile.dataTier0.position.r === 5) {
+                console.log(msgTile)
+            }
             return {
                 identifier: {
                     id: msgTile.dataTier0.tileId,

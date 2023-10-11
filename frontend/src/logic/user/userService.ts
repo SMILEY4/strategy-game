@@ -28,6 +28,10 @@ export class UserService {
         }
     }
 
+    getUserId(): string {
+        return this.userIdFromToken(UserStateAccess.getAuthTokenOrNull())
+    }
+
     private getTokenExpiration(token: string): number {
         return this.expirationFromToken(token);
     }

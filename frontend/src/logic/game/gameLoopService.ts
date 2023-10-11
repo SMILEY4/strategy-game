@@ -3,6 +3,8 @@ import {CameraStateAccess} from "../../state/access/CameraStateAccess";
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "./canvasHandle";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
+import {GameSessionStateAccess} from "../../state/access/GameSessionStateAccess";
+import {openTileWindow} from "../../ui/pages/ingame/windows/tile/TileWindow";
 
 export class GameLoopService {
 
@@ -23,6 +25,7 @@ export class GameLoopService {
 
     onGameStateUpdate() {
         this.renderer.updateWorld();
+        GameSessionStateAccess.setTurnState("playing");
     }
 
     update() {
@@ -35,7 +38,12 @@ export class GameLoopService {
 
     mouseClick(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
-        GameStateAccess.setSelectedTile(tile?.identifier || null);
+        if (GameStateAccess.getSelectedTile()?.id !== tile?.identifier) {
+            GameStateAccess.setSelectedTile(tile?.identifier || null);
+            if (tile) {
+                openTileWindow(tile.identifier);
+            }
+        }
     }
 
     mouseMove(dx: number, dy: number, x: number, y: number, leftBtnDown: boolean) {

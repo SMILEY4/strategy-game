@@ -162,6 +162,10 @@ export function useOpenWindow() {
     return WindowStore.useState(state => state.add);
 }
 
+export function openWindow(data: WindowData, keepPosition?: boolean) {
+    return WindowStore.useState.getState().add(data, keepPosition)
+}
+
 
 export function useCloseWindow() {
     return WindowStore.useState(state => state.remove);

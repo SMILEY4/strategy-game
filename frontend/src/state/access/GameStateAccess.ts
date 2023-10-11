@@ -25,12 +25,20 @@ export namespace GameStateAccess {
         return getGameState().tiles;
     }
 
+    export function useTileById(tileIdentifier: TileIdentifier | null): Tile | null {
+        return RemoteGameStateStore.useState(state => state.tiles.getTileOrNull(tileIdentifier?.id || ""))
+    }
+
     export function setSelectedTile(tile: TileIdentifier | null) {
         LocalGameStore.useState.getState().setSelectedTile(tile);
     }
 
     export function getSelectedTile(): TileIdentifier | null {
         return LocalGameStore.useState.getState().selectedTile;
+    }
+
+    export function useSelectedTile(): TileIdentifier | null {
+        return LocalGameStore.useState(state => state.selectedTile);
     }
 
     export function setHoverTile(tile: TileIdentifier | null) {

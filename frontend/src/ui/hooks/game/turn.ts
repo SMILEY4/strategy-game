@@ -1,14 +1,15 @@
 import {AppCtx} from "../../../logic/appContext";
-import {useState} from "react";
+import {GameSessionStateAccess} from "../../../state/access/GameSessionStateAccess";
 
 export function useEndTurn(): [boolean, () => void] {
 
     const gameService = AppCtx.di.get(AppCtx.DIQ.GameService);
-    const [disabled, setDisabled] = useState(false);
+    const disabled = GameSessionStateAccess.useTurnState() === "waiting";
+    const setTurnState = GameSessionStateAccess.useSetTurnState();
 
     function endTurn() {
         gameService.endTurn();
-        // setDisabled(true) // todo
+        setTurnState("waiting");
     }
 
     return [disabled, endTurn];

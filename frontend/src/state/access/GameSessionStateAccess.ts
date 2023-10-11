@@ -15,4 +15,16 @@ export namespace GameSessionStateAccess {
         return LocalGameSessionStore.useState(state => state.state);
     }
 
+    export function useTurnState(): "playing" | "waiting" {
+        return LocalGameSessionStore.useState(state => state.turnState);
+    }
+
+    export function useSetTurnState(): (state: "playing" | "waiting") => void {
+        return LocalGameSessionStore.useState().setTurnState
+    }
+
+    export function setTurnState(state: "playing" | "waiting") {
+        LocalGameSessionStore.useState.getState().setTurnState(state)
+    }
+
 }

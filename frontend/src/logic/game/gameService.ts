@@ -21,9 +21,7 @@ export class GameService {
         const commands = CommandStateAccess.getCommands();
         this.gameSessionClient.sendMessage(
             "submit-turn",
-            {
-                commands: commands.map(c => this.buildPayloadCommand(c)),
-            },
+            {commands: commands.map(c => this.buildPayloadCommand(c))},
         );
         CommandStateAccess.setCommands([]);
     }

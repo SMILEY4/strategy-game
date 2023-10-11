@@ -14,9 +14,13 @@ export function useCreateSettlement(tile: Tile, name: string | null, asColony: b
     return [possible, perform];
 }
 
-export function useValidateCreateSettlement(tile: Tile, name: string | null, asColony: boolean): boolean {
-    const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
-    return creationService.validate(tile, name, asColony);
+export function useValidateCreateSettlement(tile: Tile | null, name: string | null, asColony: boolean): boolean {
+    if (tile) {
+        const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
+        return creationService.validate(tile, name, asColony);
+    } else {
+        return false;
+    }
 }
 
 

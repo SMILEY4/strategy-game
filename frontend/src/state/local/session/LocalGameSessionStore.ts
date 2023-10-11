@@ -6,16 +6,19 @@ export namespace LocalGameSessionStore {
 
     interface StateValues {
         state: "none" | "loading" | "playing" | "error",
+        turnState: "playing" | "waiting"
         config: GameConfig | null
     }
 
     const initialStateValues: StateValues = {
         state: "none",
+        turnState: "playing",
         config: null,
     };
 
     interface StateActions {
         setState: (state: "none" | "loading" | "playing" | "error") => void;
+        setTurnState: (state: "playing" | "waiting") => void;
         setConfig: (config: GameConfig | null) => void;
     }
 
@@ -23,6 +26,9 @@ export namespace LocalGameSessionStore {
         return {
             setState: (state: "none" | "loading" | "playing" | "error") => set(() => ({
                 state: state,
+            })),
+            setTurnState: (state: "playing" | "waiting") => set(() => ({
+                turnState: state,
             })),
             setConfig: (config: GameConfig | null) => set(() => ({
                 config: config,

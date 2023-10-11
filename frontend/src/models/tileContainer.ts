@@ -3,13 +3,15 @@ import {Tile} from "./tile";
 export class TileContainer {
 
     private readonly tiles: Tile[];
+    private readonly tilesById: Map<string, Tile>;
     private readonly chunkSize: number;
     private readonly chunks: Map<string, TileContainer.Chunk>;
 
-    constructor(tiles: Tile[], chunkSize: number, chunks: Map<string, TileContainer.Chunk>) {
+    constructor(tiles: Tile[], tilesById: Map<string, Tile>, chunkSize: number, chunks: Map<string, TileContainer.Chunk>) {
         this.tiles = tiles;
         this.chunkSize = chunkSize;
         this.chunks = chunks;
+        this.tilesById = tilesById;
     }
 
     public getChunkAt(tileQ: number, tileR: number): TileContainer.Chunk {
@@ -32,6 +34,24 @@ export class TileContainer {
 
     public getTiles(): Tile[] {
         return this.tiles;
+    }
+
+    public getTile(id: string): Tile {
+        const tile = this.tilesById.get(id);
+        if (tile) {
+            return tile;
+        } else {
+            throw new Error("No tile with id" + id);
+        }
+    }
+
+    public getTileOrNull(id: string): Tile | null {
+        const tile = this.tilesById.get(id);
+        if (tile) {
+            return tile;
+        } else {
+            return null;
+        }
     }
 
     public getTileAt(q: number, r: number): Tile {
@@ -59,7 +79,7 @@ export namespace TileContainer {
         private readonly tileMap: Map<number, Tile>; // todo: maybe as 2d array (only) ?
 
         constructor(totalTileCount: number, tiles: Tile[], tileMap: Map<number, Tile>) {
-            this.totalTileCount= totalTileCount;
+            this.totalTileCount = totalTileCount;
             this.tiles = tiles;
             this.tileMap = tileMap;
         }
@@ -108,10 +128,13 @@ export namespace TileContainer {
 
     export function create(tiles: Tile[], chunkSize: number): TileContainer {
 
+        const tilesById = new Map<string, Tile>();
+
         const chunkData = new Map<string, Map<number, Tile>>();
         const amountTiles = tiles.length;
         for (let i = 0; i < amountTiles; i++) {
             const tile = tiles[i];
+            tilesById.set(tile.identifier.id, tile);
             const chunkKey = asChunkKey(tile.identifier.q, tile.identifier.r, chunkSize);
             const tileKey = asTileKey(tile.identifier.q, tile.identifier.r, amountTiles);
             let chunk = chunkData.get(chunkKey);
@@ -127,7 +150,8 @@ export namespace TileContainer {
             chunks.set(key, new Chunk(amountTiles, Array.from(chunk.values()), chunk));
         });
 
-        return new TileContainer(tiles, chunkSize, chunks);
+
+        return new TileContainer(tiles, tilesById, chunkSize, chunks);
     }
 
 

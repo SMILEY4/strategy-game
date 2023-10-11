@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {useOpenWindow} from "../../../../components/headless/useWindowData";
+import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
@@ -15,7 +15,9 @@ import {useOpenCityWindow} from "../city/CityMenu";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import {useCreateSettlement, useValidateCreateSettlement} from "../../../../hooks/game/city";
+import {useValidateCreateSettlement} from "../../../../hooks/game/city";
+import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
+import {Text} from "../../../../components/text/Text";
 
 
 export function useOpenTileWindow() {
@@ -34,6 +36,19 @@ export function useOpenTileWindow() {
     };
 }
 
+export function openTileWindow(identifier: TileIdentifier) {
+    const WINDOW_ID = "menubar-window";
+    openWindow({
+        id: WINDOW_ID,
+        className: "tile-window",
+        left: 25,
+        top: 60,
+        bottom: 25,
+        width: 360,
+        content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
+    });
+}
+
 export interface TileWindowProps {
     windowId: string;
     identifier: TileIdentifier;
@@ -41,33 +56,14 @@ export interface TileWindowProps {
 
 export function TileWindow(props: TileWindowProps): ReactElement {
 
-    const tile: Tile = {
-        identifier: props.identifier,
-        terrainType: "land",
-        // owner: null,
-        owner: {
-            country: {
-                id: "germany",
-                name: "Germany"
-            },
-            province: {
-                id: "baden-wurttemberg",
-                name: "Baden-Württemberg"
-            },
-            city: null
-            // city: {
-            //     id: "stuttgart",
-            //     name: "Stuttgart"
-            // }
-        },
-        influences: []
-    };
+    const selectedTileIdentifier = GameStateAccess.useSelectedTile();
+    const tile = GameStateAccess.useTileById(selectedTileIdentifier);
 
     const openCity = useOpenCityWindow();
     const openCountry = useOpenCountryWindow();
-    const openSettlementCreation = useOpenSettlementCreationWindow()
-    const validCreateSettlement = useValidateCreateSettlement(tile, "placeholder", false)
-    const validCreateColony = useValidateCreateSettlement(tile, "placeholder", true)
+    const openSettlementCreation = useOpenSettlementCreationWindow();
+    const validCreateSettlement = useValidateCreateSettlement(tile, "placeholder", false);
+    const validCreateColony = useValidateCreateSettlement(tile, "placeholder", true);
     const placeScout = usePlaceScout();
 
     return (
@@ -82,32 +78,39 @@ export function TileWindow(props: TileWindowProps): ReactElement {
             }}
         >
             <VBox fillParent>
-                <TileBanner data={tile}/>
-                <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <TileBaseDataSection
-                        data={tile}
-                        openCountry={() => openCountry(tile.owner!!.country.id, true)}
-                        openCity={() => openCity(tile.owner!!.city!!.id, true)}
-                    />
-                    <Spacer size="s"/>
-                    <ButtonPrimary blue onClick={() => placeScout(tile.identifier)}>
-                        Place Scout
-                    </ButtonPrimary>
-                    <ButtonPrimary
-                        blue
-                        disabled={!validCreateColony}
-                        onClick={() => openSettlementCreation(tile, true)}
-                    >
-                        Found Colony
-                    </ButtonPrimary>
-                    <ButtonPrimary
-                        blue
-                        disabled={!validCreateSettlement}
-                        onClick={() => openSettlementCreation(tile, false)}
-                    >
-                        Found Settlement
-                    </ButtonPrimary>
-                </VBox>
+                {tile && (
+                    <>
+                        <TileBanner data={tile}/>
+                        <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
+                            <TileBaseDataSection
+                                data={tile}
+                                openCountry={() => openCountry(tile.owner!!.country.id, true)}
+                                openCity={() => openCity(tile.owner!!.city!!.id, true)}
+                            />
+                            <Spacer size="s"/>
+                            <ButtonPrimary blue onClick={() => placeScout(tile.identifier)}>
+                                Place Scout
+                            </ButtonPrimary>
+                            <ButtonPrimary
+                                blue
+                                disabled={!validCreateColony}
+                                onClick={() => openSettlementCreation(tile, true)}
+                            >
+                                Found Colony
+                            </ButtonPrimary>
+                            <ButtonPrimary
+                                blue
+                                disabled={!validCreateSettlement}
+                                onClick={() => openSettlementCreation(tile, false)}
+                            >
+                                Found Settlement
+                            </ButtonPrimary>
+                        </VBox>
+                    </>
+                )}
+                {!tile && (
+                    <Text>No tile selected</Text>
+                )}
             </VBox>
         </DecoratedWindow>
     );
@@ -116,7 +119,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 function TileBanner(props: { data: Tile }): ReactElement {
     return (
         <Banner spaceAbove>
-            <Header1 centered>{props.data.terrainType}</Header1>
+            <Header1 centered>{props.data.terrainType || "Unknown"}</Header1>
         </Banner>
     );
 }
@@ -139,7 +142,8 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
             {(props.data.owner && props.data.owner.city !== null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        <LinkButton align="left"
+                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
                         (
                         <LinkButton align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>
                         )
@@ -149,7 +153,8 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
             {(props.data.owner && props.data.owner.city === null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        <LinkButton align="left"
+                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
                     </HBox>
                 </KeyValuePair>
             )}
