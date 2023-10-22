@@ -6,7 +6,7 @@ import {WindowStack} from "../../components/windows/stack/WindowStack";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../components/text/Text";
-import {useConnectGameSession} from "../../hooks/gamesession/gameSessions";
+import {useConnectGameSession} from "../../hooks/gameSessions";
 import "./pageInGame.scoped.less";
 import {GameSessionStateAccess} from "../../../state/access/GameSessionStateAccess";
 

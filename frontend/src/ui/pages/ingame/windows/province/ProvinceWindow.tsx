@@ -11,7 +11,6 @@ import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {CityEntry} from "../common/CityEntry";
-import {useProvince} from "../../../../hooks/game/province";
 import {Province, ProvinceIdentifier} from "../../../../../models/province";
 import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 

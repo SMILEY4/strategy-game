@@ -14,11 +14,11 @@ import {
 } from "../../../../../models/command";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../../../components/text/Text";
-import {useCommandCancel} from "../../../../hooks/game/commands";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {CgClose} from "react-icons/cg";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {CommandStateAccess} from "../../../../../state/access/CommandStateAccess";
+import {AppCtx} from "../../../../../logic/appContext";
 
 
 export function useOpenCommandLogWindow() {
@@ -144,4 +144,9 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
         );
     }
 
+}
+
+function useCommandCancel() {
+    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
+    return (id: string) => commandService.cancelCommand(id);
 }

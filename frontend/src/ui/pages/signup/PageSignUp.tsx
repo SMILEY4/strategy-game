@@ -7,7 +7,7 @@ import {TextField} from "../../components/textfield/TextField";
 import {HBox} from "../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../components/spacer/Spacer";
-import {useSignup} from "../../hooks/user/signup";
+import {useSignup} from "../../hooks/signup";
 import {useGotoLogin} from "../../hooks/navigate";
 
 

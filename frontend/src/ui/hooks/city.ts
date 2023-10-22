@@ -1,39 +1,41 @@
-import {CityIdentifier, ProductionEntry} from "../../../models/city";
-import {AppCtx} from "../../../logic/appContext";
-import {Tile} from "../../../models/tile";
+import {CityIdentifier, ProductionEntry} from "../../models/city";
+import {AppCtx} from "../../logic/appContext";
+import {Tile} from "../../models/tile";
 
-export function useCreateSettlement(tile: Tile, name: string | null, asColony: boolean): [boolean, () => void] {
+export function useCreateSettlement(tile: Tile, name: string | null, asColony: boolean): [boolean, string[], () => void] {
     const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
 
-    const possible = useValidateCreateSettlement(tile, name, asColony);
+    const [possible, reasons] = useValidateCreateSettlement(tile, name, asColony);
 
     function perform() {
         creationService.create(tile, name!!, asColony!!);
     }
 
-    return [possible, perform];
+    return [possible, reasons, perform];
 }
 
-export function useValidateCreateSettlement(tile: Tile | null, name: string | null, asColony: boolean): boolean {
+export function useValidateCreateSettlement(tile: Tile | null, name: string | null, asColony: boolean): [boolean, string[]] {
     if (tile) {
         const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
-        return creationService.validate(tile, name, asColony);
+        const result = creationService.validate(tile, name, asColony);
+        return [result.length === 0, result];
     } else {
-        return false;
+        return [false, ["No tile selected"]];
     }
 }
 
 
-export function useUpgradeSettlementTier(city: CityIdentifier, currentTier: number): [boolean, () => void] {
+export function useUpgradeSettlementTier(city: CityIdentifier, currentTier: number): [boolean, string[], () => void] {
     const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
 
-    const possible = true; // todo: validate
+    const validationResult: string[] = []; // todo: validate
+    const possible = validationResult.length === 0;
 
     function perform() {
         commandService.upgradeSettlementTier(city, currentTier, currentTier + 1);
     }
 
-    return [possible, perform];
+    return [possible, validationResult, perform];
 }
 
 

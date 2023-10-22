@@ -5,10 +5,11 @@ import {useCloseWindow, useOpenWindow} from "../../../../components/headless/use
 import {Tile} from "../../../../../models/tile";
 import {Header2} from "../../../../components/header/Header";
 import {TextField} from "../../../../components/textfield/TextField";
-import {useCreateSettlement} from "../../../../hooks/game/city";
+import {useCreateSettlement} from "../../../../hooks/city";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
+import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 
 
 export function useOpenSettlementCreationWindow() {
@@ -37,7 +38,7 @@ export interface SettlementCreationWindowProps {
 export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
 
     const [name, setName] = useState("");
-    const [valid, create] = useCreateSettlement(props.tile, name, props.asColony);
+    const [valid, failedValidations, create] = useCreateSettlement(props.tile, name, props.asColony);
     const closeWindow = useCloseWindow();
 
     return (
@@ -67,15 +68,26 @@ export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
                     <ButtonPrimary red onClick={() => closeWindow(props.windowId)}>
                         Cancel
                     </ButtonPrimary>
-                    <ButtonPrimary
-                        green disabled={!valid}
-                        onClick={() => {
-                            create();
-                            closeWindow(props.windowId);
-                        }}
+
+                    <BasicTooltip
+                        delay={500}
+                        content={
+                            <ul>
+                                {failedValidations.map(e => (<li>{e}</li>))}
+                            </ul>
+                        }
                     >
-                        Create
-                    </ButtonPrimary>
+                        <ButtonPrimary
+                            green disabled={!valid}
+                            onClick={() => {
+                                create();
+                                closeWindow(props.windowId);
+                            }}
+                        >
+                            Create
+                        </ButtonPrimary>
+                    </BasicTooltip>
+
                 </HBox>
 
             </VBox>

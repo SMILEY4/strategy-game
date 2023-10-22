@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {autoUpdate, flip, shift, useFloating, useHover, useInteractions, useRole} from "@floating-ui/react";
 
-export function useTooltip() {
+export function useTooltip(delay: number | undefined) {
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -12,7 +12,7 @@ export function useTooltip() {
         whileElementsMounted: autoUpdate,
     });
 
-    const hover = useHover(context, {move: false});
+    const hover = useHover(context, {move: false, delay: {open: delay, close: 0}});
     const role = useRole(context, {role: "tooltip"});
     const {getReferenceProps, getFloatingProps} = useInteractions([hover, role]);
 

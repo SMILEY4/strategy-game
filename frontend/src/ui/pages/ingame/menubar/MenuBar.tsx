@@ -7,16 +7,18 @@ import {HBox} from "../../../components/layout/hbox/HBox";
 import {Spacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiHexagon, FiMap} from "react-icons/fi";
-import {useEndTurn} from "../../../hooks/game/turn";
-import {usePlayerCountry} from "../../../hooks/game/country";
 import {useOpenCommandLogWindow} from "../windows/commandLog/CommandLogWindow";
-import "./menubar.scoped.less";
 import {PiScrollBold} from "react-icons/pi";
 import {useOpenTileWindow} from "../windows/tile/TileWindow";
+import "./menubar.scoped.less";
+import {Country} from "../../../../models/country";
+import {AppCtx} from "../../../../logic/appContext";
+import {GameStateAccess} from "../../../../state/access/GameStateAccess";
+import {GameSessionStateAccess} from "../../../../state/access/GameSessionStateAccess";
 
 export function MenuBar(): ReactElement {
 
-    const country = usePlayerCountry()
+    const playerCountry = usePlayerCountry()
     const openDevMenu = useOpenDevWindow();
     const openMapMenu = useOpenMapWindow();
     const openCountryMenu = useOpenCountryWindow();
@@ -37,7 +39,7 @@ export function MenuBar(): ReactElement {
                         <FiMap/>
                     </ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={() => openCountryMenu(country.identifier.id, true)}>
+                    <ButtonPrimary blue round onClick={() => openCountryMenu(playerCountry.identifier.id, true)}>
                         <FiFlag/>
                     </ButtonPrimary>
 
@@ -57,4 +59,23 @@ export function MenuBar(): ReactElement {
         </div>
     );
 
+}
+
+function usePlayerCountry(): Country {
+    const userId = AppCtx.di.get(AppCtx.DIQ.UserService).getUserId()
+    return GameStateAccess.useCountryByUserId(userId);
+}
+
+function useEndTurn(): [boolean, () => void] {
+
+    const gameService = AppCtx.di.get(AppCtx.DIQ.GameService);
+    const disabled = GameSessionStateAccess.useTurnState() === "waiting";
+    const setTurnState = GameSessionStateAccess.useSetTurnState();
+
+    function endTurn() {
+        gameService.endTurn();
+        setTurnState("waiting");
+    }
+
+    return [disabled, endTurn];
 }

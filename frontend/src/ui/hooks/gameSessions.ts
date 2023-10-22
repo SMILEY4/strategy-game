@@ -1,7 +1,7 @@
-import {UnauthorizedError} from "../../../_old_core/models/errors/UnauthorizedError";
+import {UnauthorizedError} from "../../_old_core/models/errors/UnauthorizedError";
 import {useNavigate} from "react-router-dom";
-import {useHandleUnauthorized} from "../user/authentication";
-import {AppCtx} from "../../../logic/appContext";
+import {useHandleUnauthorized} from "./authentication";
+import {AppCtx} from "../../logic/appContext";
 
 export function useLoadGameSessions() {
     const gameSessionService = AppCtx.di.get(AppCtx.DIQ.GameSessionService);

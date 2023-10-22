@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {useGotoSignupConfirm} from "../navigate";
-import {AppCtx} from "../../../logic/appContext";
+import {useGotoSignupConfirm} from "./navigate";
+import {AppCtx} from "../../logic/appContext";
 
 export function useSignup() {
 

@@ -1,5 +1,5 @@
 import React, {ReactElement, useEffect, useState} from "react";
-import * as gameSession from "../../hooks/gamesession/gameSessions";
+import * as gameSession from "../../hooks/gameSessions";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";

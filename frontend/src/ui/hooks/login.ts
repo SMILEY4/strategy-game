@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {useGotoLoginRedirect} from "../navigate";
-import {AppCtx} from "../../../logic/appContext";
+import {useGotoLoginRedirect} from "./navigate";
+import {AppCtx} from "../../logic/appContext";
 
 export function useLogin() {
 

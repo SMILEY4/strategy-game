@@ -17,33 +17,35 @@ export class CityCreationService {
     }
 
 
-    validate(tile: Tile, name: string | null, asColony: boolean): boolean {
+    validate(tile: Tile, name: string | null, asColony: boolean): string[] {
         const country = this.getPlayerCountry();
+
+        const failureReasons: string[] = []
         if (name !== null && !name) {
-            return false;
+            failureReasons.push("Invalid name")
         }
         if (tile.terrainType !== "LAND") {
-            return false;
+            failureReasons.push("Invalid terrain type");
         }
         if (this.isOccupied(tile)) {
-            return false;
+            failureReasons.push("Tile is already occupied");
         }
         if (this.availableSettlers(country) <= 0) {
-            return false;
+            failureReasons.push("No settlers available")
         }
         if (asColony) {
-            if ((tile.owner === null || tile.owner?.country.id === country.identifier.id) && !tile.owner?.city === null) {
-                return false;
+            if ((tile.owner === null || tile.owner?.country.id === country.identifier.id) && tile.owner?.city !== null) {
+                failureReasons.push("Tile already owned by another country or city") // todo: weird validation => check
             }
             if (!this.validInfluence(tile, country)) {
-                return false;
+                failureReasons.push("Not enough influence on tile")
             }
         } else {
-            if (!(tile.owner?.country.id === country.identifier.id && tile.owner.city === null)) {
-                return false;
+            if (tile.owner?.country.id !== country.identifier.id || tile.owner.city !== null) {
+                failureReasons.push("Tile already owned by another country or city")
             }
         }
-        return true;
+        return failureReasons;
 
     }
 
@@ -58,7 +60,6 @@ export class CityCreationService {
     isOccupied(tile: Tile): boolean {
         return this.getCityPositions().findIndex(t => t.id === tile.identifier.id) !== -1;
     }
-
 
     getCityPositions(): TileIdentifier[] {
         return [];

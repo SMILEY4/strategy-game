@@ -1,5 +1,3 @@
-import {CameraStateAccess} from "../../state/access/CameraStateAccess";
-
 export class CanvasHandle {
 
     private canvas: HTMLCanvasElement | null = null;
@@ -38,19 +36,19 @@ export class CanvasHandle {
 
 
     public getCanvasWidth(): number {
-        return this.getCanvas().width
+        return this.getCanvas().width;
     }
 
     public getCanvasHeight(): number {
-        return this.getCanvas().height
+        return this.getCanvas().height;
     }
 
     public getClientWidth(): number {
-        return this.getCanvas().clientWidth
+        return this.getCanvas().clientWidth;
     }
 
     public getClientHeight(): number {
-        return this.getCanvas().clientHeight
+        return this.getCanvas().clientHeight;
     }
 
 }

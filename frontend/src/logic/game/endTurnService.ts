@@ -9,7 +9,7 @@ import {
 } from "../../models/command";
 import {CommandStateAccess} from "../../state/access/CommandStateAccess";
 
-export class GameService {
+export class EndTurnService {
 
     private readonly gameSessionClient: GameSessionClient;
 

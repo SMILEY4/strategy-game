@@ -12,7 +12,7 @@ import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary
 import {joinClassNames} from "../../../../components/utils";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import "./cityProductionWindow.less";
-import {useAddProductionEntry, useAvailableProductionEntries} from "../../../../hooks/game/city";
+import {useAddProductionEntry, useAvailableProductionEntries} from "../../../../hooks/city";
 import {CityIdentifier, ProductionEntry} from "../../../../../models/city";
 
 export function useOpenCityProductionWindow() {

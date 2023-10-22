@@ -17,7 +17,7 @@ import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
 import {formatPercentage} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
-import {useCancelProductionQueueEntry, useUpgradeSettlementTier} from "../../../../hooks/game/city";
+import {useCancelProductionQueueEntry, useUpgradeSettlementTier} from "../../../../hooks/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
@@ -25,6 +25,7 @@ import {City, CityIdentifier, ProductionQueueEntry} from "../../../../../models/
 import "./cityMenu.less";
 import {useOpenTileWindow} from "../tile/TileWindow";
 import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
+import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -43,19 +44,19 @@ export function useOpenCityWindow() {
 }
 
 
-export interface CountryWindowProps {
+export interface CityWindowProps {
     windowId: string;
     cityId: string,
 }
 
 
-export function CityWindow(props: CountryWindowProps): ReactElement {
+export function CityWindow(props: CityWindowProps): ReactElement {
 
     const city = GameStateAccess.useCityById(props.cityId);
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();
-    const [canUpgradeTier, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier, city.population.size);
+    const [canUpgradeTier, upgradeValidationResult, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier, city.population.size);
 
     return (
         <DecoratedWindow
@@ -70,18 +71,33 @@ export function CityWindow(props: CountryWindowProps): ReactElement {
             <VBox fillParent>
                 <CityBanner identifier={city.identifier}/>
                 <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
+
                     <CityBaseDataSection
                         data={city}
                         openCountry={() => openCountryWindow(city.country.id, true)}
                         openProvince={() => openProvinceWindow(city.province.id, true)}
                         openTile={() => openTileWindow(city.tile)}
                     />
-                    <ButtonPrimary blue disabled={!canUpgradeTier} onClick={() => upgradeSettlementTier()}>
-                        Upgrade Tier
-                    </ButtonPrimary>
+
+                    <BasicTooltip
+                        delay={500}
+                        content={
+                            <ul>
+                                {upgradeValidationResult.map(e => (<li>{e}</li>))}
+                            </ul>
+                        }
+                    >
+                        <ButtonPrimary blue disabled={!canUpgradeTier} onClick={() => upgradeSettlementTier()}>
+                            Upgrade Tier
+                        </ButtonPrimary>
+                    </BasicTooltip>
+
                     <CityPopulationSection data={city}/>
+
                     <CityResourceSection data={city}/>
+
                     <CityContentSection data={city}/>
+
                 </VBox>
             </VBox>
         </DecoratedWindow>

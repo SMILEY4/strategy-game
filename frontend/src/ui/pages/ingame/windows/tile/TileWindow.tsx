@@ -8,23 +8,24 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {Tile, TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {usePlaceScout} from "../../../../hooks/game/scout";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import {useValidateCreateSettlement} from "../../../../hooks/game/city";
+import {useValidateCreateSettlement} from "../../../../hooks/city";
 import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 import {Text} from "../../../../components/text/Text";
+import {AppCtx} from "../../../../../logic/appContext";
+import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 
 
 export function useOpenTileWindow() {
     const WINDOW_ID = "menubar-window";
-    const addWindow = useOpenWindow();
+    const openWindow = useOpenWindow();
     return (identifier: TileIdentifier | null) => {
-        addWindow({
+        openWindow({
             id: WINDOW_ID,
             className: "tile-window",
             left: 25,
@@ -36,7 +37,7 @@ export function useOpenTileWindow() {
     };
 }
 
-export function openTileWindow(identifier: TileIdentifier) {
+export function openTileWindow(identifier: TileIdentifier | null) {
     const WINDOW_ID = "menubar-window";
     openWindow({
         id: WINDOW_ID,
@@ -57,15 +58,14 @@ export interface TileWindowProps {
 export function TileWindow(props: TileWindowProps): ReactElement {
 
     const selectedTileIdentifier = GameStateAccess.useSelectedTile();
-    const tileIdentifier = props.identifier === null ? selectedTileIdentifier : props.identifier
-
+    const tileIdentifier = props.identifier === null ? selectedTileIdentifier : props.identifier;
     const tile = GameStateAccess.useTileById(tileIdentifier);
 
     const openCity = useOpenCityWindow();
     const openCountry = useOpenCountryWindow();
     const openSettlementCreation = useOpenSettlementCreationWindow();
-    const validCreateSettlement = useValidateCreateSettlement(tile, "placeholder", false);
-    const validCreateColony = useValidateCreateSettlement(tile, "placeholder", true);
+    const [validCreateSettlement, reasonsValidationsSettlement] = useValidateCreateSettlement(tile, "placeholder", false);
+    const [validCreateColony, reasonsValidationsColony] = useValidateCreateSettlement(tile, "placeholder", true);
     const placeScout = usePlaceScout();
 
     return (
@@ -93,20 +93,41 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                             <ButtonPrimary blue onClick={() => placeScout(tile.identifier)}>
                                 Place Scout
                             </ButtonPrimary>
-                            <ButtonPrimary
-                                blue
-                                disabled={!validCreateColony}
-                                onClick={() => openSettlementCreation(tile, true)}
+
+                            <BasicTooltip
+                                delay={500}
+                                content={
+                                    <ul>
+                                        {reasonsValidationsColony.map(e => (<li>{e}</li>))}
+                                    </ul>
+                                }
                             >
-                                Found Colony
-                            </ButtonPrimary>
-                            <ButtonPrimary
-                                blue
-                                disabled={!validCreateSettlement}
-                                onClick={() => openSettlementCreation(tile, false)}
+                                <ButtonPrimary
+                                    blue
+                                    disabled={!validCreateColony}
+                                    onClick={() => openSettlementCreation(tile, true)}
+                                >
+                                    Found Colony
+                                </ButtonPrimary>
+                            </BasicTooltip>
+
+                            <BasicTooltip
+                                delay={500}
+                                content={
+                                    <ul>
+                                        {reasonsValidationsSettlement.map(e => (<li>{e}</li>))}
+                                    </ul>
+                                }
                             >
-                                Found Settlement
-                            </ButtonPrimary>
+                                <ButtonPrimary
+                                    blue
+                                    disabled={!validCreateSettlement}
+                                    onClick={() => openSettlementCreation(tile, false)}
+                                >
+                                    Found Settlement
+                                </ButtonPrimary>
+                            </BasicTooltip>
+
                         </VBox>
                     </>
                 )}
@@ -144,22 +165,25 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
             {(props.data.owner && props.data.owner.city !== null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left"
-                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
-                        (
-                        <LinkButton align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>
-                        )
+                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        (<LinkButton align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>)
                     </HBox>
                 </KeyValuePair>
             )}
             {(props.data.owner && props.data.owner.city === null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left"
-                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
                     </HBox>
                 </KeyValuePair>
             )}
         </InsetPanel>
     );
+}
+
+function usePlaceScout() {
+    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
+    return (tile: TileIdentifier) => {
+        commandService.placeScout(tile);
+    };
 }

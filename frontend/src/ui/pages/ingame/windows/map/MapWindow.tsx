@@ -5,14 +5,6 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {
-    useMapModeCities,
-    useMapModeCountries,
-    useMapModeDefault,
-    useMapModeProvinces,
-    useMapModeResources,
-    useMapModeTerrain,
-} from "../../../../hooks/game/mapModes";
 
 
 export function useOpenMapWindow() {
@@ -68,3 +60,26 @@ export function MapWindow(props: MapWindowProps): ReactElement {
     );
 }
 
+export function useMapModeDefault() {
+    return () => undefined // todo
+}
+
+export function useMapModeCountries() {
+    return () => undefined // todo
+}
+
+export function useMapModeProvinces() {
+    return () => undefined // todo
+}
+
+export function useMapModeCities() {
+    return () => undefined // todo
+}
+
+export function useMapModeTerrain() {
+    return () => undefined // todo
+}
+
+export function useMapModeResources() {
+    return () => undefined // todo
+}

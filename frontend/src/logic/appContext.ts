@@ -7,7 +7,7 @@ import {GameSessionService} from "./gamesession/gameSessionService";
 import {GameSessionClient} from "./gamesession/gameSessionClient";
 import {WebsocketClient} from "../shared/websocketClient";
 import {WebsocketMessageHandler} from "../shared/websocketMessageHandler";
-import {GameService} from "./game/gameService";
+import {EndTurnService} from "./game/endTurnService";
 import {CommandService} from "./game/commandService";
 import {CityCreationService} from "./game/cityCreationService";
 import {GameSessionMessageHandler} from "./gamesession/gameSessionMessageHandler";
@@ -31,7 +31,7 @@ export namespace AppCtx {
         AuthProvider: qualifier<AuthProvider>("AuthProvider"),
         UserService: qualifier<UserService>("UserService"),
         GameSessionService: qualifier<GameSessionService>("GameSessionService"),
-        GameService: qualifier<GameService>("GameService"),
+        GameService: qualifier<EndTurnService>("GameService"),
         CommandService: qualifier<CommandService>("CommandService"),
         CityCreationService: qualifier<CityCreationService>("CityCreationService"),
         GameSessionClient: qualifier<GameSessionClient>("GameSessionClient"),
@@ -70,7 +70,7 @@ export namespace AppCtx {
     diContainer.bind(DIQ.GameSessionService, ctx => new GameSessionService(
         ctx.get(DIQ.GameSessionClient),
     ));
-    diContainer.bind(DIQ.GameService, ctx => new GameService(
+    diContainer.bind(DIQ.GameService, ctx => new EndTurnService(
         ctx.get(DIQ.GameSessionClient),
     ));
     diContainer.bind(DIQ.CommandService, ctx => new CommandService());
