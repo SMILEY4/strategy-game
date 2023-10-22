@@ -51,7 +51,9 @@ export class WorldUpdater {
                 GameStateAccess.getTiles(),
                 GameStateAccess.getCities(),
                 CommandStateAccess.getCommands(),
-                this.world?.getLayers()[1].getShaderAttributes()!!),
+                this.world?.getLayers()[1].getShaderAttributes()!!,
+                layer.getTextRenderer()
+            ),
         );
     }
 

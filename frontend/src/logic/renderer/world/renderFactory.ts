@@ -10,6 +10,7 @@ import SHADER_SRC_TILEMAP_FRAG from "../mapShader.fsh?raw";
 
 import SHADER_SRC_ENTITY_VERT from "../entityShader.vsh?raw";
 import SHADER_SRC_ENTITY_FRAG from "../entityShader.fsh?raw";
+import {TextRenderer} from "../common/textRenderer";
 
 export namespace RenderWorldFactory {
 
@@ -29,7 +30,8 @@ export namespace RenderWorldFactory {
     function createIconRenderLayer(gl: WebGL2RenderingContext): EntityRenderLayer {
         const program = GLProgram.create(gl, SHADER_SRC_ENTITY_VERT, SHADER_SRC_ENTITY_FRAG);
         const texture = GLTexture.createFromPath(gl, "/resources.png");
-        return new EntityRenderLayer(program, texture);
+        const textRenderer = new TextRenderer(gl);
+        return new EntityRenderLayer(program, texture, textRenderer);
     }
 
 }

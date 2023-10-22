@@ -4,8 +4,9 @@ import {BaseRenderLayer} from "./baseRenderLayer";
 import {GLProgram} from "../../common/glProgram";
 import {MeshData} from "../data/meshData";
 import {GLUniformType} from "../../common/glTypes";
-import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import {GLTexture} from "../../common/glTexture";
+import {TextRenderer} from "../../common/textRenderer";
+import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export class EntityRenderLayer extends BaseRenderLayer {
 
@@ -13,12 +14,14 @@ export class EntityRenderLayer extends BaseRenderLayer {
 
     private readonly program: GLProgram;
     private readonly texture: GLTexture;
+    private readonly textRenderer: TextRenderer;
     private mesh: MeshData | null = null;
 
-    constructor(program: GLProgram, texture: GLTexture) {
+    constructor(program: GLProgram, texture: GLTexture, textRenderer: TextRenderer) {
         super(EntityRenderLayer.LAYER_ID);
         this.program = program;
         this.texture = texture;
+        this.textRenderer = textRenderer;
     }
 
     public setMesh(mesh: MeshData) {
@@ -28,11 +31,13 @@ export class EntityRenderLayer extends BaseRenderLayer {
     public render(camera: Camera, renderer: GLRenderer): void {
         if (this.mesh) {
 
-            this.texture.bind(0)
+            this.texture.bind(0);
+            this.textRenderer.getTexture()?.bind(1)
             this.program.use();
 
             this.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
-            this.program.setUniform("u_texture", GLUniformType.SAMPLER_2D, this.texture);
+            this.program.setUniform("u_textureIcons", GLUniformType.SAMPLER_2D, this.texture);
+            this.program.setUniform("u_textureLabels", GLUniformType.SAMPLER_2D, this.textRenderer.getTexture()!!);
 
             this.mesh.getVertexArray().bind();
             renderer.drawMesh(this.mesh.getAmountIndices());
@@ -42,6 +47,10 @@ export class EntityRenderLayer extends BaseRenderLayer {
 
     public getShaderAttributes(): GLProgramAttribute[] {
         return this.program.getInformation().attributes;
+    }
+
+    public getTextRenderer(): TextRenderer {
+        return this.textRenderer;
     }
 
     public dispose(): void {
