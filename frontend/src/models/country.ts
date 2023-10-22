@@ -7,8 +7,9 @@ export interface CountryIdentifier {
 
 export interface Country {
     identifier: CountryIdentifier;
+    userId: string,
     playerName: string,
-    settlers: number,
+    settlers: number, // todo: nullable ?
     provinces: ProvinceReduced[];
 }
 
@@ -18,6 +19,7 @@ export namespace Country {
             id: "undefined",
             name: "undefined",
         },
+        userId: "undefined",
         playerName: "undefined",
         settlers: 0,
         provinces: [],

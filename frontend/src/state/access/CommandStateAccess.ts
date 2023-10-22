@@ -3,6 +3,10 @@ import {LocalCommandStateStore} from "../local/commands/LocalCommandStore";
 
 export namespace CommandStateAccess {
 
+    export function getRevId(): string {
+        return LocalCommandStateStore.useState.getState().revId
+    }
+
     export function getCommands(): Command[] {
         return LocalCommandStateStore.useState.getState().commands;
     }

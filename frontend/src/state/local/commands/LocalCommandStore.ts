@@ -1,14 +1,17 @@
 import {SetState} from "../../../shared/zustandUtils";
 import create from "zustand";
 import {Command} from "../../../models/command";
+import {UID} from "../../../shared/uid";
 
 export namespace LocalCommandStateStore {
 
     interface StateValues {
+        revId: string,
         commands: Command[];
     }
 
     const initialStateValues: StateValues = {
+        revId: UID.generate(),
         commands: [],
     };
 
@@ -19,6 +22,7 @@ export namespace LocalCommandStateStore {
     function stateActions(set: SetState<State>): StateActions {
         return {
             set: (commands: Command[]) => set(() => ({
+                revId: UID.generate(),
                 commands: commands,
             })),
         };

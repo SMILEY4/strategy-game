@@ -1,4 +1,4 @@
-import {RenderWorld} from "./renderWorld";
+import {RenderWorld} from "./data/renderWorld";
 import {GLRenderer} from "../common/glRenderer";
 import {Camera} from "../common/camera";
 

@@ -23,7 +23,7 @@ import {Text} from "../../../../components/text/Text";
 export function useOpenTileWindow() {
     const WINDOW_ID = "menubar-window";
     const addWindow = useOpenWindow();
-    return (identifier: TileIdentifier) => {
+    return (identifier: TileIdentifier | null) => {
         addWindow({
             id: WINDOW_ID,
             className: "tile-window",
@@ -51,13 +51,15 @@ export function openTileWindow(identifier: TileIdentifier) {
 
 export interface TileWindowProps {
     windowId: string;
-    identifier: TileIdentifier;
+    identifier: TileIdentifier | null;
 }
 
 export function TileWindow(props: TileWindowProps): ReactElement {
 
     const selectedTileIdentifier = GameStateAccess.useSelectedTile();
-    const tile = GameStateAccess.useTileById(selectedTileIdentifier);
+    const tileIdentifier = props.identifier === null ? selectedTileIdentifier : props.identifier
+
+    const tile = GameStateAccess.useTileById(tileIdentifier);
 
     const openCity = useOpenCityWindow();
     const openCountry = useOpenCountryWindow();

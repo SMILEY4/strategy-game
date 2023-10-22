@@ -1,5 +1,6 @@
 import {Tile} from "./tile";
 
+
 export class TileContainer {
 
     private readonly tiles: Tile[];
@@ -12,6 +13,28 @@ export class TileContainer {
         this.chunkSize = chunkSize;
         this.chunks = chunks;
         this.tilesById = tilesById;
+    }
+
+    public getChunks(): IterableIterator<TileContainer.Chunk> {
+        return this.chunks.values();
+    }
+
+    public getChunkByKey(key: string): TileContainer.Chunk {
+        const chunk = this.chunks.get(key);
+        if (chunk) {
+            return chunk;
+        } else {
+            throw new Error("No chunk with key" + key);
+        }
+    }
+
+    public getChunkByKeyOrNull(key: string): TileContainer.Chunk | null {
+        const chunk = this.chunks.get(key);
+        if (chunk) {
+            return chunk;
+        } else {
+            return null;
+        }
     }
 
     public getChunkAt(tileQ: number, tileR: number): TileContainer.Chunk {
@@ -74,14 +97,33 @@ export namespace TileContainer {
 
     export class Chunk {
 
+        private readonly key: string;
+        private readonly chunkQ: number;
+        private readonly chunkR: number;
         private readonly totalTileCount: number;
         private readonly tiles: Tile[];
-        private readonly tileMap: Map<number, Tile>; // todo: maybe as 2d array (only) ?
+        private readonly tileMap: Map<number, Tile>;
 
-        constructor(totalTileCount: number, tiles: Tile[], tileMap: Map<number, Tile>) {
+        constructor(key: string, chunkQ: number, chunkR: number, totalTileCount: number, tiles: Tile[], tileMap: Map<number, Tile>) {
+            this.key = key;
+            this.chunkQ = chunkQ;
+            this.chunkR = chunkR;
             this.totalTileCount = totalTileCount;
             this.tiles = tiles;
             this.tileMap = tileMap;
+        }
+
+        public getKey(): string {
+            return this.key;
+        }
+
+
+        public getChunkQ(): number {
+            return this.chunkQ;
+        }
+
+        public getChunkR(): number {
+            return this.chunkR;
         }
 
         public getTiles(): Tile[] {
@@ -131,6 +173,8 @@ export namespace TileContainer {
         const tilesById = new Map<string, Tile>();
 
         const chunkData = new Map<string, Map<number, Tile>>();
+        const chunkPositions = new Map<string, [number, number]>();
+
         const amountTiles = tiles.length;
         for (let i = 0; i < amountTiles; i++) {
             const tile = tiles[i];
@@ -141,13 +185,18 @@ export namespace TileContainer {
             if (!chunk) {
                 chunk = new Map<number, Tile>();
                 chunkData.set(chunkKey, chunk);
+                chunkPositions.set(chunkKey, [
+                    getChunkQ(tile.identifier.q, tile.identifier.r, chunkSize),
+                    getChunkR(tile.identifier.r, chunkSize),
+                ]);
             }
             chunk.set(tileKey, tile);
         }
 
         const chunks = new Map<string, Chunk>();
         chunkData.forEach((chunk, key) => {
-            chunks.set(key, new Chunk(amountTiles, Array.from(chunk.values()), chunk));
+            const chunkPos = chunkPositions.get(key)!!;
+            chunks.set(key, new Chunk(key, chunkPos[0], chunkPos[1], amountTiles, Array.from(chunk.values()), chunk));
         });
 
 

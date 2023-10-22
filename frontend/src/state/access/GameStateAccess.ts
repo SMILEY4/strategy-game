@@ -17,6 +17,10 @@ export namespace GameStateAccess {
         RemoteGameStateStore.useState.getState().set(state);
     }
 
+    export function getCities(): City[] {
+        return getGameState().cities;
+    }
+
     export function getTiles(): Tile[] {
         return getTileContainer().getTiles();
     }
@@ -26,7 +30,7 @@ export namespace GameStateAccess {
     }
 
     export function useTileById(tileIdentifier: TileIdentifier | null): Tile | null {
-        return RemoteGameStateStore.useState(state => state.tiles.getTileOrNull(tileIdentifier?.id || ""))
+        return RemoteGameStateStore.useState(state => state.tiles.getTileOrNull(tileIdentifier?.id || ""));
     }
 
     export function setSelectedTile(tile: TileIdentifier | null) {
@@ -50,9 +54,18 @@ export namespace GameStateAccess {
     }
 
     export function getCountry(id: string): Country | null {
-        const elements = getGameState().countries.filter(c => c.identifier.id === id);
-        if (elements) {
-            return elements[0];
+        const country = getGameState().countries.find(c => c.identifier.id === id);
+        if (country) {
+            return country;
+        } else {
+            return null;
+        }
+    }
+
+    export function getCountryByUserId(userId: string): Country | null {
+        const country = getGameState().countries.find(c => c.userId === userId);
+        if (country) {
+            return country;
         } else {
             return null;
         }
@@ -60,6 +73,15 @@ export namespace GameStateAccess {
 
     export function useCountryById(countryId: string): Country {
         const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.identifier.id === countryId));
+        if (country) {
+            return country;
+        } else {
+            return Country.UNDEFINED;
+        }
+    }
+
+    export function useCountryByUserId(userId: string): Country {
+        const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.userId === userId));
         if (country) {
             return country;
         } else {

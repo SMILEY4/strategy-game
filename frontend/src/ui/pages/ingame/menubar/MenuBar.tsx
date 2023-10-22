@@ -45,8 +45,7 @@ export function MenuBar(): ReactElement {
                         <PiScrollBold/>
                     </ButtonPrimary>
 
-                    {/*TODO: temporary, until tiles are clickable*/}
-                    <ButtonPrimary blue round onClick={() => openTileMenu({id: "12345", q: -32, r: 16})}>
+                    <ButtonPrimary blue round onClick={() => openTileMenu(null)}>
                         <FiHexagon/>
                     </ButtonPrimary>
 

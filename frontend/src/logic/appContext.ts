@@ -77,6 +77,7 @@ export namespace AppCtx {
 
     diContainer.bind(DIQ.CityCreationService, ctx => new CityCreationService(
         ctx.get(DIQ.CommandService),
+        ctx.get(DIQ.UserService),
     ));
     diContainer.bind(DIQ.GameLoopService, ctx => new GameLoopService(
         ctx.get(DIQ.CanvasHandle),

@@ -3,14 +3,17 @@ import {Country} from "../../models/country";
 import {getMaxOrDefault} from "../../shared/utils";
 import {CommandService} from "./commandService";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
+import {UserService} from "../user/userService";
 
 export class CityCreationService {
 
     readonly cityTileMaxForeignInfluence = 3; // todo
     readonly commandService: CommandService;
+    readonly userService: UserService;
 
-    constructor(commandService: CommandService) {
+    constructor(commandService: CommandService, userService: UserService) {
         this.commandService = commandService;
+        this.userService = userService;
     }
 
 
@@ -49,8 +52,7 @@ export class CityCreationService {
     }
 
     getPlayerCountry(): Country {
-        const playerCountryId = "germany"; // todo
-        return GameStateAccess.getCountry(playerCountryId)!!;
+        return GameStateAccess.getCountryByUserId(this.userService.getUserId())!!;
     }
 
     isOccupied(tile: Tile): boolean {

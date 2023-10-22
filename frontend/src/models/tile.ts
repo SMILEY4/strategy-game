@@ -17,7 +17,8 @@ export interface Tile {
         province: ProvinceIdentifier,
         city: CityIdentifier | null
     } | null,
-    influences: TileInfluence[]
+    influences: TileInfluence[],
+    content: ScoutTileContent[]  // todo: fill, display, ...
 }
 
 export interface TileInfluence {
@@ -25,4 +26,9 @@ export interface TileInfluence {
     province: ProvinceIdentifier,
     city: CityIdentifier,
     amount: number
+}
+
+
+export interface ScoutTileContent {
+    country: CountryIdentifier,
 }

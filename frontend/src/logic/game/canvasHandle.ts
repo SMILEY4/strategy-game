@@ -1,5 +1,4 @@
 import {CameraStateAccess} from "../../state/access/CameraStateAccess";
-import getCamera = CameraStateAccess.getCamera;
 
 export class CanvasHandle {
 
