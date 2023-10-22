@@ -43,7 +43,7 @@ export interface GameStateUpdate {
                     blue: number,
                 }
             },
-            dataTier2: null | {
+            dataTier3: null | {
                 availableSettlers: number
             }
         })[],

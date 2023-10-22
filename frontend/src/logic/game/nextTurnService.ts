@@ -38,7 +38,7 @@ export class NextTurnService {
                 },
                 userId: msgCountry.dataTier1.userId,
                 playerName: msgCountry.dataTier1.userId,
-                settlers: orDefault(msgCountry.dataTier2?.availableSettlers, 0),
+                settlers: orDefault(msgCountry.dataTier3?.availableSettlers, 0),
                 provinces: game.game.provinces
                     .filter(msgProvince => msgProvince.countryId === msgCountry.dataTier1.countryId)
                     .map(msgProvince => {

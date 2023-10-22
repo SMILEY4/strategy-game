@@ -70,6 +70,7 @@ export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
                     </ButtonPrimary>
 
                     <BasicTooltip
+                        enabled={!valid}
                         delay={500}
                         content={
                             <ul>

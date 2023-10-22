@@ -95,6 +95,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                             </ButtonPrimary>
 
                             <BasicTooltip
+                                enabled={!validCreateColony}
                                 delay={500}
                                 content={
                                     <ul>
@@ -112,6 +113,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                             </BasicTooltip>
 
                             <BasicTooltip
+                                enabled={!validCreateSettlement}
                                 delay={500}
                                 content={
                                     <ul>

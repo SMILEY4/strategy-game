@@ -34,15 +34,17 @@ export class CityCreationService {
             failureReasons.push("No settlers available")
         }
         if (asColony) {
-            if ((tile.owner === null || tile.owner?.country.id === country.identifier.id) && tile.owner?.city !== null) {
-                failureReasons.push("Tile already owned by another country or city") // todo: weird validation => check
+            // must:  (tile not owned OR owned by country) AND tile not owned by any city
+            if( (tile.owner !== null && (tile.owner?.country.id !== country.identifier.id || tile.owner?.city !== null)) ) {
+                failureReasons.push("Invalid tile owner")
             }
             if (!this.validInfluence(tile, country)) {
                 failureReasons.push("Not enough influence on tile")
             }
         } else {
+            // must: country owns tile AND tile not owned by any city
             if (tile.owner?.country.id !== country.identifier.id || tile.owner.city !== null) {
-                failureReasons.push("Tile already owned by another country or city")
+                failureReasons.push("Invalid tile owner")
             }
         }
         return failureReasons;

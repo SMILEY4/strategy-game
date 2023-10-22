@@ -80,6 +80,7 @@ export function CityWindow(props: CityWindowProps): ReactElement {
                     />
 
                     <BasicTooltip
+                        enabled={!canUpgradeTier}
                         delay={500}
                         content={
                             <ul>

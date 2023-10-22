@@ -174,6 +174,8 @@ export namespace GLProgram {
         if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
             return shader;
         } else {
+            const errorReport = getErrorReport(gl, shader, source);
+            console.error("Error during shader compilation", errorReport)
             gl.deleteShader(shader);
             GLError.check(gl, "deleteShader", "deleting failed shader (" + type.displayString + ")");
             throw new Error("Failed to create shader (" + type.displayString + ")");
@@ -259,6 +261,45 @@ export namespace GLProgram {
         }
 
         return attributes;
+    }
+
+    interface ShaderErrorReport {
+        source: string[],
+        errors: ({
+            lineNumber: number,
+            line: string
+            error: string
+        })[]
+    }
+
+    function getErrorReport(gl: WebGL2RenderingContext, shader: WebGLShader, source: string): ShaderErrorReport {
+        const glErrorMsg = gl.getShaderInfoLog(shader);
+        if (glErrorMsg) {
+            const codeLines = source.split(/\r\n|\n\r|\n|\r/);
+            const errors = glErrorMsg
+                .split(/\r\n|\n\r|\n|\r/)
+                .map(e => e.trim())
+                .filter(e => e.length > 0)
+                .map(e => {
+                    const parts = e.split(":");
+                    const lineNumber = parseInt(parts[2]);
+                    const details = parts.splice(3, parts.length).join().trim();
+                    return {
+                        lineNumber: lineNumber,
+                        line: codeLines[lineNumber].trim(),
+                        error: details,
+                    };
+                });
+            return {
+                source: codeLines.map((l,i) => i + ":   " + l),
+                errors: errors
+            };
+        } else {
+            return {
+                source: source.split(/\r\n|\n\r|\n|\r/).map((l,i) => i + ":   " + l),
+                errors: []
+            };
+        }
     }
 
 }
