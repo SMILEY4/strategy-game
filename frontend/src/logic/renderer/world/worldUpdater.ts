@@ -5,6 +5,7 @@ import {GameStateAccess} from "../../../state/access/GameStateAccess";
 import {EntityRenderLayer} from "./layers/entityRenderLayer";
 import {EntityDataBuilder} from "./builders/entityDataBuilder";
 import {CommandStateAccess} from "../../../state/access/CommandStateAccess";
+import {Camera} from "../common/camera";
 
 export class WorldUpdater {
 
@@ -19,15 +20,14 @@ export class WorldUpdater {
 
 
     public updateOnNextTurn() {
-        this.rebuildEntityLayer();
         this.rebuildTerrainLayer();
     }
 
-    public update() {
+    public update(camera: Camera) {
         if (CommandStateAccess.getRevId() !== this.lastRevIdCommandState) {
             this.lastRevIdCommandState = CommandStateAccess.getRevId();
-            this.rebuildEntityLayer();
         }
+        this.rebuildEntityLayer(camera);
     }
 
     private rebuildTerrainLayer() {
@@ -42,17 +42,18 @@ export class WorldUpdater {
         );
     }
 
-    private rebuildEntityLayer() {
+    private rebuildEntityLayer(camera: Camera) {
         const layer = this.world?.getLayerById(EntityRenderLayer.LAYER_ID) as EntityRenderLayer;
         layer.disposeWorldData();
         layer.setMesh(
             EntityDataBuilder.create(
                 this.gl,
+                camera,
                 GameStateAccess.getTiles(),
                 GameStateAccess.getCities(),
                 CommandStateAccess.getCommands(),
                 this.world?.getLayers()[1].getShaderAttributes()!!,
-                layer.getTextRenderer()
+                layer.getTextRenderer(),
             ),
         );
     }

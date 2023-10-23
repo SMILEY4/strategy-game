@@ -35,13 +35,14 @@ export class GameRenderer {
 
     public render() {
         const gl = this.canvasHandle.getGL();
+        const camera = this.getRenderCamera();
 
         if (this.worldUpdater) {
-            this.worldUpdater.update();
+            this.worldUpdater.update(camera);
         }
 
         if (this.world && this.worldRenderer && gl) {
-            this.worldRenderer.render(this.world, this.getRenderCamera());
+            this.worldRenderer.render(this.world, camera);
         }
     }
 

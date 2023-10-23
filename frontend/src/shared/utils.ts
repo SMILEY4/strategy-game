@@ -61,3 +61,9 @@ export function getMin<T>(array: T[], value: (e: T) => number): T | null {
     });
     return minElement;
 }
+
+
+export function roundToPlaces(value: number, decPlaces: number): number {
+    const fac = Math.pow(10, decPlaces)
+    return Math.round(value * fac) / fac
+}

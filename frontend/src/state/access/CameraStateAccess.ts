@@ -11,4 +11,8 @@ export namespace CameraStateAccess {
         LocalCameraStore.useState.getState().set(camera);
     }
 
+    export function useCamera(): CameraData {
+        return LocalCameraStore.useState(state => state)
+    }
+
 }

@@ -6,6 +6,10 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
+import {CameraStateAccess} from "../../../../../state/access/CameraStateAccess";
+import {roundToPlaces} from "../../../../../shared/utils";
 
 export function useOpenDevWindow() {
     const WINDOW_ID = "menubar-window";
@@ -29,6 +33,7 @@ export interface DevWindowProps {
 
 export function DevWindow(props: DevWindowProps): ReactElement {
 
+    const camera = CameraStateAccess.useCamera();
     const [enterFullscreen, exitFullscreen] = useFullscreen("root");
     const [looseWGLContext, restoreWGLContext] = useWebGlContext();
 
@@ -43,11 +48,19 @@ export function DevWindow(props: DevWindowProps): ReactElement {
         >
             <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Debug</Header1>
+
+                <InsetPanel>
+                    <KeyTextValuePair name={"Camera.Pos"} value={roundToPlaces(camera.x, 4) + ", " + roundToPlaces(camera.y, 4)}/>
+                    <KeyTextValuePair name={"Camera.Zoom"} value={roundToPlaces(camera.zoom, 4)}/>
+                </InsetPanel>
+
                 <Spacer size="s"/>
                 <ButtonPrimary blue onClick={enterFullscreen}>Enter Fullscreen</ButtonPrimary>
                 <ButtonPrimary blue onClick={exitFullscreen}>Exit Fullscreen</ButtonPrimary>
                 <ButtonPrimary blue onClick={looseWGLContext}>Loose WebGL-Context</ButtonPrimary>
                 <ButtonPrimary blue onClick={restoreWGLContext}>Restore WebGL-Context</ButtonPrimary>
+
+
             </VBox>
         </DecoratedWindow>
     );

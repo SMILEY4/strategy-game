@@ -11,24 +11,24 @@ import {GLAttributeType} from "../../common/glTypes";
 import {GLVertexBuffer} from "../../common/glVertexBuffer";
 import {GLIndexBuffer} from "../../common/glIndexBuffer";
 import {TileContainer} from "../../../../models/tileContainer";
+import {BorderBuilder} from "../../../game/borderBuilder";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import toTerrainId = RenderBuilderUtils.toTerrainId;
 import hexTextureCoordinates = RenderBuilderUtils.hexTextureCoordinates;
 import hexCornerPointX = RenderBuilderUtils.hexCornerPointX;
 import hexCornerPointY = RenderBuilderUtils.hexCornerPointY;
 import toVisibilityId = RenderBuilderUtils.toVisibilityId;
-import {BorderBuilder} from "../../../game/borderBuilder";
 
 
 /*
 Vertices of hex-tiles are constructed as following (with corner index shown):
--1: center
- 0. top-right
- 1. bottom-right
- 2. bottom
- 3. bottom-left
- 4. top-left
- 5. top
+ -1: center
+ 0. bottom-right
+ 1. top-right
+ 2. top
+ 3. top-left
+ 4. bottom-left
+ 5. bottom
 */
 
 export namespace TerrainChunkBuilder {
@@ -58,10 +58,14 @@ export namespace TerrainChunkBuilder {
         // terrain data (visibility,type)
         MixedArrayBufferType.INT,
         MixedArrayBufferType.INT,
-        // borders (packed)
+        // borders colors (packed)
         MixedArrayBufferType.FLOAT,
         MixedArrayBufferType.FLOAT,
         MixedArrayBufferType.FLOAT,
+        // border data
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
     ];
 
     const INDICES_PER_TILE = 3 * 6; // "3 corners per triangle" * "6 triangles"
@@ -96,7 +100,7 @@ export namespace TerrainChunkBuilder {
         let indexOffset = 0;
         for (let i = 0, n = amountTiles; i < n; i++) {
             const tile = tiles[i];
-            const border = BorderBuilder.buildComplete(tile, tileContainer)
+            const border = BorderBuilder.buildComplete(tile, tileContainer);
             indexOffset = appendTileIndices(indexOffset, cursorIndices);
             appendTileVertices(chunk.getChunkQ(), chunk.getChunkR(), tile, border, cursorVertices);
         }
@@ -144,8 +148,14 @@ export namespace TerrainChunkBuilder {
                     },
                     {
                         buffer: vertexBuffer,
-                        location: shaderAttributes.find(a => a.name === "in_borders")!.location,
+                        location: shaderAttributes.find(a => a.name === "in_borderColors")!.location,
                         type: GLAttributeType.FLOAT,
+                        amountComponents: 3,
+                    },
+                    {
+                        buffer: vertexBuffer,
+                        location: shaderAttributes.find(a => a.name === "in_borderData")!.location,
+                        type: GLAttributeType.INT,
                         amountComponents: 3,
                     },
                 ],
@@ -231,12 +241,26 @@ export namespace TerrainChunkBuilder {
         cursor.append(packRGB(255, 100, 0));
         cursor.append(packRGB(0, 255, 100));
         cursor.append(packRGB(100, 0, 255));
+        // 3x packed border information
+        cursor.append([0, 0, 0]);
+
     }
 
-    function appendTileCornerVertex(cq: number, cr: number, tile: Tile, border: BorderData[], cornerIndex: number, edgeIndex: number, cursor: MixedArrayBufferCursor) {
+    function appendTileCornerVertex(
+        cq: number,
+        cr: number,
+        tile: Tile,
+        border: BorderData[],
+        cornerIndex: number,
+        edgeIndex: number,
+        cursor: MixedArrayBufferCursor,
+    ) {
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.identifier.q, tile.identifier.r);
         const terrainId = toTerrainId(tile);
         const texCoords = hexTextureCoordinates(cornerIndex, terrainId);
+        const borderThis = border[edgeIndex];
+        const borderPrev = border[(edgeIndex - 1) < 0 ? (edgeIndex - 1 + 6) : edgeIndex - 1];
+        const borderNext = border[(edgeIndex + 1) % 6];
         // 2x world position (x,y)
         cursor.append(hexCornerPointX(cornerIndex, TilemapUtils.DEFAULT_HEX_LAYOUT.size, center));
         cursor.append(hexCornerPointY(cornerIndex, TilemapUtils.DEFAULT_HEX_LAYOUT.size, center));
@@ -246,14 +270,26 @@ export namespace TerrainChunkBuilder {
         cursor.append(cq);
         cursor.append(cr);
         // 3x corner data
-        if (cornerIndex % 2 === 0) {
-            cursor.append(0);
-            cursor.append(1);
-            cursor.append(0);
+        if (edgeIndex % 2 === 0) {
+            if (cornerIndex % 2 === 0) {
+                cursor.append(0);
+                cursor.append(1);
+                cursor.append(0);
+            } else {
+                cursor.append(0);
+                cursor.append(0);
+                cursor.append(1);
+            }
         } else {
-            cursor.append(0);
-            cursor.append(0);
-            cursor.append(1);
+            if (cornerIndex % 2 === 0) {
+                cursor.append(0);
+                cursor.append(0);
+                cursor.append(1);
+            } else {
+                cursor.append(0);
+                cursor.append(1);
+                cursor.append(0);
+            }
         }
         // 2x texture coordinates
         cursor.append(texCoords);
@@ -261,26 +297,51 @@ export namespace TerrainChunkBuilder {
         cursor.append(toVisibilityId(tile));
         cursor.append(terrainId);
         // 3x packed border colors
-        if(border[edgeIndex].country) {
-            cursor.append(packRGB(255, 100, 0));
-        } else {
-            cursor.append(0);
-        }
-        if(border[edgeIndex].province) {
-            cursor.append(packRGB(0, 255, 100));
-        } else {
-            cursor.append(0);
-        }
-        if(border[edgeIndex].city) {
-            cursor.append(packRGB(100, 0, 255));
-        } else {
-            cursor.append(0);
-        }
+        (borderThis.country || borderNext.country || borderPrev.country)
+            ? cursor.append(packRGB(255, 100, 0))
+            : cursor.append(0);
+        (borderThis.province || borderNext.province || borderPrev.province)
+            ? cursor.append(packRGB(0, 255, 100))
+            : cursor.append(0);
+        (borderThis.city || borderNext.city || borderPrev.city)
+            ? cursor.append(packRGB(100, 0, 255))
+            : cursor.append(0);
+        // 3x packed border information
+        const borderData = packedBorderInfo(borderThis, borderPrev, borderNext);
+        cursor.append(borderData);
     }
+
+    function packedBorderInfo(borderThis: BorderData, borderPrev: BorderData, borderNext: BorderData): [number, number, number] {
+        let valueCountry = 0;
+        if (borderThis.country) valueCountry = bit_set(valueCountry, 0);
+        if (borderPrev.country) valueCountry = bit_set(valueCountry, 1);
+        if (borderNext.country) valueCountry = bit_set(valueCountry, 2);
+
+        let valueProvince = 0;
+        if (borderThis.province) valueProvince = bit_set(valueProvince, 0);
+        if (borderPrev.province) valueProvince = bit_set(valueProvince, 1);
+        if (borderNext.province) valueProvince = bit_set(valueProvince, 2);
+
+        let valueCity = 0;
+        if (borderThis.city) valueCity = bit_set(valueCity, 0);
+        if (borderPrev.city) valueCity = bit_set(valueCity, 1);
+        if (borderNext.city) valueCity = bit_set(valueCity, 2);
+
+        return [valueCountry, valueProvince, valueCity];
+    }
+
 
     // rgb must be in 0-255 (https://stackoverflow.com/questions/6893302/decode-rgb-value-to-single-float-without-bit-shift-in-glsl)
     function packRGB(red: number, green: number, blue: number): number {
         return red + green * 256 + blue * 256 * 256;
+    }
+
+    function bit_set(num: number, bit: number) {
+        return num | 1 << bit;
+    }
+
+    function bit_clear(num: number, bit: number) {
+        return num & ~(1 << bit);
     }
 
 }

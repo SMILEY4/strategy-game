@@ -11,6 +11,7 @@ import {GLProgram} from "../../common/glProgram";
 import {Command, CreateSettlementCommand, PlaceScoutCommand} from "../../../../models/command";
 import {match} from "../../../../shared/match";
 import {TextRenderer} from "../../common/textRenderer";
+import {Camera} from "../../common/camera";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export namespace EntityDataBuilder {
@@ -42,6 +43,7 @@ export namespace EntityDataBuilder {
 
     export function create(
         gl: WebGL2RenderingContext,
+        camera: Camera,
         tiles: Tile[],
         cities: City[],
         commands: Command[],
@@ -53,8 +55,8 @@ export namespace EntityDataBuilder {
         let amountSprites = 0;
         entities.forEach(e => {
             amountSprites++;
-            if(e.label) amountSprites++;
-        })
+            if (e.label) amountSprites++;
+        });
 
         prepareTextTexture(textRenderer, entities);
 
@@ -76,7 +78,7 @@ export namespace EntityDataBuilder {
             if (entity.label) {
                 indexOffset = pushEntityIndices(indexOffset, cursorIndices);
             }
-            pushEntityVertices(entity, cursorVertices, textRenderer);
+            pushEntityVertices(entity, camera, cursorVertices, textRenderer);
         }
 
         return MeshData.create(gl,
@@ -159,14 +161,14 @@ export namespace EntityDataBuilder {
     }
 
     function prepareTextTexture(textRenderer: TextRenderer, entities: RenderEntity[]) {
-        // todo: when to clear all ?
+        textRenderer.removeAll();
         const wasNewTextAdded = entities
             .filter(entity => !!entity.label)
             .map(entity => textRenderer.addTextIfNotExists(entity.label!!, {
                 text: entity.label!!,
                 width: null,
                 height: 30,
-                font: "20px monospace",
+                font: "bold 24px 'Alegreya SC'",
                 color: "black",
                 align: "center" as CanvasTextAlign,
                 baseline: "middle" as CanvasTextBaseline,
@@ -184,7 +186,7 @@ export namespace EntityDataBuilder {
     }
 
 
-    function pushEntityVertices(entity: RenderEntity, cursor: MixedArrayBufferCursor, textRenderer: TextRenderer) {
+    function pushEntityVertices(entity: RenderEntity, camera: Camera, cursor: MixedArrayBufferCursor, textRenderer: TextRenderer) {
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, entity.tile.q, entity.tile.r);
         const halfWidth = (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2);
         const halfHeight = (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2);
@@ -212,10 +214,10 @@ export namespace EntityDataBuilder {
             const region = textRenderer.getRegion(entity.label)!!;
             pushRectangleVertices(
                 cursor,
-                center[0] - region.width * 0.3 / 2,
-                center[1] - region.height * 0.3 / 2 - 5,
-                center[0] + region.width * 0.3 / 2,
-                center[1] + region.height * 0.3 / 2 - 5,
+                center[0] - region.width / camera.getZoom() * 0.5,
+                center[1] - region.height / camera.getZoom() * 0.5 - 5,
+                center[0] + region.width / camera.getZoom() * 0.5,
+                center[1] + region.height / camera.getZoom() * 0.5 - 5,
                 region.u0,
                 region.v0,
                 region.u1,

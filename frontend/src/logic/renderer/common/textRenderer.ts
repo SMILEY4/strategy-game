@@ -23,12 +23,13 @@ export interface TextEntryRegion {
 
 export class TextRenderer {
 
+    private static readonly ENTRY_PADDING = 20;
+
     private readonly gl: WebGL2RenderingContext;
     private readonly textContext: CanvasRenderingContext2D;
     private readonly regionMap = new Map<string, TextEntryRegion>();
     private readonly entryMap = new Map<string, TextEntry>();
     private texture: GLTexture | null = null;
-
 
     constructor(gl: WebGL2RenderingContext) {
         this.gl = gl;
@@ -45,8 +46,8 @@ export class TextRenderer {
     }
 
     public addText(id: string, entry: TextEntry) {
-        if(entry.width === null) {
-            entry.width = this.measureTextWidth(entry)
+        if (entry.width === null) {
+            entry.width = this.measureTextWidth(entry);
         }
         this.entryMap.set(id, entry);
     }
@@ -99,7 +100,7 @@ export class TextRenderer {
 
     private prepareCanvas(entries: TextEntry[]) {
         const canvasWidth = entries.length === 0 ? 1 : Math.max(...entries.map(e => e.width!!));
-        const canvasHeight = entries.length === 0 ? 1 : entries.map(e => e.height).reduce((a, b) => a + b, 0);
+        const canvasHeight = entries.length === 0 ? 1 : entries.map(e => e.height).reduce((a, b) => a + b, 0) + TextRenderer.ENTRY_PADDING * (entries.length-1);
         this.textContext.canvas.width = canvasWidth;
         this.textContext.canvas.height = canvasHeight;
         this.textContext.clearRect(0, 0, this.textContext.canvas.width, this.textContext.canvas.height);
@@ -111,7 +112,7 @@ export class TextRenderer {
         entries.forEach((entry, id) => {
             this.paintEntry(entry, yOffset);
             this.regionMap.set(id, this.buildRegion(entry, yOffset));
-            yOffset += entry.height;
+            yOffset += entry.height + TextRenderer.ENTRY_PADDING;
         });
     }
 
