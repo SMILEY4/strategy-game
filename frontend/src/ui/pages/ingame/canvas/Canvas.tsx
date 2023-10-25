@@ -30,6 +30,7 @@ export function Canvas() {
         }
     }, []);
 
+
     function handleContextLoss(e: any) {
         console.log("Detected webgl-context loss");
         e.preventDefault();

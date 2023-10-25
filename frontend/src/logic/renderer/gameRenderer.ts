@@ -6,6 +6,7 @@ import {GLRenderer} from "./common/glRenderer";
 import {CameraStateAccess} from "../../state/access/CameraStateAccess";
 import {CanvasHandle} from "../game/canvasHandle";
 import {WorldUpdater} from "./world/worldUpdater";
+import {GameStateAccess} from "../../state/access/GameStateAccess";
 
 export class GameRenderer {
 
@@ -28,7 +29,7 @@ export class GameRenderer {
     public updateWorld() {
         const gl = this.canvasHandle.getGL();
         if (gl && this.worldUpdater) {
-            this.worldUpdater.updateOnNextTurn();
+            this.worldUpdater.updateOnNextTurn(this.getRenderCamera());
         }
     }
 

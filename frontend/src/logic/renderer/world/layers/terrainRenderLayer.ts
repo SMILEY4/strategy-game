@@ -33,24 +33,33 @@ export class TerrainRenderLayer extends BaseRenderLayer {
 
         this.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
         this.program.setUniform("u_texture", GLUniformType.SAMPLER_2D, this.tileset);
-        const selectedTile = GameStateAccess.getSelectedTile();
-        if (selectedTile) {
-            this.program.setUniform("u_selectedTile", GLUniformType.INT_VEC2, [selectedTile.q, selectedTile.r]);
-        } else {
-            this.program.setUniform("u_selectedTile", GLUniformType.INT_VEC2, [-9999, -9999]);
-        }
-        const hoverTile = GameStateAccess.getHoverTile();
-        if (hoverTile) {
-            this.program.setUniform("u_hoverTile", GLUniformType.INT_VEC2, [hoverTile.q, hoverTile.r]);
-        } else {
-            this.program.setUniform("u_hoverTile", GLUniformType.INT_VEC2, [-9999, -9999]);
-        }
+        this.program.setUniform("u_mapMode", GLUniformType.INT, GameStateAccess.getMapMode().id);
+        this.program.setUniform("u_selectedTile", GLUniformType.INT_VEC2, this.getSelectedTileValue());
+        this.program.setUniform("u_hoverTile", GLUniformType.INT_VEC2, this.getHoverTileValue());
 
         this.chunks.forEach(chunk => {
             chunk.getVertexArray().bind();
             renderer.drawMesh(chunk.getMeshSize());
         });
 
+    }
+
+    private getSelectedTileValue(): [number, number] {
+        const selectedTile = GameStateAccess.getSelectedTile();
+        if (selectedTile) {
+            return [selectedTile.q, selectedTile.r];
+        } else {
+            return [-9999, -9999];
+        }
+    }
+
+    private getHoverTileValue(): [number, number] {
+        const hoverTile = GameStateAccess.getHoverTile();
+        if (hoverTile) {
+            return [hoverTile.q, hoverTile.r];
+        } else {
+            return [-9999, -9999];
+        }
     }
 
     public getShaderAttributes(): GLProgramAttribute[] {

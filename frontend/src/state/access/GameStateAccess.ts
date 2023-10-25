@@ -6,6 +6,7 @@ import {Province} from "../../models/province";
 import {City} from "../../models/city";
 import {TileContainer} from "../../models/tileContainer";
 import {LocalGameStore} from "../local/game/LocalGameStore";
+import {MapMode} from "../../models/mapMode";
 
 export namespace GameStateAccess {
 
@@ -51,6 +52,14 @@ export namespace GameStateAccess {
 
     export function getHoverTile(): TileIdentifier | null {
         return LocalGameStore.useState.getState().hoverTile;
+    }
+
+    export function getMapMode(): MapMode {
+        return LocalGameStore.useState.getState().mapMode;
+    }
+
+    export function setMapMode(mapMode: MapMode) {
+        LocalGameStore.useState.getState().setMapMode(mapMode);
     }
 
     export function getCountry(id: string): Country | null {
@@ -105,6 +114,13 @@ export namespace GameStateAccess {
         } else {
             return City.UNDEFINED;
         }
+    }
+
+    export function useMapMode(): [MapMode, (mode: MapMode) => void ] {
+        return [
+            LocalGameStore.useState(state => state.mapMode),
+            LocalGameStore.useState(state => state.setMapMode)
+        ];
     }
 
 }

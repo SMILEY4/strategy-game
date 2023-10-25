@@ -21,7 +21,9 @@ export class GameLoopService {
     initialize(canvas: HTMLCanvasElement) {
         this.canvasHandle.set(canvas);
         this.renderer.initialize();
+        this.renderer.updateWorld();
     }
+
 
     onGameStateUpdate() {
         this.renderer.updateWorld();

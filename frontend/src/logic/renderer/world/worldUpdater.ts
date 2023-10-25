@@ -13,21 +13,27 @@ export class WorldUpdater {
     private readonly gl: WebGL2RenderingContext;
     private lastRevIdCommandState = "";
 
+    private lastZoom = -999;
+
     constructor(gl: WebGL2RenderingContext, world: RenderWorld) {
         this.world = world;
         this.gl = gl;
     }
 
 
-    public updateOnNextTurn() {
+    public updateOnNextTurn(camera: Camera) {
         this.rebuildTerrainLayer();
+        this.rebuildEntityLayer(camera);
     }
 
     public update(camera: Camera) {
         if (CommandStateAccess.getRevId() !== this.lastRevIdCommandState) {
             this.lastRevIdCommandState = CommandStateAccess.getRevId();
         }
-        this.rebuildEntityLayer(camera);
+        if (CommandStateAccess.getRevId() !== this.lastRevIdCommandState || this.lastZoom !== camera.getZoom()) {
+            this.rebuildEntityLayer(camera);
+            this.lastZoom = camera.getZoom();
+        }
     }
 
     private rebuildTerrainLayer() {
@@ -37,7 +43,7 @@ export class WorldUpdater {
             TerrainChunkBuilder.create(
                 GameStateAccess.getTileContainer(),
                 this.gl,
-                this.world?.getLayers()[0].getShaderAttributes()!!,
+                layer.getShaderAttributes()!!,
             ),
         );
     }
@@ -52,7 +58,7 @@ export class WorldUpdater {
                 GameStateAccess.getTiles(),
                 GameStateAccess.getCities(),
                 CommandStateAccess.getCommands(),
-                this.world?.getLayers()[1].getShaderAttributes()!!,
+                layer.getShaderAttributes()!!,
                 layer.getTextRenderer(),
             ),
         );

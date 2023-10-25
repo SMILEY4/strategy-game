@@ -5,6 +5,8 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
+import {MapMode} from "../../../../../models/mapMode";
 
 
 export function useOpenMapWindow() {
@@ -29,12 +31,7 @@ export interface MapWindowProps {
 
 export function MapWindow(props: MapWindowProps): ReactElement {
 
-    const setDefault = useMapModeDefault();
-    const setCountries = useMapModeCountries();
-    const setProvinces = useMapModeProvinces();
-    const setCities = useMapModeCities();
-    const setTerrain = useMapModeTerrain();
-    const setResources = useMapModeResources();
+    const [selectedMapMode, setMapMode] = GameStateAccess.useMapMode();
 
     return (
         <DecoratedWindow
@@ -49,37 +46,19 @@ export function MapWindow(props: MapWindowProps): ReactElement {
             <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Map</Header1>
                 <Spacer size="s"/>
-                <ButtonPrimary blue onClick={setDefault}>Default</ButtonPrimary>
-                <ButtonPrimary blue onClick={setCountries}>Countries</ButtonPrimary>
-                <ButtonPrimary blue onClick={setProvinces}>Provinces</ButtonPrimary>
-                <ButtonPrimary blue onClick={setCities}>Cities</ButtonPrimary>
-                <ButtonPrimary blue onClick={setTerrain}>Terrain</ButtonPrimary>
-                <ButtonPrimary blue onClick={setResources}>Resources</ButtonPrimary>
+                {MapMode.getValues().map(mapMode => {
+                    return (
+                        <ButtonPrimary
+                            key={mapMode.id}
+                            onClick={() => setMapMode(mapMode)}
+                            blue
+                            disabled={selectedMapMode === mapMode}
+                        >
+                            {mapMode.displayString}
+                        </ButtonPrimary>
+                    );
+                })}
             </VBox>
         </DecoratedWindow>
     );
-}
-
-export function useMapModeDefault() {
-    return () => undefined // todo
-}
-
-export function useMapModeCountries() {
-    return () => undefined // todo
-}
-
-export function useMapModeProvinces() {
-    return () => undefined // todo
-}
-
-export function useMapModeCities() {
-    return () => undefined // todo
-}
-
-export function useMapModeTerrain() {
-    return () => undefined // todo
-}
-
-export function useMapModeResources() {
-    return () => undefined // todo
 }

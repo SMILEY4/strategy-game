@@ -20,11 +20,21 @@ flat in vec3 v_borderColors;
 // packed data of the 3 possible borders (whether there is or isnt a border on this edge, the previous and the next one)
 flat in ivec3 v_borderData;
 
+// id of the currently active map mode
+uniform int u_mapMode;
+
+// tileset texture
 uniform sampler2D u_texture;
+
+// position (q,r) of the currently selected tile
 uniform ivec2 u_selectedTile;
+
+// position (q,r) of the currently highlighted tile due to mouse-over
 uniform ivec2 u_hoverTile;
 
+// final output color
 out vec4 outColor;
+
 
 /*
 returns the color of the tile, with fog-of-war applied
@@ -95,8 +105,10 @@ vec4 getBorder(vec3 cornerData, float thickness, float packedColor, int packedBo
 
 void main() {
 
-    // base map color
-    vec3 color = mapColor().rgb;
+    vec3 color = vec3(1.0);
+
+    // add base map color
+    color = mapColor().rgb;
 
     // add borders
     vec4 border0 = getBorder(v_cornerData, 0.2, v_borderColors.x, v_borderData.x);
@@ -107,10 +119,10 @@ void main() {
     color = mix(color, border2.rgb, border2.a);
 
     // add mouseover and selected
-    if(u_selectedTile.x == int(v_tilePosition.x) && u_selectedTile.y == int(v_tilePosition.y)) {
+    if (u_selectedTile.x == int(v_tilePosition.x) && u_selectedTile.y == int(v_tilePosition.y)) {
         color = mix(color, vec3(0, 0.784, 1.0), step(0.90, 1.0-v_cornerData.x));
     }
-    if(u_hoverTile.x == int(v_tilePosition.x) && u_hoverTile.y == int(v_tilePosition.y)) {
+    if (u_hoverTile.x == int(v_tilePosition.x) && u_hoverTile.y == int(v_tilePosition.y)) {
         color = mix(color, vec3(0, 0.784, 1.0), step(0.94, 1.0-v_cornerData.x));
     }
 
@@ -119,17 +131,3 @@ void main() {
 
     outColor = vec4(color, 1.0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

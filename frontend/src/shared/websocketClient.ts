@@ -8,7 +8,6 @@ export class WebsocketClient {
         this.baseUrl = baseUrl;
     }
 
-
     open(url: string, ticket: string, consumer: (msg: WebsocketMessage) => void): Promise<void> {
         if (this.isOpen()) {
             return Promise.reject("Websocket is already open");
@@ -17,8 +16,8 @@ export class WebsocketClient {
             try {
                 const ws = new WebSocket(this.baseUrl + url + "?ticket=" + ticket);
                 ws.onopen = () => resolve();
-                ws.onclose = () => this.close();
                 ws.onmessage = (e: MessageEvent) => consumer(JSON.parse(e.data));
+                ws.onclose = () => this.close();
                 ws.onerror = (e) => reject(e)
                 this.websocket = ws;
             } catch (e) {

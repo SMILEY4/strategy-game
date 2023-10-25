@@ -23,7 +23,6 @@ export class RenderWorld {
     }
 
     public dispose() {
-        console.log("DISPOSE WORLD")
         this.layers.forEach(layer => {
             layer.disposeWorldData()
             layer.dispose()
