@@ -6,15 +6,15 @@ export interface ProvinceIdentifier {
     name: string,
 }
 
+export interface ProvinceReduced {
+    identifier: ProvinceIdentifier,
+    cities: CityReduced[],
+}
+
 export interface Province {
     identifier: ProvinceIdentifier;
     country: CountryIdentifier;
     cities: CityReduced[];
-}
-
-export interface ProvinceReduced {
-    identifier: ProvinceIdentifier,
-    cities: CityReduced[],
 }
 
 export namespace Province {

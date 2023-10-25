@@ -35,8 +35,10 @@ export interface GameStateUpdate {
         })[]
         countries: ({
             dataTier1: {
-                countryId: string,
+                id: string,
+                name: string,
                 userId: string,
+                userName: string,
                 color: {
                     red: number,
                     green: number,

@@ -32,5 +32,5 @@ title: Fog-of-War and Visibility
   - "dataTier0" for UNDISCOVERED, i.e, data that is always available
   - "dataTier1" for DISCOVERED, i.e. data that is always available once discovered
   - "dataTier2" for VISIBILE, i.e. data that is only available when visible
-  - "dataTier3" for data that is only available to the owner
+  - "dataTier3" for data that is only available to the "owner"
 

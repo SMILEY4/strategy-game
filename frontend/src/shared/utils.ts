@@ -67,3 +67,11 @@ export function roundToPlaces(value: number, decPlaces: number): number {
     const fac = Math.pow(10, decPlaces)
     return Math.round(value * fac) / fac
 }
+
+export function bitSet(num: number, bit: number) {
+    return num | 1 << bit;
+}
+
+export function bitClear(num: number, bit: number) {
+    return num & ~(1 << bit);
+}

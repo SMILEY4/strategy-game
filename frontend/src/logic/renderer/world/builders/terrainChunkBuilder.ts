@@ -12,6 +12,8 @@ import {GLVertexBuffer} from "../../common/glVertexBuffer";
 import {GLIndexBuffer} from "../../common/glIndexBuffer";
 import {TileContainer} from "../../../../models/tileContainer";
 import {BorderBuilder} from "../../../game/borderBuilder";
+import {Color} from "../../../../models/color";
+import {bitSet} from "../../../../shared/utils";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import toTerrainId = RenderBuilderUtils.toTerrainId;
 import hexTextureCoordinates = RenderBuilderUtils.hexTextureCoordinates;
@@ -195,6 +197,7 @@ export namespace TerrainChunkBuilder {
     }
 
     function appendTileVertices(cq: number, cr: number, tile: Tile, border: BorderData[], cursor: MixedArrayBufferCursor) {
+        // todo: "precompute" possible values per tile (border-colors, tile-positions, ...) and share, maybe extract common-data into appendTileCommonVertex (or sth)
         // center
         appendTileCenterVertex(cq, cr, tile, cursor);
         // triangle a - corner a,b
@@ -238,9 +241,13 @@ export namespace TerrainChunkBuilder {
         cursor.append(toVisibilityId(tile));
         cursor.append(terrainId);
         // 3x packed border colors
-        cursor.append(packRGB(255, 100, 0));
-        cursor.append(packRGB(0, 255, 100));
-        cursor.append(packRGB(100, 0, 255));
+        if (tile.owner !== null) {
+            cursor.append(Color.packRGB(tile.owner?.country.color!!));
+        } else {
+            cursor.append(Color.BLACK_PACKED);
+        }
+        cursor.append(Color.packRGB({red: 0, green: 255, blue: 100}));
+        cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}));
         // 3x packed border information
         cursor.append([0, 0, 0]);
 
@@ -297,14 +304,18 @@ export namespace TerrainChunkBuilder {
         cursor.append(toVisibilityId(tile));
         cursor.append(terrainId);
         // 3x packed border colors
-        (borderThis.country || borderNext.country || borderPrev.country)
-            ? cursor.append(packRGB(255, 100, 0))
-            : cursor.append(0);
+        if (tile.owner !== null) {
+            (borderThis.country || borderNext.country || borderPrev.country)
+                ? cursor.append(Color.packRGB(tile.owner?.country.color!!))
+                : cursor.append(Color.BLACK_PACKED);
+        } else {
+            cursor.append(Color.BLACK_PACKED);
+        }
         (borderThis.province || borderNext.province || borderPrev.province)
-            ? cursor.append(packRGB(0, 255, 100))
+            ? cursor.append(Color.packRGB({red: 0, green: 255, blue: 100}))
             : cursor.append(0);
         (borderThis.city || borderNext.city || borderPrev.city)
-            ? cursor.append(packRGB(100, 0, 255))
+            ? cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}))
             : cursor.append(0);
         // 3x packed border information
         const borderData = packedBorderInfo(borderThis, borderPrev, borderNext);
@@ -313,35 +324,21 @@ export namespace TerrainChunkBuilder {
 
     function packedBorderInfo(borderThis: BorderData, borderPrev: BorderData, borderNext: BorderData): [number, number, number] {
         let valueCountry = 0;
-        if (borderThis.country) valueCountry = bit_set(valueCountry, 0);
-        if (borderPrev.country) valueCountry = bit_set(valueCountry, 1);
-        if (borderNext.country) valueCountry = bit_set(valueCountry, 2);
+        if (borderThis.country) valueCountry = bitSet(valueCountry, 0);
+        if (borderPrev.country) valueCountry = bitSet(valueCountry, 1);
+        if (borderNext.country) valueCountry = bitSet(valueCountry, 2);
 
         let valueProvince = 0;
-        if (borderThis.province) valueProvince = bit_set(valueProvince, 0);
-        if (borderPrev.province) valueProvince = bit_set(valueProvince, 1);
-        if (borderNext.province) valueProvince = bit_set(valueProvince, 2);
+        if (borderThis.province) valueProvince = bitSet(valueProvince, 0);
+        if (borderPrev.province) valueProvince = bitSet(valueProvince, 1);
+        if (borderNext.province) valueProvince = bitSet(valueProvince, 2);
 
         let valueCity = 0;
-        if (borderThis.city) valueCity = bit_set(valueCity, 0);
-        if (borderPrev.city) valueCity = bit_set(valueCity, 1);
-        if (borderNext.city) valueCity = bit_set(valueCity, 2);
+        if (borderThis.city) valueCity = bitSet(valueCity, 0);
+        if (borderPrev.city) valueCity = bitSet(valueCity, 1);
+        if (borderNext.city) valueCity = bitSet(valueCity, 2);
 
         return [valueCountry, valueProvince, valueCity];
-    }
-
-
-    // rgb must be in 0-255 (https://stackoverflow.com/questions/6893302/decode-rgb-value-to-single-float-without-bit-shift-in-glsl)
-    function packRGB(red: number, green: number, blue: number): number {
-        return red + green * 256 + blue * 256 * 256;
-    }
-
-    function bit_set(num: number, bit: number) {
-        return num | 1 << bit;
-    }
-
-    function bit_clear(num: number, bit: number) {
-        return num & ~(1 << bit);
     }
 
 }

@@ -1,7 +1,6 @@
 import {RenderWorld} from "./data/renderWorld";
 import {GLRenderer} from "../common/glRenderer";
 import {Camera} from "../common/camera";
-import {MapMode} from "../../../models/mapMode";
 
 export class WorldRenderer {
 

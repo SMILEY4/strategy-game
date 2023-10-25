@@ -72,7 +72,7 @@ export namespace GameStateAccess {
     }
 
     export function getCountryByUserId(userId: string): Country | null {
-        const country = getGameState().countries.find(c => c.userId === userId);
+        const country = getGameState().countries.find(c => c.player.userId === userId);
         if (country) {
             return country;
         } else {
@@ -90,7 +90,7 @@ export namespace GameStateAccess {
     }
 
     export function useCountryByUserId(userId: string): Country {
-        const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.userId === userId));
+        const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.player.userId === userId));
         if (country) {
             return country;
         } else {

@@ -33,14 +33,17 @@ export class NextTurnService {
         return game.game.countries.map(msgCountry => {
             return {
                 identifier: {
-                    id: msgCountry.dataTier1.countryId,
-                    name: msgCountry.dataTier1.countryId,
+                    id: msgCountry.dataTier1.id,
+                    name: msgCountry.dataTier1.name,
+                    color: msgCountry.dataTier1.color,
                 },
-                userId: msgCountry.dataTier1.userId,
-                playerName: msgCountry.dataTier1.userId,
-                settlers: orDefault(msgCountry.dataTier3?.availableSettlers, 0),
+                player: {
+                    userId: msgCountry.dataTier1.userId,
+                    name: msgCountry.dataTier1.userName,
+                },
+                settlers: orNull(msgCountry.dataTier3?.availableSettlers),
                 provinces: game.game.provinces
-                    .filter(msgProvince => msgProvince.countryId === msgCountry.dataTier1.countryId)
+                    .filter(msgProvince => msgProvince.countryId === msgCountry.dataTier1.id)
                     .map(msgProvince => {
                         return {
                             identifier: {
@@ -71,10 +74,7 @@ export class NextTurnService {
                     id: msgProvince.provinceId,
                     name: msgProvince.provinceId,
                 },
-                country: {
-                    id: msgProvince.countryId,
-                    name: msgProvince.countryId,
-                },
+                country: this.findCountry(game, msgProvince.countryId),
                 cities: msgProvince.cityIds.map(msgCityId => {
                     const msgCity = this.findMsgCityById(game, msgCityId)!!;
                     return {
@@ -98,10 +98,7 @@ export class NextTurnService {
                     id: msgCity.cityId,
                     name: msgCity.name,
                 },
-                country: {
-                    id: msgCity.countryId,
-                    name: msgCity.countryId,
-                },
+                country: this.findCountry(game, msgCity.countryId),
                 province: {
                     id: msgProvince.provinceId,
                     name: msgProvince.provinceId,
@@ -146,10 +143,7 @@ export class NextTurnService {
                 terrainType: orNull(msgTile.dataTier1?.terrainType) as any,
                 visibility: msgTile.dataTier0.visibility as any,
                 owner: (msgTile.dataTier1?.owner ? {
-                    country: {
-                        id: msgTile.dataTier1.owner.countryId,
-                        name: msgTile.dataTier1.owner.countryId,
-                    },
+                    country: this.findCountry(game, msgTile.dataTier1.owner.countryId),
                     province: {
                         id: msgTile.dataTier1.owner.provinceId,
                         name: msgTile.dataTier1.owner.provinceId,
@@ -161,10 +155,7 @@ export class NextTurnService {
                 } : null),
                 influences: (msgTile.dataTier2?.influences ? msgTile.dataTier2?.influences.map(msgInfluence => {
                     return {
-                        country: {
-                            id: msgInfluence.countryId,
-                            name: msgInfluence.countryId,
-                        },
+                        country: this.findCountry(game, msgInfluence.countryId),
                         province: {
                             id: msgInfluence.provinceId,
                             name: msgInfluence.provinceId,
@@ -194,11 +185,12 @@ export class NextTurnService {
     }
 
     private findCountry(game: GameStateUpdate, countryId: string): CountryIdentifier {
-        const country = game.game.countries.find(c => c.dataTier1.countryId === countryId);
+        const country = game.game.countries.find(c => c.dataTier1.id === countryId);
         if (countryId) {
             return {
-                id: country?.dataTier1.countryId!!,
-                name: country?.dataTier1.countryId!!,
+                id: country?.dataTier1.id!!,
+                name: country?.dataTier1.id!!,
+                color: country?.dataTier1.color!!
             };
         } else {
             throw new Error("Could not find country with id " + countryId);

@@ -7,7 +7,6 @@ import {GLUniformType} from "../../common/glTypes";
 import {GLTexture} from "../../common/glTexture";
 import {TextRenderer} from "../../common/textRenderer";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
-import {MapMode} from "../../../../models/mapMode";
 
 export class EntityRenderLayer extends BaseRenderLayer {
 

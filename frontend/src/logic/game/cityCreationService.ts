@@ -1,6 +1,6 @@
 import {Tile, TileIdentifier} from "../../models/tile";
 import {Country} from "../../models/country";
-import {getMaxOrDefault} from "../../shared/utils";
+import {getMaxOrDefault, orDefault} from "../../shared/utils";
 import {CommandService} from "./commandService";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {UserService} from "../user/userService";
@@ -30,7 +30,7 @@ export class CityCreationService {
         if (this.isOccupied(tile)) {
             failureReasons.push("Tile is already occupied");
         }
-        if (this.availableSettlers(country) <= 0) {
+        if (orDefault(this.availableSettlers(country), 0) <= 0) {
             failureReasons.push("No settlers available")
         }
         if (asColony) {
@@ -67,7 +67,7 @@ export class CityCreationService {
         return [];
     }
 
-    availableSettlers(country: Country): number {
+    availableSettlers(country: Country): number | null {
         return country.settlers;
     }
 

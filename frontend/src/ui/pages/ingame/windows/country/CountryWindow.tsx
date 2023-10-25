@@ -58,6 +58,7 @@ export function CountryWindow(props: CountryWindowProps): ReactElement {
                 <CountryBanner identifier={country.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
                     <CountryBaseInformation data={country}/>
+                    <Spacer size="m"/>
                     <CountryProvincesAndCities
                         data={country}
                         openProvinceWindow={(id) => openProvinceWindow(id, true)}
@@ -83,8 +84,8 @@ function CountryBaseInformation(props: { data: Country }): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair name={"Id"} value={props.data.identifier.id}/>
-            <KeyTextValuePair name={"Player"} value={props.data.playerName}/>
-            <KeyTextValuePair name={"Settlers"} value={props.data.settlers}/>
+            <KeyTextValuePair name={"Player"} value={props.data.player.name}/>
+            <KeyTextValuePair name={"Settlers"} value={props.data.settlers === null ? "?" : props.data.settlers}/>
         </InsetPanel>
     );
 }
@@ -97,7 +98,6 @@ function CountryProvincesAndCities(props: {
 }): ReactElement {
     return (
         <>
-            <Spacer size="m"/>
             <Header2 centered>Provinces & Cities</Header2>
             <Divider/>
 
@@ -108,7 +108,6 @@ function CountryProvincesAndCities(props: {
                             key={province.identifier.id}
                             data={province}
                             onOpenProvince={() => props.openProvinceWindow(province.identifier.id)}
-                            onOpenCity={cityId => props.openCityWindow(cityId)}
                         >
                             {province.cities.map(city => (
                                 <CityEntry

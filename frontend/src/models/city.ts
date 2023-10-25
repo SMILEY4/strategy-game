@@ -8,6 +8,12 @@ export interface CityIdentifier {
     name: string,
 }
 
+export interface CityReduced {
+    identifier: CityIdentifier;
+    isCountryCapitol: boolean;
+    isProvinceCapitol: boolean;
+}
+
 export interface City {
     identifier: CityIdentifier;
     country: CountryIdentifier;
@@ -39,12 +45,6 @@ export interface ProductionEntry {
     name: "SETTLER" | "FARM" | "WOODCUTTER",
     icon: string,
     disabled: boolean,
-}
-
-export interface CityReduced {
-    identifier: CityIdentifier;
-    isCountryCapitol: boolean;
-    isProvinceCapitol: boolean;
 }
 
 export namespace City {

@@ -113,8 +113,10 @@ All messages follow the following format
       "countries": [
           {
               "dataTier1": {
-                  "countryId": "String - the id of the country",
-                  "userId": "String - the id of the owner",
+                  "id": "String - the id of the country",
+                  "name": "String - the name of the country",
+                  "userId": "String - the id of the owner player",
+                  "userName": "String - the name of the owner player",
                   "color": {
                       "red": "Int [0,255]",
                       "green": "Int [0,255]",
