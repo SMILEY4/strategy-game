@@ -1,4 +1,7 @@
-export interface GameStateUpdate {
+import {SettlementTierString} from "../../../models/settlementTier";
+import {BuildingTypeString} from "../../../models/buildingType";
+
+export interface GameStateDTO {
     game: {
         turn: number,
         tiles: TileDTO[]
@@ -12,13 +15,9 @@ export interface CountryDTO {
     dataTier1: {
         id: string,
         name: string,
+        color: ColorDTO
         userId: string,
         userName: string,
-        color: {
-            red: number,
-            green: number,
-            blue: number,
-        }
     },
     dataTier3: null | {
         availableSettlers: number
@@ -29,12 +28,8 @@ export interface ProvinceDTO {
     dataTier1: {
         id: string,
         name: string,
+        color: ColorDTO
         countryId: string,
-        color: {
-            red: number,
-            green: number,
-            blue: number,
-        }
         cityIds: string[],
         provinceCapitalCityId: string,
     },
@@ -44,38 +39,39 @@ export interface ProvinceDTO {
 }
 
 export interface CityDTO {
-    cityId: string,
-    countryId: string,
-    tier: string,
-    tile: {
-        tileId: string,
-        q: number,
-        r: number,
-    },
-    name: string,
-    color: {
-        red: number,
-        green: number,
-        blue: number,
-    },
-    isProvinceCapital: boolean,
-    buildings: ({
-        type: string,
-        tile: null | {
+    dataTier1: {
+        id: string,
+        name: string,
+        color: ColorDTO,
+        countryId: string,
+        isCountryCapital: boolean,
+        isProvinceCapital: boolean,
+        tile: {
             tileId: string,
             q: number,
             r: number,
         },
-        active: boolean
-    })[],
-    productionQueue: ({
-        type: string,
-        entryId: string,
-        progress: number,
-        buildingType: null | "FARM" | "WOODCUTTER"
-    })[],
-    size: number,
-    growthProgress: number,
+        tier: SettlementTierString
+    },
+    dataTier3: null | {
+        buildings: ({
+            type: BuildingTypeString,
+            tile: null | {
+                tileId: string,
+                q: number,
+                r: number,
+            },
+            active: boolean
+        })[],
+        productionQueue: ({
+            type: string,
+            entryId: string,
+            progress: number,
+            buildingType: null | BuildingTypeString
+        })[],
+        size: number,
+        growthProgress: number,
+    }
 }
 
 export interface TileDTO {
@@ -109,4 +105,10 @@ export interface TileDTO {
             turn: number | null,
         })[]
     }
+}
+
+export interface ColorDTO {
+    red: number,
+    green: number,
+    blue: number,
 }

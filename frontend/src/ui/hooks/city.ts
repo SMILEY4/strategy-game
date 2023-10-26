@@ -1,6 +1,7 @@
 import {CityIdentifier, ProductionEntry} from "../../models/city";
 import {AppCtx} from "../../logic/appContext";
 import {Tile} from "../../models/tile";
+import {SettlementTier} from "../../models/settlementTier";
 
 export function useCreateSettlement(tile: Tile, name: string | null, asColony: boolean): [boolean, string[], () => void] {
     const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
@@ -25,14 +26,14 @@ export function useValidateCreateSettlement(tile: Tile | null, name: string | nu
 }
 
 
-export function useUpgradeSettlementTier(city: CityIdentifier, currentTier: number): [boolean, string[], () => void] {
+export function useUpgradeSettlementTier(city: CityIdentifier, currentTier: SettlementTier): [boolean, string[], () => void] {
     const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
 
     const validationResult: string[] = []; // todo: validate
     const possible = validationResult.length === 0;
 
     function perform() {
-        commandService.upgradeSettlementTier(city, currentTier, currentTier + 1);
+        commandService.upgradeSettlementTier(city, currentTier.level, currentTier.level + 1);
     }
 
     return [possible, validationResult, perform];

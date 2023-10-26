@@ -11,7 +11,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.Provinc
 class ProvinceDTOCreator(private val countryId: String) {
 
     fun shouldInclude(province: Province, cityDTOs: List<CityDTO>): Boolean {
-        return province.cityIds.any { provinceCityId -> cityDTOs.find { it.cityId == provinceCityId } != null }
+        return province.cityIds.any { provinceCityId -> cityDTOs.find { it.dataTier1.id == provinceCityId } != null }
     }
 
     fun build(province: Province): ProvinceDTO {

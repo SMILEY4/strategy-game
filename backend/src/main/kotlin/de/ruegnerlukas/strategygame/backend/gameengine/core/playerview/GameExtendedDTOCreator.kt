@@ -28,7 +28,7 @@ class GameExtendedDTOCreator(private val gameConfig: GameConfig) {
                     .map { creator.build(it) }
             }
 
-            val cityDTOs = CityDTOCreator().let { creator ->
+            val cityDTOs = CityDTOCreator(playerCountry.countryId).let { creator ->
                 game.cities
                     .filter { creator.shouldInclude(it, tileDTOs) }
                     .map { creator.build(it) }

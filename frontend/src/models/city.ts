@@ -2,10 +2,14 @@ import {CountryIdentifier} from "./country";
 import {ProvinceIdentifier} from "./province";
 import {ResourceBalance} from "./resource";
 import {TileIdentifier} from "./tile";
+import {Color} from "./color";
+import {SettlementTier} from "./settlementTier";
+import {BuildingType} from "./buildingType";
 
 export interface CityIdentifier {
     id: string,
     name: string,
+    color: Color
 }
 
 export interface CityReduced {
@@ -19,16 +23,16 @@ export interface City {
     country: CountryIdentifier;
     province: ProvinceIdentifier;
     tile: TileIdentifier,
-    isCountryCapitol: boolean;
-    isProvinceCapitol: boolean;
+    isCountryCapital: boolean;
+    isProvinceCapital: boolean;
+    tier: SettlementTier,
     population: {
-        size: number,
-        progress: number
+        size: number | null,
+        progress: number | null
     }
+    buildings: Building[]
     resources: ResourceBalance[],
     productionQueue: ProductionQueueEntry[],
-    maxContentSlots: number,
-    content: CityContentEntry[]
 }
 
 export interface ProductionQueueEntry {
@@ -37,8 +41,10 @@ export interface ProductionQueueEntry {
     progress: number
 }
 
-export interface CityContentEntry {
-    icon: string;
+export interface Building {
+    type: BuildingType,
+    active: boolean,
+    tile: TileIdentifier | null,
 }
 
 export interface ProductionEntry {
@@ -52,29 +58,32 @@ export namespace City {
         identifier: {
             id: "undefined",
             name: "undefined",
+            color: Color.BLACK
         },
         country: {
             id: "undefined",
             name: "undefined",
+            color: Color.BLACK
         },
         province: {
             id: "undefined",
             name: "undefined",
+            color: Color.BLACK
         },
         tile: {
             id: "undefined",
             q: 0,
             r: 0
         },
-        isCountryCapitol: false,
-        isProvinceCapitol: false,
+        isCountryCapital: false,
+        isProvinceCapital: false,
+        tier: SettlementTier.VILLAGE,
         population: {
             size: 0,
             progress: 0,
         },
         resources: [],
         productionQueue: [],
-        maxContentSlots: 0,
-        content: [],
+        buildings: [],
     };
 }

@@ -13,7 +13,7 @@ import {GLIndexBuffer} from "../../common/glIndexBuffer";
 import {TileContainer} from "../../../../models/tileContainer";
 import {BorderBuilder} from "../../../game/borderBuilder";
 import {Color} from "../../../../models/color";
-import {bitSet} from "../../../../shared/utils";
+import {bitSet, orDefault} from "../../../../shared/utils";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import toTerrainId = RenderBuilderUtils.toTerrainId;
 import hexTextureCoordinates = RenderBuilderUtils.hexTextureCoordinates;
@@ -244,7 +244,7 @@ export namespace TerrainChunkBuilder {
         if (tile.owner !== null) {
             cursor.append(Color.packRGB(tile.owner?.country.color!!));
             cursor.append(Color.packRGB(tile.owner?.province.color!!));
-            cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}));
+            cursor.append(Color.packRGB(orDefault(tile.owner?.city?.color, Color.BLACK)));
         } else {
             cursor.append(Color.BLACK_PACKED);
             cursor.append(Color.BLACK_PACKED);
@@ -314,7 +314,7 @@ export namespace TerrainChunkBuilder {
                 ? cursor.append(Color.packRGB(tile.owner!!.province.color))
                 : cursor.append(Color.BLACK_PACKED);
             (borderThis.city || borderNext.city || borderPrev.city)
-                ? cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}))
+                ? cursor.append(Color.packRGB(orDefault(tile.owner?.city?.color, Color.BLACK)))
                 : cursor.append(Color.BLACK_PACKED);
         } else {
             cursor.append(Color.BLACK_PACKED);

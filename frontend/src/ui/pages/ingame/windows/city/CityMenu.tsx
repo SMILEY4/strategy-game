@@ -15,17 +15,17 @@ import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalu
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
-import {formatPercentage} from "../../../../components/utils";
+import {formatPercentage, joinClassNames} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 import {useCancelProductionQueueEntry, useUpgradeSettlementTier} from "../../../../hooks/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
-import {City, CityIdentifier, ProductionQueueEntry} from "../../../../../models/city";
-import "./cityMenu.less";
+import {Building, City, CityIdentifier, ProductionQueueEntry} from "../../../../../models/city";
 import {useOpenTileWindow} from "../tile/TileWindow";
 import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
+import "./cityMenu.less";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -56,7 +56,7 @@ export function CityWindow(props: CityWindowProps): ReactElement {
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();
-    const [canUpgradeTier, upgradeValidationResult, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier, city.population.size);
+    const [canUpgradeTier, upgradeValidationResult, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier, city.tier);
 
     return (
         <DecoratedWindow
@@ -126,6 +126,10 @@ function CityBaseDataSection(props: {
                 name={"Id"}
                 value={props.data.identifier.id}
             />
+            <KeyTextValuePair
+                name={"Tier"}
+                value={props.data.tier.displayString}
+            />
             <KeyLinkValuePair
                 name={"Country"}
                 value={props.data.country.name}
@@ -155,11 +159,11 @@ function CityPopulationSection(props: { data: City }): ReactElement {
             <InsetPanel>
                 <KeyTextValuePair
                     name={"Size"}
-                    value={props.data.population.size}
+                    value={props.data.population.size === null ? "?" : props.data.population.size}
                 />
                 <KeyTextValuePair
                     name={"Growth Progress"}
-                    value={formatPercentage(props.data.population.progress, true)}
+                    value={props.data.population.progress === null ? "?" : formatPercentage(props.data.population.progress, true)}
                 />
             </InsetPanel>
         </>
@@ -230,24 +234,24 @@ function CityContentList(props: { data: City }): ReactElement {
     return (
         <>
             <HBox gap_s centerVertical left>
-                <Text>{"Slots: " + props.data.content.length + "/" + props.data.maxContentSlots}</Text>
+                <Text>{"Slots: " + props.data.buildings.length + "/" + props.data.tier.buildingSlots}</Text>
             </HBox>
             <HBox gap_s top left wrap>
-                {props.data.content.map(content => (
-                    <ContentBox iconFilename={content.icon}/>
+                {props.data.buildings.map(building => (
+                    <ContentBox building={building}/>
                 ))}
             </HBox>
         </>
     );
 }
 
-function ContentBox(props: { iconFilename: string }) {
+function ContentBox(props: { building: Building }) {
     return (
-        <BuildingInfoTooltip>
+        <BuildingInfoTooltip building={props.building}>
             <div
-                className="city-content-box"
+                className={joinClassNames(["city-content-box", props.building.active ? null : "city-content-box--disabled"])}
                 style={{
-                    backgroundImage: "url('/icons/buildings/" + props.iconFilename + "')",
+                    backgroundImage: "url('" + props.building.type.icon + "')",
                 }}
             />
         </BuildingInfoTooltip>
