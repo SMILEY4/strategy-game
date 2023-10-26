@@ -1,12 +1,13 @@
-import {GameStateUpdate} from "./models/gameStateUpdate";
+import {CityDTO, GameStateUpdate, ProvinceDTO, TileDTO} from "./models/gameStateUpdate";
 import {Tile} from "../../models/tile";
 import {orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
-import {Province} from "../../models/province";
-import {City} from "../../models/city";
+import {Province, ProvinceIdentifier} from "../../models/province";
+import {City, CityIdentifier} from "../../models/city";
+import {Color} from "../../models/color";
 
 export class NextTurnService {
 
@@ -30,35 +31,36 @@ export class NextTurnService {
     }
 
     private buildCountries(game: GameStateUpdate): Country[] {
-        return game.game.countries.map(msgCountry => {
+        return game.game.countries.map(countryDTO => {
             return {
                 identifier: {
-                    id: msgCountry.dataTier1.id,
-                    name: msgCountry.dataTier1.name,
-                    color: msgCountry.dataTier1.color,
+                    id: countryDTO.dataTier1.id,
+                    name: countryDTO.dataTier1.name,
+                    color: countryDTO.dataTier1.color,
                 },
                 player: {
-                    userId: msgCountry.dataTier1.userId,
-                    name: msgCountry.dataTier1.userName,
+                    userId: countryDTO.dataTier1.userId,
+                    name: countryDTO.dataTier1.userName,
                 },
-                settlers: orNull(msgCountry.dataTier3?.availableSettlers),
+                settlers: orNull(countryDTO.dataTier3?.availableSettlers),
                 provinces: game.game.provinces
-                    .filter(msgProvince => msgProvince.countryId === msgCountry.dataTier1.id)
+                    .filter(provinceDTO => provinceDTO.dataTier1.countryId === countryDTO.dataTier1.id)
                     .map(msgProvince => {
                         return {
                             identifier: {
-                                id: msgProvince.provinceId,
-                                name: msgProvince.provinceId,
+                                id: msgProvince.dataTier1.id,
+                                name: msgProvince.dataTier1.name,
+                                color: msgProvince.dataTier1.color,
                             },
-                            cities: msgProvince.cityIds.map(msgCityId => {
-                                const msgCity = this.findMsgCityById(game, msgCityId)!!;
+                            cities: msgProvince.dataTier1.cityIds.map(dtoCityId => {
+                                const cityDTO = this.findDTOCityByIdOrNull(game, dtoCityId)!!;
                                 return {
                                     identifier: {
-                                        id: msgCity.cityId,
-                                        name: msgCity.name,
+                                        id: cityDTO.cityId,
+                                        name: cityDTO.name,
                                     },
                                     isCountryCapitol: false,
-                                    isProvinceCapitol: msgCity.isProvinceCapital,
+                                    isProvinceCapitol: cityDTO.isProvinceCapital,
                                 };
                             }),
                         };
@@ -68,22 +70,23 @@ export class NextTurnService {
     }
 
     private buildProvinces(game: GameStateUpdate): Province[] {
-        return game.game.provinces.map(msgProvince => {
+        return game.game.provinces.map(provinceDTO => {
             return {
                 identifier: {
-                    id: msgProvince.provinceId,
-                    name: msgProvince.provinceId,
+                    id: provinceDTO.dataTier1.id,
+                    name: provinceDTO.dataTier1.name,
+                    color: provinceDTO.dataTier1.color,
                 },
-                country: this.findCountry(game, msgProvince.countryId),
-                cities: msgProvince.cityIds.map(msgCityId => {
-                    const msgCity = this.findMsgCityById(game, msgCityId)!!;
+                country: this.findCountry(game, provinceDTO.dataTier1.countryId),
+                cities: provinceDTO.dataTier1.cityIds.map(dtoCityId => {
+                    const cityDTO = this.findDTOCityByIdOrNull(game, dtoCityId)!!;
                     return {
                         identifier: {
-                            id: msgCity.cityId,
-                            name: msgCity.name,
+                            id: cityDTO.cityId,
+                            name: cityDTO.name,
                         },
                         isCountryCapitol: false,
-                        isProvinceCapitol: msgCity.isProvinceCapital,
+                        isProvinceCapitol: cityDTO.isProvinceCapital,
                     };
                 }),
             };
@@ -91,41 +94,42 @@ export class NextTurnService {
     }
 
     private buildCities(game: GameStateUpdate): City[] {
-        return game.game.cities.map(msgCity => {
-            const msgProvince = this.findMsgProvinceByCity(game, msgCity.cityId);
+        return game.game.cities.map(cityDTO => {
+            const provinceDTO = this.findDTOProvinceByCity(game, cityDTO.cityId);
             return {
                 identifier: {
-                    id: msgCity.cityId,
-                    name: msgCity.name,
+                    id: cityDTO.cityId,
+                    name: cityDTO.name,
                 },
-                country: this.findCountry(game, msgCity.countryId),
+                country: this.findCountry(game, cityDTO.countryId),
                 province: {
-                    id: msgProvince.provinceId,
-                    name: msgProvince.provinceId,
+                    id: provinceDTO.dataTier1.id,
+                    name: provinceDTO.dataTier1.name,
+                    color: provinceDTO.dataTier1.color,
                 },
                 tile: {
-                    id: msgCity.tile.tileId,
-                    q: msgCity.tile.q,
-                    r: msgCity.tile.r,
+                    id: cityDTO.tile.tileId,
+                    q: cityDTO.tile.q,
+                    r: cityDTO.tile.r,
                 },
                 isCountryCapitol: false,
-                isProvinceCapitol: msgCity.isProvinceCapital,
+                isProvinceCapitol: cityDTO.isProvinceCapital,
                 population: {
-                    size: msgCity.size,
-                    progress: msgCity.growthProgress,
+                    size: cityDTO.size,
+                    progress: cityDTO.growthProgress,
                 },
                 resources: [],
-                productionQueue: msgCity.productionQueue.map(msgQueueEntry => {
+                productionQueue: cityDTO.productionQueue.map(queueEntryDTO => {
                     return {
-                        id: msgQueueEntry.entryId,
-                        name: msgQueueEntry.type + " - " + msgQueueEntry.buildingType,
-                        progress: msgQueueEntry.progress,
+                        id: queueEntryDTO.entryId,
+                        name: queueEntryDTO.type + " - " + queueEntryDTO.buildingType,
+                        progress: queueEntryDTO.progress,
                     };
                 }),
                 maxContentSlots: 999,
-                content: msgCity.buildings.map(msgBuilding => {
+                content: cityDTO.buildings.map(buildingDTO => {
                     return {
-                        icon: msgBuilding.type,
+                        icon: buildingDTO.type,
                     };
                 }),
             };
@@ -133,67 +137,102 @@ export class NextTurnService {
     }
 
     private buildTiles(game: GameStateUpdate): Tile[] {
-        return game.game.tiles.map(msgTile => {
+        return game.game.tiles.map(tileDTO => {
+            const owner = this.findOwner(game, tileDTO);
             return {
                 identifier: {
-                    id: msgTile.dataTier0.tileId,
-                    q: msgTile.dataTier0.position.q,
-                    r: msgTile.dataTier0.position.r,
+                    id: tileDTO.dataTier0.tileId,
+                    q: tileDTO.dataTier0.position.q,
+                    r: tileDTO.dataTier0.position.r,
                 },
-                terrainType: orNull(msgTile.dataTier1?.terrainType) as any,
-                visibility: msgTile.dataTier0.visibility as any,
-                owner: (msgTile.dataTier1?.owner ? {
-                    country: this.findCountry(game, msgTile.dataTier1.owner.countryId),
-                    province: {
-                        id: msgTile.dataTier1.owner.provinceId,
-                        name: msgTile.dataTier1.owner.provinceId,
-                    },
-                    city: (msgTile.dataTier1.owner.cityId ? {
-                        id: msgTile.dataTier1.owner.cityId,
-                        name: this.findMsgCityById(game, msgTile.dataTier1.owner.cityId)?.name!,
-                    } : null),
+                terrainType: orNull(tileDTO.dataTier1?.terrainType) as any,
+                visibility: tileDTO.dataTier0.visibility as any,
+                owner: (tileDTO.dataTier1?.owner ? {
+                    country: owner.country!!,
+                    province: owner.province!!,
+                    city: owner.city,
                 } : null),
-                influences: (msgTile.dataTier2?.influences ? msgTile.dataTier2?.influences.map(msgInfluence => {
+                influences: (tileDTO.dataTier2?.influences ? tileDTO.dataTier2?.influences.map(influenceDTO => {
                     return {
-                        country: this.findCountry(game, msgInfluence.countryId),
+                        country: this.findCountry(game, influenceDTO.countryId),
                         province: {
-                            id: msgInfluence.provinceId,
-                            name: msgInfluence.provinceId,
+                            id: influenceDTO.provinceId,
+                            name: influenceDTO.provinceId,
+                            color: Color.BLACK,
                         },
                         city: {
-                            id: msgInfluence.cityId,
-                            name: this.findMsgCityById(game, msgInfluence.cityId)?.name!,
+                            id: influenceDTO.cityId,
+                            name: this.findDTOCityByIdOrNull(game, influenceDTO.cityId)?.name!,
                         },
-                        amount: msgInfluence.amount,
+                        amount: influenceDTO.amount,
                     };
                 }) : []),
-                content: orDefault(msgTile.dataTier2?.content, [])
-                    .filter(msgContent => msgContent.type === "scout")
-                    .map(msgScout => ({
-                        country: this.findCountry(game, msgScout.countryId!!),
+                content: orDefault(tileDTO.dataTier2?.content, [])
+                    .filter(contentDTO => contentDTO.type === "scout")
+                    .map(scoutDTO => ({
+                        country: this.findCountry(game, scoutDTO.countryId!!),
                     })),
             };
         });
     }
 
-    private findMsgProvinceByCity(game: GameStateUpdate, cityId: string) {
-        return game.game.provinces.find(p => p.cityIds.indexOf(cityId) !== -1)!!;
+    private findOwner(game: GameStateUpdate, tile: TileDTO) {
+        const countryId = tile.dataTier1?.owner?.countryId;
+        const provinceId = tile.dataTier1?.owner?.provinceId;
+        const cityId = tile.dataTier1?.owner?.cityId;
+        const country = countryId ? this.findCountry(game, countryId) : null;
+        const province = provinceId ? this.findProvince(game, provinceId) : null;
+        const city = cityId ? this.findCity(game, cityId) : null;
+        return {
+            country: country,
+            province: province,
+            city: city,
+        };
     }
 
-    private findMsgCityById(game: GameStateUpdate, cityId: string) {
+    private findDTOProvinceByCity(game: GameStateUpdate, cityId: string): ProvinceDTO {
+        return game.game.provinces.find(p => p.dataTier1.cityIds.indexOf(cityId) !== -1)!!;
+    }
+
+    private findDTOCityByIdOrNull(game: GameStateUpdate, cityId: string): CityDTO | null {
         return orNull(game.game.cities.find(c => c.cityId === cityId));
     }
 
     private findCountry(game: GameStateUpdate, countryId: string): CountryIdentifier {
         const country = game.game.countries.find(c => c.dataTier1.id === countryId);
-        if (countryId) {
+        if (country) {
             return {
-                id: country?.dataTier1.id!!,
-                name: country?.dataTier1.id!!,
-                color: country?.dataTier1.color!!
+                id: country!!.dataTier1.id,
+                name: country!!.dataTier1.name,
+                color: country!!.dataTier1.color,
             };
         } else {
             throw new Error("Could not find country with id " + countryId);
+        }
+    }
+
+    private findProvince(game: GameStateUpdate, provinceId: string): ProvinceIdentifier {
+        const province = game.game.provinces.find(c => c.dataTier1.id === provinceId);
+        if (province) {
+            return {
+                id: province!!.dataTier1.id,
+                name: province!!.dataTier1.name,
+                color: province!!.dataTier1.color,
+            };
+        } else {
+            throw new Error("Could not find province with id " + provinceId);
+        }
+    }
+
+    private findCity(game: GameStateUpdate, cityId: string): CityIdentifier {
+        const city = game.game.cities.find(c => c.cityId === cityId);
+        if (city) {
+            return {
+                id: city!!.cityId,
+                name: city!!.name,
+            };
+        } else {
+            throw new Error("Could not find city with id " + cityId);
         }
     }
 

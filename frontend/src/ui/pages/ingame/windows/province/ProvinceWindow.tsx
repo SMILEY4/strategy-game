@@ -83,7 +83,7 @@ function ProvinceBanner(props: { identifier: ProvinceIdentifier }): ReactElement
 function ProvinceBaseInformationSection(props: { data: Province, openCountry: () => void }): ReactElement {
     return (
         <InsetPanel>
-            <KeyTextValuePair name={"Id"} value={props.data.identifier.name}/>
+            <KeyTextValuePair name={"Id"} value={props.data.identifier.id}/>
             <KeyLinkValuePair name={"Country"} value={props.data.country.name} onClick={props.openCountry}/>
         </InsetPanel>
     );

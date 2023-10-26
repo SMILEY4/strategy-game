@@ -171,12 +171,25 @@ All messages follow the following format
       ],
       "provinces": [
           {
-              "provinceId" : "String - the id of the province",
-              "countryId" : "String - the id of the owner country",
-              "cityIds": [
-                  "String - the ids of cities in this province (incl. capital)"
-              ],
-              "provinceCapitalCityId": "String - the id of the province capital city"
+              "dataTier1": {
+                  "id": "String - the id of the province",
+                  "name": "String - the name of the province",
+                  "countryId": "String - the id of the owner country",
+                  "color": {
+                      "red": "Int [0,255]",
+                      "green": "Int [0,255]",
+                      "blue": "Int [0,255]",
+                  },
+                  "cityIds": [
+                      "String - the ids of cities in this province (incl. capital)"
+                  ],
+                  "provinceCapitalCityId": "String - the id of the province capital city"
+              },
+              "dataTier3?": {
+                  "resourceBalance": {
+                      "<ResourceType>": "Float - balance of the given type"
+                  }
+              }
           }
       ],
       "routes": [

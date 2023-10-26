@@ -243,11 +243,13 @@ export namespace TerrainChunkBuilder {
         // 3x packed border colors
         if (tile.owner !== null) {
             cursor.append(Color.packRGB(tile.owner?.country.color!!));
+            cursor.append(Color.packRGB(tile.owner?.province.color!!));
+            cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}));
         } else {
             cursor.append(Color.BLACK_PACKED);
+            cursor.append(Color.BLACK_PACKED);
+            cursor.append(Color.BLACK_PACKED);
         }
-        cursor.append(Color.packRGB({red: 0, green: 255, blue: 100}));
-        cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}));
         // 3x packed border information
         cursor.append([0, 0, 0]);
 
@@ -306,17 +308,19 @@ export namespace TerrainChunkBuilder {
         // 3x packed border colors
         if (tile.owner !== null) {
             (borderThis.country || borderNext.country || borderPrev.country)
-                ? cursor.append(Color.packRGB(tile.owner?.country.color!!))
+                ? cursor.append(Color.packRGB(tile.owner!!.country.color))
+                : cursor.append(Color.BLACK_PACKED);
+            (borderThis.province || borderNext.province || borderPrev.province)
+                ? cursor.append(Color.packRGB(tile.owner!!.province.color))
+                : cursor.append(Color.BLACK_PACKED);
+            (borderThis.city || borderNext.city || borderPrev.city)
+                ? cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}))
                 : cursor.append(Color.BLACK_PACKED);
         } else {
             cursor.append(Color.BLACK_PACKED);
+            cursor.append(Color.BLACK_PACKED);
+            cursor.append(Color.BLACK_PACKED);
         }
-        (borderThis.province || borderNext.province || borderPrev.province)
-            ? cursor.append(Color.packRGB({red: 0, green: 255, blue: 100}))
-            : cursor.append(0);
-        (borderThis.city || borderNext.city || borderPrev.city)
-            ? cursor.append(Color.packRGB({red: 100, green: 0, blue: 255}))
-            : cursor.append(0);
         // 3x packed border information
         const borderData = packedBorderInfo(borderThis, borderPrev, borderNext);
         cursor.append(borderData);

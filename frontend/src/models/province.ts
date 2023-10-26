@@ -1,9 +1,11 @@
 import {CountryIdentifier} from "./country";
 import {CityReduced} from "./city";
+import {Color} from "./color";
 
 export interface ProvinceIdentifier {
     id: string,
     name: string,
+    color: Color,
 }
 
 export interface ProvinceReduced {
@@ -22,10 +24,12 @@ export namespace Province {
         identifier: {
             id: "undefined",
             name: "undefined",
+            color: Color.BLACK,
         },
         country: {
             id: "undefined",
             name: "undefined",
+            color: Color.BLACK,
         },
         cities: [],
     };
