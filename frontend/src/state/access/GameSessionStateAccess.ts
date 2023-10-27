@@ -8,7 +8,16 @@ export namespace GameSessionStateAccess {
     }
 
     export function setGameConfig(config: GameConfig | null) {
-        return LocalGameSessionStore.useState.getState().setConfig(config);
+        LocalGameSessionStore.useState.getState().setConfig(config);
+    }
+
+    export function getGameConfig(): GameConfig {
+        const config = LocalGameSessionStore.useState.getState().config;
+        if (config) {
+            return config;
+        } else {
+            throw new Error("No config present");
+        }
     }
 
     export function useGameState(): "none" | "loading" | "playing" | "error" {
@@ -20,11 +29,11 @@ export namespace GameSessionStateAccess {
     }
 
     export function useSetTurnState(): (state: "playing" | "waiting") => void {
-        return LocalGameSessionStore.useState().setTurnState
+        return LocalGameSessionStore.useState().setTurnState;
     }
 
     export function setTurnState(state: "playing" | "waiting") {
-        LocalGameSessionStore.useState.getState().setTurnState(state)
+        LocalGameSessionStore.useState.getState().setTurnState(state);
     }
 
 }

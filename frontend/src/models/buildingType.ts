@@ -19,23 +19,23 @@ export type BuildingTypeString = "FARM"
 export class BuildingType {
 
     // todo: icons
-    public static readonly FARM = new BuildingType("Farm", "/icons/buildings/farm.png");
-    public static readonly FISHERS_HUT = new BuildingType("Fishers Hut", "/icons/buildings/farm.png");
-    public static readonly MINE = new BuildingType("Mine", "/icons/buildings/farm.png");
-    public static readonly QUARRY = new BuildingType("Quarry", "/icons/buildings/farm.png");
-    public static readonly WOODCUTTER = new BuildingType("Woodcutter", "/icons/buildings/woodcutter.png");
-    public static readonly CATTLE_FARM = new BuildingType("Cattle Farm", "/icons/buildings/farm.png");
-    public static readonly ARMOR_SMITH = new BuildingType("Armor Smith", "/icons/buildings/farm.png");
-    public static readonly COOPER = new BuildingType("Cooper", "/icons/buildings/farm.png");
-    public static readonly JEWELLER = new BuildingType("Jeweller", "/icons/buildings/farm.png");
-    public static readonly SHEEP_FARM = new BuildingType("Sheep Farm", "/icons/buildings/farm.png");
-    public static readonly STABLES = new BuildingType("Stables", "/icons/buildings/farm.png");
-    public static readonly TOOLMAKER = new BuildingType("Toolmaker", "/icons/buildings/farm.png");
-    public static readonly WEAPON_SMITH = new BuildingType("Weapon Smith", "/icons/buildings/farm.png");
-    public static readonly MARKET = new BuildingType("Market", "/icons/buildings/farm.png");
-    public static readonly PARCHMENTERS_WORKSHOP = new BuildingType("Parchmenters Workshop", "/icons/buildings/farm.png");
-    public static readonly TAILORS_WORKSHOP = new BuildingType("Tailors Workshop", "/icons/buildings/farm.png");
-    public static readonly WINERY = new BuildingType("Winery", "/icons/buildings/farm.png");
+    public static readonly FARM = new BuildingType("FARM", "Farm", "/icons/buildings/farm.png");
+    public static readonly FISHERS_HUT = new BuildingType("FISHERS_HUT", "Fishers Hut", "/icons/buildings/farm.png");
+    public static readonly MINE = new BuildingType("MINE", "Mine", "/icons/buildings/farm.png");
+    public static readonly QUARRY = new BuildingType("QUARRY", "Quarry", "/icons/buildings/farm.png");
+    public static readonly WOODCUTTER = new BuildingType("WOODCUTTER", "Woodcutter", "/icons/buildings/woodcutter.png");
+    public static readonly CATTLE_FARM = new BuildingType("CATTLE_FARM", "Cattle Farm", "/icons/buildings/farm.png");
+    public static readonly ARMOR_SMITH = new BuildingType("ARMOR_SMITH", "Armor Smith", "/icons/buildings/farm.png");
+    public static readonly COOPER = new BuildingType("COOPER", "Cooper", "/icons/buildings/farm.png");
+    public static readonly JEWELLER = new BuildingType("JEWELLER", "Jeweller", "/icons/buildings/farm.png");
+    public static readonly SHEEP_FARM = new BuildingType("SHEEP_FARM", "Sheep Farm", "/icons/buildings/farm.png");
+    public static readonly STABLES = new BuildingType("STABLES", "Stables", "/icons/buildings/farm.png");
+    public static readonly TOOLMAKER = new BuildingType("TOOLMAKER", "Toolmaker", "/icons/buildings/farm.png");
+    public static readonly WEAPON_SMITH = new BuildingType("WEAPON_SMITH", "Weapon Smith", "/icons/buildings/farm.png");
+    public static readonly MARKET = new BuildingType("MARKET", "Market", "/icons/buildings/farm.png");
+    public static readonly PARCHMENTERS_WORKSHOP = new BuildingType("PARCHMENTERS_WORKSHOP", "Parchmenters Workshop", "/icons/buildings/farm.png");
+    public static readonly TAILORS_WORKSHOP = new BuildingType("TAILORS_WORKSHOP", "Tailors Workshop", "/icons/buildings/farm.png");
+    public static readonly WINERY = new BuildingType("WINERY", "Winery", "/icons/buildings/farm.png");
 
     private static readonly values = [
         BuildingType.FARM,
@@ -100,10 +100,12 @@ export class BuildingType {
         }
     }
 
+    readonly id: string;
     readonly displayString: string;
     readonly icon: string;
 
-    constructor(displayString: string, icon: string) {
+    constructor(id: string, displayString: string, icon: string) {
+        this.id = id;
         this.displayString = displayString;
         this.icon = icon;
     }

@@ -80,6 +80,26 @@ export namespace GameStateAccess {
         }
     }
 
+    export function getProvinceByCity(cityId: string): Province {
+        const province = getGameState().provinces.find(p => p.cities.map(c => c.identifier.id).indexOf(cityId) !== -1);
+        if (province) {
+            return province;
+        } else {
+            throw new Error("No province with city " + cityId);
+        }
+    }
+
+
+    export function getCity(cityId: string): City {
+        const city = getGameState().cities.find(c => c.identifier.id === cityId);
+        if (city) {
+            return city;
+        } else {
+            throw new Error("No city with id " + cityId + " found");
+        }
+    }
+
+
     export function useCountryById(countryId: string): Country {
         const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.identifier.id === countryId));
         if (country) {

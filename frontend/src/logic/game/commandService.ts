@@ -9,6 +9,7 @@ import {
     UpgradeSettlementCommand,
 } from "../../models/command";
 import {CommandStateAccess} from "../../state/access/CommandStateAccess";
+import {SettlementTier} from "../../models/settlementTier";
 
 export class CommandService {
 
@@ -27,13 +28,13 @@ export class CommandService {
         CommandStateAccess.addCommand(command);
     }
 
-    upgradeSettlementTier(settlement: CityIdentifier, currTier: number, tgtTier: number) {
+    upgradeSettlementTier(settlement: CityIdentifier, currTier: SettlementTier, tgtTier: SettlementTier) {
         const command: UpgradeSettlementCommand = {
             id: UID.generate(),
             type: "settlement.upgrade",
             settlement: settlement,
-            currTier: currTier,
-            tgtTier: tgtTier,
+            currTier: currTier.level,
+            tgtTier: tgtTier.level,
         };
         CommandStateAccess.addCommand(command);
     }

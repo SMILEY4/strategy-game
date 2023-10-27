@@ -29,17 +29,19 @@ export class EndTurnService {
     private buildPayloadCommand(command: Command): object {
         if (command.type === "production-queue-entry.add") {
             const cmd = command as ProductionQueueAddCommand;
-            if (cmd.entry.name == "SETTLER") {
-                return {
-                    type: "production-queue-add-entry.settler",
-                    cityId: cmd.city.id,
-                };
-            } else {
-                return {
-                    type: "production-queue-add-entry.building",
-                    cityId: cmd.city.id,
-                    buildingType: cmd.entry.name,
-                };
+            switch (cmd.entry.type) {
+                case "building":
+                    return {
+                        type: "production-queue-add-entry.building",
+                        cityId: cmd.city.id,
+                        buildingType: cmd.entry.buildingData!.type.id,
+                    };
+                case "settler":
+                    return {
+                        type: "production-queue-add-entry.settler",
+                        cityId: cmd.city.id,
+                    };
+
             }
         }
         if (command.type === "production-queue-entry.cancel") {

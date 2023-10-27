@@ -4,12 +4,12 @@ import {getMaxOrDefault, orDefault} from "../../shared/utils";
 import {CommandService} from "./commandService";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {UserService} from "../user/userService";
+import {GameSessionStateAccess} from "../../state/access/GameSessionStateAccess";
 
 export class CityCreationService {
 
-    readonly cityTileMaxForeignInfluence = 3; // todo
-    readonly commandService: CommandService;
-    readonly userService: UserService;
+    private readonly commandService: CommandService;
+    private readonly userService: UserService;
 
     constructor(commandService: CommandService, userService: UserService) {
         this.commandService = commandService;
@@ -17,12 +17,11 @@ export class CityCreationService {
     }
 
 
-    validate(tile: Tile, name: string | null, asColony: boolean): string[] {
+    public validate(tile: Tile, name: string | null, asColony: boolean): string[] {
         const country = this.getPlayerCountry();
-
-        const failureReasons: string[] = []
+        const failureReasons: string[] = [];
         if (name !== null && !name) {
-            failureReasons.push("Invalid name")
+            failureReasons.push("Invalid name");
         }
         if (tile.terrainType !== "LAND") {
             failureReasons.push("Invalid terrain type");
@@ -31,47 +30,46 @@ export class CityCreationService {
             failureReasons.push("Tile is already occupied");
         }
         if (orDefault(this.availableSettlers(country), 0) <= 0) {
-            failureReasons.push("No settlers available")
+            failureReasons.push("No settlers available");
         }
         if (asColony) {
             // must:  (tile not owned OR owned by country) AND tile not owned by any city
-            if( (tile.owner !== null && (tile.owner?.country.id !== country.identifier.id || tile.owner?.city !== null)) ) {
-                failureReasons.push("Invalid tile owner")
+            if ((tile.owner !== null && (tile.owner?.country.id !== country.identifier.id || tile.owner?.city !== null))) {
+                failureReasons.push("Invalid tile owner");
             }
             if (!this.validInfluence(tile, country)) {
-                failureReasons.push("Not enough influence on tile")
+                failureReasons.push("Not enough influence on tile");
             }
         } else {
             // must: country owns tile AND tile not owned by any city
             if (tile.owner?.country.id !== country.identifier.id || tile.owner.city !== null) {
-                failureReasons.push("Invalid tile owner")
+                failureReasons.push("Invalid tile owner");
             }
         }
         return failureReasons;
-
     }
 
-    create(tile: Tile, name: string, asColony: boolean) {
+    public create(tile: Tile, name: string, asColony: boolean) {
         this.commandService.createSettlement(tile.identifier, name, asColony);
     }
 
-    getPlayerCountry(): Country {
+    private getPlayerCountry(): Country {
         return GameStateAccess.getCountryByUserId(this.userService.getUserId())!!;
     }
 
-    isOccupied(tile: Tile): boolean {
+    private isOccupied(tile: Tile): boolean {
         return this.getCityPositions().findIndex(t => t.id === tile.identifier.id) !== -1;
     }
 
-    getCityPositions(): TileIdentifier[] {
+    private getCityPositions(): TileIdentifier[] {
         return [];
     }
 
-    availableSettlers(country: Country): number | null {
+    private availableSettlers(country: Country): number | null {
         return country.settlers;
     }
 
-    validInfluence(tile: Tile, country: Country): boolean {
+    private validInfluence(tile: Tile, country: Country): boolean {
         if (tile.owner?.country.id === country.identifier.id) {
             return true;
         }
@@ -82,7 +80,8 @@ export class CityCreationService {
             e => e,
             0,
         );
-        if (maxForeignInfluence < this.cityTileMaxForeignInfluence) {
+        const cityTileMaxForeignInfluence = GameSessionStateAccess.getGameConfig().cityTileMaxForeignInfluence;
+        if (maxForeignInfluence < cityTileMaxForeignInfluence) {
             return true;
         }
         const maxOwnInfluence = getMaxOrDefault(

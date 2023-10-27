@@ -1,6 +1,6 @@
-import {CountryIdentifier} from "./country";
 import {ProvinceIdentifier} from "./province";
 import {CityIdentifier} from "./city";
+import {CountryIdentifier} from "./country";
 
 export interface TileIdentifier {
     id: string,
@@ -18,7 +18,7 @@ export interface Tile {
         city: CityIdentifier | null
     } | null,
     influences: TileInfluence[],
-    content: ScoutTileContent[]  // todo: fill, display, ...
+    content: ScoutTileContent[]
 }
 
 export interface TileInfluence {
@@ -30,5 +30,5 @@ export interface TileInfluence {
 
 
 export interface ScoutTileContent {
-    country: CountryIdentifier,
+    country: CountryIdentifier
 }

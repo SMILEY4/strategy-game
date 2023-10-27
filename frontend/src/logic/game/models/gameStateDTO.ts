@@ -54,24 +54,28 @@ export interface CityDTO {
         tier: SettlementTierString
     },
     dataTier3: null | {
-        buildings: ({
-            type: BuildingTypeString,
-            tile: null | {
-                tileId: string,
-                q: number,
-                r: number,
-            },
-            active: boolean
-        })[],
-        productionQueue: ({
-            type: string,
-            entryId: string,
-            progress: number,
-            buildingType: null | BuildingTypeString
-        })[],
+        buildings: BuildingDTO[],
+        productionQueue: ProductionQueueEntryDTO[],
         size: number,
         growthProgress: number,
     }
+}
+
+export interface BuildingDTO {
+    type: BuildingTypeString,
+    tile: null | {
+        tileId: string,
+        q: number,
+        r: number,
+    },
+    active: boolean
+}
+
+export interface ProductionQueueEntryDTO {
+    entryId: string,
+    progress: number,
+    type: "building" | "settler",
+    buildingType: null | BuildingTypeString
 }
 
 export interface TileDTO {

@@ -17,7 +17,11 @@ import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
 import {formatPercentage, joinClassNames} from "../../../../components/utils";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
-import {useCancelProductionQueueEntry, useUpgradeSettlementTier} from "../../../../hooks/city";
+import {
+    useCancelProductionQueueEntry,
+    useUpgradeSettlementTier,
+    useValidateUpgradeSettlementTier,
+} from "../../../../hooks/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
@@ -56,7 +60,9 @@ export function CityWindow(props: CityWindowProps): ReactElement {
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();
-    const [canUpgradeTier, upgradeValidationResult, upgradeSettlementTier] = useUpgradeSettlementTier(city.identifier, city.tier);
+
+    const [validUpgradeSettlement, reasonsValidationsUpgrade] = useValidateUpgradeSettlementTier(city);
+    const [, , upgradeSettlementTier] = useUpgradeSettlementTier(city);
 
     return (
         <DecoratedWindow
@@ -80,22 +86,22 @@ export function CityWindow(props: CityWindowProps): ReactElement {
                     />
 
                     <BasicTooltip
-                        enabled={!canUpgradeTier}
+                        enabled={!validUpgradeSettlement}
                         delay={500}
                         content={
                             <ul>
-                                {upgradeValidationResult.map(e => (<li>{e}</li>))}
+                                {reasonsValidationsUpgrade.map(e => (<li>{e}</li>))}
                             </ul>
                         }
                     >
-                        <ButtonPrimary blue disabled={!canUpgradeTier} onClick={() => upgradeSettlementTier()}>
-                            Upgrade Tier
+                        <ButtonPrimary blue disabled={!validUpgradeSettlement} onClick={() => upgradeSettlementTier()}>
+                            {city.tier.nextTier === null
+                                ? "Upgrade Tier"
+                                : "Upgrade Tier to " + city.tier.nextTier.displayString}
                         </ButtonPrimary>
                     </BasicTooltip>
 
                     <CityPopulationSection data={city}/>
-
-                    <CityResourceSection data={city}/>
 
                     <CityContentSection data={city}/>
 
@@ -171,23 +177,6 @@ function CityPopulationSection(props: { data: City }): ReactElement {
 }
 
 
-function CityResourceSection(props: { data: City }): ReactElement {
-    return (
-        <>
-            <Spacer size="m"/>
-            <Header2 centered>Resources</Header2>
-            <Divider/>
-
-            <HBox gap_s top left wrap>
-                {props.data.resources.map(resource => (
-                    <ResourceBalanceBox data={resource}/>
-                ))}
-            </HBox>
-        </>
-    );
-}
-
-
 function CityContentSection(props: { data: City }): ReactElement {
     return (
         <>
@@ -206,9 +195,12 @@ function CityContentSection(props: { data: City }): ReactElement {
 
 
 function CityProductionQueue(props: { data: City }): ReactElement {
-    const entry: ProductionQueueEntry = props.data.productionQueue.length === 0
-        ? {id: "-", name: "-", progress: 0}
-        : props.data.productionQueue[0];
+    const entry = props.data.productionQueue.length === 0 ? null : props.data.productionQueue[0];
+    const entryData = {
+        id: entry === null ? "-" : entry.id,
+        name: entry === null ? "-" : getProductionQueueEntryName(entry),
+        progress: entry === null ? 0 : entry.progress,
+    };
     const cancelEntry = useCancelProductionQueueEntry(props.data.identifier);
     const openProductionWindow = useOpenCityProductionWindow();
     return (
@@ -216,18 +208,29 @@ function CityProductionQueue(props: { data: City }): ReactElement {
             <ButtonPrimary square onClick={() => openProductionWindow(props.data.identifier)}>
                 <FiPlus/>
             </ButtonPrimary>
-            <ProgressBar progress={entry.progress} className="production_queue__progress">
-                <Text relative>{entry.name}</Text>
+
+            <ProgressBar progress={entryData.progress} className="production_queue__progress">
+                <Text relative>{entryData.name}</Text>
             </ProgressBar>
+
             <ButtonPrimary
                 square round small
                 disabled={props.data.productionQueue.length === 0}
-                onClick={() => cancelEntry(entry.id)}
+                onClick={() => cancelEntry(entryData.id)}
             >
                 <CgClose/>
             </ButtonPrimary>
         </HBox>
     );
+}
+
+function getProductionQueueEntryName(entry: ProductionQueueEntry): string {
+    switch (entry.type) {
+        case "settler":
+            return "Settler";
+        case "building":
+            return entry.buildingData!.type.displayString;
+    }
 }
 
 function CityContentList(props: { data: City }): ReactElement {

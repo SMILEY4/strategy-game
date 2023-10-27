@@ -110,7 +110,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 <>
                     <Header4 onLight>{"Add to production queue"}</Header4>
                     <Spacer size="s"/>
-                    <Text onLight>construct <i>{cmd.entry.name}</i></Text>
+                    <Text onLight>construct <i>{getProductionQueueAddCommandName(cmd)}</i></Text>
                     <Text onLight>in city <i>{cmd.city.name}</i></Text>
                 </>
             );
@@ -144,6 +144,16 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
         );
     }
 
+}
+
+function getProductionQueueAddCommandName(cmd: ProductionQueueAddCommand): string {
+    switch (cmd.entry.type) {
+        case "building":
+            return cmd.entry.buildingData!.type.displayString;
+        case "settler":
+            return "Settler";
+
+    }
 }
 
 function useCommandCancel() {

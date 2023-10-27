@@ -10,7 +10,6 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {joinClassNames} from "../../../../components/utils";
-import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import "./cityProductionWindow.less";
 import {useAddProductionEntry, useAvailableProductionEntries} from "../../../../hooks/city";
 import {CityIdentifier, ProductionEntry} from "../../../../../models/city";
@@ -39,7 +38,7 @@ export interface CityProductionWindowProps {
 
 export function CityProductionWindow(props: CityProductionWindowProps): ReactElement {
 
-    const entries = useAvailableProductionEntries(props.city.id);
+    const entries = useAvailableProductionEntries();
     const addEntry = useAddProductionEntry(props.city);
 
 
@@ -79,20 +78,26 @@ function ConstructionEntry(props: { entry: ProductionEntry, onAdd: () => void })
             background={
                 <div
                     className={"construction-entry-background"}
-                    style={{backgroundImage: "url('/icons/buildings/" + props.entry.icon + "')"}}
+                    style={{backgroundImage: "url('" + props.entry.icon + "')"}}
                 />
             }
             simpleBorder paddingSmall blue
         >
             <HBox centerVertical spaceBetween>
-                <BuildingInfoTooltip>
-                    <Text>{props.entry.name}</Text>
-                </BuildingInfoTooltip>
-                <BuildingInfoTooltip>
-                    <ButtonPrimary blue small disabled={props.entry.disabled} onClick={props.onAdd}>Add</ButtonPrimary>
-                </BuildingInfoTooltip>
+                <Text>{getName(props.entry)}</Text>
+                <ButtonPrimary blue small disabled={props.entry.disabled} onClick={props.onAdd}>Add</ButtonPrimary>
             </HBox>
         </DecoratedPanel>
     );
+}
+
+function getName(entry: ProductionEntry): string {
+    switch (entry.type) {
+        case "building":
+            return entry.buildingData!.type.displayString;
+        case "settler":
+            return "Settler";
+
+    }
 }
 

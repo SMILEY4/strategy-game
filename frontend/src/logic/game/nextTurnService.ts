@@ -1,4 +1,4 @@
-import {CityDTO, GameStateDTO, TileDTO} from "./models/gameStateDTO";
+import {BuildingDTO, CityDTO, GameStateDTO, ProductionQueueEntryDTO, TileDTO} from "./models/gameStateDTO";
 import {Tile} from "../../models/tile";
 import {orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
@@ -6,7 +6,7 @@ import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
 import {Province, ProvinceIdentifier} from "../../models/province";
-import {City, CityIdentifier} from "../../models/city";
+import {Building, City, CityIdentifier, ProductionQueueEntry} from "../../models/city";
 import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
 
@@ -21,6 +21,9 @@ export class NextTurnService {
 
     handleNextTurn(game: GameStateDTO) {
         console.log("handle next turn");
+        // todo: possible performance optimisation:
+        //  object pools for tiles, cities, ...
+        //  move old game state to pool instead of gc -> allocate new state from pool
         GameStateAccess.setGameState({
             ...GameStateAccess.getGameState(),
             countries: this.buildCountries(game),
@@ -118,31 +121,49 @@ export class NextTurnService {
                     size: orNull(cityDTO.dataTier3?.size),
                     progress: orNull(cityDTO.dataTier3?.growthProgress),
                 },
-                resources: [],
                 productionQueue: cityDTO.dataTier3
-                    ? cityDTO.dataTier3.productionQueue.map(queueEntryDTO => {
-                        return {
-                            id: queueEntryDTO.entryId,
-                            name: queueEntryDTO.type + " - " + queueEntryDTO.buildingType,
-                            progress: queueEntryDTO.progress,
-                        };
-                    })
+                    ? cityDTO.dataTier3.productionQueue.map(queueEntryDTO => this.buildProductionEntry(queueEntryDTO))
                     : [],
                 buildings: cityDTO.dataTier3
-                    ? cityDTO.dataTier3.buildings.map(buildingDTO => {
-                        return {
-                            type: BuildingType.fromString(buildingDTO.type),
-                            active: buildingDTO.active,
-                            tile: buildingDTO.tile ? {
-                                id: buildingDTO.tile.tileId,
-                                q: buildingDTO.tile.q,
-                                r: buildingDTO.tile.r,
-                            } : null,
-                        };
-                    })
+                    ? cityDTO.dataTier3.buildings.map(buildingDTO => this.buildBuilding(buildingDTO))
                     : [],
             };
         });
+    }
+
+    private buildProductionEntry(entryDTO: ProductionQueueEntryDTO): ProductionQueueEntry {
+        switch (entryDTO.type) {
+            case "settler":
+                return {
+                    id: entryDTO.entryId,
+                    progress: entryDTO.progress,
+                    type: "settler",
+                    buildingData: null,
+                    settlerData: {},
+                };
+            case "building":
+                return {
+                    id: entryDTO.entryId,
+                    progress: entryDTO.progress,
+                    type: "building",
+                    buildingData: {
+                        type: BuildingType.fromString(entryDTO.buildingType!),
+                    },
+                    settlerData: null,
+                };
+        }
+    }
+
+    private buildBuilding(buildingDTO: BuildingDTO): Building {
+        return {
+            type: BuildingType.fromString(buildingDTO.type),
+            active: buildingDTO.active,
+            tile: buildingDTO.tile ? {
+                id: buildingDTO.tile.tileId,
+                q: buildingDTO.tile.q,
+                r: buildingDTO.tile.r,
+            } : null,
+        }
     }
 
     private buildTiles(game: GameStateDTO): Tile[] {
@@ -170,7 +191,7 @@ export class NextTurnService {
                     };
                 }) : []),
                 content: orDefault(tileDTO.dataTier2?.content, [])
-                    .filter(contentDTO => contentDTO.type === "scout")
+                    .filter(contentDTO => contentDTO.type === "scout") // todo: currently only scout
                     .map(scoutDTO => ({
                         country: this.findCountry(game, scoutDTO.countryId!!),
                     })),

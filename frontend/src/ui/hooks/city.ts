@@ -1,11 +1,10 @@
-import {CityIdentifier, ProductionEntry} from "../../models/city";
+import {City, CityIdentifier, ProductionEntry} from "../../models/city";
 import {AppCtx} from "../../logic/appContext";
 import {Tile} from "../../models/tile";
-import {SettlementTier} from "../../models/settlementTier";
+import {BuildingType} from "../../models/buildingType";
 
 export function useCreateSettlement(tile: Tile, name: string | null, asColony: boolean): [boolean, string[], () => void] {
     const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
-
     const [possible, reasons] = useValidateCreateSettlement(tile, name, asColony);
 
     function perform() {
@@ -25,18 +24,21 @@ export function useValidateCreateSettlement(tile: Tile | null, name: string | nu
     }
 }
 
-
-export function useUpgradeSettlementTier(city: CityIdentifier, currentTier: SettlementTier): [boolean, string[], () => void] {
-    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
-
-    const validationResult: string[] = []; // todo: validate
-    const possible = validationResult.length === 0;
+export function useUpgradeSettlementTier(city: City): [boolean, string[], () => void] {
+    const upgradeService = AppCtx.di.get(AppCtx.DIQ.CityUpgradeService);
+    const [possible, reasons] = useValidateUpgradeSettlementTier(city);
 
     function perform() {
-        commandService.upgradeSettlementTier(city, currentTier.level, currentTier.level + 1);
+        upgradeService.upgrade(city)
     }
 
-    return [possible, validationResult, perform];
+    return [possible, reasons, perform];
+}
+
+export function useValidateUpgradeSettlementTier(city: City): [boolean, string[]] {
+    const upgradeService = AppCtx.di.get(AppCtx.DIQ.CityUpgradeService);
+    const result = upgradeService.validate(city);
+    return [result.length === 0, result];
 }
 
 
@@ -56,23 +58,26 @@ export function useAddProductionEntry(city: CityIdentifier) {
 }
 
 
-export function useAvailableProductionEntries(cityId: string): ProductionEntry[] {
-    return [
-        {
-            name: "FARM",
-            icon: "farm.png",
+export function useAvailableProductionEntries(): ProductionEntry[] {
+    const options: ProductionEntry[] = [];
+    options.push({
+        type: "settler",
+        icon: "/icons/buildings/farm.png",
+        disabled: false,
+        buildingData: null,
+        settlerData: {},
+    });
+    BuildingType.getValues().forEach(buildingType => {
+        options.push({
+            type: "building",
             disabled: false,
-        },
-        {
-            name: "WOODCUTTER",
-            icon: "Woodcutter.png",
-            disabled: false,
-        },
-        {
-            name: "SETTLER",
-            icon: "Woodcutter.png",
-            disabled: false,
-        },
-    ];
+            icon: buildingType.icon,
+            buildingData: {
+                type: buildingType,
+            },
+            settlerData: null,
+        });
+    });
+    return options;
 }
 
