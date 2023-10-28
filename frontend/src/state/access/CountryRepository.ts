@@ -1,48 +1,27 @@
 import {RemoteGameStateRepository} from "./RemoteGameStateRepository";
 import {Country} from "../../models/country";
 import {RemoteGameStateStore} from "../remote/RemoteGameStore";
+import {CommandRepository} from "./CommandRepository";
+import {Command} from "../../models/command";
+import {CommandType} from "../../models/commandType";
+import {LocalCommandStateStore} from "../local/LocalCommandStore";
 
 export class CountryRepository {
 
     private readonly remoteRepository: RemoteGameStateRepository;
+    private readonly commandRepository: CommandRepository;
 
-    constructor(remoteRepository: RemoteGameStateRepository) {
+    constructor(remoteRepository: RemoteGameStateRepository, commandRepository: CommandRepository) {
         this.remoteRepository = remoteRepository;
-    }
-
-    public getCountryOrNull(countryId: string): Country | null {
-        const country = this.remoteRepository.getGameState().countries.find(c => c.identifier.id === countryId);
-        if (country) {
-            return country;
-        } else {
-            return null;
-        }
-    }
-
-    public getCountry(countryId: string): Country {
-        const country = this.remoteRepository.getGameState().countries.find(c => c.identifier.id === countryId);
-        if (country) {
-            return country;
-        } else {
-            throw new Error("No country with id " + countryId)
-        }
-    }
-
-    public getCountryByUserIdOrNull(userId: string): Country | null {
-        const country = this.remoteRepository.getGameState().countries.find(c => c.player.userId === userId);
-        if (country) {
-            return country;
-        } else {
-            return null;
-        }
+        this.commandRepository = commandRepository;
     }
 
     public getCountryByUserIdOr(userId: string): Country {
         const country = this.remoteRepository.getGameState().countries.find(c => c.player.userId === userId);
         if (country) {
-            return country;
+            return CountryRepository.applyCommands(country, this.commandRepository.getCommands());
         } else {
-            throw new Error("No country with user-id " + userId)
+            throw new Error("No country with user-id " + userId);
         }
     }
 
@@ -50,21 +29,32 @@ export class CountryRepository {
 
 export namespace CountryRepository {
 
+    export function applyCommands(country: Country, commands: Command[]): Country {
+        const usedAmountSettlers = commands.filter(cmd => cmd.type === CommandType.CITY_CREATE).length;
+        return {
+            ...country,
+            settlers: country.settlers === null ? null : country.settlers - usedAmountSettlers,
+        };
+    }
+
     export function useCountryById(countryId: string): Country {
+        const commands = LocalCommandStateStore.useState(state => state.commands);
         const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.identifier.id === countryId));
         if (country) {
-            return country;
+            return CountryRepository.applyCommands(country, commands);
         } else {
-            throw new Error("No country with id " + countryId)
+            throw new Error("No country with id " + countryId);
         }
     }
 
     export function useCountryByUserId(userId: string): Country {
+        console.log("REMOTE",RemoteGameStateStore.useState(s => s))
+        const commands = LocalCommandStateStore.useState(state => state.commands);
         const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.player.userId === userId));
         if (country) {
-            return country;
+            return CountryRepository.applyCommands(country, commands);
         } else {
-            throw new Error("No country with user " + userId)
+            throw new Error("No country with user " + userId);
         }
     }
 

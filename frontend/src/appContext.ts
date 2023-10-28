@@ -192,7 +192,7 @@ export const AppCtx: AppCtxDef = {
     ),
     CountryRepository: diContext.register(
         "CountryRepository",
-        () => new CountryRepository(AppCtx.RemoteGameStateRepository()),
+        () => new CountryRepository(AppCtx.RemoteGameStateRepository(), AppCtx.CommandRepository()),
     ),
     ProvinceRepository: diContext.register(
         "ProvinceRepository",
