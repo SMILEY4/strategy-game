@@ -28,6 +28,9 @@ export class TerrainRenderLayer extends BaseRenderLayer {
 
     public render(camera: Camera, renderer: GLRenderer): void {
 
+        // todo: possible optimisation
+        //  - use instanced rendering -> share single value for whole hex-tile
+
         this.tileset.bind(0);
         this.program.use();
 

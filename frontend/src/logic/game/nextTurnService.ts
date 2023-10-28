@@ -21,7 +21,6 @@ export class NextTurnService {
 
 
     handleNextTurn(game: GameStateDTO) {
-        console.log("handle next turn");
         // todo: possible performance optimisation:
         //  object pools for tiles, cities, ...
         //  move old game state to pool instead of gc -> allocate new state from pool
@@ -206,7 +205,8 @@ export class NextTurnService {
                     };
                 }) : []),
                 content: orDefault(tileDTO.dataTier2?.content, [])
-                    .filter(contentDTO => contentDTO.type === "scout") // todo: currently only scout
+                    // todo: currently only handles scouts
+                    .filter(contentDTO => contentDTO.type === "scout")
                     .map(scoutDTO => ({
                         country: this.findCountry(game, scoutDTO.countryId!!),
                     })),

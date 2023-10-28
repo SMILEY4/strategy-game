@@ -10,6 +10,7 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {CameraStateAccess} from "../../../../../state/access/CameraStateAccess";
 import {roundToPlaces} from "../../../../../shared/utils";
+import {AppCtx} from "../../../../../logic/appContext";
 
 export function useOpenDevWindow() {
     const WINDOW_ID = "menubar-window";
@@ -50,7 +51,8 @@ export function DevWindow(props: DevWindowProps): ReactElement {
                 <Header1>Debug</Header1>
 
                 <InsetPanel>
-                    <KeyTextValuePair name={"Camera.Pos"} value={roundToPlaces(camera.x, 4) + ", " + roundToPlaces(camera.y, 4)}/>
+                    <KeyTextValuePair name={"Camera.Pos"}
+                                      value={roundToPlaces(camera.x, 4) + ", " + roundToPlaces(camera.y, 4)}/>
                     <KeyTextValuePair name={"Camera.Zoom"} value={roundToPlaces(camera.zoom, 4)}/>
                 </InsetPanel>
 
@@ -67,8 +69,9 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 }
 
 function useWebGlContext() {
+    const canvasHandle = AppCtx.di.get(AppCtx.DIQ.CanvasHandle);
     return [
-        () => undefined, // TODO (AppConfig.debugLooseWebglContext(),)
-        () => undefined, // TODO (AppConfig.debugRestoreWebglContext(),)
+        () => canvasHandle.debugLooseWebglContext(),
+        () => canvasHandle.debugRestoreWebglContext(),
     ];
 }

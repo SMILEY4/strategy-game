@@ -18,7 +18,7 @@ export type BuildingTypeString = "FARM"
 
 export class BuildingType {
 
-    // todo: icons
+    // todo: create missing icons
     public static readonly FARM = new BuildingType("FARM", "Farm", "/icons/buildings/farm.png");
     public static readonly FISHERS_HUT = new BuildingType("FISHERS_HUT", "Fishers Hut", "/icons/buildings/farm.png");
     public static readonly MINE = new BuildingType("MINE", "Mine", "/icons/buildings/farm.png");

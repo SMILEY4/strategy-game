@@ -1,5 +1,4 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
-import {AppConfig} from "../../../../main";
 import "./canvas.css";
 import {AppCtx} from "../../../../logic/appContext";
 

@@ -197,7 +197,7 @@ export namespace TerrainChunkBuilder {
     }
 
     function appendTileVertices(cq: number, cr: number, tile: Tile, border: BorderData[], cursor: MixedArrayBufferCursor) {
-        // todo: "precompute" possible values per tile (border-colors, tile-positions, ...) and share, maybe extract common-data into appendTileCommonVertex (or sth)
+        // todo optimization: "precompute" possible values per tile (border-colors, tile-positions, ...) and share, maybe extract common-data into appendTileCommonVertex (or sth)
         // center
         appendTileCenterVertex(cq, cr, tile, cursor);
         // triangle a - corner a,b
