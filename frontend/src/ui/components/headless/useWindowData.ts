@@ -15,7 +15,7 @@ export function useWindowStack() {
 export function useWindowData(id: string) {
     const data = WindowStore.useState(state => state.windows).find(w => w.id === id);
     if (!data) {
-        throw Error("Could not find window with id " + id);
+        throw new Error("Could not find window with id " + id);
     }
     return {
         elementProps: {
@@ -47,7 +47,7 @@ export function useWindow(id: string) {
     const data = WindowStore.useState(state => state.windows.find(w => w.id === id));
 
     if (!data) {
-        throw Error("Could not find window with id " + id);
+        throw new Error("Could not find window with id " + id);
     }
 
     function filterCanDrag(e: MouseEvent<any>): boolean {

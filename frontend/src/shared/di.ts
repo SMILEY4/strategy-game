@@ -60,18 +60,3 @@ export class DIContext {
     }
 
 }
-
-const ctx = new DIContext();
-
-export const DI: any = {
-    GameRenderer: ctx.register(
-        "GameRenderer",
-        () => new GameRenderer(DI.CanvasHandle()),
-    ),
-    CanvasHandle: ctx.register(
-        "CanvasHandle",
-        () => new CanvasHandle(),
-    ),
-};
-
-ctx.initialize();

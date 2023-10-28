@@ -12,7 +12,6 @@ export class Optional<T> {
         return new Optional<T>(null);
     }
 
-
     private readonly value: T | null | undefined;
 
     constructor(value: T | null | undefined) {

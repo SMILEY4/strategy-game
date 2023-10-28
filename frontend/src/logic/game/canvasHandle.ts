@@ -9,7 +9,7 @@ export class CanvasHandle {
         if (canvas) {
             const gl = canvas.getContext("webgl2");
             if (!gl) {
-                throw Error("webgl2 not supported");
+                throw new Error("webgl2 not supported");
             }
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             this.gl = gl;

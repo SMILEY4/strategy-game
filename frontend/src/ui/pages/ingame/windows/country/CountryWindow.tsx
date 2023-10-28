@@ -13,7 +13,7 @@ import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ProvinceEntry} from "../common/ProvinceEntry";
 import {CityEntry} from "../common/CityEntry";
 import {Country, CountryIdentifier} from "../../../../../models/country";
-import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
+import {CountryRepository} from "../../../../../state/access/CountryRepository";
 
 
 export function useOpenCountryWindow() {
@@ -40,7 +40,7 @@ export interface CountryWindowProps {
 
 export function CountryWindow(props: CountryWindowProps): ReactElement {
 
-    const country = GameStateAccess.useCountryById(props.countryId);
+    const country = CountryRepository.useCountryById(props.countryId);
     const openProvinceWindow = useOpenProvinceWindow();
     const openCityWindow = useOpenCityWindow();
 

@@ -1,6 +1,8 @@
-import {SetState} from "../../../shared/zustandUtils";
+import {SetState} from "../../shared/zustandUtils";
 import create from "zustand";
-import {GameConfig} from "../../../models/gameConfig";
+import {GameConfig} from "../../models/gameConfig";
+import {GameSessionState} from "../../models/gameSessionState";
+import {GameTurnState} from "../../models/gameTurnState";
 
 export namespace LocalGameSessionStore {
 
@@ -17,17 +19,17 @@ export namespace LocalGameSessionStore {
     };
 
     interface StateActions {
-        setState: (state: "none" | "loading" | "playing" | "error") => void;
-        setTurnState: (state: "playing" | "waiting") => void;
+        setState: (state: GameSessionState) => void;
+        setTurnState: (state: GameTurnState) => void;
         setConfig: (config: GameConfig | null) => void;
     }
 
     function stateActions(set: SetState<State>): StateActions {
         return {
-            setState: (state: "none" | "loading" | "playing" | "error") => set(() => ({
+            setState: (state: GameSessionState) => set(() => ({
                 state: state,
             })),
-            setTurnState: (state: "playing" | "waiting") => set(() => ({
+            setTurnState: (state: GameTurnState) => set(() => ({
                 turnState: state,
             })),
             setConfig: (config: GameConfig | null) => set(() => ({

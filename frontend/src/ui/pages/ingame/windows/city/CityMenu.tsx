@@ -16,7 +16,6 @@ import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary
 import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
 import {formatPercentage, joinClassNames} from "../../../../components/utils";
-import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 import {
     useCancelProductionQueueEntry,
     useUpgradeSettlementTier,
@@ -27,9 +26,9 @@ import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindo
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import {Building, City, CityIdentifier, ProductionQueueEntry} from "../../../../../models/city";
 import {useOpenTileWindow} from "../tile/TileWindow";
-import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import "./cityMenu.less";
+import {CityRepository} from "../../../../../state/access/CityRepository";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -56,7 +55,7 @@ export interface CityWindowProps {
 
 export function CityWindow(props: CityWindowProps): ReactElement {
 
-    const city = GameStateAccess.useCityById(props.cityId);
+    const city = CityRepository.useCityById(props.cityId);
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();

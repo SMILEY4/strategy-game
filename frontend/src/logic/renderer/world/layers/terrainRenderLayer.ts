@@ -4,20 +4,25 @@ import {BaseRenderLayer} from "./baseRenderLayer";
 import {GLProgram} from "../../common/glProgram";
 import {GLUniformType} from "../../common/glTypes";
 import {GLTexture} from "../../common/glTexture";
-import {GameStateAccess} from "../../../../state/access/GameStateAccess";
 import {TerrainChunk} from "../data/terrainChunk";
+import {MapModeRepository} from "../../../../state/access/MapModeRepository";
+import {TileRepository} from "../../../../state/access/TileRepository";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export class TerrainRenderLayer extends BaseRenderLayer {
 
     public static readonly LAYER_ID = 0;
 
+    private readonly mapModeRepository: MapModeRepository;
+    private readonly tileRepository: TileRepository;
     private readonly program: GLProgram;
     private readonly tileset: GLTexture;
     private chunks: TerrainChunk[] = [];
 
-    constructor(program: GLProgram, tileset: GLTexture) {
+    constructor(mapModeRepository: MapModeRepository, tileRepository: TileRepository, program: GLProgram, tileset: GLTexture) {
         super(TerrainRenderLayer.LAYER_ID);
+        this.mapModeRepository = mapModeRepository;
+        this.tileRepository = tileRepository;
         this.program = program;
         this.tileset = tileset;
     }
@@ -36,7 +41,7 @@ export class TerrainRenderLayer extends BaseRenderLayer {
 
         this.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
         this.program.setUniform("u_texture", GLUniformType.SAMPLER_2D, this.tileset);
-        this.program.setUniform("u_mapMode", GLUniformType.INT, GameStateAccess.getMapMode().id);
+        this.program.setUniform("u_mapMode", GLUniformType.INT, this.mapModeRepository.getMapMode().id);
         this.program.setUniform("u_selectedTile", GLUniformType.INT_VEC2, this.getSelectedTileValue());
         this.program.setUniform("u_hoverTile", GLUniformType.INT_VEC2, this.getHoverTileValue());
 
@@ -48,7 +53,7 @@ export class TerrainRenderLayer extends BaseRenderLayer {
     }
 
     private getSelectedTileValue(): [number, number] {
-        const selectedTile = GameStateAccess.getSelectedTile();
+        const selectedTile = this.tileRepository.getSelectedTile();
         if (selectedTile) {
             return [selectedTile.q, selectedTile.r];
         } else {
@@ -57,7 +62,7 @@ export class TerrainRenderLayer extends BaseRenderLayer {
     }
 
     private getHoverTileValue(): [number, number] {
-        const hoverTile = GameStateAccess.getHoverTile();
+        const hoverTile = this.tileRepository.getHoverTile();
         if (hoverTile) {
             return [hoverTile.q, hoverTile.r];
         } else {

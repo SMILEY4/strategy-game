@@ -8,12 +8,12 @@ import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../components/text/Text";
 import {useConnectGameSession} from "../../hooks/gameSessions";
 import "./pageInGame.scoped.less";
-import {GameSessionStateAccess} from "../../../state/access/GameSessionStateAccess";
+import {GameSessionStateRepository} from "../../../state/access/GameSessionStateRepository";
 
 const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
-    const currentState = GameSessionStateAccess.useGameState();
+    const currentState = GameSessionStateRepository.useGameSessionState();
     const loadGame = useLoadGame();
 
     useEffect(() => {

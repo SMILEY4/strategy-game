@@ -3,15 +3,6 @@ import {Tile} from "../../models/tile";
 
 export namespace BorderBuilder {
 
-    // const NEIGHBOUR_OFFSETS = [
-    //     [+1, +0], // right
-    //     [+0, +1], // top right
-    //     [-1, +1], // top left
-    //     [-1, +0], // left
-    //     [+0, -1], // bottom left
-    //     [+1, -1], // bottom right
-    // ];
-
     const NEIGHBOUR_OFFSETS = [
         [+1, +0], // right
         [+0, +1], // top right

@@ -12,9 +12,9 @@ import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {CityEntry} from "../common/CityEntry";
 import {Province, ProvinceIdentifier} from "../../../../../models/province";
-import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
+import {ProvinceRepository} from "../../../../../state/access/ProvinceRepository";
 
 
 export function useOpenProvinceWindow() {
@@ -41,7 +41,7 @@ export interface ProvinceWindowProps {
 
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
-    const province = GameStateAccess.useProvinceById(props.provinceId);
+    const province = ProvinceRepository.useProvinceById(props.provinceId);
     const openCountryWindow = useOpenCountryWindow();
     const openCityWindow = useOpenCityWindow();
 

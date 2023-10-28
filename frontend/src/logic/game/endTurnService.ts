@@ -7,23 +7,25 @@ import {
     ProductionQueueCancelCommand,
     UpgradeSettlementCommand,
 } from "../../models/command";
-import {CommandStateAccess} from "../../state/access/CommandStateAccess";
+import {CommandRepository} from "../../state/access/CommandRepository";
 
 export class EndTurnService {
 
     private readonly gameSessionClient: GameSessionClient;
+    private readonly commandRepository: CommandRepository;
 
-    constructor(gameSessionClient: GameSessionClient) {
+    constructor(gameSessionClient: GameSessionClient, commandRepository: CommandRepository) {
         this.gameSessionClient = gameSessionClient;
+        this.commandRepository = commandRepository;
     }
 
-    endTurn() {
-        const commands = CommandStateAccess.getCommands();
+    public endTurn() {
+        const commands = this.commandRepository.getCommands();
         this.gameSessionClient.sendMessage(
             "submit-turn",
             {commands: commands.map(c => this.buildPayloadCommand(c))},
         );
-        CommandStateAccess.setCommands([]);
+        this.commandRepository.setCommands([]);
     }
 
     private buildPayloadCommand(command: Command): object {

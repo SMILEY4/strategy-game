@@ -8,16 +8,22 @@ import {
     ProductionQueueCancelCommand,
     UpgradeSettlementCommand,
 } from "../../models/command";
-import {CommandStateAccess} from "../../state/access/CommandStateAccess";
 import {SettlementTier} from "../../models/settlementTier";
+import {CommandRepository} from "../../state/access/CommandRepository";
 
 export class CommandService {
 
-    cancelCommand(id: string) {
-        CommandStateAccess.removeCommand(id);
+    private readonly commandRepository: CommandRepository;
+
+    constructor(commandRepository: CommandRepository) {
+        this.commandRepository = commandRepository;
     }
 
-    createSettlement(tile: TileIdentifier, name: string, asColony: boolean) {
+    public cancelCommand(id: string) {
+        this.commandRepository.removeCommand(id);
+    }
+
+    public createSettlement(tile: TileIdentifier, name: string, asColony: boolean) {
         const command: CreateSettlementCommand = {
             id: UID.generate(),
             type: "settlement.create",
@@ -25,10 +31,10 @@ export class CommandService {
             name: name,
             asColony,
         };
-        CommandStateAccess.addCommand(command);
+        this.commandRepository.addCommand(command);
     }
 
-    upgradeSettlementTier(settlement: CityIdentifier, currTier: SettlementTier, tgtTier: SettlementTier) {
+    public upgradeSettlementTier(settlement: CityIdentifier, currTier: SettlementTier, tgtTier: SettlementTier) {
         const command: UpgradeSettlementCommand = {
             id: UID.generate(),
             type: "settlement.upgrade",
@@ -36,36 +42,36 @@ export class CommandService {
             currTier: currTier.level,
             tgtTier: tgtTier.level,
         };
-        CommandStateAccess.addCommand(command);
+        this.commandRepository.addCommand(command);
     }
 
-    addProductionQueueEntry(city: CityIdentifier, entry: ProductionEntry) {
+    public addProductionQueueEntry(city: CityIdentifier, entry: ProductionEntry) {
         const command: ProductionQueueAddCommand = {
             id: UID.generate(),
             type: "production-queue-entry.add",
             city: city,
             entry: entry,
         };
-        CommandStateAccess.addCommand(command);
+        this.commandRepository.addCommand(command);
     }
 
-    cancelProductionQueueEntry(city: CityIdentifier, entryId: string) {
+    public cancelProductionQueueEntry(city: CityIdentifier, entryId: string) {
         const command: ProductionQueueCancelCommand = {
             id: UID.generate(),
             type: "production-queue-entry.cancel",
             city: city,
             entryId: entryId,
         };
-        CommandStateAccess.addCommand(command);
+        this.commandRepository.addCommand(command);
     }
 
-    placeScout(tile: TileIdentifier) {
+    public placeScout(tile: TileIdentifier) {
         const command: PlaceScoutCommand = {
             id: UID.generate(),
             type: "scout.place",
             tile: tile,
         };
-        CommandStateAccess.addCommand(command);
+        this.commandRepository.addCommand(command);
     }
 
 }

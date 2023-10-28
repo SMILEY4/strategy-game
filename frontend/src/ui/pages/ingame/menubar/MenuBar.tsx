@@ -12,9 +12,9 @@ import {PiScrollBold} from "react-icons/pi";
 import {useOpenTileWindow} from "../windows/tile/TileWindow";
 import "./menubar.scoped.less";
 import {Country} from "../../../../models/country";
-import {GameStateAccess} from "../../../../state/access/GameStateAccess";
-import {GameSessionStateAccess} from "../../../../state/access/GameSessionStateAccess";
 import {AppCtx} from "../../../../appContext";
+import {GameSessionStateRepository} from "../../../../state/access/GameSessionStateRepository";
+import {CountryRepository} from "../../../../state/access/CountryRepository";
 
 export function MenuBar(): ReactElement {
 
@@ -63,13 +63,13 @@ export function MenuBar(): ReactElement {
 
 function usePlayerCountry(): Country {
     const userId = AppCtx.UserService().getUserId();
-    return GameStateAccess.useCountryByUserId(userId);
+    return CountryRepository.useCountryByUserId(userId);
 }
 
 function useEndTurn(): [boolean, () => void] {
     const endTurnService = AppCtx.EndTurnService();
-    const disabled = GameSessionStateAccess.useTurnState() === "waiting";
-    const setTurnState = GameSessionStateAccess.useSetTurnState();
+    const disabled = GameSessionStateRepository.useGameTurnState() === "waiting";
+    const setTurnState = GameSessionStateRepository.useSetGameTurnState();
 
     function endTurn() {
         endTurnService.endTurn();

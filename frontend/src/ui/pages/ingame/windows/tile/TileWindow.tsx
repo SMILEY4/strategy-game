@@ -15,10 +15,10 @@ import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {useValidateCreateSettlement} from "../../../../hooks/city";
-import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 import {Text} from "../../../../components/text/Text";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {AppCtx} from "../../../../../appContext";
+import {TileRepository} from "../../../../../state/access/TileRepository";
 
 
 export function useOpenTileWindow() {
@@ -57,9 +57,9 @@ export interface TileWindowProps {
 
 export function TileWindow(props: TileWindowProps): ReactElement {
 
-    const selectedTileIdentifier = GameStateAccess.useSelectedTile();
+    const selectedTileIdentifier = TileRepository.useSelectedTile();
     const tileIdentifier = props.identifier === null ? selectedTileIdentifier : props.identifier;
-    const tile = GameStateAccess.useTileById(tileIdentifier);
+    const tile = TileRepository.useTileById(tileIdentifier);
 
     const openCity = useOpenCityWindow();
     const openCountry = useOpenCountryWindow();
@@ -167,7 +167,8 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
             {(props.data.owner && props.data.owner.city !== null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        <LinkButton align="left"
+                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
                         (<LinkButton align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>)
                     </HBox>
                 </KeyValuePair>
@@ -175,7 +176,8 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
             {(props.data.owner && props.data.owner.city === null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        <LinkButton align="left"
+                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
                     </HBox>
                 </KeyValuePair>
             )}
@@ -184,7 +186,7 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
 }
 
 function usePlaceScout() {
-    const commandService = AppCtx.CommandService()
+    const commandService = AppCtx.CommandService();
     return (tile: TileIdentifier) => {
         commandService.placeScout(tile);
     };

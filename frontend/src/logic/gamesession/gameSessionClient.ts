@@ -18,7 +18,7 @@ export class GameSessionClient {
         this.messageHandler = messageHandler;
     }
 
-    list(): Promise<string[]> {
+    public list(): Promise<string[]> {
         return this.httpClient.get<string[]>({
             url: "/api/session/list",
             requireAuth: true,
@@ -26,7 +26,7 @@ export class GameSessionClient {
         });
     }
 
-    create(seed: string | null): Promise<string> {
+    public create(seed: string | null): Promise<string> {
         return this.httpClient.post<string>({
             url: "/api/session/create" + (seed ? ("?seed=" + seed) : ""),
             requireAuth: true,
@@ -35,7 +35,7 @@ export class GameSessionClient {
         });
     }
 
-    delete(gameId: string): Promise<void> {
+    public delete(gameId: string): Promise<void> {
         return this.httpClient.delete<void>({
             url: "/api/session/delete/" + gameId,
             requireAuth: true,
@@ -43,7 +43,7 @@ export class GameSessionClient {
         });
     }
 
-    join(gameId: string): Promise<void> {
+    public join(gameId: string): Promise<void> {
         return this.httpClient.post<void>({
             url: `/api/session/join/${gameId}`,
             requireAuth: true,
@@ -51,7 +51,7 @@ export class GameSessionClient {
         });
     }
 
-    connect(gameId: string): Promise<void> {
+    public connect(gameId: string): Promise<void> {
         return this.getWebsocketTicket().then(ticket => {
             return this.wsClient.open(`/api/session/${gameId}`, ticket, message => {
                 this.messageHandler.onMessage(message.type, message.payload);
@@ -59,15 +59,15 @@ export class GameSessionClient {
         });
     }
 
-    disconnect(): void {
+    public disconnect(): void {
         this.wsClient.close();
     }
 
-    sendMessage(type: string, payload: any): void {
+    public sendMessage(type: string, payload: any): void {
         this.wsClient.send(type, payload)
     }
 
-    config(): Promise<GameConfig> {
+    public config(): Promise<GameConfig> {
         return this.httpClient.get<GameConfig>({
             url: "/api/session/config",
             requireAuth: true,

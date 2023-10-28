@@ -5,8 +5,8 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 import {MapMode} from "../../../../../models/mapMode";
+import {MapModeRepository} from "../../../../../state/access/MapModeRepository";
 
 
 export function useOpenMapWindow() {
@@ -31,7 +31,7 @@ export interface MapWindowProps {
 
 export function MapWindow(props: MapWindowProps): ReactElement {
 
-    const [selectedMapMode, setMapMode] = GameStateAccess.useMapMode();
+    const [selectedMapMode, setMapMode] = MapModeRepository.useMapMode();
 
     return (
         <DecoratedWindow

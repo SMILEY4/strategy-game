@@ -1,64 +1,82 @@
 import {RenderWorld} from "./data/renderWorld";
 import {TerrainRenderLayer} from "./layers/terrainRenderLayer";
 import {TerrainChunkBuilder} from "./builders/terrainChunkBuilder";
-import {GameStateAccess} from "../../../state/access/GameStateAccess";
 import {EntityRenderLayer} from "./layers/entityRenderLayer";
 import {EntityDataBuilder} from "./builders/entityDataBuilder";
-import {CommandStateAccess} from "../../../state/access/CommandStateAccess";
 import {Camera} from "../common/camera";
+import {CommandRepository} from "../../../state/access/CommandRepository";
+import {CityRepository} from "../../../state/access/CityRepository";
+import {TileRepository} from "../../../state/access/TileRepository";
+import {CanvasHandle} from "../../game/canvasHandle";
 
 export class WorldUpdater {
 
-    private readonly world: RenderWorld;
-    private readonly gl: WebGL2RenderingContext;
+    private readonly commandRepository: CommandRepository;
+    private readonly cityRepository: CityRepository;
+    private readonly tileRepository: TileRepository;
+    private readonly canvasHandle: CanvasHandle;
+    private world: RenderWorld | null = null;
     private lastRevIdCommandState = "";
-
     private lastZoom = -999;
 
-    constructor(gl: WebGL2RenderingContext, world: RenderWorld) {
+    constructor(canvasHandle: CanvasHandle,
+                commandRepository: CommandRepository,
+                cityRepository: CityRepository,
+                tileRepository: TileRepository) {
+        this.canvasHandle = canvasHandle;
+        this.commandRepository = commandRepository;
+        this.cityRepository = cityRepository;
+        this.tileRepository = tileRepository;
+    }
+
+    public setWorld(world: RenderWorld) {
         this.world = world;
-        this.gl = gl;
     }
 
 
     public updateOnNextTurn(camera: Camera) {
-        this.rebuildTerrainLayer();
-        this.rebuildEntityLayer(camera);
+        if (this.world) {
+            this.rebuildTerrainLayer();
+            this.rebuildEntityLayer(camera);
+        }
     }
 
     public update(camera: Camera) {
-        if (CommandStateAccess.getRevId() !== this.lastRevIdCommandState) {
-            this.lastRevIdCommandState = CommandStateAccess.getRevId();
-        }
-        if (CommandStateAccess.getRevId() !== this.lastRevIdCommandState || this.lastZoom !== camera.getZoom()) {
-            this.rebuildEntityLayer(camera);
-            this.lastZoom = camera.getZoom();
+        if (this.world) {
+            const currentRevId = this.commandRepository.getRevId();
+            if (currentRevId !== this.lastRevIdCommandState) {
+                this.lastRevIdCommandState = currentRevId;
+            }
+            if (currentRevId !== this.lastRevIdCommandState || this.lastZoom !== camera.getZoom()) {
+                this.rebuildEntityLayer(camera);
+                this.lastZoom = camera.getZoom();
+            }
         }
     }
 
     private rebuildTerrainLayer() {
-        const layer = this.world?.getLayerById(TerrainRenderLayer.LAYER_ID) as TerrainRenderLayer;
+        const layer = this.world!.getLayerById(TerrainRenderLayer.LAYER_ID) as TerrainRenderLayer;
         layer.disposeWorldData();
         layer.setChunks(
             TerrainChunkBuilder.create(
-                GameStateAccess.getTileContainer(),
-                this.gl,
-                layer.getShaderAttributes()!!,
+                this.tileRepository.getTileContainer(),
+                this.canvasHandle.getGL(),
+                layer.getShaderAttributes(),
             ),
         );
     }
 
     private rebuildEntityLayer(camera: Camera) {
-        const layer = this.world?.getLayerById(EntityRenderLayer.LAYER_ID) as EntityRenderLayer;
+        const layer = this.world!.getLayerById(EntityRenderLayer.LAYER_ID) as EntityRenderLayer;
         layer.disposeWorldData();
         layer.setMesh(
             EntityDataBuilder.create(
-                this.gl,
+                this.canvasHandle.getGL(),
                 camera,
-                GameStateAccess.getTiles(),
-                GameStateAccess.getCities(),
-                CommandStateAccess.getCommands(),
-                layer.getShaderAttributes()!!,
+                this.tileRepository.getTiles(),
+                this.cityRepository.getCities(),
+                this.commandRepository.getCommands(),
+                layer.getShaderAttributes(),
                 layer.getTextRenderer(),
             ),
         );

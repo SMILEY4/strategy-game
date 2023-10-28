@@ -1,26 +1,28 @@
 import {UserClient} from "./userClient";
-import {UserStateAccess} from "../../state/access/UserStateAccess";
 import jwt_decode from "jwt-decode";
+import {UserRepository} from "../../state/access/UserRepository";
 
 export class UserService {
 
     private readonly client: UserClient;
+    private readonly userRepository: UserRepository;
 
-    constructor(client: UserClient) {
+    constructor(client: UserClient, userRepository: UserRepository) {
         this.client = client;
+        this.userRepository = userRepository;
     }
 
-    login(email: string, password: string): Promise<void> {
+    public login(email: string, password: string): Promise<void> {
         return this.client.login(email, password)
-            .then(data => UserStateAccess.setAuthToken(data.idToken));
+            .then(data => this.userRepository.setAuthToken(data.idToken));
     }
 
-    signup(email: string, password: string, username: string): Promise<void> {
+    public signup(email: string, password: string, username: string): Promise<void> {
         return this.client.signUp(email, password, username);
     }
 
-    isAuthenticated(): boolean {
-        const token = UserStateAccess.getAuthTokenOrNull();
+    public isAuthenticated(): boolean {
+        const token = this.userRepository.getAuthTokenOrNull();
         if (token) {
             return this.getTokenExpiration(token) > Date.now();
         } else {
@@ -28,8 +30,8 @@ export class UserService {
         }
     }
 
-    getUserId(): string {
-        return this.userIdFromToken(UserStateAccess.getAuthTokenOrNull())
+    public getUserId(): string {
+        return this.userIdFromToken(this.userRepository.getAuthTokenOrNull());
     }
 
     private getTokenExpiration(token: string): number {

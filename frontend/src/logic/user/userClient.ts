@@ -18,7 +18,7 @@ export class UserClient {
     }
 
 
-    login(email: string, password: string): Promise<LoginData> {
+    public login(email: string, password: string): Promise<LoginData> {
         return this.httpClient.post<LoginData>({
             url: "/api/user/login",
             body: {
@@ -28,7 +28,7 @@ export class UserClient {
         });
     }
 
-    signUp(email: string, password: string, username: string): Promise<void> {
+    public signUp(email: string, password: string, username: string): Promise<void> {
         return this.httpClient.post<void>({
             url: "/api/user/signup",
             body: {
@@ -39,7 +39,7 @@ export class UserClient {
         });
     }
 
-    deleteUser(email: string, password: string): Promise<void> {
+    public deleteUser(email: string, password: string): Promise<void> {
         return this.httpClient.delete<void>({
             url: "/api/user/delete",
             body: {

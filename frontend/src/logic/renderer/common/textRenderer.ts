@@ -41,7 +41,7 @@ export class TextRenderer {
         if (ctx) {
             return ctx;
         } else {
-            throw Error("Could not create text canvas context");
+            throw new Error("Could not create text canvas context");
         }
     }
 

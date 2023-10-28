@@ -17,8 +17,8 @@ import {Text} from "../../../../components/text/Text";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {CgClose} from "react-icons/cg";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {CommandStateAccess} from "../../../../../state/access/CommandStateAccess";
 import {AppCtx} from "../../../../../appContext";
+import {CommandRepository} from "../../../../../state/access/CommandRepository";
 
 
 export function useOpenCommandLogWindow() {
@@ -43,7 +43,7 @@ export interface CommandLogWindowProps {
 
 export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 
-    const commands = CommandStateAccess.useCommands();
+    const commands = CommandRepository.useCommands();
     const cancel = useCommandCancel();
 
     return (

@@ -2,18 +2,27 @@ import {Tile, TileIdentifier} from "../../models/tile";
 import {Country} from "../../models/country";
 import {getMaxOrDefault, orDefault} from "../../shared/utils";
 import {CommandService} from "./commandService";
-import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {UserService} from "../user/userService";
-import {GameSessionStateAccess} from "../../state/access/GameSessionStateAccess";
+import {GameConfigRepository} from "../../state/access/GameConfigRepository";
+import {CountryRepository} from "../../state/access/CountryRepository";
 
 export class CityCreationService {
 
     private readonly commandService: CommandService;
     private readonly userService: UserService;
+    private readonly gameConfigRepository: GameConfigRepository;
+    private readonly countryRepository: CountryRepository;
 
-    constructor(commandService: CommandService, userService: UserService) {
+    constructor(
+        commandService: CommandService,
+        userService: UserService,
+        gameConfigRepository: GameConfigRepository,
+        countryRepository: CountryRepository,
+    ) {
         this.commandService = commandService;
         this.userService = userService;
+        this.gameConfigRepository = gameConfigRepository;
+        this.countryRepository = countryRepository;
     }
 
 
@@ -54,7 +63,7 @@ export class CityCreationService {
     }
 
     private getPlayerCountry(): Country {
-        return GameStateAccess.getCountryByUserId(this.userService.getUserId())!!;
+        return this.countryRepository.getCountryByUserIdOr(this.userService.getUserId());
     }
 
     private isOccupied(tile: Tile): boolean {
@@ -80,7 +89,7 @@ export class CityCreationService {
             e => e,
             0,
         );
-        const cityTileMaxForeignInfluence = GameSessionStateAccess.getGameConfig().cityTileMaxForeignInfluence;
+        const cityTileMaxForeignInfluence = this.gameConfigRepository.getGameConfig().cityTileMaxForeignInfluence;
         if (maxForeignInfluence < cityTileMaxForeignInfluence) {
             return true;
         }

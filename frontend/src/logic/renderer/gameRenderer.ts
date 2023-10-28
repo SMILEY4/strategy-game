@@ -3,27 +3,45 @@ import {RenderWorldFactory} from "./world/renderFactory";
 import {RenderWorld} from "./world/data/renderWorld";
 import {Camera} from "./common/camera";
 import {GLRenderer} from "./common/glRenderer";
-import {CameraStateAccess} from "../../state/access/CameraStateAccess";
 import {CanvasHandle} from "../game/canvasHandle";
 import {WorldUpdater} from "./world/worldUpdater";
-import {GameStateAccess} from "../../state/access/GameStateAccess";
+import {CameraRepository} from "../../state/access/CameraRepository";
+import {CommandRepository} from "../../state/access/CommandRepository";
+import {MapModeRepository} from "../../state/access/MapModeRepository";
+import {TileRepository} from "../../state/access/TileRepository";
 
 export class GameRenderer {
 
-    private canvasHandle: CanvasHandle;
+    private readonly canvasHandle: CanvasHandle;
+    private readonly worldUpdater: WorldUpdater;
+    private readonly cameraRepository: CameraRepository;
+    private readonly commandRepository: CommandRepository;
+    private readonly mapModeRepository: MapModeRepository;
+    private readonly tileRepository: TileRepository;
     private worldRenderer: WorldRenderer | null = null;
     private world: RenderWorld | null = null;
-    private worldUpdater: WorldUpdater | null = null;
 
-    constructor(canvasHandle: CanvasHandle) {
+    constructor(
+        canvasHandle: CanvasHandle,
+        worldUpdater: WorldUpdater,
+        cameraRepository: CameraRepository,
+        commandRepository: CommandRepository,
+        mapModeRepository: MapModeRepository,
+        tileRepository: TileRepository,
+    ) {
         this.canvasHandle = canvasHandle;
+        this.worldUpdater = worldUpdater;
+        this.cameraRepository = cameraRepository;
+        this.commandRepository = commandRepository;
+        this.mapModeRepository = mapModeRepository;
+        this.tileRepository = tileRepository;
     }
 
     public initialize() {
         const gl = this.canvasHandle.getGL();
         this.worldRenderer = new WorldRenderer(new GLRenderer(gl));
-        this.world = RenderWorldFactory.createWorld(gl);
-        this.worldUpdater = new WorldUpdater(gl, this.world);
+        this.world = RenderWorldFactory.createWorld(gl, this.mapModeRepository, this.tileRepository);
+        this.worldUpdater.setWorld(this.world);
     }
 
     public updateWorld() {
@@ -53,7 +71,7 @@ export class GameRenderer {
     }
 
     private getRenderCamera(): Camera {
-        const data = CameraStateAccess.getCamera();
+        const data = this.cameraRepository.getCamera();
         return Camera.create(data, this.canvasHandle.getCanvasWidth(), this.canvasHandle.getCanvasHeight());
     }
 

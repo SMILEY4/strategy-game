@@ -1,7 +1,7 @@
-import {SetState} from "../../../shared/zustandUtils";
+import {SetState} from "../../shared/zustandUtils";
 import create from "zustand";
-import {Command} from "../../../models/command";
-import {UID} from "../../../shared/uid";
+import {Command} from "../../models/command";
+import {UID} from "../../shared/uid";
 
 export namespace LocalCommandStateStore {
 

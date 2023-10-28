@@ -2,7 +2,6 @@ import {BuildingDTO, CityDTO, GameStateDTO, ProductionQueueEntryDTO, ProvinceDTO
 import {Tile} from "../../models/tile";
 import {orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
-import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
 import {Province, ProvinceIdentifier} from "../../models/province";
@@ -10,13 +9,16 @@ import {Building, City, CityIdentifier, ProductionQueueEntry} from "../../models
 import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
 import {ResourceType} from "../../models/resourceType";
+import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
 
 export class NextTurnService {
 
     private readonly gameLoopService: GameLoopService;
+    private readonly remoteGameRepository: RemoteGameStateRepository;
 
-    constructor(gameLoopService: GameLoopService) {
+    constructor(gameLoopService: GameLoopService, remoteGameRepository: RemoteGameStateRepository) {
         this.gameLoopService = gameLoopService;
+        this.remoteGameRepository = remoteGameRepository;
     }
 
 
@@ -24,8 +26,8 @@ export class NextTurnService {
         // todo: possible performance optimisation:
         //  object pools for tiles, cities, ...
         //  move old game state to pool instead of gc -> allocate new state from pool
-        GameStateAccess.setGameState({
-            ...GameStateAccess.getGameState(),
+        this.remoteGameRepository.setGameState({
+            ...this.remoteGameRepository.getGameState(),
             countries: this.buildCountries(game),
             provinces: this.buildProvinces(game),
             cities: this.buildCities(game),

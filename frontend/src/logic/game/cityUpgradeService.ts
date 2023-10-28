@@ -1,22 +1,34 @@
 import {CommandService} from "./commandService";
 import {UserService} from "../user/userService";
-import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {City} from "../../models/city";
 import {SettlementTier} from "../../models/settlementTier";
 import {Country} from "../../models/country";
+import {CountryRepository} from "../../state/access/CountryRepository";
+import {ProvinceRepository} from "../../state/access/ProvinceRepository";
+import {CityRepository} from "../../state/access/CityRepository";
 
 export class CityUpgradeService {
 
-    readonly commandService: CommandService;
-    readonly userService: UserService;
+    private readonly commandService: CommandService;
+    private readonly userService: UserService;
+    private readonly countryRepository: CountryRepository;
+    private readonly provinceRepository: ProvinceRepository;
+    private readonly cityRepository: CityRepository;
 
-    constructor(commandService: CommandService, userService: UserService) {
+    constructor(commandService: CommandService,
+                userService: UserService,
+                countryRepository: CountryRepository,
+                provinceRepository: ProvinceRepository,
+                cityRepository: CityRepository) {
         this.commandService = commandService;
         this.userService = userService;
+        this.countryRepository = countryRepository;
+        this.provinceRepository = provinceRepository;
+        this.cityRepository = cityRepository;
     }
 
 
-    validate(city: City): string[] {
+    public validate(city: City): string[] {
         const country = this.getPlayerCountry();
         const failureReasons: string[] = [];
 
@@ -41,7 +53,7 @@ export class CityUpgradeService {
         return failureReasons;
     }
 
-    upgrade(city: City) {
+    public upgrade(city: City) {
         this.commandService.upgradeSettlementTier(
             city.identifier,
             city.tier,
@@ -50,15 +62,15 @@ export class CityUpgradeService {
     }
 
     private getPlayerCountry(): Country {
-        return GameStateAccess.getCountryByUserId(this.userService.getUserId())!!;
+        return this.countryRepository.getCountryByUserIdOr(this.userService.getUserId());
     }
 
     private getProvinceCityCount(city: City): number {
-        const province = GameStateAccess.getProvinceByCity(city.identifier.id);
+        const province = this.provinceRepository.getProvinceByCity(city.identifier.id);
         let count = 0;
         for (let i = 0; i < province.cities.length; i++) {
             const cityReduced = province.cities[i];
-            const city = GameStateAccess.getCity(cityReduced.identifier.id);
+            const city = this.cityRepository.getCity(cityReduced.identifier.id);
             if (city.tier === SettlementTier.CITY) {
                 count++;
             }

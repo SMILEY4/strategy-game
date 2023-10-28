@@ -1,74 +1,85 @@
 import {GameRenderer} from "../renderer/gameRenderer";
-import {CameraStateAccess} from "../../state/access/CameraStateAccess";
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "./canvasHandle";
-import {GameStateAccess} from "../../state/access/GameStateAccess";
-import {GameSessionStateAccess} from "../../state/access/GameSessionStateAccess";
 import {openTileWindow} from "../../ui/pages/ingame/windows/tile/TileWindow";
+import {CameraRepository} from "../../state/access/CameraRepository";
+import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
+import {TileRepository} from "../../state/access/TileRepository";
 
 export class GameLoopService {
 
-    private canvasHandle: CanvasHandle;
+    private readonly canvasHandle: CanvasHandle;
     private readonly renderer: GameRenderer;
-    private readonly tilePicker;
+    private readonly cameraRepository: CameraRepository;
+    private readonly gameSessionRepository: GameSessionStateRepository;
+    private readonly tileRepository: TileRepository;
+    private readonly tilePicker: TilePicker;
 
-    constructor(canvasHandle: CanvasHandle, renderer: GameRenderer) {
+    constructor(canvasHandle: CanvasHandle,
+                renderer: GameRenderer,
+                tilePicker: TilePicker,
+                cameraRepository: CameraRepository,
+                gameSessionRepository: GameSessionStateRepository,
+                tileRepository: TileRepository) {
         this.canvasHandle = canvasHandle;
         this.renderer = renderer;
-        this.tilePicker = new TilePicker(canvasHandle);
+        this.tilePicker = tilePicker;
+        this.cameraRepository = cameraRepository;
+        this.gameSessionRepository = gameSessionRepository;
+        this.tileRepository = tileRepository;
     }
 
-    initialize(canvas: HTMLCanvasElement) {
+    public initialize(canvas: HTMLCanvasElement) {
         this.canvasHandle.set(canvas);
         this.renderer.initialize();
         this.renderer.updateWorld();
     }
 
 
-    onGameStateUpdate() {
+    public onGameStateUpdate() {
         this.renderer.updateWorld();
-        GameSessionStateAccess.setTurnState("playing");
+        this.gameSessionRepository.setGameTurnState("playing");
     }
 
-    update() {
+    public update() {
         this.renderer.render();
     }
 
-    dispose() {
+    public dispose() {
         this.renderer.dispose();
     }
 
-    mouseClick(x: number, y: number) {
+    public mouseClick(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
-        if (GameStateAccess.getSelectedTile()?.id !== tile?.identifier) {
-            GameStateAccess.setSelectedTile(tile?.identifier || null);
+        if (this.tileRepository.getSelectedTile()?.id !== tile?.identifier) {
+            this.tileRepository.setSelectedTile(tile?.identifier || null);
             if (tile) {
                 openTileWindow(tile.identifier);
             }
         }
     }
 
-    mouseMove(dx: number, dy: number, x: number, y: number, leftBtnDown: boolean) {
+    public mouseMove(dx: number, dy: number, x: number, y: number, leftBtnDown: boolean) {
         if (leftBtnDown) {
-            const camera = CameraStateAccess.getCamera();
-            CameraStateAccess.setCamera({
+            const camera = this.cameraRepository.getCamera();
+            this.cameraRepository.setCamera({
                 x: camera.x + (dx / camera.zoom),
                 y: camera.y - (dy / camera.zoom),
                 zoom: camera.zoom,
             });
         } else {
             const tile = this.tilePicker.tileAt(x, y);
-            if (tile?.identifier.id !== GameStateAccess.getHoverTile()?.id) {
-                GameStateAccess.setHoverTile(tile?.identifier || null);
+            if (tile?.identifier.id !== this.tileRepository.getHoverTile()?.id) {
+                this.tileRepository.setHoverTile(tile?.identifier || null);
             }
         }
     }
 
-    mouseScroll(d: number) {
-        const camera = CameraStateAccess.getCamera();
+    public mouseScroll(d: number) {
+        const camera = this.cameraRepository.getCamera();
         const dz = d > 0 ? 0.1 : -0.1;
         const zoom = Math.max(0.01, camera.zoom - dz);
-        CameraStateAccess.setCamera({
+        this.cameraRepository.setCamera({
             x: camera.x,
             y: camera.y,
             zoom: zoom,

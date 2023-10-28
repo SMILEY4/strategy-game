@@ -1,6 +1,6 @@
-import {SetState} from "../../../shared/zustandUtils";
+import {SetState} from "../../shared/zustandUtils";
 import create from "zustand";
-import {CameraData} from "../../../models/cameraData";
+import {CameraData} from "../../models/cameraData";
 
 export namespace LocalCameraStore {
 

@@ -8,9 +8,9 @@ import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {CameraStateAccess} from "../../../../../state/access/CameraStateAccess";
 import {roundToPlaces} from "../../../../../shared/utils";
 import {AppCtx} from "../../../../../appContext";
+import {CameraRepository} from "../../../../../state/access/CameraRepository";
 
 export function useOpenDevWindow() {
     const WINDOW_ID = "menubar-window";
@@ -34,7 +34,7 @@ export interface DevWindowProps {
 
 export function DevWindow(props: DevWindowProps): ReactElement {
 
-    const camera = CameraStateAccess.useCamera();
+    const camera = CameraRepository.useCamera();
     const [enterFullscreen, exitFullscreen] = useFullscreen("root");
     const [looseWGLContext, restoreWGLContext] = useWebGlContext();
 
@@ -69,7 +69,7 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 }
 
 function useWebGlContext() {
-    const canvasHandle = AppCtx.CanvasHandle()
+    const canvasHandle = AppCtx.CanvasHandle();
     return [
         () => canvasHandle.debugLooseWebglContext(),
         () => canvasHandle.debugRestoreWebglContext(),

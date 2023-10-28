@@ -1,7 +1,7 @@
-import {SetState} from "../../../shared/zustandUtils";
+import {SetState} from "../../shared/zustandUtils";
 import create from "zustand";
-import {TileIdentifier} from "../../../models/tile";
-import {MapMode} from "../../../models/mapMode";
+import {TileIdentifier} from "../../models/tile";
+import {MapMode} from "../../models/mapMode";
 
 export namespace LocalGameStore {
 
