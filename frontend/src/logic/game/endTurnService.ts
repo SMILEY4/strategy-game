@@ -1,13 +1,14 @@
 import {GameSessionClient} from "../gamesession/gameSessionClient";
 import {
+    AddProductionQueueCommand,
+    CancelProductionQueueCommand,
     Command,
-    CreateSettlementCommand,
+    CreateCityCommand,
     PlaceScoutCommand,
-    ProductionQueueAddCommand,
-    ProductionQueueCancelCommand,
-    UpgradeSettlementCommand,
+    UpgradeCityCommand,
 } from "../../models/command";
 import {CommandRepository} from "../../state/access/CommandRepository";
+import {CommandType} from "../../models/commandType";
 
 export class EndTurnService {
 
@@ -29,8 +30,8 @@ export class EndTurnService {
     }
 
     private buildPayloadCommand(command: Command): object {
-        if (command.type === "production-queue-entry.add") {
-            const cmd = command as ProductionQueueAddCommand;
+        if (command.type === CommandType.PRODUCTION_QUEUE_ADD) {
+            const cmd = command as AddProductionQueueCommand;
             switch (cmd.entry.type) {
                 case "building":
                     return {
@@ -46,16 +47,16 @@ export class EndTurnService {
 
             }
         }
-        if (command.type === "production-queue-entry.cancel") {
-            const cmd = command as ProductionQueueCancelCommand;
+        if (command.type === CommandType.PRODUCTION_QUEUE_CANCEL) {
+            const cmd = command as CancelProductionQueueCommand;
             return {
                 type: "production-queue-remove-entry",
                 cityId: cmd.city.id,
                 queueEntryId: cmd.entryId,
             };
         }
-        if (command.type === "settlement.create") {
-            const cmd = command as CreateSettlementCommand;
+        if (command.type === CommandType.CITY_CREATE) {
+            const cmd = command as CreateCityCommand;
             return {
                 type: "create-city",
                 q: cmd.tile.q,
@@ -64,14 +65,14 @@ export class EndTurnService {
                 withNewProvince: cmd.asColony,
             };
         }
-        if (command.type === "settlement.upgrade") {
-            const cmd = command as UpgradeSettlementCommand;
+        if (command.type === CommandType.CITY_UPGRADE) {
+            const cmd = command as UpgradeCityCommand;
             return {
                 type: "upgrade-settlement-tier",
-                cityId: cmd.settlement.id,
+                cityId: cmd.city.id,
             };
         }
-        if (command.type === "scout.place") {
+        if (command.type === CommandType.SCOUT_PLACE) {
             const cmd = command as PlaceScoutCommand;
             return {
                 type: "place-scout",

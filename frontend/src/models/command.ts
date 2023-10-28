@@ -1,48 +1,88 @@
+import {CommandType} from "./commandType";
+import {UID} from "../shared/uid";
 import {TileIdentifier} from "./tile";
 import {CityIdentifier, ProductionEntry} from "./city";
 
-export type CommandType = "production-queue-entry.add"
-    | "production-queue-entry.cancel"
-    | "scout.place"
-    | "settlement.create"
-    | "settlement.upgrade"
 
-export interface Command {
-    id: string,
-    type: CommandType,
-}
+export abstract class Command {
+    readonly id: string;
+    readonly type: CommandType;
 
-export interface CreateSettlementCommand extends Command {
-    type: "settlement.create",
-    tile: TileIdentifier,
-    name: string,
-    asColony: boolean
+    protected constructor(type: CommandType) {
+        this.type = type;
+        this.id = UID.generate();
+    }
+
 }
 
 
-export interface UpgradeSettlementCommand extends Command {
-    type: "settlement.upgrade",
-    settlement: CityIdentifier,
-    currTier: number,
-    tgtTier: number
+export class CreateCityCommand extends Command {
+
+    readonly tile: TileIdentifier;
+    readonly name: string;
+    readonly asColony: boolean;
+
+    constructor(data: { tile: TileIdentifier, name: string, asColony: boolean }) {
+        super(CommandType.CITY_CREATE);
+        this.tile = data.tile;
+        this.name = data.name;
+        this.asColony = data.asColony;
+    }
+
 }
 
 
-export interface ProductionQueueAddCommand extends Command {
-    type: "production-queue-entry.add",
-    city: CityIdentifier,
-    entry: ProductionEntry
+export class UpgradeCityCommand extends Command {
+
+    readonly city: CityIdentifier;
+    readonly currentTier: number;
+    readonly targetTier: number;
+
+    constructor(data: { city: CityIdentifier, currentTier: number, targetTier: number }) {
+        super(CommandType.CITY_UPGRADE);
+        this.city = data.city;
+        this.currentTier = data.currentTier;
+        this.targetTier = data.targetTier;
+    }
+
 }
 
 
-export interface ProductionQueueCancelCommand extends Command {
-    type: "production-queue-entry.cancel",
-    city: CityIdentifier,
-    entryId: string,
+export class AddProductionQueueCommand extends Command {
+
+    readonly city: CityIdentifier;
+    readonly entry: ProductionEntry;
+
+    constructor(data: { city: CityIdentifier, entry: ProductionEntry }) {
+        super(CommandType.PRODUCTION_QUEUE_ADD);
+        this.city = data.city;
+        this.entry = data.entry;
+    }
+
 }
 
 
-export interface PlaceScoutCommand extends Command {
-    type: "scout.place",
-    tile: TileIdentifier,
+export class CancelProductionQueueCommand extends Command {
+
+    readonly city: CityIdentifier;
+    readonly entryId: string;
+
+    constructor(data: { city: CityIdentifier, entryId: string }) {
+        super(CommandType.CITY_UPGRADE);
+        this.city = data.city;
+        this.entryId = data.entryId;
+    }
+
+}
+
+
+export class PlaceScoutCommand extends Command {
+
+    readonly tile: TileIdentifier;
+
+    constructor(data: { tile: TileIdentifier }) {
+        super(CommandType.SCOUT_PLACE);
+        this.tile = data.tile;
+    }
+
 }

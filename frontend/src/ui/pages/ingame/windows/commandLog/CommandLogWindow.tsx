@@ -5,12 +5,8 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1, Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {
-    Command,
-    CreateSettlementCommand,
-    PlaceScoutCommand,
-    ProductionQueueAddCommand,
-    ProductionQueueCancelCommand,
-    UpgradeSettlementCommand,
+    AddProductionQueueCommand, CancelProductionQueueCommand,
+    Command, CreateCityCommand, PlaceScoutCommand, UpgradeCityCommand,
 } from "../../../../../models/command";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../../../components/text/Text";
@@ -19,6 +15,7 @@ import {CgClose} from "react-icons/cg";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {AppCtx} from "../../../../../appContext";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
+import {CommandType} from "../../../../../models/commandType";
 
 
 export function useOpenCommandLogWindow() {
@@ -82,8 +79,8 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
     );
 
     function renderCommand(command: Command): any {
-        if (command.type === "settlement.create") {
-            const cmd = command as CreateSettlementCommand;
+        if (command.type === CommandType.CITY_CREATE) {
+            const cmd = command as CreateCityCommand;
             return (
                 <>
                     <Header4 onLight>{"Create " + (cmd.asColony ? "Colony" : "Settlement")}</Header4>
@@ -93,19 +90,19 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 </>
             );
         }
-        if (command.type === "settlement.upgrade") {
-            const cmd = command as UpgradeSettlementCommand;
+        if (command.type === CommandType.CITY_UPGRADE) {
+            const cmd = command as UpgradeCityCommand;
             return (
                 <>
                     <Header4 onLight>{"Upgrade Settlement"}</Header4>
                     <Spacer size="s"/>
-                    <Text onLight>with name <i>{cmd.settlement.name}</i></Text>
-                    <Text onLight>from tier <i>{cmd.currTier}</i> to <i>{cmd.tgtTier}</i></Text>
+                    <Text onLight>with name <i>{cmd.city.name}</i></Text>
+                    <Text onLight>from tier <i>{cmd.currentTier}</i> to <i>{cmd.targetTier}</i></Text>
                 </>
             );
         }
-        if (command.type === "production-queue-entry.add") {
-            const cmd = command as ProductionQueueAddCommand;
+        if (command.type === CommandType.PRODUCTION_QUEUE_ADD) {
+            const cmd = command as AddProductionQueueCommand;
             return (
                 <>
                     <Header4 onLight>{"Add to production queue"}</Header4>
@@ -115,8 +112,8 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 </>
             );
         }
-        if (command.type === "production-queue-entry.cancel") {
-            const cmd = command as ProductionQueueCancelCommand;
+        if (command.type === CommandType.PRODUCTION_QUEUE_CANCEL) {
+            const cmd = command as CancelProductionQueueCommand;
             return (
                 <>
                     <Header4 onLight>{"Cancel production queue entry"}</Header4>
@@ -125,7 +122,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 </>
             );
         }
-        if (command.type === "scout.place") {
+        if (command.type === CommandType.SCOUT_PLACE) {
             const cmd = command as PlaceScoutCommand;
             return (
                 <>
@@ -137,7 +134,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
         }
         return (
             <>
-                <Header4 onLight>{command.type}</Header4>
+                <Header4 onLight>{command.type.id}</Header4>
                 <Spacer size="s"/>
                 <Text onLight>{command.id}</Text>
             </>
@@ -146,7 +143,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
 
 }
 
-function getProductionQueueAddCommandName(cmd: ProductionQueueAddCommand): string {
+function getProductionQueueAddCommandName(cmd: AddProductionQueueCommand): string {
     switch (cmd.entry.type) {
         case "building":
             return cmd.entry.buildingData!.type.displayString;

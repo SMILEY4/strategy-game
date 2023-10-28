@@ -7,12 +7,13 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {MeshData} from "../data/meshData";
 import {GLAttributeType} from "../../common/glTypes";
 import {GLProgram} from "../../common/glProgram";
-import {Command, CreateSettlementCommand, PlaceScoutCommand} from "../../../../models/command";
+import {Command, CreateCityCommand, PlaceScoutCommand} from "../../../../models/command";
 import {match} from "../../../../shared/match";
 import {TextRenderer} from "../../common/textRenderer";
 import {Camera} from "../../common/camera";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import {TilemapUtils} from "../../../game/tilemapUtils";
+import {CommandType} from "../../../../models/commandType";
 
 export namespace EntityDataBuilder {
 
@@ -139,7 +140,7 @@ export namespace EntityDataBuilder {
 
         for (let i = 0; i < commands.length; i++) {
             const command = commands[i];
-            if (command.type === "scout.place") {
+            if (command.type === CommandType.SCOUT_PLACE) {
                 entities.push({
                     type: "scout",
                     tile: (command as PlaceScoutCommand).tile,
@@ -147,12 +148,12 @@ export namespace EntityDataBuilder {
                     label: null,
                 });
             }
-            if (command.type === "settlement.create") {
+            if (command.type === CommandType.CITY_CREATE) {
                 entities.push({
                     type: "city",
-                    tile: (command as CreateSettlementCommand).tile,
+                    tile: (command as CreateCityCommand).tile,
                     country: Country.UNDEFINED.identifier,
-                    label: (command as CreateSettlementCommand).name,
+                    label: (command as CreateCityCommand).name,
                 });
             }
         }
