@@ -1,10 +1,10 @@
 import {mat3} from "../renderer/common/mat3";
-import {TilemapUtils} from "../../_old_core/tilemap/tilemapUtils";
 import {CameraStateAccess} from "../../state/access/CameraStateAccess";
 import {Camera} from "../renderer/common/camera";
 import {GameStateAccess} from "../../state/access/GameStateAccess";
 import {Tile} from "../../models/tile";
 import {CanvasHandle} from "./canvasHandle";
+import {TilemapUtils} from "./tilemapUtils";
 
 export class TilePicker {
 

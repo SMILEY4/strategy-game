@@ -16,7 +16,7 @@ export function ResourceBalanceBox(props: { data: ResourceBalance }) {
                 <ResourceBalanceTooltip data={props.data}>
                     <div
                         className="resource-box__icon"
-                        style={{backgroundImage: "url('" + props.data.icon + "')"}}
+                        style={{backgroundImage: "url('" + props.data.type.icon + "')"}}
                     />
                 </ResourceBalanceTooltip>
                 <Text
@@ -61,7 +61,7 @@ function ResourceBalanceTooltip(props: { data: ResourceBalance, children?: any }
             <TooltipContent>
                 <TooltipPanel>
                     <VBox padding_m gap_s fillParent>
-                        <Header4>{props.data.name}</Header4>
+                        <Header4>{props.data.type.displayString}</Header4>
                         {props.data.contributions.map(contribution => (
                             <Text type={contribution.value < 0 ? "negative" : "positive"}>
                                 {(contribution.value < 0 ? "" : "+") + contribution.value + " " + contribution.reason}

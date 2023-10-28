@@ -1,7 +1,7 @@
 import {GameSessionClient} from "./gameSessionClient";
 import {handleResponseError} from "../../shared/httpClient";
-import {UnauthorizedError} from "../../_old_core/models/errors/UnauthorizedError";
 import {GameSessionStateAccess} from "../../state/access/GameSessionStateAccess";
+import {UnauthorizedError} from "../../models/UnauthorizedError";
 
 export class GameSessionService {
 

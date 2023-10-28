@@ -1,4 +1,4 @@
-import {BuildingDTO, CityDTO, GameStateDTO, ProductionQueueEntryDTO, TileDTO} from "./models/gameStateDTO";
+import {BuildingDTO, CityDTO, GameStateDTO, ProductionQueueEntryDTO, ProvinceDTO, TileDTO} from "./models/gameStateDTO";
 import {Tile} from "../../models/tile";
 import {orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
@@ -9,6 +9,7 @@ import {Province, ProvinceIdentifier} from "../../models/province";
 import {Building, City, CityIdentifier, ProductionQueueEntry} from "../../models/city";
 import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
+import {ResourceType} from "../../models/resourceType";
 
 export class NextTurnService {
 
@@ -95,8 +96,22 @@ export class NextTurnService {
                         isProvinceCapitol: cityDTO.dataTier1.isProvinceCapital,
                     };
                 }),
+                resourceBalance: this.buildResourceBalance(provinceDTO),
             };
         });
+    }
+
+    private buildResourceBalance(provinceDTO: ProvinceDTO): Map<ResourceType, number> {
+        const balance = new Map<ResourceType, number>();
+        if (provinceDTO.dataTier3) {
+            ResourceType.getValues().forEach(type => {
+                const entry = provinceDTO.dataTier3!.resourceBalance[type.id];
+                if (entry !== undefined && entry !== null) {
+                    balance.set(type, entry.valueOf());
+                }
+            });
+        }
+        return balance;
     }
 
     private buildCities(game: GameStateDTO): City[] {
@@ -163,7 +178,7 @@ export class NextTurnService {
                 q: buildingDTO.tile.q,
                 r: buildingDTO.tile.r,
             } : null,
-        }
+        };
     }
 
     private buildTiles(game: GameStateDTO): Tile[] {
@@ -221,9 +236,9 @@ export class NextTurnService {
         const country = game.game.countries.find(c => c.dataTier1.id === countryId);
         if (country) {
             return {
-                id: country!!.dataTier1.id,
-                name: country!!.dataTier1.name,
-                color: country!!.dataTier1.color,
+                id: country.dataTier1.id,
+                name: country.dataTier1.name,
+                color: country.dataTier1.color,
             };
         } else {
             throw new Error("Could not find country with id " + countryId);
@@ -234,9 +249,9 @@ export class NextTurnService {
         const province = game.game.provinces.find(c => c.dataTier1.id === provinceId);
         if (province) {
             return {
-                id: province!!.dataTier1.id,
-                name: province!!.dataTier1.name,
-                color: province!!.dataTier1.color,
+                id: province.dataTier1.id,
+                name: province.dataTier1.name,
+                color: province.dataTier1.color,
             };
         } else {
             throw new Error("Could not find province with id " + provinceId);
@@ -247,9 +262,9 @@ export class NextTurnService {
         const province = game.game.provinces.find(c => c.dataTier1.cityIds.indexOf(cityId) !== -1);
         if (province) {
             return {
-                id: province!!.dataTier1.id,
-                name: province!!.dataTier1.name,
-                color: province!!.dataTier1.color,
+                id: province.dataTier1.id,
+                name: province.dataTier1.name,
+                color: province.dataTier1.color,
             };
         } else {
             throw new Error("Could not find province with city " + cityId);

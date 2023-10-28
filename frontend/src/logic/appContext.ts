@@ -16,7 +16,6 @@ import {GameLoopService} from "./game/gameLoopService";
 import {GameRenderer} from "./renderer/gameRenderer";
 import {CanvasHandle} from "./game/canvasHandle";
 import {CityUpgradeService} from "./game/cityUpgradeService";
-import {ConfigService} from "./gamesession/configService";
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
 const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;

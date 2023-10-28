@@ -1,6 +1,7 @@
+import {ResourceType} from "./resourceType";
+
 export interface ResourceBalance {
-    name: string,
-    icon: string,
+    type: ResourceType,
     value: number,
     contributions: ({
         reason: string,

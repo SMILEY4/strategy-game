@@ -1,6 +1,7 @@
 import {CountryIdentifier} from "./country";
 import {CityReduced} from "./city";
 import {Color} from "./color";
+import {ResourceType} from "./resourceType";
 
 export interface ProvinceIdentifier {
     id: string,
@@ -17,6 +18,7 @@ export interface Province {
     identifier: ProvinceIdentifier;
     country: CountryIdentifier;
     cities: CityReduced[];
+    resourceBalance: Map<ResourceType, number>
 }
 
 export namespace Province {
@@ -32,5 +34,6 @@ export namespace Province {
             color: Color.BLACK,
         },
         cities: [],
+        resourceBalance: new Map<ResourceType, number>()
     };
 }

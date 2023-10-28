@@ -13,6 +13,8 @@ import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalu
 import {CityEntry} from "../common/CityEntry";
 import {Province, ProvinceIdentifier} from "../../../../../models/province";
 import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
+import {HBox} from "../../../../components/layout/hbox/HBox";
+import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 
 
 export function useOpenProvinceWindow() {
@@ -39,7 +41,7 @@ export interface ProvinceWindowProps {
 
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
-    const province = GameStateAccess.useProvinceById(props.provinceId)
+    const province = GameStateAccess.useProvinceById(props.provinceId);
     const openCountryWindow = useOpenCountryWindow();
     const openCityWindow = useOpenCityWindow();
 
@@ -60,6 +62,9 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
                         data={province}
                         openCountry={() => openCountryWindow(province.country.id, true)}
                     />
+                    <Spacer size="m"/>
+                    <ProvinceResourceBalanceSection data={province}/>
+                    <Spacer size="m"/>
                     <ProvinceCitiesSection
                         data={province}
                         openCity={(id) => openCityWindow(id, true)}
@@ -89,10 +94,33 @@ function ProvinceBaseInformationSection(props: { data: Province, openCountry: ()
     );
 }
 
+function ProvinceResourceBalanceSection(props: { data: Province }): ReactElement {
+    console.log("RENDER PROVINCE RESOURCES", props.data)
+    return (
+        <>
+            <Header2 centered>Resource Balance</Header2>
+            <Divider/>
+
+            <InsetPanel>
+
+                <HBox fillParent gap_s top left wrap>
+                    {Array.from(props.data.resourceBalance).map(entry => (
+                        <ResourceBalanceBox data={{
+                            type: entry[0],
+                            value: entry[1],
+                            contributions: [],
+                        }}/>
+                    ))}
+                </HBox>
+
+            </InsetPanel>
+        </>
+    );
+}
+
 function ProvinceCitiesSection(props: { data: Province, openCity: (id: string) => void }): ReactElement {
     return (
         <>
-            <Spacer size="m"/>
             <Header2 centered>Cities</Header2>
             <Divider/>
 

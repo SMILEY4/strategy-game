@@ -1,5 +1,6 @@
 import {SettlementTierString} from "../../../models/settlementTier";
 import {BuildingTypeString} from "../../../models/buildingType";
+import {ResourceTypeString} from "../../../models/resourceType";
 
 export interface GameStateDTO {
     game: {
@@ -34,7 +35,7 @@ export interface ProvinceDTO {
         provinceCapitalCityId: string,
     },
     dataTier3: null | {
-        resourceBalance: Map<string, number>
+        resourceBalance: Record<ResourceTypeString, number>
     }
 }
 

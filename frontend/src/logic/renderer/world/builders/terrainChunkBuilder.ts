@@ -4,7 +4,6 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {GLProgram} from "../../common/glProgram";
 import {TerrainChunk} from "../data/terrainChunk";
 import {Tile} from "../../../../models/tile";
-import {TilemapUtils} from "../../../../_old_core/tilemap/tilemapUtils";
 import {RenderBuilderUtils} from "./renderBuilderUtils";
 import {GLVertexArray} from "../../common/glVertexArray";
 import {GLAttributeType} from "../../common/glTypes";
@@ -20,6 +19,7 @@ import hexTextureCoordinates = RenderBuilderUtils.hexTextureCoordinates;
 import hexCornerPointX = RenderBuilderUtils.hexCornerPointX;
 import hexCornerPointY = RenderBuilderUtils.hexCornerPointY;
 import toVisibilityId = RenderBuilderUtils.toVisibilityId;
+import {TilemapUtils} from "../../../game/tilemapUtils";
 
 
 /*

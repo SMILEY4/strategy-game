@@ -4,7 +4,6 @@ import {Tile, TileIdentifier} from "../../../../models/tile";
 import {City} from "../../../../models/city";
 import {Country, CountryIdentifier} from "../../../../models/country";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/mixedArrayBuffer";
-import {TilemapUtils} from "../../../../_old_core/tilemap/tilemapUtils";
 import {MeshData} from "../data/meshData";
 import {GLAttributeType} from "../../common/glTypes";
 import {GLProgram} from "../../common/glProgram";
@@ -13,6 +12,7 @@ import {match} from "../../../../shared/match";
 import {TextRenderer} from "../../common/textRenderer";
 import {Camera} from "../../common/camera";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
+import {TilemapUtils} from "../../../game/tilemapUtils";
 
 export namespace EntityDataBuilder {
 
