@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {useGotoSignupConfirm} from "./navigate";
-import {AppCtx} from "../../logic/appContext";
+import {AppCtx} from "../../appContext";
 
 export function useSignup() {
 
@@ -9,7 +9,7 @@ export function useSignup() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const gotoSignupConfirm = useGotoSignupConfirm();
-    const userService = AppCtx.di.get(AppCtx.DIQ.UserService);
+    const userService = AppCtx.UserService();
 
     function signup() {
         if (!email) {

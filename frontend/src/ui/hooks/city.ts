@@ -1,10 +1,10 @@
 import {City, CityIdentifier, ProductionEntry} from "../../models/city";
-import {AppCtx} from "../../logic/appContext";
 import {Tile} from "../../models/tile";
 import {BuildingType} from "../../models/buildingType";
+import {AppCtx} from "../../appContext";
 
 export function useCreateSettlement(tile: Tile, name: string | null, asColony: boolean): [boolean, string[], () => void] {
-    const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
+    const creationService = AppCtx.CityCreationService();
     const [possible, reasons] = useValidateCreateSettlement(tile, name, asColony);
 
     function perform() {
@@ -16,7 +16,7 @@ export function useCreateSettlement(tile: Tile, name: string | null, asColony: b
 
 export function useValidateCreateSettlement(tile: Tile | null, name: string | null, asColony: boolean): [boolean, string[]] {
     if (tile) {
-        const creationService = AppCtx.di.get(AppCtx.DIQ.CityCreationService);
+        const creationService = AppCtx.CityCreationService();
         const result = creationService.validate(tile, name, asColony);
         return [result.length === 0, result];
     } else {
@@ -25,25 +25,25 @@ export function useValidateCreateSettlement(tile: Tile | null, name: string | nu
 }
 
 export function useUpgradeSettlementTier(city: City): [boolean, string[], () => void] {
-    const upgradeService = AppCtx.di.get(AppCtx.DIQ.CityUpgradeService);
+    const upgradeService = AppCtx.CityUpgradeService();
     const [possible, reasons] = useValidateUpgradeSettlementTier(city);
 
     function perform() {
-        upgradeService.upgrade(city)
+        upgradeService.upgrade(city);
     }
 
     return [possible, reasons, perform];
 }
 
 export function useValidateUpgradeSettlementTier(city: City): [boolean, string[]] {
-    const upgradeService = AppCtx.di.get(AppCtx.DIQ.CityUpgradeService);
+    const upgradeService = AppCtx.CityUpgradeService();
     const result = upgradeService.validate(city);
     return [result.length === 0, result];
 }
 
 
 export function useCancelProductionQueueEntry(city: CityIdentifier) {
-    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
+    const commandService = AppCtx.CommandService();
     return (entryId: string) => {
         commandService.cancelProductionQueueEntry(city, entryId);
     };
@@ -51,7 +51,7 @@ export function useCancelProductionQueueEntry(city: CityIdentifier) {
 
 
 export function useAddProductionEntry(city: CityIdentifier) {
-    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
+    const commandService = AppCtx.CommandService();
     return (entry: ProductionEntry) => {
         commandService.addProductionQueueEntry(city, entry);
     };

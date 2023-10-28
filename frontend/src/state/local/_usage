@@ -10,4 +10,4 @@ LOCAL STATE
     - updated/modified regularly
     - flat structure
     - split into different states to reduce unwanted updates
-   (- does not need to be read-efficient, since data to filter is relatively small)
+   (- does not need to be read-efficient, since data to search is relatively small)

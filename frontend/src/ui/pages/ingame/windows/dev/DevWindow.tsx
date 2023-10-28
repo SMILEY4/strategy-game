@@ -10,7 +10,7 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {CameraStateAccess} from "../../../../../state/access/CameraStateAccess";
 import {roundToPlaces} from "../../../../../shared/utils";
-import {AppCtx} from "../../../../../logic/appContext";
+import {AppCtx} from "../../../../../appContext";
 
 export function useOpenDevWindow() {
     const WINDOW_ID = "menubar-window";
@@ -69,7 +69,7 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 }
 
 function useWebGlContext() {
-    const canvasHandle = AppCtx.di.get(AppCtx.DIQ.CanvasHandle);
+    const canvasHandle = AppCtx.CanvasHandle()
     return [
         () => canvasHandle.debugLooseWebglContext(),
         () => canvasHandle.debugRestoreWebglContext(),

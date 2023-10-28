@@ -1,6 +1,6 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
 import "./canvas.css";
-import {AppCtx} from "../../../../logic/appContext";
+import {AppCtx} from "../../../../appContext";
 
 
 export function Canvas() {
@@ -11,7 +11,7 @@ export function Canvas() {
     const mouseDownInCanvas = useRef<boolean>(false);
     const timestampMouseDown = useRef<number>(0);
 
-    const gameLoopService = AppCtx.di.get(AppCtx.DIQ.GameLoopService)
+    const gameLoopService = AppCtx.GameLoopService();
 
     useEffect(() => {
         if (canvasRef.current) {

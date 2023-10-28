@@ -17,8 +17,8 @@ import {Spacer} from "../../../../components/spacer/Spacer";
 import {useValidateCreateSettlement} from "../../../../hooks/city";
 import {GameStateAccess} from "../../../../../state/access/GameStateAccess";
 import {Text} from "../../../../components/text/Text";
-import {AppCtx} from "../../../../../logic/appContext";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
+import {AppCtx} from "../../../../../appContext";
 
 
 export function useOpenTileWindow() {
@@ -184,7 +184,7 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
 }
 
 function usePlaceScout() {
-    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
+    const commandService = AppCtx.CommandService()
     return (tile: TileIdentifier) => {
         commandService.placeScout(tile);
     };

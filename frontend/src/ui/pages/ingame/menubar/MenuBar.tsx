@@ -12,9 +12,9 @@ import {PiScrollBold} from "react-icons/pi";
 import {useOpenTileWindow} from "../windows/tile/TileWindow";
 import "./menubar.scoped.less";
 import {Country} from "../../../../models/country";
-import {AppCtx} from "../../../../logic/appContext";
 import {GameStateAccess} from "../../../../state/access/GameStateAccess";
 import {GameSessionStateAccess} from "../../../../state/access/GameSessionStateAccess";
+import {AppCtx} from "../../../../appContext";
 
 export function MenuBar(): ReactElement {
 
@@ -62,18 +62,17 @@ export function MenuBar(): ReactElement {
 }
 
 function usePlayerCountry(): Country {
-    const userId = AppCtx.di.get(AppCtx.DIQ.UserService).getUserId()
+    const userId = AppCtx.UserService().getUserId();
     return GameStateAccess.useCountryByUserId(userId);
 }
 
 function useEndTurn(): [boolean, () => void] {
-
-    const gameService = AppCtx.di.get(AppCtx.DIQ.GameService);
+    const endTurnService = AppCtx.EndTurnService();
     const disabled = GameSessionStateAccess.useTurnState() === "waiting";
     const setTurnState = GameSessionStateAccess.useSetTurnState();
 
     function endTurn() {
-        gameService.endTurn();
+        endTurnService.endTurn();
         setTurnState("waiting");
     }
 

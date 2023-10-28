@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {useGotoLoginRedirect} from "./navigate";
-import {AppCtx} from "../../logic/appContext";
+import {AppCtx} from "../../appContext";
 
 export function useLogin() {
 
@@ -8,7 +8,7 @@ export function useLogin() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const gotoLoginRedirect = useGotoLoginRedirect("/sessions");
-    const userService = AppCtx.di.get(AppCtx.DIQ.UserService)
+    const userService = AppCtx.UserService();
 
     function login() {
         if (!email) {

@@ -1,4 +1,4 @@
-import {AuthProvider} from "../authProvider";
+import {AuthProvider} from "../user/authProvider";
 import {HttpClient} from "../../shared/httpClient";
 import {WebsocketClient} from "../../shared/websocketClient";
 import {WebsocketMessageHandler} from "../../shared/websocketMessageHandler";

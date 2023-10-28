@@ -1,4 +1,4 @@
-import {UserStateAccess} from "../state/access/UserStateAccess";
+import {UserStateAccess} from "../../state/access/UserStateAccess";
 
 export class AuthProvider {
 

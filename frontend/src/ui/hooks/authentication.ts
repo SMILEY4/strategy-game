@@ -1,8 +1,8 @@
 import {useGotoLoginRedirect} from "./navigate";
-import {AppCtx} from "../../logic/appContext";
+import {AppCtx} from "../../appContext";
 
 export function useAuthenticated() {
-    const userService = AppCtx.di.get(AppCtx.DIQ.UserService)
+    const userService = AppCtx.UserService()
     return userService.isAuthenticated();
 }
 

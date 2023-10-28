@@ -1,4 +1,4 @@
-import {AuthProvider} from "../authProvider";
+import {AuthProvider} from "./authProvider";
 import {HttpClient} from "../../shared/httpClient";
 
 export interface LoginData {

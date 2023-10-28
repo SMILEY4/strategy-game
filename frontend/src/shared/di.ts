@@ -1,99 +1,77 @@
-export function createDiContainer(): DiContainer {
-    return new DiContainerImpl();
-}
+import {GameRenderer} from "../logic/renderer/gameRenderer";
+import {CanvasHandle} from "../logic/game/canvasHandle";
 
-export interface DiContainer {
-    bind: (qualifier: Qualifier<any>, builder: (ctx: DiContext) => any, config?: DiBeanConfig) => void;
-    createEager: () => void;
-    getContext: () => DiContext;
-}
-
-
-export interface DiContext {
-    get: <T>(qualifier: Qualifier<T>) => T;
-}
-
-
-interface DiBeanConfig {
+interface DIObjectConfig {
     /**
-     * singleton: bean is created once and reused (default)
-     * transient: bean is created every time it is requested
+     * singleton: object is created once and reused (default)
+     * transient: object is created every time it is requested
      */
-    lifetime?: "singleton" | "transient";
+    lifetime: "singleton" | "transient";
     /**
-     * eager: bean is created at start (makes only sense with "singleton")
-     * lazy: bean is created the first time it is requested (default)
+     * eager: object is created at start (makes only sense with "singleton")
+     * lazy: object is created the first time it is requested (default)
      */
-    creation?: "eager" | "lazy";
+    creation: "eager" | "lazy";
 }
 
-class DiContainerImpl implements DiContainer, DiContext {
+export class DIContext {
 
-    private readonly configs = new Map<String, DiBeanConfig>();
-    private readonly bindings = new Map<String, (ctx: DiContext) => any>();
+    private readonly definitions = new Map<string, { factory: (ctx: DIContext) => any, config: DIObjectConfig }>();
+    private readonly entries = new Map<string, any>();
 
-    private readonly singletons = new Map<String, any>();
-
-
-    bind(qualifier: Qualifier<any>, builder: (ctx: DiContext) => any, config?: DiBeanConfig): void {
-        this.bindings.set(qualifier.id, builder);
-        this.configs.set(qualifier.id, this.buildFullConfig(config));
+    public register<T>(qualifier: string, factory: (ctx: DIContext) => T, config?: DIObjectConfig): () => T {
+        this.definitions.set(qualifier, {
+            factory: factory,
+            config: {
+                lifetime: "singleton",
+                creation: "lazy",
+                ...config,
+            },
+        });
+        return () => this.get<T>(qualifier);
     }
 
-    get<T>(qualifier: Qualifier<T>): T {
-        if (this.singletons.has(qualifier.id)) {
-            return this.singletons.get(qualifier.id);
+    public initialize() {
+        this.definitions.forEach((definition, qualifier) => {
+            if (definition.config.creation === "eager") {
+                this.get(qualifier);
+            }
+        });
+    }
+
+    public get<T>(qualifier: string): T {
+        const definition = this.definitions.get(qualifier);
+        if (definition) {
+            if (definition.config.lifetime === "singleton") {
+                const existing = this.entries.get(qualifier);
+                if (existing === null || existing === undefined) {
+                    const entry = definition.factory(this);
+                    this.entries.set(qualifier, entry);
+                    return entry;
+                } else {
+                    return existing;
+                }
+            } else {
+                return definition.factory(this);
+            }
         } else {
-            console.debug("creating new bean", qualifier);
-            const config = this.configs.get(qualifier.id);
-            const binding = this.bindings.get(qualifier.id);
-            if (binding === undefined || config === undefined) {
-                throw new Error("No bean for qualifier " + qualifier);
-            }
-            const bean = binding(this);
-            if (config.lifetime === "singleton") {
-                this.singletons.set(qualifier.id, bean);
-            }
-            return bean;
+            throw new Error("No definition for qualifier " + qualifier);
         }
     }
 
-    createEager(): void {
-        Array.from(this.configs.entries())
-            .filter(entry => entry[1].creation === "eager")
-            .forEach(entry => {
-                this.get(qualifier(entry[0].toString()));
-            });
-    }
-
-    getContext(): DiContext {
-        return this;
-    }
-
-    private buildFullConfig(config: DiBeanConfig | undefined): DiBeanConfig {
-        if (config === undefined || config === null) {
-            return this.defaultConfig();
-        } else {
-            return {
-                ...this.defaultConfig(),
-                ...config
-            };
-        }
-    }
-
-    private defaultConfig(): DiBeanConfig {
-        return {
-            lifetime: "singleton",
-            creation: "lazy"
-        };
-    }
-
 }
 
-export function qualifier<T>(id: string): Qualifier<T> {
-    return {id: id};
-}
+const ctx = new DIContext();
 
-interface Qualifier<T> {
-    id: string,
-}
+export const DI: any = {
+    GameRenderer: ctx.register(
+        "GameRenderer",
+        () => new GameRenderer(DI.CanvasHandle()),
+    ),
+    CanvasHandle: ctx.register(
+        "CanvasHandle",
+        () => new CanvasHandle(),
+    ),
+};
+
+ctx.initialize();

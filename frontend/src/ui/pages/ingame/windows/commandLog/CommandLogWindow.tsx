@@ -18,7 +18,7 @@ import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary
 import {CgClose} from "react-icons/cg";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {CommandStateAccess} from "../../../../../state/access/CommandStateAccess";
-import {AppCtx} from "../../../../../logic/appContext";
+import {AppCtx} from "../../../../../appContext";
 
 
 export function useOpenCommandLogWindow() {
@@ -157,6 +157,6 @@ function getProductionQueueAddCommandName(cmd: ProductionQueueAddCommand): strin
 }
 
 function useCommandCancel() {
-    const commandService = AppCtx.di.get(AppCtx.DIQ.CommandService);
+    const commandService = AppCtx.CommandService();
     return (id: string) => commandService.cancelCommand(id);
 }

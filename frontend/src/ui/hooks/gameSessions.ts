@@ -1,10 +1,10 @@
 import {useNavigate} from "react-router-dom";
 import {useHandleUnauthorized} from "./authentication";
-import {AppCtx} from "../../logic/appContext";
 import {UnauthorizedError} from "../../models/UnauthorizedError";
+import {AppCtx} from "../../appContext";
 
 export function useLoadGameSessions() {
-    const gameSessionService = AppCtx.di.get(AppCtx.DIQ.GameSessionService);
+    const gameSessionService = AppCtx.GameSessionService();
     const handleUnauthorized = useHandleUnauthorized();
     return () => {
         return gameSessionService.listSessions()
@@ -16,7 +16,7 @@ export function useLoadGameSessions() {
 }
 
 export function useCreateGameSession() {
-    const gameSessionService = AppCtx.di.get(AppCtx.DIQ.GameSessionService);
+    const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
     return (seed: string | null) => {
         return gameSessionService.createSession(seed)
@@ -27,7 +27,7 @@ export function useCreateGameSession() {
 }
 
 export function useJoinGameSession() {
-    const gameSessionService = AppCtx.di.get(AppCtx.DIQ.GameSessionService);
+    const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
         return gameSessionService.joinSession(gameId)
@@ -39,7 +39,7 @@ export function useJoinGameSession() {
 }
 
 export function useDeleteGameSession() {
-    const gameSessionService = AppCtx.di.get(AppCtx.DIQ.GameSessionService);
+    const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
         return gameSessionService.deleteSession(gameId)
@@ -56,7 +56,7 @@ export function useStartGameSession() {
 
 
 export function useConnectGameSession() {
-    const gameSessionService = AppCtx.di.get(AppCtx.DIQ.GameSessionService);
+    const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
         gameSessionService.connectSession(gameId)
