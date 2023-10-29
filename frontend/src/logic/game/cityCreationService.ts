@@ -5,6 +5,9 @@ import {CommandService} from "./commandService";
 import {UserService} from "../user/userService";
 import {GameConfigRepository} from "../../state/access/GameConfigRepository";
 import {CountryRepository} from "../../state/access/CountryRepository";
+import {CommandRepository} from "../../state/access/CommandRepository";
+import {CommandType} from "../../models/commandType";
+import {CreateCityCommand} from "../../models/command";
 
 export class CityCreationService {
 
@@ -12,17 +15,20 @@ export class CityCreationService {
     private readonly userService: UserService;
     private readonly gameConfigRepository: GameConfigRepository;
     private readonly countryRepository: CountryRepository;
+    private readonly commandRepository: CommandRepository;
 
     constructor(
         commandService: CommandService,
         userService: UserService,
         gameConfigRepository: GameConfigRepository,
         countryRepository: CountryRepository,
+        commandRepository: CommandRepository,
     ) {
         this.commandService = commandService;
         this.userService = userService;
         this.gameConfigRepository = gameConfigRepository;
         this.countryRepository = countryRepository;
+        this.commandRepository = commandRepository;
     }
 
 
@@ -67,7 +73,8 @@ export class CityCreationService {
     }
 
     private isOccupied(tile: Tile): boolean {
-        return this.getCityPositions().findIndex(t => t.id === tile.identifier.id) !== -1;
+        return this.getCityPositions().findIndex(t => t.id === tile.identifier.id) !== -1
+            || this.commandRepository.getCommands().some(cmd => cmd.type === CommandType.CITY_CREATE && (cmd as CreateCityCommand).tile.id === tile.identifier.id);
     }
 
     private getCityPositions(): TileIdentifier[] {

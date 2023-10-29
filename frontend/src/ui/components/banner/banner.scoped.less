@@ -17,6 +17,12 @@
     border-bottom-width: 1px;
     border-image-source: linear-gradient(90deg, @color-border-dark, @color-border-light, @color-border-dark);
     background:          radial-gradient(ellipse at bottom, @color-green-secondary-light 0%, @color-green-secondary-dark 90%);
+
+    /deep/ .banner__subtitle {
+      width: 100%;
+      margin-top: @spacing-xs;
+    }
+
   }
 
   .banner__inner::before {
@@ -61,7 +67,6 @@
                     linear-gradient(180deg, rgba(0, 0, 0, 50%), transparent 10px);
 
   }
-
 
   &.banner--space-above {
     margin-top: @spacing-m;

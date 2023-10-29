@@ -63,8 +63,8 @@ export class GameLoopService {
         if (leftBtnDown) {
             const camera = this.cameraRepository.getCamera();
             this.cameraRepository.setCamera({
-                x: camera.x + (dx / camera.zoom),
-                y: camera.y - (dy / camera.zoom),
+                x: camera.x + (dx / camera.zoom * 2),
+                y: camera.y - (dy / camera.zoom * 2),
                 zoom: camera.zoom,
             });
         } else {

@@ -11,10 +11,13 @@ import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {CityEntry} from "../common/CityEntry";
-import {Province, ProvinceIdentifier} from "../../../../../models/province";
+import {Province, ProvinceIdentifier, ProvinceView} from "../../../../../models/province";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 import {ProvinceRepository} from "../../../../../state/access/ProvinceRepository";
+import {AppCtx} from "../../../../../appContext";
+import {InfoVisibility} from "../../../../../models/infoVisibility";
+import {CommandRepository} from "../../../../../state/access/CommandRepository";
 
 
 export function useOpenProvinceWindow() {
@@ -42,6 +45,9 @@ export interface ProvinceWindowProps {
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
     const province = ProvinceRepository.useProvinceById(props.provinceId);
+    const provinceView = AppCtx.DataViewService().getProvinceView(province)
+    const commands = CommandRepository.useCommands() // so menu updates with changes to commands
+
     const openCountryWindow = useOpenCountryWindow();
     const openCityWindow = useOpenCityWindow();
 
@@ -59,14 +65,14 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
                 <ProvinceBanner identifier={province.identifier}/>
                 <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
                     <ProvinceBaseInformationSection
-                        data={province}
+                        data={provinceView}
                         openCountry={() => openCountryWindow(province.country.id, true)}
                     />
                     <Spacer size="m"/>
-                    <ProvinceResourceBalanceSection data={province}/>
+                    <ProvinceResourceBalanceSection data={provinceView}/>
                     <Spacer size="m"/>
                     <ProvinceCitiesSection
-                        data={province}
+                        data={provinceView}
                         openCity={(id) => openCityWindow(id, true)}
                     />
                 </VBox>
@@ -79,13 +85,13 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
 function ProvinceBanner(props: { identifier: ProvinceIdentifier }): ReactElement {
     return (
-        <Banner spaceAbove>
+        <Banner spaceAbove subtitle={"Province"}>
             <Header1 centered>{props.identifier.name}</Header1>
         </Banner>
     );
 }
 
-function ProvinceBaseInformationSection(props: { data: Province, openCountry: () => void }): ReactElement {
+function ProvinceBaseInformationSection(props: { data: ProvinceView, openCountry: () => void }): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair name={"Id"} value={props.data.identifier.id}/>
@@ -94,17 +100,20 @@ function ProvinceBaseInformationSection(props: { data: Province, openCountry: ()
     );
 }
 
-function ProvinceResourceBalanceSection(props: { data: Province }): ReactElement {
-    console.log("RENDER PROVINCE RESOURCES", props.data)
+function ProvinceResourceBalanceSection(props: { data: ProvinceView }): ReactElement {
     return (
         <>
-            <Header2 centered>Resource Balance</Header2>
+            <Header2 centered>
+                {props.data.resourceBalance.visibility === InfoVisibility.KNOWN
+                    ? "Resource Balance"
+                    : "Known Resource Balance"}
+            </Header2>
             <Divider/>
 
             <InsetPanel>
 
                 <HBox fillParent gap_s top left wrap>
-                    {Array.from(props.data.resourceBalance).map(entry => (
+                    {Array.from(props.data.resourceBalance.items).map(entry => (
                         <ResourceBalanceBox data={{
                             type: entry[0],
                             value: entry[1],
@@ -118,15 +127,20 @@ function ProvinceResourceBalanceSection(props: { data: Province }): ReactElement
     );
 }
 
-function ProvinceCitiesSection(props: { data: Province, openCity: (id: string) => void }): ReactElement {
+function ProvinceCitiesSection(props: { data: ProvinceView, openCity: (id: string) => void }): ReactElement {
     return (
         <>
-            <Header2 centered>Cities</Header2>
+
+            <Header2 centered>
+                {props.data.cities.visibility === InfoVisibility.KNOWN
+                    ? "Cities"
+                    : "Known Cities"}
+            </Header2>
             <Divider/>
 
             <InsetPanel>
                 <VBox fillParent gap_s top stretch>
-                    {props.data.cities.map(city => {
+                    {props.data.cities.items.map(city => {
                         return (
                             <CityEntry
                                 data={city}

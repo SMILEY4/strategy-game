@@ -4,6 +4,7 @@ import {TileIdentifier} from "./tile";
 import {Color} from "./color";
 import {SettlementTier} from "./settlementTier";
 import {BuildingType} from "./buildingType";
+import {InfoVisibility} from "./infoVisibility";
 
 export interface CityIdentifier {
     id: string,
@@ -15,11 +16,6 @@ export interface CityReduced {
     identifier: CityIdentifier;
     isCountryCapitol: boolean;
     isProvinceCapitol: boolean;
-}
-
-export interface CityPlanned {
-    tile: TileIdentifier,
-    name: string
 }
 
 export interface City {
@@ -64,36 +60,29 @@ export interface ProductionEntry {
     settlerData: null | {}
 }
 
-export namespace City {
-    export const UNDEFINED: City = {
-        identifier: {
-            id: "undefined",
-            name: "undefined",
-            color: Color.BLACK,
-        },
-        country: {
-            id: "undefined",
-            name: "undefined",
-            color: Color.BLACK,
-        },
-        province: {
-            id: "undefined",
-            name: "undefined",
-            color: Color.BLACK,
-        },
-        tile: {
-            id: "undefined",
-            q: 0,
-            r: 0,
-        },
-        isCountryCapital: false,
-        isProvinceCapital: false,
-        tier: SettlementTier.VILLAGE,
-        population: {
-            size: 0,
-            progress: 0,
-        },
-        productionQueue: [],
-        buildings: [],
-    };
+export interface CityView {
+    isPlayerOwned: boolean,
+    identifier: CityIdentifier;
+    country: CountryIdentifier;
+    province: ProvinceIdentifier;
+    tile: TileIdentifier,
+    isCountryCapital: boolean;
+    isProvinceCapital: boolean;
+    tier: {
+        value: SettlementTier,
+        modifiedValue: SettlementTier | null
+    },
+    population: {
+        visibility: InfoVisibility,
+        size: number,
+        progress: number
+    },
+    buildings: {
+        visibility: InfoVisibility,
+        items: Building[]
+    },
+    productionQueue: {
+        visibility: InfoVisibility,
+        items: ProductionQueueEntry[]
+    },
 }

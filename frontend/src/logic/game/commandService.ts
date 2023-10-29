@@ -34,8 +34,8 @@ export class CommandService {
     public upgradeSettlementTier(city: CityIdentifier, currentTier: SettlementTier, targetTier: SettlementTier) {
         const command = new UpgradeCityCommand({
             city: city,
-            currentTier: currentTier.level,
-            targetTier: targetTier.level,
+            currentTier: currentTier,
+            targetTier: targetTier,
         });
         this.commandRepository.addCommand(command);
     }

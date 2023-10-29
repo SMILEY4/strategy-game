@@ -29,6 +29,7 @@ import {TilePicker} from "./logic/game/tilePicker";
 import {WorldUpdater} from "./logic/renderer/world/worldUpdater";
 import {MapModeRepository} from "./state/access/MapModeRepository";
 import {AudioService} from "./logic/audio/audioService";
+import {DataViewService} from "./logic/game/dataViewService";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -48,6 +49,7 @@ interface AppCtxDef {
     UserClient: () => UserClient,
     UserService: () => UserService,
 
+    DataViewService: () => DataViewService;
     NextTurnService: () => NextTurnService,
     EndTurnService: () => EndTurnService,
     CommandService: () => CommandService,
@@ -121,6 +123,10 @@ export const AppCtx: AppCtxDef = {
     ),
 
 
+    DataViewService: diContext.register(
+        "ModifiedAccessService",
+        () => new DataViewService(AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.CommandRepository()),
+    ),
     NextTurnService: diContext.register(
         "NextTurnService",
         () => new NextTurnService(AppCtx.GameLoopService(), AppCtx.RemoteGameStateRepository(), AppCtx.GameSessionStateRepository()),
@@ -135,11 +141,11 @@ export const AppCtx: AppCtxDef = {
     ),
     CityCreationService: diContext.register(
         "CityCreationService",
-        () => new CityCreationService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.GameConfigRepository(), AppCtx.CountryRepository()),
+        () => new CityCreationService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.GameConfigRepository(), AppCtx.CountryRepository(), AppCtx.CommandRepository()),
     ),
     CityUpgradeService: diContext.register(
         "CityUpgradeService",
-        () => new CityUpgradeService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.ProvinceRepository(), AppCtx.CityRepository()),
+        () => new CityUpgradeService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.ProvinceRepository(), AppCtx.CityRepository(), AppCtx.CommandRepository()),
     ),
     GameLoopService: diContext.register(
         "GameLoopService",

@@ -2,6 +2,7 @@ import {CountryIdentifier} from "./country";
 import {CityReduced} from "./city";
 import {Color} from "./color";
 import {ResourceType} from "./resourceType";
+import {InfoVisibility} from "./infoVisibility";
 
 export interface ProvinceIdentifier {
     id: string,
@@ -21,19 +22,17 @@ export interface Province {
     resourceBalance: Map<ResourceType, number>
 }
 
-export namespace Province {
-    export const UNDEFINED: Province = {
-        identifier: {
-            id: "undefined",
-            name: "undefined",
-            color: Color.BLACK,
-        },
-        country: {
-            id: "undefined",
-            name: "undefined",
-            color: Color.BLACK,
-        },
-        cities: [],
-        resourceBalance: new Map<ResourceType, number>()
+
+export interface ProvinceView {
+    isPlayerOwned: boolean,
+    identifier: ProvinceIdentifier;
+    country: CountryIdentifier;
+    cities: {
+        visibility: InfoVisibility,
+        items: CityReduced[]
     };
+    resourceBalance: {
+        visibility: InfoVisibility,
+        items: Map<ResourceType, number>
+    }
 }

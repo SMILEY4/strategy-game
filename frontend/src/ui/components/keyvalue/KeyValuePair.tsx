@@ -3,7 +3,7 @@ import {HBox} from "../layout/hbox/HBox";
 import {Text} from "../text/Text";
 import {joinClassNames} from "../utils";
 import {LinkButton} from "../button/link/LinkButton";
-import "./keyValuePair.less"
+import "./keyValuePair.less";
 
 export interface KeyValuePairProps {
     name: string,
@@ -17,34 +17,32 @@ export function KeyValuePair(props: KeyValuePairProps): ReactElement {
             <Text fillParent align="right">{props.name + ":"}</Text>
             {props.children}
         </HBox>
-    )
+    );
 }
 
 
-
-export interface KeyTextValuePairProps extends KeyValuePairProps{
-    value: any
+export interface KeyTextValuePairProps extends KeyValuePairProps {
+    value: any;
 }
 
 export function KeyTextValuePair(props: KeyTextValuePairProps) {
     return (
-        <KeyValuePair name={props.name}>
+        <KeyValuePair {...props} name={props.name}>
             <Text fillParent align="left">{props.value}</Text>
         </KeyValuePair>
-    )
+    );
 }
 
 
-
-export interface KeyLinkValuePairProps extends KeyValuePairProps{
+export interface KeyLinkValuePairProps extends KeyValuePairProps {
     value: string,
     onClick?: () => void
 }
 
 export function KeyLinkValuePair(props: KeyLinkValuePairProps) {
     return (
-        <KeyValuePair name={props.name}>
+        <KeyValuePair {...props} name={props.name}>
             <LinkButton fillParent align="left" onClick={props.onClick}>{props.value}</LinkButton>
         </KeyValuePair>
-    )
+    );
 }

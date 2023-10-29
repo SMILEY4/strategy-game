@@ -52,7 +52,7 @@ export class EndTurnService {
             return {
                 type: "production-queue-remove-entry",
                 cityId: cmd.city.id,
-                queueEntryId: cmd.entryId,
+                queueEntryId: cmd.entry.id,
             };
         }
         if (command.type === CommandType.CITY_CREATE) {

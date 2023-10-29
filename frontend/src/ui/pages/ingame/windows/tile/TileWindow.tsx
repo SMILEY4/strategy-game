@@ -143,7 +143,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 
 function TileBanner(props: { data: Tile }): ReactElement {
     return (
-        <Banner spaceAbove>
+        <Banner spaceAbove subtitle={"Tile"}>
             <Header1 centered>{props.data.terrainType || "Unknown"}</Header1>
         </Banner>
     );

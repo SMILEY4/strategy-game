@@ -11,16 +11,16 @@ import {Banner} from "../../../../components/banner/Banner";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {useOpenProvinceWindow} from "../province/ProvinceWindow";
 import {useOpenCountryWindow} from "../country/CountryWindow";
-import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
+import {KeyLinkValuePair, KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
-import {formatPercentage, joinClassNames} from "../../../../components/utils";
+import {joinClassNames} from "../../../../components/utils";
 import {useCancelProductionQueueEntry, useUpgradeSettlementTier, useValidateUpgradeSettlementTier} from "../../../../hooks/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
-import {Building, City, CityIdentifier, ProductionQueueEntry} from "../../../../../models/city";
+import {Building, CityIdentifier, CityView, ProductionQueueEntry} from "../../../../../models/city";
 import {useOpenTileWindow} from "../tile/TileWindow";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import "./cityMenu.less";
@@ -31,6 +31,10 @@ import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CommandType} from "../../../../../models/commandType";
 import {AudioType} from "../../../../../logic/audio/audioService";
 import {UIAudio} from "../../../../components/audio";
+import {SettlementTier} from "../../../../../models/settlementTier";
+import {AppCtx} from "../../../../../appContext";
+import {InfoVisibility} from "../../../../../models/infoVisibility";
+import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -58,10 +62,12 @@ export interface CityWindowProps {
 export function CityWindow(props: CityWindowProps): ReactElement {
 
     const city = CityRepository.useCityById(props.cityId);
+    const cityView = AppCtx.DataViewService().getCityView(city);
+    const commands = CommandRepository.useCommands() // so menu updates with changes to commands
+
     const openCountryWindow = useOpenCountryWindow();
     const openProvinceWindow = useOpenProvinceWindow();
     const openTileWindow = useOpenTileWindow();
-
     const [validUpgradeSettlement, reasonsValidationsUpgrade] = useValidateUpgradeSettlementTier(city);
     const [, , upgradeSettlementTier] = useUpgradeSettlementTier(city);
 
@@ -76,11 +82,11 @@ export function CityWindow(props: CityWindowProps): ReactElement {
             noPadding
         >
             <VBox fillParent>
-                <CityBanner identifier={city.identifier}/>
+                <CityBanner identifier={city.identifier} tier={city.tier}/>
                 <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
 
                     <CityBaseDataSection
-                        data={city}
+                        data={cityView}
                         openCountry={() => openCountryWindow(city.country.id, true)}
                         openProvince={() => openProvinceWindow(city.province.id, true)}
                         openTile={() => openTileWindow(city.tile)}
@@ -102,9 +108,13 @@ export function CityWindow(props: CityWindowProps): ReactElement {
                         </ButtonPrimary>
                     </BasicTooltip>
 
-                    <CityPopulationSection data={city}/>
+                    <Spacer size="m"/>
 
-                    <CityContentSection data={city}/>
+                    <CityPopulationSection data={cityView}/>
+
+                    <Spacer size="m"/>
+
+                    <CityContentSection data={cityView}/>
 
                 </VBox>
             </VBox>
@@ -113,19 +123,19 @@ export function CityWindow(props: CityWindowProps): ReactElement {
 }
 
 
-function CityBanner(props: { identifier: CityIdentifier }): ReactElement {
+function CityBanner(props: { identifier: CityIdentifier, tier: SettlementTier }): ReactElement {
     return (
-        <Banner spaceAbove>
+        <Banner spaceAbove subtitle={props.tier.displayString}>
             <Header1 centered>{props.identifier.name}</Header1>
         </Banner>
     );
 }
 
 function CityBaseDataSection(props: {
-    data: City,
+    data: CityView,
     openCountry: () => void,
     openProvince: () => void,
-    openTile: () => void,
+    openTile: () => void
 }): ReactElement {
     return (
         <InsetPanel>
@@ -133,10 +143,9 @@ function CityBaseDataSection(props: {
                 name={"Id"}
                 value={props.data.identifier.id}
             />
-            <KeyTextValuePair
-                name={"Tier"}
-                value={props.data.tier.displayString}
-            />
+            <KeyValuePair name={"Tier"}>
+                <ChangeInfoText prevValue={props.data.tier.value.displayString} nextValue={props.data.tier.modifiedValue?.displayString}/>
+            </KeyValuePair>
             <KeyLinkValuePair
                 name={"Country"}
                 value={props.data.country.name}
@@ -157,35 +166,38 @@ function CityBaseDataSection(props: {
 }
 
 
-function CityPopulationSection(props: { data: City }): ReactElement {
+function CityPopulationSection(props: { data: CityView }): ReactElement {
     return (
         <>
-            <Spacer size="m"/>
             <Header2 centered>Population</Header2>
             <Divider/>
             <InsetPanel>
                 <KeyTextValuePair
                     name={"Size"}
-                    value={props.data.population.size === null ? "?" : props.data.population.size}
+                    value={props.data.population.visibility === InfoVisibility.KNOWN ? props.data.population.size : "?"}
                 />
                 <KeyTextValuePair
                     name={"Growth Progress"}
-                    value={props.data.population.progress === null ? "?" : formatPercentage(props.data.population.progress, true)}
+                    value={props.data.population.visibility === InfoVisibility.KNOWN ? props.data.population.progress : "?"}
                 />
             </InsetPanel>
         </>
     );
 }
 
-
-function CityContentSection(props: { data: City }): ReactElement {
+function CityContentSection(props: { data: CityView }): ReactElement {
     return (
         <>
-            <Spacer size="m"/>
-            <Header2 centered>Contents</Header2>
+
+            <Header2 centered>
+                {props.data.buildings.visibility === InfoVisibility.KNOWN
+                    ? "Buildings"
+                    : "Known Buildings"}
+            </Header2>
+
             <Divider/>
 
-            <CityProductionQueue data={props.data}/>
+            {props.data.isPlayerOwned && (<CityProductionQueue data={props.data}/>)}
 
             <Spacer size={"xs"}/>
 
@@ -195,10 +207,9 @@ function CityContentSection(props: { data: City }): ReactElement {
 }
 
 
-function CityProductionQueue(props: { data: City }): ReactElement {
-    // todo: button to open window with list of complete production queue
-    // todo: display cancelled queue entries (as strikethrough / grayed out / ...)
-    const entry = props.data.productionQueue.length === 0 ? null : props.data.productionQueue[0];
+function CityProductionQueue(props: { data: CityView }): ReactElement {
+    // todo: improve
+    const entry = props.data.productionQueue.items.length === 0 ? null : props.data.productionQueue.items[0];
     const entryData = {
         id: entry === null ? "-" : entry.id,
         name: entry === null ? "-" : getProductionQueueEntryName(entry),
@@ -207,11 +218,11 @@ function CityProductionQueue(props: { data: City }): ReactElement {
     const cancelCommands = CommandRepository.useCommands()
         .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
         .map(cmd => cmd as CancelProductionQueueCommand);
-    const cancelled = entry ? isCancelled(entry, cancelCommands) : false
+    const cancelled = entry ? isCancelled(entry, cancelCommands) : false;
     const cancelEntry = useCancelProductionQueueEntry(props.data.identifier, entry);
     const openProductionWindow = useOpenCityProductionWindow();
     const openQueueWindow = useOpenCityProductionQueueWindow();
-    const playSound = UIAudio.usePlayAudio(AudioType.CLICK_A.id)
+    const playSound = UIAudio.usePlayAudio(AudioType.CLICK_A.id);
     return (
         <HBox centerVertical left gap_s>
             <ButtonPrimary square onClick={() => openProductionWindow(props.data.identifier)}>
@@ -223,7 +234,7 @@ function CityProductionQueue(props: { data: City }): ReactElement {
                 className="production_queue__progress"
                 onClick={() => {
                     playSound();
-                    openQueueWindow(props.data.identifier)
+                    openQueueWindow(props.data.identifier);
                 }}
             >
                 <Text relative strikethrough={cancelled}>{entryData.name}</Text>
@@ -231,7 +242,7 @@ function CityProductionQueue(props: { data: City }): ReactElement {
 
             <ButtonPrimary
                 square round small
-                disabled={props.data.productionQueue.length === 0 || cancelled}
+                disabled={props.data.productionQueue.items.length === 0 || cancelled}
                 onClick={cancelEntry}
                 soundId={AudioType.CLICK_B.id}
             >
@@ -239,6 +250,7 @@ function CityProductionQueue(props: { data: City }): ReactElement {
             </ButtonPrimary>
         </HBox>
     );
+
 }
 
 function getProductionQueueEntryName(entry: ProductionQueueEntry): string {
@@ -250,14 +262,22 @@ function getProductionQueueEntryName(entry: ProductionQueueEntry): string {
     }
 }
 
-function CityContentList(props: { data: City }): ReactElement {
+
+function CityContentList(props: { data: CityView }): ReactElement {
     return (
         <>
             <HBox gap_s centerVertical left>
-                <Text>{"Slots: " + props.data.buildings.length + "/" + props.data.tier.buildingSlots}</Text>
+                <Text>
+                    {
+                        "Building-Slots: "
+                        + (props.data.buildings.visibility === InfoVisibility.KNOWN ? props.data.buildings.items.length : "?")
+                        + "/"
+                        + props.data.tier.value.buildingSlots
+                    }
+                </Text>
             </HBox>
             <HBox gap_s top left wrap>
-                {props.data.buildings.map(building => (
+                {props.data.buildings.items.map(building => (
                     <ContentBox building={building}/>
                 ))}
             </HBox>

@@ -99,7 +99,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                     <Header4 onLight>{"Upgrade Settlement"}</Header4>
                     <Spacer size="s"/>
                     <Text onLight>with name <i>{cmd.city.name}</i></Text>
-                    <Text onLight>from tier <i>{cmd.currentTier}</i> to <i>{cmd.targetTier}</i></Text>
+                    <Text onLight>from tier <i>{cmd.currentTier.displayString}</i> to <i>{cmd.targetTier.displayString}</i></Text>
                 </>
             );
         }

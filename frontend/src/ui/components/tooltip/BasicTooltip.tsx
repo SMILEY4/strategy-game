@@ -4,7 +4,7 @@ import {VBox} from "../layout/vbox/VBox";
 import React from "react";
 
 export function BasicTooltip(props: { enabled?: boolean, delay?: number, content: any, children: any }) {
-    if (props.enabled) {
+    if (props.enabled !== false) {
         return (
             <TooltipContext delay={props.delay}>
                 <TooltipTrigger>

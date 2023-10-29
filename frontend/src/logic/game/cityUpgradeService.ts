@@ -6,6 +6,9 @@ import {Country} from "../../models/country";
 import {CountryRepository} from "../../state/access/CountryRepository";
 import {ProvinceRepository} from "../../state/access/ProvinceRepository";
 import {CityRepository} from "../../state/access/CityRepository";
+import {CommandRepository} from "../../state/access/CommandRepository";
+import {CommandType} from "../../models/commandType";
+import {UpgradeCityCommand} from "../../models/command";
 
 export class CityUpgradeService {
 
@@ -14,17 +17,21 @@ export class CityUpgradeService {
     private readonly countryRepository: CountryRepository;
     private readonly provinceRepository: ProvinceRepository;
     private readonly cityRepository: CityRepository;
+    private readonly commandRepository: CommandRepository;
 
     constructor(commandService: CommandService,
                 userService: UserService,
                 countryRepository: CountryRepository,
                 provinceRepository: ProvinceRepository,
-                cityRepository: CityRepository) {
+                cityRepository: CityRepository,
+                commandRepository: CommandRepository,
+    ) {
         this.commandService = commandService;
         this.userService = userService;
         this.countryRepository = countryRepository;
         this.provinceRepository = provinceRepository;
         this.cityRepository = cityRepository;
+        this.commandRepository = commandRepository;
     }
 
 
@@ -34,6 +41,9 @@ export class CityUpgradeService {
 
         if (city.country.id !== country.identifier.id) {
             failureReasons.push("Not owner of city");
+        }
+        if (this.isAlreadyUpgrading(city)) {
+            failureReasons.push("Already upgrading");
         }
         if (city.tier.nextTier === null) {
             failureReasons.push("City is already at max tier");
@@ -53,6 +63,12 @@ export class CityUpgradeService {
         return failureReasons;
     }
 
+    private isAlreadyUpgrading(city: City): boolean {
+        return this.commandRepository.getCommands().some(cmd =>
+            cmd.type === CommandType.CITY_UPGRADE && (cmd as UpgradeCityCommand).city.id === city.identifier.id,
+        );
+    }
+
     public upgrade(city: City) {
         this.commandService.upgradeSettlementTier(
             city.identifier,
@@ -60,6 +76,7 @@ export class CityUpgradeService {
             city.tier.nextTier!,
         );
     }
+
 
     private getPlayerCountry(): Country {
         return this.countryRepository.getCountryByUserId(this.userService.getUserId());
