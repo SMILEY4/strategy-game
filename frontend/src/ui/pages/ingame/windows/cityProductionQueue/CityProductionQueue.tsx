@@ -20,6 +20,7 @@ import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CommandType} from "../../../../../models/commandType";
 import {CancelProductionQueueCommand} from "../../../../../models/command";
 import useCityById = CityRepository.useCityById;
+import {AudioType} from "../../../../../logic/audio/audioService";
 
 export function useOpenCityProductionQueueWindow() {
     const WINDOW_ID = "city-production-queue";
@@ -100,7 +101,7 @@ function QueueEntry(props: { position: number, entry: ProductionQueueEntry, canc
             <HBox centerVertical spaceBetween gap_s>
                 <Text strikethrough={props.cancelled}>{props.position + ") " + getName(props.entry)}</Text>
                 {props.position === 1 && (<ProgressBar progress={props.entry.progress} className="production_queue__progress"/>)}
-                <ButtonPrimary square round small onClick={props.onCancel} disabled={props.cancelled}><CgClose/></ButtonPrimary>
+                <ButtonPrimary square round small onClick={props.onCancel} disabled={props.cancelled} soundId={AudioType.CLICK_B.id}><CgClose/></ButtonPrimary>
             </HBox>
         </DecoratedPanel>
     );

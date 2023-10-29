@@ -28,6 +28,7 @@ import {RemoteGameStateRepository} from "./state/access/RemoteGameStateRepositor
 import {TilePicker} from "./logic/game/tilePicker";
 import {WorldUpdater} from "./logic/renderer/world/worldUpdater";
 import {MapModeRepository} from "./state/access/MapModeRepository";
+import {AudioService} from "./logic/audio/audioService";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -37,6 +38,7 @@ const API_WS_BASE_URL = import.meta.env.PUB_BACKEND_WEBSOCKET_URL;
 interface AppCtxDef {
     HttpClient: () => HttpClient,
     WebsocketClient: () => WebsocketClient,
+    AudioService: () => AudioService,
 
     GameSessionMessageHandler: () => GameSessionMessageHandler,
     GameSessionClient: () => GameSessionClient,
@@ -81,7 +83,14 @@ export const AppCtx: AppCtxDef = {
         "WebsocketClient",
         () => new WebsocketClient(API_WS_BASE_URL),
     ),
-
+    AudioService: diContext.register(
+        "AudioService",
+        () => new AudioService(),
+        {
+            creation: "eager",
+            lifetime: "singleton",
+        },
+    ),
 
 
     GameSessionMessageHandler: diContext.register(
@@ -98,7 +107,6 @@ export const AppCtx: AppCtxDef = {
     ),
 
 
-
     AuthProvider: diContext.register(
         "AuthProvider",
         () => new AuthProvider(AppCtx.UserRepository()),
@@ -111,7 +119,6 @@ export const AppCtx: AppCtxDef = {
         "UserService",
         () => new UserService(AppCtx.UserClient(), AppCtx.UserRepository()),
     ),
-
 
 
     NextTurnService: diContext.register(
@@ -147,7 +154,6 @@ export const AppCtx: AppCtxDef = {
     ),
 
 
-
     CanvasHandle: diContext.register(
         "CanvasHandle",
         () => new CanvasHandle(),
@@ -163,7 +169,6 @@ export const AppCtx: AppCtxDef = {
             AppCtx.TileRepository(),
         ),
     ),
-
 
 
     UserRepository: diContext.register(

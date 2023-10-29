@@ -29,6 +29,8 @@ import {useOpenCityProductionQueueWindow} from "../cityProductionQueue/CityProdu
 import {CancelProductionQueueCommand} from "../../../../../models/command";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CommandType} from "../../../../../models/commandType";
+import {AudioType} from "../../../../../logic/audio/audioService";
+import {UIAudio} from "../../../../components/audio";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -209,6 +211,7 @@ function CityProductionQueue(props: { data: City }): ReactElement {
     const cancelEntry = useCancelProductionQueueEntry(props.data.identifier, entry);
     const openProductionWindow = useOpenCityProductionWindow();
     const openQueueWindow = useOpenCityProductionQueueWindow();
+    const playSound = UIAudio.usePlayAudio(AudioType.CLICK_A.id)
     return (
         <HBox centerVertical left gap_s>
             <ButtonPrimary square onClick={() => openProductionWindow(props.data.identifier)}>
@@ -218,7 +221,10 @@ function CityProductionQueue(props: { data: City }): ReactElement {
             <ProgressBar
                 progress={entryData.progress}
                 className="production_queue__progress"
-                onClick={() => openQueueWindow(props.data.identifier)}
+                onClick={() => {
+                    playSound();
+                    openQueueWindow(props.data.identifier)
+                }}
             >
                 <Text relative strikethrough={cancelled}>{entryData.name}</Text>
             </ProgressBar>
@@ -227,6 +233,7 @@ function CityProductionQueue(props: { data: City }): ReactElement {
                 square round small
                 disabled={props.data.productionQueue.length === 0 || cancelled}
                 onClick={cancelEntry}
+                soundId={AudioType.CLICK_B.id}
             >
                 <CgClose/>
             </ButtonPrimary>

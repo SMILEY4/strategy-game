@@ -5,6 +5,7 @@ import {joinClassNames} from "../../utils";
 import {ButtonPrimary} from "../../button/primary/ButtonPrimary";
 import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less"
+import {AudioType} from "../../../../logic/audio/audioService";
 
 export interface DecoratedWindowProps {
     windowId: string;
@@ -44,7 +45,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             <div {...resizerProps} className="decorated-window__resize-area"/>
 
             {props.withCloseButton && (
-                <ButtonPrimary red round className="decorated-window__close" onClick={handleClose}>
+                <ButtonPrimary red round className="decorated-window__close" onClick={handleClose} soundId={AudioType.CLICK_B.id}>
                     <CgClose/>
                 </ButtonPrimary>
             )}

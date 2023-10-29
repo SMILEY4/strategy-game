@@ -17,6 +17,7 @@ import {AppCtx} from "../../../../../appContext";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CommandType} from "../../../../../models/commandType";
 import {ProductionEntry, ProductionQueueEntry} from "../../../../../models/city";
+import {AudioType} from "../../../../../logic/audio/audioService";
 
 
 export function useOpenCommandLogWindow() {
@@ -72,7 +73,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 <VBox stretch>
                     {renderCommand(props.command)}
                 </VBox>
-                <ButtonPrimary red round small onClick={props.onCancel}>
+                <ButtonPrimary red round small onClick={props.onCancel} soundId={AudioType.CLICK_B.id}>
                     <CgClose/>
                 </ButtonPrimary>
             </HBox>
