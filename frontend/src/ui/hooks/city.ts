@@ -1,4 +1,4 @@
-import {City, CityIdentifier, ProductionEntry} from "../../models/city";
+import {City, CityIdentifier, ProductionEntry, ProductionQueueEntry} from "../../models/city";
 import {Tile} from "../../models/tile";
 import {BuildingType} from "../../models/buildingType";
 import {AppCtx} from "../../appContext";
@@ -42,10 +42,12 @@ export function useValidateUpgradeSettlementTier(city: City): [boolean, string[]
 }
 
 
-export function useCancelProductionQueueEntry(city: CityIdentifier) {
+export function useCancelProductionQueueEntry(city: CityIdentifier, entry: ProductionQueueEntry | null) {
     const commandService = AppCtx.CommandService();
-    return (entryId: string) => {
-        commandService.cancelProductionQueueEntry(city, entryId);
+    return () => {
+        if (entry) {
+            commandService.cancelProductionQueueEntry(city, entry);
+        }
     };
 }
 

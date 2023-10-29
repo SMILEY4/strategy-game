@@ -16,11 +16,7 @@ import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary
 import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
 import {formatPercentage, joinClassNames} from "../../../../components/utils";
-import {
-    useCancelProductionQueueEntry,
-    useUpgradeSettlementTier,
-    useValidateUpgradeSettlementTier,
-} from "../../../../hooks/city";
+import {useCancelProductionQueueEntry, useUpgradeSettlementTier, useValidateUpgradeSettlementTier} from "../../../../hooks/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
@@ -29,6 +25,10 @@ import {useOpenTileWindow} from "../tile/TileWindow";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import "./cityMenu.less";
 import {CityRepository} from "../../../../../state/access/CityRepository";
+import {useOpenCityProductionQueueWindow} from "../cityProductionQueue/CityProductionQueue";
+import {CancelProductionQueueCommand} from "../../../../../models/command";
+import {CommandRepository} from "../../../../../state/access/CommandRepository";
+import {CommandType} from "../../../../../models/commandType";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -202,22 +202,31 @@ function CityProductionQueue(props: { data: City }): ReactElement {
         name: entry === null ? "-" : getProductionQueueEntryName(entry),
         progress: entry === null ? 0 : entry.progress,
     };
-    const cancelEntry = useCancelProductionQueueEntry(props.data.identifier);
+    const cancelCommands = CommandRepository.useCommands()
+        .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
+        .map(cmd => cmd as CancelProductionQueueCommand);
+    const cancelled = entry ? isCancelled(entry, cancelCommands) : false
+    const cancelEntry = useCancelProductionQueueEntry(props.data.identifier, entry);
     const openProductionWindow = useOpenCityProductionWindow();
+    const openQueueWindow = useOpenCityProductionQueueWindow();
     return (
         <HBox centerVertical left gap_s>
             <ButtonPrimary square onClick={() => openProductionWindow(props.data.identifier)}>
                 <FiPlus/>
             </ButtonPrimary>
 
-            <ProgressBar progress={entryData.progress} className="production_queue__progress">
-                <Text relative>{entryData.name}</Text>
+            <ProgressBar
+                progress={entryData.progress}
+                className="production_queue__progress"
+                onClick={() => openQueueWindow(props.data.identifier)}
+            >
+                <Text relative strikethrough={cancelled}>{entryData.name}</Text>
             </ProgressBar>
 
             <ButtonPrimary
                 square round small
-                disabled={props.data.productionQueue.length === 0}
-                onClick={() => cancelEntry(entryData.id)}
+                disabled={props.data.productionQueue.length === 0 || cancelled}
+                onClick={cancelEntry}
             >
                 <CgClose/>
             </ButtonPrimary>
@@ -260,4 +269,8 @@ function ContentBox(props: { building: Building }) {
             />
         </BuildingInfoTooltip>
     );
+}
+
+function isCancelled(entry: ProductionQueueEntry, commands: CancelProductionQueueCommand[]): boolean {
+    return commands.some(cmd => cmd.entry.id === entry.id);
 }

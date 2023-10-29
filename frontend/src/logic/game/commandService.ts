@@ -1,4 +1,4 @@
-import {CityIdentifier, ProductionEntry} from "../../models/city";
+import {CityIdentifier, ProductionEntry, ProductionQueueEntry} from "../../models/city";
 import {TileIdentifier} from "../../models/tile";
 import {SettlementTier} from "../../models/settlementTier";
 import {CommandRepository} from "../../state/access/CommandRepository";
@@ -48,10 +48,10 @@ export class CommandService {
         this.commandRepository.addCommand(command);
     }
 
-    public cancelProductionQueueEntry(city: CityIdentifier, entryId: string) {
+    public cancelProductionQueueEntry(city: CityIdentifier, entry: ProductionQueueEntry) {
         const command = new CancelProductionQueueCommand({
             city: city,
-            entryId: entryId,
+            entry: entry,
         });
         this.commandRepository.addCommand(command);
     }

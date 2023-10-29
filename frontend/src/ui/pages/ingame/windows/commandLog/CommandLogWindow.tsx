@@ -16,6 +16,7 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {AppCtx} from "../../../../../appContext";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CommandType} from "../../../../../models/commandType";
+import {ProductionEntry, ProductionQueueEntry} from "../../../../../models/city";
 
 
 export function useOpenCommandLogWindow() {
@@ -107,7 +108,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 <>
                     <Header4 onLight>{"Add to production queue"}</Header4>
                     <Spacer size="s"/>
-                    <Text onLight>construct <i>{getProductionQueueAddCommandName(cmd)}</i></Text>
+                    <Text onLight>construct <i>{getProductionEntryName(cmd.entry)}</i></Text>
                     <Text onLight>in city <i>{cmd.city.name}</i></Text>
                 </>
             );
@@ -118,6 +119,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 <>
                     <Header4 onLight>{"Cancel production queue entry"}</Header4>
                     <Spacer size="s"/>
+                    <Text onLight>with name <i>{getProductionQueueEntryName(cmd.entry)}</i></Text>
                     <Text onLight>in city <i>{cmd.city.name}</i></Text>
                 </>
             );
@@ -143,10 +145,20 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
 
 }
 
-function getProductionQueueAddCommandName(cmd: AddProductionQueueCommand): string {
-    switch (cmd.entry.type) {
+function getProductionEntryName(entry: ProductionEntry): string {
+    switch (entry.type) {
         case "building":
-            return cmd.entry.buildingData!.type.displayString;
+            return entry.buildingData!.type.displayString;
+        case "settler":
+            return "Settler";
+
+    }
+}
+
+function getProductionQueueEntryName(entry: ProductionQueueEntry): string {
+    switch (entry.type) {
+        case "building":
+            return entry.buildingData!.type.displayString;
         case "settler":
             return "Settler";
 

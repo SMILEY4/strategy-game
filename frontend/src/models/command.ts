@@ -1,7 +1,7 @@
 import {CommandType} from "./commandType";
 import {UID} from "../shared/uid";
 import {TileIdentifier} from "./tile";
-import {CityIdentifier, ProductionEntry} from "./city";
+import {CityIdentifier, ProductionEntry, ProductionQueueEntry} from "./city";
 
 
 export abstract class Command {
@@ -65,12 +65,12 @@ export class AddProductionQueueCommand extends Command {
 export class CancelProductionQueueCommand extends Command {
 
     readonly city: CityIdentifier;
-    readonly entryId: string;
+    readonly entry: ProductionQueueEntry;
 
-    constructor(data: { city: CityIdentifier, entryId: string }) {
-        super(CommandType.CITY_UPGRADE);
+    constructor(data: { city: CityIdentifier, entry: ProductionQueueEntry }) {
+        super(CommandType.PRODUCTION_QUEUE_CANCEL);
         this.city = data.city;
-        this.entryId = data.entryId;
+        this.entry = data.entry;
     }
 
 }
