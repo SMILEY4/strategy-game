@@ -44,10 +44,8 @@ export class WorldUpdater {
     public update(camera: Camera) {
         if (this.world) {
             const currentRevId = this.commandRepository.getRevId();
-            if (currentRevId !== this.lastRevIdCommandState) {
-                this.lastRevIdCommandState = currentRevId;
-            }
             if (currentRevId !== this.lastRevIdCommandState || this.lastZoom !== camera.getZoom()) {
+                this.lastRevIdCommandState = currentRevId;
                 this.rebuildEntityLayer(camera);
                 this.lastZoom = camera.getZoom();
             }

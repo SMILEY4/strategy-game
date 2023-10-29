@@ -16,7 +16,7 @@ export class CountryRepository {
         this.commandRepository = commandRepository;
     }
 
-    public getCountryByUserIdOr(userId: string): Country {
+    public getCountryByUserId(userId: string): Country {
         const country = this.remoteRepository.getGameState().countries.find(c => c.player.userId === userId);
         if (country) {
             return CountryRepository.applyCommands(country, this.commandRepository.getCommands());
@@ -30,6 +30,7 @@ export class CountryRepository {
 export namespace CountryRepository {
 
     export function applyCommands(country: Country, commands: Command[]): Country {
+        // todo: think - is this good idea?  alternative: apply commands everywhere else outside of repository
         const usedAmountSettlers = commands.filter(cmd => cmd.type === CommandType.CITY_CREATE).length;
         return {
             ...country,
@@ -48,7 +49,6 @@ export namespace CountryRepository {
     }
 
     export function useCountryByUserId(userId: string): Country {
-        console.log("REMOTE",RemoteGameStateStore.useState(s => s))
         const commands = LocalCommandStateStore.useState(state => state.commands);
         const country = RemoteGameStateStore.useState(state => state.countries.find(c => c.player.userId === userId));
         if (country) {

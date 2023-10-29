@@ -111,7 +111,6 @@ export namespace EntityDataBuilder {
     }
 
     function collectEntities(tiles: Tile[], cities: City[], commands: Command[]): RenderEntity[] {
-
         const entities: RenderEntity[] = [];
 
         for (let i = 0, n = tiles.length; i < n; i++) {

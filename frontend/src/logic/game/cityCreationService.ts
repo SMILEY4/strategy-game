@@ -63,7 +63,7 @@ export class CityCreationService {
     }
 
     private getPlayerCountry(): Country {
-        return this.countryRepository.getCountryByUserIdOr(this.userService.getUserId());
+        return this.countryRepository.getCountryByUserId(this.userService.getUserId());
     }
 
     private isOccupied(tile: Tile): boolean {

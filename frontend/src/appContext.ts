@@ -116,7 +116,7 @@ export const AppCtx: AppCtxDef = {
 
     NextTurnService: diContext.register(
         "NextTurnService",
-        () => new NextTurnService(AppCtx.GameLoopService(), AppCtx.RemoteGameStateRepository()),
+        () => new NextTurnService(AppCtx.GameLoopService(), AppCtx.RemoteGameStateRepository(), AppCtx.GameSessionStateRepository()),
     ),
     EndTurnService: diContext.register(
         "EndTurnService",

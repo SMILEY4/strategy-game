@@ -1,14 +1,10 @@
-import {Command} from "../../models/command";
+import {Command, CreateCityCommand} from "../../models/command";
 import {LocalCommandStateStore} from "../local/LocalCommandStore";
 
 export class CommandRepository {
 
     public getRevId(): string {
         return LocalCommandStateStore.useState.getState().revId;
-    }
-
-    public getCommands(): Command[] {
-        return LocalCommandStateStore.useState.getState().commands;
     }
 
     public setCommands(commands: Command[]) {
@@ -24,6 +20,10 @@ export class CommandRepository {
 
     public removeCommand(id: string) {
         this.setCommands(this.getCommands().filter(cmd => cmd.id !== id));
+    }
+
+    public getCommands(): Command[] {
+        return LocalCommandStateStore.useState.getState().commands;
     }
 
 }

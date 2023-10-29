@@ -62,7 +62,7 @@ export class CityUpgradeService {
     }
 
     private getPlayerCountry(): Country {
-        return this.countryRepository.getCountryByUserIdOr(this.userService.getUserId());
+        return this.countryRepository.getCountryByUserId(this.userService.getUserId());
     }
 
     private getProvinceCityCount(city: City): number {

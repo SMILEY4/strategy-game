@@ -8,6 +8,10 @@ export class GameSessionStateRepository {
         LocalGameSessionStore.useState.getState().setState(state);
     }
 
+    public getGameSessionState(): GameSessionState {
+        return LocalGameSessionStore.useState.getState().state;
+    }
+
     public setGameTurnState(state: GameTurnState) {
         LocalGameSessionStore.useState.getState().setTurnState(state);
     }

@@ -51,7 +51,6 @@ export class GameSessionService {
             .then(() => this.client.config())
             .then(config => this.gameConfigRepository.setGameConfig(config))
             .then(() => this.client.connect(gameId))
-            .then(() => this.gameSessionRepository.setGameSessionState("playing"))
             .catch(() => this.gameSessionRepository.setGameSessionState("error"));
     }
 

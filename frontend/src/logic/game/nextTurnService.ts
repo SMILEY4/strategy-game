@@ -10,15 +10,20 @@ import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
 import {ResourceType} from "../../models/resourceType";
 import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
+import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 
 export class NextTurnService {
 
     private readonly gameLoopService: GameLoopService;
     private readonly remoteGameRepository: RemoteGameStateRepository;
+    private readonly gameSessionRepository: GameSessionStateRepository;
 
-    constructor(gameLoopService: GameLoopService, remoteGameRepository: RemoteGameStateRepository) {
+    constructor(gameLoopService: GameLoopService,
+                remoteGameRepository: RemoteGameStateRepository,
+                gameSessionRepository: GameSessionStateRepository) {
         this.gameLoopService = gameLoopService;
         this.remoteGameRepository = remoteGameRepository;
+        this.gameSessionRepository = gameSessionRepository;
     }
 
 
@@ -33,6 +38,9 @@ export class NextTurnService {
             cities: this.buildCities(game),
             tiles: TileContainer.create(this.buildTiles(game), 11),
         });
+        if (this.gameSessionRepository.getGameSessionState() === "loading") {
+            this.gameSessionRepository.setGameSessionState("playing");
+        }
         this.gameLoopService.onGameStateUpdate();
     }
 

@@ -17,6 +17,11 @@ export interface CityReduced {
     isProvinceCapitol: boolean;
 }
 
+export interface CityPlanned {
+    tile: TileIdentifier,
+    name: string
+}
+
 export interface City {
     identifier: CityIdentifier;
     country: CountryIdentifier;

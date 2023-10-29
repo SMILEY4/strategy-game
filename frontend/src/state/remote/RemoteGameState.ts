@@ -9,6 +9,7 @@ export interface RemoteGameState {
     provinces: Province[],
     cities: City[]
     tiles: TileContainer;
+    // todo: routes
 }
 
 export const INITIAL_REMOTE_GAME_STATE: RemoteGameState = {

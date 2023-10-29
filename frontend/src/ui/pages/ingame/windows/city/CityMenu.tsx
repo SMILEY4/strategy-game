@@ -194,6 +194,8 @@ function CityContentSection(props: { data: City }): ReactElement {
 
 
 function CityProductionQueue(props: { data: City }): ReactElement {
+    // todo: button to open window with list of complete production queue
+    // todo: display cancelled queue entries (as strikethrough / grayed out / ...)
     const entry = props.data.productionQueue.length === 0 ? null : props.data.productionQueue[0];
     const entryData = {
         id: entry === null ? "-" : entry.id,

@@ -23,6 +23,7 @@ export class CityRepository {
         }
     }
 
+
 }
 
 export namespace CityRepository {
