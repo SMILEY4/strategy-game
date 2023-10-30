@@ -8,7 +8,6 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
 import {useOpenProvinceWindow} from "../province/ProvinceWindow";
-import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ProvinceEntry} from "../common/ProvinceEntry";
 import {CityEntry} from "../common/CityEntry";
@@ -19,6 +18,7 @@ import {Text} from "../../../../components/text/Text";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
+import {UseCityWindow} from "../city/useCityWindow";
 
 
 export function useOpenCountryWindow() {
@@ -45,11 +45,11 @@ export interface CountryWindowProps {
 
 export function CountryWindow(props: CountryWindowProps): ReactElement {
     const country = CountryRepository.useCountryById(props.countryId);
-    const countryView = AppCtx.DataViewService().getCountryView(country);
-    const commands = CommandRepository.useCommands() // so menu updates with changes to commands
+    const commands = CommandRepository.useCommands();
+    const countryView = AppCtx.DataViewService().getCountryView(country, commands);
 
     const openProvinceWindow = useOpenProvinceWindow();
-    const openCityWindow = useOpenCityWindow();
+    const openCityWindow = UseCityWindow.useOpen();
 
     return (
         <DecoratedWindow

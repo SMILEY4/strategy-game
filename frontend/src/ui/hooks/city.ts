@@ -24,34 +24,6 @@ export function useValidateCreateSettlement(tile: Tile | null, name: string | nu
     }
 }
 
-export function useUpgradeSettlementTier(city: City): [boolean, string[], () => void] {
-    const upgradeService = AppCtx.CityUpgradeService();
-    const [possible, reasons] = useValidateUpgradeSettlementTier(city);
-
-    function perform() {
-        upgradeService.upgrade(city);
-    }
-
-    return [possible, reasons, perform];
-}
-
-export function useValidateUpgradeSettlementTier(city: City): [boolean, string[]] {
-    const upgradeService = AppCtx.CityUpgradeService();
-    const result = upgradeService.validate(city);
-    return [result.length === 0, result];
-}
-
-
-export function useCancelProductionQueueEntry(city: CityIdentifier, entry: ProductionQueueEntry | null) {
-    const commandService = AppCtx.CommandService();
-    return () => {
-        if (entry) {
-            commandService.cancelProductionQueueEntry(city, entry);
-        }
-    };
-}
-
-
 export function useAddProductionEntry(city: CityIdentifier) {
     const commandService = AppCtx.CommandService();
     return (entry: ProductionEntry) => {

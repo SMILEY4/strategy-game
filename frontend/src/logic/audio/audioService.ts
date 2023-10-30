@@ -3,8 +3,8 @@ import {UIAudio} from "../../ui/components/audio";
 
 export class AudioType {
 
-    public static readonly CLICK_A = new AudioType("click.primary");
-    public static readonly CLICK_B = new AudioType("click.close");
+    public static readonly CLICK_PRIMARY = new AudioType("click.primary");
+    public static readonly CLICK_CLOSE = new AudioType("click.close");
 
     readonly id: string;
 
@@ -20,13 +20,13 @@ export class AudioService implements UIAudio.AudioProvider {
 
     constructor() {
         this.sounds.set(
-            AudioType.CLICK_A.id,
+            AudioType.CLICK_PRIMARY.id,
             new Howl({
                 src: ["/public/sfx/menu-button-click-10.mp3"],
             }),
         );
         this.sounds.set(
-            AudioType.CLICK_B.id,
+            AudioType.CLICK_CLOSE.id,
             new Howl({
                 src: ["/public/sfx/menu-button-click-11.mp3"],
             }),

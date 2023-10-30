@@ -79,10 +79,17 @@ export interface CityView {
     },
     buildings: {
         visibility: InfoVisibility,
+        remainingSlots: number,
         items: Building[]
     },
     productionQueue: {
         visibility: InfoVisibility,
-        items: ProductionQueueEntry[]
+        items: ProductionQueueEntryView[]
     },
+}
+
+export interface ProductionQueueEntryView {
+    cancelled: boolean,
+    name: string,
+    entry: ProductionQueueEntry
 }

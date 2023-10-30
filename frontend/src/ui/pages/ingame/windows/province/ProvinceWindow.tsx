@@ -8,16 +8,16 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
 import {useOpenCountryWindow} from "../country/CountryWindow";
-import {useOpenCityWindow} from "../city/CityMenu";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {CityEntry} from "../common/CityEntry";
-import {Province, ProvinceIdentifier, ProvinceView} from "../../../../../models/province";
+import {ProvinceIdentifier, ProvinceView} from "../../../../../models/province";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 import {ProvinceRepository} from "../../../../../state/access/ProvinceRepository";
 import {AppCtx} from "../../../../../appContext";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
+import {UseCityWindow} from "../city/useCityWindow";
 
 
 export function useOpenProvinceWindow() {
@@ -45,11 +45,11 @@ export interface ProvinceWindowProps {
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
     const province = ProvinceRepository.useProvinceById(props.provinceId);
-    const provinceView = AppCtx.DataViewService().getProvinceView(province)
-    const commands = CommandRepository.useCommands() // so menu updates with changes to commands
+    const provinceView = AppCtx.DataViewService().getProvinceView(province);
+    const commands = CommandRepository.useCommands(); // so menu updates with changes to commands
 
     const openCountryWindow = useOpenCountryWindow();
-    const openCityWindow = useOpenCityWindow();
+    const openCityWindow = UseCityWindow.useOpen();
 
     return (
         <DecoratedWindow

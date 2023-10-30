@@ -1,12 +1,12 @@
 import {Country, CountryView} from "../../models/country";
-import {Command, CreateCityCommand, UpgradeCityCommand} from "../../models/command";
+import {CancelProductionQueueCommand, Command, CreateCityCommand, UpgradeCityCommand} from "../../models/command";
 import {CommandType} from "../../models/commandType";
 import {InfoVisibility} from "../../models/infoVisibility";
 import {UserService} from "../user/userService";
 import {CountryRepository} from "../../state/access/CountryRepository";
 import {CommandRepository} from "../../state/access/CommandRepository";
 import {Province, ProvinceView} from "../../models/province";
-import {City, CityView} from "../../models/city";
+import {City, CityView, ProductionQueueEntry} from "../../models/city";
 
 export class DataViewService {
 
@@ -21,8 +21,7 @@ export class DataViewService {
     }
 
 
-    public getCountryView(country: Country): CountryView {
-        const commands = this.getCommands();
+    public getCountryView(country: Country, commands: Command[]): CountryView {
         const povCountryId = this.getPlayerCountry().identifier.id;
         const createCityCommands: CreateCityCommand[] = [];
         for (let i = 0; i < commands.length; i++) {
@@ -38,7 +37,7 @@ export class DataViewService {
             settlers: {
                 visibility: country.identifier.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
                 value: country.identifier.id === povCountryId ? country.settlers! : 0,
-                modifiedValue: (country.identifier.id === povCountryId || createCityCommands.length === 0) ? null : (country.settlers! - createCityCommands.length),
+                modifiedValue: (country.identifier.id === povCountryId && createCityCommands.length > 0) ? (country.settlers! - createCityCommands.length) : null,
             },
             provinces: {
                 visibility: country.identifier.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
@@ -66,9 +65,12 @@ export class DataViewService {
     }
 
 
-    public getCityView(city: City): CityView {
+    public getCityView(city: City, commands: Command[]): CityView {
         const povCountryId = this.getPlayerCountry().identifier.id;
-        const cmdUpgradeTier = this.getCommands().find(cmd => cmd.type === CommandType.CITY_UPGRADE && (cmd as UpgradeCityCommand).city.id === city.identifier.id);
+        const commandUpgradeTier = commands.find(cmd => cmd.type === CommandType.CITY_UPGRADE && (cmd as UpgradeCityCommand).city.id === city.identifier.id);
+        const commandsCancelQueueEntry = commands
+            .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
+            .map(cmd => cmd as CancelProductionQueueCommand);
         return {
             isPlayerOwned: city.country.id === povCountryId,
             identifier: city.identifier,
@@ -79,7 +81,7 @@ export class DataViewService {
             isProvinceCapital: city.isProvinceCapital,
             tier: {
                 value: city.tier,
-                modifiedValue: cmdUpgradeTier ? (cmdUpgradeTier as UpgradeCityCommand).targetTier : null
+                modifiedValue: commandUpgradeTier ? (commandUpgradeTier as UpgradeCityCommand).targetTier : null,
             },
             population: {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
@@ -88,18 +90,28 @@ export class DataViewService {
             },
             buildings: {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
+                remainingSlots: city.tier.buildingSlots - city.buildings.length,
                 items: city.buildings,
             },
             productionQueue: {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
-                items: city.productionQueue,
+                items: city.productionQueue.map(entry => ({
+                    entry: entry,
+                    cancelled: commandsCancelQueueEntry.some(cmd => cmd.id === entry.id),
+                    name: this.getProductionQueueEntryName(entry),
+                })),
             },
         };
     }
 
 
-    private getCommands(): Command[] {
-        return this.commandRepository.getCommands();
+    private getProductionQueueEntryName(entry: ProductionQueueEntry): string {
+        switch (entry.type) {
+            case "settler":
+                return "Settler";
+            case "building":
+                return entry.buildingData!.type.displayString;
+        }
     }
 
     private getPlayerCountry(): Country {

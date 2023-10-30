@@ -111,7 +111,7 @@ function GameSessionEntry(props: { name: string, onConnect: () => void, onDelete
             <HBox gap_s centerVertical right>
                 <Header3>{props.name}</Header3>
                 <ButtonPrimary blue onClick={props.onConnect}>Connect</ButtonPrimary>
-                <ButtonPrimary red onClick={props.onDelete} soundId={AudioType.CLICK_B.id}>Delete</ButtonPrimary>
+                <ButtonPrimary red onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</ButtonPrimary>
             </HBox>
         </DecoratedPanel>
     );
@@ -141,7 +141,7 @@ function ModalJoinGame(props: {
                     <div/>
 
                     <HBox centerVertical right>
-                        <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_B.id}>
+                        <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
                             Cancel
                         </ButtonPrimary>
                         <ButtonPrimary green onClick={props.onAccept} disabled={props.acceptDisabled}>
@@ -178,7 +178,7 @@ function ModalCreateGame(props: {
                     <div/>
 
                     <HBox centerVertical right>
-                        <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_B.id}>
+                        <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
                             Cancel
                         </ButtonPrimary>
                         <ButtonPrimary green onClick={props.onAccept}>

@@ -9,7 +9,7 @@ export interface UseButtonProps {
 
 export function useButton(props: UseButtonProps) {
 
-    const playSound = UIAudio.usePlayAudio(props.soundId ? props.soundId : AudioType.CLICK_A.id);
+    const playSound = UIAudio.usePlayAudio(props.soundId ? props.soundId : AudioType.CLICK_PRIMARY.id);
 
     function handleClick() {
         if (!props.disabled && props.onClick) {

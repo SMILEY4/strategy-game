@@ -73,7 +73,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 <VBox stretch>
                     {renderCommand(props.command)}
                 </VBox>
-                <ButtonPrimary red round small onClick={props.onCancel} soundId={AudioType.CLICK_B.id}>
+                <ButtonPrimary red round small onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
                     <CgClose/>
                 </ButtonPrimary>
             </HBox>

@@ -10,7 +10,6 @@ import {Tile, TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
-import {useOpenCityWindow} from "../city/CityMenu";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
@@ -19,6 +18,7 @@ import {Text} from "../../../../components/text/Text";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {AppCtx} from "../../../../../appContext";
 import {TileRepository} from "../../../../../state/access/TileRepository";
+import {UseCityWindow} from "../city/useCityWindow";
 
 
 export function useOpenTileWindow() {
@@ -61,7 +61,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
     const tileIdentifier = props.identifier === null ? selectedTileIdentifier : props.identifier;
     const tile = TileRepository.useTileById(tileIdentifier);
 
-    const openCity = useOpenCityWindow();
+    const openCity = UseCityWindow.useOpen();
     const openCountry = useOpenCountryWindow();
     const openSettlementCreation = useOpenSettlementCreationWindow();
     const [validCreateSettlement, reasonsValidationsSettlement] = useValidateCreateSettlement(tile, "placeholder", false);

@@ -101,7 +101,7 @@ function QueueEntry(props: { position: number, entry: ProductionQueueEntry, canc
             <HBox centerVertical spaceBetween gap_s>
                 <Text strikethrough={props.cancelled}>{props.position + ") " + getName(props.entry)}</Text>
                 {props.position === 1 && (<ProgressBar progress={props.entry.progress} className="production_queue__progress"/>)}
-                <ButtonPrimary square round small onClick={props.onCancel} disabled={props.cancelled} soundId={AudioType.CLICK_B.id}><CgClose/></ButtonPrimary>
+                <ButtonPrimary square round small onClick={props.onCancel} disabled={props.cancelled} soundId={AudioType.CLICK_CLOSE.id}><CgClose/></ButtonPrimary>
             </HBox>
         </DecoratedPanel>
     );

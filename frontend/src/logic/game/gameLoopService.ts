@@ -63,8 +63,9 @@ export class GameLoopService {
         if (leftBtnDown) {
             const camera = this.cameraRepository.getCamera();
             this.cameraRepository.setCamera({
-                x: camera.x + (dx / camera.zoom * 2),
-                y: camera.y - (dy / camera.zoom * 2),
+                // todo: drag-speed (+zoom) seems to be dependent on dpi / screen resolution
+                x: camera.x + (dx / camera.zoom),
+                y: camera.y - (dy / camera.zoom),
                 zoom: camera.zoom,
             });
         } else {
