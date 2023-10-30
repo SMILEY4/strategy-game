@@ -20,3 +20,13 @@ export function formatPercentage(value: number, addPlus: boolean): string {
         return "" + shortValue + "%";
     }
 }
+
+export function formatNumber(value: number, addPlus: boolean, addPlusZero: boolean): string {
+    if (addPlus && value > 0) {
+        return "+" + value;
+    } else if(addPlusZero && value === 0) {
+        return "+" + value;
+    } else {
+        return "" + value;
+    }
+}

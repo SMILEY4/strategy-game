@@ -22,13 +22,13 @@ export class AudioService implements UIAudio.AudioProvider {
         this.sounds.set(
             AudioType.CLICK_PRIMARY.id,
             new Howl({
-                src: ["/public/sfx/menu-button-click-10.mp3"],
+                src: ["/sfx/menu-button-click-10.mp3"],
             }),
         );
         this.sounds.set(
             AudioType.CLICK_CLOSE.id,
             new Howl({
-                src: ["/public/sfx/menu-button-click-11.mp3"],
+                src: ["/sfx/menu-button-click-11.mp3"],
             }),
         );
         UIAudio.audioProvider = this;

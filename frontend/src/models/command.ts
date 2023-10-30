@@ -3,6 +3,7 @@ import {UID} from "../shared/uid";
 import {TileIdentifier} from "./tile";
 import {CityIdentifier, ProductionEntry, ProductionQueueEntry} from "./city";
 import {SettlementTier} from "./settlementTier";
+import {ConstructionEntry} from "./ConstructionEntry";
 
 
 export abstract class Command {
@@ -52,9 +53,9 @@ export class UpgradeCityCommand extends Command {
 export class AddProductionQueueCommand extends Command {
 
     readonly city: CityIdentifier;
-    readonly entry: ProductionEntry;
+    readonly entry: ConstructionEntry;
 
-    constructor(data: { city: CityIdentifier, entry: ProductionEntry }) {
+    constructor(data: { city: CityIdentifier, entry: ConstructionEntry }) {
         super(CommandType.PRODUCTION_QUEUE_ADD);
         this.city = data.city;
         this.entry = data.entry;

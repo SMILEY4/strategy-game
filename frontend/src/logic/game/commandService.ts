@@ -9,6 +9,7 @@ import {
     PlaceScoutCommand,
     UpgradeCityCommand,
 } from "../../models/command";
+import {ConstructionEntry} from "../../models/ConstructionEntry";
 
 export class CommandService {
 
@@ -40,7 +41,7 @@ export class CommandService {
         this.commandRepository.addCommand(command);
     }
 
-    public addProductionQueueEntry(city: CityIdentifier, entry: ProductionEntry) {
+    public addProductionQueueEntry(city: CityIdentifier, entry: ConstructionEntry) {
         const command = new AddProductionQueueCommand({
             city: city,
             entry: entry,

@@ -1,5 +1,11 @@
 import {Country, CountryView} from "../../models/country";
-import {CancelProductionQueueCommand, Command, CreateCityCommand, UpgradeCityCommand} from "../../models/command";
+import {
+    AddProductionQueueCommand,
+    CancelProductionQueueCommand,
+    Command,
+    CreateCityCommand,
+    UpgradeCityCommand,
+} from "../../models/command";
 import {CommandType} from "../../models/commandType";
 import {InfoVisibility} from "../../models/infoVisibility";
 import {UserService} from "../user/userService";
@@ -7,6 +13,12 @@ import {CountryRepository} from "../../state/access/CountryRepository";
 import {CommandRepository} from "../../state/access/CommandRepository";
 import {Province, ProvinceView} from "../../models/province";
 import {City, CityView, ProductionQueueEntry} from "../../models/city";
+import {
+    BuildingConstructionEntry,
+    ConstructionEntry,
+    ConstructionEntryView,
+    SettlerConstructionEntry,
+} from "../../models/ConstructionEntry";
 
 export class DataViewService {
 
@@ -101,6 +113,31 @@ export class DataViewService {
                     name: this.getProductionQueueEntryName(entry),
                 })),
             },
+        };
+    }
+
+    public getConstructionEntryView(entry: ConstructionEntry, city: City, commands: Command[]): ConstructionEntryView {
+        let queueCount = 0;
+        queueCount += commands
+            .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_ADD)
+            .map(cmd => cmd as AddProductionQueueCommand)
+            .filter(cmd => cmd.entry.id === entry.id)
+            .length;
+        queueCount += city.productionQueue
+            .filter(e => {
+                if (e.type === "settler") {
+                    return entry instanceof SettlerConstructionEntry;
+                }
+                if (e.type === "building") {
+                    return entry instanceof BuildingConstructionEntry && entry.buildingType === e.buildingData?.type;
+                }
+                return false;
+            })
+            .length;
+        return {
+            entry: entry,
+            disabled: false,
+            queueCount: queueCount,
         };
     }
 

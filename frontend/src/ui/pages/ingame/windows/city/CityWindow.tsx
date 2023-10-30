@@ -171,7 +171,7 @@ function ProductionQueue(props: UseCityWindow.Data): ReactElement {
 
 function ProductionQueueAddButton(props: UseCityWindow.Data): ReactElement {
     return (
-        <ButtonPrimary square onClick={props.openWindow.cityProduction}>
+        <ButtonPrimary square onClick={props.openWindow.cityConstruction}>
             <FiPlus/>
         </ButtonPrimary>
     );

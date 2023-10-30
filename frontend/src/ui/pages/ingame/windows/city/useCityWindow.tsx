@@ -8,8 +8,8 @@ import {City, CityIdentifier, CityView, ProductionQueueEntry, ProductionQueueEnt
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {CityWindow} from "./CityWindow";
-import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {useOpenCityProductionQueueWindow} from "../cityProductionQueue/CityProductionQueue";
+import {UseCityConstructionWindow} from "../cityConstruction/useCityConstructionWindow";
 
 export namespace UseCityWindow {
 
@@ -36,7 +36,7 @@ export namespace UseCityWindow {
         city: CityView,
         openWindow: {
             cityProductionQueue: () => void,
-            cityProduction: () => void,
+            cityConstruction: () => void,
             country: () => void,
             province: () => void,
             tile: () => void,
@@ -55,7 +55,7 @@ export namespace UseCityWindow {
         const commands = CommandRepository.useCommands();
         const cityView = AppCtx.DataViewService().getCityView(city, commands);
 
-        const openCityProductionWindow = useOpenCityProductionWindow();
+        const openCityConstructionWindow = UseCityConstructionWindow.useOpen();
         const openCityQueueWindow = useOpenCityProductionQueueWindow();
         const openCountryWindow = useOpenCountryWindow();
         const openProvinceWindow = useOpenProvinceWindow();
@@ -68,7 +68,7 @@ export namespace UseCityWindow {
             city: cityView,
             openWindow: {
                 cityProductionQueue: () => openCityQueueWindow(city.identifier),
-                cityProduction: () => openCityProductionWindow(city.identifier),
+                cityConstruction: () => openCityConstructionWindow(city.identifier),
                 country: () => openCountryWindow(city.country.id, true),
                 province: () => openProvinceWindow(city.province.id, true),
                 tile: () => openTileWindow(city.tile),

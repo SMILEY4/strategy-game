@@ -1,6 +1,4 @@
-import {City, CityIdentifier, ProductionEntry, ProductionQueueEntry} from "../../models/city";
 import {Tile} from "../../models/tile";
-import {BuildingType} from "../../models/buildingType";
 import {AppCtx} from "../../appContext";
 
 export function useCreateSettlement(tile: Tile, name: string | null, asColony: boolean): [boolean, string[], () => void] {
@@ -24,34 +22,5 @@ export function useValidateCreateSettlement(tile: Tile | null, name: string | nu
     }
 }
 
-export function useAddProductionEntry(city: CityIdentifier) {
-    const commandService = AppCtx.CommandService();
-    return (entry: ProductionEntry) => {
-        commandService.addProductionQueueEntry(city, entry);
-    };
-}
 
-
-export function useAvailableProductionEntries(): ProductionEntry[] {
-    const options: ProductionEntry[] = [];
-    options.push({
-        type: "settler",
-        icon: "/icons/buildings/farm.png",
-        disabled: false,
-        buildingData: null,
-        settlerData: {},
-    });
-    BuildingType.getValues().forEach(buildingType => {
-        options.push({
-            type: "building",
-            disabled: false,
-            icon: buildingType.icon,
-            buildingData: {
-                type: buildingType,
-            },
-            settlerData: null,
-        });
-    });
-    return options;
-}
 

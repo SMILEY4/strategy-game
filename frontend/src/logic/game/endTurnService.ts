@@ -9,6 +9,7 @@ import {
 } from "../../models/command";
 import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
+import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../models/ConstructionEntry";
 
 export class EndTurnService {
 
@@ -32,19 +33,19 @@ export class EndTurnService {
     private buildPayloadCommand(command: Command): object {
         if (command.type === CommandType.PRODUCTION_QUEUE_ADD) {
             const cmd = command as AddProductionQueueCommand;
-            switch (cmd.entry.type) {
-                case "building":
-                    return {
-                        type: "production-queue-add-entry.building",
-                        cityId: cmd.city.id,
-                        buildingType: cmd.entry.buildingData!.type.id,
-                    };
-                case "settler":
-                    return {
-                        type: "production-queue-add-entry.settler",
-                        cityId: cmd.city.id,
-                    };
-
+            if (cmd.entry instanceof SettlerConstructionEntry) {
+                return {
+                    type: "production-queue-add-entry.settler",
+                    cityId: cmd.city.id,
+                };
+            } else if (cmd.entry instanceof BuildingConstructionEntry) {
+                return {
+                    type: "production-queue-add-entry.building",
+                    cityId: cmd.city.id,
+                    buildingType: cmd.entry.buildingType.id,
+                };
+            } else {
+                console.warn("Unknown construction-entry-type:", cmd.entry);
             }
         }
         if (command.type === CommandType.PRODUCTION_QUEUE_CANCEL) {
