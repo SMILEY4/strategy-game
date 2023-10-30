@@ -9,22 +9,18 @@ import {Text} from "../../../../components/text/Text";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {useOpenProvinceWindow} from "../province/ProvinceWindow";
-import {useOpenCountryWindow} from "../country/CountryWindow";
 import {KeyLinkValuePair, KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
 import {joinClassNames} from "../../../../components/utils";
-import {useCancelProductionQueueEntry, useUpgradeSettlementTier, useValidateUpgradeSettlementTier} from "../../../../hooks/city";
+import {useCancelProductionQueueEntry} from "../../../../hooks/city";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {useOpenCityProductionWindow} from "../cityProduction/CityProductionWindow";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import {Building, CityIdentifier, CityView, ProductionQueueEntry} from "../../../../../models/city";
-import {useOpenTileWindow} from "../tile/TileWindow";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import "./cityMenu.less";
-import {CityRepository} from "../../../../../state/access/CityRepository";
 import {useOpenCityProductionQueueWindow} from "../cityProductionQueue/CityProductionQueue";
 import {CancelProductionQueueCommand} from "../../../../../models/command";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
@@ -32,9 +28,9 @@ import {CommandType} from "../../../../../models/commandType";
 import {AudioType} from "../../../../../logic/audio/audioService";
 import {UIAudio} from "../../../../components/audio";
 import {SettlementTier} from "../../../../../models/settlementTier";
-import {AppCtx} from "../../../../../appContext";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
+import {useCityWindow, UseCityWindow} from "./useCityWindow";
 
 export function useOpenCityWindow() {
     const addWindow = useOpenWindow();
@@ -58,18 +54,9 @@ export interface CityWindowProps {
     cityId: string,
 }
 
-
 export function CityWindow(props: CityWindowProps): ReactElement {
 
-    const city = CityRepository.useCityById(props.cityId);
-    const cityView = AppCtx.DataViewService().getCityView(city);
-    const commands = CommandRepository.useCommands() // so menu updates with changes to commands
-
-    const openCountryWindow = useOpenCountryWindow();
-    const openProvinceWindow = useOpenProvinceWindow();
-    const openTileWindow = useOpenTileWindow();
-    const [validUpgradeSettlement, reasonsValidationsUpgrade] = useValidateUpgradeSettlementTier(city);
-    const [, , upgradeSettlementTier] = useUpgradeSettlementTier(city);
+    const data: UseCityWindow.Data = useCityWindow(props.cityId);
 
     return (
         <DecoratedWindow
@@ -82,39 +69,35 @@ export function CityWindow(props: CityWindowProps): ReactElement {
             noPadding
         >
             <VBox fillParent>
-                <CityBanner identifier={city.identifier} tier={city.tier}/>
+                <CityBanner identifier={data.city.identifier} tier={data.city.tier.value}/>
                 <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
 
-                    <CityBaseDataSection
-                        data={cityView}
-                        openCountry={() => openCountryWindow(city.country.id, true)}
-                        openProvince={() => openProvinceWindow(city.province.id, true)}
-                        openTile={() => openTileWindow(city.tile)}
-                    />
+                    <CityBaseDataSection {...data}/>
 
+                    {/*todo: own component: "UpgradeTierButton"*/}
                     <BasicTooltip
-                        enabled={!validUpgradeSettlement}
+                        enabled={!data.upgradeCityTier.valid}
                         delay={500}
                         content={
                             <ul>
-                                {reasonsValidationsUpgrade.map(e => (<li>{e}</li>))}
+                                {data.upgradeCityTier.reasonsInvalid.map(reason => (<li>{reason}</li>))}
                             </ul>
                         }
                     >
-                        <ButtonPrimary blue disabled={!validUpgradeSettlement} onClick={() => upgradeSettlementTier()}>
-                            {city.tier.nextTier === null
+                        <ButtonPrimary blue disabled={!data.upgradeCityTier.valid} onClick={() => data.upgradeCityTier.upgrade()}>
+                            {data.city.tier.value.nextTier === null
                                 ? "Upgrade Tier"
-                                : "Upgrade Tier to " + city.tier.nextTier.displayString}
+                                : "Upgrade Tier to " + data.city.tier.value.nextTier.displayString}
                         </ButtonPrimary>
                     </BasicTooltip>
 
                     <Spacer size="m"/>
 
-                    <CityPopulationSection data={cityView}/>
+                    <CityPopulationSection data={data.city}/>
 
                     <Spacer size="m"/>
 
-                    <CityContentSection data={cityView}/>
+                    <CityContentSection data={data.city}/>
 
                 </VBox>
             </VBox>
@@ -131,35 +114,30 @@ function CityBanner(props: { identifier: CityIdentifier, tier: SettlementTier })
     );
 }
 
-function CityBaseDataSection(props: {
-    data: CityView,
-    openCountry: () => void,
-    openProvince: () => void,
-    openTile: () => void
-}): ReactElement {
+function CityBaseDataSection(props: UseCityWindow.Data): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair
                 name={"Id"}
-                value={props.data.identifier.id}
+                value={props.city.identifier.id}
             />
             <KeyValuePair name={"Tier"}>
-                <ChangeInfoText prevValue={props.data.tier.value.displayString} nextValue={props.data.tier.modifiedValue?.displayString}/>
+                <ChangeInfoText prevValue={props.city.tier.value.displayString} nextValue={props.city.tier.modifiedValue?.displayString}/>
             </KeyValuePair>
             <KeyLinkValuePair
                 name={"Country"}
-                value={props.data.country.name}
-                onClick={props.openCountry}
+                value={props.city.country.name}
+                onClick={props.openWindow.country}
             />
             <KeyLinkValuePair
                 name={"Province"}
-                value={props.data.province.name}
-                onClick={props.openProvince}
+                value={props.city.province.name}
+                onClick={props.openWindow.province}
             />
             <KeyLinkValuePair
                 name={"Tile"}
-                value={props.data.tile.q + ", " + props.data.tile.r}
-                onClick={props.openTile}
+                value={props.city.tile.q + ", " + props.city.tile.r}
+                onClick={props.openWindow.tile}
             />
         </InsetPanel>
     );
