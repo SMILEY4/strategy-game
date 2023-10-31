@@ -32,3 +32,17 @@ export interface TileInfluence {
 export interface ScoutTileContent {
     country: CountryIdentifier
 }
+
+
+export interface TileView {
+    identifier: TileIdentifier,
+    terrainType: "LAND" | "WATER" | "MOUNTAIN" | null,
+    visibility: "UNKNOWN" | "DISCOVERED" | "VISIBLE"
+    owner: {
+        country: CountryIdentifier,
+        province: ProvinceIdentifier,
+        city: CityIdentifier | null
+    } | null,
+    influences: TileInfluence[],
+    content: ScoutTileContent[]
+}

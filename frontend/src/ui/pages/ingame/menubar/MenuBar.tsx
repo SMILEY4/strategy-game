@@ -1,30 +1,30 @@
 import React, {ReactElement} from "react";
-import {useOpenDevWindow} from "../windows/dev/DevWindow";
-import {useOpenMapWindow} from "../windows/map/MapWindow";
-import {useOpenCountryWindow} from "../windows/country/CountryWindow";
 import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../components/layout/hbox/HBox";
 import {Spacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiHexagon, FiMap} from "react-icons/fi";
-import {useOpenCommandLogWindow} from "../windows/commandLog/CommandLogWindow";
 import {PiScrollBold} from "react-icons/pi";
-import {useOpenTileWindow} from "../windows/tile/TileWindow";
 import "./menubar.scoped.less";
 import {Country} from "../../../../models/country";
 import {AppCtx} from "../../../../appContext";
 import {GameSessionStateRepository} from "../../../../state/access/GameSessionStateRepository";
 import {CountryRepository} from "../../../../state/access/CountryRepository";
+import {UseCommandLogWindow} from "../windows/commandLog/useCommandLogWindow";
+import {UseCountryWindow} from "../windows/country/useCountryWindow";
+import {UseDevWindow} from "../windows/dev/useDevWindow";
+import {UseMapWindow} from "../windows/map/useMapWindow";
+import {UseTileWindow} from "../windows/tile/useTileWindow";
 
 export function MenuBar(): ReactElement {
 
-    const playerCountry = usePlayerCountry()
-    const openDevMenu = useOpenDevWindow();
-    const openMapMenu = useOpenMapWindow();
-    const openCountryMenu = useOpenCountryWindow();
-    const openCommandLogMenu = useOpenCommandLogWindow();
-    const openTileMenu = useOpenTileWindow();
-    const [endTurnDisabled, endTurn] = useEndTurn()
+    const playerCountry = usePlayerCountry();
+    const openDevMenu = UseDevWindow.useOpen();
+    const openMapMenu = UseMapWindow.useOpen();
+    const openCountryMenu = UseCountryWindow.useOpen();
+    const openCommandLogMenu = UseCommandLogWindow.useOpen();
+    const openTileMenu = UseTileWindow.useOpen();
+    const [endTurnDisabled, endTurn] = useEndTurn();
 
     return (
         <div className="menubar">

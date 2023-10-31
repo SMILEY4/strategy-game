@@ -3,6 +3,8 @@ export interface BaseBoxProperties {
     center?: boolean,
 
     fillParent?: boolean,
+    fillParentWidth?: boolean,
+    fillParentHeight?: boolean,
 
     scrollable?: boolean,
     stableScrollbar?: boolean,

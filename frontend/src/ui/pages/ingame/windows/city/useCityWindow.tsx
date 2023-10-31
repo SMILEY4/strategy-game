@@ -1,16 +1,16 @@
 import {CityRepository} from "../../../../../state/access/CityRepository";
 import {AppCtx} from "../../../../../appContext";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
-import {useOpenCountryWindow} from "../country/CountryWindow";
-import {useOpenProvinceWindow} from "../province/ProvinceWindow";
-import {useOpenTileWindow} from "../tile/TileWindow";
 import {City, CityIdentifier, CityView} from "../../../../../models/city";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {CityWindow} from "./CityWindow";
 import {UseCityConstructionWindow} from "../cityConstruction/useCityConstructionWindow";
 import {UseCityProductionQueueWindow} from "../cityProductionQueue/useCityProductionQueueWindow";
-import {ProductionQueueEntry, ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
+import {ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
+import {UseCountryWindow} from "../country/useCountryWindow";
+import {UseProvinceWindow} from "../province/useProvinceWindow";
+import {UseTileWindow} from "../tile/useTileWindow";
 
 export namespace UseCityWindow {
 
@@ -58,9 +58,9 @@ export namespace UseCityWindow {
 
         const openCityConstructionWindow = UseCityConstructionWindow.useOpen();
         const openCityQueueWindow = UseCityProductionQueueWindow.useOpen();
-        const openCountryWindow = useOpenCountryWindow();
-        const openProvinceWindow = useOpenProvinceWindow();
-        const openTileWindow = useOpenTileWindow();
+        const openCountryWindow = UseCountryWindow.useOpen();
+        const openProvinceWindow = UseProvinceWindow.useOpen();
+        const openTileWindow = UseTileWindow.useOpen();
 
         const [validUpgradeSettlement, reasonsValidationsUpgrade, upgradeSettlementTier] = useUpgradeSettlementTier(city);
         const cancelQueueEntry = useCancelQueueEntry(city.identifier);

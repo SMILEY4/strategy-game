@@ -1,40 +1,26 @@
 import React, {ReactElement} from "react";
-import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1, Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {
-    AddProductionQueueCommand, CancelProductionQueueCommand,
-    Command, CreateCityCommand, PlaceScoutCommand, UpgradeCityCommand,
+    AddProductionQueueCommand,
+    CancelProductionQueueCommand,
+    Command,
+    CreateCityCommand,
+    PlaceScoutCommand,
+    UpgradeCityCommand,
 } from "../../../../../models/command";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../../../components/text/Text";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {CgClose} from "react-icons/cg";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {AppCtx} from "../../../../../appContext";
-import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CommandType} from "../../../../../models/commandType";
-import {ProductionEntry, ProductionQueueEntry} from "../../../../../models/city";
 import {AudioType} from "../../../../../logic/audio/audioService";
+import {UseCommandLogWindow} from "./useCommandLogWindow";
+import CommandLogEntry = UseCommandLogWindow.CommandLogEntry;
 
-
-export function useOpenCommandLogWindow() {
-    const WINDOW_ID = "menubar-window";
-    const addWindow = useOpenWindow();
-    return () => {
-        addWindow({
-            id: WINDOW_ID,
-            className: "command-log-window",
-            left: 25,
-            top: 60,
-            bottom: 25,
-            width: 360,
-            content: <CommandLogWindow windowId={WINDOW_ID}/>,
-        });
-    };
-}
 
 export interface CommandLogWindowProps {
     windowId: string;
@@ -42,8 +28,7 @@ export interface CommandLogWindowProps {
 
 export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 
-    const commands = CommandRepository.useCommands();
-    const cancel = useCommandCancel();
+    const data: UseCommandLogWindow.Data = UseCommandLogWindow.useData();
 
     return (
         <DecoratedWindow
@@ -58,22 +43,24 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
             <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Commands</Header1>
                 <Spacer size="s"/>
-                {commands.map(command => (
-                    <CommandEntry command={command} onCancel={() => cancel(command.id)}/>
-                ))}
+                {data.entries.map(commandEntry => (<CommandEntry data={data} entry={commandEntry}/>))}
             </VBox>
         </DecoratedWindow>
     );
 }
 
-export function CommandEntry(props: { command: Command, onCancel: () => void }): ReactElement {
+export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: CommandLogEntry }): ReactElement {
     return (
         <DecoratedPanel paper simpleBorder>
             <HBox centerVertical spaceBetween>
                 <VBox stretch>
-                    {renderCommand(props.command)}
+                    {renderCommand(props.entry.command)}
                 </VBox>
-                <ButtonPrimary red round small onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
+                <ButtonPrimary
+                    red round small
+                    onClick={() => props.data.cancel(props.entry)}
+                    soundId={AudioType.CLICK_CLOSE.id
+                    }>
                     <CgClose/>
                 </ButtonPrimary>
             </HBox>
@@ -109,7 +96,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 <>
                     <Header4 onLight>{"Add to production queue"}</Header4>
                     <Spacer size="s"/>
-                    <Text onLight>construct <i>{getProductionEntryName(cmd.entry)}</i></Text>
+                    <Text onLight>construct <i>{cmd.entry.displayString}</i></Text>
                     <Text onLight>in city <i>{cmd.city.name}</i></Text>
                 </>
             );
@@ -120,7 +107,7 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
                 <>
                     <Header4 onLight>{"Cancel production queue entry"}</Header4>
                     <Spacer size="s"/>
-                    <Text onLight>with name <i>{getProductionQueueEntryName(cmd.entry)}</i></Text>
+                    <Text onLight>with name <i>{cmd.entry.displayName}</i></Text>
                     <Text onLight>in city <i>{cmd.city.name}</i></Text>
                 </>
             );
@@ -144,29 +131,4 @@ export function CommandEntry(props: { command: Command, onCancel: () => void }):
         );
     }
 
-}
-
-function getProductionEntryName(entry: ProductionEntry): string {
-    switch (entry.type) {
-        case "building":
-            return entry.buildingData!.type.displayString;
-        case "settler":
-            return "Settler";
-
-    }
-}
-
-function getProductionQueueEntryName(entry: ProductionQueueEntry): string {
-    switch (entry.type) {
-        case "building":
-            return entry.buildingData!.type.displayString;
-        case "settler":
-            return "Settler";
-
-    }
-}
-
-function useCommandCancel() {
-    const commandService = AppCtx.CommandService();
-    return (id: string) => commandService.cancelCommand(id);
 }

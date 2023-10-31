@@ -12,7 +12,7 @@ export function useCreateSettlement(tile: Tile, name: string | null, asColony: b
     return [possible, reasons, perform];
 }
 
-export function useValidateCreateSettlement(tile: Tile | null, name: string | null, asColony: boolean): [boolean, string[]] {
+function useValidateCreateSettlement(tile: Tile | null, name: string | null, asColony: boolean): [boolean, string[]] {
     if (tile) {
         const creationService = AppCtx.CityCreationService();
         const result = creationService.validate(tile, name, asColony);

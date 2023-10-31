@@ -24,6 +24,7 @@ import {
     ProductionQueueEntryView,
     SettlerProductionQueueEntry,
 } from "../../models/productionQueueEntry";
+import {Tile, TileView} from "../../models/tile";
 
 export class DataViewService {
 
@@ -33,6 +34,13 @@ export class DataViewService {
     constructor(userService: UserService, countryRepository: CountryRepository) {
         this.userService = userService;
         this.countryRepository = countryRepository;
+    }
+
+
+    public getTileView(tile: Tile, commands: Command[]): TileView {
+        return {
+            ...tile, // todo
+        };
     }
 
 
@@ -62,7 +70,7 @@ export class DataViewService {
     }
 
 
-    public getProvinceView(province: Province): ProvinceView {
+    public getProvinceView(province: Province, commands: Command[]): ProvinceView {
         const povCountryId = this.getPlayerCountry().identifier.id;
         return {
             isPlayerOwned: province.country.id === povCountryId,

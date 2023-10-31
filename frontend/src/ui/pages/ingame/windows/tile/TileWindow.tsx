@@ -1,5 +1,4 @@
 import React, {ReactElement} from "react";
-import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
@@ -10,45 +9,10 @@ import {Tile, TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
-import {useOpenCountryWindow} from "../country/CountryWindow";
-import {useOpenSettlementCreationWindow} from "./SettlementCreationWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import {useValidateCreateSettlement} from "../../../../hooks/city";
 import {Text} from "../../../../components/text/Text";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
-import {AppCtx} from "../../../../../appContext";
-import {TileRepository} from "../../../../../state/access/TileRepository";
-import {UseCityWindow} from "../city/useCityWindow";
-
-
-export function useOpenTileWindow() {
-    const WINDOW_ID = "menubar-window";
-    const openWindow = useOpenWindow();
-    return (identifier: TileIdentifier | null) => {
-        openWindow({
-            id: WINDOW_ID,
-            className: "tile-window",
-            left: 25,
-            top: 60,
-            bottom: 25,
-            width: 360,
-            content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
-        });
-    };
-}
-
-export function openTileWindow(identifier: TileIdentifier | null) {
-    const WINDOW_ID = "menubar-window";
-    openWindow({
-        id: WINDOW_ID,
-        className: "tile-window",
-        left: 25,
-        top: 60,
-        bottom: 25,
-        width: 360,
-        content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
-    });
-}
+import {UseTileWindow} from "./useTileWindow";
 
 export interface TileWindowProps {
     windowId: string;
@@ -57,16 +21,7 @@ export interface TileWindowProps {
 
 export function TileWindow(props: TileWindowProps): ReactElement {
 
-    const selectedTileIdentifier = TileRepository.useSelectedTile();
-    const tileIdentifier = props.identifier === null ? selectedTileIdentifier : props.identifier;
-    const tile = TileRepository.useTileById(tileIdentifier);
-
-    const openCity = UseCityWindow.useOpen();
-    const openCountry = useOpenCountryWindow();
-    const openSettlementCreation = useOpenSettlementCreationWindow();
-    const [validCreateSettlement, reasonsValidationsSettlement] = useValidateCreateSettlement(tile, "placeholder", false);
-    const [validCreateColony, reasonsValidationsColony] = useValidateCreateSettlement(tile, "placeholder", true);
-    const placeScout = usePlaceScout();
+    const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
 
     return (
         <DecoratedWindow
@@ -80,104 +35,69 @@ export function TileWindow(props: TileWindowProps): ReactElement {
             }}
         >
             <VBox fillParent>
-                {tile && (
+                {data && (
                     <>
-                        <TileBanner data={tile}/>
+                        <TileBanner {...data}/>
                         <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                            <TileBaseDataSection
-                                data={tile}
-                                openCountry={() => openCountry(tile.owner!!.country.id, true)}
-                                openCity={() => openCity(tile.owner!!.city!!.id, true)}
-                            />
+                            <BaseInformation {...data}/>
                             <Spacer size="s"/>
-                            <ButtonPrimary blue onClick={() => placeScout(tile.identifier)}>
-                                Place Scout
-                            </ButtonPrimary>
-
-                            <BasicTooltip
-                                enabled={!validCreateColony}
-                                delay={500}
-                                content={
-                                    <ul>
-                                        {reasonsValidationsColony.map(e => (<li>{e}</li>))}
-                                    </ul>
-                                }
-                            >
-                                <ButtonPrimary
-                                    blue
-                                    disabled={!validCreateColony}
-                                    onClick={() => openSettlementCreation(tile, true)}
-                                >
-                                    Found Colony
-                                </ButtonPrimary>
-                            </BasicTooltip>
-
-                            <BasicTooltip
-                                enabled={!validCreateSettlement}
-                                delay={500}
-                                content={
-                                    <ul>
-                                        {reasonsValidationsSettlement.map(e => (<li>{e}</li>))}
-                                    </ul>
-                                }
-                            >
-                                <ButtonPrimary
-                                    blue
-                                    disabled={!validCreateSettlement}
-                                    onClick={() => openSettlementCreation(tile, false)}
-                                >
-                                    Found Settlement
-                                </ButtonPrimary>
-                            </BasicTooltip>
-
+                            <PlaceScoutButton {...data}/>
+                            <CreateColonyButton {...data}/>
+                            <CreateSettlementButton {...data}/>
                         </VBox>
                     </>
                 )}
-                {!tile && (
-                    <Text>No tile selected</Text>
+                {!data && (
+                    <VBox fillParent center>
+                        <Text>No tile selected</Text>
+                    </VBox>
                 )}
             </VBox>
         </DecoratedWindow>
     );
 }
 
-function TileBanner(props: { data: Tile }): ReactElement {
+function TileBanner(props: UseTileWindow.Data): ReactElement {
     return (
         <Banner spaceAbove subtitle={"Tile"}>
-            <Header1 centered>{props.data.terrainType || "Unknown"}</Header1>
+            <Header1 centered>{props.tile.terrainType || "Unknown"}</Header1>
         </Banner>
     );
 }
 
-function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openCity: () => void }): ReactElement {
+function BaseInformation(props: UseTileWindow.Data): ReactElement {
     return (
         <InsetPanel>
             <KeyTextValuePair
                 name={"Id"}
-                value={props.data.identifier.id}
+                value={props.tile.identifier.id}
             />
             <KeyTextValuePair
                 name={"Position"}
-                value={props.data.identifier.q + ", " + props.data.identifier.r}
+                value={props.tile.identifier.q + ", " + props.tile.identifier.r}
             />
             <KeyTextValuePair
                 name={"Terrain"}
-                value={props.data.terrainType}
+                value={props.tile.terrainType}
             />
-            {(props.data.owner && props.data.owner.city !== null) && (
+            {(props.tile.owner && props.tile.owner.city !== null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left"
-                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
-                        (<LinkButton align="left" onClick={props.openCity}>{props.data.owner.city!!.name}</LinkButton>)
+                        <LinkButton align="left" onClick={props.openWindow.country}>
+                            {props.tile.owner.country.name}
+                        </LinkButton>
+                        <LinkButton align="left" onClick={props.openWindow.city}>
+                            {props.tile.owner.city!!.name}
+                        </LinkButton>
                     </HBox>
                 </KeyValuePair>
             )}
-            {(props.data.owner && props.data.owner.city === null) && (
+            {(props.tile.owner && props.tile.owner.city === null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>
-                        <LinkButton align="left"
-                                    onClick={props.openCountry}>{props.data.owner.country.name}</LinkButton>
+                        <LinkButton align="left" onClick={props.openWindow.country}>
+                            {props.tile.owner.country.name}
+                        </LinkButton>
                     </HBox>
                 </KeyValuePair>
             )}
@@ -185,9 +105,59 @@ function TileBaseDataSection(props: { data: Tile, openCountry: () => void, openC
     );
 }
 
-function usePlaceScout() {
-    const commandService = AppCtx.CommandService();
-    return (tile: TileIdentifier) => {
-        commandService.placeScout(tile);
-    };
+
+function PlaceScoutButton(props: UseTileWindow.Data): ReactElement {
+    return (
+        <ButtonPrimary blue onClick={props.scout.place}>
+            Place Scout
+        </ButtonPrimary>
+    );
+}
+
+
+
+function CreateColonyButton(props: UseTileWindow.Data): ReactElement {
+    return (
+        <BasicTooltip
+            enabled={!props.createColony.valid}
+            delay={500}
+            content={
+                <ul>
+                    {props.createColony.reasonsInvalid.map(e => (<li>{e}</li>))}
+                </ul>
+            }
+        >
+            <ButtonPrimary
+                blue
+                disabled={!props.createColony.valid}
+                onClick={props.openWindow.createColony}
+            >
+                Found Colony
+            </ButtonPrimary>
+        </BasicTooltip>
+    );
+}
+
+
+
+function CreateSettlementButton(props: UseTileWindow.Data): ReactElement {
+    return (
+        <BasicTooltip
+            enabled={!props.createSettlement.valid}
+            delay={500}
+            content={
+                <ul>
+                    {props.createSettlement.reasonsInvalid.map(e => (<li>{e}</li>))}
+                </ul>
+            }
+        >
+            <ButtonPrimary
+                blue
+                disabled={!props.createSettlement.valid}
+                onClick={props.openWindow.createSettlement}
+            >
+                Found Settlement
+            </ButtonPrimary>
+        </BasicTooltip>
+    );
 }

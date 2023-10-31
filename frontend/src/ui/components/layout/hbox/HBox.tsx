@@ -35,6 +35,8 @@ export function HBox(props: HBoxProps): ReactElement {
                 gap ? "hbox--gap-" + gap : null,
                 padding ? "hbox--padding-" + padding : null,
                 props.fillParent ? "hbox--fill" : null,
+                props.fillParentWidth ? "hbox--fill-width" : null,
+                props.fillParentHeight ? "hbox--fill-height" : null,
                 props.scrollable ? "hbox--scrollable" : null,
                 props.stableScrollbar ? "hbox--stable-scrollbar" : null,
                 props.wrap ? "hbox--wrap" : null,

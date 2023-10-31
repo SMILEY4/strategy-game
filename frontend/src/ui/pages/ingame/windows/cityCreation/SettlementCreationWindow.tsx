@@ -2,7 +2,7 @@ import {DecoratedWindow} from "../../../../components/windows/decorated/Decorate
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import React, {useState} from "react";
 import {useCloseWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
-import {Tile} from "../../../../../models/tile";
+import {Tile, TileIdentifier} from "../../../../../models/tile";
 import {Header2} from "../../../../components/header/Header";
 import {TextField} from "../../../../components/textfield/TextField";
 import {useCreateSettlement} from "../../../../hooks/city";
@@ -10,12 +10,13 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
+import {TileRepository} from "../../../../../state/access/TileRepository";
 
 
 export function useOpenSettlementCreationWindow() {
     const WINDOW_ID = "settlement-creation-window";
     const addWindow = useOpenWindow();
-    return (tile: Tile, asColony: boolean) => {
+    return (tile: TileIdentifier, asColony: boolean) => {
         addWindow({
             id: WINDOW_ID,
             className: "settlement-creation-window",
@@ -30,15 +31,17 @@ export function useOpenSettlementCreationWindow() {
 
 export interface SettlementCreationWindowProps {
     windowId: string;
-    tile: Tile,
+    tile: TileIdentifier,
     asColony: boolean,
 }
 
 
 export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
 
+    // todo: move logic outside
+    const tile = TileRepository.useTileById(props.tile)!!
     const [name, setName] = useState("");
-    const [valid, failedValidations, create] = useCreateSettlement(props.tile, name, props.asColony);
+    const [valid, failedValidations, create] = useCreateSettlement(tile, name, props.asColony);
     const closeWindow = useCloseWindow();
 
     return (

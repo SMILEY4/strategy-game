@@ -1,10 +1,10 @@
 import {GameRenderer} from "../renderer/gameRenderer";
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "./canvasHandle";
-import {openTileWindow} from "../../ui/pages/ingame/windows/tile/TileWindow";
 import {CameraRepository} from "../../state/access/CameraRepository";
 import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {TileRepository} from "../../state/access/TileRepository";
+import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 
 export class GameLoopService {
 
@@ -54,7 +54,7 @@ export class GameLoopService {
         if (this.tileRepository.getSelectedTile()?.id !== tile?.identifier) {
             this.tileRepository.setSelectedTile(tile?.identifier || null);
             if (tile) {
-                openTileWindow(tile.identifier);
+                UseTileWindow.open(tile.identifier);
             }
         }
     }
