@@ -11,7 +11,7 @@ import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary
 import {formatNumber, joinClassNames} from "../../../../components/utils";
 import {CityIdentifier} from "../../../../../models/city";
 import {UseCityConstructionWindow} from "./useCityConstructionWindow";
-import {ConstructionEntryView} from "../../../../../models/ConstructionEntry";
+import {ConstructionEntryView} from "../../../../../models/constructionEntry";
 import "./cityConstructionWindow.less";
 
 export interface CityConstructionWindowProps {

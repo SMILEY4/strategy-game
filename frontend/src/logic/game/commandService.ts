@@ -1,4 +1,4 @@
-import {CityIdentifier, ProductionEntry, ProductionQueueEntry} from "../../models/city";
+import {CityIdentifier} from "../../models/city";
 import {TileIdentifier} from "../../models/tile";
 import {SettlementTier} from "../../models/settlementTier";
 import {CommandRepository} from "../../state/access/CommandRepository";
@@ -9,7 +9,8 @@ import {
     PlaceScoutCommand,
     UpgradeCityCommand,
 } from "../../models/command";
-import {ConstructionEntry} from "../../models/ConstructionEntry";
+import {ConstructionEntry} from "../../models/constructionEntry";
+import {ProductionQueueEntry} from "../../models/productionQueueEntry";
 
 export class CommandService {
 

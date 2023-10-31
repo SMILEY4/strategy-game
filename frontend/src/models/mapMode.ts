@@ -23,7 +23,7 @@ export class MapMode {
     readonly id: number;
     readonly displayString: string;
 
-    constructor(id: number, displayString: string) {
+    private constructor(id: number, displayString: string) {
         this.id = id;
         this.displayString = displayString;
     }

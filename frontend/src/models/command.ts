@@ -1,9 +1,10 @@
 import {CommandType} from "./commandType";
 import {UID} from "../shared/uid";
 import {TileIdentifier} from "./tile";
-import {CityIdentifier, ProductionEntry, ProductionQueueEntry} from "./city";
+import {CityIdentifier} from "./city";
 import {SettlementTier} from "./settlementTier";
-import {ConstructionEntry} from "./ConstructionEntry";
+import {ConstructionEntry} from "./constructionEntry";
+import {ProductionQueueEntry} from "./productionQueueEntry";
 
 
 export abstract class Command {

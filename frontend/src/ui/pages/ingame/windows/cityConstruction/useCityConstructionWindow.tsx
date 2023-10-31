@@ -9,7 +9,7 @@ import {
     ConstructionEntry,
     ConstructionEntryView,
     SettlerConstructionEntry,
-} from "../../../../../models/ConstructionEntry";
+} from "../../../../../models/constructionEntry";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CityRepository} from "../../../../../state/access/CityRepository";
 

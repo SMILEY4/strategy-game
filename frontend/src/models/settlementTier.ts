@@ -54,7 +54,7 @@ export class SettlementTier {
     readonly maxSize: number;
     readonly nextTier: SettlementTier | null;
 
-    constructor(data: {
+    private constructor(data: {
         displayString: string,
         level: number,
         buildingSlots: number,

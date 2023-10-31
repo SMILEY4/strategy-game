@@ -4,12 +4,13 @@ import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {useOpenCountryWindow} from "../country/CountryWindow";
 import {useOpenProvinceWindow} from "../province/ProvinceWindow";
 import {useOpenTileWindow} from "../tile/TileWindow";
-import {City, CityIdentifier, CityView, ProductionQueueEntry, ProductionQueueEntryView} from "../../../../../models/city";
+import {City, CityIdentifier, CityView} from "../../../../../models/city";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {CityWindow} from "./CityWindow";
-import {useOpenCityProductionQueueWindow} from "../cityProductionQueue/CityProductionQueue";
 import {UseCityConstructionWindow} from "../cityConstruction/useCityConstructionWindow";
+import {UseCityProductionQueueWindow} from "../cityProductionQueue/useCityProductionQueueWindow";
+import {ProductionQueueEntry, ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
 
 export namespace UseCityWindow {
 
@@ -56,13 +57,13 @@ export namespace UseCityWindow {
         const cityView = AppCtx.DataViewService().getCityView(city, commands);
 
         const openCityConstructionWindow = UseCityConstructionWindow.useOpen();
-        const openCityQueueWindow = useOpenCityProductionQueueWindow();
+        const openCityQueueWindow = UseCityProductionQueueWindow.useOpen();
         const openCountryWindow = useOpenCountryWindow();
         const openProvinceWindow = useOpenProvinceWindow();
         const openTileWindow = useOpenTileWindow();
 
         const [validUpgradeSettlement, reasonsValidationsUpgrade, upgradeSettlementTier] = useUpgradeSettlementTier(city);
-        const cancelQueueEntry = useCancelProductionQueueEntry(city.identifier);
+        const cancelQueueEntry = useCancelQueueEntry(city.identifier);
 
         return {
             city: cityView,
@@ -78,7 +79,7 @@ export namespace UseCityWindow {
                 reasonsInvalid: reasonsValidationsUpgrade,
                 upgrade: upgradeSettlementTier,
             },
-            cancelProductionQueueEntry: entryView => entryView && cancelQueueEntry(entryView.entry),
+            cancelProductionQueueEntry: entryView => entryView && cancelQueueEntry(entryView),
         };
     }
 
@@ -92,10 +93,14 @@ export namespace UseCityWindow {
         ];
     }
 
-    function useCancelProductionQueueEntry(city: CityIdentifier) {
+    function useCancelQueueEntry(city: CityIdentifier) {
         const commandService = AppCtx.CommandService();
-        return (entry: ProductionQueueEntry) => {
-            commandService.cancelProductionQueueEntry(city, entry);
+        return (entryView: ProductionQueueEntryView) => {
+            if (entryView.command === null) {
+                commandService.cancelProductionQueueEntry(city, entryView.entry);
+            } else {
+                commandService.cancelCommand(entryView.command.id);
+            }
         };
     }
 

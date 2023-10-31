@@ -104,7 +104,7 @@ export class BuildingType {
     readonly displayString: string;
     readonly icon: string;
 
-    constructor(id: string, displayString: string, icon: string) {
+    private constructor(id: string, displayString: string, icon: string) {
         this.id = id;
         this.displayString = displayString;
         this.icon = icon;

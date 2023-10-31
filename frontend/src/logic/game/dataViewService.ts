@@ -10,26 +10,29 @@ import {CommandType} from "../../models/commandType";
 import {InfoVisibility} from "../../models/infoVisibility";
 import {UserService} from "../user/userService";
 import {CountryRepository} from "../../state/access/CountryRepository";
-import {CommandRepository} from "../../state/access/CommandRepository";
 import {Province, ProvinceView} from "../../models/province";
-import {City, CityView, ProductionQueueEntry} from "../../models/city";
+import {City, CityView} from "../../models/city";
 import {
     BuildingConstructionEntry,
     ConstructionEntry,
     ConstructionEntryView,
     SettlerConstructionEntry,
-} from "../../models/ConstructionEntry";
+} from "../../models/constructionEntry";
+import {
+    BuildingProductionQueueEntry,
+    ProductionQueueEntry,
+    ProductionQueueEntryView,
+    SettlerProductionQueueEntry,
+} from "../../models/productionQueueEntry";
 
 export class DataViewService {
 
     private readonly userService: UserService;
-    private readonly commandRepository: CommandRepository;
     private readonly countryRepository: CountryRepository;
 
-    constructor(userService: UserService, countryRepository: CountryRepository, commandRepository: CommandRepository) {
+    constructor(userService: UserService, countryRepository: CountryRepository) {
         this.userService = userService;
         this.countryRepository = countryRepository;
-        this.commandRepository = commandRepository;
     }
 
 
@@ -107,48 +110,90 @@ export class DataViewService {
             },
             productionQueue: {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
-                items: city.productionQueue.map(entry => ({
-                    entry: entry,
-                    cancelled: commandsCancelQueueEntry.some(cmd => cmd.id === entry.id),
-                    name: this.getProductionQueueEntryName(entry),
-                })),
+                items: this.getMergedProductionQueueEntries(city, commands),
             },
         };
     }
 
+
+    private getMergedProductionQueueEntries(city: City, commands: Command[]): ProductionQueueEntryView[] {
+
+        const cancelledEntries: string[] = commands
+            .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
+            .filter(cmd => (cmd as CancelProductionQueueCommand).city.id === city.identifier.id)
+            .map(cmd => (cmd as CancelProductionQueueCommand).entry.id);
+
+        const addCommands: AddProductionQueueCommand[] = commands
+            .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_ADD)
+            .filter(cmd => (cmd as AddProductionQueueCommand).city.id === city.identifier.id)
+            .map(cmd => cmd as AddProductionQueueCommand);
+
+        return [
+            ...city.productionQueue
+                .filter(e => cancelledEntries.indexOf(e.id) === -1)
+                .map(e => ({
+                    entry: e,
+                    command: null,
+                })),
+            ...addCommands.map(cmd => ({
+                entry: this.asProductionQueueEntry(cmd),
+                command: cmd,
+            })),
+        ];
+    }
+
+    private asProductionQueueEntry(cmd: AddProductionQueueCommand): ProductionQueueEntry {
+        if (cmd.entry instanceof SettlerConstructionEntry) {
+            return new SettlerProductionQueueEntry(cmd.id, 0);
+        }
+        if (cmd.entry instanceof BuildingConstructionEntry) {
+            return new BuildingProductionQueueEntry(cmd.id, 0, (cmd.entry as BuildingConstructionEntry).buildingType);
+        }
+        throw new Error("Unexpected construction-entry-type");
+    }
+
     public getConstructionEntryView(entry: ConstructionEntry, city: City, commands: Command[]): ConstructionEntryView {
         let queueCount = 0;
+
+        queueCount += city.productionQueue
+            .filter(e => {
+                if (e instanceof SettlerProductionQueueEntry) {
+                    return entry instanceof SettlerConstructionEntry;
+                }
+                if (e instanceof BuildingProductionQueueEntry) {
+                    return entry instanceof BuildingConstructionEntry
+                        && entry.buildingType === (e as BuildingProductionQueueEntry).buildingType;
+                }
+                return false;
+            })
+            .length;
+
         queueCount += commands
             .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_ADD)
             .map(cmd => cmd as AddProductionQueueCommand)
             .filter(cmd => cmd.entry.id === entry.id)
             .length;
-        queueCount += city.productionQueue
+
+        queueCount -= commands
+            .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
+            .map(cmd => (cmd as CancelProductionQueueCommand).entry)
             .filter(e => {
-                if (e.type === "settler") {
+                if (e instanceof SettlerProductionQueueEntry) {
                     return entry instanceof SettlerConstructionEntry;
                 }
-                if (e.type === "building") {
-                    return entry instanceof BuildingConstructionEntry && entry.buildingType === e.buildingData?.type;
+                if (e instanceof BuildingProductionQueueEntry) {
+                    return entry instanceof BuildingConstructionEntry
+                        && entry.buildingType === (e as BuildingProductionQueueEntry).buildingType;
                 }
                 return false;
             })
             .length;
+
         return {
             entry: entry,
             disabled: false,
             queueCount: queueCount,
         };
-    }
-
-
-    private getProductionQueueEntryName(entry: ProductionQueueEntry): string {
-        switch (entry.type) {
-            case "settler":
-                return "Settler";
-            case "building":
-                return entry.buildingData!.type.displayString;
-        }
     }
 
     private getPlayerCountry(): Country {

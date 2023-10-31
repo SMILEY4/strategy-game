@@ -15,7 +15,7 @@ export class CommandType {
 
     readonly id: CommandTypeString;
 
-    constructor(id: CommandTypeString) {
+    private constructor(id: CommandTypeString) {
         this.id = id;
     }
 

@@ -9,7 +9,7 @@ import {
 } from "../../models/command";
 import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
-import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../models/ConstructionEntry";
+import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../models/constructionEntry";
 
 export class EndTurnService {
 

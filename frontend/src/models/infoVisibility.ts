@@ -6,7 +6,7 @@ export class InfoVisibility {
 
     readonly id: string;
 
-    constructor(id: string) {
+    private constructor(id: string) {
         this.id = id;
     }
 

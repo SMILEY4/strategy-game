@@ -5,12 +5,13 @@ import {GameLoopService} from "./gameLoopService";
 import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
 import {Province, ProvinceIdentifier} from "../../models/province";
-import {Building, City, CityIdentifier, ProductionQueueEntry} from "../../models/city";
+import {Building, City, CityIdentifier} from "../../models/city";
 import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
 import {ResourceType} from "../../models/resourceType";
 import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
 import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
+import {BuildingProductionQueueEntry, ProductionQueueEntry, SettlerProductionQueueEntry} from "../../models/productionQueueEntry";
 
 export class NextTurnService {
 
@@ -158,23 +159,9 @@ export class NextTurnService {
     private buildProductionEntry(entryDTO: ProductionQueueEntryDTO): ProductionQueueEntry {
         switch (entryDTO.type) {
             case "settler":
-                return {
-                    id: entryDTO.entryId,
-                    progress: entryDTO.progress,
-                    type: "settler",
-                    buildingData: null,
-                    settlerData: {},
-                };
+                return new SettlerProductionQueueEntry(entryDTO.entryId, entryDTO.progress);
             case "building":
-                return {
-                    id: entryDTO.entryId,
-                    progress: entryDTO.progress,
-                    type: "building",
-                    buildingData: {
-                        type: BuildingType.fromString(entryDTO.buildingType!),
-                    },
-                    settlerData: null,
-                };
+                return new BuildingProductionQueueEntry(entryDTO.entryId, entryDTO.progress, BuildingType.fromString(entryDTO.buildingType!));
         }
     }
 

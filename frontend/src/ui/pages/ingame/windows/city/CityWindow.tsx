@@ -15,7 +15,7 @@ import {CgClose} from "react-icons/cg";
 import {joinClassNames} from "../../../../components/utils";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
-import {Building, CityIdentifier, CityView, ProductionQueueEntryView} from "../../../../../models/city";
+import {Building, CityIdentifier, CityView} from "../../../../../models/city";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {AudioType} from "../../../../../logic/audio/audioService";
 import {UIAudio} from "../../../../components/audio";
@@ -24,6 +24,7 @@ import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {UseCityWindow} from "./useCityWindow";
 import "./cityWindow.less";
+import {ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
 
 
 export interface CityWindowProps {
@@ -188,11 +189,8 @@ function ProductionQueueProgressBar(props: { data: UseCityWindow.Data, currentEn
                 props.data.openWindow.cityProductionQueue();
             }}
         >
-            <Text
-                relative
-                strikethrough={props.currentEntry === null ? false : props.currentEntry.cancelled}
-            >
-                {props.currentEntry === null ? "" : props.currentEntry.name}
+            <Text relative>
+                {props.currentEntry === null ? "" : props.currentEntry.entry.displayName}
             </Text>
         </ProgressBar>
     );
@@ -202,7 +200,6 @@ function ProductionQueueCancelButton(props: { data: UseCityWindow.Data, currentE
     return (
         <ButtonPrimary
             square round small
-            disabled={props.currentEntry === null ? true : props.currentEntry.cancelled}
             onClick={() => props.data.cancelProductionQueueEntry(props.currentEntry)}
             soundId={AudioType.CLICK_CLOSE.id}
         >
@@ -216,7 +213,7 @@ function BuildingList(props: CityView): ReactElement {
     return (
         <>
             <HBox gap_s centerVertical left>
-                <Text>{"Building-Slots: " + props.buildings.remainingSlots + "/" + props.tier.value.buildingSlots}</Text>
+                <Text>{"Available Building-Slots: " + props.buildings.remainingSlots + "/" + props.tier.value.buildingSlots}</Text>
             </HBox>
             <HBox gap_s top left wrap>
                 {props.buildings.items.map(building => (

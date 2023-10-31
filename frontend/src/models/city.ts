@@ -5,6 +5,7 @@ import {Color} from "./color";
 import {SettlementTier} from "./settlementTier";
 import {BuildingType} from "./buildingType";
 import {InfoVisibility} from "./infoVisibility";
+import {ProductionQueueEntry, ProductionQueueEntryView} from "./productionQueueEntry";
 
 export interface CityIdentifier {
     id: string,
@@ -40,26 +41,6 @@ export interface Building {
     tile: TileIdentifier | null,
 }
 
-export interface ProductionQueueEntry {
-    id: string,
-    progress: number,
-    type: "building" | "settler",
-    buildingData: null | {
-        type: BuildingType
-    },
-    settlerData: null | {}
-}
-
-export interface ProductionEntry {
-    type: "building" | "settler",
-    disabled: boolean,
-    icon: string,
-    buildingData: null | {
-        type: BuildingType
-    },
-    settlerData: null | {}
-}
-
 export interface CityView {
     isPlayerOwned: boolean,
     identifier: CityIdentifier;
@@ -86,10 +67,4 @@ export interface CityView {
         visibility: InfoVisibility,
         items: ProductionQueueEntryView[]
     },
-}
-
-export interface ProductionQueueEntryView {
-    cancelled: boolean,
-    name: string,
-    entry: ProductionQueueEntry
 }

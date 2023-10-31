@@ -90,7 +90,7 @@ export class ResourceType {
     readonly icon: string;
 
 
-    constructor(id: ResourceTypeString, displayString: string, icon: string) {
+    private constructor(id: ResourceTypeString, displayString: string, icon: string) {
         this.id = id;
         this.displayString = displayString;
         this.icon = icon;
