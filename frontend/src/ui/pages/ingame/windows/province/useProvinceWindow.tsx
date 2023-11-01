@@ -7,7 +7,8 @@ import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {UseCountryWindow} from "../country/useCountryWindow";
 import {UseCityWindow} from "../city/useCityWindow";
 import {ProvinceView} from "../../../../../models/province";
-import {CityIdentifier} from "../../../../../models/city";
+import {CityReduced} from "../../../../../models/city";
+import {UseCityPlannedWindow} from "../cityPlanned/useCityPlannedWindow";
 
 export namespace UseProvinceWindow {
 
@@ -32,7 +33,7 @@ export namespace UseProvinceWindow {
         province: ProvinceView,
         openWindow: {
             country: () => void,
-            city: (city: CityIdentifier) => void
+            city: (city: CityReduced) => void
         }
     }
 
@@ -45,12 +46,20 @@ export namespace UseProvinceWindow {
 
         const openCountryWindow = UseCountryWindow.useOpen();
         const openCityWindow = UseCityWindow.useOpen();
+        const openCityPlannedWindow = UseCityPlannedWindow.useOpen();
 
         return {
             province: provinceView,
             openWindow: {
                 country: () => openCountryWindow(province.country.id, true),
-                city: (city: CityIdentifier) => openCityWindow(city.id, true),
+                city: (city: CityReduced) => {
+                    if (city.isPlanned) {
+                        openCityPlannedWindow(city.createCommand!.id, true);
+                    } else {
+                        openCityWindow(city.identifier.id, true);
+                    }
+
+                },
             },
         };
     }

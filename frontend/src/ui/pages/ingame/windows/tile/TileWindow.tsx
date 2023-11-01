@@ -5,7 +5,7 @@ import {Header1} from "../../../../components/header/Header";
 import {Banner} from "../../../../components/banner/Banner";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {Tile, TileIdentifier} from "../../../../../models/tile";
+import {TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {LinkButton} from "../../../../components/button/link/LinkButton";

@@ -6,6 +6,7 @@ import {SettlementTier} from "./settlementTier";
 import {BuildingType} from "./buildingType";
 import {InfoVisibility} from "./infoVisibility";
 import {ProductionQueueEntry, ProductionQueueEntryView} from "./productionQueueEntry";
+import {CreateCityCommand} from "./command";
 
 export interface CityIdentifier {
     id: string,
@@ -18,6 +19,7 @@ export interface CityReduced {
     isCountryCapitol: boolean;
     isProvinceCapitol: boolean;
     isPlanned?: boolean,
+    createCommand?: CreateCityCommand
 }
 
 export interface City {

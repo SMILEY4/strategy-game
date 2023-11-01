@@ -7,14 +7,15 @@ import {Spacer} from "../../../../components/spacer/Spacer";
 import {ProvinceReduced} from "../../../../../models/province";
 import {ExpandButton} from "../../../../components/button/expand/ExpandButton";
 import {joinClassNames} from "../../../../components/utils";
-import "./provinceListEntry.less"
+import "./provinceListEntry.less";
+import {Text} from "../../../../components/text/Text";
 
 export function ProvinceListEntry(props: {
     data: ProvinceReduced,
     onOpenProvince: () => void,
     children?: any
 }) {
-    const [isOpen, setOpen] = useState(false);
+    const [isOpen, setOpen] = useState(true);
     return (
         <DecoratedPanel
             paddingSmall blue simpleBorder
@@ -25,7 +26,11 @@ export function ProvinceListEntry(props: {
         >
             <VBox gap_xs>
                 <HBox centerVertical spaceBetween>
-                    <LinkButton onClick={props.onOpenProvince}>{props.data.identifier.name}</LinkButton>
+                    {
+                        props.data.isPlanned === true
+                            ? (<Text>{props.data.identifier.name}</Text>)
+                            : (<LinkButton onClick={props.onOpenProvince}>{props.data.identifier.name}</LinkButton>)
+                    }
                     <ExpandButton isOpen={isOpen} setOpen={setOpen}/>
                 </HBox>
                 {isOpen && <Spacer size={"xs"}/>}

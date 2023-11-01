@@ -86,17 +86,16 @@ function ProvincesAndCities(props: UseCountryWindow.Data): ReactElement {
             <InsetPanel>
                 <VBox fillParent gap_s top stretch>
                     {props.country.provinces.items.map(province => (
-                        // todo: fix broken "links" for planned cities,provinces
                         <ProvinceListEntry
                             key={province.identifier.id}
                             data={province}
-                            onOpenProvince={() => props.openWindow.province(province.identifier)}
+                            onOpenProvince={() => props.openWindow.province(province)}
                         >
                             {province.cities.map(city => (
                                 <CityListEntry
                                     key={city.identifier.id}
                                     data={city}
-                                    onOpen={() => props.openWindow.city(city.identifier)}
+                                    onOpen={() => props.openWindow.city(city)}
                                 />
                             ))}
                         </ProvinceListEntry>

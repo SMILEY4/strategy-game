@@ -34,4 +34,13 @@ export namespace CommandRepository {
         return LocalCommandStateStore.useState(state => state.commands);
     }
 
+    export function useCommandById(commandId: string): Command {
+        const command = LocalCommandStateStore.useState(state => state.commands.find(cmd => cmd.id === commandId));
+        if (command) {
+            return command;
+        } else {
+            throw new Error("No command with id " + commandId + " found");
+        }
+    }
+
 }

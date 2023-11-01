@@ -40,7 +40,7 @@ export class DataViewService {
 
     public getTileView(tile: Tile, commands: Command[]): TileView {
         return {
-            ...tile, // todo
+            ...tile,
         };
     }
 
@@ -82,6 +82,7 @@ export class DataViewService {
                                         isCountryCapitol: false,
                                         isProvinceCapitol: false,
                                         isPlanned: true,
+                                        createCommand: cmd,
                                     },
                                 ],
                             };
@@ -104,6 +105,7 @@ export class DataViewService {
                             isCountryCapitol: false,
                             isProvinceCapitol: true,
                             isPlanned: true,
+                            createCommand: cmd,
                         }],
                         isPlanned: true,
                     })),
@@ -115,13 +117,33 @@ export class DataViewService {
 
     public getProvinceView(province: Province, commands: Command[]): ProvinceView {
         const povCountryId = this.getPlayerCountry().identifier.id;
+        const createCityCommands: CreateCityCommand[] = [];
+        for (let i = 0; i < commands.length; i++) {
+            const command = commands[i];
+            if (command.type === CommandType.CITY_CREATE) {
+                createCityCommands.push(command as CreateCityCommand);
+            }
+        }
         return {
             isPlayerOwned: province.country.id === povCountryId,
             identifier: province.identifier,
             country: province.country,
             cities: {
                 visibility: province.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
-                items: province.cities,
+                items: [
+                    ...province.cities,
+                    ...createCityCommands.filter(cmd => cmd.province?.id === province.identifier.id).map(cmd => ({
+                        identifier: {
+                            id: cmd.id,
+                            name: cmd.name,
+                            color: Color.BLACK,
+                        },
+                        isCountryCapitol: false,
+                        isProvinceCapitol: false,
+                        isPlanned: true,
+                        createCommand: cmd,
+                    })),
+                ],
             },
             resourceBalance: {
                 visibility: province.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
@@ -134,9 +156,6 @@ export class DataViewService {
     public getCityView(city: City, commands: Command[]): CityView {
         const povCountryId = this.getPlayerCountry().identifier.id;
         const commandUpgradeTier = commands.find(cmd => cmd.type === CommandType.CITY_UPGRADE && (cmd as UpgradeCityCommand).city.id === city.identifier.id);
-        const commandsCancelQueueEntry = commands
-            .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
-            .map(cmd => cmd as CancelProductionQueueCommand);
         return {
             isPlayerOwned: city.country.id === povCountryId,
             identifier: city.identifier,

@@ -6,9 +6,10 @@ import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {AppCtx} from "../../../../../appContext";
 import {UseCityWindow} from "../city/useCityWindow";
 import {CountryView} from "../../../../../models/country";
-import {ProvinceIdentifier} from "../../../../../models/province";
-import {CityIdentifier} from "../../../../../models/city";
+import {ProvinceReduced} from "../../../../../models/province";
+import {CityReduced} from "../../../../../models/city";
 import {UseProvinceWindow} from "../province/useProvinceWindow";
+import {UseCityPlannedWindow} from "../cityPlanned/useCityPlannedWindow";
 
 export namespace UseCountryWindow {
 
@@ -31,8 +32,8 @@ export namespace UseCountryWindow {
     export interface Data {
         country: CountryView,
         openWindow: {
-            province: (province: ProvinceIdentifier) => void,
-            city: (city: CityIdentifier) => void,
+            province: (province: ProvinceReduced) => void,
+            city: (city: CityReduced) => void,
         };
     }
 
@@ -44,12 +45,25 @@ export namespace UseCountryWindow {
 
         const openProvinceWindow = UseProvinceWindow.useOpen();
         const openCityWindow = UseCityWindow.useOpen();
+        const openCityPlannedWindow = UseCityPlannedWindow.useOpen();
 
         return {
             country: countryView,
             openWindow: {
-                province: (province: ProvinceIdentifier) => openProvinceWindow(province.id, true),
-                city: (city: CityIdentifier) => openCityWindow(city.id, true),
+                province: (province: ProvinceReduced) => {
+                    if (province.isPlanned) {
+                        // do nothing
+                    } else {
+                        openProvinceWindow(province.identifier.id, true);
+                    }
+                },
+                city: (city: CityReduced) => {
+                    if (city.isPlanned) {
+                        openCityPlannedWindow(city.createCommand!.id, true)
+                    } else {
+                        openCityWindow(city.identifier.id, true);
+                    }
+                },
             },
         };
     }

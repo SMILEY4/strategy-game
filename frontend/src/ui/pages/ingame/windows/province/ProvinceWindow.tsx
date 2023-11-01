@@ -21,7 +21,6 @@ export interface ProvinceWindowProps {
 
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
-    // todo: include planned cities
     const data: UseProvinceWindow.Data = UseProvinceWindow.useData(props.provinceId);
 
     return (
@@ -111,7 +110,7 @@ function CitiesSection(props: UseProvinceWindow.Data): ReactElement {
                         return (
                             <CityListEntry
                                 data={city}
-                                onOpen={() => props.openWindow.city(city.identifier)}
+                                onOpen={() => props.openWindow.city(city)}
                             />
                         );
                     })}
