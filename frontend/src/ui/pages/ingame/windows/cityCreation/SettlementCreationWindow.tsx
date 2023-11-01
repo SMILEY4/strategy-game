@@ -1,33 +1,15 @@
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import React, {useState} from "react";
-import {useCloseWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
-import {Tile, TileIdentifier} from "../../../../../models/tile";
+import React from "react";
+import {TileIdentifier} from "../../../../../models/tile";
 import {Header2} from "../../../../components/header/Header";
 import {TextField} from "../../../../components/textfield/TextField";
-import {useCreateSettlement} from "../../../../hooks/city";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
-import {TileRepository} from "../../../../../state/access/TileRepository";
+import {UseSettlementCreationWindow} from "./useSettlementCreationWindow";
 
-
-export function useOpenSettlementCreationWindow() {
-    const WINDOW_ID = "settlement-creation-window";
-    const addWindow = useOpenWindow();
-    return (tile: TileIdentifier, asColony: boolean) => {
-        addWindow({
-            id: WINDOW_ID,
-            className: "settlement-creation-window",
-            left: 125,
-            top: 160,
-            width: 360,
-            height: 170,
-            content: <SettlementCreationWindow windowId={WINDOW_ID} tile={tile} asColony={asColony}/>,
-        });
-    };
-}
 
 export interface SettlementCreationWindowProps {
     windowId: string;
@@ -38,11 +20,7 @@ export interface SettlementCreationWindowProps {
 
 export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
 
-    // todo: move logic outside
-    const tile = TileRepository.useTileById(props.tile)!!
-    const [name, setName] = useState("");
-    const [valid, failedValidations, create] = useCreateSettlement(tile, name, props.asColony);
-    const closeWindow = useCloseWindow();
+    const data: UseSettlementCreationWindow.Data = UseSettlementCreationWindow.useData(props.windowId, props.tile, props.asColony);
 
     return (
         <DecoratedWindow
@@ -61,33 +39,23 @@ export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
                 <Spacer size="s"/>
 
                 <TextField
-                    value={name}
+                    value={data.input.name.value}
                     placeholder={"Settlement Name"}
                     type="text"
-                    onChange={setName}
+                    onChange={data.input.name.set}
                 />
 
                 <HBox right centerVertical gap_s>
-                    <ButtonPrimary red onClick={() => closeWindow(props.windowId)}>
+                    <ButtonPrimary red onClick={data.cancel}>
                         Cancel
                     </ButtonPrimary>
 
                     <BasicTooltip
-                        enabled={!valid}
+                        enabled={data.input.valid}
                         delay={500}
-                        content={
-                            <ul>
-                                {failedValidations.map(e => (<li>{e}</li>))}
-                            </ul>
-                        }
+                        content={<ul>{data.input.reasonsInvalid.map(e => (<li>{e}</li>))}</ul>}
                     >
-                        <ButtonPrimary
-                            green disabled={!valid}
-                            onClick={() => {
-                                create();
-                                closeWindow(props.windowId);
-                            }}
-                        >
+                        <ButtonPrimary green disabled={!data.input.valid} onClick={data.create}>
                             Create
                         </ButtonPrimary>
                     </BasicTooltip>

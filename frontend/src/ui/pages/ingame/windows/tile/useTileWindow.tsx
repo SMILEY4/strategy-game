@@ -5,9 +5,9 @@ import {TileWindow} from "./TileWindow";
 import {TileRepository} from "../../../../../state/access/TileRepository";
 import {UseCityWindow} from "../city/useCityWindow";
 import {UseCountryWindow} from "../country/useCountryWindow";
-import {useOpenSettlementCreationWindow} from "../cityCreation/SettlementCreationWindow";
 import {AppCtx} from "../../../../../appContext";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
+import {UseSettlementCreationWindow} from "../cityCreation/useSettlementCreationWindow";
 
 export namespace UseTileWindow {
 
@@ -70,7 +70,7 @@ export namespace UseTileWindow {
 
         const openCity = UseCityWindow.useOpen();
         const openCountry = UseCountryWindow.useOpen();
-        const openSettlementCreation = useOpenSettlementCreationWindow();
+        const openSettlementCreation = UseSettlementCreationWindow.useOpen();
 
         const [validCreateSettlement, reasonsValidationsSettlement] = useValidateCreateSettlement(tile, "placeholder", false);
         const [validCreateColony, reasonsValidationsColony] = useValidateCreateSettlement(tile, "placeholder", true);
