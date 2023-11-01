@@ -3,7 +3,10 @@ import {BuildingType} from "./buildingType";
 export interface ConstructionEntryView {
     entry: ConstructionEntry,
     disabled: boolean,
-    queueCount: number
+    queueCount: {
+        value: number,
+        modifiedValue: number
+    }
 }
 
 export abstract class ConstructionEntry {

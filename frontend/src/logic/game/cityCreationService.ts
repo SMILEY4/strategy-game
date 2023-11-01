@@ -8,6 +8,7 @@ import {CountryRepository} from "../../state/access/CountryRepository";
 import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
 import {CreateCityCommand} from "../../models/command";
+import {ProvinceIdentifier} from "../../models/province";
 
 export class CityCreationService {
 
@@ -64,8 +65,8 @@ export class CityCreationService {
         return failureReasons;
     }
 
-    public create(tile: Tile, name: string, asColony: boolean) {
-        this.commandService.createSettlement(tile.identifier, name, asColony);
+    public create(tile: Tile, name: string, province: ProvinceIdentifier | null) {
+        this.commandService.createSettlement(tile.identifier, name, province);
     }
 
     private getPlayerCountry(): Country {

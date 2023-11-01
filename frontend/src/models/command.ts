@@ -5,6 +5,7 @@ import {CityIdentifier} from "./city";
 import {SettlementTier} from "./settlementTier";
 import {ConstructionEntry} from "./constructionEntry";
 import {ProductionQueueEntry} from "./productionQueueEntry";
+import {ProvinceIdentifier} from "./province";
 
 
 export abstract class Command {
@@ -22,14 +23,14 @@ export abstract class Command {
 export class CreateCityCommand extends Command {
 
     readonly tile: TileIdentifier;
+    readonly province: ProvinceIdentifier | null;
     readonly name: string;
-    readonly asColony: boolean;
 
-    constructor(data: { tile: TileIdentifier, name: string, asColony: boolean }) {
+    constructor(data: { tile: TileIdentifier, name: string, province: ProvinceIdentifier | null }) {
         super(CommandType.CITY_CREATE);
         this.tile = data.tile;
         this.name = data.name;
-        this.asColony = data.asColony;
+        this.province = data.province;
     }
 
 }

@@ -13,13 +13,14 @@ export interface ProvinceIdentifier {
 export interface ProvinceReduced {
     identifier: ProvinceIdentifier,
     cities: CityReduced[],
+    isPlanned?: boolean,
 }
 
 export interface Province {
     identifier: ProvinceIdentifier;
     country: CountryIdentifier;
     cities: CityReduced[];
-    resourceBalance: Map<ResourceType, number>
+    resourceBalance: Map<ResourceType, number>;
 }
 
 

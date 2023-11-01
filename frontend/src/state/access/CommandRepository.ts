@@ -1,4 +1,4 @@
-import {Command, CreateCityCommand} from "../../models/command";
+import {Command} from "../../models/command";
 import {LocalCommandStateStore} from "../local/LocalCommandStore";
 
 export class CommandRepository {

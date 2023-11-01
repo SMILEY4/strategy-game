@@ -7,8 +7,8 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
 import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {ProvinceEntry} from "../common/ProvinceEntry";
-import {CityEntry} from "../common/CityEntry";
+import {ProvinceListEntry} from "../common/ProvinceListEntry";
+import {CityListEntry} from "../common/CityListEntry";
 import {Text} from "../../../../components/text/Text";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
@@ -86,19 +86,20 @@ function ProvincesAndCities(props: UseCountryWindow.Data): ReactElement {
             <InsetPanel>
                 <VBox fillParent gap_s top stretch>
                     {props.country.provinces.items.map(province => (
-                        <ProvinceEntry
+                        // todo: fix broken "links" for planned cities,provinces
+                        <ProvinceListEntry
                             key={province.identifier.id}
                             data={province}
                             onOpenProvince={() => props.openWindow.province(province.identifier)}
                         >
                             {province.cities.map(city => (
-                                <CityEntry
+                                <CityListEntry
                                     key={city.identifier.id}
                                     data={city}
                                     onOpen={() => props.openWindow.city(city.identifier)}
                                 />
                             ))}
-                        </ProvinceEntry>
+                        </ProvinceListEntry>
                     ))}
                 </VBox>
             </InsetPanel>

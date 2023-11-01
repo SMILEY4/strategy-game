@@ -63,7 +63,7 @@ export class EndTurnService {
                 q: cmd.tile.q,
                 r: cmd.tile.r,
                 name: cmd.name,
-                withNewProvince: cmd.asColony,
+                withNewProvince: cmd.province === null,
             };
         }
         if (command.type === CommandType.CITY_UPGRADE) {

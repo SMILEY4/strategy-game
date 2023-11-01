@@ -15,6 +15,7 @@ import {AudioType} from "../../../../../logic/audio/audioService";
 import {UseCityProductionQueueWindow} from "./useCityProductionQueueWindow";
 import {ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
 import "./cityProductionQueueWindow.less";
+import {joinClassNames} from "../../../../components/utils";
 
 export interface CityProductionQueueWindowProps {
     windowId: string;
@@ -60,7 +61,7 @@ export function CityProductionQueueWindow(props: CityProductionQueueWindowProps)
 function QueueEntry(props: { data: UseCityProductionQueueWindow.Data, entry: ProductionQueueEntryView, position: number }): ReactElement {
     return (
         <DecoratedPanel
-            className="queue-entry"
+            className={joinClassNames(["queue-entry", props.entry.command === null ? null : "queue-entry--command"])}
             background={
                 <div
                     className={"queue-entry-background"}
@@ -70,7 +71,7 @@ function QueueEntry(props: { data: UseCityProductionQueueWindow.Data, entry: Pro
             simpleBorder paddingSmall blue
         >
             <HBox centerVertical spaceBetween gap_s>
-                <Text>{props.position + ". " + props.entry.entry.displayName}</Text>
+                <Text className="queue-entry__name">{props.position + ". " + props.entry.entry.displayName}</Text>
                 {props.position === 1 && (<ProgressBar progress={props.entry.entry.progress} className="production_queue__progress"/>)}
                 <ButtonPrimary
                     square round small

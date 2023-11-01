@@ -10,7 +10,7 @@ import {useConnectGameSession} from "../../hooks/gameSessions";
 import "./pageInGame.scoped.less";
 import {GameSessionStateRepository} from "../../../state/access/GameSessionStateRepository";
 
-const USE_DUMMY_CANVAS = true;
+const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
     const currentState = GameSessionStateRepository.useGameSessionState();

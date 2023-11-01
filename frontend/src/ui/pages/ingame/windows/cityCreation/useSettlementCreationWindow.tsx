@@ -68,7 +68,7 @@ export namespace UseSettlementCreationWindow {
         const [possible, reasons] = useValidateCreateSettlement(tile, name, asColony);
 
         function perform() {
-            creationService.create(tile, name!!, asColony!!);
+            creationService.create(tile, name!, asColony ? null : (tile.owner?.province ? tile.owner.province : null));
         }
 
         return [possible, reasons, perform];

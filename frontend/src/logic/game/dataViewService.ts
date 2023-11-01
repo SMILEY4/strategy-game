@@ -25,6 +25,7 @@ import {
     SettlerProductionQueueEntry,
 } from "../../models/productionQueueEntry";
 import {Tile, TileView} from "../../models/tile";
+import {Color} from "../../models/color";
 
 export class DataViewService {
 
@@ -64,7 +65,49 @@ export class DataViewService {
             },
             provinces: {
                 visibility: country.identifier.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
-                items: country.provinces,
+                items: [
+                    ...country.provinces.map(p => {
+                        const cmd = createCityCommands.find(c => c.province?.id === p.identifier.id);
+                        if (cmd) {
+                            return {
+                                ...p,
+                                cities: [
+                                    ...p.cities,
+                                    {
+                                        identifier: {
+                                            id: cmd.id,
+                                            name: cmd.name,
+                                            color: Color.BLACK,
+                                        },
+                                        isCountryCapitol: false,
+                                        isProvinceCapitol: false,
+                                        isPlanned: true,
+                                    },
+                                ],
+                            };
+                        } else {
+                            return p;
+                        }
+                    }),
+                    ...createCityCommands.filter(cmd => cmd.province === null).map(cmd => ({
+                        identifier: {
+                            id: cmd.id,
+                            name: cmd.id,
+                            color: Color.BLACK,
+                        },
+                        cities: [{
+                            identifier: {
+                                id: cmd.id,
+                                name: cmd.name,
+                                color: Color.BLACK,
+                            },
+                            isCountryCapitol: false,
+                            isProvinceCapitol: true,
+                            isPlanned: true,
+                        }],
+                        isPlanned: true,
+                    })),
+                ],
             },
         };
     }
@@ -162,6 +205,7 @@ export class DataViewService {
 
     public getConstructionEntryView(entry: ConstructionEntry, city: City, commands: Command[]): ConstructionEntryView {
         let queueCount = 0;
+        let queueCountModified = 0;
 
         queueCount += city.productionQueue
             .filter(e => {
@@ -176,13 +220,13 @@ export class DataViewService {
             })
             .length;
 
-        queueCount += commands
+        queueCountModified += commands
             .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_ADD)
             .map(cmd => cmd as AddProductionQueueCommand)
             .filter(cmd => cmd.entry.id === entry.id)
             .length;
 
-        queueCount -= commands
+        queueCountModified -= commands
             .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
             .map(cmd => (cmd as CancelProductionQueueCommand).entry)
             .filter(e => {
@@ -200,7 +244,10 @@ export class DataViewService {
         return {
             entry: entry,
             disabled: false,
-            queueCount: queueCount,
+            queueCount: {
+                value: queueCount,
+                modifiedValue: queueCount + queueCountModified,
+            },
         };
     }
 

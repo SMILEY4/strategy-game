@@ -17,15 +17,27 @@
     opacity:             70%;
   }
 
-  &.queue-entry--cancelled {
-    filter: grayscale(60%);
+  &.queue-entry--command {
+
+    .queue-entry-background {
+      filter: grayscale(80%);
+    }
+
+    & > .border {
+      border-style: dashed;
+    }
+
+    .queue-entry__name {
+      opacity: 80%;
+    }
+
   }
 
   .production_queue__progress {
-    flex-grow:     1;
-    padding-left:  @spacing-m;
-    padding-right: @spacing-m;
-    border:        1px solid @color-decorative-gold;
+    flex-grow:        1;
+    padding-left:     @spacing-m;
+    padding-right:    @spacing-m;
+    border:           1px solid @color-decorative-gold;
     background-color: rgba(0, 0, 0, 0.4);
   }
 

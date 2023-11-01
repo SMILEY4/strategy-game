@@ -22,11 +22,17 @@
 
 .construction-entry__name {
   flex-shrink: 1;
-  flex-grow: 1;
+  flex-grow:   1;
 }
 
 .construction-entry__count {
-  opacity: 70%;
+  opacity:     70%;
   flex-shrink: 0;
-  flex-grow: 0;
+  flex-grow:   0;
+  min-width:   3rem;
+
+  .change-info-text__next:not(svg) {
+    opacity: 100%;
+  }
+
 }

@@ -7,8 +7,7 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
 import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {CityEntry} from "../common/CityEntry";
-import {ProvinceIdentifier, ProvinceView} from "../../../../../models/province";
+import {CityListEntry} from "../common/CityListEntry";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
@@ -22,6 +21,7 @@ export interface ProvinceWindowProps {
 
 export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
 
+    // todo: include planned cities
     const data: UseProvinceWindow.Data = UseProvinceWindow.useData(props.provinceId);
 
     return (
@@ -109,7 +109,7 @@ function CitiesSection(props: UseProvinceWindow.Data): ReactElement {
                 <VBox fillParent gap_s top stretch>
                     {props.province.cities.items.map(city => {
                         return (
-                            <CityEntry
+                            <CityListEntry
                                 data={city}
                                 onOpen={() => props.openWindow.city(city.identifier)}
                             />

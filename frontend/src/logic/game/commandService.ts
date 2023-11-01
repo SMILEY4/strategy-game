@@ -11,6 +11,7 @@ import {
 } from "../../models/command";
 import {ConstructionEntry} from "../../models/constructionEntry";
 import {ProductionQueueEntry} from "../../models/productionQueueEntry";
+import {ProvinceIdentifier} from "../../models/province";
 
 export class CommandService {
 
@@ -24,11 +25,11 @@ export class CommandService {
         this.commandRepository.removeCommand(id);
     }
 
-    public createSettlement(tile: TileIdentifier, name: string, asColony: boolean) {
+    public createSettlement(tile: TileIdentifier, name: string, province: ProvinceIdentifier | null) {
         const command = new CreateCityCommand({
             tile: tile,
             name: name,
-            asColony,
+            province: province,
         });
         this.commandRepository.addCommand(command);
     }

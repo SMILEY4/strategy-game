@@ -4,10 +4,18 @@ import {LinkButton} from "../../../../components/button/link/LinkButton";
 import {RiVipCrown2Fill, RiVipCrown2Line} from "react-icons/ri";
 import React from "react";
 import {CityReduced} from "../../../../../models/city";
+import {joinClassNames} from "../../../../components/utils";
+import "./cityListEntry.less";
 
-export function CityEntry(props: { data: CityReduced, onOpen: () => void }) {
+export function CityListEntry(props: { data: CityReduced, onOpen: () => void }) {
     return (
-        <DecoratedPanel paddingSmall blue simpleBorder>
+        <DecoratedPanel
+            paddingSmall blue simpleBorder
+            className={joinClassNames([
+                "city-list-entry",
+                props.data.isPlanned ? "city-list-entry--planned" : null,
+            ])}
+        >
             <HBox centerVertical gap_s>
                 <LinkButton onClick={props.onOpen}>{props.data.identifier.name}</LinkButton>
                 {props.data.isCountryCapitol && <RiVipCrown2Fill/>}

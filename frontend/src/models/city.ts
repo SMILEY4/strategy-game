@@ -17,6 +17,7 @@ export interface CityReduced {
     identifier: CityIdentifier;
     isCountryCapitol: boolean;
     isProvinceCapitol: boolean;
+    isPlanned?: boolean,
 }
 
 export interface City {

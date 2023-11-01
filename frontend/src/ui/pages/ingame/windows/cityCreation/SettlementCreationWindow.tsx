@@ -51,7 +51,7 @@ export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
                     </ButtonPrimary>
 
                     <BasicTooltip
-                        enabled={data.input.valid}
+                        enabled={!data.input.valid}
                         delay={500}
                         content={<ul>{data.input.reasonsInvalid.map(e => (<li>{e}</li>))}</ul>}
                     >

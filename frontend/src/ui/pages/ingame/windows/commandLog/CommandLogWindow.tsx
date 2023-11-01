@@ -72,9 +72,10 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: Com
             const cmd = command as CreateCityCommand;
             return (
                 <>
-                    <Header4 onLight>{"Create " + (cmd.asColony ? "Colony" : "Settlement")}</Header4>
+                    <Header4 onLight>{"Create " + (cmd.province === null ? "Colony" : "Settlement")}</Header4>
                     <Spacer size="s"/>
                     <Text onLight>with name <i>{cmd.name}</i></Text>
+                    {cmd.province && (<Text onLight>in province <i>{cmd.province.name}</i></Text>)}
                     <Text onLight>at <i>{cmd.tile.q + ", " + cmd.tile.r}</i></Text>
                 </>
             );

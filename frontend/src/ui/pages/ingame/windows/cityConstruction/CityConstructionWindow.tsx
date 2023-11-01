@@ -13,6 +13,7 @@ import {CityIdentifier} from "../../../../../models/city";
 import {UseCityConstructionWindow} from "./useCityConstructionWindow";
 import {ConstructionEntryView} from "../../../../../models/constructionEntry";
 import "./cityConstructionWindow.less";
+import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 
 export interface CityConstructionWindowProps {
     windowId: string;
@@ -67,9 +68,11 @@ function ConstructionListEntry(props: { data: UseCityConstructionWindow.Data, en
                 <Text className="construction-entry__name">
                     {props.entry.entry.displayString}
                 </Text>
-                <Text className="construction-entry__count">
-                    {formatNumber(props.entry.queueCount, true, true)}
-                </Text>
+                <ChangeInfoText
+                    className={"construction-entry__count"}
+                    prevValue={formatNumber(props.entry.queueCount.value, true, true)}
+                    nextValue={formatNumber(props.entry.queueCount.modifiedValue, true, true)}
+                />
                 <ButtonPrimary
                     blue small
                     className={"construction-entry__button"}
