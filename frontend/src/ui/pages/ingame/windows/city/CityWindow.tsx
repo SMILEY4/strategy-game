@@ -15,7 +15,7 @@ import {CgClose} from "react-icons/cg";
 import {joinClassNames} from "../../../../components/utils";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
-import {Building, CityIdentifier, CityView} from "../../../../../models/city";
+import {CityIdentifier, CityView} from "../../../../../models/city";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {AudioType} from "../../../../../logic/audio/audioService";
 import {UIAudio} from "../../../../components/audio";
@@ -25,6 +25,7 @@ import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {UseCityWindow} from "./useCityWindow";
 import "./cityWindow.less";
 import {ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
+import {Building} from "../../../../../models/building";
 
 
 export interface CityWindowProps {

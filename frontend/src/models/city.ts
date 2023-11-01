@@ -7,6 +7,7 @@ import {BuildingType} from "./buildingType";
 import {InfoVisibility} from "./infoVisibility";
 import {ProductionQueueEntry, ProductionQueueEntryView} from "./productionQueueEntry";
 import {CreateCityCommand} from "./command";
+import {Building} from "./building";
 
 export interface CityIdentifier {
     id: string,
@@ -36,12 +37,6 @@ export interface City {
     }
     buildings: Building[]
     productionQueue: ProductionQueueEntry[],
-}
-
-export interface Building {
-    type: BuildingType,
-    active: boolean,
-    tile: TileIdentifier | null,
 }
 
 export interface CityView {

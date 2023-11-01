@@ -2,7 +2,7 @@
 
 import {Tile, TileIdentifier} from "../../../../models/tile";
 import {City} from "../../../../models/city";
-import {Country, CountryIdentifier} from "../../../../models/country";
+import {CountryIdentifier} from "../../../../models/country";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/mixedArrayBuffer";
 import {MeshData} from "../data/meshData";
 import {GLAttributeType} from "../../common/glTypes";
@@ -11,9 +11,10 @@ import {Command, CreateCityCommand, PlaceScoutCommand} from "../../../../models/
 import {match} from "../../../../shared/match";
 import {TextRenderer} from "../../common/textRenderer";
 import {Camera} from "../../common/camera";
-import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import {TilemapUtils} from "../../../game/tilemapUtils";
 import {CommandType} from "../../../../models/commandType";
+import {Color} from "../../../../models/color";
+import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export namespace EntityDataBuilder {
 
@@ -143,7 +144,7 @@ export namespace EntityDataBuilder {
                 entities.push({
                     type: "scout",
                     tile: (command as PlaceScoutCommand).tile,
-                    country: Country.UNDEFINED.identifier,
+                    country: placeholderCountry(),
                     label: null,
                 });
             }
@@ -151,13 +152,21 @@ export namespace EntityDataBuilder {
                 entities.push({
                     type: "city",
                     tile: (command as CreateCityCommand).tile,
-                    country: Country.UNDEFINED.identifier,
+                    country: placeholderCountry(),
                     label: (command as CreateCityCommand).name,
                 });
             }
         }
 
         return entities;
+    }
+
+    function placeholderCountry(): CountryIdentifier {
+        return {
+            id: "undefined",
+            name: "undefined",
+            color: Color.BLACK,
+        };
     }
 
     function prepareTextTexture(textRenderer: TextRenderer, entities: RenderEntity[]) {

@@ -30,20 +30,3 @@ export interface CountryView {
         items: ProvinceReduced[]
     };
 }
-
-export namespace Country {
-    // todo: remove `UNDEFINED`
-    export const UNDEFINED: Country = {
-        identifier: {
-            id: "undefined",
-            name: "undefined",
-            color: Color.BLACK,
-        },
-        player: {
-            userId: "undefined",
-            name: "undefined",
-        },
-        settlers: null,
-        provinces: [],
-    };
-}

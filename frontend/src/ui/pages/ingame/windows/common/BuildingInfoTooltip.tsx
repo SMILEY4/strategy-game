@@ -3,8 +3,8 @@ import {Header4} from "../../../../components/header/Header";
 import React from "react";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
-import {Building} from "../../../../../models/city";
 import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
+import {Building} from "../../../../../models/building";
 
 
 export function BuildingInfoTooltip(props: { building: Building, children?: any }) {

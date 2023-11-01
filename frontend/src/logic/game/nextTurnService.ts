@@ -5,13 +5,14 @@ import {GameLoopService} from "./gameLoopService";
 import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
 import {Province, ProvinceIdentifier} from "../../models/province";
-import {Building, City, CityIdentifier} from "../../models/city";
+import {City, CityIdentifier} from "../../models/city";
 import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
 import {ResourceType} from "../../models/resourceType";
 import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
 import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {BuildingProductionQueueEntry, ProductionQueueEntry, SettlerProductionQueueEntry} from "../../models/productionQueueEntry";
+import {Building} from "../../models/building";
 
 export class NextTurnService {
 
