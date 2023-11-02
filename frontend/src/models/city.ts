@@ -8,6 +8,7 @@ import {InfoVisibility} from "./infoVisibility";
 import {ProductionQueueEntry, ProductionQueueEntryView} from "./productionQueueEntry";
 import {CreateCityCommand} from "./command";
 import {Building} from "./building";
+import {Route} from "./route";
 
 export interface CityIdentifier {
     id: string,
@@ -65,4 +66,11 @@ export interface CityView {
         visibility: InfoVisibility,
         items: ProductionQueueEntryView[]
     },
+    connectedCities: ConnectedCityView[]
+}
+
+export interface ConnectedCityView {
+    routeId: string,
+    city: CityIdentifier,
+    routeLength: number
 }

@@ -9,6 +9,7 @@ export interface GameStateDTO {
         countries: CountryDTO[],
         provinces: ProvinceDTO[],
         cities: CityDTO[]
+        routes: RouteDTO[]
     };
 }
 
@@ -110,6 +111,17 @@ export interface TileDTO {
             turn: number | null,
         })[]
     }
+}
+
+export interface RouteDTO {
+    routeId: string,
+    cityIdA: string,
+    cityIdB: string,
+    path: ({
+        tileId: string,
+        q: number,
+        r: number,
+    })[]
 }
 
 export interface ColorDTO {

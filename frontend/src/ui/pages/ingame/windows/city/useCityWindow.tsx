@@ -1,7 +1,7 @@
 import {CityRepository} from "../../../../../state/access/CityRepository";
 import {AppCtx} from "../../../../../appContext";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
-import {City, CityIdentifier, CityView} from "../../../../../models/city";
+import {City, CityIdentifier, CityView, ConnectedCityView} from "../../../../../models/city";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {CityWindow} from "./CityWindow";
@@ -41,6 +41,7 @@ export namespace UseCityWindow {
             country: () => void,
             province: () => void,
             tile: () => void,
+            connectedCity: (connectedCity: ConnectedCityView) => void
         },
         upgradeCityTier: {
             valid: boolean,
@@ -56,6 +57,7 @@ export namespace UseCityWindow {
         const commands = CommandRepository.useCommands();
         const cityView = AppCtx.DataViewService().getCityView(city, commands);
 
+        const openCityWindow = UseCityWindow.useOpen()
         const openCityConstructionWindow = UseCityConstructionWindow.useOpen();
         const openCityQueueWindow = UseCityProductionQueueWindow.useOpen();
         const openCountryWindow = UseCountryWindow.useOpen();
@@ -73,6 +75,7 @@ export namespace UseCityWindow {
                 country: () => openCountryWindow(city.country.id, true),
                 province: () => openProvinceWindow(city.province.id, true),
                 tile: () => openTileWindow(city.tile),
+                connectedCity: (connectedCity: ConnectedCityView) => openCityWindow(connectedCity.city.id, true)
             },
             upgradeCityTier: {
                 valid: validUpgradeSettlement,

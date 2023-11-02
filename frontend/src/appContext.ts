@@ -30,6 +30,7 @@ import {WorldUpdater} from "./logic/renderer/world/worldUpdater";
 import {MapModeRepository} from "./state/access/MapModeRepository";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
+import {RouteRepository} from "./state/access/RouteRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -71,6 +72,7 @@ interface AppCtxDef {
     CityRepository: () => CityRepository,
     TileRepository: () => TileRepository,
     MapModeRepository: () => MapModeRepository,
+    RouteRepository: () => RouteRepository,
 }
 
 const diContext = new DIContext();
@@ -125,7 +127,7 @@ export const AppCtx: AppCtxDef = {
 
     DataViewService: diContext.register(
         "ModifiedAccessService",
-        () => new DataViewService(AppCtx.UserService(), AppCtx.CountryRepository()),
+        () => new DataViewService(AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.RouteRepository()),
     ),
     NextTurnService: diContext.register(
         "NextTurnService",
@@ -219,7 +221,11 @@ export const AppCtx: AppCtxDef = {
     ),
     MapModeRepository: diContext.register(
         "MapModeRepository",
-        () => new MapModeRepository(AppCtx.RemoteGameStateRepository()),
+        () => new MapModeRepository(),
+    ),
+    RouteRepository: diContext.register(
+        "RouteRepository",
+        () => new RouteRepository(AppCtx.RemoteGameStateRepository()),
     ),
 };
 

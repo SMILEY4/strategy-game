@@ -26,6 +26,8 @@ import {UseCityWindow} from "./useCityWindow";
 import "./cityWindow.less";
 import {ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
 import {Building} from "../../../../../models/building";
+import {BsArrowRight} from "react-icons/bs";
+import {LinkButton} from "../../../../components/button/link/LinkButton";
 
 
 export interface CityWindowProps {
@@ -52,6 +54,8 @@ export function CityWindow(props: CityWindowProps): ReactElement {
                     <UpgradeTierButton {...data}/>
                     <Spacer size="m"/>
                     <PopulationSection {...data}/>
+                    <Spacer size="m"/>
+                    <RouteSectionSection {...data}/>
                     <Spacer size="m"/>
                     <ContentSection {...data}/>
                 </VBox>
@@ -133,6 +137,31 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
                     name={"Growth Progress"}
                     value={props.city.population.visibility === InfoVisibility.KNOWN ? props.city.population.progress : "?"}
                 />
+            </InsetPanel>
+        </>
+    );
+}
+
+function RouteSectionSection(props: UseCityWindow.Data): ReactElement {
+    return (
+        <>
+            <Header2 centered>Connected Cities</Header2>
+            <Divider/>
+            <InsetPanel>
+                {props.city.connectedCities.map(entry => {
+                    return (
+                        <HBox left centerVertical gap_s>
+                            <BsArrowRight/>
+                            <LinkButton align="left" onClick={() => props.openWindow.connectedCity(entry)}>
+                                {entry.city.name}
+                            </LinkButton>
+                            <Spacer size={"xs"}/>
+                            <Text>
+                                {"(" + entry.routeLength + ")"}
+                            </Text>
+                        </HBox>
+                    );
+                })}
             </InsetPanel>
         </>
     );

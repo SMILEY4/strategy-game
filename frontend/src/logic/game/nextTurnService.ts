@@ -13,6 +13,7 @@ import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepos
 import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {BuildingProductionQueueEntry, ProductionQueueEntry, SettlerProductionQueueEntry} from "../../models/productionQueueEntry";
 import {Building} from "../../models/building";
+import {Route} from "../../models/route";
 
 export class NextTurnService {
 
@@ -39,6 +40,7 @@ export class NextTurnService {
             provinces: this.buildProvinces(game),
             cities: this.buildCities(game),
             tiles: TileContainer.create(this.buildTiles(game), 11),
+            routes: this.buildRoutes(game),
         });
         if (this.gameSessionRepository.getGameSessionState() === "loading") {
             this.gameSessionRepository.setGameSessionState("playing");
@@ -208,6 +210,17 @@ export class NextTurnService {
                     .map(scoutDTO => ({
                         country: this.findCountry(game, scoutDTO.countryId!!),
                     })),
+            };
+        });
+    }
+
+    private buildRoutes(game: GameStateDTO): Route[] {
+        return game.game.routes.map(routeDTO => {
+            return {
+                routeId: routeDTO.routeId,
+                cityA: this.findCity(game, routeDTO.cityIdA),
+                cityB: this.findCity(game, routeDTO.cityIdB),
+                path: routeDTO.path,
             };
         });
     }

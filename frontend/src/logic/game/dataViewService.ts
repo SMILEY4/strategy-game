@@ -26,15 +26,18 @@ import {
 } from "../../models/productionQueueEntry";
 import {Tile, TileView} from "../../models/tile";
 import {Color} from "../../models/color";
+import {RouteRepository} from "../../state/access/RouteRepository";
 
 export class DataViewService {
 
     private readonly userService: UserService;
     private readonly countryRepository: CountryRepository;
+    private readonly routeRepository: RouteRepository;
 
-    constructor(userService: UserService, countryRepository: CountryRepository) {
+    constructor(userService: UserService, countryRepository: CountryRepository, routeRepository: RouteRepository) {
         this.userService = userService;
         this.countryRepository = countryRepository;
+        this.routeRepository = routeRepository;
     }
 
 
@@ -156,6 +159,7 @@ export class DataViewService {
     public getCityView(city: City, commands: Command[]): CityView {
         const povCountryId = this.getPlayerCountry().identifier.id;
         const commandUpgradeTier = commands.find(cmd => cmd.type === CommandType.CITY_UPGRADE && (cmd as UpgradeCityCommand).city.id === city.identifier.id);
+        const routes = this.routeRepository.getRoutes().filter(r => r.cityA.id === city.identifier.id || r.cityB.id === city.identifier.id);
         return {
             isPlayerOwned: city.country.id === povCountryId,
             identifier: city.identifier,
@@ -182,6 +186,13 @@ export class DataViewService {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
                 items: this.getMergedProductionQueueEntries(city, commands),
             },
+            connectedCities: routes.map(r => {
+                return {
+                    city: (r.cityA.id === city.identifier.id) ? r.cityB : r.cityA,
+                    routeId: r.routeId,
+                    routeLength: r.path.length,
+                };
+            }),
         };
     }
 
