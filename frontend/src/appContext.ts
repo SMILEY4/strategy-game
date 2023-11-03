@@ -170,7 +170,7 @@ export const AppCtx: AppCtxDef = {
         "GameRenderer",
         () => new GameRenderer(
             AppCtx.CanvasHandle(),
-            new WorldUpdater(AppCtx.CanvasHandle(), AppCtx.CommandRepository(), AppCtx.CityRepository(), AppCtx.TileRepository()),
+            new WorldUpdater(AppCtx.CanvasHandle(), AppCtx.CommandRepository(), AppCtx.CityRepository(), AppCtx.TileRepository(), AppCtx.RouteRepository()),
             AppCtx.CameraRepository(),
             AppCtx.CommandRepository(),
             AppCtx.MapModeRepository(),

@@ -8,12 +8,16 @@ import {CommandRepository} from "../../../state/access/CommandRepository";
 import {CityRepository} from "../../../state/access/CityRepository";
 import {TileRepository} from "../../../state/access/TileRepository";
 import {CanvasHandle} from "../../game/canvasHandle";
+import {LinesRenderLayer} from "./layers/linesRenderLayer";
+import {RouteRepository} from "../../../state/access/RouteRepository";
+import {TilemapUtils} from "../../game/tilemapUtils";
 
 export class WorldUpdater {
 
     private readonly commandRepository: CommandRepository;
     private readonly cityRepository: CityRepository;
     private readonly tileRepository: TileRepository;
+    private readonly routeRepository: RouteRepository;
     private readonly canvasHandle: CanvasHandle;
     private world: RenderWorld | null = null;
     private lastRevIdCommandState = "";
@@ -22,11 +26,13 @@ export class WorldUpdater {
     constructor(canvasHandle: CanvasHandle,
                 commandRepository: CommandRepository,
                 cityRepository: CityRepository,
-                tileRepository: TileRepository) {
+                tileRepository: TileRepository,
+                routeRepository: RouteRepository) {
         this.canvasHandle = canvasHandle;
         this.commandRepository = commandRepository;
         this.cityRepository = cityRepository;
         this.tileRepository = tileRepository;
+        this.routeRepository = routeRepository;
     }
 
     public setWorld(world: RenderWorld) {
@@ -43,11 +49,14 @@ export class WorldUpdater {
 
     public update(camera: Camera) {
         if (this.world) {
+            // todo: check/fix:    if-conditions may be broken here / not doing what intended
             const currentRevId = this.commandRepository.getRevId();
             if (currentRevId !== this.lastRevIdCommandState || this.lastZoom !== camera.getZoom()) {
-                this.lastRevIdCommandState = currentRevId;
                 this.rebuildEntityLayer(camera);
                 this.lastZoom = camera.getZoom();
+            }
+            if (currentRevId !== this.lastRevIdCommandState) {
+                this.rebuildLinesLayer();
             }
         }
     }
@@ -78,6 +87,16 @@ export class WorldUpdater {
                 layer.getTextRenderer(),
             ),
         );
+    }
+
+    private rebuildLinesLayer() {
+        const layer = this.world!.getLayerById(LinesRenderLayer.LAYER_ID) as LinesRenderLayer;
+        const lines: number[][][] = this.routeRepository.getRoutes().map(route => {
+            return route.path.map(tile => {
+                return TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r);
+            });
+        });
+        layer.setLines(lines);
     }
 
 }

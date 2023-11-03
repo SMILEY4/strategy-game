@@ -22,18 +22,18 @@ export class MixedArrayBuffer {
     private readonly patternBytes: number;
 
     constructor(lengthBytes: number, pattern: MixedArrayBufferType[]) {
+        const maxBytes = MixedArrayBuffer.maxValueBytes(pattern);
         this.buffer = new ArrayBuffer(lengthBytes);
-        this.bufferInt8 = new Int8Array(this.buffer);
-        this.bufferInt16 = new Int16Array(this.buffer);
-        this.bufferInt32 = new Int32Array(this.buffer);
-        this.bufferUInt8 = new Uint8Array(this.buffer);
-        this.bufferUInt16 = new Uint16Array(this.buffer);
-        this.bufferUInt32 = new Uint32Array(this.buffer);
-        this.bufferFloat32 = new Float32Array(this.buffer);
+        this.bufferInt8 = maxBytes >= 1 ? new Int8Array(this.buffer) : null as any;
+        this.bufferInt16 = maxBytes >= 2 ? new Int16Array(this.buffer) : null as any;
+        this.bufferInt32 = maxBytes >= 4 ? new Int32Array(this.buffer) : null as any;
+        this.bufferUInt8 = maxBytes >= 1 ? new Uint8Array(this.buffer) : null as any;
+        this.bufferUInt16 = maxBytes >= 2 ? new Uint16Array(this.buffer) : null as any;
+        this.bufferUInt32 = maxBytes >= 4 ? new Uint32Array(this.buffer) : null as any;
+        this.bufferFloat32 = maxBytes >= 4 ? new Float32Array(this.buffer) : null as any;
         this.pattern = pattern;
         this.patternBytes = MixedArrayBuffer.getTotalRequiredBytes(1, pattern);
     }
-
 
     public getPattern(): MixedArrayBufferType[] {
         return this.pattern;
@@ -95,6 +95,17 @@ export class MixedArrayBuffer {
             default:
                 throw new Error("Could not get amount of bytes for type. Invalid type:", type);
         }
+    }
+
+    private static maxValueBytes(pattern: MixedArrayBufferType[]): number {
+        let maxBytes = 0;
+        pattern.forEach(p => {
+            const bytes = this.getBytes(p);
+            if (bytes > maxBytes) {
+                maxBytes = bytes;
+            }
+        });
+        return maxBytes;
     }
 
     public static getTotalRequiredBytes(amountValues: number, pattern: MixedArrayBufferType[]): number {

@@ -10,16 +10,22 @@ import SHADER_SRC_TILEMAP_FRAG from "../mapShader.fsh?raw";
 
 import SHADER_SRC_ENTITY_VERT from "../entityShader.vsh?raw";
 import SHADER_SRC_ENTITY_FRAG from "../entityShader.fsh?raw";
+
+import SHADER_SRC_LINE_VERT from "../routesShader.vsh?raw";
+import SHADER_SRC_LINE_FRAG from "../routesShader.fsh?raw";
+
 import {TextRenderer} from "../common/textRenderer";
 import {MapModeRepository} from "../../../state/access/MapModeRepository";
 import {TileRepository} from "../../../state/access/TileRepository";
+import {LinesRenderLayer} from "./layers/linesRenderLayer";
 
 export namespace RenderWorldFactory {
 
     export function createWorld(gl: WebGL2RenderingContext, mapModeRepository: MapModeRepository, tileRepository: TileRepository): RenderWorld {
         return new RenderWorld([
             createTerrainLayer(gl, mapModeRepository, tileRepository),
-            createIconRenderLayer(gl),
+            creatLinesRenderLayer(gl),
+            createEntityRenderLayer(gl),
         ]);
     }
 
@@ -29,11 +35,16 @@ export namespace RenderWorldFactory {
         return new TerrainRenderLayer(mapModeRepository, tileRepository, program, tileset);
     }
 
-    function createIconRenderLayer(gl: WebGL2RenderingContext): EntityRenderLayer {
+    function createEntityRenderLayer(gl: WebGL2RenderingContext): EntityRenderLayer {
         const program = GLProgram.create(gl, SHADER_SRC_ENTITY_VERT, SHADER_SRC_ENTITY_FRAG);
         const texture = GLTexture.createFromPath(gl, "/resources.png");
         const textRenderer = new TextRenderer(gl);
         return new EntityRenderLayer(program, texture, textRenderer);
+    }
+
+    function creatLinesRenderLayer(gl: WebGL2RenderingContext): LinesRenderLayer {
+        const program = GLProgram.create(gl, SHADER_SRC_LINE_VERT, SHADER_SRC_LINE_FRAG);
+        return new LinesRenderLayer(gl, program);
     }
 
 }
