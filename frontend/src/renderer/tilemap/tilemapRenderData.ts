@@ -92,6 +92,20 @@ export class TilemapRenderData {
                     amountComponents: 2,
                     divisor: 1,
                 },
+                {
+                    buffer: this.instanceData.instanceBuffer,
+                    location: programAttributes.find(a => a.name === "in_tilesetIndex")!.location,
+                    type: GLAttributeType.INT,
+                    amountComponents: 1,
+                    divisor: 1,
+                },
+                {
+                    buffer: this.instanceData.instanceBuffer,
+                    location: programAttributes.find(a => a.name === "in_visibility")!.location,
+                    type: GLAttributeType.INT,
+                    amountComponents: 1,
+                    divisor: 1,
+                },
             ],
             undefined,
         );

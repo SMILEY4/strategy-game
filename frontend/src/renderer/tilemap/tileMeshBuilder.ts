@@ -79,6 +79,7 @@ export namespace TileMeshBuilder {
     }
 
 
+
     function hexCornerPointX(cornerIndex: number, size: [number, number]): number {
         const angleDeg = 60 * cornerIndex - 30;
         const angleRad = Math.PI / 180 * angleDeg;

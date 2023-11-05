@@ -6,7 +6,7 @@ export enum MixedArrayBufferType {
     U_BYTE,
     U_SHORT,
     U_INT,
-}
+} // todo: => improved enum
 
 export namespace MixedArrayBufferType {
 

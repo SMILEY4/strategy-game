@@ -32,7 +32,7 @@ export class GLProgram implements GLDisposable {
     public setUniform(name: string, type: GLUniformType, values: GLUniformValueType) {
         const information = this.information.uniforms.find(u => u.name === name);
         if (information) {
-            this.setUniformValue(information.location, type, values);
+            this.setUniformValue(name, information.location, type, values);
         }
     }
 
@@ -48,7 +48,7 @@ export class GLProgram implements GLDisposable {
         }
     }
 
-    private setUniformValue(location: WebGLUniformLocation, type: GLUniformType, values: GLUniformValueType) {
+    private setUniformValue(name: string, location: WebGLUniformLocation, type: GLUniformType, values: GLUniformValueType) {
         const valuesArray: number[] | Float32Array = this.uniformValueAsArray(values);
         switch (type) {
             case GLUniformType.FLOAT:
@@ -120,7 +120,7 @@ export class GLProgram implements GLDisposable {
                 this.gl.uniformMatrix4fv(location, false, valuesArray);
                 break;
         }
-        GLError.check(this.gl, "uniform[...]", "setting program uniform value");
+        GLError.check(this.gl, "uniform[...]", "setting program uniform value '" + name + "'");
     }
 
 }

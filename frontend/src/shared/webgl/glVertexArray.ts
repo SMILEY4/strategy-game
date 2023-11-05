@@ -20,6 +20,11 @@ export class GLVertexArray implements GLDisposable {
         GLError.check(this.gl, "bindVertexArray", "binding vertex array object");
     }
 
+    public unbind() {
+        this.gl.bindVertexArray(null);
+        GLError.check(this.gl, "bindVertexArray", "un-binding vertex array object");
+    }
+
     public dispose() {
         this.gl.deleteVertexArray(this.handle);
         GLError.check(this.gl, "deleteVertexArray", "disposing vertex array object");
@@ -61,8 +66,6 @@ export namespace GLVertexArray {
         const buffers = getBuffers(attributes);
         const stride = calculateStridePerBuffer(attributes, buffers);
         const offset = initialOffsets(buffers);
-
-        console.log("stride", stride)
 
         // configure attributes
         attributes.forEach(attribute => {
