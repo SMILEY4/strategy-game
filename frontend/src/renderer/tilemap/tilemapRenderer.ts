@@ -40,7 +40,7 @@ export class TilemapRenderer implements RenderModule {
         this.data = {
             program: program,
             renderer: new GLRenderer(gl),
-            tileset: GLTexture.createFromPath(gl, "/tileset_4.png"),
+            tileset: GLTexture.createFromPath(gl, "/tiles.png"),
             texture: GLTexture.createFromPath(gl, "/textures/plain_white_paper_blendable.jpg"),
             noise: GLTexture.createFromPath(gl, "/textures/noise.png"),
             renderData: new TilemapRenderData(gl, program.getInformation().attributes),

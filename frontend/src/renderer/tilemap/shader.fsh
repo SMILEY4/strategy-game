@@ -36,38 +36,38 @@ vec3 blendBurn(vec3 a, vec3 b) {
 
 vec2 tilesetTextureCoords() {
     float totalTiles = 4.0;
-    float totalWidth = 2274.0;
+    float slotSize = 600.0;
     float gapSize = 10.0;
-    float gapSizePerc = gapSize / totalWidth;
+    float totalWidth = gapSize + (slotSize + gapSize) * totalTiles;
 
+    float texCoordPx = v_textureCoordinates.x * slotSize;
+    float offsetPx = gapSize + (float(v_tilesetIndex) * (slotSize + gapSize));
+    float uPx = texCoordPx + offsetPx;
+    float u = uPx / totalWidth;
 
-
-    float offset = float(v_tilesetIndex) / totalTiles;
-    float u = (v_textureCoordinates.x / totalTiles) + offset + (gapSizePerc * float(v_tilesetIndex + 1));
     float v = v_textureCoordinates.y;
+
     return vec2(u, v);
 }
 
-float basePaperTexture() {
-
-    float scalePaper = 90.0; // bigger number = larger texture
+float basePaperTexture(float basePaper, float baseClouds) {
     float impactPaper = 1.0;
+    float impactClouds = 0.5;
 
-    float scaleClouds = 200.0;
-    float impactClouds = 0.4;
-
-    float paper = mix(1.0, texture(u_texture, v_worldPosition / scalePaper).x, impactPaper);
-    float clouds = mix(1.0, texture(u_noise, v_worldPosition / scaleClouds).x, impactClouds);
+    float paper = mix(1.0, basePaper, impactPaper);
+    float clouds = mix(1.0, baseClouds, impactClouds);
 
     return paper * clouds;
 }
 
-vec4 paperColor(float basePaperTexture) {
+vec4 paperColor(float baseClouds, float paperTexture) {
     // combine paper + noise
-    vec3 color = vec3(basePaperTexture);
+    vec3 color = vec3(paperTexture);
 
     // define tint color (in hsv)
-    vec3 tintColor = rgb2hsv(vec3(0.75, 0.64, 0.5));
+    vec3 tintColor0 = rgb2hsv(vec3(0.88, 0.73, 0.62));
+    vec3 tintColor1 = rgb2hsv(vec3(0.99, 0.75, 0.58));
+    vec3 tintColor = mix(tintColor0, tintColor1, 1.0-baseClouds);
 
     // convert color to hsv
     vec3 colorHSV = rgb2hsv(color);
@@ -78,6 +78,7 @@ vec4 paperColor(float basePaperTexture) {
     // convert back to rgb
     vec3 blendedColorRGB = hsv2rgb(blendedColorHSV);
     return vec4(blendedColorRGB, 1.0);
+
 }
 
 vec4 tileColor(float basePaperTexture) {
@@ -102,12 +103,16 @@ vec3 applyFogOfWar(vec3 baseColor) {
 
 void main() {
 
-    float paperTexture = basePaperTexture();
+    float scalePaper = 90.0;
+    float basePaper = texture(u_texture, v_worldPosition / scalePaper).x;
 
-    vec4 colorPaper = paperColor(paperTexture);
+    float scaleClouds = 200.0;
+    float baseClouds = texture(u_noise, v_worldPosition / scaleClouds).x;
+
+    float paperTexture = basePaperTexture(basePaper, baseClouds);
+
+    vec4 colorPaper = paperColor(baseClouds, paperTexture);
     vec4 colorTile = tileColor(paperTexture);
-
-    outColor = colorTile;
 
 
     vec3 color = mix(colorPaper, colorTile, colorTile.a).rgb;
