@@ -131,6 +131,8 @@ function ModalJoinGame(props: {
 
                     <Header1>Join</Header1>
 
+                    <Spacer size="m"/>
+
                     <TextField
                         value={props.sessionId}
                         placeholder={"Session-Id"}
@@ -138,7 +140,7 @@ function ModalJoinGame(props: {
                         onChange={props.onSessionId}
                     />
 
-                    <div/>
+                    <Spacer size="m"/>
 
                     <HBox centerVertical right>
                         <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
@@ -168,6 +170,8 @@ function ModalCreateGame(props: {
 
                     <Header1>Create</Header1>
 
+                    <Spacer size="m"/>
+
                     <TextField
                         value={props.seed}
                         placeholder={"Seed (Optional)"}
@@ -175,7 +179,7 @@ function ModalCreateGame(props: {
                         onChange={props.onSeed}
                     />
 
-                    <div/>
+                    <Spacer size="m"/>
 
                     <HBox centerVertical right>
                         <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>

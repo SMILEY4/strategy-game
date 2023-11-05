@@ -49,13 +49,14 @@ export class WorldUpdater {
 
     public update(camera: Camera) {
         if (this.world) {
-            // todo: check/fix:    if-conditions may be broken here / not doing what intended
-            const currentRevId = this.commandRepository.getRevId();
-            if (currentRevId !== this.lastRevIdCommandState || this.lastZoom !== camera.getZoom()) {
+            const commandsChanged = this.lastRevIdCommandState !== this.commandRepository.getRevId()
+            const zoomChanged = this.lastZoom !== camera.getZoom();
+            this.lastRevIdCommandState = this.commandRepository.getRevId();
+            this.lastZoom = camera.getZoom();
+            if(commandsChanged || zoomChanged) {
                 this.rebuildEntityLayer(camera);
-                this.lastZoom = camera.getZoom();
             }
-            if (currentRevId !== this.lastRevIdCommandState) {
+            if(commandsChanged) {
                 this.rebuildLinesLayer();
             }
         }
@@ -74,6 +75,7 @@ export class WorldUpdater {
     }
 
     private rebuildEntityLayer(camera: Camera) {
+        console.log("rebuild entities")
         const layer = this.world!.getLayerById(EntityRenderLayer.LAYER_ID) as EntityRenderLayer;
         layer.disposeWorldData();
         layer.setMesh(
