@@ -10,7 +10,7 @@ import {GameSessionService} from "./logic/gamesession/gameSessionService";
 import {EndTurnService} from "./logic/game/endTurnService";
 import {CommandService} from "./logic/game/commandService";
 import {CityCreationService} from "./logic/game/cityCreationService";
-import {GameRenderer} from "./logic/rendererOld/gameRenderer";
+import {OLDGameRenderer} from "./logic/rendererOld/OLDGameRenderer";
 import {GameLoopService} from "./logic/game/gameLoopService";
 import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
@@ -59,7 +59,7 @@ interface AppCtxDef {
     GameLoopService: () => GameLoopService,
 
     CanvasHandle: () => CanvasHandle,
-    GameRenderer: () => GameRenderer,
+    GameRenderer: () => OLDGameRenderer,
 
     UserRepository: () => UserRepository,
     CameraRepository: () => CameraRepository,
@@ -168,7 +168,7 @@ export const AppCtx: AppCtxDef = {
     ),
     GameRenderer: diContext.register(
         "GameRenderer",
-        () => new GameRenderer(
+        () => new OLDGameRenderer(
             AppCtx.CanvasHandle(),
             new WorldUpdater(AppCtx.CanvasHandle(), AppCtx.CommandRepository(), AppCtx.CityRepository(), AppCtx.TileRepository(), AppCtx.RouteRepository()),
             AppCtx.CameraRepository(),

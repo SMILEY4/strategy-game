@@ -123,7 +123,9 @@ function CreateColonyButton(props: UseTileWindow.Data): ReactElement {
             delay={500}
             content={
                 <ul>
-                    {props.createColony.reasonsInvalid.map(e => (<li>{e}</li>))}
+                    {props.createColony.reasonsInvalid.map((e, i) => (
+                        <li key={i}>{e}</li>
+                    ))}
                 </ul>
             }
         >
@@ -147,7 +149,9 @@ function CreateSettlementButton(props: UseTileWindow.Data): ReactElement {
             delay={500}
             content={
                 <ul>
-                    {props.createSettlement.reasonsInvalid.map(e => (<li>{e}</li>))}
+                    {props.createSettlement.reasonsInvalid.map((e,i) => (
+                        <li key={i}>{e}</li>
+                    ))}
                 </ul>
             }
         >

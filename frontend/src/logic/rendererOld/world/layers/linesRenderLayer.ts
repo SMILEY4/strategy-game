@@ -36,7 +36,7 @@ export class LinesRenderLayer extends BaseRenderLayer {
         this.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
 
         mesh.getVertexArray().bind();
-        renderer.drawMesh(mesh.getAmountIndices());
+        renderer.drawIndexed(mesh.getAmountIndices());
 
         mesh.dispose()
 

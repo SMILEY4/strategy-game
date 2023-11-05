@@ -8,6 +8,47 @@ export enum MixedArrayBufferType {
     U_INT,
 }
 
+export namespace MixedArrayBufferType {
+
+    export const VEC2: MixedArrayBufferType[] = [
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+    ];
+
+    export const VEC3: MixedArrayBufferType[] = [
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+    ];
+
+    export const VEC4: MixedArrayBufferType[] = [
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+        MixedArrayBufferType.FLOAT,
+    ];
+
+    export const INT_VEC2: MixedArrayBufferType[] = [
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
+    ];
+
+    export const INT_VEC3: MixedArrayBufferType[] = [
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
+    ];
+
+    export const INT_VEC4: MixedArrayBufferType[] = [
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
+        MixedArrayBufferType.INT,
+    ];
+
+
+}
+
 export class MixedArrayBuffer {
 
     private readonly buffer: ArrayBuffer;

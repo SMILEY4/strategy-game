@@ -16,13 +16,13 @@ export class GLVertexArray implements GLDisposable {
     }
 
     public bind() {
-        this.gl.bindVertexArray(this.handle)
-        GLError.check(this.gl, "bindVertexArray", "binding vertex array object")
+        this.gl.bindVertexArray(this.handle);
+        GLError.check(this.gl, "bindVertexArray", "binding vertex array object");
     }
 
     public dispose() {
         this.gl.deleteVertexArray(this.handle);
-        GLError.check(this.gl, "deleteVertexArray", "disposing vertex array object")
+        GLError.check(this.gl, "deleteVertexArray", "disposing vertex array object");
     }
 
 }
@@ -35,9 +35,10 @@ export namespace GLVertexArray {
         location: GLuint,
         type: GLAttributeType,
         amountComponents: GLAttributeComponentAmount,
-        normalized?: boolean
-        stride?: number
-        offset?: number
+        normalized?: boolean,
+        stride?: number,
+        offset?: number,
+        divisor?: number,
     }
 
     export function create(gl: WebGL2RenderingContext, attributes: AttributeConfig[], indexBuffer?: GLIndexBuffer) {
@@ -56,7 +57,12 @@ export namespace GLVertexArray {
         const stride = calculateStride(attributes);
         let offset = 0;
         attributes.forEach(attribute => {
+            // enable
+            gl.enableVertexAttribArray(attribute.location);
+            GLError.check(gl, "enableVertexAttribArray", "enabling attribute " + attribute.location);
+            // bind source buffer
             attribute.buffer.bind();
+            // set attrib pointers
             if (attribute.type.isInteger) {
                 gl.vertexAttribIPointer(
                     attribute.location,
@@ -77,8 +83,10 @@ export namespace GLVertexArray {
                 );
                 GLError.check(gl, "vertexAttribPointer");
             }
-            gl.enableVertexAttribArray(attribute.location);
-            GLError.check(gl, "enableVertexAttribArray", "enabling attribute " + attribute.location);
+            // configure attribute divisor (optional)
+            if (attribute.divisor !== undefined) {
+                gl.vertexAttribDivisor(attribute.location, attribute.divisor);
+            }
 
             offset += attribute.type.bytes * attribute.amountComponents;
         });

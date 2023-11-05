@@ -22,7 +22,7 @@ export class TerrainChunk {
     }
 
     public dispose() {
-        this.additionalDisposables.forEach(disposable => disposable.dispose);
+        this.additionalDisposables.forEach(disposable => disposable.dispose());
         this.vertexArray.dispose();
     }
 

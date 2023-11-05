@@ -10,7 +10,7 @@ import {CommandRepository} from "../../state/access/CommandRepository";
 import {MapModeRepository} from "../../state/access/MapModeRepository";
 import {TileRepository} from "../../state/access/TileRepository";
 
-export class GameRenderer {
+export class OLDGameRenderer {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly worldUpdater: WorldUpdater;

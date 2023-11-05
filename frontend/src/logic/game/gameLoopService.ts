@@ -1,52 +1,59 @@
-import {GameRenderer} from "../rendererOld/gameRenderer";
+import {OLDGameRenderer} from "../rendererOld/OLDGameRenderer";
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "./canvasHandle";
 import {CameraRepository} from "../../state/access/CameraRepository";
 import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {TileRepository} from "../../state/access/TileRepository";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
+import {GameRenderer} from "../../renderer/gameRenderer";
 
 export class GameLoopService {
 
     private readonly canvasHandle: CanvasHandle;
-    private readonly renderer: GameRenderer;
+    private readonly oldRenderer: OLDGameRenderer;
     private readonly cameraRepository: CameraRepository;
     private readonly gameSessionRepository: GameSessionStateRepository;
     private readonly tileRepository: TileRepository;
     private readonly tilePicker: TilePicker;
 
+    private readonly renderer: GameRenderer;
+
     constructor(canvasHandle: CanvasHandle,
-                renderer: GameRenderer,
+                renderer: OLDGameRenderer,
                 tilePicker: TilePicker,
                 cameraRepository: CameraRepository,
                 gameSessionRepository: GameSessionStateRepository,
                 tileRepository: TileRepository) {
         this.canvasHandle = canvasHandle;
-        this.renderer = renderer;
+        this.oldRenderer = renderer;
         this.tilePicker = tilePicker;
         this.cameraRepository = cameraRepository;
         this.gameSessionRepository = gameSessionRepository;
         this.tileRepository = tileRepository;
+        this.renderer = new GameRenderer(canvasHandle, cameraRepository, tileRepository)
     }
 
     public initialize(canvas: HTMLCanvasElement) {
         this.canvasHandle.set(canvas);
-        this.renderer.initialize();
-        this.renderer.updateWorld();
+        // this.oldRenderer.initialize();
+        // this.oldRenderer.updateWorld();
+        this.renderer.initialize()
     }
 
 
     public onGameStateUpdate() {
-        this.renderer.updateWorld();
+        // this.oldRenderer.updateWorld();
         this.gameSessionRepository.setGameTurnState("playing");
     }
 
     public update() {
-        this.renderer.render();
+        // this.oldRenderer.render();
+        this.renderer.render()
     }
 
     public dispose() {
-        this.renderer.dispose();
+        // this.oldRenderer.dispose();
+        this.renderer.dispose()
     }
 
     public mouseClick(x: number, y: number) {

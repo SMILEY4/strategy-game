@@ -40,7 +40,7 @@ export class EntityRenderLayer extends BaseRenderLayer {
             this.program.setUniform("u_textureLabels", GLUniformType.SAMPLER_2D, this.textRenderer.getTexture()!!);
 
             this.mesh.getVertexArray().bind();
-            renderer.drawMesh(this.mesh.getAmountIndices());
+            renderer.drawIndexed(this.mesh.getAmountIndices());
 
         }
     }

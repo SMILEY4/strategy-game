@@ -47,7 +47,7 @@ export class TerrainRenderLayer extends BaseRenderLayer {
 
         this.chunks.forEach(chunk => {
             chunk.getVertexArray().bind();
-            renderer.drawMesh(chunk.getMeshSize());
+            renderer.drawIndexed(chunk.getMeshSize());
         });
 
     }
