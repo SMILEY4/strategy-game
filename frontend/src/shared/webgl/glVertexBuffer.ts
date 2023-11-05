@@ -13,7 +13,15 @@ export class GLVertexBuffer implements GLDisposable {
 
     public bind() {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.handle);
-        GLError.check(this.gl, "bindBuffer", "binding vertex buffer.")
+        GLError.check(this.gl, "bindBuffer", "binding vertex buffer.");
+    }
+
+    public setData(data: ArrayBuffer, bind?: boolean) {
+        if (bind) {
+            this.bind();
+        }
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+        GLError.check(this.gl, "bufferData", "uploading vertex buffer data");
     }
 
     public dispose() {
@@ -25,20 +33,19 @@ export class GLVertexBuffer implements GLDisposable {
 
 export namespace GLVertexBuffer {
 
-    export function create(gl: WebGL2RenderingContext, data: ArrayBuffer) {
-        // create new buffer handle
+    export function createEmpty(gl: WebGL2RenderingContext) {
         const vbo = gl.createBuffer();
-        GLError.check(gl, "createBuffer", "creating vertex buffer")
+        GLError.check(gl, "createBuffer", "creating vertex buffer");
         if (vbo === null) {
             throw new Error("Could not create buffer");
         }
-        // bind buffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-        GLError.check(gl, "bindBuffer", "bind vertex buffer for creation")
-        // upload data
-        gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-        GLError.check(gl, "bufferData", "uploading vertex buffer data")
         return new GLVertexBuffer(gl, vbo);
+    }
+
+    export function create(gl: WebGL2RenderingContext, data: ArrayBuffer) {
+        const buffer = createEmpty(gl);
+        buffer.setData(data, true);
+        return buffer;
     }
 
 }

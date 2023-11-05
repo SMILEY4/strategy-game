@@ -1,19 +1,11 @@
 // noinspection PointlessArithmeticExpressionJS,DuplicatedCode
 
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../shared/webgl/mixedArrayBuffer";
-import {GLVertexArray} from "../../shared/webgl/glVertexArray";
-import {GLAttributeType} from "../../shared/webgl/glTypes";
 import {GLVertexBuffer} from "../../shared/webgl/glVertexBuffer";
-import {GLProgram} from "../../shared/webgl/glProgram";
-import {GLDisposable} from "../../shared/webgl/glDisposable";
 import {TilemapUtils} from "../../logic/game/tilemapUtils";
-import GLProgramAttribute = GLProgram.GLProgramAttribute;
+import {TilemapRenderData} from "./tilemapRenderData";
+import TileMesh = TilemapRenderData.TileMesh;
 
-export interface TileMesh {
-    vertexCount: number,
-    vertexArray: GLVertexArray;
-    additionalDisposables: GLDisposable[];
-}
 
 /*
 Vertices of hex-tiles are constructed as following (with corner index shown):
@@ -25,7 +17,7 @@ Vertices of hex-tiles are constructed as following (with corner index shown):
  4. bottom-left
  5. bottom
 */
-export namespace TileMesh {
+export namespace TileMeshBuilder {
 
     const PATTERN_VERTEX = [
         // vertex position
@@ -38,40 +30,28 @@ export namespace TileMesh {
     const VALUES_PER_VERTEX = PATTERN_VERTEX.length;
 
 
-    export function build(gl: WebGL2RenderingContext, shaderAttributes: GLProgramAttribute[]): TileMesh {
-        const vertices = new MixedArrayBuffer(
+    export function build(gl: WebGL2RenderingContext): TileMesh {
+        const [vertices, cursor] = createMixedArray();
+        appendVertices(cursor);
+        return createTileMesh(gl, vertices);
+    }
+
+    function createMixedArray(): [MixedArrayBuffer, MixedArrayBufferCursor] {
+        const array = new MixedArrayBuffer(
             MixedArrayBuffer.getTotalRequiredBytes(VERTICES_PER_TILE * VALUES_PER_VERTEX, PATTERN_VERTEX),
             PATTERN_VERTEX,
         );
-        const cursorVertices = new MixedArrayBufferCursor(vertices);
-
-        appendVertices(cursorVertices);
-
-        const vertexBuffer = GLVertexBuffer.create(gl, vertices.getRawBuffer()!);
-        return {
-            vertexCount: VERTICES_PER_TILE,
-            vertexArray: GLVertexArray.create(
-                gl,
-                [
-                    {
-                        buffer: vertexBuffer,
-                        location: shaderAttributes.find(a => a.name === "in_vertexPosition")!.location,
-                        type: GLAttributeType.FLOAT,
-                        amountComponents: 2,
-                    },
-                    {
-                        buffer: vertexBuffer,
-                        location: shaderAttributes.find(a => a.name === "in_textureCoordinates")!.location,
-                        type: GLAttributeType.FLOAT,
-                        amountComponents: 2,
-                    },
-                ],
-                undefined,
-            ),
-            additionalDisposables: [vertexBuffer],
-        };
+        const cursor = new MixedArrayBufferCursor(array);
+        return [array, cursor];
     }
 
+
+    function createTileMesh(gl: WebGL2RenderingContext, vertices: MixedArrayBuffer): TileMesh {
+        return {
+            vertexCount: VERTICES_PER_TILE,
+            vertexBuffer: GLVertexBuffer.create(gl, vertices.getRawBuffer()!),
+        };
+    }
 
     function appendVertices(cursor: MixedArrayBufferCursor) {
         appendTriangle(cursor, 0, 1);

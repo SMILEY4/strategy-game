@@ -8,14 +8,7 @@ import {GLAttributeType} from "../../shared/webgl/glTypes";
 import {TilemapUtils} from "../../logic/game/tilemapUtils";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
-export interface TileInstanceData {
-    instanceCount: number,
-    vertexArray: GLVertexArray;
-    additionalDisposables: GLDisposable[];
-}
-
-
-export namespace TileInstanceData {
+export namespace TileInstanceDataBuilder {
 
     const PATTERN_VERTEX = [
         // world position
@@ -25,8 +18,7 @@ export namespace TileInstanceData {
     const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
 
 
-    export function build(tiles: Tile[], gl: WebGL2RenderingContext, shaderAttributes: GLProgramAttribute[]): TileInstanceData {
-
+    export function build(tiles: Tile[]): [number, ArrayBuffer] {
         const buffer = new MixedArrayBuffer(
             MixedArrayBuffer.getTotalRequiredBytes(VALUES_PER_INSTANCE * tiles.length, PATTERN_VERTEX),
             PATTERN_VERTEX,
@@ -35,24 +27,7 @@ export namespace TileInstanceData {
 
         appendTiles(cursor, tiles);
 
-        const vertexBuffer = GLVertexBuffer.create(gl, buffer.getRawBuffer()!);
-        return {
-            instanceCount: tiles.length,
-            vertexArray: GLVertexArray.create(
-                gl,
-                [
-                    {
-                        buffer: vertexBuffer,
-                        location: shaderAttributes.find(a => a.name === "in_worldPosition")!.location,
-                        type: GLAttributeType.FLOAT,
-                        amountComponents: 2,
-                        divisor: 1
-                    },
-                ],
-                undefined,
-            ),
-            additionalDisposables: [vertexBuffer],
-        };
+        return [tiles.length, buffer.getRawBuffer()!];
     }
 
 

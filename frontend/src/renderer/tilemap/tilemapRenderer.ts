@@ -5,16 +5,16 @@ import {GLProgram} from "../../shared/webgl/glProgram";
 
 import SHADER_SRC_VERT from "./shader.vsh?raw";
 import SHADER_SRC_FRAG from "./shader.fsh?raw";
-import {GLUniformType} from "../../shared/webgl/glTypes";
-import {TileMesh} from "./tileMesh";
 import {GLRenderer} from "../../shared/webgl/glRenderer";
 import {TileRepository} from "../../state/access/TileRepository";
-import {TileInstanceData} from "./tileInstanceData";
+import {TilemapRenderData} from "./tilemapRenderData";
+import {GLUniformType} from "../../shared/webgl/glTypes";
+import {TileInstanceDataBuilder} from "./tileInstanceDataBuilder";
 
 interface TilemapRenderModuleData {
     renderer: GLRenderer;
     program: GLProgram;
-    tileMesh: TileMesh;
+    renderData: TilemapRenderData;
 }
 
 export class TilemapRenderer implements RenderModule {
@@ -33,11 +33,10 @@ export class TilemapRenderer implements RenderModule {
     public initialize(): void {
         const renderer = new GLRenderer(this.canvasHandle.getGL());
         const program = GLProgram.create(this.canvasHandle.getGL(), SHADER_SRC_VERT, SHADER_SRC_FRAG);
-        const tileMesh = TileMesh.build(this.canvasHandle.getGL(), program.getInformation().attributes);
         this.data = {
             renderer: renderer,
             program: program,
-            tileMesh: tileMesh,
+            renderData: new TilemapRenderData(this.canvasHandle.getGL(), program.getInformation().attributes),
         };
     }
 
@@ -45,32 +44,26 @@ export class TilemapRenderer implements RenderModule {
     public render(camera: Camera) {
         if (this.data) {
 
-            const tileInstanceData = this.getTileInstanceData();
+            this.updateInstanceData();
+
+            this.data.renderData.getVertexArray().bind();
 
             this.data.program.use();
             this.data.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
 
-            this.data.tileMesh.vertexArray.bind();
-            tileInstanceData.vertexArray.bind()
-
-            this.data.renderer.drawInstanced(this.data.tileMesh.vertexCount, tileInstanceData.instanceCount);
-            // this.data.renderer.draw(this.data.tileMesh.vertexCount)
-
-            tileInstanceData.additionalDisposables.forEach(disposable => disposable.dispose());
-            tileInstanceData.vertexArray.dispose();
+            this.data.renderer.drawInstanced(this.data.renderData.getVertexCount(), this.data.renderData.getInstanceCount());
         }
     }
 
-    private getTileInstanceData(): TileInstanceData {
-        return TileInstanceData.build(this.tileRepository.getTiles(), this.canvasHandle.getGL(), this.data!.program.getInformation().attributes);
+    private updateInstanceData() {
+        const [count, array] = TileInstanceDataBuilder.build(this.tileRepository.getTiles());
+        this.data?.renderData.updateInstanceData(count, array);
     }
-
 
     public dispose() {
         if (this.data) {
             this.data.program.dispose();
-            this.data.tileMesh.additionalDisposables.forEach(disposable => disposable.dispose());
-            this.data.tileMesh.vertexArray.dispose();
+            this.data.renderData.dispose();
         }
     }
 
