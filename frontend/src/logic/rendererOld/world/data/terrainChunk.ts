@@ -1,5 +1,5 @@
-import {GLVertexArray} from "../../common/glVertexArray";
-import {GLDisposable} from "../../common/glDisposable";
+import {GLVertexArray} from "../../../../shared/webgl/glVertexArray";
+import {GLDisposable} from "../../../../shared/webgl/glDisposable";
 
 export class TerrainChunk {
 

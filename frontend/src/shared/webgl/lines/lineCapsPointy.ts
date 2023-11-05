@@ -1,4 +1,4 @@
-import {Vec2d} from "../../../shared/vec2d";
+import {Vec2d} from "../../vec2d";
 import {LineElementInputData} from "./lineElementInputData";
 import {LineElementOutputData} from "./lineElementOutputData";
 

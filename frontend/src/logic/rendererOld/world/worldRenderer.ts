@@ -1,6 +1,6 @@
 import {RenderWorld} from "./data/renderWorld";
-import {GLRenderer} from "../common/glRenderer";
-import {Camera} from "../common/camera";
+import {GLRenderer} from "../../../shared/webgl/glRenderer";
+import {Camera} from "../../../shared/webgl/camera";
 
 export class WorldRenderer {
 

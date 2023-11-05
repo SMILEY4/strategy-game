@@ -1,13 +1,13 @@
 // noinspection PointlessArithmeticExpressionJS
 
 import {MeshData} from "../data/meshData";
-import {LineCapsButt} from "../../lines/lineCapsButt";
-import {LineJoinMiter} from "../../lines/lineJoinMitter";
-import {LineMeshCreator} from "../../lines/lineMeshCreator";
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/mixedArrayBuffer";
-import {LineMesh} from "../../lines/lineMesh";
-import {GLAttributeType} from "../../common/glTypes";
-import {GLProgram} from "../../common/glProgram";
+import {LineCapsButt} from "../../../../shared/webgl/lines/lineCapsButt";
+import {LineJoinMiter} from "../../../../shared/webgl/lines/lineJoinMitter";
+import {LineMeshCreator} from "../../../../shared/webgl/lines/lineMeshCreator";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
+import {LineMesh} from "../../../../shared/webgl/lines/lineMesh";
+import {GLAttributeType} from "../../../../shared/webgl/glTypes";
+import {GLProgram} from "../../../../shared/webgl/glProgram";
 
 export namespace LineDataBuilder {
 

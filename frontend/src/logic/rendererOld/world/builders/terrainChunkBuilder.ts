@@ -1,14 +1,14 @@
 // noinspection PointlessArithmeticExpressionJS
 
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../common/mixedArrayBuffer";
-import {GLProgram} from "../../common/glProgram";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
+import {GLProgram} from "../../../../shared/webgl/glProgram";
 import {TerrainChunk} from "../data/terrainChunk";
 import {Tile} from "../../../../models/tile";
 import {RenderBuilderUtils} from "./renderBuilderUtils";
-import {GLVertexArray} from "../../common/glVertexArray";
-import {GLAttributeType} from "../../common/glTypes";
-import {GLVertexBuffer} from "../../common/glVertexBuffer";
-import {GLIndexBuffer} from "../../common/glIndexBuffer";
+import {GLVertexArray} from "../../../../shared/webgl/glVertexArray";
+import {GLAttributeType} from "../../../../shared/webgl/glTypes";
+import {GLVertexBuffer} from "../../../../shared/webgl/glVertexBuffer";
+import {GLIndexBuffer} from "../../../../shared/webgl/glIndexBuffer";
 import {TileContainer} from "../../../../models/tileContainer";
 import {BorderBuilder} from "../../../game/borderBuilder";
 import {Color} from "../../../../models/color";

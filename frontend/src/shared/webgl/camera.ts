@@ -1,5 +1,5 @@
 import {mat3} from "./mat3";
-import {CameraData} from "../../../models/cameraData";
+import {CameraData} from "../../models/cameraData";
 
 export class Camera {
 

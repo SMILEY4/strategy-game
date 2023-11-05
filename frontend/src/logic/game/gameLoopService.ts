@@ -1,4 +1,4 @@
-import {GameRenderer} from "../renderer/gameRenderer";
+import {GameRenderer} from "../rendererOld/gameRenderer";
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "./canvasHandle";
 import {CameraRepository} from "../../state/access/CameraRepository";

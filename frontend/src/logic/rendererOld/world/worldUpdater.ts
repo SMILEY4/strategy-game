@@ -3,7 +3,7 @@ import {TerrainRenderLayer} from "./layers/terrainRenderLayer";
 import {TerrainChunkBuilder} from "./builders/terrainChunkBuilder";
 import {EntityRenderLayer} from "./layers/entityRenderLayer";
 import {EntityDataBuilder} from "./builders/entityDataBuilder";
-import {Camera} from "../common/camera";
+import {Camera} from "../../../shared/webgl/camera";
 import {CommandRepository} from "../../../state/access/CommandRepository";
 import {CityRepository} from "../../../state/access/CityRepository";
 import {TileRepository} from "../../../state/access/TileRepository";

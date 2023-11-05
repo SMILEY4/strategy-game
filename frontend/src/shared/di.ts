@@ -1,4 +1,4 @@
-import {GameRenderer} from "../logic/renderer/gameRenderer";
+import {GameRenderer} from "../logic/rendererOld/gameRenderer";
 import {CanvasHandle} from "../logic/game/canvasHandle";
 
 interface DIObjectConfig {

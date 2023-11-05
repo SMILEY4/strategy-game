@@ -1,8 +1,8 @@
 import {BaseRenderLayer} from "./baseRenderLayer";
-import {GLProgram} from "../../common/glProgram";
-import {Camera} from "../../common/camera";
-import {GLRenderer} from "../../common/glRenderer";
-import {GLUniformType} from "../../common/glTypes";
+import {GLProgram} from "../../../../shared/webgl/glProgram";
+import {Camera} from "../../../../shared/webgl/camera";
+import {GLRenderer} from "../../../../shared/webgl/glRenderer";
+import {GLUniformType} from "../../../../shared/webgl/glTypes";
 import {LineDataBuilder} from "../builders/lineDataBuilder";
 
 export class LinesRenderLayer extends BaseRenderLayer {

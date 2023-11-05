@@ -1,6 +1,6 @@
-import {GLRenderer} from "../../common/glRenderer";
-import {Camera} from "../../common/camera";
-import {GLProgram} from "../../common/glProgram";
+import {GLRenderer} from "../../../../shared/webgl/glRenderer";
+import {Camera} from "../../../../shared/webgl/camera";
+import {GLProgram} from "../../../../shared/webgl/glProgram";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import {MapMode} from "../../../../models/mapMode";
 

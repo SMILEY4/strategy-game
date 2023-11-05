@@ -1,8 +1,8 @@
 import {TerrainRenderLayer} from "./layers/terrainRenderLayer";
 import {RenderWorld} from "./data/renderWorld";
 
-import {GLProgram} from "../common/glProgram";
-import {GLTexture} from "../common/glTexture";
+import {GLProgram} from "../../../shared/webgl/glProgram";
+import {GLTexture} from "../../../shared/webgl/glTexture";
 import {EntityRenderLayer} from "./layers/entityRenderLayer";
 
 import SHADER_SRC_TILEMAP_VERT from "../mapShader.vsh?raw";
@@ -14,7 +14,7 @@ import SHADER_SRC_ENTITY_FRAG from "../entityShader.fsh?raw";
 import SHADER_SRC_LINE_VERT from "../routesShader.vsh?raw";
 import SHADER_SRC_LINE_FRAG from "../routesShader.fsh?raw";
 
-import {TextRenderer} from "../common/textRenderer";
+import {TextRenderer} from "../../../shared/webgl/textRenderer";
 import {MapModeRepository} from "../../../state/access/MapModeRepository";
 import {TileRepository} from "../../../state/access/TileRepository";
 import {LinesRenderLayer} from "./layers/linesRenderLayer";

@@ -1,11 +1,11 @@
-import {GLRenderer} from "../../common/glRenderer";
-import {Camera} from "../../common/camera";
+import {GLRenderer} from "../../../../shared/webgl/glRenderer";
+import {Camera} from "../../../../shared/webgl/camera";
 import {BaseRenderLayer} from "./baseRenderLayer";
-import {GLProgram} from "../../common/glProgram";
+import {GLProgram} from "../../../../shared/webgl/glProgram";
 import {MeshData} from "../data/meshData";
-import {GLUniformType} from "../../common/glTypes";
-import {GLTexture} from "../../common/glTexture";
-import {TextRenderer} from "../../common/textRenderer";
+import {GLUniformType} from "../../../../shared/webgl/glTypes";
+import {GLTexture} from "../../../../shared/webgl/glTexture";
+import {TextRenderer} from "../../../../shared/webgl/textRenderer";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export class EntityRenderLayer extends BaseRenderLayer {

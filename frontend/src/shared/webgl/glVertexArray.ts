@@ -1,7 +1,7 @@
 import {GLError} from "./glError";
 import {GLVertexBuffer} from "./glVertexBuffer";
 import {GLAttributeComponentAmount, GLAttributeType} from "./glTypes";
-import {isPresent} from "../../../shared/utils";
+import {isPresent} from "../utils";
 import {GLIndexBuffer} from "./glIndexBuffer";
 import {GLDisposable} from "./glDisposable";
 

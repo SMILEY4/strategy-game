@@ -1,7 +1,7 @@
-import {MixedArrayBuffer} from "../../common/mixedArrayBuffer";
-import {GLVertexBuffer} from "../../common/glVertexBuffer";
-import {GLIndexBuffer} from "../../common/glIndexBuffer";
-import {GLVertexArray} from "../../common/glVertexArray";
+import {MixedArrayBuffer} from "../../../../shared/webgl/mixedArrayBuffer";
+import {GLVertexBuffer} from "../../../../shared/webgl/glVertexBuffer";
+import {GLIndexBuffer} from "../../../../shared/webgl/glIndexBuffer";
+import {GLVertexArray} from "../../../../shared/webgl/glVertexArray";
 import AttributeConfig = GLVertexArray.AttributeConfig;
 
 
