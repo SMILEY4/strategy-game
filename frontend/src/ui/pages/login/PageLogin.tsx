@@ -1,109 +1,65 @@
-import React, {ReactElement, useState} from "react";
-import {TextInput} from "../../components/controls/textinputfield/TextInput";
-import {ButtonGem} from "../../components/controls/button/gem/ButtonGem";
-import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
-import {ButtonText} from "../../components/controls/button/text/ButtonText";
-import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
-import {useLogin, useLoginPostRedirect} from "../../hooks/user";
-import {useNavigate} from "react-router-dom";
-import "./pageLogin.css";
+import React, {ReactElement} from "react";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1} from "../../components/header/Header";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {TextField} from "../../components/textfield/TextField";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {HBox} from "../../components/layout/hbox/HBox";
+import {Spacer} from "../../components/spacer/Spacer";
+import {useLogin} from "../../hooks/login";
+import {useGotoSignup} from "../../hooks/navigate";
 
 
 export function PageLogin(): ReactElement {
 
     const {
         email,
-        password,
-        error,
         setEmail,
+        password,
         setPassword,
         login,
-        signUp
-    } = usePageLogin()
+        error,
+    } = useLogin();
+    const gotoSignup = useGotoSignup();
 
     return (
-        <PanelCloth className="page-login" color="blue">
-            <PanelDecorated classNameContent="page-login__content">
+        <BackgroundImagePanel fillParent centerContent image="/images/image_1.png">
+            <DecoratedPanel red floating>
+                <VBox gap_s centerVertical stretch>
 
-                <h1>Login</h1>
+                    <Header1>Login</Header1>
 
-                <TextInput
-                    value={email}
-                    onAccept={setEmail}
-                    placeholder="Email Address"
-                    type="email"
-                    border="silver"
-                />
+                    <Spacer size="s"/>
 
-                <TextInput
-                    value={password}
-                    onAccept={setPassword}
-                    placeholder={"Password"}
-                    type="password"
-                    border="silver"
-                />
+                    <TextField
+                        value={email}
+                        placeholder={"Email"}
+                        type="email"
+                        onChange={setEmail}
+                    />
 
-                {error && (
-                    <div className="login-error">{error}</div>
-                )}
+                    <TextField
+                        value={password}
+                        placeholder={"Password"}
+                        type="password"
+                        onChange={setPassword}
+                    />
 
-                <div className="login-actions">
-                    <ButtonText onClick={signUp}>Sign up</ButtonText>
-                    <ButtonGem onClick={login}>Login</ButtonGem>
-                </div>
+                    <Spacer size="s"/>
 
-            </PanelDecorated>
-        </PanelCloth>
+                    <HBox gap_s centerVertical right>
+                        <ButtonPrimary blue onClick={gotoSignup}>
+                            Sign-Up
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={login}>
+                            Login
+                        </ButtonPrimary>
+                    </HBox>
+
+
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
     );
-}
-
-
-function usePageLogin() {
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
-    const login = useLogin()
-    const loginRedirect = useLoginPostRedirect("/sessions")
-
-
-    function changeEmail(value: string) {
-        setEmail(value)
-        setError(null)
-    }
-
-
-    function changePassword(value: string) {
-        setPassword(value)
-        setError(null)
-    }
-
-    function requestLogin() {
-        if (!email) {
-            setError("Email address is missing!");
-            return;
-        }
-        if (!password) {
-            setError("Password is missing!");
-            return;
-        }
-        login(email, password)
-            .then(() => loginRedirect())
-            .catch(e => setError("Error: " + e));
-    }
-
-    function signUp() {
-        navigate("/signup");
-    }
-
-    return {
-        email: email,
-        password: password,
-        error: error,
-        setEmail: changeEmail,
-        setPassword: changePassword,
-        login: requestLogin,
-        signUp: signUp,
-    };
 }

@@ -7,8 +7,8 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.RouteDT
 class RouteDTOCreator {
 
     fun shouldInclude(route: Route, cityDTOs: List<CityDTO>): Boolean {
-        val cityA = cityDTOs.find { it.cityId == route.cityIdA }
-        val cityB = cityDTOs.find { it.cityId == route.cityIdA }
+        val cityA = cityDTOs.find { it.dataTier1.id == route.cityIdA }
+        val cityB = cityDTOs.find { it.dataTier1.id == route.cityIdA }
         return cityA != null && cityB != null
     }
 

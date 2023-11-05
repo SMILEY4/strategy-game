@@ -1,16 +1,22 @@
 import React, {ReactElement} from "react";
-import "./pageNotFound.css";
-import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {Header1} from "../../components/header/Header";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {Text} from "../../components/text/Text";
+import {Spacer} from "../../components/spacer/Spacer";
 
 
 export function PageNotFound(): ReactElement {
     return (
-        <PanelCloth className="page-404" color="blue">
-            <PanelDecorated classNameContent="page-404__content">
-                <h1>404</h1>
-                <p>The requested page does not exist</p>
-            </PanelDecorated>
-        </PanelCloth>
+        <BackgroundImagePanel fillParent centerContent image="/images/image_4.bmp">
+            <DecoratedPanel red floating>
+                <VBox gap_s centerVertical left>
+                    <Header1>404</Header1>
+                    <Spacer size="s"/>
+                    <Text>The requested page does not exist.</Text>
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
     );
 }

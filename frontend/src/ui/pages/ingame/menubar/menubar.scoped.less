@@ -1,0 +1,31 @@
+@import "./../../../components/common.less";
+
+
+.menubar {
+  position:      absolute;
+  left:          0;
+  right:         0;
+  top:           0;
+  height:        22px;
+  box-sizing:    border-box;
+  border-bottom: 1px solid transparent;
+  background:    @gradient-border-primary;
+
+  .menubar__inner {
+    position:   absolute;
+    left:       0;
+    right:      0;
+    top:        0;
+    bottom:     0;
+
+    background: @gradient-red-secondary;
+
+    display: flex;
+
+    /deep/ .button-primary {
+      flex-shrink: 0;
+    }
+
+  }
+
+}

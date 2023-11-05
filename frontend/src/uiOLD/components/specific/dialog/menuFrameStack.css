@@ -1,8 +1,0 @@
-.menu-frame-stack {
-	overflow: hidden;
-	pointer-events: none;
-}
-
-.menu-frame-stack > * {
-	pointer-events: all;
-}

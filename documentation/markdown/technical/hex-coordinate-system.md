@@ -25,3 +25,7 @@ This results in the following positions around the origin (image shows the value
 https://www.redblobgames.com/grids/hexagons/#coordinates-axial
 
 - Note: RedBlob assumes an "origin" in the "bottom left of the window". OpenGL uses the top-left as the origin. This results in the r- and s-axis being flipped and switched in comparison to RedBlob. 
+
+https://catlikecoding.com/unity/tutorials/hex-map/part-5/
+
+- Talks about hex-chunks

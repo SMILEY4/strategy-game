@@ -11,11 +11,15 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.25.1",
+    "@types/howler": "^2.2.10",
+    "howler": "^2.2.4",
     "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.4.0",
+    "react-icons": "^4.10.1",
     "react-router-dom": "^6.3.0",
+    "rollup-plugin-react-scoped-css": "^0.8.2",
     "zustand": "^4.1.2"
   },
   "devDependencies": {
@@ -36,6 +40,8 @@
     "babel-loader": "^8.2.5",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^28.1.0",
+    "less": "^4.2.0",
+    "sass": "^1.65.1",
     "storybook": "^7.2.1",
     "ts-jest": "^28.0.2",
     "typescript": "^5.1.6",

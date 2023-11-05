@@ -1,71 +1,67 @@
-import {AppConfig} from "../../main";
-import {UnauthorizedError} from "../../core/models/errors/UnauthorizedError";
-import {useHandleUnauthorized} from "./user";
 import {useNavigate} from "react-router-dom";
+import {useHandleUnauthorized} from "./authentication";
+import {UnauthorizedError} from "../../models/UnauthorizedError";
+import {AppCtx} from "../../appContext";
 
 export function useLoadGameSessions() {
-    const action = AppConfig.di.get(AppConfig.DIQ.GameListAction);
+    const gameSessionService = AppCtx.GameSessionService();
     const handleUnauthorized = useHandleUnauthorized();
     return () => {
-        return action.perform()
-            .catch(e => {
-                if (e instanceof UnauthorizedError) {
-                    handleUnauthorized();
-                    return [];
-                } else {
-                    throw e;
-                }
-            });
+        return gameSessionService.listSessions()
+            .catch(error => UnauthorizedError.handle(error, () => {
+                handleUnauthorized();
+                return [];
+            }));
     };
 }
 
 export function useCreateGameSession() {
-    const action = AppConfig.di.get(AppConfig.DIQ.GameCreateAction);
+    const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
     return (seed: string | null) => {
-        return action.perform(seed)
-            .catch(e => {
-                if (e instanceof UnauthorizedError) {
-                    handleUnauthorized();
-                } else {
-                    throw e;
-                }
-            });
+        return gameSessionService.createSession(seed)
+            .catch(error => UnauthorizedError.handle(error, () => {
+                handleUnauthorized();
+            }));
     };
 }
 
 export function useJoinGameSession() {
-    const action = AppConfig.di.get(AppConfig.DIQ.GameJoinAction);
+    const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
-        return action.perform(gameId)
-            .catch(e => {
-                if (e instanceof UnauthorizedError) {
-                    handleUnauthorized();
-                } else {
-                    throw e;
-                }
-            });
+        return gameSessionService.joinSession(gameId)
+            .catch(error => UnauthorizedError.handle(error, () => {
+                handleUnauthorized();
+            }));
     };
 
 }
 
-export function useDeleteGameSessions() {
-    const action = AppConfig.di.get(AppConfig.DIQ.GameDeleteAction);
+export function useDeleteGameSession() {
+    const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
-        return action.perform(gameId)
-            .catch(e => {
-                if (e instanceof UnauthorizedError) {
-                    handleUnauthorized();
-                } else {
-                    throw e;
-                }
-            });
+        return gameSessionService.deleteSession(gameId)
+            .catch(error => UnauthorizedError.handle(error, () => {
+                handleUnauthorized();
+            }));
     };
 }
 
-export function useConnectGameSession() {
+export function useStartGameSession() {
     const navigate = useNavigate();
     return (gameId: string) => navigate("/game?id=" + gameId);
+}
+
+
+export function useConnectGameSession() {
+    const gameSessionService = AppCtx.GameSessionService()
+    const handleUnauthorized = useHandleUnauthorized();
+    return (gameId: string) => {
+        gameSessionService.connectSession(gameId)
+            .catch(error => UnauthorizedError.handle(error, () => {
+                handleUnauthorized();
+            }));
+    };
 }

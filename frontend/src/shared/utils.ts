@@ -1,3 +1,7 @@
+export function isPresent<T>(value: T  | null | undefined ): boolean{
+    return !(value === undefined || value === null);
+}
+
 export function orDefault<T>(value: T | null | undefined, defaultValue: T): T {
     if (value == null || value == undefined) {
         return defaultValue;
@@ -32,6 +36,18 @@ export function getMax<T>(array: T[], value: (e: T) => number): T | null {
     return maxElement;
 }
 
+export function getMaxOrDefault<T>(array: T[], value: (e: T) => number, defaultValue: T): T {
+    let maxElement: T = defaultValue;
+    let maxValue = Number.MIN_VALUE;
+    array.forEach(e => {
+        const v = value(e);
+        if (v > maxValue) {
+            maxValue = v;
+            maxElement = e;
+        }
+    });
+    return maxElement
+}
 
 export function getMin<T>(array: T[], value: (e: T) => number): T | null {
     let minElement: T | null = null;
@@ -44,4 +60,18 @@ export function getMin<T>(array: T[], value: (e: T) => number): T | null {
         }
     });
     return minElement;
+}
+
+
+export function roundToPlaces(value: number, decPlaces: number): number {
+    const fac = Math.pow(10, decPlaces)
+    return Math.round(value * fac) / fac
+}
+
+export function bitSet(num: number, bit: number) {
+    return num | 1 << bit;
+}
+
+export function bitClear(num: number, bit: number) {
+    return num & ~(1 << bit);
 }

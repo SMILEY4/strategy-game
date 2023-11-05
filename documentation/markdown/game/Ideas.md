@@ -1360,3 +1360,33 @@ Process:
 1. if resources left-over, transfer resources (up to max amount) to target province
 
 => resources can then be consumed next turn; if not consumed by target city, resources get automatically added to shared resource pool and gets further "traded internally"
+
+
+
+
+
+# City Growth
+
+- cities have
+  - tier: hamlet -> village -> town -> city
+  - pop-count: number of inhabitants
+  - growth-factor:   how much the city grows/shrinks
+- new settlements starts with x pop
+- multiple factors determine growth-factor
+  - food-availability
+  - availability of resources
+    - free farmland, mines
+    - more buildings -> more work -> more growth 
+    - some buildings only give bonus at certain tiers, e.g.:
+      - farm,mine,fisher only at hamlet,village
+      - jewellery only at town,city
+      - ...
+      - player decides buildings -> buildings influence/determine size/tier
+  - terrain/climate/...
+  - security
+  - trade/connectivity
+  - wealth
+  - ...
+- growth factor can be influences via player-decisions "limit-growth" and "promote growth" to get/keep desired size
+- growth factor determines pop-count of next turn
+- if pop-count reaches required pop-count of next tier -> settlement "levels-up" automatically

@@ -4,10 +4,11 @@ import {PageNotFound} from "./notfound/PageNotFound";
 import {PageLogin} from "./login/PageLogin";
 import {PageSignUp} from "./signup/PageSignUp";
 import {PageSignupConfirm} from "./signupconfirm/PageSignupConfirm";
-import {RequireAuth} from "../components/misc/RequireAuth";
-import {PageGame} from "../../uiOLD/pages/game/PageGame";
+import {RequireAuth} from "../components/headless/RequireAuth";
 import {PageSessions} from "./sessions/pageSessions";
+import {PageInGame} from "./ingame/PageInGame";
 import "./app.css";
+
 
 export function App() {
     return (
@@ -22,11 +23,10 @@ export function App() {
                         <PageSessions/>
                     </RequireAuth>
                 }/>
-                {/*TEMP*/}
                 <Route path="game" element={
-                    <RequireAuth loginUrl="/login">
-                        <PageGame/>
-                    </RequireAuth>
+                    // <RequireAuth loginUrl="/login">
+                        <PageInGame/>
+                    // </RequireAuth>
                 }/>
                 <Route path="*" element={<PageNotFound/>}/>
             </Routes>

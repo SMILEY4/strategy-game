@@ -1,27 +1,42 @@
 import React, {ReactElement} from "react";
-import {PanelDecorated} from "../../components/panels/decorated/PanelDecorated";
-import {PanelCloth} from "../../components/panels/cloth/PanelCloth";
-import {useNavigate} from "react-router-dom";
-import {ButtonText} from "../../components/controls/button/text/ButtonText";
-import "./pageSignupConfirm.css";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1} from "../../components/header/Header";
+import {HBox} from "../../components/layout/hbox/HBox";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {Text} from "../../components/text/Text";
+import {Spacer} from "../../components/spacer/Spacer";
+import {useGotoLogin} from "../../hooks/navigate";
 
 
 export function PageSignupConfirm(): ReactElement {
 
-    const navigate = useNavigate();
+    const gotoLogin = useGotoLogin();
 
     return (
-        <PanelCloth className="page-signup-confirm" color="blue">
-            <PanelDecorated classNameContent="page-signup-confirm__content">
-                <h1>Confirm E-Mail</h1>
-                <p>A confirmation email has been sent to the specified address.</p>
-                <p>Complete the signup by clicking the link in the email.</p>
-                <ButtonText onClick={login}>Return to Login</ButtonText>
-            </PanelDecorated>
-        </PanelCloth>
+        <BackgroundImagePanel fillParent centerContent image="/images/image_2.bmp">
+            <DecoratedPanel red floating>
+                <VBox gap_s centerVertical stretch>
+
+                    <Header1>Confirm E-Mail</Header1>
+
+                    <Spacer size="s"/>
+
+                    <Text>A confirmation email has been sent to the specified address.</Text>
+                    <Text>Complete the signup by clicking the link in the email.</Text>
+
+                    <Spacer size="s"/>
+
+                    <HBox centerVertical right>
+                        <ButtonPrimary green onClick={gotoLogin}>
+                            Return to Login
+                        </ButtonPrimary>
+                    </HBox>
+
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
     );
 
-    function login() {
-        navigate("/login")
-    }
 }

@@ -1,0 +1,133 @@
+@import "./../../common.less";
+
+.vbox {
+  position:       relative;
+  display:        flex;
+  flex-direction: column;
+  box-sizing:     border-box;
+
+
+  &.vbox--fill {
+    width:  100%;
+    height: 100%;
+  }
+
+  &.vbox--fill-width {
+    width:  100%;
+  }
+
+  &.vbox--fill-height {
+    height: 100%;
+  }
+
+
+  &.vbox--scrollable {
+    overflow:        auto;
+    scrollbar-width: thin;
+    scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
+  }
+
+  &.vbox--stable-scrollbar {
+    scrollbar-gutter: stable both-edges;
+  }
+
+
+  &.vbox-vert-center {
+    justify-content: center;
+  }
+
+  &.vbox-vert-top {
+    justify-content: flex-start;
+  }
+
+  &.vbox-vert-bottom {
+    justify-content: flex-end;
+  }
+
+  &.vbox-vert-space-between {
+    justify-content: space-between;
+  }
+
+  &.vbox-vert-space-evenly {
+    justify-content: space-evenly;
+  }
+
+  &.vbox-vert-space-around {
+    justify-content: space-around;
+  }
+
+  &.vbox-hor-center {
+    align-items: center;
+  }
+
+  &.vbox-hor-left {
+    align-items: flex-start;
+  }
+
+  &.vbox-hor-right {
+    align-items: flex-end;
+  }
+
+  &.vbox-hor-stretch {
+    align-items: stretch;
+  }
+
+
+  &.vbox--gap-none {
+    gap: 0;
+  }
+
+  &.vbox--gap-xs {
+    gap: @spacing-xs;
+  }
+
+  &.vbox--gap-s {
+    gap: @spacing-s;
+  }
+
+  &.vbox--gap-m {
+    gap: @spacing-m;
+  }
+
+  &.vbox--gap-l {
+    gap: @spacing-l;
+  }
+
+  &.vbox--gap-xl {
+    gap: @spacing-xl;
+  }
+
+  &.vbox--gap-xxl {
+    gap: @spacing-xxl;
+  }
+
+
+  &.vbox--padding-none {
+    padding: 0;
+  }
+
+  &.vbox--padding-xs {
+    padding: @spacing-xs;
+  }
+
+  &.vbox--padding-s {
+    padding: @spacing-s;
+  }
+
+  &.vbox--padding-m {
+    padding: @spacing-m;
+  }
+
+  &.vbox--padding-l {
+    padding: @spacing-l;
+  }
+
+  &.vbox--padding-xl {
+    padding: @spacing-xl;
+  }
+
+  &.vbox--padding-xxl {
+    padding: @spacing-xxl;
+  }
+
+}
