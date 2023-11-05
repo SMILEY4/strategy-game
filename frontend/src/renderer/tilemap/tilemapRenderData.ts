@@ -73,6 +73,7 @@ export class TilemapRenderData {
         return GLVertexArray.create(
             gl,
             [
+                //==== tile mesh ====//
                 {
                     buffer: this.tileMesh.vertexBuffer,
                     location: programAttributes.find(a => a.name === "in_vertexPosition")!.location,
@@ -85,6 +86,19 @@ export class TilemapRenderData {
                     type: GLAttributeType.FLOAT,
                     amountComponents: 2,
                 },
+                {
+                    buffer: this.tileMesh.vertexBuffer,
+                    location: programAttributes.find(a => a.name === "in_cornerData")!.location,
+                    type: GLAttributeType.FLOAT,
+                    amountComponents: 3,
+                },
+                {
+                    buffer: this.tileMesh.vertexBuffer,
+                    location: programAttributes.find(a => a.name === "in_edgeDirection")!.location,
+                    type: GLAttributeType.INT,
+                    amountComponents: 1,
+                },
+                //==== instance data ====//
                 {
                     buffer: this.instanceData.instanceBuffer,
                     location: programAttributes.find(a => a.name === "in_worldPosition")!.location,
@@ -102,6 +116,13 @@ export class TilemapRenderData {
                 {
                     buffer: this.instanceData.instanceBuffer,
                     location: programAttributes.find(a => a.name === "in_visibility")!.location,
+                    type: GLAttributeType.INT,
+                    amountComponents: 1,
+                    divisor: 1,
+                },
+                {
+                    buffer: this.instanceData.instanceBuffer,
+                    location: programAttributes.find(a => a.name === "in_borderMask")!.location,
                     type: GLAttributeType.INT,
                     amountComponents: 1,
                     divisor: 1,

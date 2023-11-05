@@ -4,12 +4,18 @@ precision mediump float;
 uniform sampler2D u_tileset;
 uniform sampler2D u_texture;
 uniform sampler2D u_noise;
+uniform float u_zoom;
 
 in vec2 v_textureCoordinates;
 in vec2 v_worldPosition;
 
+in vec3 v_cornerData;
+
 flat in int v_tilesetIndex;
 flat in int v_visibility;
+
+flat in int v_edgeDirection;
+flat in int v_borderMask;
 
 out vec4 outColor;
 
@@ -28,6 +34,17 @@ vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+bool checkBit(int value, int digit) {
+    int mask = 0;
+    if (digit == 1) { mask = 1; }
+    else if (digit == 2) { mask = 2; }
+    else if (digit == 3) { mask = 4; }
+    else if (digit == 4) { mask = 8; }
+    else if (digit == 5) { mask = 16; }
+    else if (digit == 6) { mask = 32; }
+    return (value & mask) > 0;
 }
 
 vec3 blendBurn(vec3 a, vec3 b) {
@@ -100,6 +117,28 @@ vec3 applyFogOfWar(vec3 baseColor) {
     return baseColor;
 }
 
+vec4 baseTileBorder() {
+    if (u_zoom < 3.5) {
+        return vec4(0.0);
+    } else {
+        float minThickness = 0.015;
+        float thickness = smoothstep(3.5, 10.0, u_zoom) * (0.03 - minThickness) + minThickness;
+        float value = step(v_cornerData.x, thickness);
+        return vec4(vec3(0.0), value);
+    }
+}
+
+vec4 primaryBorder()  {
+    bool hasBorder = checkBit(v_borderMask, v_edgeDirection+1);
+    if(hasBorder) {
+        float thickness = 0.1;
+        float value = step(v_cornerData.x, thickness);
+        return vec4(1.0, 0.0, 0.0, value);
+    } else {
+        return vec4(0.0);
+    }
+}
+
 
 void main() {
 
@@ -114,10 +153,13 @@ void main() {
     vec4 colorPaper = paperColor(baseClouds, paperTexture);
     vec4 colorTile = tileColor(paperTexture);
 
+    vec4 colorBaseTileBorder = baseTileBorder();
+    vec4 colorPrimaryBorder = primaryBorder();
 
     vec3 color = mix(colorPaper, colorTile, colorTile.a).rgb;
-
     color = applyFogOfWar(color);
+    color = mix(color, colorPrimaryBorder.rgb, colorPrimaryBorder.a);
+    color = mix(color, colorBaseTileBorder.rgb, colorBaseTileBorder.a);
 
     outColor = vec4(color.rgb, 1.0);
 }

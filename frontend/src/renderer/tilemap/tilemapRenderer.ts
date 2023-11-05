@@ -64,6 +64,7 @@ export class TilemapRenderer implements RenderModule {
             this.data.program.setUniform("u_tileset", GLUniformType.SAMPLER_2D, this.data.tileset);
             this.data.program.setUniform("u_texture", GLUniformType.SAMPLER_2D, this.data.texture);
             this.data.program.setUniform("u_noise", GLUniformType.SAMPLER_2D, this.data.noise);
+            this.data.program.setUniform("u_zoom", GLUniformType.FLOAT, camera.getZoom());
 
             this.data.renderer.drawInstanced(this.data.renderData.getVertexCount(), this.data.renderData.getInstanceCount());
 

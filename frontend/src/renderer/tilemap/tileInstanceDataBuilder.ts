@@ -11,6 +11,8 @@ export namespace TileInstanceDataBuilder {
         MixedArrayBufferType.INT,
         // visibility
         MixedArrayBufferType.INT,
+        // border data
+        MixedArrayBufferType.INT,
     ];
 
     const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
@@ -46,6 +48,9 @@ export namespace TileInstanceDataBuilder {
 
             // visibility
             cursor.append(toVisibilityId(tile));
+
+            // border data
+            cursor.append(45) // 101101
         }
     }
 
