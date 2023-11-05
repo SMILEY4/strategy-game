@@ -23,11 +23,11 @@ import {SettlementTier} from "../../../../../models/settlementTier";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {UseCityWindow} from "./useCityWindow";
-import "./cityWindow.less";
 import {ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";
 import {Building} from "../../../../../models/building";
 import {BsArrowRight} from "react-icons/bs";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
+import "./cityWindow.less";
 
 
 export interface CityWindowProps {
@@ -80,7 +80,9 @@ function UpgradeTierButton(props: UseCityWindow.Data) {
             delay={500}
             content={
                 <ul>
-                    {props.upgradeCityTier.reasonsInvalid.map(reason => (<li>{reason}</li>))}
+                    {props.upgradeCityTier.reasonsInvalid.map((reason, index) => (
+                        <li key={index}>{reason}</li>
+                    ))}
                 </ul>
             }
         >
@@ -150,7 +152,7 @@ function RouteSectionSection(props: UseCityWindow.Data): ReactElement {
             <InsetPanel>
                 {props.city.connectedCities.map(entry => {
                     return (
-                        <HBox left centerVertical gap_s>
+                        <HBox left centerVertical gap_s key={entry.routeId}>
                             <BsArrowRight/>
                             <LinkButton align="left" onClick={() => props.openWindow.connectedCity(entry)}>
                                 {entry.city.name}
@@ -246,8 +248,8 @@ function BuildingList(props: CityView): ReactElement {
                 <Text>{"Available Building-Slots: " + props.buildings.remainingSlots + "/" + props.tier.value.buildingSlots}</Text>
             </HBox>
             <HBox gap_s top left wrap>
-                {props.buildings.items.map(building => (
-                    <BuildingEntry building={building}/>
+                {props.buildings.items.map((building,index) => (
+                    <BuildingEntry key={index} building={building}/>
                 ))}
             </HBox>
         </>

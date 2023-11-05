@@ -39,7 +39,11 @@ export function CityConstructionWindow(props: CityConstructionWindowProps): Reac
                 <InsetPanel fillParent hideOverflow noPadding>
                     <VBox top stretch gap_xs padding_s scrollable fillParent>
                         {data.entries.map(entry => (
-                            <ConstructionListEntry data={data} entry={entry}/>
+                            <ConstructionListEntry
+                                key={entry.entry.id}
+                                data={data}
+                                entry={entry}
+                            />
                         ))}
                     </VBox>
                 </InsetPanel>

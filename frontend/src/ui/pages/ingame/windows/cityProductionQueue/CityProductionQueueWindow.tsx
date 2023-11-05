@@ -44,6 +44,7 @@ export function CityProductionQueueWindow(props: CityProductionQueueWindowProps)
 
                         {data.queueEntries.map((entry, index) => (
                             <QueueEntry
+                                key={entry.entry.id}
                                 data={data}
                                 entry={entry}
                                 position={index + 1}

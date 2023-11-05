@@ -60,6 +60,7 @@ export function PageSessions(): ReactElement {
                         <VBox padding_s gap_s fillParent top stretch className="page-sessions__list__content">
                             {sessions.map(sessionId => (
                                 <GameSessionEntry
+                                    key={sessionId}
                                     name={sessionId}
                                     onConnect={() => connectSession(sessionId)}
                                     onDelete={() => deleteSession(sessionId)}
@@ -146,6 +147,7 @@ function ModalJoinGame(props: {
                         <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
                             Cancel
                         </ButtonPrimary>
+                        <Spacer size="xs"/>
                         <ButtonPrimary green onClick={props.onAccept} disabled={props.acceptDisabled}>
                             Join
                         </ButtonPrimary>
@@ -185,6 +187,7 @@ function ModalCreateGame(props: {
                         <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
                             Cancel
                         </ButtonPrimary>
+                        <Spacer size="xs"/>
                         <ButtonPrimary green onClick={props.onAccept}>
                             Create
                         </ButtonPrimary>

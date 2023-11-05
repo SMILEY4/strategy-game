@@ -79,11 +79,14 @@ function ProvinceResourceBalanceSection(props: UseProvinceWindow.Data): ReactEle
 
                 <HBox fillParent gap_s top left wrap>
                     {Array.from(props.province.resourceBalance.items).map(entry => (
-                        <ResourceBalanceBox data={{
-                            type: entry[0],
-                            value: entry[1],
-                            contributions: [],
-                        }}/>
+                        <ResourceBalanceBox
+                            key={entry[0].id}
+                            data={{
+                                type: entry[0],
+                                value: entry[1],
+                                contributions: [],
+                            }}
+                        />
                     ))}
                 </HBox>
 
@@ -101,7 +104,7 @@ function CitiesSection(props: UseProvinceWindow.Data): ReactElement {
                     ? "Cities"
                     : "Known Cities"}
             </Header2>
-            
+
             <Divider/>
 
             <InsetPanel>
@@ -109,6 +112,7 @@ function CitiesSection(props: UseProvinceWindow.Data): ReactElement {
                     {props.province.cities.items.map(city => {
                         return (
                             <CityListEntry
+                                key={city.identifier.id}
                                 data={city}
                                 onOpen={() => props.openWindow.city(city)}
                             />

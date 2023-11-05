@@ -43,7 +43,9 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
             <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Commands</Header1>
                 <Spacer size="s"/>
-                {data.entries.map(commandEntry => (<CommandEntry data={data} entry={commandEntry}/>))}
+                {data.entries.map(commandEntry => (
+                    <CommandEntry data={data} entry={commandEntry} key={commandEntry.command.id}/>
+                ))}
             </VBox>
         </DecoratedWindow>
     );
