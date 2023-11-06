@@ -9,8 +9,9 @@ import {GLRenderer} from "../../shared/webgl/glRenderer";
 import {TileRepository} from "../../state/access/TileRepository";
 import {TilemapRenderData} from "./tilemapRenderData";
 import {GLUniformType} from "../../shared/webgl/glTypes";
-import {TileInstanceDataBuilder} from "./tileInstanceDataBuilder";
 import {GLTexture} from "../../shared/webgl/glTexture";
+import {InstanceBaseDataBuilder} from "./meshbuilders/instanceBaseDataBuilder";
+import {InstanceOverlayDataBuilder} from "./meshbuilders/instanceOverlayDataBuilder";
 
 interface TilemapRenderModuleData {
     renderer: GLRenderer;
@@ -55,9 +56,9 @@ export class TilemapRenderer implements RenderModule {
 
             this.data.renderData.getVertexArray().bind();
 
-            this.data.tileset.bind(0)
-            this.data.texture.bind(1)
-            this.data.noise.bind(2)
+            this.data.tileset.bind(0);
+            this.data.texture.bind(1);
+            this.data.noise.bind(2);
 
             this.data.program.use();
             this.data.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
@@ -73,8 +74,10 @@ export class TilemapRenderer implements RenderModule {
     }
 
     private updateInstanceData() {
-        const [count, array] = TileInstanceDataBuilder.build(this.tileRepository.getTileContainer());
-        this.data?.renderData.updateInstanceData(count, array);
+        const [count, baseDataArray] = InstanceBaseDataBuilder.build(this.tileRepository.getTileContainer());
+        const [_, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileRepository.getTileContainer());
+        this.data?.renderData.updateInstanceBaseData(count, baseDataArray);
+        this.data?.renderData.updateInstanceOverlayData(count, overlayDataArray);
     }
 
     public dispose() {

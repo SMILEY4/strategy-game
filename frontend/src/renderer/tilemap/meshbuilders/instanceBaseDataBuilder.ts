@@ -1,11 +1,9 @@
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../shared/webgl/mixedArrayBuffer";
-import {Tile} from "../../models/tile";
-import {TilemapUtils} from "../../logic/game/tilemapUtils";
-import {BorderBuilder} from "../../logic/game/borderBuilder";
-import {TileContainer} from "../../models/tileContainer";
-import {bitSet} from "../../shared/utils";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
+import {Tile} from "../../../models/tile";
+import {TilemapUtils} from "../../../logic/game/tilemapUtils";
+import {TileContainer} from "../../../models/tileContainer";
 
-export namespace TileInstanceDataBuilder {
+export namespace InstanceBaseDataBuilder {
 
     const PATTERN_VERTEX = [
         // world position
@@ -13,8 +11,6 @@ export namespace TileInstanceDataBuilder {
         // tilset index
         MixedArrayBufferType.INT,
         // visibility
-        MixedArrayBufferType.INT,
-        // packed border data
         MixedArrayBufferType.INT,
     ];
 
@@ -54,29 +50,8 @@ export namespace TileInstanceDataBuilder {
             // visibility
             cursor.append(toVisibilityId(tile));
 
-            // border data
-            // todo: temp
-            const border = BorderBuilder.build(tile, tileContainer, false, (ta, tb) => {
-                const a = ta.terrainType;
-                const b = tb.terrainType;
-                return (!a && !b) ? false : (!!a && a !== b);
-            });
-            const borderPacked = packBorder(border);
-            cursor.append(borderPacked);
         }
     }
-
-
-    function packBorder(data: boolean[]): number {
-        let packed = 0;
-        data.forEach((value, index) => {
-            if (value) {
-                packed = bitSet(packed, index);
-            }
-        });
-        return packed;
-    }
-
 
     function toTerrainId(tile: Tile) {
         switch (tile.terrainType) {

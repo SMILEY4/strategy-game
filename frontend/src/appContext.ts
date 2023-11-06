@@ -153,7 +153,6 @@ export const AppCtx: AppCtxDef = {
         "GameLoopService",
         () => new GameLoopService(
             AppCtx.CanvasHandle(),
-            AppCtx.GameRenderer(),
             new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraRepository(), AppCtx.TileRepository()),
             AppCtx.CameraRepository(),
             AppCtx.GameSessionStateRepository(),

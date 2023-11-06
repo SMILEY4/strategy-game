@@ -2,10 +2,10 @@ import {GLVertexBuffer} from "../../shared/webgl/glVertexBuffer";
 import {GLProgram} from "../../shared/webgl/glProgram";
 import {GLVertexArray} from "../../shared/webgl/glVertexArray";
 import {GLAttributeType} from "../../shared/webgl/glTypes";
+import {BaseMeshBuilder} from "./meshbuilders/baseMeshBuilder";
 import GLProgramAttribute = GLProgram.GLProgramAttribute;
 import TileMesh = TilemapRenderData.TileMesh;
 import InstanceData = TilemapRenderData.InstanceData;
-import {TileMeshBuilder} from "./tileMeshBuilder";
 
 export namespace TilemapRenderData {
 
@@ -23,13 +23,15 @@ export namespace TilemapRenderData {
 
 export class TilemapRenderData {
 
-    private readonly tileMesh: TileMesh;
-    private readonly instanceData: InstanceData;
+    private readonly baseTileMesh: TileMesh;
+    private readonly instanceBaseData: InstanceData;
+    private readonly instanceOverlayData: InstanceData;
     private readonly vertexArray: GLVertexArray;
 
     constructor(gl: WebGL2RenderingContext, programAttributes: GLProgramAttribute[]) {
-        this.tileMesh = this.buildTileMesh(gl);
-        this.instanceData = this.buildInitialInstanceData(gl);
+        this.baseTileMesh = this.buildBaseTileMesh(gl);
+        this.instanceBaseData = this.buildEmptyInstanceData(gl);
+        this.instanceOverlayData = this.buildEmptyInstanceData(gl);
         this.vertexArray = this.buildVertexArray(gl, programAttributes);
     }
 
@@ -39,30 +41,35 @@ export class TilemapRenderData {
     }
 
     public getVertexCount(): number {
-        return this.tileMesh.vertexCount;
+        return this.baseTileMesh.vertexCount;
     }
 
     public getInstanceCount(): number {
-        return this.instanceData.instanceCount;
+        return this.instanceBaseData.instanceCount;
     }
 
-    public updateInstanceData(count: number, data: ArrayBuffer) {
-        this.instanceData.instanceCount = count;
-        this.instanceData.instanceBuffer.setData(data, true);
+    public updateInstanceBaseData(count: number, data: ArrayBuffer) {
+        this.instanceBaseData.instanceCount = count;
+        this.instanceBaseData.instanceBuffer.setData(data, true);
+    }
+
+    public updateInstanceOverlayData(count: number, data: ArrayBuffer) {
+        this.instanceOverlayData.instanceCount = count;
+        this.instanceOverlayData.instanceBuffer.setData(data, true);
     }
 
     public dispose() {
-        this.tileMesh.vertexBuffer.dispose();
-        this.instanceData.instanceBuffer.dispose();
+        this.baseTileMesh.vertexBuffer.dispose();
+        this.instanceBaseData.instanceBuffer.dispose();
         this.vertexArray.dispose();
     }
 
 
-    private buildTileMesh(gl: WebGL2RenderingContext): TileMesh {
-        return TileMeshBuilder.build(gl);
+    private buildBaseTileMesh(gl: WebGL2RenderingContext): TileMesh {
+        return BaseMeshBuilder.build(gl);
     }
 
-    private buildInitialInstanceData(gl: WebGL2RenderingContext): InstanceData {
+    private buildEmptyInstanceData(gl: WebGL2RenderingContext): InstanceData {
         return {
             instanceCount: 0,
             instanceBuffer: GLVertexBuffer.createEmpty(gl),
@@ -75,53 +82,54 @@ export class TilemapRenderData {
             [
                 //==== tile mesh ====//
                 {
-                    buffer: this.tileMesh.vertexBuffer,
+                    buffer: this.baseTileMesh.vertexBuffer,
                     location: programAttributes.find(a => a.name === "in_vertexPosition")!.location,
                     type: GLAttributeType.FLOAT,
                     amountComponents: 2,
                 },
                 {
-                    buffer: this.tileMesh.vertexBuffer,
+                    buffer: this.baseTileMesh.vertexBuffer,
                     location: programAttributes.find(a => a.name === "in_textureCoordinates")!.location,
                     type: GLAttributeType.FLOAT,
                     amountComponents: 2,
                 },
                 {
-                    buffer: this.tileMesh.vertexBuffer,
+                    buffer: this.baseTileMesh.vertexBuffer,
                     location: programAttributes.find(a => a.name === "in_cornerData")!.location,
                     type: GLAttributeType.FLOAT,
                     amountComponents: 3,
                 },
                 {
-                    buffer: this.tileMesh.vertexBuffer,
+                    buffer: this.baseTileMesh.vertexBuffer,
                     location: programAttributes.find(a => a.name === "in_edgeDirection")!.location,
                     type: GLAttributeType.INT,
                     amountComponents: 1,
                 },
-                //==== instance data ====//
+                //==== instance base data ====//
                 {
-                    buffer: this.instanceData.instanceBuffer,
+                    buffer: this.instanceBaseData.instanceBuffer,
                     location: programAttributes.find(a => a.name === "in_worldPosition")!.location,
                     type: GLAttributeType.FLOAT,
                     amountComponents: 2,
                     divisor: 1,
                 },
                 {
-                    buffer: this.instanceData.instanceBuffer,
+                    buffer: this.instanceBaseData.instanceBuffer,
                     location: programAttributes.find(a => a.name === "in_tilesetIndex")!.location,
                     type: GLAttributeType.INT,
                     amountComponents: 1,
                     divisor: 1,
                 },
                 {
-                    buffer: this.instanceData.instanceBuffer,
+                    buffer: this.instanceBaseData.instanceBuffer,
                     location: programAttributes.find(a => a.name === "in_visibility")!.location,
                     type: GLAttributeType.INT,
                     amountComponents: 1,
                     divisor: 1,
                 },
+                //==== instance overlay data ====//
                 {
-                    buffer: this.instanceData.instanceBuffer,
+                    buffer: this.instanceOverlayData.instanceBuffer,
                     location: programAttributes.find(a => a.name === "in_borderMask")!.location,
                     type: GLAttributeType.INT,
                     amountComponents: 1,

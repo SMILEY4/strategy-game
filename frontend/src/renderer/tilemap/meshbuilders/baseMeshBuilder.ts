@@ -1,9 +1,9 @@
 // noinspection PointlessArithmeticExpressionJS,DuplicatedCode
 
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../shared/webgl/mixedArrayBuffer";
-import {GLVertexBuffer} from "../../shared/webgl/glVertexBuffer";
-import {TilemapUtils} from "../../logic/game/tilemapUtils";
-import {TilemapRenderData} from "./tilemapRenderData";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
+import {GLVertexBuffer} from "../../../shared/webgl/glVertexBuffer";
+import {TilemapUtils} from "../../../logic/game/tilemapUtils";
+import {TilemapRenderData} from "../tilemapRenderData";
 import TileMesh = TilemapRenderData.TileMesh;
 
 
@@ -17,7 +17,7 @@ Vertices of hex-tiles are constructed as following (with corner index shown):
  4. bottom-left
  5. bottom
 */
-export namespace TileMeshBuilder {
+export namespace BaseMeshBuilder {
 
     const PATTERN_VERTEX = [
         // vertex position

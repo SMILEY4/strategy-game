@@ -1,4 +1,3 @@
-import {OLDGameRenderer} from "../rendererOld/OLDGameRenderer";
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "./canvasHandle";
 import {CameraRepository} from "../../state/access/CameraRepository";
@@ -10,7 +9,6 @@ import {GameRenderer} from "../../renderer/gameRenderer";
 export class GameLoopService {
 
     private readonly canvasHandle: CanvasHandle;
-    private readonly oldRenderer: OLDGameRenderer;
     private readonly cameraRepository: CameraRepository;
     private readonly gameSessionRepository: GameSessionStateRepository;
     private readonly tileRepository: TileRepository;
@@ -19,41 +17,34 @@ export class GameLoopService {
     private readonly renderer: GameRenderer;
 
     constructor(canvasHandle: CanvasHandle,
-                renderer: OLDGameRenderer,
                 tilePicker: TilePicker,
                 cameraRepository: CameraRepository,
                 gameSessionRepository: GameSessionStateRepository,
                 tileRepository: TileRepository) {
         this.canvasHandle = canvasHandle;
-        this.oldRenderer = renderer;
         this.tilePicker = tilePicker;
         this.cameraRepository = cameraRepository;
         this.gameSessionRepository = gameSessionRepository;
         this.tileRepository = tileRepository;
-        this.renderer = new GameRenderer(canvasHandle, cameraRepository, tileRepository)
+        this.renderer = new GameRenderer(canvasHandle, cameraRepository, tileRepository);
     }
 
     public initialize(canvas: HTMLCanvasElement) {
         this.canvasHandle.set(canvas);
-        // this.oldRenderer.initialize();
-        // this.oldRenderer.updateWorld();
-        this.renderer.initialize()
+        this.renderer.initialize();
     }
 
 
     public onGameStateUpdate() {
-        // this.oldRenderer.updateWorld();
         this.gameSessionRepository.setGameTurnState("playing");
     }
 
     public update() {
-        // this.oldRenderer.render();
-        this.renderer.render()
+        this.renderer.render();
     }
 
     public dispose() {
-        // this.oldRenderer.dispose();
-        this.renderer.dispose()
+        this.renderer.dispose();
     }
 
     public mouseClick(x: number, y: number) {
