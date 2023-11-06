@@ -62,6 +62,16 @@ first bit = direction "0", second bit = direction "1"
 flat in int v_borderMask;
 
 /*
+color of the border
+*/
+in vec3 v_borderColor;
+
+/*
+fill color of the tile
+*/
+in vec3 v_fillColor;
+
+/*
 The final output color
 */
 out vec4 outColor;
@@ -113,9 +123,9 @@ bool checkBit(int value, int digit) {
 //            BASE TEXTURES          //
 // ==================================//
 
-float baseTextureClouds() {
+float baseTextureClouds(vec2 offset) {
     float scale = 200.0;
-    return texture(u_noise, v_worldPosition / scale).x;
+    return texture(u_noise, (v_worldPosition + offset) / scale).x;
 }
 
 float baseTexturePaper() {
@@ -209,13 +219,12 @@ float borderMaskCombine(vec3 directionMask, vec3 edgeMask) {
 
 vec4 borderPrimary() {
     float thickness = 0.2;
-    vec3 color = vec3(1.0, 0.0, 0.0);
     // masks
     vec3 maskDirection = borderMaskDirection(v_borderMask, v_edgeDirection);
     vec3 maskEdge = borderMaskEdge(v_cornerData, thickness);
     float maskCombined = borderMaskCombine(maskDirection, maskEdge);
     // color
-    return mix(vec4(0.0), vec4(color, 1.0), maskCombined);
+    return mix(vec4(0.0), vec4(v_borderColor, 1.0), maskCombined);
 }
 
 vec4 borderTile(float zoom) {
@@ -233,12 +242,30 @@ vec4 borderTile(float zoom) {
     }
 }
 
-vec4 colorLayerOverlay() {
+vec4 fillColor(vec3 baseColor, float textureClouds) {
+    float fillIntensity = 0.6;
+    float saturationShift = 0.3;
+    if (baseColor.r + baseColor.g + baseColor.b > 0.01) {
+        vec3 baseColorHsv = rgb2hsv(baseColor);
+        vec3 colorHsv0 = vec3(baseColorHsv.x, clamp(baseColorHsv.y-saturationShift, 0.0, 1.0), baseColorHsv.z);
+        vec3 colorHsv1 = vec3(baseColorHsv.x, clamp(baseColorHsv.y+saturationShift, 0.0, 1.0), baseColorHsv.z);
+        vec3 colorHsv = mix(colorHsv0, colorHsv1, textureClouds);
+        vec3 colorRgb = hsv2rgb(colorHsv);
+        return vec4(colorRgb, fillIntensity);
+    } else {
+        return vec4(0.0);
+    }
+}
+
+vec4 colorLayerOverlay(float textureBase, float textureClouds) {
     // get borders
     vec4 tile = borderTile(u_zoom);
-    vec4 primary = borderPrimary();
+    vec4 primary = borderPrimary() * mix(1.0, textureBase, 0.3);
+    // get fill
+    vec4 fill = fillColor(v_fillColor, textureClouds);
     // combine
     vec4 color = vec4(0.0);
+    color = mix(color, fill, fill.a);
     color = mix(color, primary, primary.a);
     color = mix(color, tile, tile.a);
     return color;
@@ -269,13 +296,14 @@ void main() {
 
     // textures
     float texturePaper = baseTexturePaper();
-    float textureClouds = baseTextureClouds();
-    float textureBase = baseTexture(texturePaper, textureClouds);
+    float textureClouds0 = baseTextureClouds(vec2(0.0));
+    float textureClouds1 = baseTextureClouds(vec2(100.0, 200.0));
+    float textureBase = baseTexture(texturePaper, textureClouds0);
 
     // layers
-    vec4 layerPaper  = colorLayerPaper(textureBase, textureClouds);
+    vec4 layerPaper  = colorLayerPaper(textureBase, textureClouds0);
     vec4 layerTerrain = colorLayerTerrain(textureBase);
-    vec4 layerOverlay = colorLayerOverlay();
+    vec4 layerOverlay = colorLayerOverlay(textureBase, textureClouds1);
 
     // combine layers
     vec4 color = layerPaper;

@@ -135,6 +135,20 @@ export class TilemapRenderData {
                     amountComponents: 1,
                     divisor: 1,
                 },
+                {
+                    buffer: this.instanceOverlayData.instanceBuffer,
+                    location: programAttributes.find(a => a.name === "in_borderColor")!.location,
+                    type: GLAttributeType.FLOAT,
+                    amountComponents: 3,
+                    divisor: 1,
+                },
+                {
+                    buffer: this.instanceOverlayData.instanceBuffer,
+                    location: programAttributes.find(a => a.name === "in_fillColor")!.location,
+                    type: GLAttributeType.FLOAT,
+                    amountComponents: 3,
+                    divisor: 1,
+                },
             ],
             undefined,
         );

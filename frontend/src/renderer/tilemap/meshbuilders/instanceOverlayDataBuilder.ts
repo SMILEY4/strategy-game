@@ -1,15 +1,18 @@
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {TileContainer} from "../../../models/tileContainer";
 import {bitSet} from "../../../shared/utils";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
 import {BorderBuilder} from "../../../logic/game/borderBuilder";
 
 export namespace InstanceOverlayDataBuilder {
 
 
     const PATTERN_VERTEX = [
-        // packed border data
+        // packed border mask
         MixedArrayBufferType.INT,
+        // border color
+        ...MixedArrayBufferType.VEC3,
+        // fill color
+        ...MixedArrayBufferType.VEC3,
     ];
 
     const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
@@ -37,15 +40,38 @@ export namespace InstanceOverlayDataBuilder {
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
 
-            // border data
-            // todo: temp
+            // border mask
             const border = BorderBuilder.build(tile, tileContainer, false, (ta, tb) => {
-                const a = ta.terrainType;
-                const b = tb.terrainType;
-                return (!a && !b) ? false : (!!a && a !== b);
+                const a = ta.owner?.province.id;
+                const b = tb.owner?.province.id;
+                return (!a && !b) ? false : !!a && a !== b;
             });
             const borderPacked = packBorder(border);
             cursor.append(borderPacked);
+
+            // border color
+            if (tile.owner?.province) {
+                const color = tile.owner.province.color;
+                cursor.append(color.red / 255);
+                cursor.append(color.green / 255);
+                cursor.append(color.blue / 255);
+            } else {
+                cursor.append(0);
+                cursor.append(0);
+                cursor.append(0);
+            }
+
+            // fill color
+            if (tile.owner?.country) {
+                const color = tile.owner.country.color;
+                cursor.append(color.red / 255);
+                cursor.append(color.green / 255);
+                cursor.append(color.blue / 255);
+            } else {
+                cursor.append(0);
+                cursor.append(0);
+                cursor.append(0);
+            }
 
         }
     }
@@ -60,8 +86,6 @@ export namespace InstanceOverlayDataBuilder {
         });
         return packed;
     }
-
-
 
 
 }
