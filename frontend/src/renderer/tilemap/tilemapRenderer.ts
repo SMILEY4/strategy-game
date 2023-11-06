@@ -73,7 +73,7 @@ export class TilemapRenderer implements RenderModule {
     }
 
     private updateInstanceData() {
-        const [count, array] = TileInstanceDataBuilder.build(this.tileRepository.getTiles());
+        const [count, array] = TileInstanceDataBuilder.build(this.tileRepository.getTileContainer());
         this.data?.renderData.updateInstanceData(count, array);
     }
 

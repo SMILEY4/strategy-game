@@ -1,6 +1,9 @@
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../shared/webgl/mixedArrayBuffer";
 import {Tile} from "../../models/tile";
 import {TilemapUtils} from "../../logic/game/tilemapUtils";
+import {BorderBuilder} from "../../logic/game/borderBuilder";
+import {TileContainer} from "../../models/tileContainer";
+import {bitSet} from "../../shared/utils";
 
 export namespace TileInstanceDataBuilder {
 
@@ -11,17 +14,17 @@ export namespace TileInstanceDataBuilder {
         MixedArrayBufferType.INT,
         // visibility
         MixedArrayBufferType.INT,
-        // border data
+        // packed border data
         MixedArrayBufferType.INT,
     ];
 
     const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
 
 
-    export function build(tiles: Tile[]): [number, ArrayBuffer] {
-        const [buffer, cursor] = createMixedArray(tiles.length);
-        appendTiles(cursor, tiles);
-        return [tiles.length, buffer.getRawBuffer()!];
+    export function build(tileContainer: TileContainer): [number, ArrayBuffer] {
+        const [buffer, cursor] = createMixedArray(tileContainer.getTileCount());
+        appendTiles(cursor, tileContainer);
+        return [tileContainer.getTileCount(), buffer.getRawBuffer()!];
     }
 
 
@@ -34,9 +37,11 @@ export namespace TileInstanceDataBuilder {
         return [array, cursor];
     }
 
-    export function appendTiles(cursor: MixedArrayBufferCursor, tiles: Tile[]) {
+    export function appendTiles(cursor: MixedArrayBufferCursor, tileContainer: TileContainer) {
+        const tiles = tileContainer.getTiles();
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
+
 
             // world position
             const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.identifier.q, tile.identifier.r);
@@ -50,12 +55,30 @@ export namespace TileInstanceDataBuilder {
             cursor.append(toVisibilityId(tile));
 
             // border data
-            cursor.append(45) // 101101
+            // todo: temp
+            const border = BorderBuilder.build(tile, tileContainer, false, (ta, tb) => {
+                const a = ta.terrainType;
+                const b = tb.terrainType;
+                return (!a && !b) ? false : (!!a && a !== b);
+            });
+            const borderPacked = packBorder(border);
+            cursor.append(borderPacked);
         }
     }
 
 
-    export function toTerrainId(tile: Tile) {
+    function packBorder(data: boolean[]): number {
+        let packed = 0;
+        data.forEach((value, index) => {
+            if (value) {
+                packed = bitSet(packed, index);
+            }
+        });
+        return packed;
+    }
+
+
+    function toTerrainId(tile: Tile) {
         switch (tile.terrainType) {
             case "WATER":
                 return 0;
@@ -68,7 +91,7 @@ export namespace TileInstanceDataBuilder {
         }
     }
 
-    export function toVisibilityId(tile: Tile) {
+    function toVisibilityId(tile: Tile) {
         switch (tile.visibility) {
             case "UNKNOWN":
                 return 0;
