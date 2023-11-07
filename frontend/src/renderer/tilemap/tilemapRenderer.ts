@@ -2,14 +2,13 @@ import {CanvasHandle} from "../../logic/game/canvasHandle";
 import {Camera} from "../../shared/webgl/camera";
 import {RenderModule} from "../common/renderModule";
 import {GLProgram} from "../../shared/webgl/glProgram";
-
 import SHADER_SRC_VERT from "./shader.vsh?raw";
 import SHADER_SRC_FRAG from "./shader.fsh?raw";
 import {GLRenderer} from "../../shared/webgl/glRenderer";
 import {TileRepository} from "../../state/access/TileRepository";
 import {TilemapRenderData} from "./tilemapRenderData";
 import {GLUniformType} from "../../shared/webgl/glTypes";
-import {GLTexture} from "../../shared/webgl/glTexture";
+import {GLTexture, GLTextureMinFilter} from "../../shared/webgl/glTexture";
 import {InstanceBaseDataBuilder} from "./meshbuilders/instanceBaseDataBuilder";
 import {InstanceOverlayDataBuilder} from "./meshbuilders/instanceOverlayDataBuilder";
 
@@ -41,7 +40,7 @@ export class TilemapRenderer implements RenderModule {
         this.data = {
             program: program,
             renderer: new GLRenderer(gl),
-            tileset: GLTexture.createFromPath(gl, "/tiles.png"),
+            tileset: GLTexture.createFromPath(gl, "/tiles.png", {filterMin: GLTextureMinFilter.NEAREST}),
             texture: GLTexture.createFromPath(gl, "/textures/plain_white_paper_blendable.jpg"),
             noise: GLTexture.createFromPath(gl, "/textures/noise.png"),
             renderData: new TilemapRenderData(gl, program.getInformation().attributes),
@@ -83,6 +82,8 @@ export class TilemapRenderer implements RenderModule {
     public dispose() {
         if (this.data) {
             this.data.program.dispose();
+            this.data.tileset.dispose();
+            this.data.texture.dispose();
             this.data.renderData.dispose();
         }
     }

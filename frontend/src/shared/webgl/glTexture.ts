@@ -32,9 +32,69 @@ export class GLTexture implements GLDisposable {
 }
 
 
+export class GLTextureWrap {
+
+    public static readonly REPEAT = new GLTextureWrap(WebGL2RenderingContext.REPEAT);
+    public static readonly CLAMP_TO_EDGE = new GLTextureWrap(WebGL2RenderingContext.CLAMP_TO_EDGE);
+    public static readonly MIRRORED_REPEAT = new GLTextureWrap(WebGL2RenderingContext.MIRRORED_REPEAT);
+
+    readonly id: GLint;
+
+    constructor(id: GLint) {
+        this.id = id;
+    }
+}
+
+
+export class GLTextureMinFilter {
+
+    public static readonly LINEAR = new GLTextureMinFilter(WebGL2RenderingContext.LINEAR, false);
+    public static readonly NEAREST = new GLTextureMinFilter(WebGL2RenderingContext.NEAREST, false);
+    public static readonly NEAREST_MIPMAP_NEAREST = new GLTextureMinFilter(WebGL2RenderingContext.NEAREST_MIPMAP_NEAREST, true);
+    public static readonly LINEAR_MIPMAP_NEAREST = new GLTextureMinFilter(WebGL2RenderingContext.LINEAR_MIPMAP_NEAREST, true);
+    public static readonly NEAREST_MIPMAP_LINEAR = new GLTextureMinFilter(WebGL2RenderingContext.NEAREST_MIPMAP_LINEAR, true);
+    public static readonly LINEAR_MIPMAP_LINEAR = new GLTextureMinFilter(WebGL2RenderingContext.LINEAR_MIPMAP_LINEAR, true);
+
+    readonly id: GLint;
+    readonly requiresMipmap: boolean;
+
+    constructor(id: GLint, requiresMipmap: boolean) {
+        this.id = id;
+        this.requiresMipmap = requiresMipmap;
+    }
+}
+
+
+export class GLTextureMagFilter {
+
+    public static readonly LINEAR = new GLTextureMagFilter(WebGL2RenderingContext.LINEAR);
+    public static readonly NEAREST = new GLTextureMagFilter(WebGL2RenderingContext.NEAREST);
+
+    readonly id: GLint;
+
+    constructor(id: GLint) {
+        this.id = id;
+    }
+}
+
+
 export namespace GLTexture {
 
-    export function createFromPath(gl: WebGL2RenderingContext, path: string): GLTexture {
+    export interface Config {
+        wrap?: GLTextureWrap,
+        filterMin?: GLTextureMinFilter,
+        filterMag?: GLTextureMagFilter,
+    }
+
+    const DEFAULT_CONFIG: Config = {
+        wrap: GLTextureWrap.REPEAT,
+        filterMin: GLTextureMinFilter.NEAREST_MIPMAP_LINEAR,
+        filterMag: GLTextureMagFilter.LINEAR,
+    };
+
+    export function createFromPath(gl: WebGL2RenderingContext, path: string, config?: Config): GLTexture {
+
+        const mergedConfig: Config = {...DEFAULT_CONFIG, ...config};
 
         // create new handle
         const texture = gl.createTexture();
@@ -65,8 +125,20 @@ export namespace GLTexture {
             GLError.check(gl, "texImage2D", "fill texture with image data");
 
             // generate mipmaps
-            gl.generateMipmap(gl.TEXTURE_2D);
-            GLError.check(gl, "generateMipmap", "generate mipmaps");
+            if (mergedConfig.filterMin!.requiresMipmap) {
+                gl.generateMipmap(gl.TEXTURE_2D);
+                GLError.check(gl, "generateMipmap", "generate mipmaps");
+            }
+
+            // wrap
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, mergedConfig.wrap!.id);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, mergedConfig.wrap!.id);
+            GLError.check(gl, "texParameteri", "set texture wrap");
+
+            // filter
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mergedConfig.filterMin!.id);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mergedConfig.filterMag!.id);
+            GLError.check(gl, "texParameteri", "set texture filter");
 
         });
 

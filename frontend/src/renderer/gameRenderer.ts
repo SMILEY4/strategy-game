@@ -5,19 +5,23 @@ import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {RenderModule} from "./common/renderModule";
 import {GLRenderer} from "../shared/webgl/glRenderer";
 import {TileRepository} from "../state/access/TileRepository";
+import {EntityRenderer} from "./entity/entityRenderer";
 
 export class GameRenderer {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraRepository: CameraRepository;
-    private readonly modules: RenderModule[] = [];
+    private readonly modules: RenderModule[];
     private renderer: GLRenderer | null = null;
 
 
     constructor(canvasHandle: CanvasHandle, cameraRepository: CameraRepository, tileRepository: TileRepository) {
         this.canvasHandle = canvasHandle;
         this.cameraRepository = cameraRepository;
-        this.modules.push(new TilemapRenderer(canvasHandle, tileRepository));
+        this.modules = [
+            new TilemapRenderer(canvasHandle, tileRepository),
+            new EntityRenderer(canvasHandle),
+        ];
     }
 
 
@@ -35,7 +39,6 @@ export class GameRenderer {
     public dispose() {
         this.modules.forEach(m => m.dispose());
     }
-
 
     private getRenderCamera(): Camera {
         const data = this.cameraRepository.getCamera();
