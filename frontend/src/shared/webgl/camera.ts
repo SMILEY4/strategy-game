@@ -5,12 +5,20 @@ export class Camera {
 
     private x = 0;
     private y = 0;
+    private width = 0;
+    private height = 0;
     private zoom = 1;
     private viewProjectionMatrix: Float32Array | null = null;
 
     public setPosition(x: number, y: number): void {
         this.x = x;
         this.y = y;
+    }
+
+
+    public setSize(width: number, height: number) {
+        this.width = width;
+        this.height = height;
     }
 
     public move(dx: number, dy: number): void {
@@ -35,27 +43,35 @@ export class Camera {
         return this.y;
     }
 
+    public getWidth(): number {
+        return this.width;
+    }
+
+    public getHeight(): number {
+        return this.height;
+    }
+
     public getZoom(): number {
         return this.zoom;
     }
 
-    public updateViewProjectionMatrix(width: number, height: number) {
+    public updateViewProjectionMatrix() {
         const mat = mat3.identity();
-        mat3.scale(mat, 1 / (width / 2), 1 / (height / 2), mat);
+        mat3.scale(mat, 1 / (this.width / 2), 1 / (this.height / 2), mat);
         mat3.scale(mat, this.zoom, this.zoom, mat);
         mat3.translate(mat, this.x, this.y, mat);
         this.viewProjectionMatrix = mat;
     }
 
-    public getViewProjectionMatrix(calculateIfNotExists?: boolean, width?: number, height?: number): Float32Array | null {
-        if (calculateIfNotExists === true && !this.viewProjectionMatrix && width && height) {
-            this.updateViewProjectionMatrix(width, height);
+    public getViewProjectionMatrix(calculateIfNotExists?: boolean): Float32Array | null {
+        if (calculateIfNotExists === true && !this.viewProjectionMatrix) {
+            this.updateViewProjectionMatrix();
         }
         return this.viewProjectionMatrix;
     }
 
-    public getViewProjectionMatrixOrThrow(calculateIfNotExists?: boolean, width?: number, height?: number): Float32Array {
-        const matrix = this.getViewProjectionMatrix(calculateIfNotExists, width, height);
+    public getViewProjectionMatrixOrThrow(calculateIfNotExists?: boolean): Float32Array {
+        const matrix = this.getViewProjectionMatrix(calculateIfNotExists);
         if (!matrix) {
             throw new Error("Camera view-projection-matrix does not exist.");
         } else {
@@ -70,8 +86,9 @@ export namespace Camera {
     export function create(cameraData: CameraData, width: number, height: number): Camera {
         const camera = new Camera();
         camera.setPosition(cameraData.x, cameraData.y);
+        camera.setSize(width, height)
         camera.setZoom(cameraData.zoom);
-        camera.updateViewProjectionMatrix(width, height);
+        camera.updateViewProjectionMatrix();
         return camera;
     }
 

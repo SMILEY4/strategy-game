@@ -1,7 +1,7 @@
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {Tile} from "../../../models/tile";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
-import {TileContainer} from "../../../models/tileContainer";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
+import {Tile} from "../../../../models/tile";
+import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
+import {TileContainer} from "../../../../models/tileContainer";
 
 export namespace InstanceBaseDataBuilder {
 

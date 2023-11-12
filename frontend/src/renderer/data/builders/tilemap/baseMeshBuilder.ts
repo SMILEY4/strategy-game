@@ -1,7 +1,7 @@
 // noinspection PointlessArithmeticExpressionJS,DuplicatedCode
 
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
+import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 
 
 /*

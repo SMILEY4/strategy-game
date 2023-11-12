@@ -2,6 +2,11 @@
 precision mediump float;
 
 /*
+The current size of the screen
+*/
+uniform vec2 u_screenSize;
+
+/*
 The texture for the tiles
 */
 uniform sampler2D u_tileset;
@@ -15,6 +20,11 @@ uniform sampler2D u_texture;
 The additional noise texture
 */
 uniform sampler2D u_noise;
+
+/*
+The entity mask texture
+*/
+uniform sampler2D u_entityMask;
 
 /*
 The current zoom value of the camera
@@ -139,6 +149,14 @@ float baseTexture(float basePaper, float baseClouds) {
     float paper = mix(1.0, basePaper, impactPaper);
     float clouds = mix(1.0, baseClouds, impactClouds);
     return paper * clouds;
+}
+
+// ==================================//
+//            ENTITY MASK            //
+// ==================================//
+
+vec4 getEntityMask() {
+    return vec4(vec3(1.0), texture(u_entityMask, gl_FragCoord.xy / u_screenSize).g);
 }
 
 // ==================================//
@@ -300,9 +318,12 @@ void main() {
     float textureClouds1 = baseTextureClouds(vec2(100.0, 200.0));
     float textureBase = baseTexture(texturePaper, textureClouds0);
 
+    // entity mask
+    vec4 entityMask = getEntityMask();
+
     // layers
     vec4 layerPaper  = colorLayerPaper(textureBase, textureClouds0);
-    vec4 layerTerrain = colorLayerTerrain(textureBase);
+    vec4 layerTerrain = colorLayerTerrain(textureBase) * entityMask;
     vec4 layerOverlay = colorLayerOverlay(textureBase, textureClouds1);
 
     // combine layers

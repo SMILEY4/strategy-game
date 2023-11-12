@@ -11,7 +11,7 @@ export class WorldRenderer {
     }
 
     public render(world: RenderWorld, camera: Camera) {
-        this.renderer.prepareFrame();
+        this.renderer.prepareFrame(camera);
         world.getLayers().forEach(layer => {
             layer.render(camera, this.renderer);
         });

@@ -2,10 +2,11 @@ import {CanvasHandle} from "../logic/game/canvasHandle";
 import {Camera} from "../shared/webgl/camera";
 import {CameraRepository} from "../state/access/CameraRepository";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
-import {RenderModule} from "./common/renderModule";
+import {RenderModule} from "./renderModule";
 import {GLRenderer} from "../shared/webgl/glRenderer";
 import {EntityRenderer} from "./entity/entityRenderer";
 import {RenderDataManager} from "./data/renderDataManager";
+import {EntityMaskRenderer} from "./entitymask/entityMaskRenderer";
 
 export class GameRenderer {
 
@@ -21,6 +22,7 @@ export class GameRenderer {
         this.cameraRepository = cameraRepository;
         this.renderDataManager = renderDataManager;
         this.modules = [
+            new EntityMaskRenderer(canvasHandle),
             new TilemapRenderer(canvasHandle),
             new EntityRenderer(canvasHandle),
         ];
@@ -37,7 +39,7 @@ export class GameRenderer {
         this.renderDataManager.updateData();
         const camera = this.getRenderCamera();
         const data = this.renderDataManager.getData();
-        this.renderer?.prepareFrame();
+        this.renderer?.prepareFrame(camera);
         this.modules.forEach(m => m.render(camera, data));
     }
 

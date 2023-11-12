@@ -21,8 +21,7 @@ export class GLVertexArray implements GLDisposable {
     }
 
     public unbind() {
-        this.gl.bindVertexArray(null);
-        GLError.check(this.gl, "bindVertexArray", "un-binding vertex array object");
+        GLVertexArray.unbind(this.gl)
     }
 
     public dispose() {
@@ -34,6 +33,11 @@ export class GLVertexArray implements GLDisposable {
 
 
 export namespace GLVertexArray {
+
+    export function unbind(gl: WebGL2RenderingContext) {
+        gl.bindVertexArray(null);
+        GLError.check(gl, "bindVertexArray", "un-binding vertex array object");
+    }
 
     export interface AttributeConfig {
         buffer: GLVertexBuffer;

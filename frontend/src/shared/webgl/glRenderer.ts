@@ -1,4 +1,5 @@
 import {GLError} from "./glError";
+import {Camera} from "./camera";
 
 export class GLRenderer {
 
@@ -8,9 +9,13 @@ export class GLRenderer {
         this.gl = gl;
     }
 
-    public prepareFrame() {
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-        this.gl.clearColor(0, 0, 0, 1);
+    public prepareFrame(camera: Camera, clearColor?: [number, number, number, number]) {
+        this.gl.viewport(0, 0, camera.getWidth(), camera.getHeight());
+        if (clearColor) {
+            this.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        } else {
+            this.gl.clearColor(0, 0, 0, 1);
+        }
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
@@ -21,7 +26,7 @@ export class GLRenderer {
         this.gl.drawArrays(
             this.gl.TRIANGLES,
             0,
-            vertexCount
+            vertexCount,
         );
         GLError.check(this.gl, "drawArrays", "drawing");
     }
@@ -41,11 +46,10 @@ export class GLRenderer {
             this.gl.TRIANGLES,
             0,
             vertexCount,
-            instanceCount
+            instanceCount,
         );
         GLError.check(this.gl, "drawArraysInstanced", "drawing instanced");
     }
-
 
 
 }

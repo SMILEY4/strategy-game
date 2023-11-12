@@ -1,4 +1,5 @@
 import {GLTexture} from "./glTexture";
+import {GLFramebuffer} from "./glFramebuffer";
 
 export class GLShaderType {
 
@@ -40,7 +41,7 @@ export class GLAttributeType {
     }
 }
 
-export type GLUniformValueType = number | number[] | Float32Array | GLTexture;
+export type GLUniformValueType = number | number[] | Float32Array | GLTexture | GLFramebuffer;
 
 export class GLUniformType {
     public static FLOAT = new GLUniformType();

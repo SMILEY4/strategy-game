@@ -29,7 +29,7 @@ import {MapModeRepository} from "./state/access/MapModeRepository";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
 import {RouteRepository} from "./state/access/RouteRepository";
-import {RenderEntityCollector} from "./renderer/entity/meshbuilder/renderEntityCollector";
+import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
 import {RenderDataManager} from "./renderer/data/renderDataManager";
 import {GameRenderer} from "./renderer/gameRenderer";
 

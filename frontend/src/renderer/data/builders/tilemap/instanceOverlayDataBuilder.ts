@@ -1,7 +1,7 @@
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TileContainer} from "../../../models/tileContainer";
-import {bitSet} from "../../../shared/utils";
-import {BorderBuilder} from "../../../logic/game/borderBuilder";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
+import {TileContainer} from "../../../../models/tileContainer";
+import {bitSet} from "../../../../shared/utils";
+import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 
 export namespace InstanceOverlayDataBuilder {
 

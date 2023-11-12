@@ -5,7 +5,7 @@ import {CanvasHandle} from "../../logic/game/canvasHandle";
 import {RenderData} from "../data/renderData";
 import {GLUniformType} from "../../shared/webgl/glTypes";
 
-export class EntityRenderer implements RenderModule {
+export class EntityMaskRenderer implements RenderModule {
 
     private readonly canvasHandle: CanvasHandle;
     private renderer: GLRenderer = null as any;
@@ -22,15 +22,23 @@ export class EntityRenderer implements RenderModule {
 
     public render(camera: Camera, data: RenderData): void {
 
-        data.entities.textures.tileset.bind(0);
+        data.entityMask.textures.mask.bind(0);
 
-        data.entities.program.use();
-        data.entities.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
-        data.entities.program.setUniform("u_tileset", GLUniformType.SAMPLER_2D, data.entities.textures.tileset);
+        data.entityMask.program.use();
+        data.entityMask.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
+        data.entityMask.program.setUniform("u_tileset", GLUniformType.SAMPLER_2D, data.entityMask.textures.mask);
 
-        data.entities.vertexArray.bind();
+        data.entityMask.framebuffer.bind()
+        data.entityMask.framebuffer.resize(camera.getWidth(), camera.getHeight())
+
+
+        data.entityMask.vertexArray.bind();
+        this.renderer.prepareFrame(camera, [1, 1, 1, 1])
         this.renderer.draw(data.entities.vertexCount);
-        data.entities.vertexArray.unbind();
+        data.entityMask.vertexArray.unbind();
+
+        data.entityMask.framebuffer.unbind()
+
     }
 
 

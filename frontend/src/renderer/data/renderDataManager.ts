@@ -8,13 +8,16 @@ import SHADER_TILEMAP_VERT from "./../tilemap/shader.vsh?raw";
 import SHADER_TILEMAP_FRAG from "./../tilemap/shader.fsh?raw";
 import SHADER_ENTITIES_VERT from "./../entity/shader.vsh?raw";
 import SHADER_ENTITIES_FRAG from "./../entity/shader.fsh?raw";
+import SHADER_ENTITY_MASK_VERT from "./../entitymask/shader.vsh?raw";
+import SHADER_ENTITY_MASK_FRAG from "./../entitymask/shader.fsh?raw";
 import {GLAttributeType} from "../../shared/webgl/glTypes";
-import {BaseMeshBuilder} from "../tilemap/meshbuilders/baseMeshBuilder";
-import {InstanceBaseDataBuilder} from "../tilemap/meshbuilders/instanceBaseDataBuilder";
-import {InstanceOverlayDataBuilder} from "../tilemap/meshbuilders/instanceOverlayDataBuilder";
+import {BaseMeshBuilder} from "./builders/tilemap/baseMeshBuilder";
+import {InstanceBaseDataBuilder} from "./builders/tilemap/instanceBaseDataBuilder";
+import {InstanceOverlayDataBuilder} from "./builders/tilemap/instanceOverlayDataBuilder";
 import {TileRepository} from "../../state/access/TileRepository";
-import {RenderEntityCollector} from "../entity/meshbuilder/renderEntityCollector";
-import {EntityMeshBuilder} from "../entity/meshbuilder/entityMeshBuilder";
+import {RenderEntityCollector} from "./builders/entities/renderEntityCollector";
+import {EntityMeshBuilder} from "./builders/entities/entityMeshBuilder";
+import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 
 
 export class RenderDataManager {
@@ -44,6 +47,7 @@ export class RenderDataManager {
 
         const programTilemap = GLProgram.create(gl, SHADER_TILEMAP_VERT, SHADER_TILEMAP_FRAG);
         const programEntities = GLProgram.create(gl, SHADER_ENTITIES_VERT, SHADER_ENTITIES_FRAG);
+        const programEntityMask = GLProgram.create(gl, SHADER_ENTITY_MASK_VERT, SHADER_ENTITY_MASK_FRAG);
 
         const tileMesh = BaseMeshBuilder.build();
         const tileMeshBuffer = GLVertexBuffer.create(gl, tileMesh[1]);
@@ -147,8 +151,7 @@ export class RenderDataManager {
             entities: {
                 program: programEntities,
                 textures: {
-                    tileset: GLTexture.createFromPath(gl, "/entities.png", {filterMin: GLTextureMinFilter.NEAREST}), // todo
-                    mask: GLTexture.createFromPath(gl, "/entities.png", {filterMin: GLTextureMinFilter.NEAREST}), // todo
+                    tileset: GLTexture.createFromPath(gl, "/entities.png", {filterMin: GLTextureMinFilter.NEAREST}),
                 },
                 vertexCount: 0,
                 vertexBuffer: entityVertexBuffer,
@@ -171,6 +174,31 @@ export class RenderDataManager {
                     undefined,
                 ),
             },
+            entityMask: {
+                framebuffer: GLFramebuffer.create(gl, 1, 1),
+                program: programEntityMask,
+                textures: {
+                    mask: GLTexture.createFromPath(gl, "/entities_mask.png", {filterMin: GLTextureMinFilter.NEAREST}),
+                },
+                vertexArray: GLVertexArray.create(
+                    gl,
+                    [
+                        {
+                            buffer: entityVertexBuffer,
+                            location: programEntityMask.getInformation().attributes.find(a => a.name === "in_vertexPosition")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            buffer: entityVertexBuffer,
+                            location: programEntityMask.getInformation().attributes.find(a => a.name === "in_textureCoordinates")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                    ],
+                    undefined,
+                ),
+            }
         };
     }
 
@@ -186,9 +214,11 @@ export class RenderDataManager {
             this.renderData.tilemap.vertexArray.dispose();
             this.renderData.entities.program.dispose();
             this.renderData.entities.textures.tileset.dispose();
-            this.renderData.entities.textures.mask.dispose();
             this.renderData.entities.vertexBuffer.dispose();
             this.renderData.entities.vertexArray.dispose();
+            this.renderData.entityMask.program.dispose()
+            this.renderData.entityMask.textures.mask.dispose()
+            this.renderData.entityMask.framebuffer.dispose()
             this.renderData = null;
         }
     }

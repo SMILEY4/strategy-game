@@ -2,6 +2,7 @@ import {GLShaderType, GLUniformType, GLUniformValueType} from "./glTypes";
 import {GLError} from "./glError";
 import {GLDisposable} from "./glDisposable";
 import {GLTexture} from "./glTexture";
+import {GLFramebuffer} from "./glFramebuffer";
 
 export class GLProgram implements GLDisposable {
 
@@ -42,6 +43,8 @@ export class GLProgram implements GLDisposable {
         } else if (values instanceof Float32Array) {
             return values;
         } else if (values instanceof GLTexture) {
+            return [values.getLastBoundTextureUnit()];
+        } else if (values instanceof GLFramebuffer) {
             return [values.getLastBoundTextureUnit()];
         } else {
             return [values];

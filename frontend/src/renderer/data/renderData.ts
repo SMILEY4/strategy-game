@@ -2,6 +2,7 @@ import {GLVertexBuffer} from "../../shared/webgl/glVertexBuffer";
 import {GLVertexArray} from "../../shared/webgl/glVertexArray";
 import {GLProgram} from "../../shared/webgl/glProgram";
 import {GLTexture} from "../../shared/webgl/glTexture";
+import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 
 export interface RenderData {
     tilemap: {
@@ -26,10 +27,17 @@ export interface RenderData {
         program: GLProgram,
         textures: {
             tileset: GLTexture,
-            mask: GLTexture,
         },
         vertexCount: number,
         vertexBuffer: GLVertexBuffer,
+        vertexArray: GLVertexArray
+    },
+    entityMask: {
+        framebuffer: GLFramebuffer,
+        program: GLProgram,
+        textures: {
+            mask: GLTexture,
+        },
         vertexArray: GLVertexArray
     }
 }
