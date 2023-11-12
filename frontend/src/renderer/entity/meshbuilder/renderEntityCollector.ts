@@ -5,10 +5,31 @@ import {Command, CreateCityCommand, PlaceScoutCommand} from "../../../models/com
 import {CommandType} from "../../../models/commandType";
 import {CountryIdentifier} from "../../../models/country";
 import {Color} from "../../../models/color";
+import {TileRepository} from "../../../state/access/TileRepository";
+import {CityRepository} from "../../../state/access/CityRepository";
+import {CommandRepository} from "../../../state/access/CommandRepository";
 
-export namespace RenderEntityCollector {
+export class RenderEntityCollector {
 
-    export function collect(tiles: Tile[], cities: City[], commands: Command[]): RenderEntity[] {
+    private readonly tileRepository: TileRepository;
+    private readonly cityRepository: CityRepository;
+    private readonly commandRepository: CommandRepository;
+
+    constructor(tileRepository: TileRepository, cityRepository: CityRepository, commandRepository: CommandRepository) {
+        this.tileRepository = tileRepository;
+        this.cityRepository = cityRepository;
+        this.commandRepository = commandRepository;
+    }
+
+    public collect(): RenderEntity[] {
+        return this.collectEntities(
+            this.tileRepository.getTiles(),
+            this.cityRepository.getCities(),
+            this.commandRepository.getCommands(),
+        );
+    }
+
+    private collectEntities(tiles: Tile[], cities: City[], commands: Command[]): RenderEntity[] {
 
         const entities: RenderEntity[] = [];
 
@@ -42,7 +63,7 @@ export namespace RenderEntityCollector {
                 entities.push({
                     type: "scout",
                     tile: (command as PlaceScoutCommand).tile,
-                    country: placeholderCountry(),
+                    country: this.placeholderCountry(),
                     label: null,
                 });
             }
@@ -50,7 +71,7 @@ export namespace RenderEntityCollector {
                 entities.push({
                     type: "city",
                     tile: (command as CreateCityCommand).tile,
-                    country: placeholderCountry(),
+                    country: this.placeholderCountry(),
                     label: (command as CreateCityCommand).name,
                 });
             }
@@ -59,7 +80,7 @@ export namespace RenderEntityCollector {
         return entities;
     }
 
-    function placeholderCountry(): CountryIdentifier {
+    private placeholderCountry(): CountryIdentifier {
         return {
             id: "undefined",
             name: "undefined",

@@ -4,39 +4,45 @@ import {CameraRepository} from "../state/access/CameraRepository";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {RenderModule} from "./common/renderModule";
 import {GLRenderer} from "../shared/webgl/glRenderer";
-import {TileRepository} from "../state/access/TileRepository";
 import {EntityRenderer} from "./entity/entityRenderer";
+import {RenderDataManager} from "./data/renderDataManager";
 
 export class GameRenderer {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraRepository: CameraRepository;
+    private readonly renderDataManager: RenderDataManager;
     private readonly modules: RenderModule[];
     private renderer: GLRenderer | null = null;
 
 
-    constructor(canvasHandle: CanvasHandle, cameraRepository: CameraRepository, tileRepository: TileRepository) {
+    constructor(canvasHandle: CanvasHandle, cameraRepository: CameraRepository, renderDataManager: RenderDataManager) {
         this.canvasHandle = canvasHandle;
         this.cameraRepository = cameraRepository;
+        this.renderDataManager = renderDataManager;
         this.modules = [
-            new TilemapRenderer(canvasHandle, tileRepository),
+            new TilemapRenderer(canvasHandle),
             new EntityRenderer(canvasHandle),
         ];
     }
 
 
     public initialize(): void {
+        this.renderDataManager.initialize();
         this.renderer = new GLRenderer(this.canvasHandle.getGL());
         this.modules.forEach(m => m.initialize());
     }
 
     public render() {
+        this.renderDataManager.updateData();
         const camera = this.getRenderCamera();
+        const data = this.renderDataManager.getData();
         this.renderer?.prepareFrame();
-        this.modules.forEach(m => m.render(camera));
+        this.modules.forEach(m => m.render(camera, data));
     }
 
     public dispose() {
+        this.renderDataManager.disposeData();
         this.modules.forEach(m => m.dispose());
     }
 

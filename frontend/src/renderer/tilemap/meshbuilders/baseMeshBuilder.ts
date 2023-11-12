@@ -1,10 +1,7 @@
 // noinspection PointlessArithmeticExpressionJS,DuplicatedCode
 
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {GLVertexBuffer} from "../../../shared/webgl/glVertexBuffer";
 import {TilemapUtils} from "../../../logic/game/tilemapUtils";
-import {TilemapRenderData} from "../tilemapRenderData";
-import TileMesh = TilemapRenderData.TileMesh;
 
 
 /*
@@ -34,10 +31,10 @@ export namespace BaseMeshBuilder {
     const VALUES_PER_VERTEX = PATTERN_VERTEX.length;
 
 
-    export function build(gl: WebGL2RenderingContext): TileMesh {
+    export function build(): [number, ArrayBuffer] {
         const [vertices, cursor] = createMixedArray();
         appendVertices(cursor);
-        return createTileMesh(gl, vertices);
+        return createTileMesh(vertices);
     }
 
     function createMixedArray(): [MixedArrayBuffer, MixedArrayBufferCursor] {
@@ -50,11 +47,8 @@ export namespace BaseMeshBuilder {
     }
 
 
-    function createTileMesh(gl: WebGL2RenderingContext, vertices: MixedArrayBuffer): TileMesh {
-        return {
-            vertexCount: VERTICES_PER_TILE,
-            vertexBuffer: GLVertexBuffer.create(gl, vertices.getRawBuffer()!),
-        };
+    function createTileMesh(vertices: MixedArrayBuffer): [number, ArrayBuffer] {
+        return [VERTICES_PER_TILE, vertices.getRawBuffer()]
     }
 
     function appendVertices(cursor: MixedArrayBufferCursor) {

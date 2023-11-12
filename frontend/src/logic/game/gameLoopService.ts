@@ -13,25 +13,28 @@ export class GameLoopService {
     private readonly gameSessionRepository: GameSessionStateRepository;
     private readonly tileRepository: TileRepository;
     private readonly tilePicker: TilePicker;
+    private readonly gameRenderer: GameRenderer;
 
-    private readonly renderer: GameRenderer;
 
-    constructor(canvasHandle: CanvasHandle,
-                tilePicker: TilePicker,
-                cameraRepository: CameraRepository,
-                gameSessionRepository: GameSessionStateRepository,
-                tileRepository: TileRepository) {
+    constructor(
+        canvasHandle: CanvasHandle,
+        tilePicker: TilePicker,
+        cameraRepository: CameraRepository,
+        gameSessionRepository: GameSessionStateRepository,
+        tileRepository: TileRepository,
+        gameRenderer: GameRenderer,
+    ) {
         this.canvasHandle = canvasHandle;
         this.tilePicker = tilePicker;
         this.cameraRepository = cameraRepository;
         this.gameSessionRepository = gameSessionRepository;
         this.tileRepository = tileRepository;
-        this.renderer = new GameRenderer(canvasHandle, cameraRepository, tileRepository);
+        this.gameRenderer = gameRenderer;
     }
 
     public initialize(canvas: HTMLCanvasElement) {
         this.canvasHandle.set(canvas);
-        this.renderer.initialize();
+        this.gameRenderer.initialize();
     }
 
 
@@ -40,11 +43,11 @@ export class GameLoopService {
     }
 
     public update() {
-        this.renderer.render();
+        this.gameRenderer.render();
     }
 
     public dispose() {
-        this.renderer.dispose();
+        this.gameRenderer.dispose();
     }
 
     public mouseClick(x: number, y: number) {
