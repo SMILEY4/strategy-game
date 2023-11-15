@@ -7,6 +7,7 @@ import {GLRenderer} from "../shared/webgl/glRenderer";
 import {EntityRenderer} from "./entity/entityRenderer";
 import {RenderDataManager} from "./data/renderDataManager";
 import {EntityMaskRenderer} from "./entitymask/entityMaskRenderer";
+import {LabelRenderer} from "./labels/labelRenderer";
 
 export class GameRenderer {
 
@@ -25,6 +26,7 @@ export class GameRenderer {
             new EntityMaskRenderer(canvasHandle),
             new TilemapRenderer(canvasHandle),
             new EntityRenderer(canvasHandle),
+            new LabelRenderer(),
         ];
     }
 

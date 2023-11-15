@@ -5,5 +5,5 @@ export interface RenderEntity {
     type: "scout" | "city"
     tile: TileIdentifier,
     label: string | null,
-    country: CountryIdentifier
+    country: CountryIdentifier,
 }

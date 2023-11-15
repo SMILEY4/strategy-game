@@ -149,6 +149,7 @@ export class RenderDataManager {
                 ),
             },
             entities: {
+                items: [],
                 program: programEntities,
                 textures: {
                     tileset: GLTexture.createFromPath(gl, "/entities.png", {filterMin: GLTextureMinFilter.NEAREST}),
@@ -242,6 +243,7 @@ export class RenderDataManager {
         if (this.renderData) {
             const entities = this.entityCollector.collect();
             const [count, vertices] = EntityMeshBuilder.build(entities);
+            this.renderData.entities.items = entities;
             this.renderData.entities.vertexCount = count;
             this.renderData.entities.vertexBuffer.setData(vertices, true);
         }

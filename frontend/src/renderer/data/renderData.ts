@@ -3,6 +3,7 @@ import {GLVertexArray} from "../../shared/webgl/glVertexArray";
 import {GLProgram} from "../../shared/webgl/glProgram";
 import {GLTexture} from "../../shared/webgl/glTexture";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
+import {RenderEntity} from "./builders/entities/renderEntity";
 
 export interface RenderData {
     tilemap: {
@@ -24,6 +25,7 @@ export interface RenderData {
         vertexArray: GLVertexArray
     },
     entities: {
+        items: RenderEntity[],
         program: GLProgram,
         textures: {
             tileset: GLTexture,
