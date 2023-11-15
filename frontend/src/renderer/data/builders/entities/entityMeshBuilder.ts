@@ -36,46 +36,49 @@ export namespace EntityMeshBuilder {
     function appendEntities(cursor: MixedArrayBufferCursor, entities: RenderEntity[]) {
         for (let i = 0, n = entities.length; i < n; i++) {
             const entity = entities[i];
-            appendEntity(cursor, entity);
+            appendEntity(cursor, entity, entity.type === "city" ? 0 : 1);
         }
     }
 
-    function appendEntity(cursor: MixedArrayBufferCursor, entity: RenderEntity) {
+    function appendEntity(cursor: MixedArrayBufferCursor, entity: RenderEntity, tilesetIndex: number) {
 
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, entity.tile.q, entity.tile.r);
         const halfWidth = (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] * 0.8);
         const halfHeight = (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * 0.8);
 
+        const u0 = tilesetIndex === 0 ? 0 : 0.5;
+        const u1 = tilesetIndex === 0 ? 0.5 : 1;
+
         // triangle a, corner 1
         cursor.append(center[0] - halfWidth)
         cursor.append(center[1] - halfHeight)
-        cursor.append(0)
+        cursor.append(u0)
         cursor.append(0)
         // triangle a, corner 2
         cursor.append(center[0] + halfWidth)
         cursor.append(center[1] - halfHeight)
-        cursor.append(1)
+        cursor.append(u1)
         cursor.append(0)
         // triangle a, corner 3
         cursor.append(center[0] + halfWidth)
         cursor.append(center[1] + halfHeight)
-        cursor.append(1)
+        cursor.append(u1)
         cursor.append(1)
 
         // triangle b, corner 1
         cursor.append(center[0] - halfWidth)
         cursor.append(center[1] - halfHeight)
-        cursor.append(0)
+        cursor.append(u0)
         cursor.append(0)
         // triangle b, corner 2
         cursor.append(center[0] + halfWidth)
         cursor.append(center[1] + halfHeight)
-        cursor.append(1)
+        cursor.append(u1)
         cursor.append(1)
         // triangle b, corner 3
         cursor.append(center[0] - halfWidth)
         cursor.append(center[1] + halfHeight)
-        cursor.append(0)
+        cursor.append(u0)
         cursor.append(1)
     }
 
