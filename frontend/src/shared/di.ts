@@ -1,6 +1,3 @@
-import {OLDGameRenderer} from "../logic/rendererOld/OLDGameRenderer";
-import {CanvasHandle} from "../logic/game/canvasHandle";
-
 interface DIObjectConfig {
     /**
      * singleton: object is created once and reused (default)

@@ -1,6 +1,8 @@
 import {SettlementTierString} from "../../../models/settlementTier";
 import {BuildingTypeString} from "../../../models/buildingType";
 import {ResourceTypeString} from "../../../models/resourceType";
+import {TerrainTypeString} from "../../../models/terrainType";
+import {VisibilityString} from "../../../models/visibility";
 
 export interface GameStateDTO {
     game: {
@@ -87,10 +89,10 @@ export interface TileDTO {
             q: number,
             r: number
         },
-        visibility: "UNKNOWN" | "DISCOVERED" | "VISIBLE"
+        visibility: VisibilityString
     },
     dataTier1: null | {
-        terrainType: string,
+        terrainType: TerrainTypeString,
         resourceType: string,
         owner: null | {
             countryId: string,

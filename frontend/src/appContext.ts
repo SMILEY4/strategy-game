@@ -162,6 +162,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.GameSessionStateRepository(),
             AppCtx.TileRepository(),
             AppCtx.GameRenderer(),
+            AppCtx.AudioService(),
         ),
     ),
 

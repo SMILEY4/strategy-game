@@ -2,6 +2,9 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {Tile} from "../../../../models/tile";
 import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 import {TileContainer} from "../../../../models/tileContainer";
+import {BorderBuilder} from "../../../../logic/game/borderBuilder";
+import {packBorder} from "./packBorder";
+import {TerrainType} from "../../../../models/terrainType";
 
 export namespace InstanceBaseDataBuilder {
 
@@ -10,9 +13,11 @@ export namespace InstanceBaseDataBuilder {
         ...MixedArrayBufferType.INT_VEC2,
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
-        // tilset index
+        // tileset index
         MixedArrayBufferType.INT,
         // visibility
+        MixedArrayBufferType.INT,
+        // packed water border mask
         MixedArrayBufferType.INT,
     ];
 
@@ -50,35 +55,20 @@ export namespace InstanceBaseDataBuilder {
             cursor.append(center[1]);
 
             // tileset index
-            cursor.append(toTerrainId(tile));
+            cursor.append(tile.terrainType ? tile.terrainType.renderId : 3);
 
             // visibility
-            cursor.append(toVisibilityId(tile));
+            cursor.append(tile.visibility.renderId);
 
-        }
-    }
+            // water border mask
+            const border = BorderBuilder.build(tile, tileContainer, false, (ta, tb) => {
+                const a = ta.terrainType;
+                const b = tb.terrainType;
+                return (!a && !b) ? false : a === TerrainType.WATER && b !== null && a !== b;
+            });
+            const borderPacked = packBorder(border);
+            cursor.append(borderPacked);
 
-    function toTerrainId(tile: Tile) {
-        switch (tile.terrainType) {
-            case "WATER":
-                return 0;
-            case "LAND":
-                return 3;
-            case "MOUNTAIN":
-                return 2;
-            default:
-                return 3;
-        }
-    }
-
-    function toVisibilityId(tile: Tile) {
-        switch (tile.visibility) {
-            case "UNKNOWN":
-                return 0;
-            case "DISCOVERED":
-                return 1;
-            case "VISIBLE":
-                return 2;
         }
     }
 

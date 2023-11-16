@@ -7,7 +7,8 @@ import {RenderEntity} from "./builders/entities/renderEntity";
 import {TilePosition} from "../../models/tilePosition";
 
 export interface RenderData {
-    game: {
+    meta: {
+        time: number,
         tileMouseOver: number[] | null,
         tileSelected: number[] | null
     }

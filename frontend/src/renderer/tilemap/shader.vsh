@@ -11,9 +11,9 @@ in int in_visibility;
 in vec3 in_cornerData;
 in int in_edgeDirection;
 in int in_borderMask;
+in int in_coastMask;
 in vec3 in_borderColor;
 in vec3 in_fillColor;
-
 
 out vec2 v_textureCoordinates;
 flat out ivec2 v_tilePosition;
@@ -23,6 +23,7 @@ flat out int v_visibility;
 out vec3 v_cornerData;
 flat out int v_edgeDirection;
 flat out int v_borderMask;
+flat out int v_coastMask;
 out vec3 v_borderColor;
 out vec3 v_fillColor;
 
@@ -34,6 +35,7 @@ void main() {
     v_visibility = in_visibility;
     v_cornerData = in_cornerData;
     v_edgeDirection = in_edgeDirection;
+    v_coastMask = in_coastMask;
     v_borderMask = in_borderMask;
     v_borderColor = in_borderColor;
     v_fillColor = in_fillColor;

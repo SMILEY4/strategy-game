@@ -30,11 +30,12 @@ export class TilemapRenderer implements RenderModule {
         data.entityMask.framebuffer.bindTexture(3);
 
         data.tilemap.program.use();
+        data.tilemap.program.setUniform("u_time", GLUniformType.FLOAT, data.meta.time);
         data.tilemap.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
         data.tilemap.program.setUniform("u_zoom", GLUniformType.FLOAT, camera.getZoom());
         data.tilemap.program.setUniform("u_screenSize", GLUniformType.VEC2, [camera.getWidth(), camera.getHeight()]);
-        data.tilemap.program.setUniform("u_selectedTile", GLUniformType.INT_VEC2, data.game.tileSelected ? data.game.tileSelected : TilemapRenderer.TILE_POS_NONE);
-        data.tilemap.program.setUniform("u_mouseOverTile", GLUniformType.INT_VEC2, data.game.tileMouseOver ? data.game.tileMouseOver : TilemapRenderer.TILE_POS_NONE);
+        data.tilemap.program.setUniform("u_selectedTile", GLUniformType.INT_VEC2, data.meta.tileSelected ? data.meta.tileSelected : TilemapRenderer.TILE_POS_NONE);
+        data.tilemap.program.setUniform("u_mouseOverTile", GLUniformType.INT_VEC2, data.meta.tileMouseOver ? data.meta.tileMouseOver : TilemapRenderer.TILE_POS_NONE);
         data.tilemap.program.setUniform("u_tileset", GLUniformType.SAMPLER_2D, data.tilemap.textures.tileset);
         data.tilemap.program.setUniform("u_texture", GLUniformType.SAMPLER_2D, data.tilemap.textures.texturePaper);
         data.tilemap.program.setUniform("u_noise", GLUniformType.SAMPLER_2D, data.tilemap.textures.textureClouds);

@@ -1,7 +1,7 @@
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
 import {TileContainer} from "../../../../models/tileContainer";
-import {bitSet} from "../../../../shared/utils";
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
+import {packBorder} from "./packBorder";
 
 export namespace InstanceOverlayDataBuilder {
 
@@ -62,8 +62,8 @@ export namespace InstanceOverlayDataBuilder {
             }
 
             // fill color
-            if (tile.owner?.country) {
-                const color = tile.owner.country.color;
+            if (tile.owner?.province) {
+                const color = tile.owner.province.color;
                 cursor.append(color.red / 255);
                 cursor.append(color.green / 255);
                 cursor.append(color.blue / 255);
@@ -74,17 +74,6 @@ export namespace InstanceOverlayDataBuilder {
             }
 
         }
-    }
-
-
-    function packBorder(data: boolean[]): number {
-        let packed = 0;
-        data.forEach((value, index) => {
-            if (value) {
-                packed = bitSet(packed, index);
-            }
-        });
-        return packed;
     }
 
 

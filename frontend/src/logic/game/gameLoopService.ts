@@ -5,6 +5,7 @@ import {GameSessionStateRepository} from "../../state/access/GameSessionStateRep
 import {TileRepository} from "../../state/access/TileRepository";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 import {GameRenderer} from "../../renderer/gameRenderer";
+import {AudioService, AudioType} from "../audio/audioService";
 
 export class GameLoopService {
 
@@ -14,6 +15,7 @@ export class GameLoopService {
     private readonly tileRepository: TileRepository;
     private readonly tilePicker: TilePicker;
     private readonly gameRenderer: GameRenderer;
+    private readonly audioService: AudioService;
 
 
     constructor(
@@ -23,6 +25,7 @@ export class GameLoopService {
         gameSessionRepository: GameSessionStateRepository,
         tileRepository: TileRepository,
         gameRenderer: GameRenderer,
+        audioService: AudioService
     ) {
         this.canvasHandle = canvasHandle;
         this.tilePicker = tilePicker;
@@ -30,6 +33,7 @@ export class GameLoopService {
         this.gameSessionRepository = gameSessionRepository;
         this.tileRepository = tileRepository;
         this.gameRenderer = gameRenderer;
+        this.audioService = audioService;
     }
 
     public initialize(canvas: HTMLCanvasElement) {
@@ -55,6 +59,7 @@ export class GameLoopService {
         if (this.tileRepository.getSelectedTile()?.id !== tile?.identifier) {
             this.tileRepository.setSelectedTile(tile?.identifier || null);
             if (tile) {
+                AudioType.CLICK_PRIMARY.play(this.audioService)
                 UseTileWindow.open(tile.identifier);
             }
         }

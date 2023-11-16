@@ -12,6 +12,10 @@ export class AudioType {
         this.id = id;
     }
 
+    public play(audioService: AudioService) {
+        audioService.play(this.id)
+    }
+
 }
 
 export class AudioService implements UIAudio.AudioProvider {

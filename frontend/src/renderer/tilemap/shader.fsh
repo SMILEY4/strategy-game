@@ -2,6 +2,11 @@
 precision mediump float;
 
 /*
+a counter starting at 0, incrementing each frame and wrapping at an arbitrary number
+*/
+uniform float u_time;
+
+/*
 The current size of the screen/canvas
 */
 uniform vec2 u_screenSize;
@@ -81,8 +86,14 @@ e.g. 0 = bottom-right, 1 = top-right, 2 = top, ...
 flat in int v_edgeDirection;
 
 /*
+information whether there is a coast (same as border) in a given direction - packed into a single integer
+first bit = direction "0", second bit = direction "1", ...
+*/
+flat in int v_coastMask;
+
+/*
 information whether there is a border in a given direction - packed into a single integer
-first bit = direction "0", second bit = direction "1"
+first bit = direction "0", second bit = direction "1", ...
 */
 flat in int v_borderMask;
 
@@ -141,6 +152,75 @@ bool checkBit(int value, int digit) {
     else if (digit == 5) { mask = 16; }
     else if (digit == 6) { mask = 32; }
     return (value & mask) > 0;
+}
+
+/*
+return information about the borders in the current direction
+x: whether there is a border in the previous direction
+y: whether there is a border in the current direction
+z: whether there is a border in the next direction
+*/
+vec3 borderMaskDirection(int mask, int edgeDirection) {
+    // get direction indices
+    int dirPrev = (edgeDirection-1) < 0 ? 5 : edgeDirection-1;
+    int dirCurr = edgeDirection;
+    int dirNext = int(mod(float(edgeDirection+1), 6.0));
+    // check if bit in mask is set
+    bool isPrev = checkBit(mask, dirPrev+1);
+    bool isCurr = checkBit(mask, dirCurr+1);
+    bool isNext = checkBit(mask, dirNext+1);
+    // as float values - either 0 or 1
+    return vec3((isPrev ? 1.0 : 0.0), (isCurr ? 1.0 : 0.0), (isNext ? 1.0 : 0.0));
+}
+
+/*
+Whether the current pixel is in the area of a border (of the previus, current and next border direction).
+Independent of whether there is an actual border according to a mask.
+*/
+vec3 borderMaskEdge(vec3 cornerData, float thickness) {
+    float maskCurr = 1.0 - step(thickness, cornerData.x);
+    float maskPrev = step(1.0 - thickness, cornerData.y);
+    float maskNext = step(1.0 - thickness, cornerData.z);
+    return vec3(maskPrev, maskCurr, maskNext);
+}
+
+/*
+Whether the current pixel is in the area of a border. All directions and masks combined.
+*/
+float borderMaskCombine(vec3 directionMask, vec3 edgeMask) {
+    vec3 borderValues = directionMask * edgeMask;
+    return min(1.0, borderValues.x + borderValues.y + borderValues.z);
+}
+
+vec3 borderMaskGradient(vec3 cornerData) {
+    float maskCurr = 1.0 - cornerData.x;
+    float maskPrev = cornerData.y;
+    float maskNext = cornerData.z;
+    return vec3(maskPrev, maskCurr, maskNext);
+}
+
+float borderMaskCombineGradient(vec3 directionMask, vec3 gradientEdgeMask) {
+    if (directionMask.x > 0.01 && directionMask.y < 0.01 && directionMask.z > 0.01) {
+        return max(gradientEdgeMask.x * directionMask.x, gradientEdgeMask.z * directionMask.z);
+    } else if (directionMask.y > 0.01) {
+        return gradientEdgeMask.y;
+    } else {
+        return gradientEdgeMask.x * directionMask.x + gradientEdgeMask.z * directionMask.z;
+    }
+}
+
+float borderEdge(vec3 cornerData, int edgeDirection, int mask, float thickness) {
+    vec3 maskDirection = borderMaskDirection(mask, edgeDirection);
+    vec3 maskEdge = borderMaskEdge(cornerData, thickness);
+    float maskCombined = borderMaskCombine(maskDirection, maskEdge);
+    return maskCombined;
+}
+
+float borderGradient(vec3 cornerData, int edgeDirection, int mask) {
+    vec3 maskDirection = borderMaskDirection(mask, edgeDirection);
+    vec3 maskEdge = borderMaskGradient(cornerData);
+    float maskCombined = borderMaskCombineGradient(maskDirection, maskEdge);
+    return maskCombined;
 }
 
 
@@ -211,9 +291,28 @@ vec2 tilesetTextureCoords(vec2 textureCoordinates, int index) {
     return vec2(u, v);
 }
 
+vec4 coastBorder() {
+    float thickness = 0.2;
+    float waveScale = 20.0;
+    float waveTimeScale = 0.0125;
+    float waveStrength = 0.15;
+    // masks
+    float border = borderGradient(v_cornerData, v_edgeDirection, v_coastMask);
+    float waves = (sin(border * waveScale - u_time * waveTimeScale) + 1.0) * 0.5;
+    waves = waves * border * waveStrength;
+    // color
+    return mix(vec4(0.0), vec4(1.0), waves);
+}
+
 vec4 baseColorTerrain() {
+    // color
     vec2 texCoords = tilesetTextureCoords(v_textureCoordinates, v_tilesetIndex);
-    return texture(u_tileset, texCoords);
+    vec4 color = texture(u_tileset, texCoords);
+    // apply coast color effect
+    vec4 coast = coastBorder();
+    color = vec4(color.rgb + coast.rgb, color.a);
+    // resulting terrain color
+    return color;
 }
 
 vec4 colorLayerTerrain(float textureBase) {
@@ -225,39 +324,12 @@ vec4 colorLayerTerrain(float textureBase) {
 //            OVERLAY LAYER          //
 // ==================================//
 
-vec3 borderMaskDirection(int mask, int edgeDirection) {
-    // get direction indices
-    int dirPrev = (edgeDirection-1) < 0 ? 5 : edgeDirection-1;
-    int dirCurr = edgeDirection;
-    int dirNext = int(mod(float(edgeDirection+1), 6.0));
-    // check if bit in mask is set
-    bool isPrev = checkBit(mask, dirPrev+1);
-    bool isCurr = checkBit(mask, dirCurr+1);
-    bool isNext = checkBit(mask, dirNext+1);
-    // as float values - either 0 or 1
-    return vec3((isPrev ? 1.0 : 0.0), (isCurr ? 1.0 : 0.0), (isNext ? 1.0 : 0.0));
-}
-
-vec3 borderMaskEdge(vec3 cornerData, float thickness) {
-    float maskCurr = 1.0 - step(thickness, cornerData.x);
-    float maskPrev = step(1.0 - thickness, cornerData.y);
-    float maskNext = step(1.0 - thickness, cornerData.z);
-    return vec3(maskPrev, maskCurr, maskNext);
-}
-
-float borderMaskCombine(vec3 directionMask, vec3 edgeMask) {
-    vec3 borderValues = directionMask * edgeMask;
-    return min(1.0, borderValues.x + borderValues.y + borderValues.z);
-}
-
 vec4 borderPrimary() {
-    float thickness = 0.2;
-    // masks
-    vec3 maskDirection = borderMaskDirection(v_borderMask, v_edgeDirection);
-    vec3 maskEdge = borderMaskEdge(v_cornerData, thickness);
-    float maskCombined = borderMaskCombine(maskDirection, maskEdge);
+    float thickness = 0.15;
+    // border
+    float border = borderEdge(v_cornerData, v_edgeDirection, v_borderMask, thickness);
     // color
-    return mix(vec4(0.0), vec4(v_borderColor, 1.0), maskCombined);
+    return mix(vec4(0.0), vec4(v_borderColor, 1.0), border);
 }
 
 vec4 fillColor(vec3 baseColor, float textureClouds) {

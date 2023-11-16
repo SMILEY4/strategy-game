@@ -56,7 +56,8 @@ export class RenderDataManager {
         const entityVertexBuffer = GLVertexBuffer.createEmpty(gl);
 
         this.renderData = {
-            game: {
+            meta: {
+                time: 0,
                 tileSelected: null,
                 tileMouseOver: null
             },
@@ -129,6 +130,13 @@ export class RenderDataManager {
                         {
                             buffer: tileInstanceBaseBuffer,
                             location: programTilemap.getInformation().attributes.find(a => a.name === "in_visibility")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                            divisor: 1,
+                        },
+                        {
+                            buffer: tileInstanceBaseBuffer,
+                            location: programTilemap.getInformation().attributes.find(a => a.name === "in_coastMask")!.location,
                             type: GLAttributeType.INT,
                             amountComponents: 1,
                             divisor: 1,
@@ -236,17 +244,18 @@ export class RenderDataManager {
     }
 
     public updateData() {
-        this.updateGameData();
+        this.updateMeta();
         this.updateEntities();
         this.updateTilemapInstances();
     }
 
-    private updateGameData() {
+    private updateMeta() {
         if(this.renderData) {
+            this.renderData.meta.time = (this.renderData.meta.time + 1) % 10000;
             const selectedTile = this.tileRepository.getSelectedTile();
-            this.renderData.game.tileSelected = selectedTile ? [selectedTile.q, selectedTile.r] : null
+            this.renderData.meta.tileSelected = selectedTile ? [selectedTile.q, selectedTile.r] : null
             const mouseOverTile = this.tileRepository.getHoverTile();
-            this.renderData.game.tileMouseOver = mouseOverTile ? [mouseOverTile.q, mouseOverTile.r] : null
+            this.renderData.meta.tileMouseOver = mouseOverTile ? [mouseOverTile.q, mouseOverTile.r] : null
         }
     }
 
