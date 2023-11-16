@@ -1,6 +1,87 @@
 #version 300 es
 precision mediump float;
 
+
+struct BaseTextureData {
+    float scalePaper;
+    float scaleClouds;
+
+    float strengthPaper;
+    float strengthClouds;
+
+    vec3 colorLight;
+    vec3 colorDark;
+
+};
+
+uniform BaseTextureData u_baseTextureData;
+
+
+struct TerrainTilesetData {
+    float totalTileCount;
+    float slotSize;
+    float gapSize;
+};
+
+uniform TerrainTilesetData u_terrainTilesetData;
+
+
+struct OceanWaveData {
+    float thickness;
+    float waveScale;
+    float waveTimeScale;
+    float waveStrength;
+};
+
+uniform OceanWaveData u_oceanWaveData;
+
+
+struct OverlayData {
+    float borderThickness;
+    float fillStrength;
+    float saturationShift;
+};
+
+uniform OverlayData u_overlayData;
+
+
+struct TileBorderData {
+    vec4 color;
+    float zoomThreshold;
+    float zoomMax;
+    float minThickness;
+    float maxThickness;
+};
+
+uniform TileBorderData u_tileBorderData;
+
+
+struct FoWData {
+    float strengthUnknown;
+    float strengthDiscovered;
+    float strengthVisible;
+};
+
+uniform FoWData u_foWData;
+
+
+struct SelectionData {
+    vec4 color;
+    float thickness;
+};
+
+uniform SelectionData u_selectionData;
+
+
+struct MouseOverData {
+    vec4 color;
+    float thickness;
+};
+
+uniform MouseOverData u_mouseOverData;
+
+
+
 /*
 a counter starting at 0, incrementing each frame and wrapping at an arbitrary number
 */
@@ -229,20 +310,16 @@ float borderGradient(vec3 cornerData, int edgeDirection, int mask) {
 // ==================================//
 
 float baseTextureClouds(vec2 offset) {
-    float scale = 200.0;
-    return texture(u_noise, (v_worldPosition + offset) / scale).x;
+    return texture(u_noise, (v_worldPosition + offset) / u_baseTextureData.scaleClouds).x;
 }
 
 float baseTexturePaper() {
-    float scale = 90.0;
-    return texture(u_texture, v_worldPosition / scale).x;
+    return texture(u_texture, v_worldPosition / u_baseTextureData.scalePaper).x;
 }
 
 float baseTexture(float basePaper, float baseClouds) {
-    float impactPaper = 1.0;
-    float impactClouds = 0.5;
-    float paper = mix(1.0, basePaper, impactPaper);
-    float clouds = mix(1.0, baseClouds, impactClouds);
+    float paper = mix(1.0, basePaper, u_baseTextureData.strengthPaper);
+    float clouds = mix(1.0, baseClouds, u_baseTextureData.strengthClouds);
     return paper * clouds;
 }
 
@@ -260,8 +337,8 @@ vec4 getEntityMask() {
 
 vec4 colorLayerPaper(float textureBase, float textureClouds) {
     // define tint color (in hsv)
-    vec3 tintColor0 = rgb2hsv(vec3(0.88, 0.73, 0.62));
-    vec3 tintColor1 = rgb2hsv(vec3(0.99, 0.75, 0.58));
+    vec3 tintColor0 = rgb2hsv(u_baseTextureData.colorLight);
+    vec3 tintColor1 = rgb2hsv(u_baseTextureData.colorDark);
     vec3 tintColor = mix(tintColor0, tintColor1, 1.0-textureClouds);
     // merge texture with tint
     vec3 colorHSV = vec3(tintColor.x, tintColor.y, textureBase);
@@ -275,9 +352,9 @@ vec4 colorLayerPaper(float textureBase, float textureClouds) {
 // ==================================//
 
 vec2 tilesetTextureCoords(vec2 textureCoordinates, int index) {
-    float totalTiles = 4.0;
-    float slotSize = 600.0;
-    float gapSize = 10.0;
+    float totalTiles = u_terrainTilesetData.totalTileCount;
+    float slotSize = u_terrainTilesetData.slotSize;
+    float gapSize = u_terrainTilesetData.gapSize;
     // calculate total with of tileset-strip
     float totalWidth = gapSize + (slotSize + gapSize) * totalTiles;
     // x position in px of left edge of tileset-slot
@@ -292,10 +369,10 @@ vec2 tilesetTextureCoords(vec2 textureCoordinates, int index) {
 }
 
 vec4 coastBorder() {
-    float thickness = 0.2;
-    float waveScale = 20.0;
-    float waveTimeScale = 0.0125;
-    float waveStrength = 0.15;
+    float thickness = u_oceanWaveData.thickness;
+    float waveScale = u_oceanWaveData.waveScale;
+    float waveTimeScale = u_oceanWaveData.waveTimeScale;
+    float waveStrength = u_oceanWaveData.waveStrength;
     // masks
     float border = borderGradient(v_cornerData, v_edgeDirection, v_coastMask);
     float waves = (sin(border * waveScale - u_time * waveTimeScale) + 1.0) * 0.5;
@@ -325,7 +402,7 @@ vec4 colorLayerTerrain(float textureBase) {
 // ==================================//
 
 vec4 borderPrimary() {
-    float thickness = 0.15;
+    float thickness = u_overlayData.borderThickness;
     // border
     float border = borderEdge(v_cornerData, v_edgeDirection, v_borderMask, thickness);
     // color
@@ -333,8 +410,8 @@ vec4 borderPrimary() {
 }
 
 vec4 fillColor(vec3 baseColor, float textureClouds) {
-    float fillIntensity = 0.6;
-    float saturationShift = 0.3;
+    float fillIntensity = u_overlayData.fillStrength;
+    float saturationShift = u_overlayData.saturationShift;
     if (baseColor.r + baseColor.g + baseColor.b > 0.01) {
         vec3 baseColorHsv = rgb2hsv(baseColor);
         vec3 colorHsv0 = vec3(baseColorHsv.x, clamp(baseColorHsv.y-saturationShift, 0.0, 1.0), baseColorHsv.z);
@@ -364,26 +441,24 @@ vec4 colorLayerOverlay(float textureBase, float textureClouds) {
 // ==================================//
 
 vec4 colorTileBorder(float zoom) {
-    float zoomThreshold = 3.5;
-    float zoomMax = 10.0;
-    float minThickness = 0.015;
-    float maxThickness = 0.025;
+    float zoomThreshold = u_tileBorderData.zoomThreshold;
+    float zoomMax = u_tileBorderData.zoomMax;
+    float minThickness = u_tileBorderData.minThickness;
+    float maxThickness = u_tileBorderData.maxThickness;
     if (zoom < zoomThreshold) {
         return vec4(0.0);
     } else {
         float zoomPerc = smoothstep(zoomThreshold, zoomMax, zoom);
         float thickness = zoomPerc * (maxThickness - minThickness) + minThickness;
         float value = step(v_cornerData.x, thickness);
-        return vec4(vec3(0.0), value * 0.6);
+        return vec4(u_tileBorderData.color.rgb, value * u_tileBorderData.color.a);
     }
 }
 
 vec4 colorSelectionBorder(ivec2 tilePos) {
     if (tilePos.x == u_selectedTile.x && tilePos.y == u_selectedTile.y) {
-        vec3 color = vec3(1.0, 1.0, 0.0);
-        float thickness = 0.15;
-        float value = step(v_cornerData.x, thickness);
-        return vec4(color, value * 0.75);
+        float value = step(v_cornerData.x, u_selectionData.thickness);
+        return vec4(u_selectionData.color.rgb, value * u_selectionData.color.a);
     } else {
         return vec4(0.0);
     }
@@ -391,10 +466,8 @@ vec4 colorSelectionBorder(ivec2 tilePos) {
 
 vec4 colorMouseOverBorder(ivec2 tilePos) {
     if (tilePos.x == u_mouseOverTile.x && tilePos.y == u_mouseOverTile.y) {
-        vec3 color = vec3(0.8, 0.8, 0.1);
-        float thickness = 0.08;
-        float value = step(v_cornerData.x, thickness);
-        return vec4(color, value * 0.75);
+        float value = step(v_cornerData.x, u_mouseOverData.thickness);
+        return vec4(u_mouseOverData.color.rgb, value * u_mouseOverData.color.a);
     } else {
         return vec4(0.0);
     }
@@ -402,13 +475,13 @@ vec4 colorMouseOverBorder(ivec2 tilePos) {
 
 vec4 applyFogOfWar(vec4 color) {
     if (v_visibility == 0) { // unknown
-        return vec4(color.rgb * 0.2, color.a);
+        return vec4(color.rgb * u_foWData.strengthUnknown, color.a);
     }
     if (v_visibility == 1) { // discovered
-        return vec4(color.rgb * 0.5, color.a);
+        return vec4(color.rgb * u_foWData.strengthDiscovered, color.a);
     }
     if (v_visibility == 2) { // visible
-        return color;
+        return vec4(color.rgb * u_foWData.strengthVisible, color.a);
     }
     return color;
 }
