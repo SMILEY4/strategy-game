@@ -3,6 +3,7 @@
 uniform mat3 u_viewProjection;
 
 in vec2 in_vertexPosition;
+in ivec2 in_tilePosition;
 in vec2 in_worldPosition;
 in vec2 in_textureCoordinates;
 in int in_tilesetIndex;
@@ -15,6 +16,7 @@ in vec3 in_fillColor;
 
 
 out vec2 v_textureCoordinates;
+flat out ivec2 v_tilePosition;
 out vec2 v_worldPosition;
 flat out int v_tilesetIndex;
 flat out int v_visibility;
@@ -26,6 +28,7 @@ out vec3 v_fillColor;
 
 void main() {
     v_textureCoordinates = in_textureCoordinates;
+    v_tilePosition = in_tilePosition;
     v_worldPosition = in_vertexPosition + in_worldPosition;
     v_tilesetIndex = in_tilesetIndex;
     v_visibility = in_visibility;

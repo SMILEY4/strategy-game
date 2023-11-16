@@ -2,9 +2,19 @@
 precision mediump float;
 
 /*
-The current size of the screen
+The current size of the screen/canvas
 */
 uniform vec2 u_screenSize;
+
+/*
+The currently selected tile position
+*/
+uniform ivec2 u_selectedTile;
+
+/*
+The current tile position under the cursor
+*/
+uniform ivec2 u_mouseOverTile;
 
 /*
 The texture for the tiles
@@ -32,7 +42,12 @@ The current zoom value of the camera
 uniform float u_zoom;
 
 /*
-The position in world space - before transformation for camera
+The position/index of the tile (q,r)
+*/
+flat in ivec2 v_tilePosition;
+
+/*
+The position in world space (x,y) - before transformation for camera
 */
 in vec2 v_worldPosition;
 
@@ -245,21 +260,6 @@ vec4 borderPrimary() {
     return mix(vec4(0.0), vec4(v_borderColor, 1.0), maskCombined);
 }
 
-vec4 borderTile(float zoom) {
-    float zoomThreshold = 3.5;
-    float zoomMax = 10.0;
-    float minThickness = 0.015;
-    float maxThickness = 0.025;
-    if (zoom < zoomThreshold) {
-        return vec4(0.0);
-    } else {
-        float zoomPerc = smoothstep(zoomThreshold, zoomMax, zoom);
-        float thickness = zoomPerc * (maxThickness - minThickness) + minThickness;
-        float value = step(v_cornerData.x, thickness);
-        return vec4(vec3(0.0), value * 0.6);
-    }
-}
-
 vec4 fillColor(vec3 baseColor, float textureClouds) {
     float fillIntensity = 0.6;
     float saturationShift = 0.3;
@@ -277,7 +277,6 @@ vec4 fillColor(vec3 baseColor, float textureClouds) {
 
 vec4 colorLayerOverlay(float textureBase, float textureClouds) {
     // get borders
-    vec4 tile = borderTile(u_zoom);
     vec4 primary = borderPrimary() * mix(1.0, textureBase, 0.3);
     // get fill
     vec4 fill = fillColor(v_fillColor, textureClouds);
@@ -285,13 +284,49 @@ vec4 colorLayerOverlay(float textureBase, float textureClouds) {
     vec4 color = vec4(0.0);
     color = mix(color, fill, fill.a);
     color = mix(color, primary, primary.a);
-    color = mix(color, tile, tile.a);
     return color;
 }
 
 // ==================================//
-//                MISC               //
+//               EFFECTS             //
 // ==================================//
+
+vec4 colorTileBorder(float zoom) {
+    float zoomThreshold = 3.5;
+    float zoomMax = 10.0;
+    float minThickness = 0.015;
+    float maxThickness = 0.025;
+    if (zoom < zoomThreshold) {
+        return vec4(0.0);
+    } else {
+        float zoomPerc = smoothstep(zoomThreshold, zoomMax, zoom);
+        float thickness = zoomPerc * (maxThickness - minThickness) + minThickness;
+        float value = step(v_cornerData.x, thickness);
+        return vec4(vec3(0.0), value * 0.6);
+    }
+}
+
+vec4 colorSelectionBorder(ivec2 tilePos) {
+    if (tilePos.x == u_selectedTile.x && tilePos.y == u_selectedTile.y) {
+        vec3 color = vec3(1.0, 1.0, 0.0);
+        float thickness = 0.15;
+        float value = step(v_cornerData.x, thickness);
+        return vec4(color, value * 0.75);
+    } else {
+        return vec4(0.0);
+    }
+}
+
+vec4 colorMouseOverBorder(ivec2 tilePos) {
+    if (tilePos.x == u_mouseOverTile.x && tilePos.y == u_mouseOverTile.y) {
+        vec3 color = vec3(0.8, 0.8, 0.1);
+        float thickness = 0.08;
+        float value = step(v_cornerData.x, thickness);
+        return vec4(color, value * 0.75);
+    } else {
+        return vec4(0.0);
+    }
+}
 
 vec4 applyFogOfWar(vec4 color) {
     if (v_visibility == 0) { // unknown
@@ -331,8 +366,16 @@ void main() {
     color = mix(color, layerTerrain, layerTerrain.a);
     color = mix(color, layerOverlay, layerOverlay.a);
 
+    // effects
+    vec4 effectTileBorder = colorTileBorder(u_zoom);
+    vec4 effectSelectionBorder = colorSelectionBorder(v_tilePosition);
+    vec4 effectMouseOverBorder = colorMouseOverBorder(v_tilePosition);
+
     // apply effects
     color = applyFogOfWar(color);
+    color = mix(color, effectSelectionBorder, effectSelectionBorder.a);
+    color = mix(color, effectMouseOverBorder, effectMouseOverBorder.a);
+    color = mix(color, effectTileBorder, effectTileBorder.a);
 
     // result
     outColor = vec4(color.rgb, 1.0);

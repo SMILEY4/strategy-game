@@ -4,8 +4,13 @@ import {GLProgram} from "../../shared/webgl/glProgram";
 import {GLTexture} from "../../shared/webgl/glTexture";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 import {RenderEntity} from "./builders/entities/renderEntity";
+import {TilePosition} from "../../models/tilePosition";
 
 export interface RenderData {
+    game: {
+        tileMouseOver: number[] | null,
+        tileSelected: number[] | null
+    }
     tilemap: {
         program: GLProgram,
         textures: {

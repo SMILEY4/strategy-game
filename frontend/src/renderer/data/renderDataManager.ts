@@ -56,6 +56,10 @@ export class RenderDataManager {
         const entityVertexBuffer = GLVertexBuffer.createEmpty(gl);
 
         this.renderData = {
+            game: {
+                tileSelected: null,
+                tileMouseOver: null
+            },
             tilemap: {
                 program: programTilemap,
                 textures: {
@@ -101,6 +105,13 @@ export class RenderDataManager {
                             amountComponents: 1,
                         },
                         //==== instance base data ====//
+                        {
+                            buffer: tileInstanceBaseBuffer,
+                            location: programTilemap.getInformation().attributes.find(a => a.name === "in_tilePosition")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
                         {
                             buffer: tileInstanceBaseBuffer,
                             location: programTilemap.getInformation().attributes.find(a => a.name === "in_worldPosition")!.location,
@@ -225,8 +236,18 @@ export class RenderDataManager {
     }
 
     public updateData() {
+        this.updateGameData();
         this.updateEntities();
         this.updateTilemapInstances();
+    }
+
+    private updateGameData() {
+        if(this.renderData) {
+            const selectedTile = this.tileRepository.getSelectedTile();
+            this.renderData.game.tileSelected = selectedTile ? [selectedTile.q, selectedTile.r] : null
+            const mouseOverTile = this.tileRepository.getHoverTile();
+            this.renderData.game.tileMouseOver = mouseOverTile ? [mouseOverTile.q, mouseOverTile.r] : null
+        }
     }
 
     private updateTilemapInstances() {

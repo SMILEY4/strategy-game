@@ -6,7 +6,9 @@ import {TileContainer} from "../../../../models/tileContainer";
 export namespace InstanceBaseDataBuilder {
 
     const PATTERN_VERTEX = [
-        // world position
+        // tile position (q,r)
+        ...MixedArrayBufferType.INT_VEC2,
+        // world position (x,y)
         ...MixedArrayBufferType.VEC2,
         // tilset index
         MixedArrayBufferType.INT,
@@ -38,6 +40,9 @@ export namespace InstanceBaseDataBuilder {
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
 
+            // tile position
+            cursor.append(tile.identifier.q);
+            cursor.append(tile.identifier.r);
 
             // world position
             const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.identifier.q, tile.identifier.r);
