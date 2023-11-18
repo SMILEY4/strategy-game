@@ -46,6 +46,8 @@ export class GLProgram implements GLDisposable {
             return [values.getLastBoundTextureUnit()];
         } else if (values instanceof GLFramebuffer) {
             return [values.getLastBoundTextureUnit()];
+        } else if(typeof values == "boolean") {
+            return values ? [1] : [0]
         } else {
             return [values];
         }

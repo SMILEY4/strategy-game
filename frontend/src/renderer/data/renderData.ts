@@ -11,6 +11,7 @@ export interface RenderData {
         time: number,
         tileMouseOver: number[] | null,
         tileSelected: number[] | null
+        grayscale: boolean,
     }
     tilemap: {
         program: GLProgram,

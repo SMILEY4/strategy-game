@@ -3,6 +3,7 @@ import {BuildingTypeString} from "../../../models/buildingType";
 import {ResourceTypeString} from "../../../models/resourceType";
 import {TerrainTypeString} from "../../../models/terrainType";
 import {VisibilityString} from "../../../models/visibility";
+import {TerrainResourceTypeString} from "../../../models/terrainResourceType";
 
 export interface GameStateDTO {
     game: {
@@ -93,7 +94,7 @@ export interface TileDTO {
     },
     dataTier1: null | {
         terrainType: TerrainTypeString,
-        resourceType: string,
+        resourceType: "NONE" | TerrainResourceTypeString,
         owner: null | {
             countryId: string,
             provinceId: string,

@@ -41,7 +41,7 @@ export class GLAttributeType {
     }
 }
 
-export type GLUniformValueType = number | number[] | Float32Array | GLTexture | GLFramebuffer;
+export type GLUniformValueType = boolean | number | number[] | Float32Array | GLTexture | GLFramebuffer;
 
 export class GLUniformType {
     public static FLOAT = new GLUniformType();

@@ -31,7 +31,7 @@ export class TilemapRenderer implements RenderModule {
 
         data.tilemap.program.use();
 
-        data.tilemap.program.setUniform("u_grayscaleMode", GLUniformType.BOOL, 1);
+        data.tilemap.program.setUniform("u_grayscaleMode", GLUniformType.BOOL, data.meta.grayscale);
 
         data.tilemap.program.setUniform("u_baseTextureData.scalePaper", GLUniformType.FLOAT, 90);
         data.tilemap.program.setUniform("u_baseTextureData.scaleClouds", GLUniformType.FLOAT, 200);
@@ -39,8 +39,8 @@ export class TilemapRenderer implements RenderModule {
         data.tilemap.program.setUniform("u_baseTextureData.strengthPaper", GLUniformType.FLOAT, 1);
         data.tilemap.program.setUniform("u_baseTextureData.strengthClouds", GLUniformType.FLOAT, 0.5);
 
-        data.tilemap.program.setUniform("u_baseTextureData.colorLight", GLUniformType.VEC3, [1, 1, 1]);
-        data.tilemap.program.setUniform("u_baseTextureData.colorDark", GLUniformType.VEC3, [0.9, 0.9, 0.9]);
+        data.tilemap.program.setUniform("u_baseTextureData.colorLight", GLUniformType.VEC3, [0.88, 0.75, 0.66]);
+        data.tilemap.program.setUniform("u_baseTextureData.colorDark", GLUniformType.VEC3, [0.99, 0.75, 0.58]);
 
         data.tilemap.program.setUniform("u_terrainTilesetData.totalTileCount", GLUniformType.FLOAT, 4);
         data.tilemap.program.setUniform("u_terrainTilesetData.slotSize", GLUniformType.FLOAT, 600);

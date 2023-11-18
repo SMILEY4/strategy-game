@@ -2,6 +2,7 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {TileContainer} from "../../../../models/tileContainer";
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {packBorder} from "./packBorder";
+import {MapMode} from "../../../../models/mapMode";
 
 export namespace InstanceOverlayDataBuilder {
 
@@ -18,9 +19,9 @@ export namespace InstanceOverlayDataBuilder {
     const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
 
 
-    export function build(tileContainer: TileContainer): [number, ArrayBuffer] {
+    export function build(tileContainer: TileContainer, mapMode: MapMode): [number, ArrayBuffer] {
         const [buffer, cursor] = createMixedArray(tileContainer.getTileCount());
-        appendTiles(cursor, tileContainer);
+        appendTiles(cursor, tileContainer, mapMode);
         return [tileContainer.getTileCount(), buffer.getRawBuffer()!];
     }
 
@@ -35,44 +36,21 @@ export namespace InstanceOverlayDataBuilder {
     }
 
 
-    function appendTiles(cursor: MixedArrayBufferCursor, tileContainer: TileContainer) {
+    function appendTiles(cursor: MixedArrayBufferCursor, tileContainer: TileContainer, mapMode: MapMode) {
         const tiles = tileContainer.getTiles();
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
 
             // border mask
-            const border = BorderBuilder.build(tile, tileContainer, false, (ta, tb) => {
-                const a = ta.owner?.province.id;
-                const b = tb.owner?.province.id;
-                return (!a && !b) ? false : !!a && a !== b;
-            });
+            const border = BorderBuilder.build(tile, tileContainer, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
             const borderPacked = packBorder(border);
             cursor.append(borderPacked);
 
             // border color
-            if (tile.owner?.province) {
-                const color = tile.owner.province.color;
-                cursor.append(color.red / 255);
-                cursor.append(color.green / 255);
-                cursor.append(color.blue / 255);
-            } else {
-                cursor.append(0);
-                cursor.append(0);
-                cursor.append(0);
-            }
+            cursor.append(mapMode.renderData.borderColor(tile))
 
             // fill color
-            if (tile.owner?.province) {
-                const color = tile.owner.province.color;
-                cursor.append(color.red / 255);
-                cursor.append(color.green / 255);
-                cursor.append(color.blue / 255);
-            } else {
-                cursor.append(0);
-                cursor.append(0);
-                cursor.append(0);
-            }
-
+            cursor.append(mapMode.renderData.fillColor(tile))
         }
     }
 

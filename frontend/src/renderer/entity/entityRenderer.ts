@@ -25,7 +25,7 @@ export class EntityRenderer implements RenderModule {
         data.entities.textures.tileset.bind(0);
 
         data.entities.program.use();
-        data.entities.program.setUniform("u_grayscaleMode", GLUniformType.BOOL, 1);
+        data.entities.program.setUniform("u_grayscaleMode", GLUniformType.BOOL, data.meta.grayscale);
         data.entities.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
         data.entities.program.setUniform("u_tileset", GLUniformType.SAMPLER_2D, data.entities.textures.tileset);
 

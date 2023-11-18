@@ -80,6 +80,10 @@ function BaseInformation(props: UseTileWindow.Data): ReactElement {
                 name={"Terrain"}
                 value={props.tile.terrainType?.displayString}
             />
+            <KeyTextValuePair
+                name={"Resource"}
+                value={props.tile.resourceType?.displayString}
+            />
             {(props.tile.owner && props.tile.owner.city !== null) && (
                 <KeyValuePair name={"Owned By"}>
                     <HBox gap_xs left>

@@ -18,21 +18,31 @@ import {TileRepository} from "../../state/access/TileRepository";
 import {RenderEntityCollector} from "./builders/entities/renderEntityCollector";
 import {EntityMeshBuilder} from "./builders/entities/entityMeshBuilder";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
+import {MapModeRepository} from "../../state/access/MapModeRepository";
+import {MapMode} from "../../models/mapMode";
 
 
 export class RenderDataManager {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly tileRepository: TileRepository;
+    private readonly mapModeRepository: MapModeRepository;
     private readonly entityCollector: RenderEntityCollector;
 
     private renderData: RenderData | null = null;
 
-    constructor(canvasHandle: CanvasHandle, tileRepository: TileRepository, entityCollector: RenderEntityCollector) {
+    constructor(
+        canvasHandle: CanvasHandle,
+        tileRepository: TileRepository,
+        mapModeRepository: MapModeRepository,
+        entityCollector: RenderEntityCollector,
+    ) {
         this.canvasHandle = canvasHandle;
         this.tileRepository = tileRepository;
+        this.mapModeRepository = mapModeRepository;
         this.entityCollector = entityCollector;
     }
+
 
     public getData(): RenderData {
         if (this.renderData) {
@@ -57,9 +67,10 @@ export class RenderDataManager {
 
         this.renderData = {
             meta: {
+                grayscale: false,
                 time: 0,
                 tileSelected: null,
-                tileMouseOver: null
+                tileMouseOver: null,
             },
             tilemap: {
                 program: programTilemap,
@@ -218,7 +229,7 @@ export class RenderDataManager {
                     ],
                     undefined,
                 ),
-            }
+            },
         };
     }
 
@@ -236,40 +247,42 @@ export class RenderDataManager {
             this.renderData.entities.textures.tileset.dispose();
             this.renderData.entities.vertexBuffer.dispose();
             this.renderData.entities.vertexArray.dispose();
-            this.renderData.entityMask.program.dispose()
-            this.renderData.entityMask.textures.mask.dispose()
-            this.renderData.entityMask.framebuffer.dispose()
+            this.renderData.entityMask.program.dispose();
+            this.renderData.entityMask.textures.mask.dispose();
+            this.renderData.entityMask.framebuffer.dispose();
             this.renderData = null;
         }
     }
 
     public updateData() {
-        this.updateMeta();
-        this.updateEntities();
-        this.updateTilemapInstances();
+        const mapMode = this.mapModeRepository.getMapMode();
+        this.updateMeta(mapMode);
+        this.updateEntities(mapMode);
+        this.updateTilemapInstances(mapMode);
     }
 
-    private updateMeta() {
-        if(this.renderData) {
+    private updateMeta(mapMode: MapMode) {
+        if (this.renderData) {
+            this.renderData.meta.grayscale = mapMode.renderData.grayscale
             this.renderData.meta.time = (this.renderData.meta.time + 1) % 10000;
             const selectedTile = this.tileRepository.getSelectedTile();
-            this.renderData.meta.tileSelected = selectedTile ? [selectedTile.q, selectedTile.r] : null
+            this.renderData.meta.tileSelected = selectedTile ? [selectedTile.q, selectedTile.r] : null;
             const mouseOverTile = this.tileRepository.getHoverTile();
-            this.renderData.meta.tileMouseOver = mouseOverTile ? [mouseOverTile.q, mouseOverTile.r] : null
+            this.renderData.meta.tileMouseOver = mouseOverTile ? [mouseOverTile.q, mouseOverTile.r] : null;
         }
     }
 
-    private updateTilemapInstances() {
+    private updateTilemapInstances(mapMode: MapMode) {
         if (this.renderData) {
             const [count, baseDataArray] = InstanceBaseDataBuilder.build(this.tileRepository.getTileContainer());
-            const [_, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileRepository.getTileContainer());
+            const [_, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileRepository.getTileContainer(), mapMode);
             this.renderData.tilemap.instances.instanceCount = count;
             this.renderData.tilemap.instances.instanceBaseBuffer.setData(baseDataArray, true);
             this.renderData.tilemap.instances.instanceOverlayBuffer.setData(overlayDataArray, true);
         }
     }
 
-    private updateEntities() {
+    private updateEntities(mapMode: MapMode) {
         if (this.renderData) {
             const entities = this.entityCollector.collect();
             const [count, vertices] = EntityMeshBuilder.build(entities);
