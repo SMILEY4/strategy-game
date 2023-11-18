@@ -38,7 +38,6 @@ export class EntityMaskRenderer implements RenderModule {
         data.entityMask.vertexArray.unbind();
 
         data.entityMask.framebuffer.unbind()
-
     }
 
 

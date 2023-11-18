@@ -81,6 +81,7 @@ struct MouseOverData {
 uniform MouseOverData u_mouseOverData;
 
 
+uniform bool u_grayscaleMode;
 
 /*
 a counter starting at 0, incrementing each frame and wrapping at an arbitrary number
@@ -197,6 +198,10 @@ out vec4 outColor;
 // ==================================//
 //          UTILITY FUNCTIONS        //
 // ==================================//
+
+vec4 grayscale(vec4 color) {
+    return vec4(vec3(color.r+color.g+color.b) / 3.0, color.a);
+}
 
 /*
 convert the given rgb-color into hsv
@@ -328,7 +333,8 @@ float baseTexture(float basePaper, float baseClouds) {
 // ==================================//
 
 vec4 getEntityMask() {
-    return vec4(vec3(1.0), texture(u_entityMask, gl_FragCoord.xy / u_screenSize).g);
+    float mask = texture(u_entityMask, gl_FragCoord.xy / u_screenSize).g;
+    return vec4(vec3(1.0), mask);
 }
 
 // ==================================//
@@ -501,14 +507,22 @@ void main() {
     // entity mask
     vec4 entityMask = getEntityMask();
 
-    // layers
+    // base layers
     vec4 layerPaper  = colorLayerPaper(textureBase, textureClouds0);
     vec4 layerTerrain = colorLayerTerrain(textureBase) * entityMask;
-    vec4 layerOverlay = colorLayerOverlay(textureBase, textureClouds1);
 
-    // combine layers
-    vec4 color = layerPaper;
+    // combine base layers
+    vec4 color = vec4(0.0);
+    color = mix(color, layerPaper, layerPaper.a);
     color = mix(color, layerTerrain, layerTerrain.a);
+
+    // grayscale
+    if(u_grayscaleMode) {
+        color = grayscale(color);
+    }
+
+    // combine overlay-layer
+    vec4 layerOverlay = colorLayerOverlay(textureBase, textureClouds1);
     color = mix(color, layerOverlay, layerOverlay.a);
 
     // effects

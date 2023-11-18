@@ -19,6 +19,7 @@ export class GLRenderer {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        this.gl.blendEquation(this.gl.FUNC_ADD)
         GLError.check(this.gl, "[gl-setup]", "preparing current frame");
     }
 
