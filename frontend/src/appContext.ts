@@ -187,6 +187,7 @@ export const AppCtx: AppCtxDef = {
         () => new RenderDataManager(
             AppCtx.CanvasHandle(),
             AppCtx.TileRepository(),
+            AppCtx.RouteRepository(),
             AppCtx.MapModeRepository(),
             AppCtx.RenderEntityCollector(),
         )

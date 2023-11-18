@@ -8,6 +8,7 @@ import {EntityRenderer} from "./entity/entityRenderer";
 import {RenderDataManager} from "./data/renderDataManager";
 import {EntityMaskRenderer} from "./entitymask/entityMaskRenderer";
 import {LabelRenderer} from "./labels/labelRenderer";
+import {RoutesRenderer} from "./routes/routesRenderer";
 
 export class GameRenderer {
 
@@ -23,6 +24,7 @@ export class GameRenderer {
         this.cameraRepository = cameraRepository;
         this.renderDataManager = renderDataManager;
         this.modules = [
+            new RoutesRenderer(canvasHandle),
             new EntityMaskRenderer(canvasHandle),
             new TilemapRenderer(canvasHandle),
             new EntityRenderer(canvasHandle),

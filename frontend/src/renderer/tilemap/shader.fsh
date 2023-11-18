@@ -124,6 +124,11 @@ The entity mask texture
 uniform sampler2D u_entityMask;
 
 /*
+The prepared roads layer
+*/
+uniform sampler2D u_routes;
+
+/*
 The current zoom value of the camera
 */
 uniform float u_zoom;
@@ -337,6 +342,15 @@ vec4 getEntityMask() {
     return vec4(vec3(1.0), mask);
 }
 
+
+// ==================================//
+//               ROUTES              //
+// ==================================//
+
+vec4 getRoutes() {
+    return texture(u_routes, gl_FragCoord.xy / u_screenSize);
+}
+
 // ==================================//
 //            PAPER LAYER            //
 // ==================================//
@@ -402,6 +416,16 @@ vec4 colorLayerTerrain(float textureBase) {
     vec4 baseColor = baseColorTerrain();
     return vec4(baseColor.rgb * textureBase, baseColor.a);
 }
+
+// ==================================//
+//             ROUTE LAYER           //
+// ==================================//
+
+vec4 colorLayerRoutes() {
+    vec4 routes = getRoutes();
+    return vec4(u_baseTextureData.colorDark*0.3, routes.a);
+}
+
 
 // ==================================//
 //            OVERLAY LAYER          //
@@ -510,14 +534,16 @@ void main() {
     // base layers
     vec4 layerPaper  = colorLayerPaper(textureBase, textureClouds0);
     vec4 layerTerrain = colorLayerTerrain(textureBase) * entityMask;
+    vec4 layerRoutes = colorLayerRoutes() * entityMask;
 
     // combine base layers
     vec4 color = vec4(0.0);
     color = mix(color, layerPaper, layerPaper.a);
     color = mix(color, layerTerrain, layerTerrain.a);
+    color = mix(color, layerRoutes, layerRoutes.a);
 
     // grayscale
-    if(u_grayscaleMode) {
+    if (u_grayscaleMode) {
         color = grayscale(color);
     }
 

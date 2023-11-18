@@ -1,6 +1,5 @@
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
 import {RenderEntity} from "./renderEntity";
-import {Camera} from "../../../../shared/webgl/camera";
 import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 
 export namespace EntityMeshBuilder {

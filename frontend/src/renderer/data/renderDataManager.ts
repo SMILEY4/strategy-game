@@ -10,6 +10,8 @@ import SHADER_ENTITIES_VERT from "./../entity/shader.vsh?raw";
 import SHADER_ENTITIES_FRAG from "./../entity/shader.fsh?raw";
 import SHADER_ENTITY_MASK_VERT from "./../entitymask/shader.vsh?raw";
 import SHADER_ENTITY_MASK_FRAG from "./../entitymask/shader.fsh?raw";
+import SHADER_ROUTES_VERT from "./../routes/shader.vsh?raw";
+import SHADER_ROUTES_FRAG from "./../routes/shader.fsh?raw";
 import {GLAttributeType} from "../../shared/webgl/glTypes";
 import {BaseMeshBuilder} from "./builders/tilemap/baseMeshBuilder";
 import {InstanceBaseDataBuilder} from "./builders/tilemap/instanceBaseDataBuilder";
@@ -20,12 +22,15 @@ import {EntityMeshBuilder} from "./builders/entities/entityMeshBuilder";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 import {MapModeRepository} from "../../state/access/MapModeRepository";
 import {MapMode} from "../../models/mapMode";
+import {RoutesMeshBuilder} from "./builders/routes/routesMeshBuilder";
+import {RouteRepository} from "../../state/access/RouteRepository";
 
 
 export class RenderDataManager {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly tileRepository: TileRepository;
+    private readonly routesRepository: RouteRepository;
     private readonly mapModeRepository: MapModeRepository;
     private readonly entityCollector: RenderEntityCollector;
 
@@ -34,11 +39,13 @@ export class RenderDataManager {
     constructor(
         canvasHandle: CanvasHandle,
         tileRepository: TileRepository,
+        routesRepository: RouteRepository,
         mapModeRepository: MapModeRepository,
         entityCollector: RenderEntityCollector,
     ) {
         this.canvasHandle = canvasHandle;
         this.tileRepository = tileRepository;
+        this.routesRepository = routesRepository;
         this.mapModeRepository = mapModeRepository;
         this.entityCollector = entityCollector;
     }
@@ -58,12 +65,14 @@ export class RenderDataManager {
         const programTilemap = GLProgram.create(gl, SHADER_TILEMAP_VERT, SHADER_TILEMAP_FRAG);
         const programEntities = GLProgram.create(gl, SHADER_ENTITIES_VERT, SHADER_ENTITIES_FRAG);
         const programEntityMask = GLProgram.create(gl, SHADER_ENTITY_MASK_VERT, SHADER_ENTITY_MASK_FRAG);
+        const programRoutes = GLProgram.create(gl, SHADER_ROUTES_VERT, SHADER_ROUTES_FRAG);
 
         const tileMesh = BaseMeshBuilder.build();
         const tileMeshBuffer = GLVertexBuffer.create(gl, tileMesh[1]);
         const tileInstanceBaseBuffer = GLVertexBuffer.createEmpty(gl);
         const tileInstanceOverlayBuffer = GLVertexBuffer.createEmpty(gl);
         const entityVertexBuffer = GLVertexBuffer.createEmpty(gl);
+        const routesVertexBuffer = GLVertexBuffer.createEmpty(gl);
 
         this.renderData = {
             meta: {
@@ -230,6 +239,31 @@ export class RenderDataManager {
                     undefined,
                 ),
             },
+            routes: {
+                framebuffer: GLFramebuffer.create(gl, 1, 1),
+                texture: GLTexture.createFromPath(gl, "/route2.png", {filterMin: GLTextureMinFilter.NEAREST}),
+                program: programRoutes,
+                vertexCount: 0,
+                vertexBuffer: routesVertexBuffer,
+                vertexArray: GLVertexArray.create(
+                    gl,
+                    [
+                        {
+                            buffer: routesVertexBuffer,
+                            location: programRoutes.getInformation().attributes.find(a => a.name === "in_vertexPosition")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            buffer: routesVertexBuffer,
+                            location: programRoutes.getInformation().attributes.find(a => a.name === "in_textureCoordinates")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                    ],
+                    undefined,
+                ),
+            },
         };
     }
 
@@ -257,13 +291,14 @@ export class RenderDataManager {
     public updateData() {
         const mapMode = this.mapModeRepository.getMapMode();
         this.updateMeta(mapMode);
-        this.updateEntities(mapMode);
+        this.updateEntities();
         this.updateTilemapInstances(mapMode);
+        this.updateRoutes();
     }
 
     private updateMeta(mapMode: MapMode) {
         if (this.renderData) {
-            this.renderData.meta.grayscale = mapMode.renderData.grayscale
+            this.renderData.meta.grayscale = mapMode.renderData.grayscale;
             this.renderData.meta.time = (this.renderData.meta.time + 1) % 10000;
             const selectedTile = this.tileRepository.getSelectedTile();
             this.renderData.meta.tileSelected = selectedTile ? [selectedTile.q, selectedTile.r] : null;
@@ -282,13 +317,22 @@ export class RenderDataManager {
         }
     }
 
-    private updateEntities(mapMode: MapMode) {
+    private updateEntities() {
         if (this.renderData) {
             const entities = this.entityCollector.collect();
             const [count, vertices] = EntityMeshBuilder.build(entities);
             this.renderData.entities.items = entities;
             this.renderData.entities.vertexCount = count;
             this.renderData.entities.vertexBuffer.setData(vertices, true);
+        }
+    }
+
+
+    private updateRoutes() {
+        if (this.renderData) {
+            const [count, vertices] = RoutesMeshBuilder.build(this.routesRepository.getRoutes())
+            this.renderData.routes.vertexCount = count;
+            this.renderData.routes.vertexBuffer.setData(vertices, true)
         }
     }
 

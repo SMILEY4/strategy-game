@@ -28,6 +28,7 @@ export class TilemapRenderer implements RenderModule {
         data.tilemap.textures.texturePaper.bind(1);
         data.tilemap.textures.textureClouds.bind(2);
         data.entityMask.framebuffer.bindTexture(3);
+        data.routes.framebuffer.bindTexture(4);
 
         data.tilemap.program.use();
 
@@ -84,6 +85,7 @@ export class TilemapRenderer implements RenderModule {
         data.tilemap.program.setUniform("u_texture", GLUniformType.SAMPLER_2D, data.tilemap.textures.texturePaper);
         data.tilemap.program.setUniform("u_noise", GLUniformType.SAMPLER_2D, data.tilemap.textures.textureClouds);
         data.tilemap.program.setUniform("u_entityMask", GLUniformType.SAMPLER_2D, data.entityMask.framebuffer);
+        data.tilemap.program.setUniform("u_routes", GLUniformType.SAMPLER_2D, data.routes.framebuffer);
 
         data.tilemap.vertexArray.bind();
         this.renderer.drawInstanced(data.tilemap.mesh.vertexCount, data.tilemap.instances.instanceCount);
