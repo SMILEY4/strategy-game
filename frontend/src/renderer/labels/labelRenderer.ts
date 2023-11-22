@@ -15,7 +15,7 @@ export class LabelRenderer implements RenderModule {
     private readonly tileRepository: TileRepository;
 
     private containerElement: HTMLElement | null = null;
-    private lastCameraHash = -99999;
+    private lastSceneHash = -99999;
 
     constructor(tileRepository: TileRepository) {
         this.tileRepository = tileRepository;
@@ -31,9 +31,9 @@ export class LabelRenderer implements RenderModule {
 
 
     public render(camera: Camera, data: RenderData): void {
-        const currentCameraHash = this.cameraHash(camera);
-        if (this.containerElement && currentCameraHash !== this.lastCameraHash) {
-            this.lastCameraHash = currentCameraHash;
+        const currentSceneHash = this.sceneHash(camera, data);
+        if (this.containerElement && currentSceneHash !== this.lastSceneHash) {
+            this.lastSceneHash = currentSceneHash;
 
             const canvasSize = this.getCanvasSize();
 
@@ -67,8 +67,8 @@ export class LabelRenderer implements RenderModule {
         }
     }
 
-    private cameraHash(camera: Camera): number {
-        return camera.getWidth() + camera.getHeight() + camera.getX() + camera.getY() + camera.getZoom();
+    private sceneHash(camera: Camera, data: RenderData): number {
+        return camera.getWidth() + camera.getHeight() + camera.getX() + camera.getY() + camera.getZoom() + data.meta.mapMode.id;
     }
 
     private getCanvasSize(): [number, number] {
