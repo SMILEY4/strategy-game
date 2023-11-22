@@ -241,7 +241,7 @@ export class RenderDataManager {
             },
             routes: {
                 framebuffer: GLFramebuffer.create(gl, 1, 1),
-                texture: GLTexture.createFromPath(gl, "/route2.png", {filterMin: GLTextureMinFilter.NEAREST}),
+                texture: GLTexture.createFromPath(gl, "/route3.png", {filterMin: GLTextureMinFilter.NEAREST}),
                 program: programRoutes,
                 vertexCount: 0,
                 vertexBuffer: routesVertexBuffer,

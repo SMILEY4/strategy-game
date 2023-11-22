@@ -20,5 +20,5 @@ out vec4 outColor;
 
 void main() {
     vec4 color = texture(u_texture, v_textureCoordinates);
-    outColor = vec4(vec3(1.0), color);
+    outColor = vec4(vec3(1.0), color.a);
 }

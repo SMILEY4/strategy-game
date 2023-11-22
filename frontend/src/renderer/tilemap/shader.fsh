@@ -423,7 +423,7 @@ vec4 colorLayerTerrain(float textureBase) {
 
 vec4 colorLayerRoutes() {
     vec4 routes = getRoutes();
-    return vec4(u_baseTextureData.colorDark*0.3, routes.a);
+    return vec4(u_baseTextureData.colorDark*0.2, routes.a);
 }
 
 

@@ -8,7 +8,7 @@ import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 
 export namespace RoutesMeshBuilder {
 
-    const THICKNESS = 2.5;
+    const THICKNESS = 1.6;
 
     const PATTERN_VERTEX = [
         // world position
@@ -20,7 +20,6 @@ export namespace RoutesMeshBuilder {
     export function build(routes: Route[]): [number, ArrayBuffer] {
 
         const lines = toLines(routes);
-        console.log(lines)
 
         const [triangleCount, _, lineMeshes] = buildLineMeshes(lines);
 

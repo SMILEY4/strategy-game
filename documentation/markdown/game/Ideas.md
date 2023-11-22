@@ -1374,6 +1374,9 @@ Process:
 - new settlements starts with x pop
 - multiple factors determine growth-factor
   - food-availability
+    - general bonus
+    - if more food => farm-villages shrink, cities grow
+    - if less food => farm-villages grow, cities shrink
   - availability of resources
     - free farmland, mines
     - more buildings -> more work -> more growth 

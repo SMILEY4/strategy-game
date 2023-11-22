@@ -4,6 +4,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 
 class ProvinceEntity(
     val gameId: String,
@@ -11,6 +12,7 @@ class ProvinceEntity(
     val cityIds: List<String>,
     val provinceCityId: String,
     val resources: List<ResourceStackEntity>,
+    val color: ColorEntity,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -22,6 +24,7 @@ class ProvinceEntity(
             cityIds = serviceModel.cityIds.toList(),
             provinceCityId = serviceModel.provinceCapitalCityId,
             resources = serviceModel.resourcesProducedCurrTurn.toStacks().map { ResourceStackEntity.of(it) },
+            color = ColorEntity.of(serviceModel.color),
         )
 
     }
@@ -30,6 +33,7 @@ class ProvinceEntity(
         provinceId = this.getKeyOrThrow(),
         countryId = this.countryId,
         cityIds = this.cityIds.toMutableList(),
+        color = this.color.toRGBColor(),
         provinceCapitalCityId = this.provinceCityId,
         resourcesProducedPrevTurn = ResourceCollection.basic(this.resources.map { it.asServiceModel() }),
         resourcesProducedCurrTurn = ResourceCollection.basic(),
