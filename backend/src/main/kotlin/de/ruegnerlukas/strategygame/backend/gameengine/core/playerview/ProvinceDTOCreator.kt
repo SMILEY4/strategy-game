@@ -1,7 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
-import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.ProvinceDTO
@@ -20,7 +19,7 @@ class ProvinceDTOCreator(private val countryId: String) {
                 id = province.provinceId,
                 name = province.provinceId, // todo: store proper name
                 countryId = province.countryId,
-                color = RGBColor.random(), // todo: store proper color
+                color = province.color,
                 cityIds = province.cityIds,
                 provinceCapitalCityId = province.provinceCapitalCityId,
             ),

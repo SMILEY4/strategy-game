@@ -1,6 +1,6 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
-import "./canvas.css";
 import {AppCtx} from "../../../../appContext";
+import "./canvas.css";
 
 
 export function Canvas() {
@@ -129,6 +129,7 @@ export function Canvas() {
             onMouseLeave={mouseLeave}
         >
             <canvas ref={canvasRef}/>
+            <div id="game-canvas-overlay"/>
         </div>
     );
 }

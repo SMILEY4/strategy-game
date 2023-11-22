@@ -1,5 +1,5 @@
-import {mat3} from "../renderer/common/mat3";
-import {Camera} from "../renderer/common/camera";
+import {mat3} from "../../shared/webgl/mat3";
+import {Camera} from "../../shared/webgl/camera";
 import {Tile} from "../../models/tile";
 import {CanvasHandle} from "./canvasHandle";
 import {TilemapUtils} from "./tilemapUtils";

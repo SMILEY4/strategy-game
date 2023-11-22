@@ -1,52 +1,57 @@
-import {GameRenderer} from "../renderer/gameRenderer";
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "./canvasHandle";
 import {CameraRepository} from "../../state/access/CameraRepository";
 import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {TileRepository} from "../../state/access/TileRepository";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
+import {GameRenderer} from "../../renderer/gameRenderer";
+import {AudioService, AudioType} from "../audio/audioService";
 
 export class GameLoopService {
 
     private readonly canvasHandle: CanvasHandle;
-    private readonly renderer: GameRenderer;
     private readonly cameraRepository: CameraRepository;
     private readonly gameSessionRepository: GameSessionStateRepository;
     private readonly tileRepository: TileRepository;
     private readonly tilePicker: TilePicker;
+    private readonly gameRenderer: GameRenderer;
+    private readonly audioService: AudioService;
 
-    constructor(canvasHandle: CanvasHandle,
-                renderer: GameRenderer,
-                tilePicker: TilePicker,
-                cameraRepository: CameraRepository,
-                gameSessionRepository: GameSessionStateRepository,
-                tileRepository: TileRepository) {
+
+    constructor(
+        canvasHandle: CanvasHandle,
+        tilePicker: TilePicker,
+        cameraRepository: CameraRepository,
+        gameSessionRepository: GameSessionStateRepository,
+        tileRepository: TileRepository,
+        gameRenderer: GameRenderer,
+        audioService: AudioService
+    ) {
         this.canvasHandle = canvasHandle;
-        this.renderer = renderer;
         this.tilePicker = tilePicker;
         this.cameraRepository = cameraRepository;
         this.gameSessionRepository = gameSessionRepository;
         this.tileRepository = tileRepository;
+        this.gameRenderer = gameRenderer;
+        this.audioService = audioService;
     }
 
     public initialize(canvas: HTMLCanvasElement) {
         this.canvasHandle.set(canvas);
-        this.renderer.initialize();
-        this.renderer.updateWorld();
+        this.gameRenderer.initialize();
     }
 
 
     public onGameStateUpdate() {
-        this.renderer.updateWorld();
         this.gameSessionRepository.setGameTurnState("playing");
     }
 
     public update() {
-        this.renderer.render();
+        this.gameRenderer.render();
     }
 
     public dispose() {
-        this.renderer.dispose();
+        this.gameRenderer.dispose();
     }
 
     public mouseClick(x: number, y: number) {
@@ -54,6 +59,7 @@ export class GameLoopService {
         if (this.tileRepository.getSelectedTile()?.id !== tile?.identifier) {
             this.tileRepository.setSelectedTile(tile?.identifier || null);
             if (tile) {
+                AudioType.CLICK_PRIMARY.play(this.audioService)
                 UseTileWindow.open(tile.identifier);
             }
         }

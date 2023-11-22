@@ -1,6 +1,10 @@
 import {ProvinceIdentifier} from "./province";
 import {CityIdentifier} from "./city";
 import {CountryIdentifier} from "./country";
+import {TerrainType} from "./terrainType";
+import {Visibility} from "./visibility";
+import {ResourceType} from "./resourceType";
+import {TerrainResourceType, TerrainResourceTypeString} from "./terrainResourceType";
 
 export interface TileIdentifier {
     id: string,
@@ -10,8 +14,9 @@ export interface TileIdentifier {
 
 export interface Tile {
     identifier: TileIdentifier,
-    terrainType: "LAND" | "WATER" | "MOUNTAIN" | null,
-    visibility: "UNKNOWN" | "DISCOVERED" | "VISIBLE"
+    terrainType: TerrainType | null,
+    resourceType: TerrainResourceType | null
+    visibility: Visibility
     owner: {
         country: CountryIdentifier,
         province: ProvinceIdentifier,
@@ -36,8 +41,9 @@ export interface ScoutTileContent {
 
 export interface TileView {
     identifier: TileIdentifier,
-    terrainType: "LAND" | "WATER" | "MOUNTAIN" | null,
-    visibility: "UNKNOWN" | "DISCOVERED" | "VISIBLE"
+    terrainType: TerrainType | null,
+    resourceType: TerrainResourceType | null,
+    visibility: Visibility
     owner: {
         country: CountryIdentifier,
         province: ProvinceIdentifier,

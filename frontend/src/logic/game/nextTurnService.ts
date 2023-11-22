@@ -14,6 +14,9 @@ import {GameSessionStateRepository} from "../../state/access/GameSessionStateRep
 import {BuildingProductionQueueEntry, ProductionQueueEntry, SettlerProductionQueueEntry} from "../../models/productionQueueEntry";
 import {Building} from "../../models/building";
 import {Route} from "../../models/route";
+import {TerrainType} from "../../models/terrainType";
+import {Visibility} from "../../models/visibility";
+import {TerrainResourceType} from "../../models/terrainResourceType";
 
 export class NextTurnService {
 
@@ -189,8 +192,9 @@ export class NextTurnService {
                     q: tileDTO.dataTier0.position.q,
                     r: tileDTO.dataTier0.position.r,
                 },
-                terrainType: orNull(tileDTO.dataTier1?.terrainType) as any,
-                visibility: tileDTO.dataTier0.visibility as any,
+                terrainType: tileDTO.dataTier1?.terrainType ? TerrainType.fromString(tileDTO.dataTier1.terrainType) : null,
+                resourceType: (tileDTO.dataTier1?.resourceType === "NONE" || !tileDTO.dataTier1?.resourceType) ? null : TerrainResourceType.fromString(tileDTO.dataTier1!.resourceType),
+                visibility: Visibility.fromString(tileDTO.dataTier0.visibility),
                 owner: (tileDTO.dataTier1?.owner ? {
                     country: owner.country!!,
                     province: owner.province!!,

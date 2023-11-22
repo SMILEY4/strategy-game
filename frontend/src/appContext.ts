@@ -10,7 +10,6 @@ import {GameSessionService} from "./logic/gamesession/gameSessionService";
 import {EndTurnService} from "./logic/game/endTurnService";
 import {CommandService} from "./logic/game/commandService";
 import {CityCreationService} from "./logic/game/cityCreationService";
-import {GameRenderer} from "./logic/renderer/gameRenderer";
 import {GameLoopService} from "./logic/game/gameLoopService";
 import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
@@ -26,11 +25,13 @@ import {CityRepository} from "./state/access/CityRepository";
 import {TileRepository} from "./state/access/TileRepository";
 import {RemoteGameStateRepository} from "./state/access/RemoteGameStateRepository";
 import {TilePicker} from "./logic/game/tilePicker";
-import {WorldUpdater} from "./logic/renderer/world/worldUpdater";
 import {MapModeRepository} from "./state/access/MapModeRepository";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
 import {RouteRepository} from "./state/access/RouteRepository";
+import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
+import {RenderDataManager} from "./renderer/data/renderDataManager";
+import {GameRenderer} from "./renderer/gameRenderer";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -58,8 +59,11 @@ interface AppCtxDef {
     CityUpgradeService: () => CityUpgradeService,
     GameLoopService: () => GameLoopService,
 
-    CanvasHandle: () => CanvasHandle,
     GameRenderer: () => GameRenderer,
+    RenderEntityCollector: () => RenderEntityCollector,
+    RenderDataManager: () => RenderDataManager,
+
+    CanvasHandle: () => CanvasHandle,
 
     UserRepository: () => UserRepository,
     CameraRepository: () => CameraRepository,
@@ -153,29 +157,47 @@ export const AppCtx: AppCtxDef = {
         "GameLoopService",
         () => new GameLoopService(
             AppCtx.CanvasHandle(),
-            AppCtx.GameRenderer(),
             new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraRepository(), AppCtx.TileRepository()),
             AppCtx.CameraRepository(),
             AppCtx.GameSessionStateRepository(),
             AppCtx.TileRepository(),
+            AppCtx.GameRenderer(),
+            AppCtx.AudioService(),
         ),
+    ),
+
+    GameRenderer: diContext.register(
+        "GameRenderer",
+        () => new GameRenderer(
+            AppCtx.CanvasHandle(),
+            AppCtx.CameraRepository(),
+            AppCtx.RenderDataManager(),
+            AppCtx.TileRepository(),
+        )
+    ),
+    RenderEntityCollector: diContext.register(
+        "RenderEntityCollector",
+        () => new RenderEntityCollector(
+            AppCtx.TileRepository(),
+            AppCtx.CityRepository(),
+            AppCtx.CommandRepository(),
+        ),
+    ),
+    RenderDataManager: diContext.register(
+        "RenderDataManager",
+        () => new RenderDataManager(
+            AppCtx.CanvasHandle(),
+            AppCtx.TileRepository(),
+            AppCtx.RouteRepository(),
+            AppCtx.MapModeRepository(),
+            AppCtx.RenderEntityCollector(),
+        )
     ),
 
 
     CanvasHandle: diContext.register(
         "CanvasHandle",
         () => new CanvasHandle(),
-    ),
-    GameRenderer: diContext.register(
-        "GameRenderer",
-        () => new GameRenderer(
-            AppCtx.CanvasHandle(),
-            new WorldUpdater(AppCtx.CanvasHandle(), AppCtx.CommandRepository(), AppCtx.CityRepository(), AppCtx.TileRepository(), AppCtx.RouteRepository()),
-            AppCtx.CameraRepository(),
-            AppCtx.CommandRepository(),
-            AppCtx.MapModeRepository(),
-            AppCtx.TileRepository(),
-        ),
     ),
 
 

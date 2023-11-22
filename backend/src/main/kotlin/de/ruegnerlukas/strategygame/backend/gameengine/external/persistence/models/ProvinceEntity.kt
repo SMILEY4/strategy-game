@@ -11,6 +11,7 @@ class ProvinceEntity(
     val cityIds: List<String>,
     val provinceCityId: String,
     val resources: List<ResourceStackEntity>,
+    val color: ColorEntity,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -22,6 +23,7 @@ class ProvinceEntity(
             cityIds = serviceModel.cityIds.toList(),
             provinceCityId = serviceModel.provinceCapitalCityId,
             resources = serviceModel.resourcesProducedCurrTurn.toStacks().map { ResourceStackEntity.of(it) },
+            color = ColorEntity.of(serviceModel.color),
         )
 
     }
@@ -30,6 +32,7 @@ class ProvinceEntity(
         provinceId = this.getKeyOrThrow(),
         countryId = this.countryId,
         cityIds = this.cityIds.toMutableList(),
+        color = this.color.toRGBColor(),
         provinceCapitalCityId = this.provinceCityId,
         resourcesProducedPrevTurn = ResourceCollection.basic(this.resources.map { it.asServiceModel() }),
         resourcesProducedCurrTurn = ResourceCollection.basic(),

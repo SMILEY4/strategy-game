@@ -55,6 +55,10 @@ export class TileContainer {
         }
     }
 
+    public getTileCount(): number {
+        return this.tiles.length;
+    }
+
     public getTiles(): Tile[] {
         return this.tiles;
     }

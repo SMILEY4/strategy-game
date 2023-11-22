@@ -60,7 +60,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 function TileBanner(props: UseTileWindow.Data): ReactElement {
     return (
         <Banner spaceAbove subtitle={"Tile"}>
-            <Header1 centered>{props.tile.terrainType || "Unknown"}</Header1>
+            <Header1 centered>{props.tile.terrainType?.displayString || "Unknown"}</Header1>
         </Banner>
     );
 }
@@ -78,7 +78,11 @@ function BaseInformation(props: UseTileWindow.Data): ReactElement {
             />
             <KeyTextValuePair
                 name={"Terrain"}
-                value={props.tile.terrainType}
+                value={props.tile.terrainType?.displayString}
+            />
+            <KeyTextValuePair
+                name={"Resource"}
+                value={props.tile.resourceType?.displayString}
             />
             {(props.tile.owner && props.tile.owner.city !== null) && (
                 <KeyValuePair name={"Owned By"}>
@@ -123,7 +127,9 @@ function CreateColonyButton(props: UseTileWindow.Data): ReactElement {
             delay={500}
             content={
                 <ul>
-                    {props.createColony.reasonsInvalid.map(e => (<li>{e}</li>))}
+                    {props.createColony.reasonsInvalid.map((e, i) => (
+                        <li key={i}>{e}</li>
+                    ))}
                 </ul>
             }
         >
@@ -147,7 +153,9 @@ function CreateSettlementButton(props: UseTileWindow.Data): ReactElement {
             delay={500}
             content={
                 <ul>
-                    {props.createSettlement.reasonsInvalid.map(e => (<li>{e}</li>))}
+                    {props.createSettlement.reasonsInvalid.map((e,i) => (
+                        <li key={i}>{e}</li>
+                    ))}
                 </ul>
             }
         >

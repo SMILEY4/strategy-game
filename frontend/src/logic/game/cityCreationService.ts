@@ -9,6 +9,7 @@ import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
 import {CreateCityCommand} from "../../models/command";
 import {ProvinceIdentifier} from "../../models/province";
+import {TerrainType} from "../../models/terrainType";
 
 export class CityCreationService {
 
@@ -39,7 +40,7 @@ export class CityCreationService {
         if (name !== null && !name) {
             failureReasons.push("Invalid name");
         }
-        if (tile.terrainType !== "LAND") {
+        if (tile.terrainType !== TerrainType.LAND) {
             failureReasons.push("Invalid terrain type");
         }
         if (this.isOccupied(tile)) {

@@ -1,12 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.models
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 
 data class Province(
     val provinceId: String,
     val countryId: String,
     val cityIds: MutableList<String>,
     val provinceCapitalCityId: String,
+    val color: RGBColor,
 
     var resourcesProducedPrevTurn: ResourceCollection = ResourceCollection.basic(),
     var resourcesProducedCurrTurn: ResourceCollection = ResourceCollection.basic(),
