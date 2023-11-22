@@ -27,17 +27,22 @@
     height:   100%;
     pointer-events: none;
 
-    * {
-
-        transform: translate(-50%, -50%);
+    .world-ui__label {
         position: absolute;
-
+        transform: translate(-50%, -50%);
         color: white;
         text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, 10px 4px 10px black;
         font-weight: 500;
         letter-spacing: 1px;
         font-size: 1.2rem;
+    }
 
+    .world-ui__icon {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        transform: translate(-50%, -50%);
+        background-size: contain;
     }
 
 }

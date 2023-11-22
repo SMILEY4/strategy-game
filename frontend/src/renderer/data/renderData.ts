@@ -4,6 +4,7 @@ import {GLProgram} from "../../shared/webgl/glProgram";
 import {GLTexture} from "../../shared/webgl/glTexture";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 import {RenderEntity} from "./builders/entities/renderEntity";
+import {MapMode} from "../../models/mapMode";
 
 export interface RenderData {
     meta: {
@@ -11,6 +12,7 @@ export interface RenderData {
         tileMouseOver: number[] | null,
         tileSelected: number[] | null
         grayscale: boolean,
+        mapMode: MapMode,
     }
     tilemap: {
         program: GLProgram,

@@ -9,11 +9,11 @@ export type TerrainResourceTypeString =
 
 export class TerrainResourceType {
 
-    public static readonly PLAINS = new TerrainResourceType("PLAINS", "Plains", "/icons/resources/barrel.png", {red: 153, green: 227, blue: 136});
-    public static readonly FOREST = new TerrainResourceType("FOREST", "Forest", "/icons/resources/clothes.png", {red: 37, green: 128, blue: 51});
-    public static readonly FISH = new TerrainResourceType("FISH", "Fish", "/icons/resources/food.png", {red: 46, green: 178, blue: 255});
-    public static readonly STONE = new TerrainResourceType("STONE", "Stone", "/icons/resources/hide.png", {red: 70, green: 70, blue: 70});
-    public static readonly METAL = new TerrainResourceType("METAL", "Metal", "/icons/resources/horse.png", {red: 145, green: 156, blue: 154});
+    public static readonly PLAINS = new TerrainResourceType("PLAINS", "Plains", "/icons/resources/food.png", {red: 153, green: 227, blue: 136});
+    public static readonly FOREST = new TerrainResourceType("FOREST", "Forest", "/icons/resources/wood.png", {red: 37, green: 128, blue: 51});
+    public static readonly FISH = new TerrainResourceType("FISH", "Fish", "/icons/resources/fish.png", {red: 46, green: 178, blue: 255});
+    public static readonly STONE = new TerrainResourceType("STONE", "Stone", "/icons/resources/stone.png", {red: 70, green: 70, blue: 70});
+    public static readonly METAL = new TerrainResourceType("METAL", "Metal", "/icons/resources/metal.png", {red: 145, green: 156, blue: 154});
 
     private static readonly values = [
         TerrainResourceType.PLAINS,

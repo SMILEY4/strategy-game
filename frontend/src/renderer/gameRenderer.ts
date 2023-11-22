@@ -9,6 +9,7 @@ import {RenderDataManager} from "./data/renderDataManager";
 import {EntityMaskRenderer} from "./entitymask/entityMaskRenderer";
 import {LabelRenderer} from "./labels/labelRenderer";
 import {RoutesRenderer} from "./routes/routesRenderer";
+import {TileRepository} from "../state/access/TileRepository";
 
 export class GameRenderer {
 
@@ -19,7 +20,7 @@ export class GameRenderer {
     private renderer: GLRenderer | null = null;
 
 
-    constructor(canvasHandle: CanvasHandle, cameraRepository: CameraRepository, renderDataManager: RenderDataManager) {
+    constructor(canvasHandle: CanvasHandle, cameraRepository: CameraRepository, renderDataManager: RenderDataManager, tileRepository: TileRepository) {
         this.canvasHandle = canvasHandle;
         this.cameraRepository = cameraRepository;
         this.renderDataManager = renderDataManager;
@@ -28,7 +29,7 @@ export class GameRenderer {
             new EntityMaskRenderer(canvasHandle),
             new TilemapRenderer(canvasHandle),
             new EntityRenderer(canvasHandle),
-            new LabelRenderer(),
+            new LabelRenderer(tileRepository),
         ];
     }
 

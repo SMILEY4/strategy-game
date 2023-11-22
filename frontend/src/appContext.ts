@@ -172,6 +172,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.CanvasHandle(),
             AppCtx.CameraRepository(),
             AppCtx.RenderDataManager(),
+            AppCtx.TileRepository(),
         )
     ),
     RenderEntityCollector: diContext.register(

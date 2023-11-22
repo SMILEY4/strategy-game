@@ -80,6 +80,7 @@ export class RenderDataManager {
                 time: 0,
                 tileSelected: null,
                 tileMouseOver: null,
+                mapMode: MapMode.DEFAULT
             },
             tilemap: {
                 program: programTilemap,
@@ -298,6 +299,7 @@ export class RenderDataManager {
 
     private updateMeta(mapMode: MapMode) {
         if (this.renderData) {
+            this.renderData.meta.mapMode = mapMode;
             this.renderData.meta.grayscale = mapMode.renderData.grayscale;
             this.renderData.meta.time = (this.renderData.meta.time + 1) % 10000;
             const selectedTile = this.tileRepository.getSelectedTile();
