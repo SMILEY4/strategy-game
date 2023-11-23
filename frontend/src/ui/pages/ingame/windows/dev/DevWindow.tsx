@@ -28,12 +28,22 @@ export function DevWindow(props: DevWindowProps): ReactElement {
         >
             <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Dev / Debug</Header1>
+
                 <Spacer size="s"/>
+
                 <BaseInformation {...data}/>
+
                 <Spacer size="s"/>
+
+                <MonitoringInformation {...data}/>
+
+                <Spacer size="s"/>
+
                 <ButtonPrimary blue onClick={data.fullscreen.enter}>Enter Fullscreen</ButtonPrimary>
                 <ButtonPrimary blue onClick={data.fullscreen.exit}>Exit Fullscreen</ButtonPrimary>
+
                 <Spacer size="xs"/>
+
                 <ButtonPrimary blue onClick={data.webgl.loose}>Loose WebGL-Context</ButtonPrimary>
                 <ButtonPrimary blue onClick={data.webgl.restore}>Restore WebGL-Context</ButtonPrimary>
             </VBox>
@@ -57,4 +67,41 @@ function BaseInformation(props: UseDevWindow.Data): ReactElement {
     );
 }
 
-
+function MonitoringInformation(props: UseDevWindow.Data): ReactElement {
+    return (
+        <InsetPanel>
+            <KeyTextValuePair
+                name={"FPS"}
+                value={props.monitoring.webGLMonitorData.fps}
+            />
+            <KeyTextValuePair
+                name={"FrameDuration"}
+                value={props.monitoring.webGLMonitorData.frameDuration + " ms"}
+            />
+            <KeyTextValuePair
+                name={"DrawCalls/Frame"}
+                value={props.monitoring.webGLMonitorData.countDrawCalls}
+            />
+            <KeyTextValuePair
+                name={"GLObjects.Buffers"}
+                value={props.monitoring.webGLMonitorData.countBuffers}
+            />
+            <KeyTextValuePair
+                name={"GLObjects.VertexArray"}
+                value={props.monitoring.webGLMonitorData.countVertexArrays}
+            />
+            <KeyTextValuePair
+                name={"GLObjects.Textures"}
+                value={props.monitoring.webGLMonitorData.countTextures}
+            />
+            <KeyTextValuePair
+                name={"GLObjects.Framebuffers"}
+                value={props.monitoring.webGLMonitorData.countFramebuffers}
+            />
+            <KeyTextValuePair
+                name={"GLObjects.Programs"}
+                value={props.monitoring.webGLMonitorData.countPrograms}
+            />
+        </InsetPanel>
+    );
+}

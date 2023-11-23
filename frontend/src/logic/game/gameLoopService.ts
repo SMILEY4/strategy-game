@@ -1,5 +1,5 @@
 import {TilePicker} from "./tilePicker";
-import {CanvasHandle} from "./canvasHandle";
+import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {CameraRepository} from "../../state/access/CameraRepository";
 import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {TileRepository} from "../../state/access/TileRepository";
