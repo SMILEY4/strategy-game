@@ -7,7 +7,7 @@ import {BaseRenderer} from "../shared/webgl/baseRenderer";
 import {EntityRenderer} from "./entity/entityRenderer";
 import {RenderDataManager} from "./data/renderDataManager";
 import {EntityMaskRenderer} from "./entitymask/entityMaskRenderer";
-import {LabelRenderer} from "./labels/labelRenderer";
+import {StampRenderer} from "./stamps/stampRenderer";
 import {RoutesRenderer} from "./routes/routesRenderer";
 import {TileRepository} from "../state/access/TileRepository";
 import {WebGLMonitor} from "../shared/webgl/monitor/webGLMonitor";
@@ -30,7 +30,6 @@ export class GameRenderer {
         monitoringRepository: MonitoringRepository,
         cameraRepository: CameraRepository,
         renderDataManager: RenderDataManager,
-        tileRepository: TileRepository,
     ) {
         this.canvasHandle = canvasHandle;
         this.monitor = monitor;
@@ -42,7 +41,7 @@ export class GameRenderer {
             new EntityMaskRenderer(canvasHandle),
             new TilemapRenderer(canvasHandle),
             new EntityRenderer(canvasHandle),
-            new LabelRenderer(tileRepository),
+            new StampRenderer(),
         ];
     }
 
@@ -57,8 +56,8 @@ export class GameRenderer {
 
     public render() {
         this.monitor.beginFrame();
-        this.renderDataManager.updateData();
         const camera = this.getRenderCamera();
+        this.renderDataManager.updateData(camera);
         const data = this.renderDataManager.getData();
         this.renderer?.prepareFrame(camera);
         this.modules.forEach(m => m.render(camera, data));
@@ -73,7 +72,13 @@ export class GameRenderer {
 
     private getRenderCamera(): Camera {
         const data = this.cameraRepository.getCamera();
-        return Camera.create(data, this.canvasHandle.getCanvasWidth(), this.canvasHandle.getCanvasHeight());
+        return Camera.create(
+            data,
+            this.canvasHandle.getCanvasWidth(),
+            this.canvasHandle.getCanvasHeight(),
+            this.canvasHandle.getClientWidth(),
+            this.canvasHandle.getClientHeight(),
+        );
     }
 
 }

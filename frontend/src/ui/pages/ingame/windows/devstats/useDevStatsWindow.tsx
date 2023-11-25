@@ -16,7 +16,7 @@ export namespace UseDevStatsWindow {
                 left: 25,
                 top: 60,
                 bottom: 25,
-                width: 360,
+                width: 450,
                 content: <DevStatsWindow windowId={WINDOW_ID}/>,
             });
         };

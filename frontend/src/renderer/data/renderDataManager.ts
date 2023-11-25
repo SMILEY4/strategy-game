@@ -14,17 +14,10 @@ import SHADER_ROUTES_VERT from "./../routes/shader.vsh?raw";
 import SHADER_ROUTES_FRAG from "./../routes/shader.fsh?raw";
 import {GLAttributeType} from "../../shared/webgl/glTypes";
 import {BaseMeshBuilder} from "./builders/tilemap/baseMeshBuilder";
-import {InstanceBaseDataBuilder} from "./builders/tilemap/instanceBaseDataBuilder";
-import {InstanceOverlayDataBuilder} from "./builders/tilemap/instanceOverlayDataBuilder";
-import {TileRepository} from "../../state/access/TileRepository";
-import {RenderEntityCollector} from "./builders/entities/renderEntityCollector";
-import {EntityMeshBuilder} from "./builders/entities/entityMeshBuilder";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
-import {MapModeRepository} from "../../state/access/MapModeRepository";
 import {MapMode} from "../../models/mapMode";
-import {RoutesMeshBuilder} from "./builders/routes/routesMeshBuilder";
-import {RouteRepository} from "../../state/access/RouteRepository";
 import {RenderDataUpdater} from "./renderDataUpdater";
+import {Camera} from "../../shared/webgl/camera";
 
 
 export class RenderDataManager {
@@ -69,7 +62,7 @@ export class RenderDataManager {
                 time: 0,
                 tileSelected: null,
                 tileMouseOver: null,
-                mapMode: MapMode.DEFAULT
+                mapMode: MapMode.DEFAULT,
             },
             tilemap: {
                 program: programTilemap,
@@ -181,7 +174,7 @@ export class RenderDataManager {
                 items: [],
                 program: programEntities,
                 textures: {
-                    tileset: GLTexture.createFromPath(gl, "/entities.png", {filterMin: GLTextureMinFilter.NEAREST}),
+                    tileset: GLTexture.createFromPath(gl, "/entities2.png", {filterMin: GLTextureMinFilter.NEAREST}),
                 },
                 vertexCount: 0,
                 vertexBuffer: entityVertexBuffer,
@@ -254,6 +247,10 @@ export class RenderDataManager {
                     undefined,
                 ),
             },
+            stamps: {
+                dirty: false,
+                items: [],
+            },
         };
     }
 
@@ -278,9 +275,9 @@ export class RenderDataManager {
         }
     }
 
-    public updateData() {
-        if(this.renderData) {
-            this.updater.update(this.renderData)
+    public updateData(camera: Camera) {
+        if (this.renderData) {
+            this.updater.update(this.renderData, camera);
         }
     }
 

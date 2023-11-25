@@ -37,7 +37,7 @@ export class TilePicker {
 
     private cameraMatrix(width: number, height: number): Float32Array {
         const cameraData = this.cameraRepository.getCamera();
-        const camera = Camera.create(cameraData, width, height);
+        const camera = Camera.create(cameraData, width, height, 0, 0);
         return camera.getViewProjectionMatrixOrThrow();
     }
 
