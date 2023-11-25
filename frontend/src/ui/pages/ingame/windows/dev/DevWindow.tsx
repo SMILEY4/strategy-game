@@ -33,9 +33,7 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 
                 <BaseInformation {...data}/>
 
-                <Spacer size="s"/>
-
-                <MonitoringInformation {...data}/>
+                <ButtonPrimary blue onClick={data.open.devStats}>More Statistics</ButtonPrimary>
 
                 <Spacer size="s"/>
 
@@ -62,45 +60,6 @@ function BaseInformation(props: UseDevWindow.Data): ReactElement {
             <KeyTextValuePair
                 name={"Camera.Zoom"}
                 value={roundToPlaces(props.camera.zoom, 4)}
-            />
-        </InsetPanel>
-    );
-}
-
-function MonitoringInformation(props: UseDevWindow.Data): ReactElement {
-    return (
-        <InsetPanel>
-            <KeyTextValuePair
-                name={"FPS"}
-                value={props.monitoring.webGLMonitorData.fps}
-            />
-            <KeyTextValuePair
-                name={"FrameDuration"}
-                value={props.monitoring.webGLMonitorData.frameDuration + " ms"}
-            />
-            <KeyTextValuePair
-                name={"DrawCalls/Frame"}
-                value={props.monitoring.webGLMonitorData.countDrawCalls}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Buffers"}
-                value={props.monitoring.webGLMonitorData.countBuffers}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.VertexArray"}
-                value={props.monitoring.webGLMonitorData.countVertexArrays}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Textures"}
-                value={props.monitoring.webGLMonitorData.countTextures}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Framebuffers"}
-                value={props.monitoring.webGLMonitorData.countFramebuffers}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Programs"}
-                value={props.monitoring.webGLMonitorData.countPrograms}
             />
         </InsetPanel>
     );

@@ -7,6 +7,8 @@ import {AppCtx} from "../../../../../appContext";
 import {CameraData} from "../../../../../models/cameraData";
 import {MonitoringRepository} from "../../../../../state/access/MonitoringRepository";
 import {WebGLMonitor} from "../../../../../shared/webgl/monitor/webGLMonitor";
+import {DevStatsWindow} from "../devstats/DevStatsWindow";
+import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
 
 export namespace UseDevWindow {
 
@@ -20,13 +22,16 @@ export namespace UseDevWindow {
                 left: 25,
                 top: 60,
                 bottom: 25,
-                width: 360,
+                width: 450,
                 content: <DevWindow windowId={WINDOW_ID}/>,
             });
         };
     }
 
     export interface Data {
+        open: {
+            devStats: () => void
+        }
         fullscreen: {
             enter: () => void,
             exit: () => void
@@ -36,17 +41,17 @@ export namespace UseDevWindow {
             restore: () => void
         },
         camera: CameraData,
-        monitoring: {
-            webGLMonitorData: WebGLMonitor.Data,
-        }
     }
 
     export function useData(): UseDevWindow.Data {
+        const openDevStats = UseDevStatsWindow.useOpen()
         const camera = CameraRepository.useCamera();
-        const webGLMonitorData = MonitoringRepository.useWebGLMonitorData();
         const [enterFullscreen, exitFullscreen] = useFullscreen("root");
         const [looseWGLContext, restoreWGLContext] = useWebGlContext();
         return {
+            open: {
+                devStats: openDevStats
+            },
             fullscreen: {
                 enter: enterFullscreen,
                 exit: exitFullscreen,
@@ -56,9 +61,6 @@ export namespace UseDevWindow {
                 restore: restoreWGLContext,
             },
             camera: camera,
-            monitoring: {
-                webGLMonitorData: webGLMonitorData,
-            }
         };
     }
 
