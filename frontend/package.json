@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
     "react-router-dom": "^6.3.0",
+    "recharts": "^2.10.1",
     "rollup-plugin-react-scoped-css": "^0.8.2",
     "zustand": "^4.1.2"
   },

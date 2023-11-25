@@ -7,6 +7,7 @@ import {GLFramebufferWrapper} from "./glwrapper/glFramebufferWrapper";
 import {GLProgramWrapper} from "./glwrapper/glProgramWrapper";
 import {GLTextureWrapper} from "./glwrapper/glTextureWrapper";
 import {GLVertexArrayWrapper} from "./glwrapper/glVertexArrayWrapper";
+import {ValueHistory} from "../../valueHistory";
 
 export class WebGLMonitor {
 
@@ -67,8 +68,8 @@ export class WebGLMonitor {
         if (this.gl) {
             const time = Date.now();
             this.gl.getError(); // sync cpu and gpu
-            this.data.fps = 1 / ((time - this.timeLastFrame) / 1000)
-            this.data.frameDuration = time - this.timeBeginFrame;
+            this.data.fps.set(1 / ((time - this.timeLastFrame) / 1000))
+            this.data.frameDuration.set(time - this.timeBeginFrame);
             this.data.countDrawCalls = this.wrapperDrawArraysInstanced!.getCount() + this.wrapperDrawArrays!.getCount() + this.wrapperDrawElementsInstanced!.getCount() + this.wrapperDrawElements!.getCount();
             this.data.countBuffers = this.wrapperBuffers!.getCount();
             this.data.countFramebuffers = this.wrapperFramebuffers!.getCount();
@@ -88,8 +89,8 @@ export class WebGLMonitor {
 export namespace WebGLMonitor {
 
     export interface Data {
-        fps: number,
-        frameDuration: number,
+        fps: ValueHistory,
+        frameDuration: ValueHistory,
         countDrawCalls: number,
         countBuffers: number,
         countFramebuffers: number,
@@ -99,8 +100,8 @@ export namespace WebGLMonitor {
     }
 
     export const EMPTY_DATA: WebGLMonitor.Data = {
-        fps: 0,
-        frameDuration: 0,
+        fps: new ValueHistory(120),
+        frameDuration: new ValueHistory(120),
         countDrawCalls: 0,
         countBuffers: 0,
         countFramebuffers: 0,

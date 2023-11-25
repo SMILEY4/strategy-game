@@ -25,15 +25,23 @@ export namespace UseDevStatsWindow {
     export interface Data {
         rendering: {
             webGLMonitorData: WebGLMonitor.Data,
+        },
+        actions: {
+            nextTurn: number[]
         }
     }
 
     export function useData(): UseDevStatsWindow.Data {
         const webGLMonitorData = MonitoringRepository.useWebGLMonitorData();
+        const nextTurnDurations = MonitoringRepository.useNextTurnDurations();
+
         return {
             rendering: {
                 webGLMonitorData: webGLMonitorData,
-            }
+            },
+            actions: {
+                nextTurn: nextTurnDurations,
+            },
         };
     }
 
