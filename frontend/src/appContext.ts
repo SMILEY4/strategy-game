@@ -34,6 +34,7 @@ import {RenderDataManager} from "./renderer/data/renderDataManager";
 import {GameRenderer} from "./renderer/gameRenderer";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
 import {MonitoringRepository} from "./state/access/MonitoringRepository";
+import {RenderDataUpdater} from "./renderer/data/renderDataUpdater";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -64,6 +65,7 @@ interface AppCtxDef {
     WebGLMonitor: () => WebGLMonitor,
     GameRenderer: () => GameRenderer,
     RenderEntityCollector: () => RenderEntityCollector,
+    RenderDataUpdater: () => RenderDataUpdater,
     RenderDataManager: () => RenderDataManager,
 
     CanvasHandle: () => CanvasHandle,
@@ -187,7 +189,6 @@ export const AppCtx: AppCtxDef = {
             AppCtx.MonitoringRepository(),
             AppCtx.CameraRepository(),
             AppCtx.RenderDataManager(),
-            AppCtx.TileRepository(),
         ),
     ),
     RenderEntityCollector: diContext.register(
@@ -198,14 +199,22 @@ export const AppCtx: AppCtxDef = {
             AppCtx.CommandRepository(),
         ),
     ),
+    RenderDataUpdater: diContext.register(
+        "RenderDataUpdater",
+        () => new RenderDataUpdater(
+            AppCtx.RemoteGameStateRepository(),
+            AppCtx.TileRepository(),
+            AppCtx.RouteRepository(),
+            AppCtx.MapModeRepository(),
+            AppCtx.CommandRepository(),
+            AppCtx.RenderEntityCollector(),
+        ),
+    ),
     RenderDataManager: diContext.register(
         "RenderDataManager",
         () => new RenderDataManager(
             AppCtx.CanvasHandle(),
-            AppCtx.TileRepository(),
-            AppCtx.RouteRepository(),
-            AppCtx.MapModeRepository(),
-            AppCtx.RenderEntityCollector(),
+            AppCtx.RenderDataUpdater(),
         ),
     ),
 
@@ -245,7 +254,7 @@ export const AppCtx: AppCtxDef = {
     ),
     CountryRepository: diContext.register(
         "CountryRepository",
-        () => new CountryRepository(AppCtx.RemoteGameStateRepository(), AppCtx.CommandRepository()),
+        () => new CountryRepository(AppCtx.RemoteGameStateRepository()),
     ),
     ProvinceRepository: diContext.register(
         "ProvinceRepository",

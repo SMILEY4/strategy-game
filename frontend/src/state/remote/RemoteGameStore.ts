@@ -1,13 +1,19 @@
 import {SetState} from "../../shared/zustandUtils";
 import create from "zustand";
 import {INITIAL_REMOTE_GAME_STATE, RemoteGameState} from "./RemoteGameState";
+import {UID} from "../../shared/uid";
 
 export namespace RemoteGameStateStore {
 
-    interface StateValues extends RemoteGameState {
+    interface StateValues {
+        gameState: RemoteGameState,
+        revId: string
     }
 
-    const initialStateValues: StateValues = INITIAL_REMOTE_GAME_STATE;
+    const initialStateValues: StateValues = {
+        gameState: INITIAL_REMOTE_GAME_STATE,
+        revId: ""
+    };
 
     interface StateActions {
         set: (state: RemoteGameState) => void;
@@ -15,7 +21,10 @@ export namespace RemoteGameStateStore {
 
     function stateActions(set: SetState<State>): StateActions {
         return {
-            set: (state: RemoteGameState) => set(() => state),
+            set: (state: RemoteGameState) => set(() => ({
+                gameState: state,
+                revId: UID.generate()
+            })),
         };
     }
 

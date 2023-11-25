@@ -29,7 +29,7 @@ export class CityRepository {
 export namespace CityRepository {
 
     export function useCityById(cityId: string): City {
-        const city = RemoteGameStateStore.useState(state => state.cities.find(c => c.identifier.id === cityId));
+        const city = RemoteGameStateStore.useState(state => state.gameState.cities.find(c => c.identifier.id === cityId));
         if (city) {
             return city;
         } else {

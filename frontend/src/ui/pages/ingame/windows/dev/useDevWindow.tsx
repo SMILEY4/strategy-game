@@ -22,7 +22,7 @@ export namespace UseDevWindow {
                 left: 25,
                 top: 60,
                 bottom: 25,
-                width: 450,
+                width: 360,
                 content: <DevWindow windowId={WINDOW_ID}/>,
             });
         };

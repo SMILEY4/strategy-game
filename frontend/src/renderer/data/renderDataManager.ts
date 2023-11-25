@@ -14,40 +14,22 @@ import SHADER_ROUTES_VERT from "./../routes/shader.vsh?raw";
 import SHADER_ROUTES_FRAG from "./../routes/shader.fsh?raw";
 import {GLAttributeType} from "../../shared/webgl/glTypes";
 import {BaseMeshBuilder} from "./builders/tilemap/baseMeshBuilder";
-import {InstanceBaseDataBuilder} from "./builders/tilemap/instanceBaseDataBuilder";
-import {InstanceOverlayDataBuilder} from "./builders/tilemap/instanceOverlayDataBuilder";
-import {TileRepository} from "../../state/access/TileRepository";
-import {RenderEntityCollector} from "./builders/entities/renderEntityCollector";
-import {EntityMeshBuilder} from "./builders/entities/entityMeshBuilder";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
-import {MapModeRepository} from "../../state/access/MapModeRepository";
 import {MapMode} from "../../models/mapMode";
-import {RoutesMeshBuilder} from "./builders/routes/routesMeshBuilder";
-import {RouteRepository} from "../../state/access/RouteRepository";
+import {RenderDataUpdater} from "./renderDataUpdater";
+import {Camera} from "../../shared/webgl/camera";
 
 
 export class RenderDataManager {
 
     private readonly canvasHandle: CanvasHandle;
-    private readonly tileRepository: TileRepository;
-    private readonly routesRepository: RouteRepository;
-    private readonly mapModeRepository: MapModeRepository;
-    private readonly entityCollector: RenderEntityCollector;
+    private readonly updater: RenderDataUpdater;
 
     private renderData: RenderData | null = null;
 
-    constructor(
-        canvasHandle: CanvasHandle,
-        tileRepository: TileRepository,
-        routesRepository: RouteRepository,
-        mapModeRepository: MapModeRepository,
-        entityCollector: RenderEntityCollector,
-    ) {
+    constructor(canvasHandle: CanvasHandle, updater: RenderDataUpdater) {
         this.canvasHandle = canvasHandle;
-        this.tileRepository = tileRepository;
-        this.routesRepository = routesRepository;
-        this.mapModeRepository = mapModeRepository;
-        this.entityCollector = entityCollector;
+        this.updater = updater;
     }
 
 
@@ -80,7 +62,7 @@ export class RenderDataManager {
                 time: 0,
                 tileSelected: null,
                 tileMouseOver: null,
-                mapMode: MapMode.DEFAULT
+                mapMode: MapMode.DEFAULT,
             },
             tilemap: {
                 program: programTilemap,
@@ -192,7 +174,7 @@ export class RenderDataManager {
                 items: [],
                 program: programEntities,
                 textures: {
-                    tileset: GLTexture.createFromPath(gl, "/entities.png", {filterMin: GLTextureMinFilter.NEAREST}),
+                    tileset: GLTexture.createFromPath(gl, "/entities2.png", {filterMin: GLTextureMinFilter.NEAREST}),
                 },
                 vertexCount: 0,
                 vertexBuffer: entityVertexBuffer,
@@ -265,6 +247,10 @@ export class RenderDataManager {
                     undefined,
                 ),
             },
+            stamps: {
+                dirty: false,
+                items: [],
+            },
         };
     }
 
@@ -289,52 +275,9 @@ export class RenderDataManager {
         }
     }
 
-    public updateData() {
-        const mapMode = this.mapModeRepository.getMapMode();
-        this.updateMeta(mapMode);
-        this.updateEntities();
-        this.updateTilemapInstances(mapMode);
-        this.updateRoutes();
-    }
-
-    private updateMeta(mapMode: MapMode) {
+    public updateData(camera: Camera) {
         if (this.renderData) {
-            this.renderData.meta.mapMode = mapMode;
-            this.renderData.meta.grayscale = mapMode.renderData.grayscale;
-            this.renderData.meta.time = (this.renderData.meta.time + 1) % 10000;
-            const selectedTile = this.tileRepository.getSelectedTile();
-            this.renderData.meta.tileSelected = selectedTile ? [selectedTile.q, selectedTile.r] : null;
-            const mouseOverTile = this.tileRepository.getHoverTile();
-            this.renderData.meta.tileMouseOver = mouseOverTile ? [mouseOverTile.q, mouseOverTile.r] : null;
-        }
-    }
-
-    private updateTilemapInstances(mapMode: MapMode) {
-        if (this.renderData) {
-            const [count, baseDataArray] = InstanceBaseDataBuilder.build(this.tileRepository.getTileContainer());
-            const [_, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileRepository.getTileContainer(), mapMode);
-            this.renderData.tilemap.instances.instanceCount = count;
-            this.renderData.tilemap.instances.instanceBaseBuffer.setData(baseDataArray, true);
-            this.renderData.tilemap.instances.instanceOverlayBuffer.setData(overlayDataArray, true);
-        }
-    }
-
-    private updateEntities() {
-        if (this.renderData) {
-            const entities = this.entityCollector.collect();
-            const [count, vertices] = EntityMeshBuilder.build(entities);
-            this.renderData.entities.items = entities;
-            this.renderData.entities.vertexCount = count;
-            this.renderData.entities.vertexBuffer.setData(vertices, true);
-        }
-    }
-
-
-    private updateRoutes() {
-        if (this.renderData) {
-            const [count, vertices] = RoutesMeshBuilder.build(this.routesRepository.getRoutes())
-            this.renderData.routes.vertexCount = count;
-            this.renderData.routes.vertexBuffer.setData(vertices, true)
+            this.updater.update(this.renderData, camera);
         }
     }
 

@@ -7,6 +7,8 @@ export class Camera {
     private y = 0;
     private width = 0;
     private height = 0;
+    private clientWidth = 0;
+    private clientHeight = 0;
     private zoom = 1;
     private viewProjectionMatrix: Float32Array | null = null;
 
@@ -15,12 +17,13 @@ export class Camera {
         this.y = y;
     }
 
-
-    public setSize(width: number, height: number) {
+    public setSize(width: number, height: number, clientWidth: number, clientHeight: number) {
         this.width = width;
         this.height = height;
+        this.clientWidth = clientWidth;
+        this.clientHeight = clientHeight;
     }
-
+    
     public move(dx: number, dy: number): void {
         this.x += (dx * 2) / this.zoom;
         this.y -= (dy * 2) / this.zoom;
@@ -51,8 +54,26 @@ export class Camera {
         return this.height;
     }
 
+    public getClientWidth(): number {
+        return this.clientWidth;
+    }
+
+    public getClientHeight(): number {
+        return this.clientHeight;
+    }
+
     public getZoom(): number {
         return this.zoom;
+    }
+
+    public getHash(): string {
+        return "" + this.x
+            + "" + this.y
+            + "" + this.zoom
+            + "" + this.width
+            + "" + this.height
+            + "" + this.clientWidth
+            + "" + this.clientHeight
     }
 
     public updateViewProjectionMatrix() {
@@ -83,10 +104,10 @@ export class Camera {
 
 export namespace Camera {
 
-    export function create(cameraData: CameraData, width: number, height: number): Camera {
+    export function create(cameraData: CameraData, width: number, height: number, clientWidth: number, clientHeight: number): Camera {
         const camera = new Camera();
         camera.setPosition(cameraData.x, cameraData.y);
-        camera.setSize(width, height)
+        camera.setSize(width, height, clientWidth, clientHeight)
         camera.setZoom(cameraData.zoom);
         camera.updateViewProjectionMatrix();
         return camera;

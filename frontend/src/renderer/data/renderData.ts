@@ -5,6 +5,7 @@ import {GLTexture} from "../../shared/webgl/glTexture";
 import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 import {RenderEntity} from "./builders/entities/renderEntity";
 import {MapMode} from "../../models/mapMode";
+import {Stamp} from "./builders/stamps/stamp";
 
 export interface RenderData {
     meta: {
@@ -57,5 +58,9 @@ export interface RenderData {
         vertexCount: number,
         vertexBuffer: GLVertexBuffer,
         vertexArray: GLVertexArray
+    },
+    stamps: {
+        dirty: boolean,
+        items: Stamp[]
     }
 }
