@@ -2,7 +2,7 @@ import {DIContext} from "./shared/di";
 import {HttpClient} from "./shared/httpClient";
 import {WebsocketClient} from "./shared/websocketClient";
 import {AuthProvider} from "./logic/user/authProvider";
-import {CanvasHandle} from "./logic/game/canvasHandle";
+import {CanvasHandle} from "./shared/webgl/canvasHandle";
 import {NextTurnService} from "./logic/game/nextTurnService";
 import {UserService} from "./logic/user/userService";
 import {GameSessionClient} from "./logic/gamesession/gameSessionClient";
@@ -32,6 +32,8 @@ import {RouteRepository} from "./state/access/RouteRepository";
 import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
 import {RenderDataManager} from "./renderer/data/renderDataManager";
 import {GameRenderer} from "./renderer/gameRenderer";
+import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
+import {MonitoringRepository} from "./state/access/MonitoringRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -59,12 +61,14 @@ interface AppCtxDef {
     CityUpgradeService: () => CityUpgradeService,
     GameLoopService: () => GameLoopService,
 
+    WebGLMonitor: () => WebGLMonitor,
     GameRenderer: () => GameRenderer,
     RenderEntityCollector: () => RenderEntityCollector,
     RenderDataManager: () => RenderDataManager,
 
     CanvasHandle: () => CanvasHandle,
 
+    MonitoringRepository: () => MonitoringRepository,
     UserRepository: () => UserRepository,
     CameraRepository: () => CameraRepository,
     CommandRepository: () => CommandRepository,
@@ -135,7 +139,12 @@ export const AppCtx: AppCtxDef = {
     ),
     NextTurnService: diContext.register(
         "NextTurnService",
-        () => new NextTurnService(AppCtx.GameLoopService(), AppCtx.RemoteGameStateRepository(), AppCtx.GameSessionStateRepository()),
+        () => new NextTurnService(
+            AppCtx.GameLoopService(),
+            AppCtx.RemoteGameStateRepository(),
+            AppCtx.GameSessionStateRepository(),
+            AppCtx.MonitoringRepository(),
+        ),
     ),
     EndTurnService: diContext.register(
         "EndTurnService",
@@ -166,14 +175,20 @@ export const AppCtx: AppCtxDef = {
         ),
     ),
 
+    WebGLMonitor: diContext.register(
+        "WebGLMonitor",
+        () => new WebGLMonitor(),
+    ),
     GameRenderer: diContext.register(
         "GameRenderer",
         () => new GameRenderer(
             AppCtx.CanvasHandle(),
+            AppCtx.WebGLMonitor(),
+            AppCtx.MonitoringRepository(),
             AppCtx.CameraRepository(),
             AppCtx.RenderDataManager(),
             AppCtx.TileRepository(),
-        )
+        ),
     ),
     RenderEntityCollector: diContext.register(
         "RenderEntityCollector",
@@ -191,7 +206,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.RouteRepository(),
             AppCtx.MapModeRepository(),
             AppCtx.RenderEntityCollector(),
-        )
+        ),
     ),
 
 
@@ -200,7 +215,10 @@ export const AppCtx: AppCtxDef = {
         () => new CanvasHandle(),
     ),
 
-
+    MonitoringRepository: diContext.register(
+        "MonitoringRepository",
+        () => new MonitoringRepository(),
+    ),
     UserRepository: diContext.register(
         "UserRepository",
         () => new UserRepository(),

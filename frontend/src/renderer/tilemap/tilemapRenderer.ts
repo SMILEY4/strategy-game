@@ -1,8 +1,8 @@
-import {CanvasHandle} from "../../logic/game/canvasHandle";
+import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {Camera} from "../../shared/webgl/camera";
 import {RenderModule} from "../renderModule";
 import {RenderData} from "../data/renderData";
-import {GLRenderer} from "../../shared/webgl/glRenderer";
+import {BaseRenderer} from "../../shared/webgl/baseRenderer";
 import {GLUniformType} from "../../shared/webgl/glTypes";
 
 export class TilemapRenderer implements RenderModule {
@@ -10,7 +10,7 @@ export class TilemapRenderer implements RenderModule {
     private static readonly TILE_POS_NONE = [9999, 9999];
 
     private readonly canvasHandle: CanvasHandle;
-    private renderer: GLRenderer = null as any;
+    private renderer: BaseRenderer = null as any;
 
     constructor(canvasHandle: CanvasHandle) {
         this.canvasHandle = canvasHandle;
@@ -18,7 +18,7 @@ export class TilemapRenderer implements RenderModule {
 
 
     public initialize(): void {
-        this.renderer = new GLRenderer(this.canvasHandle.getGL());
+        this.renderer = new BaseRenderer(this.canvasHandle.getGL());
     }
 
 

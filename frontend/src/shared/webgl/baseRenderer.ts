@@ -1,7 +1,7 @@
 import {GLError} from "./glError";
 import {Camera} from "./camera";
 
-export class GLRenderer {
+export class BaseRenderer {
 
     private readonly gl: WebGL2RenderingContext;
 

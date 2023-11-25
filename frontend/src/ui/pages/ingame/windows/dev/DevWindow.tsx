@@ -28,12 +28,20 @@ export function DevWindow(props: DevWindowProps): ReactElement {
         >
             <VBox fillParent gap_s top stretch scrollable stableScrollbar>
                 <Header1>Dev / Debug</Header1>
+
                 <Spacer size="s"/>
+
                 <BaseInformation {...data}/>
+
+                <ButtonPrimary blue onClick={data.open.devStats}>More Statistics</ButtonPrimary>
+
                 <Spacer size="s"/>
+
                 <ButtonPrimary blue onClick={data.fullscreen.enter}>Enter Fullscreen</ButtonPrimary>
                 <ButtonPrimary blue onClick={data.fullscreen.exit}>Exit Fullscreen</ButtonPrimary>
+
                 <Spacer size="xs"/>
+
                 <ButtonPrimary blue onClick={data.webgl.loose}>Loose WebGL-Context</ButtonPrimary>
                 <ButtonPrimary blue onClick={data.webgl.restore}>Restore WebGL-Context</ButtonPrimary>
             </VBox>
@@ -56,5 +64,3 @@ function BaseInformation(props: UseDevWindow.Data): ReactElement {
         </InsetPanel>
     );
 }
-
-

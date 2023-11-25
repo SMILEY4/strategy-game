@@ -1,5 +1,5 @@
 import {RenderData} from "./renderData";
-import {CanvasHandle} from "../../logic/game/canvasHandle";
+import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {GLProgram} from "../../shared/webgl/glProgram";
 import {GLTexture, GLTextureMinFilter} from "../../shared/webgl/glTexture";
 import {GLVertexBuffer} from "../../shared/webgl/glVertexBuffer";

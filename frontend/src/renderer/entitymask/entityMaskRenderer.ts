@@ -1,14 +1,14 @@
 import {RenderModule} from "../renderModule";
 import {Camera} from "../../shared/webgl/camera";
-import {GLRenderer} from "../../shared/webgl/glRenderer";
-import {CanvasHandle} from "../../logic/game/canvasHandle";
+import {BaseRenderer} from "../../shared/webgl/baseRenderer";
+import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {RenderData} from "../data/renderData";
 import {GLUniformType} from "../../shared/webgl/glTypes";
 
 export class EntityMaskRenderer implements RenderModule {
 
     private readonly canvasHandle: CanvasHandle;
-    private renderer: GLRenderer = null as any;
+    private renderer: BaseRenderer = null as any;
 
     constructor(canvasHandle: CanvasHandle) {
         this.canvasHandle = canvasHandle;
@@ -16,7 +16,7 @@ export class EntityMaskRenderer implements RenderModule {
 
 
     public initialize(): void {
-        this.renderer = new GLRenderer(this.canvasHandle.getGL());
+        this.renderer = new BaseRenderer(this.canvasHandle.getGL());
     }
 
 

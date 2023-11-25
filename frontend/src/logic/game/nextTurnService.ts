@@ -17,23 +17,32 @@ import {Route} from "../../models/route";
 import {TerrainType} from "../../models/terrainType";
 import {Visibility} from "../../models/visibility";
 import {TerrainResourceType} from "../../models/terrainResourceType";
+import {MonitoringRepository} from "../../state/access/MonitoringRepository";
+import {ValueHistory} from "../../shared/valueHistory";
 
 export class NextTurnService {
 
     private readonly gameLoopService: GameLoopService;
     private readonly remoteGameRepository: RemoteGameStateRepository;
     private readonly gameSessionRepository: GameSessionStateRepository;
+    private readonly monitoringRepository: MonitoringRepository;
+
+    private readonly durationHistory = new ValueHistory(10)
 
     constructor(gameLoopService: GameLoopService,
                 remoteGameRepository: RemoteGameStateRepository,
-                gameSessionRepository: GameSessionStateRepository) {
+                gameSessionRepository: GameSessionStateRepository,
+                monitoringRepository: MonitoringRepository) {
         this.gameLoopService = gameLoopService;
         this.remoteGameRepository = remoteGameRepository;
         this.gameSessionRepository = gameSessionRepository;
+        this.monitoringRepository = monitoringRepository;
     }
 
 
     handleNextTurn(game: GameStateDTO) {
+        const timeStart = Date.now()
+
         // todo: possible performance optimisation:
         //  object pools for tiles, cities, ...
         //  move old game state to pool instead of gc -> allocate new state from pool
@@ -49,6 +58,10 @@ export class NextTurnService {
             this.gameSessionRepository.setGameSessionState("playing");
         }
         this.gameLoopService.onGameStateUpdate();
+
+        const timeEnd = Date.now();
+        this.durationHistory.set(timeEnd - timeStart)
+        this.monitoringRepository.setNextTurnDurations(this.durationHistory.getHistory())
     }
 
     private buildCountries(game: GameStateDTO): Country[] {

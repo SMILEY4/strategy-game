@@ -5,6 +5,10 @@ import {CameraRepository} from "../../../../../state/access/CameraRepository";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppCtx} from "../../../../../appContext";
 import {CameraData} from "../../../../../models/cameraData";
+import {MonitoringRepository} from "../../../../../state/access/MonitoringRepository";
+import {WebGLMonitor} from "../../../../../shared/webgl/monitor/webGLMonitor";
+import {DevStatsWindow} from "../devstats/DevStatsWindow";
+import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
 
 export namespace UseDevWindow {
 
@@ -18,14 +22,16 @@ export namespace UseDevWindow {
                 left: 25,
                 top: 60,
                 bottom: 25,
-                width: 360,
+                width: 450,
                 content: <DevWindow windowId={WINDOW_ID}/>,
             });
         };
     }
 
     export interface Data {
-        camera: CameraData,
+        open: {
+            devStats: () => void
+        }
         fullscreen: {
             enter: () => void,
             exit: () => void
@@ -33,15 +39,19 @@ export namespace UseDevWindow {
         webgl: {
             loose: () => void,
             restore: () => void
-        }
+        },
+        camera: CameraData,
     }
 
     export function useData(): UseDevWindow.Data {
+        const openDevStats = UseDevStatsWindow.useOpen()
         const camera = CameraRepository.useCamera();
         const [enterFullscreen, exitFullscreen] = useFullscreen("root");
         const [looseWGLContext, restoreWGLContext] = useWebGlContext();
         return {
-            camera: camera,
+            open: {
+                devStats: openDevStats
+            },
             fullscreen: {
                 enter: enterFullscreen,
                 exit: exitFullscreen,
@@ -50,6 +60,7 @@ export namespace UseDevWindow {
                 loose: looseWGLContext,
                 restore: restoreWGLContext,
             },
+            camera: camera,
         };
     }
 
