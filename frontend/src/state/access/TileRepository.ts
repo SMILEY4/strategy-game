@@ -41,7 +41,7 @@ export class TileRepository {
 export namespace TileRepository {
 
     export function useTileById(tileIdentifier: TileIdentifier | null): Tile | null {
-        return RemoteGameStateStore.useState(state => state.tiles.getTileOrNull(tileIdentifier?.id || ""));
+        return RemoteGameStateStore.useState(state => state.gameState.tiles.getTileOrNull(tileIdentifier?.id || ""));
     }
 
     export function useSelectedTile(): TileIdentifier | null {

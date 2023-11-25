@@ -24,7 +24,7 @@ export class ProvinceRepository {
 export namespace ProvinceRepository {
 
     export function useProvinceById(provinceId: string): Province {
-        const province = RemoteGameStateStore.useState(state => state.provinces.find(c => c.identifier.id === provinceId));
+        const province = RemoteGameStateStore.useState(state => state.gameState.provinces.find(c => c.identifier.id === provinceId));
         if (province) {
             return province;
         } else {
