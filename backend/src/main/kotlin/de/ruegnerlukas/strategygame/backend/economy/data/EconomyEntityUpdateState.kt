@@ -3,13 +3,12 @@ package de.ruegnerlukas.strategygame.backend.economy.data
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 
 
-class EconomyEntityUpdateState(private val input: ResourceCollection) {
+class EconomyEntityUpdateState(input: ResourceCollection) {
 
     var state = EconomyUpdateState.CONSUME
         private set
 
-    private val collectedResources = ResourceCollection.basic()
-
+    private val requiredResources = input.copy()
 
     /**
      * @return the current state
@@ -23,13 +22,7 @@ class EconomyEntityUpdateState(private val input: ResourceCollection) {
      * @return the currently required resources (i.e. initial - provided) for consumption
      */
     fun getRemainingRequired(): ResourceCollection {
-        return if (state == EconomyUpdateState.CONSUME) {
-            input.copy()
-                .sub(collectedResources)
-                .trim()
-        } else {
-            ResourceCollection.empty()
-        }
+        return requiredResources
     }
 
 
@@ -38,8 +31,8 @@ class EconomyEntityUpdateState(private val input: ResourceCollection) {
      */
     fun consume(resources: ResourceCollection) {
         if (state == EconomyUpdateState.CONSUME) {
-            collectedResources.add(resources)
-            if (getRemainingRequired().isEmpty()) {
+            requiredResources.sub(resources)
+            if (requiredResources.isEmpty()) {
                 state = EconomyUpdateState.PRODUCE
             }
         }
@@ -52,6 +45,5 @@ class EconomyEntityUpdateState(private val input: ResourceCollection) {
     fun produce() {
         state = EconomyUpdateState.DONE
     }
-
 
 }

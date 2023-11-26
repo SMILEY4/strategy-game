@@ -1,10 +1,10 @@
-package de.ruegnerlukas.strategygame.backend.economy.old.prebuild
+package de.ruegnerlukas.strategygame.backend.economy.prebuilt
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
-import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNodeStorage
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNodeStorage
 
-class BlockingEconomyNodeStorageImpl : EconomyNodeStorage {
+class NoOpEconomyNodeStorageImpl : EconomyNodeStorage {
 
     override fun revertToInitial() = Unit
 
@@ -18,17 +18,8 @@ class BlockingEconomyNodeStorageImpl : EconomyNodeStorage {
 
     override fun remove(resources: ResourceCollection) = Unit
 
-    override fun removedFromSharedStorage(type: ResourceType, amount: Float) = Unit
-
-    override fun removedFromSharedStorage(resources: ResourceCollection)  = Unit
-
     override fun add(type: ResourceType, amount: Float) = Unit
 
     override fun add(resources: ResourceCollection)  = Unit
 
-    override fun getAdded(): ResourceCollection = ResourceCollection.empty()
-
-    override fun getRemoved(): ResourceCollection = ResourceCollection.empty()
-
-    override fun getRemovedFromShared(): ResourceCollection = ResourceCollection.empty()
 }

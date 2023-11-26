@@ -9,32 +9,32 @@ interface EconomyNode {
         /**
          * @return all entities in this subtree, i.e. all entities of this node, its child nodes and their children
          */
-        fun EconomyNode.collectEntities(): Collection<EconomyEntity> = getEntities() + getChildren().flatMap { it.collectEntities() }
+        fun EconomyNode.collectEntities(): Collection<EconomyEntity> = entities + children.flatMap { it.collectEntities() }
 
 
         /**
          * @return the whole subtree as a flat list, i.e. this node, its children and their children
          */
-        fun EconomyNode.collectNodes(): Collection<EconomyNode> = listOf(this) + getChildren().flatMap { it.collectNodes() }
+        fun EconomyNode.collectNodes(): Collection<EconomyNode> = listOf(this) + children.flatMap { it.collectNodes() }
     }
 
 
     /**
      * @return the resources currently stored/available in this node
      */
-    fun getStorage(): EconomyNodeStorage
+    val storage: EconomyNodeStorage
 
 
     /**
      * @return the child nodes
      */
-    fun getChildren(): Collection<EconomyNode>
+    val children: Collection<EconomyNode>
 
 
     /**
      * the entities at this node
      */
-    fun getEntities(): Collection<EconomyEntity>
+    val entities: Collection<EconomyEntity>
 
 }
 

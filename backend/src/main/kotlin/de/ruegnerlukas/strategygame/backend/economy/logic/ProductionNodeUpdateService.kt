@@ -11,14 +11,14 @@ class ProductionNodeUpdateService(private val productionEntityUpdateService: Pro
     }
 
     private fun updateChildren(node: EconomyNode) {
-        node.getChildren().forEach { update(it) }
+        node.children.forEach { update(it) }
     }
 
     private fun updateEntities(node: EconomyNode) {
-        node.getEntities()
-            .filter { it.getConfig().isActive }
-            .filter { it.getState().state == EconomyUpdateState.PRODUCE }
-            .sortedBy { it.getConfig().priority }
+        node.entities
+            .filter { it.config.isActive }
+            .filter { it.state.state == EconomyUpdateState.PRODUCE }
+            .sortedBy { it.config.priority }
             .forEach { productionEntityUpdateService.update(it) }
     }
 

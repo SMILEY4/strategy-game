@@ -14,19 +14,19 @@ class ConsumptionNodeUpdateService(private val consumptionEntityUpdateService: C
     }
 
     private fun updateChildren(node: EconomyNode) {
-        node.getChildren().forEach { update(it) }
+        node.children.forEach { update(it) }
     }
 
     private fun updateNodeStorage(node: EconomyNode) {
-        node.getStorage().revertToInitial()
-        node.getChildren().forEach { node.getStorage().merge(it.getStorage()) }
+        node.storage.revertToInitial()
+        node.children.forEach { node.storage.merge(it.storage) }
     }
 
     private fun updateEntities(node: EconomyNode) {
         node.collectEntities()
-            .filter { it.getConfig().isActive }
-            .filter { it.getState().state == EconomyUpdateState.CONSUME }
-            .sortedBy { it.getConfig().priority }
+            .filter { it.config.isActive }
+            .filter { it.state.state == EconomyUpdateState.CONSUME }
+            .sortedBy { it.config.priority }
             .forEach { consumptionEntityUpdateService.update(it, node) }
     }
 

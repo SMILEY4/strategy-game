@@ -6,9 +6,9 @@ import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
 class ProductionEntityUpdateService: Logging {
 
     fun update(entity: EconomyEntity) {
-        entity.getOwner().getStorage().add(entity.getConfig().output)
-        entity.getState().produce()
-        log().debug("[eco-update] $entity produced ${entity.getConfig().output.toList()}")
+        entity.owner.storage.add(entity.config.output)
+        entity.state.produce()
+        log().debug("[eco-update] $entity produced ${entity.config.output.toList()}")
     }
 
 }

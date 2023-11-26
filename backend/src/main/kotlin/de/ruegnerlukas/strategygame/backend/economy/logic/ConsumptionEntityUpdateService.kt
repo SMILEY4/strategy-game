@@ -12,19 +12,19 @@ import java.lang.Float.min
 class ConsumptionEntityUpdateService : Logging {
 
     fun update(entity: EconomyEntity, currentNode: EconomyNode) {
-        when(entity.getConfig().consumptionType) {
+        when(entity.config.consumptionType) {
             EconomyConsumptionType.DISTRIBUTED -> updateDistributed(entity, currentNode)
             EconomyConsumptionType.LOCAL -> updateLocal(entity, currentNode)
         }
     }
 
     private fun updateDistributed(entity: EconomyEntity, currentNode: EconomyNode) {
-        val requiredResources = entity.getState().getRemainingRequired()
+        val requiredResources = entity.state.getRemainingRequired()
         if (allResourcesAvailable(currentNode, requiredResources)) {
             updateLocal(entity, currentNode)
         } else {
             requiredResources.forEach { requiredType, requiredAmount ->
-                val amountAvailable = currentNode.getStorage().getAvailable(requiredType)
+                val amountAvailable = currentNode.storage.getAvailable(requiredType)
                 val amountPossible = min(requiredAmount, amountAvailable)
                 provideResources(entity, currentNode, requiredType, amountPossible)
                 log().debug("[eco-update] $entity in node $currentNode consumed $amountPossible of $requiredType")
@@ -33,7 +33,7 @@ class ConsumptionEntityUpdateService : Logging {
     }
 
     private fun updateLocal(entity: EconomyEntity, currentNode: EconomyNode) {
-        val requiredResources = entity.getState().getRemainingRequired()
+        val requiredResources = entity.state.getRemainingRequired()
         if (allResourcesAvailable(currentNode, requiredResources)) {
             provideResources(entity, currentNode, requiredResources)
             log().debug("[eco-update] $entity in node $currentNode consumed ${requiredResources.toList()}")
@@ -45,12 +45,12 @@ class ConsumptionEntityUpdateService : Logging {
     }
 
     private fun provideResources(entity: EconomyEntity, currentNode: EconomyNode, resources: ResourceCollection) {
-        currentNode.getStorage().remove(resources)
-        entity.getState().consume(resources)
+        currentNode.storage.remove(resources)
+        entity.state.consume(resources)
     }
 
     private fun allResourcesAvailable(node: EconomyNode, resources: ResourceCollection): Boolean {
-        return resources.all { type, amount -> node.getStorage().getAvailable(type) >= amount }
+        return resources.all { type, amount -> node.storage.getAvailable(type) >= amount }
     }
 
 }
