@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.economy.core.data
+package de.ruegnerlukas.strategygame.backend.economy.data
 
 /**
- * Something that "owns" resources, e.g. a city, province, market, country, ...
+ * Something that "owns" resources, e.g. a city, province, market-area, country, ...
  */
 interface EconomyNode {
 

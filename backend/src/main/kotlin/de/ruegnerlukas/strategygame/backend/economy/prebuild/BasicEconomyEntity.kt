@@ -1,6 +1,8 @@
-package de.ruegnerlukas.strategygame.backend.economy.core.data
+package de.ruegnerlukas.strategygame.backend.economy.prebuild
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 
 open class BasicEconomyEntity(
     private val owner: EconomyNode,

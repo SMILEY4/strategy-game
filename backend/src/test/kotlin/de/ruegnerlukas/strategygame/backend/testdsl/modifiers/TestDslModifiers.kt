@@ -133,6 +133,7 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
         countryId = city.countryId,
         cityIds = mutableListOf(city.cityId),
         provinceCapitalCityId = city.cityId,
+        color = RGBColor.random()
     )
     ProvinceEntity.of(province, getActiveGame()).also { entity ->
         getDb().insertDocument(Collections.PROVINCES, entity)

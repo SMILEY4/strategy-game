@@ -1,10 +1,10 @@
-package de.ruegnerlukas.strategygame.backend.economy.core.data
+package de.ruegnerlukas.strategygame.backend.economy.data
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 
 
 /**
- * Something that takes part in the economy by consuming and/or producing resources. Can be located in a specific city, province or country.
+ * Something that takes part in the economy by consuming and/or producing resources. Located in a specific node (e.g. city, province or country).
  */
 interface EconomyEntity {
 

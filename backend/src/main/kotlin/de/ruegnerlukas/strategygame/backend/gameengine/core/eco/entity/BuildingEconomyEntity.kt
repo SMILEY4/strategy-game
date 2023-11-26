@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.economy.core.data.BasicEconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.prebuild.BasicEconomyEntity
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 

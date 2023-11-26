@@ -1,14 +1,14 @@
-package de.ruegnerlukas.strategygame.backend.economy.core.service
+package de.ruegnerlukas.strategygame.backend.economy.service
 
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 import java.lang.Float.min
 
-class ConsumptionEntityUpdateService: Logging {
+class ConsumptionEntityUpdateService : Logging {
 
     fun update(entity: EconomyEntity, currentNode: EconomyNode) {
         if (entity.allowPartialInput()) {
@@ -38,6 +38,10 @@ class ConsumptionEntityUpdateService: Logging {
         }
     }
 
+    private fun provideResources(entity: EconomyEntity, currentNode: EconomyNode, type: ResourceType, amount: Float) {
+        provideResources(entity, currentNode, ResourceCollection.basic(type.amount(amount)))
+    }
+
     private fun provideResources(entity: EconomyEntity, currentNode: EconomyNode, resources: ResourceCollection) {
         currentNode.getStorage().remove(resources)
         if (currentNode != entity.getNode()) {
@@ -46,9 +50,6 @@ class ConsumptionEntityUpdateService: Logging {
         entity.addResources(resources)
     }
 
-    private fun provideResources(entity: EconomyEntity, currentNode: EconomyNode, type: ResourceType, amount: Float) {
-        provideResources(entity, currentNode, ResourceCollection.basic(type.amount(amount)))
-    }
 
     private fun allResourcesAvailable(node: EconomyNode, resources: ResourceCollection): Boolean {
         return resources.all { type, amount -> node.getStorage().getAvailable(type) >= amount }

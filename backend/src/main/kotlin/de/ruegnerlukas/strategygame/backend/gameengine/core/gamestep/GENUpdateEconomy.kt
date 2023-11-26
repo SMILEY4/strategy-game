@@ -6,14 +6,11 @@ import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectEntities
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectNodes
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionEntityUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionNodeUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionEntityUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionNodeUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectEntities
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectNodes
+import de.ruegnerlukas.strategygame.backend.economy.service.EconomyService
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
@@ -32,9 +29,7 @@ class GENUpdateEconomy(
 
     object Definition : BasicEventNodeDefinition<GameExtended, GameExtended>()
 
-    private val consumptionNodeUpdateService = ConsumptionNodeUpdateService(ConsumptionEntityUpdateService())
-    private val productionNodeUpdateService = ProductionNodeUpdateService(ProductionEntityUpdateService())
-
+    private val economyService = EconomyService()
 
     init {
         eventSystem.createNode(Definition) {
@@ -42,8 +37,7 @@ class GENUpdateEconomy(
             action { game ->
                 log().debug("Update economy")
                 val rootNode = buildEconomyTree(game)
-                consumptionNodeUpdateService.update(rootNode)
-                productionNodeUpdateService.update(rootNode)
+                economyService.update(rootNode)
                 writeBack(rootNode)
                 eventResultOk(game)
             }

@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package data {
+    interface EconomyNode
+    interface EconomyNodeStorage
+    interface EconomyEntity
+}
+
+package logic {
+    class EconomyService
+    class ConsumptionNodeUpdateService
+    class ConsumptionEntityUpdateService
+    class ProductionNodeUpdateService
+    class ProductionEntityUpdateService
+}
+
+
+EconomyNode "1" -down- "n" EconomyEntity : has >
+EconomyNode "1" -down- "1" EconomyNodeStorage : has >
+EconomyNode "1" -down- "n" EconomyNode : children >
+
+EconomyService -down- ConsumptionNodeUpdateService : uses >
+EconomyService -down- ProductionNodeUpdateService : uses >
+
+ConsumptionNodeUpdateService -down- ConsumptionEntityUpdateService : uses >
+ProductionNodeUpdateService -down- ProductionEntityUpdateService : uses >
+
+ConsumptionNodeUpdateService ..right..> EconomyNode : handles
+ProductionNodeUpdateService ..right..> EconomyNode : handles
+
+ConsumptionEntityUpdateService ..right..> EconomyEntity : handles
+ProductionEntityUpdateService ..right..> EconomyEntity : handles
+
+@enduml

@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.economy.core.data.BasicEconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.core.data.BlockingEconomyNodeStorageImpl
-import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.economy.prebuild.BasicEconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.prebuild.BlockingEconomyNodeStorageImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ProvinceNetwork
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 

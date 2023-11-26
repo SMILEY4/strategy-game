@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.economy.ports.required
+package de.ruegnerlukas.strategygame.backend.gameengine.core.eco
 
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 

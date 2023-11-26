@@ -1,7 +1,7 @@
-package de.ruegnerlukas.strategygame.backend.economy.core.service
+package de.ruegnerlukas.strategygame.backend.economy.service
 
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
 
 class ProductionEntityUpdateService: Logging {
 
