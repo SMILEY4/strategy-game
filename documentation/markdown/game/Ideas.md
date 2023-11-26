@@ -1393,3 +1393,40 @@ Process:
 - growth factor can be influences via player-decisions "limit-growth" and "promote growth" to get/keep desired size
 - growth factor determines pop-count of next turn
 - if pop-count reaches required pop-count of next tier -> settlement "levels-up" automatically
+
+
+
+
+
+# Tile "Resources"
+
+- a tile can have any number of different resources
+- for each resource on that tile
+  - amount available = how much is present on that tile
+  - replenishment rate = how much is added each turn (only if resource is already "present")
+  - max amount = how much can be present at most
+  - => stats may be different for each tile
+- examples
+  - wood (forest)
+    - max = 10
+    - replenishment = +10/turn
+    - woodcutter lvl 1 collects 8/turn
+    - woodcutter lvl 2 collects 10/turn
+    - => never runs out, but no point upgrading past lvl 2 
+  - gold mine
+    - max 100
+    - replenishment +3/turn
+    - mine collects 10/turn
+    - => gold deposit can eventually run out
+  - dead soldiers
+    - max = infinite
+    - battle occurs with 200 dead => adds 200 to tile
+    - replenishment = -5/turn
+    - => necromancers can "harvest" undead after larger battles, but corpses decay over time
+  - deathfog
+    - max = infinite
+    - replenishment = +1/turn
+    - can randomly spawn on any tile
+    - can spread to nearby tiles if hits threshold
+    - can be reduced by mages
+    - if too much fog on tile => reduced positive effects or even deadly to population and units
