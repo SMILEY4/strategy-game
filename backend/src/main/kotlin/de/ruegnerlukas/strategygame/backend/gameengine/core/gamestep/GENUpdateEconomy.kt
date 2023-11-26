@@ -4,10 +4,19 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectNodes
 import de.ruegnerlukas.strategygame.backend.economy.logic.EconomyService
+import de.ruegnerlukas.strategygame.backend.economy.report.ConsumptionReportEntry
+import de.ruegnerlukas.strategygame.backend.economy.report.EconomyUpdateReport
+import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesReportEntry
+import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.ProductionQueueEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.WorldEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
@@ -31,8 +40,8 @@ class GENUpdateEconomy(
             action { game ->
                 log().debug("Update economy")
                 val rootNode = buildEconomyTree(game)
-                economyService.update(rootNode)
-                writeBack(rootNode)
+                val report = economyService.update(rootNode)
+                writeBack(game, report)
                 eventResultOk(game)
             }
         }
@@ -42,36 +51,61 @@ class GENUpdateEconomy(
         return WorldEconomyNode(game, config, popFoodConsumption)
     }
 
-    private fun writeBack(rootNode: EconomyNode) {
-        rootNode.collectNodes()
-            .filterIsInstance<ProvinceEconomyNode>()
-            .forEach { writeBack(it) }
-    }
+    private fun writeBack(game: GameExtended, report: EconomyUpdateReport) {
 
-    private fun writeBack(node: ProvinceEconomyNode) {
-        // TODO
-//        node.province.resourcesProducedCurrTurn = node.getStorage().getAdded()
-//        node.province.resourcesConsumedCurrTurn = ResourceCollection.basic().also {
-//            it.add(node.getStorage().getRemoved())
-//            it.add(node.getStorage().getRemovedFromShared())
-//        }
-//        node.province.resourcesMissing = ResourceCollection.basic().also { missing ->
-//            node.collectEntities()
-//                .filter { it.isActive() }
-//                .forEach { entity -> missing.add(entity.getRequiredInput()) }
-//        }
-//        node.getEntities()
-//            .filterIsInstance<BuildingEconomyEntity>()
-//            .forEach { entity -> entity.building.active = entity.completedOutput() }
-//        node.getEntities()
-//            .filterIsInstance<ProductionQueueEconomyEntity>()
-//            .forEach { entity -> entity.queueEntry.collectedResources.add(entity.getProvidedResources()) }
-//        node.getEntities()
-//            .filterIsInstance<PopulationBaseEconomyEntity>()
-//            .forEach { entity -> entity.city.population.popConsumedFood = entity.getConsumedFood() }
-//        node.getEntities()
-//            .filterIsInstance<PopulationGrowthEconomyEntity>()
-//            .forEach { entity -> entity.city.population.popGrowthConsumedFood = entity.hasConsumedFood() }
+        // reset
+        game.provinces.forEach { province ->
+            province.resourcesConsumedCurrTurn = ResourceCollection.basic()
+            province.resourcesProducedCurrTurn = ResourceCollection.basic()
+            province.resourcesMissing = ResourceCollection.basic()
+        }
+        game.cities.forEach { city ->
+            city.population.popConsumedFood = 0f
+            city.population.popGrowthConsumedFood = false
+            city.infrastructure.buildings.forEach { building ->
+                building.active = false
+            }
+        }
+
+        // apply report entries
+        report.getEntries().forEach { entry ->
+            when (entry) {
+
+                is ConsumptionReportEntry -> {
+                    if (entry.entity.owner is ProvinceEconomyNode) {
+                        val province = (entry.entity.owner as ProvinceEconomyNode).province
+                        province.resourcesConsumedCurrTurn.add(entry.resources)
+                    }
+                    if (entry.entity is BuildingEconomyEntity) {
+                        entry.entity.building.active = true
+                    }
+                    if (entry.entity is ProductionQueueEconomyEntity) {
+                        entry.entity.queueEntry.collectedResources.add(entry.resources)
+                    }
+                    if (entry.entity is PopulationBaseEconomyEntity) {
+                        entry.entity.city.population.popConsumedFood = entry.resources[ResourceType.FOOD]
+                    }
+                }
+
+                is ProductionReportEntry -> {
+                    if (entry.entity.owner is ProvinceEconomyNode) {
+                        val province = (entry.entity.owner as ProvinceEconomyNode).province
+                        province.resourcesProducedCurrTurn.add(entry.resources)
+                    }
+                    if (entry.entity is PopulationGrowthEconomyEntity) {
+                        entry.entity.city.population.popGrowthConsumedFood = true
+                    }
+                }
+
+                is MissingResourcesReportEntry -> {
+                    if (entry.entity.owner is ProvinceEconomyNode) {
+                        val province = (entry.entity.owner as ProvinceEconomyNode).province
+                        province.resourcesMissing.add(entry.resources)
+                    }
+                }
+
+            }
+        }
     }
 
 }

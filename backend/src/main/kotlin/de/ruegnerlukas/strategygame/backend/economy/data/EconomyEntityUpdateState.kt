@@ -10,13 +10,6 @@ class EconomyEntityUpdateState(input: ResourceCollection) {
 
     private val requiredResources = input.copy()
 
-    /**
-     * @return the current state
-     */
-    fun getState(): EconomyUpdateState {
-        return state
-    }
-
 
     /**
      * @return the currently required resources (i.e. initial - provided) for consumption
