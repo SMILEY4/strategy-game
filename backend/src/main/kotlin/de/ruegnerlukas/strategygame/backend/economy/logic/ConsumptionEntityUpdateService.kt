@@ -13,7 +13,7 @@ class ConsumptionEntityUpdateService : Logging {
     fun update(entity: EconomyEntity, currentNode: EconomyNode, report: EconomyUpdateReport) {
         when (entity.config.consumptionType) {
             EconomyConsumptionType.DISTRIBUTED -> updateDistributed(entity, currentNode, report)
-            EconomyConsumptionType.LOCAL -> updateLocal(entity, currentNode, report)
+            EconomyConsumptionType.COMPLETE -> updateLocal(entity, currentNode, report)
         }
     }
 
@@ -24,7 +24,6 @@ class ConsumptionEntityUpdateService : Logging {
         } else {
             val resources = getPossibleResources(requiredResources, currentNode)
             provideResources(entity, currentNode, resources, report)
-            log().debug("[eco-update] $entity in node $currentNode consumed ${resources.toList()}")
         }
     }
 
@@ -42,7 +41,6 @@ class ConsumptionEntityUpdateService : Logging {
         val requiredResources = entity.state.getRemainingRequired()
         if (allResourcesAvailable(currentNode, requiredResources)) {
             provideResources(entity, currentNode, requiredResources, report)
-            log().debug("[eco-update] $entity in node $currentNode consumed ${requiredResources.toList()}")
         }
     }
 
@@ -56,13 +54,14 @@ class ConsumptionEntityUpdateService : Logging {
         resources: ResourceCollection,
         report: EconomyUpdateReport
     ) {
-        currentNode.storage.remove(resources)
-        entity.state.consume(resources)
+        log().debug("[eco-update] $entity in node $currentNode consumed ${resources.toList()} (requires ${entity.state.getRemainingRequired()})")
         report.addConsumption(
             entity = entity,
             fromNode = currentNode,
             resources = resources.copy()
         )
+        currentNode.storage.remove(resources)
+        entity.state.consume(resources)
     }
 
 

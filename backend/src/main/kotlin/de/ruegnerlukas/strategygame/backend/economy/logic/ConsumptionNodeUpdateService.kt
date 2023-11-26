@@ -27,7 +27,7 @@ class ConsumptionNodeUpdateService(private val consumptionEntityUpdateService: C
         node.collectEntities()
             .filter { it.config.isActive }
             .filter { it.state.state == EconomyUpdateState.CONSUME }
-            .sortedBy { it.config.priority }
+            .sortedByDescending { it.config.priority }
             .forEach { consumptionEntityUpdateService.update(it, node, report) }
     }
 

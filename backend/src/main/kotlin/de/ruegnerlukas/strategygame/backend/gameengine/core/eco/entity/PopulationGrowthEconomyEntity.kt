@@ -28,7 +28,7 @@ class PopulationGrowthEconomyEntity(
     override val config: EconomyEntityConfig = EconomyEntityConfig(
         input = getRequiredResources(gameConfig),
         output = ResourceCollection.empty(),
-        consumptionType = EconomyConsumptionType.LOCAL,
+        consumptionType = EconomyConsumptionType.COMPLETE,
         priority = 0f,
         isActive = true
     )

@@ -83,7 +83,7 @@ class GENUpdateEconomy(
                         entry.entity.queueEntry.collectedResources.add(entry.resources)
                     }
                     if (entry.entity is PopulationBaseEconomyEntity) {
-                        entry.entity.city.population.popConsumedFood = entry.resources[ResourceType.FOOD]
+                        entry.entity.city.population.popConsumedFood += entry.resources[ResourceType.FOOD]
                     }
                 }
 

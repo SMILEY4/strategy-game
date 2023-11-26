@@ -17,7 +17,7 @@ class EconomyUpdateReport {
             ConsumptionReportEntry(
                 entity = entity,
                 fromNode = fromNode,
-                resources = resources
+                resources = resources.copy()
             )
         )
     }
@@ -31,7 +31,7 @@ class EconomyUpdateReport {
             ProductionReportEntry(
                 entity = entity,
                 inNode = inNode,
-                resources = resources
+                resources = resources.copy()
             )
         )
     }
@@ -43,7 +43,7 @@ class EconomyUpdateReport {
         add(
             MissingResourcesReportEntry(
                 entity = entity,
-                resources = resources
+                resources = resources.copy()
             )
         )
     }

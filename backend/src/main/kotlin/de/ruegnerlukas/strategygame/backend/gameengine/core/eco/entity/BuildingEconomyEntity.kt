@@ -26,7 +26,7 @@ class BuildingEconomyEntity(
     override val config: EconomyEntityConfig = EconomyEntityConfig(
         input = ResourceCollection.basic(building.type.templateData.requires),
         output = ResourceCollection.basic(building.type.templateData.produces),
-        consumptionType = EconomyConsumptionType.LOCAL,
+        consumptionType = EconomyConsumptionType.COMPLETE,
         priority = if (city.meta.isProvinceCapital) 1.5f else 1f,
         isActive = fulfillsTileRequirement(building),
     )

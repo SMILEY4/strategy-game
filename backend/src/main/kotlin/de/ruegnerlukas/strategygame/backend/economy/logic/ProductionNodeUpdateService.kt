@@ -19,7 +19,7 @@ class ProductionNodeUpdateService(private val productionEntityUpdateService: Pro
         node.entities
             .filter { it.config.isActive }
             .filter { it.state.state == EconomyUpdateState.PRODUCE }
-            .sortedBy { it.config.priority }
+            .sortedByDescending { it.config.priority }
             .forEach { productionEntityUpdateService.update(it, report) }
     }
 
