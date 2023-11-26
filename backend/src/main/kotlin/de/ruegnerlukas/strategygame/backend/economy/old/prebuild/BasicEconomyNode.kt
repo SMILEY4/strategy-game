@@ -1,8 +1,8 @@
-package de.ruegnerlukas.strategygame.backend.economy.prebuild
+package de.ruegnerlukas.strategygame.backend.economy.old.prebuild
 
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNodeStorage
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNodeStorage
 
 open class BasicEconomyNode(
     private val storage: EconomyNodeStorage,

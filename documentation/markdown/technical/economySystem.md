@@ -8,16 +8,8 @@
   - Something that "owns" resources, e.g. a city, province, market-area, country, ...
 - **storages** attached to nodes
   - keep track of resources available in a node
-  - *available* -  the amount of resources currently available at this node (includes all resources from subtree)
-  - *added* - the amount of resources added to this storage
-  - *removed* - the amount of resources removed from this storage
-  - *removedFromShared* - the amount of resources removed from another storage by an entity owned by the node with this storage
-  - ...
 - **entities** owned by nodes
   - Something that takes part in the economy by consuming and/or producing resources. Located in a specific node (e.g. city, province or country).
-  - *priority* - determines who gets to consume and produce first
-  - *allow partial input* - whether all resources have to be fully consumed from the storage of the "owning" node or if some part can be taken from "higher up" nodes. The resources are still consumed, even if the required amount is not reached at the end of the update. The required amount must still be consumed completely to be able to produce
-  - ...
 
 
 
@@ -46,18 +38,18 @@
 
 - *input: entity to update, current node  (note: current node is not always owner of entity)*
 
-- if entity **allows partial** input ("partial"):
+- if consumption type is **distributed**:
   - **check** if all required resources are **available** at current node
     - *yes*:
-      - -> handle same as fixed / if it would not allow partial input
+      - -> handle same as "local"-type
     - *no*:
       - **for each required** resource, calculate the **amount** that is **possible** to consume:
         - **remove** amount from storage of current node
         - (mark amount as removed from another storage at the storage of the entity owner)
         - **provide** amount to entity (i.e. "consumed")
-        - **if** entity is **satisfied, mark** as "no longer ready to consume & ready to produce" 
+        - **if** entity is **satisfied**, **mark** as "no longer ready to consume & ready to produce" 
 
-- if entity does **not allow partial** input ("fixed"):
+- if consumption type is **local**:
   - **check** if all required resources are **available** at current node:
     - *yes*:
       - **remove** resources from storage of current node

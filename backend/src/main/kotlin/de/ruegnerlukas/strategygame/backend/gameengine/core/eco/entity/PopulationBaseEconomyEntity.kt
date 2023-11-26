@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
-import de.ruegnerlukas.strategygame.backend.economy.prebuild.BasicEconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.old.prebuild.BasicEconomyEntity
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 

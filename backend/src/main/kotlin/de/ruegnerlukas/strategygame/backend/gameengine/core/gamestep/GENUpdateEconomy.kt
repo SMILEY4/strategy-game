@@ -6,10 +6,10 @@ import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectEntities
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectNodes
-import de.ruegnerlukas.strategygame.backend.economy.service.EconomyService
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNode.Companion.collectEntities
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNode.Companion.collectNodes
+import de.ruegnerlukas.strategygame.backend.economy.old.service.EconomyService
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity

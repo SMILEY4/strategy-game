@@ -1,8 +1,8 @@
-package de.ruegnerlukas.strategygame.backend.economy.prebuild
+package de.ruegnerlukas.strategygame.backend.economy.old.prebuild
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
-import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNodeStorage
+import de.ruegnerlukas.strategygame.backend.economy.old.data.EconomyNodeStorage
 
 class EconomyNodeStorageImpl(private val initialResources: ResourceCollection) : EconomyNodeStorage {
 

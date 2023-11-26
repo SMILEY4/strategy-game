@@ -1,4 +1,4 @@
-package de.ruegnerlukas.strategygame.backend.economy.data
+package de.ruegnerlukas.strategygame.backend.economy.old.data
 
 /**
  * Something that "owns" resources, e.g. a city, province, market-area, country, ...
@@ -13,7 +13,7 @@ interface EconomyNode {
 
 
         /**
-         * @return the whole subtree as a flat list, i.e. this node, its children and their children
+         * @return the whole subtree, i.e. this node, its children and their children
          */
         fun EconomyNode.collectNodes(): Collection<EconomyNode> = listOf(this) + getChildren().flatMap { it.collectNodes() }
     }

@@ -1,8 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.economy.prebuild.BasicEconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.prebuild.EconomyNodeStorageImpl
+import de.ruegnerlukas.strategygame.backend.economy.old.prebuild.BasicEconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.old.prebuild.EconomyNodeStorageImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity

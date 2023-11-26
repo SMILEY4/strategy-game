@@ -5,6 +5,8 @@ package data {
     interface EconomyNode
     interface EconomyNodeStorage
     interface EconomyEntity
+    interface EconomyEntityConfig
+    interface EconomyEntityState
 }
 
 package logic {
@@ -19,6 +21,9 @@ package logic {
 EconomyNode "1" -down- "n" EconomyEntity : has >
 EconomyNode "1" -down- "1" EconomyNodeStorage : has >
 EconomyNode "1" -down- "n" EconomyNode : children >
+
+EconomyEntity "1" -down- "1" EconomyEntityConfig : has >
+EconomyEntity "1" -down- "1" EconomyEntityState : has >
 
 EconomyService -down- ConsumptionNodeUpdateService : uses >
 EconomyService -down- ProductionNodeUpdateService : uses >
