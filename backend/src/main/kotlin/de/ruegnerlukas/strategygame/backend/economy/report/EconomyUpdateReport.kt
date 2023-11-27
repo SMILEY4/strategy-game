@@ -8,11 +8,7 @@ class EconomyUpdateReport {
 
     private val entries = mutableListOf<ReportEntry>()
 
-    fun addConsumption(
-        entity: EconomyEntity,
-        fromNode: EconomyNode,
-        resources: ResourceCollection,
-    ) {
+    fun addConsumption(entity: EconomyEntity, fromNode: EconomyNode, resources: ResourceCollection) {
         add(
             ConsumptionReportEntry(
                 entity = entity,
@@ -22,11 +18,7 @@ class EconomyUpdateReport {
         )
     }
 
-    fun addProduction(
-        entity: EconomyEntity,
-        inNode: EconomyNode,
-        resources: ResourceCollection,
-    ) {
+    fun addProduction(entity: EconomyEntity, inNode: EconomyNode, resources: ResourceCollection) {
         add(
             ProductionReportEntry(
                 entity = entity,
@@ -36,10 +28,7 @@ class EconomyUpdateReport {
         )
     }
 
-    fun addMissingResources(
-        entity: EconomyEntity,
-        resources: ResourceCollection
-    ) {
+    fun addMissingResources(entity: EconomyEntity, resources: ResourceCollection) {
         add(
             MissingResourcesReportEntry(
                 entity = entity,

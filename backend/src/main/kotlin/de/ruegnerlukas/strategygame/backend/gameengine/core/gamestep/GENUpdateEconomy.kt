@@ -7,8 +7,11 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectNodes
+import de.ruegnerlukas.strategygame.backend.economy.ledger.NodeLedger
 import de.ruegnerlukas.strategygame.backend.economy.logic.EconomyService
 import de.ruegnerlukas.strategygame.backend.economy.report.ConsumptionReportEntry
+import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReportCalculations
 import de.ruegnerlukas.strategygame.backend.economy.report.EconomyUpdateReport
 import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesReportEntry
 import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
@@ -17,6 +20,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingE
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.ProductionQueueEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.MarketEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.WorldEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
@@ -41,6 +45,7 @@ class GENUpdateEconomy(
                 log().debug("Update economy")
                 val rootNode = buildEconomyTree(game)
                 val report = economyService.update(rootNode)
+                printFlowSummary(rootNode, report)
                 writeBack(game, report)
                 eventResultOk(game)
             }
@@ -106,6 +111,44 @@ class GENUpdateEconomy(
 
             }
         }
+    }
+
+
+    private fun printFlowSummary(rootNode: EconomyNode, report: EconomyUpdateReport) {
+
+        println()
+        println()
+        println()
+        println("========================")
+
+        rootNode.collectNodes().forEach { node ->
+            when(node) {
+                is WorldEconomyNode -> {
+                    println("[WORLD]:")
+                }
+                is MarketEconomyNode -> {
+                    println("[MARKET]")
+                }
+                is ProvinceEconomyNode -> {
+                    println("[PROVINCE] ${node.province.provinceCapitalCityId}:")
+                }
+            }
+
+            val ledger = NodeLedger.from(report, node)
+
+            ledger.entries.forEach { entry ->
+                println("   * ${entry.amount}x ${entry.resource}  (${entry.missing} missing)")
+                entry.details.forEach { detail ->
+                    println("      ${detail.amount} ${detail.type}      (${detail.entity})")
+                }
+            }
+
+        }
+
+        println("========================")
+        println()
+        println()
+        println()
     }
 
 }
