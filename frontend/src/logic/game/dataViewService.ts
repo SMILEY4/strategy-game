@@ -148,9 +148,9 @@ export class DataViewService {
                     })),
                 ],
             },
-            resourceBalance: {
-                visibility: province.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
-                items: province.resourceBalance,
+            resourceLedger: {
+                visibility: (province.country.id === povCountryId && province.resourceLedger !== null) ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
+                ledger: province.resourceLedger!,
             },
         };
     }

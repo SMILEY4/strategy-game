@@ -39,8 +39,40 @@ export interface ProvinceDTO {
         provinceCapitalCityId: string,
     },
     dataTier3: null | {
-        resourceBalance: Record<ResourceTypeString, number>
+        resourceLedger: ResourceLedgerDTO
     }
+}
+
+export interface ResourceLedgerDTO {
+    entries: ResourceLedgerEntryDTO[];
+}
+
+export interface ResourceLedgerEntryDTO {
+    resourceType: ResourceTypeString,
+    amount: number,
+    missing: number,
+    details: ResourceLedgerDetailDTO[]
+}
+
+export interface ResourceLedgerDetailDTO {
+    type: "unknown-consumption"
+        | "unknown-production"
+        | "unknown-missing"
+        | "population-base"
+        | "population-growth"
+        | "population-base-missing"
+        | "population-growth-missing"
+        | "building-consumption"
+        | "building-production"
+        | "building-missing"
+        | "production-queue"
+        | "production-queue-missing"
+        | "production-queue-refund"
+        | "give-shared"
+        | "take-shared"
+    amount?: number,
+    buildingType?: BuildingTypeString,
+    count?: number
 }
 
 export interface CityDTO {

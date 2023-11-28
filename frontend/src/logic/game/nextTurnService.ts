@@ -1,4 +1,12 @@
-import {BuildingDTO, CityDTO, GameStateDTO, ProductionQueueEntryDTO, ProvinceDTO, TileDTO} from "./models/gameStateDTO";
+import {
+    BuildingDTO,
+    CityDTO,
+    GameStateDTO,
+    ProductionQueueEntryDTO,
+    ResourceLedgerDetailDTO,
+    ResourceLedgerDTO,
+    TileDTO,
+} from "./models/gameStateDTO";
 import {Tile} from "../../models/tile";
 import {orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
@@ -19,6 +27,7 @@ import {Visibility} from "../../models/visibility";
 import {TerrainResourceType} from "../../models/terrainResourceType";
 import {MonitoringRepository} from "../../state/access/MonitoringRepository";
 import {ValueHistory} from "../../shared/valueHistory";
+import {ResourceLedger, ResourceLedgerDetail} from "../../models/resourceLedger";
 
 export class NextTurnService {
 
@@ -27,7 +36,7 @@ export class NextTurnService {
     private readonly gameSessionRepository: GameSessionStateRepository;
     private readonly monitoringRepository: MonitoringRepository;
 
-    private readonly durationHistory = new ValueHistory(10)
+    private readonly durationHistory = new ValueHistory(10);
 
     constructor(gameLoopService: GameLoopService,
                 remoteGameRepository: RemoteGameStateRepository,
@@ -41,7 +50,7 @@ export class NextTurnService {
 
 
     handleNextTurn(game: GameStateDTO) {
-        const timeStart = Date.now()
+        const timeStart = Date.now();
 
         // todo: possible performance optimisation:
         //  object pools for tiles, cities, ...
@@ -60,8 +69,8 @@ export class NextTurnService {
         this.gameLoopService.onGameStateUpdate();
 
         const timeEnd = Date.now();
-        this.durationHistory.set(timeEnd - timeStart)
-        this.monitoringRepository.setNextTurnDurations(this.durationHistory.getHistory())
+        this.durationHistory.set(timeEnd - timeStart);
+        this.monitoringRepository.setNextTurnDurations(this.durationHistory.getHistory());
     }
 
     private buildCountries(game: GameStateDTO): Country[] {
@@ -125,22 +134,121 @@ export class NextTurnService {
                         isProvinceCapitol: cityDTO.dataTier1.isProvinceCapital,
                     };
                 }),
-                resourceBalance: this.buildResourceBalance(provinceDTO),
+                resourceLedger: provinceDTO.dataTier3 ? this.buildResourceLedger(provinceDTO.dataTier3.resourceLedger) : null,
             };
         });
     }
 
-    private buildResourceBalance(provinceDTO: ProvinceDTO): Map<ResourceType, number> {
-        const balance = new Map<ResourceType, number>();
-        if (provinceDTO.dataTier3) {
-            ResourceType.getValues().forEach(type => {
-                const entry = provinceDTO.dataTier3!.resourceBalance[type.id];
-                if (entry !== undefined && entry !== null) {
-                    balance.set(type, entry.valueOf());
-                }
-            });
+    private buildResourceLedger(dto: ResourceLedgerDTO): ResourceLedger {
+        return {
+            entries: dto.entries.map(dtoEntry => ({
+                resourceType: ResourceType.fromString(dtoEntry.resourceType),
+                amount: dtoEntry.amount,
+                missing: dtoEntry.missing,
+                details: dtoEntry.details.map(dtoDetail => this.buildLedgerDetail(dtoDetail)),
+            })),
+        };
+    }
+
+    private buildLedgerDetail(dto: ResourceLedgerDetailDTO): ResourceLedgerDetail {
+        switch (dto.type) {
+            case "unknown-consumption":
+                return {
+                    type: "removed",
+                    amount: dto.amount!,
+                    message: "unknown",
+                };
+            case "unknown-production":
+                return {
+                    type: "added",
+                    amount: dto.amount!,
+                    message: "unknown",
+                };
+            case "unknown-missing":
+                return {
+                    type: "missing",
+                    amount: dto.amount!,
+                    message: "unknown",
+                };
+            case "population-base":
+                return {
+                    type: "removed",
+                    amount: dto.amount!,
+                    message: "basic population needs",
+                };
+            case "population-growth":
+                return {
+                    type: "removed",
+                    amount: dto.amount!,
+                    message: "population growth",
+                };
+            case "population-base-missing":
+                return {
+                    type: "missing",
+                    amount: dto.amount!,
+                    message: "basic population needs",
+                };
+            case "population-growth-missing":
+                return {
+                    type: "missing",
+                    amount: dto.amount!,
+                    message: "population growth",
+                };
+            case "building-consumption":
+                return {
+                    type: "removed",
+                    amount: dto.amount!,
+                    message: BuildingType.fromString(dto.buildingType!).displayString + " (" +dto.count!+ "x)",
+                };
+            case "building-production":
+                return {
+                    type: "added",
+                    amount: dto.amount!,
+                    message: BuildingType.fromString(dto.buildingType!).displayString + " (" +dto.count!+ "x)",
+                };
+            case "building-missing":
+                return {
+                    type: "missing",
+                    amount: dto.amount!,
+                    message: BuildingType.fromString(dto.buildingType!).displayString + " (" +dto.count!+ "x)",
+                };
+            case "production-queue":
+                return {
+                    type: "removed",
+                    amount: dto.amount!,
+                    message: "production queue(s)" + " (" +dto.count!+ "x)",
+                };
+            case "production-queue-missing":
+                return {
+                    type: "missing",
+                    amount: dto.amount!,
+                    message: "production queue(s)" + " (" +dto.count!+ "x)",
+                };
+            case "production-queue-refund":
+                return {
+                    type: "added",
+                    amount: dto.amount!,
+                    message: "refund production queue entry",
+                };
+            case "give-shared":
+                return {
+                    type: "removed",
+                    amount: dto.amount!,
+                    message: "traded with other",
+                };
+            case "take-shared":
+                return {
+                    type: "added",
+                    amount: dto.amount!,
+                    message: "traded with other",
+                };
+            default:
+                return {
+                    type: "added",
+                    amount: 0,
+                    message: "error",
+                };
         }
-        return balance;
     }
 
     private buildCities(game: GameStateDTO): City[] {

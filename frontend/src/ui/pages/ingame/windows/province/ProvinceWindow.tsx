@@ -69,7 +69,7 @@ function ProvinceResourceBalanceSection(props: UseProvinceWindow.Data): ReactEle
     return (
         <>
             <Header2 centered>
-                {props.province.resourceBalance.visibility === InfoVisibility.KNOWN
+                {props.province.resourceLedger.visibility === InfoVisibility.KNOWN
                     ? "Resource Balance"
                     : "Known Resource Balance"}
             </Header2>
@@ -78,14 +78,10 @@ function ProvinceResourceBalanceSection(props: UseProvinceWindow.Data): ReactEle
             <InsetPanel>
 
                 <HBox fillParent gap_s top left wrap>
-                    {Array.from(props.province.resourceBalance.items).map(entry => (
+                    {Array.from(props.province.resourceLedger.ledger.entries).map(entry => (
                         <ResourceBalanceBox
-                            key={entry[0].id}
-                            data={{
-                                type: entry[0],
-                                value: entry[1],
-                                contributions: [],
-                            }}
+                            key={entry.resourceType.id}
+                            data={entry}
                         />
                     ))}
                 </HBox>

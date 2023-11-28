@@ -3,6 +3,7 @@ import {CityReduced} from "./city";
 import {Color} from "./color";
 import {ResourceType} from "./resourceType";
 import {InfoVisibility} from "./infoVisibility";
+import {ResourceLedger} from "./resourceLedger";
 
 export interface ProvinceIdentifier {
     id: string,
@@ -20,7 +21,7 @@ export interface Province {
     identifier: ProvinceIdentifier;
     country: CountryIdentifier;
     cities: CityReduced[];
-    resourceBalance: Map<ResourceType, number>;
+    resourceLedger: ResourceLedger | null;
 }
 
 
@@ -32,8 +33,8 @@ export interface ProvinceView {
         visibility: InfoVisibility,
         items: CityReduced[]
     };
-    resourceBalance: {
+    resourceLedger: {
         visibility: InfoVisibility,
-        items: Map<ResourceType, number>
+        ledger: ResourceLedger
     }
 }
