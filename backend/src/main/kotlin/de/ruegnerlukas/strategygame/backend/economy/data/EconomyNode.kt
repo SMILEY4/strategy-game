@@ -16,6 +16,19 @@ interface EconomyNode {
          * @return the whole subtree as a flat list, i.e. this node, its children and their children
          */
         fun EconomyNode.collectNodes(): Collection<EconomyNode> = listOf(this) + children.flatMap { it.collectNodes() }
+
+
+        /**
+         * @return whether the given node is this node or a node in the subtree with this node as root
+         */
+        fun EconomyNode.contains(node: EconomyNode): Boolean {
+            return if (this == node) {
+                true
+            } else {
+                this.children.any { it.contains(node) }
+            }
+        }
+
     }
 
 

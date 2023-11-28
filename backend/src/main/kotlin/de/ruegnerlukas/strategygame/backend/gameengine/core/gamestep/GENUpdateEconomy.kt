@@ -11,7 +11,6 @@ import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.c
 import de.ruegnerlukas.strategygame.backend.economy.ledger.NodeLedger
 import de.ruegnerlukas.strategygame.backend.economy.logic.EconomyService
 import de.ruegnerlukas.strategygame.backend.economy.report.ConsumptionReportEntry
-import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReportCalculations
 import de.ruegnerlukas.strategygame.backend.economy.report.EconomyUpdateReport
 import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesReportEntry
 import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
@@ -20,6 +19,21 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingE
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.ProductionQueueEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingConsumptionDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingMissingDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingProductionDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GiveSharedResourceDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.LedgerResourceDetailBuilderImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseMissingDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationGrowthDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationGrowthMissingDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ProductionQueueDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ProductionQueueMissingDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.TakeSharedResourceDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.UnknownConsumptionLedgerDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.UnknownMissingLedgerDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.UnknownProductionLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.MarketEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.WorldEconomyNode
@@ -134,12 +148,27 @@ class GENUpdateEconomy(
                 }
             }
 
-            val ledger = NodeLedger.from(report, node)
+            val ledger = NodeLedger(LedgerResourceDetailBuilderImpl()).also { it.record(report, node) }
 
-            ledger.entries.forEach { entry ->
-                println("   * ${entry.amount}x ${entry.resource}  (${entry.missing} missing)")
+            ledger.getEntries().forEach { entry ->
+                println("   * ${entry.amount} ${entry.resourceType} (${entry.missing} missing)")
                 entry.details.forEach { detail ->
-                    println("      ${detail.amount} ${detail.type}      (${detail.entity})")
+                    when(detail) {
+                        is UnknownConsumptionLedgerDetail -> println("      * -${detail.amount}: consumed by unknown")
+                        is UnknownProductionLedgerDetail -> println("      * +${detail.amount}: produced by unknown")
+                        is UnknownMissingLedgerDetail -> println("      * ${detail.amount}: missed by unknown")
+                        is PopulationBaseDetail -> println("      * -${detail.amount}: consumed by population basics")
+                        is PopulationBaseMissingDetail -> println("      * ${detail.amount}: missed by population basics")
+                        is PopulationGrowthDetail -> println("      * -${detail.amount}: consumed by population growth")
+                        is PopulationGrowthMissingDetail -> println("      * ${detail.amount}: missed by population growth")
+                        is BuildingConsumptionDetail -> println("      * -${detail.amount}: consumed by ${detail.buildingType}")
+                        is BuildingProductionDetail -> println("      * +${detail.amount}:  produced by ${detail.buildingType}")
+                        is BuildingMissingDetail -> println("      * ${detail.amount}:  missed by ${detail.buildingType}")
+                        is ProductionQueueDetail -> println("      * -${detail.amount}: consumed by production queue")
+                        is ProductionQueueMissingDetail -> println("      * ${detail.amount}: missed by production queue")
+                        is GiveSharedResourceDetail -> println("      * -${detail.amount}: sold on marked")
+                        is TakeSharedResourceDetail -> println("      * +${detail.amount}: bought on market")
+                    }
                 }
             }
 
