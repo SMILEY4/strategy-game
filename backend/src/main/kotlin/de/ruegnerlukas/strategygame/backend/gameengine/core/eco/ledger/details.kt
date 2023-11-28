@@ -118,13 +118,15 @@ class PopulationGrowthMissingDetail(
 
 
 class BuildingConsumptionDetail(
+    val buildingType: BuildingType,
     var amount: Float,
-    val buildingType: BuildingType
+    var count: Int = 1,
 ) : LedgerResourceDetail {
 
     override fun merge(other: LedgerResourceDetail): Boolean {
         return if(other is BuildingConsumptionDetail && other.buildingType == buildingType) {
             this.amount += other.amount
+            this.count += other.count
             true
         } else {
             false
@@ -135,13 +137,15 @@ class BuildingConsumptionDetail(
 
 
 class BuildingProductionDetail(
+    val buildingType: BuildingType,
     var amount: Float,
-    val buildingType: BuildingType
+    var count: Int = 1,
 ) : LedgerResourceDetail {
 
     override fun merge(other: LedgerResourceDetail): Boolean {
         return if(other is BuildingProductionDetail && other.buildingType == buildingType) {
             this.amount += other.amount
+            this.count += other.count
             true
         } else {
             false
@@ -152,13 +156,15 @@ class BuildingProductionDetail(
 
 
 class BuildingMissingDetail(
+    val buildingType: BuildingType,
     var amount: Float,
-    val buildingType: BuildingType
-) : LedgerResourceDetail {
+    var count: Int = 1,
+    ) : LedgerResourceDetail {
 
     override fun merge(other: LedgerResourceDetail): Boolean {
         return if(other is BuildingMissingDetail && other.buildingType == buildingType) {
             this.amount += other.amount
+            this.count += other.count
             true
         } else {
             false
@@ -170,11 +176,13 @@ class BuildingMissingDetail(
 
 class ProductionQueueDetail(
     var amount: Float,
-) : LedgerResourceDetail {
+    var count: Int = 1,
+    ) : LedgerResourceDetail {
 
     override fun merge(other: LedgerResourceDetail): Boolean {
         return if(other is ProductionQueueDetail) {
             this.amount += other.amount
+            this.count += other.count
             true
         } else {
             false
@@ -186,11 +194,13 @@ class ProductionQueueDetail(
 
 class ProductionQueueMissingDetail(
     var amount: Float,
-) : LedgerResourceDetail {
+    var count: Int = 1,
+    ) : LedgerResourceDetail {
 
     override fun merge(other: LedgerResourceDetail): Boolean {
         return if(other is ProductionQueueMissingDetail) {
             this.amount += other.amount
+            this.count += other.count
             true
         } else {
             false
@@ -199,6 +209,23 @@ class ProductionQueueMissingDetail(
 
 }
 
+
+class ProductionQueueRefundDetail(
+    var amount: Float,
+    var count: Int = 1,
+) : LedgerResourceDetail {
+
+    override fun merge(other: LedgerResourceDetail): Boolean {
+        return if(other is ProductionQueueRefundDetail) {
+            this.amount += other.amount
+            this.count += other.count
+            true
+        } else {
+            false
+        }
+    }
+
+}
 
 class GiveSharedResourceDetail(
     var amount: Float

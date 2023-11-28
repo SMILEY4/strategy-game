@@ -10,16 +10,36 @@ import de.ruegnerlukas.strategygame.backend.economy.report.EconomyUpdateReport
 import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesReportEntry
 import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
 
-data class NodeLedger(val detailBuilder: LedgerResourceDetailBuilder) {
+data class ResourceLedger(val detailBuilder: LedgerResourceDetailBuilder) {
 
     private val entries: MutableList<LedgerResourceEntry> = mutableListOf()
 
+
+    /**
+     * Replaces all entries with the given entries
+     */
+    fun setEntries(entries: List<LedgerResourceEntry>) {
+        this.entries.clear()
+        this.entries.addAll(entries)
+    }
 
     /**
      * @return all resource entries of this ledger
      */
     fun getEntries(): List<LedgerResourceEntry> {
         return this.entries
+    }
+
+
+    /**
+     * Get the current resource balance (i.e. produced - consumed)
+     */
+    fun getBalance(): ResourceCollection {
+        return ResourceCollection.basic().also { balance ->
+            entries.forEach { entry ->
+                balance.add(entry.resourceType, entry.amount)
+            }
+        }
     }
 
 
@@ -32,7 +52,6 @@ data class NodeLedger(val detailBuilder: LedgerResourceDetailBuilder) {
             getEntry(type).add(amount, detail)
         }
     }
-
 
     /**
      * Record resources being consumed and removed from this node
@@ -76,6 +95,14 @@ data class NodeLedger(val detailBuilder: LedgerResourceDetailBuilder) {
             getEntry(type).addMissing(amount, detail)
         }
     }
+
+
+    fun record(resources: ResourceCollection, detail: (type: ResourceType, amount: Float) -> LedgerResourceDetail) {
+        resources.forEach(false) { type, amount ->
+            getEntry(type).add(amount, detail(type, amount))
+        }
+    }
+
 
     fun record(report: EconomyUpdateReport, root: EconomyNode) {
         report.getEntries().forEach { entry ->

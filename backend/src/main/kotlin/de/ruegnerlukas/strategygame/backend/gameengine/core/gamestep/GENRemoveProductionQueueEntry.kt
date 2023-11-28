@@ -3,8 +3,9 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ProductionQueueRefundDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 
@@ -28,9 +29,9 @@ class GENRemoveProductionQueueEntry(private val gameConfig: GameConfig, eventSys
     }
 
     private fun removeEntry(city: City, province: Province, entry: ProductionQueueEntry) {
-        province.resourcesProducedCurrTurn.add(
-            entry.collectedResources.copy().scale(gameConfig.productionQueueRefundPercentage)
-        )
+        province.resourceLedger.record(entry.collectedResources.copy().scale(gameConfig.productionQueueRefundPercentage)) { _, amount ->
+            ProductionQueueRefundDetail(amount)
+        }
         city.infrastructure.productionQueue.remove(entry)
     }
 

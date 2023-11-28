@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
-import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.ProvinceDTO
@@ -25,9 +24,16 @@ class ProvinceDTOCreator(private val countryId: String) {
             ),
             dataTier3 = if (countryId == province.countryId) {
                 ProvinceDataTier3(
-                    resourceBalance = ResourceType.values().associateWith { type ->
-                        province.resourcesProducedPrevTurn[type] - province.resourcesConsumedCurrTurn[type]
-                    }
+                    resourceLedger = ResourceLedgerDTO(
+                        entries = province.resourceLedger.getEntries().map { entry ->
+                            LedgerEntryDTO(
+                                resourceType = entry.resourceType,
+                                amount = entry.amount,
+                                missing = entry.missing,
+                                details = entry.details.map { LedgerDetailDTO.of(it) },
+                            )
+                        }
+                    )
                 )
             } else {
                 null

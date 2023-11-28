@@ -12,7 +12,7 @@ class LedgerResourceDetailBuilderImpl : LedgerResourceDetailBuilder {
 
     override fun consume(amount: Float, entity: EconomyEntity): LedgerResourceDetail {
         return when (entity) {
-            is BuildingEconomyEntity -> BuildingConsumptionDetail(amount, entity.building.type)
+            is BuildingEconomyEntity -> BuildingConsumptionDetail(entity.building.type, amount)
             is PopulationBaseEconomyEntity -> PopulationBaseDetail(amount)
             is PopulationGrowthEconomyEntity -> PopulationGrowthDetail(amount)
             is ProductionQueueEconomyEntity -> ProductionQueueDetail(amount)
@@ -22,7 +22,7 @@ class LedgerResourceDetailBuilderImpl : LedgerResourceDetailBuilder {
 
     override fun produce(amount: Float, entity: EconomyEntity): LedgerResourceDetail {
         return when (entity) {
-            is BuildingEconomyEntity -> BuildingProductionDetail(amount, entity.building.type)
+            is BuildingEconomyEntity -> BuildingProductionDetail(entity.building.type, amount)
             else -> UnknownProductionLedgerDetail(amount)
         }
     }
@@ -37,7 +37,7 @@ class LedgerResourceDetailBuilderImpl : LedgerResourceDetailBuilder {
 
     override fun missing(amount: Float, entity: EconomyEntity): LedgerResourceDetail {
         return when (entity) {
-            is BuildingEconomyEntity -> BuildingMissingDetail(amount, entity.building.type)
+            is BuildingEconomyEntity -> BuildingMissingDetail(entity.building.type, amount)
             is PopulationBaseEconomyEntity -> PopulationBaseMissingDetail(amount)
             is PopulationGrowthEconomyEntity -> PopulationGrowthMissingDetail(amount)
             is ProductionQueueEconomyEntity -> ProductionQueueMissingDetail(amount)
