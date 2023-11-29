@@ -5,7 +5,7 @@ import "./text.scoped.less"
 export interface TextProps {
     fillParent?: boolean,
     align?: "left" | "center" | "right"
-    type?: "positive" | "negative"
+    type?: "positive" | "negative" | "secondary"
     strikethrough?: boolean,
     onLight?: boolean,
     relative?: boolean,
