@@ -3,10 +3,11 @@ package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.mod
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.economy.ledger.LedgerResourceDetail
+import de.ruegnerlukas.strategygame.backend.economy.ledger.EconomyLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingConsumptionDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingMissingDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingProductionDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GameEconomyLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GiveSharedResourceDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseMissingDetail
@@ -42,11 +43,11 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.UnknownPr
     JsonSubTypes.Type(value = GiveSharedResourceDetailEntity::class),
     JsonSubTypes.Type(value = TakeSharedResourceDetailEntity::class),
 )
-sealed interface LedgerDetailEntity {
+sealed interface EconomyLedgerDetailEntity {
 
     companion object {
 
-        fun of(serviceModel: LedgerResourceDetail): LedgerDetailEntity {
+        fun of(serviceModel: GameEconomyLedgerDetail): EconomyLedgerDetailEntity {
             return when(serviceModel) {
                 is UnknownConsumptionLedgerDetail -> UnknownConsumptionLedgerDetailEntity(serviceModel.amount)
                 is UnknownProductionLedgerDetail -> UnknownProductionLedgerDetailEntity(serviceModel.amount)
@@ -63,11 +64,10 @@ sealed interface LedgerDetailEntity {
                 is ProductionQueueRefundDetail -> ProductionQueueRefundDetailEntity(serviceModel.amount, serviceModel.count)
                 is GiveSharedResourceDetail -> GiveSharedResourceDetailEntity(serviceModel.amount)
                 is TakeSharedResourceDetail -> TakeSharedResourceDetailEntity(serviceModel.amount)
-                else -> throw Exception("Unexpected LedgerResourceDetail-type")
             }
         }
 
-        fun LedgerDetailEntity.asServiceModel(): LedgerResourceDetail {
+        fun EconomyLedgerDetailEntity.asServiceModel(): EconomyLedgerDetail {
             return when(this) {
                 is UnknownConsumptionLedgerDetailEntity -> UnknownConsumptionLedgerDetail(this.amount)
                 is UnknownProductionLedgerDetailEntity -> UnknownProductionLedgerDetail(this.amount)
@@ -93,69 +93,69 @@ sealed interface LedgerDetailEntity {
 
 data class UnknownConsumptionLedgerDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class UnknownProductionLedgerDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class UnknownMissingLedgerDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class PopulationBaseDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class PopulationGrowthDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class PopulationBaseMissingDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class PopulationGrowthMissingDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class BuildingConsumptionDetailEntity(
     val buildingType: BuildingType,
     val amount: Float,
     val count: Int
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class BuildingProductionDetailEntity(
     val buildingType: BuildingType,
     val amount: Float,
     val count: Int
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class BuildingMissingDetailEntity(
     val buildingType: BuildingType,
     val amount: Float,
     val count: Int
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class ProductionQueueDetailEntity(
     val amount: Float,
     val count: Int
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class ProductionQueueMissingDetailEntity(
     val amount: Float,
     val count: Int
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class ProductionQueueRefundDetailEntity(
     val amount: Float,
     val count: Int
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class GiveSharedResourceDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity
 
 data class TakeSharedResourceDetailEntity(
     val amount: Float
-) : LedgerDetailEntity
+) : EconomyLedgerDetailEntity

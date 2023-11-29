@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.mod
 
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.LedgerEntity.Companion.asServiceModel
+import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.EconomyLedgerEntity.Companion.asServiceModel
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 
 class ProvinceEntity(
@@ -10,7 +10,7 @@ class ProvinceEntity(
     val countryId: String,
     val cityIds: List<String>,
     val provinceCityId: String,
-    val resourceLedger: LedgerEntity,
+    val resourceLedger: EconomyLedgerEntity,
     val color: ColorEntity,
     key: String? = null,
 ) : DbEntity(key) {
@@ -22,7 +22,7 @@ class ProvinceEntity(
             countryId = serviceModel.countryId,
             cityIds = serviceModel.cityIds.toList(),
             provinceCityId = serviceModel.provinceCapitalCityId,
-            resourceLedger = LedgerEntity.of(serviceModel.resourceLedger),
+            resourceLedger = EconomyLedgerEntity.of(serviceModel.resourceLedger),
             color = ColorEntity.of(serviceModel.color),
         )
 

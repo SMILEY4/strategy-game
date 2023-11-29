@@ -2,11 +2,11 @@ package de.ruegnerlukas.strategygame.backend.economy.logic
 
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
-import de.ruegnerlukas.strategygame.backend.economy.report.EconomyUpdateReport
+import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReport
 
 class ProductionEntityUpdateService : Logging {
 
-    fun update(entity: EconomyEntity, report: EconomyUpdateReport) {
+    fun update(entity: EconomyEntity, report: EconomyReport) {
         entity.owner.storage.add(entity.config.output)
         entity.state.produce()
         report.addProduction(

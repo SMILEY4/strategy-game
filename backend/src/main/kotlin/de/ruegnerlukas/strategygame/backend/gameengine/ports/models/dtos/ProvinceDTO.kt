@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos
 
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
-import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.ResourceLedgerDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.EconomyLedgerDTO
 
 data class ProvinceDTO(
     override val dataTier0: Unit = Unit,
@@ -22,5 +22,5 @@ data class ProvinceDataTier1(
 
 
 data class ProvinceDataTier3(
-    val resourceLedger: ResourceLedgerDTO
+    val resourceLedger: EconomyLedgerDTO
 )

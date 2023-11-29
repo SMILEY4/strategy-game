@@ -6,19 +6,19 @@ import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.contains
 import de.ruegnerlukas.strategygame.backend.economy.report.ConsumptionReportEntry
-import de.ruegnerlukas.strategygame.backend.economy.report.EconomyUpdateReport
+import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReport
 import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesReportEntry
 import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
 
-data class ResourceLedger(val detailBuilder: LedgerResourceDetailBuilder) {
+data class EconomyLedger(val detailBuilder: EconomyLedgerDetailBuilder) {
 
-    private val entries: MutableList<LedgerResourceEntry> = mutableListOf()
+    private val entries: MutableList<EconomyLedgerEntry> = mutableListOf()
 
 
     /**
      * Replaces all entries with the given entries
      */
-    fun setEntries(entries: List<LedgerResourceEntry>) {
+    fun setEntries(entries: List<EconomyLedgerEntry>) {
         this.entries.clear()
         this.entries.addAll(entries)
     }
@@ -26,7 +26,7 @@ data class ResourceLedger(val detailBuilder: LedgerResourceDetailBuilder) {
     /**
      * @return all resource entries of this ledger
      */
-    fun getEntries(): List<LedgerResourceEntry> {
+    fun getEntries(): List<EconomyLedgerEntry> {
         return this.entries
     }
 
@@ -97,14 +97,14 @@ data class ResourceLedger(val detailBuilder: LedgerResourceDetailBuilder) {
     }
 
 
-    fun record(resources: ResourceCollection, detail: (type: ResourceType, amount: Float) -> LedgerResourceDetail) {
+    fun record(resources: ResourceCollection, detail: (type: ResourceType, amount: Float) -> EconomyLedgerDetail) {
         resources.forEach(false) { type, amount ->
             getEntry(type).add(amount, detail(type, amount))
         }
     }
 
 
-    fun record(report: EconomyUpdateReport, root: EconomyNode) {
+    fun record(report: EconomyReport, root: EconomyNode) {
         report.getEntries().forEach { entry ->
             when (entry) {
                 is ProductionReportEntry -> {
@@ -139,10 +139,10 @@ data class ResourceLedger(val detailBuilder: LedgerResourceDetailBuilder) {
     }
 
 
-    private fun getEntry(type: ResourceType): LedgerResourceEntry {
+    private fun getEntry(type: ResourceType): EconomyLedgerEntry {
         return entries
             .find { it.resourceType == type }
-            ?: LedgerResourceEntry(
+            ?: EconomyLedgerEntry(
                 resourceType = type,
                 amount = 0F,
                 missing = 0F,

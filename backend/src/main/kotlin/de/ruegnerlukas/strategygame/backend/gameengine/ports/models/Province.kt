@@ -1,15 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.models
 
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
-import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.economy.ledger.EconomyLedger
 
 data class Province(
     val provinceId: String,
     val countryId: String,
+    val color: RGBColor,
     val cityIds: MutableList<String>,
     val provinceCapitalCityId: String,
-    val color: RGBColor,
-    var resourceLedger: ResourceLedger
+    var resourceLedger: EconomyLedger
 ) {
 
     fun findCountry(game: GameExtended): Country = game.findCountry(countryId)

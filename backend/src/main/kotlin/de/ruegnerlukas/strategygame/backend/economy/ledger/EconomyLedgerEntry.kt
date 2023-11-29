@@ -2,24 +2,24 @@ package de.ruegnerlukas.strategygame.backend.economy.ledger
 
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 
-class LedgerResourceEntry(
+class EconomyLedgerEntry(
     val resourceType: ResourceType,
     var amount: Float,
     var missing: Float,
-    val details: MutableList<LedgerResourceDetail>
+    val details: MutableList<EconomyLedgerDetail>
 ) {
 
-    fun add(amount: Float, detail: LedgerResourceDetail) {
+    fun add(amount: Float, detail: EconomyLedgerDetail) {
         this.amount += amount
         this.addDetail(detail)
     }
 
-    fun addMissing(amount: Float, detail: LedgerResourceDetail) {
+    fun addMissing(amount: Float, detail: EconomyLedgerDetail) {
         this.missing += amount
         this.addDetail(detail)
     }
 
-    private fun addDetail(detail: LedgerResourceDetail) {
+    private fun addDetail(detail: EconomyLedgerDetail) {
         var merged = false
         for (d in details) {
             if (d.merge(detail)) {

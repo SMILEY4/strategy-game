@@ -5,19 +5,19 @@ import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceColl
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyConsumptionType
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.report.EconomyUpdateReport
+import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReport
 import java.lang.Float.min
 
 class ConsumptionEntityUpdateService : Logging {
 
-    fun update(entity: EconomyEntity, currentNode: EconomyNode, report: EconomyUpdateReport) {
+    fun update(entity: EconomyEntity, currentNode: EconomyNode, report: EconomyReport) {
         when (entity.config.consumptionType) {
             EconomyConsumptionType.DISTRIBUTED -> updateDistributed(entity, currentNode, report)
             EconomyConsumptionType.COMPLETE -> updateLocal(entity, currentNode, report)
         }
     }
 
-    private fun updateDistributed(entity: EconomyEntity, currentNode: EconomyNode, report: EconomyUpdateReport) {
+    private fun updateDistributed(entity: EconomyEntity, currentNode: EconomyNode, report: EconomyReport) {
         val requiredResources = entity.state.getRemainingRequired()
         if (allResourcesAvailable(currentNode, requiredResources)) {
             updateLocal(entity, currentNode, report)
@@ -37,7 +37,7 @@ class ConsumptionEntityUpdateService : Logging {
         return resources
     }
 
-    private fun updateLocal(entity: EconomyEntity, currentNode: EconomyNode, report: EconomyUpdateReport) {
+    private fun updateLocal(entity: EconomyEntity, currentNode: EconomyNode, report: EconomyReport) {
         val requiredResources = entity.state.getRemainingRequired()
         if (allResourcesAvailable(currentNode, requiredResources)) {
             provideResources(entity, currentNode, requiredResources, report)
@@ -52,7 +52,7 @@ class ConsumptionEntityUpdateService : Logging {
         entity: EconomyEntity,
         currentNode: EconomyNode,
         resources: ResourceCollection,
-        report: EconomyUpdateReport
+        report: EconomyReport
     ) {
         log().debug("[eco-update] $entity in node $currentNode consumed ${resources.toList()} (requires ${entity.state.getRemainingRequired()})")
         report.addConsumption(

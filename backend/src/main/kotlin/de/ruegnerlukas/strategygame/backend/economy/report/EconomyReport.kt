@@ -4,9 +4,9 @@ import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceColl
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 
-class EconomyUpdateReport {
+class EconomyReport {
 
-    private val entries = mutableListOf<ReportEntry>()
+    private val entries = mutableListOf<EconomyReportEntry>()
 
     fun addConsumption(entity: EconomyEntity, fromNode: EconomyNode, resources: ResourceCollection) {
         add(
@@ -37,10 +37,10 @@ class EconomyUpdateReport {
         )
     }
 
-    fun add(entry: ReportEntry) {
+    fun add(entry: EconomyReportEntry) {
         entries.add(entry)
     }
 
-    fun getEntries(): List<ReportEntry> = entries
+    fun getEntries(): List<EconomyReportEntry> = entries
 
 }
