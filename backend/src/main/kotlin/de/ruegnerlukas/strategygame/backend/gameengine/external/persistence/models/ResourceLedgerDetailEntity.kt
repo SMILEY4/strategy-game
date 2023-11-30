@@ -3,11 +3,11 @@ package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.mod
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.economy.ledger.EconomyLedgerDetail
+import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingConsumptionDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingMissingDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingProductionDetail
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GameEconomyLedgerDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GameResourceLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GiveSharedResourceDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseMissingDetail
@@ -47,7 +47,7 @@ sealed interface EconomyLedgerDetailEntity {
 
     companion object {
 
-        fun of(serviceModel: GameEconomyLedgerDetail): EconomyLedgerDetailEntity {
+        fun of(serviceModel: GameResourceLedgerDetail): EconomyLedgerDetailEntity {
             return when(serviceModel) {
                 is UnknownConsumptionLedgerDetail -> UnknownConsumptionLedgerDetailEntity(serviceModel.amount)
                 is UnknownProductionLedgerDetail -> UnknownProductionLedgerDetailEntity(serviceModel.amount)
@@ -67,7 +67,7 @@ sealed interface EconomyLedgerDetailEntity {
             }
         }
 
-        fun EconomyLedgerDetailEntity.asServiceModel(): EconomyLedgerDetail {
+        fun EconomyLedgerDetailEntity.asServiceModel(): ResourceLedgerDetail {
             return when(this) {
                 is UnknownConsumptionLedgerDetailEntity -> UnknownConsumptionLedgerDetail(this.amount)
                 is UnknownProductionLedgerDetailEntity -> UnknownProductionLedgerDetail(this.amount)

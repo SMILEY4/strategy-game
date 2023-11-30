@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectNodes
-import de.ruegnerlukas.strategygame.backend.economy.ledger.EconomyLedger
+import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedger
 import de.ruegnerlukas.strategygame.backend.economy.logic.EconomyService
 import de.ruegnerlukas.strategygame.backend.economy.report.ConsumptionReportEntry
 import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReport
@@ -67,7 +67,7 @@ class GENUpdateEconomy(
         // save ledger
         rootNode.collectNodes().forEach { node ->
             if (node is ProvinceEconomyNode) {
-                val ledger = EconomyLedger(LedgerResourceDetailBuilderImpl()).also { it.record(report, node) }
+                val ledger = ResourceLedger(LedgerResourceDetailBuilderImpl()).also { it.record(report, node) }
                 node.province.resourceLedger = ledger
             }
         }

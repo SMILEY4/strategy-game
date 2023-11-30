@@ -85,7 +85,7 @@ function ResourceBalanceTooltip(props: { data: ResourceLedgerEntry, children?: a
 
 
 function getValueType(entry: ResourceLedgerEntry): "positive" | "negative" | undefined {
-    if (entry.amount > 0 && entry.missing < 0) {
+    if (entry.amount > 0 && entry.missing === 0) {
         return "positive";
     }
     if (entry.amount === 0 && entry.missing === 0) {

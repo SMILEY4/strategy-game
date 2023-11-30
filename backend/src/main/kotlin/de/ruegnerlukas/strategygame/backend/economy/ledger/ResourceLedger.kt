@@ -10,15 +10,15 @@ import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReport
 import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesReportEntry
 import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
 
-data class EconomyLedger(val detailBuilder: EconomyLedgerDetailBuilder) {
+data class ResourceLedger(val detailBuilder: ResourceLedgerDetailBuilder) {
 
-    private val entries: MutableList<EconomyLedgerEntry> = mutableListOf()
+    private val entries: MutableList<ResourceLedgerEntry> = mutableListOf()
 
 
     /**
      * Replaces all entries with the given entries
      */
-    fun setEntries(entries: List<EconomyLedgerEntry>) {
+    fun setEntries(entries: List<ResourceLedgerEntry>) {
         this.entries.clear()
         this.entries.addAll(entries)
     }
@@ -26,7 +26,7 @@ data class EconomyLedger(val detailBuilder: EconomyLedgerDetailBuilder) {
     /**
      * @return all resource entries of this ledger
      */
-    fun getEntries(): List<EconomyLedgerEntry> {
+    fun getEntries(): List<ResourceLedgerEntry> {
         return this.entries
     }
 
@@ -97,7 +97,7 @@ data class EconomyLedger(val detailBuilder: EconomyLedgerDetailBuilder) {
     }
 
 
-    fun record(resources: ResourceCollection, detail: (type: ResourceType, amount: Float) -> EconomyLedgerDetail) {
+    fun record(resources: ResourceCollection, detail: (type: ResourceType, amount: Float) -> ResourceLedgerDetail) {
         resources.forEach(false) { type, amount ->
             getEntry(type).add(amount, detail(type, amount))
         }
@@ -139,10 +139,10 @@ data class EconomyLedger(val detailBuilder: EconomyLedgerDetailBuilder) {
     }
 
 
-    private fun getEntry(type: ResourceType): EconomyLedgerEntry {
+    private fun getEntry(type: ResourceType): ResourceLedgerEntry {
         return entries
             .find { it.resourceType == type }
-            ?: EconomyLedgerEntry(
+            ?: ResourceLedgerEntry(
                 resourceType = type,
                 amount = 0F,
                 missing = 0F,

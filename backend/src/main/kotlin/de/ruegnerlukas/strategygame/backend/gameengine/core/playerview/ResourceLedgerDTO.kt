@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
-import de.ruegnerlukas.strategygame.backend.economy.ledger.EconomyLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingConsumptionDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingMissingDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.BuildingProductionDetail
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GameEconomyLedgerDetail
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GameResourceLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GiveSharedResourceDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.PopulationBaseMissingDetail
@@ -23,15 +22,15 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.UnknownCo
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.UnknownMissingLedgerDetail
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.UnknownProductionLedgerDetail
 
-data class EconomyLedgerDTO(
-    val entries: List<EconomyLedgerEntryDTO>
+data class ResourceLedgerDTO(
+    val entries: List<ResourceLedgerEntryDTO>
 )
 
-data class EconomyLedgerEntryDTO(
+data class ResourceLedgerEntryDTO(
     val resourceType: ResourceType,
     val amount: Float,
     val missing: Float,
-    val details: List<EconomyLedgerDetailDTO>
+    val details: List<ResourceLedgerDetailDTO>
 )
 
 
@@ -57,11 +56,11 @@ data class EconomyLedgerEntryDTO(
     JsonSubTypes.Type(value = GiveSharedResourceDetailDTO::class),
     JsonSubTypes.Type(value = TakeSharedResourceDetailDTO::class),
 )
-sealed class EconomyLedgerDetailDTO(val type: String) {
+sealed class ResourceLedgerDetailDTO(val type: String) {
 
     companion object {
 
-        fun of(serviceModel: GameEconomyLedgerDetail): EconomyLedgerDetailDTO {
+        fun of(serviceModel: GameResourceLedgerDetail): ResourceLedgerDetailDTO {
             return when (serviceModel) {
                 is UnknownConsumptionLedgerDetail -> UnknownConsumptionLedgerDetailDTO(serviceModel.amount)
                 is UnknownProductionLedgerDetail -> UnknownProductionLedgerDetailDTO(serviceModel.amount)
@@ -96,7 +95,7 @@ sealed class EconomyLedgerDetailDTO(val type: String) {
 @JsonTypeName(UnknownConsumptionLedgerDetailDTO.TYPE)
 data class UnknownConsumptionLedgerDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "unknown-consumption"
     }
@@ -105,7 +104,7 @@ data class UnknownConsumptionLedgerDetailDTO(
 @JsonTypeName(UnknownProductionLedgerDetailDTO.TYPE)
 data class UnknownProductionLedgerDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "unknown-production"
     }
@@ -114,7 +113,7 @@ data class UnknownProductionLedgerDetailDTO(
 @JsonTypeName(UnknownMissingLedgerDetailDTO.TYPE)
 data class UnknownMissingLedgerDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "unknown-missing"
     }
@@ -123,7 +122,7 @@ data class UnknownMissingLedgerDetailDTO(
 @JsonTypeName(PopulationBaseDetailDTO.TYPE)
 data class PopulationBaseDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "population-base"
     }
@@ -132,7 +131,7 @@ data class PopulationBaseDetailDTO(
 @JsonTypeName(PopulationGrowthDetailDTO.TYPE)
 data class PopulationGrowthDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "population-growth"
     }
@@ -141,7 +140,7 @@ data class PopulationGrowthDetailDTO(
 @JsonTypeName(PopulationBaseMissingDetailDTO.TYPE)
 data class PopulationBaseMissingDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "population-base-missing"
     }
@@ -150,7 +149,7 @@ data class PopulationBaseMissingDetailDTO(
 @JsonTypeName(PopulationGrowthMissingDetailDTO.TYPE)
 data class PopulationGrowthMissingDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "population-growth-missing"
     }
@@ -161,7 +160,7 @@ data class BuildingConsumptionDetailDTO(
     val buildingType: BuildingType,
     val amount: Float,
     val count: Int
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "building-consumption"
     }
@@ -172,7 +171,7 @@ data class BuildingProductionDetailDTO(
     val buildingType: BuildingType,
     val amount: Float,
     val count: Int
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "building-production"
     }
@@ -183,7 +182,7 @@ data class BuildingMissingDetailDTO(
     val buildingType: BuildingType,
     val amount: Float,
     val count: Int
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "building-missing"
     }
@@ -193,7 +192,7 @@ data class BuildingMissingDetailDTO(
 data class ProductionQueueDetailDTO(
     val amount: Float,
     val count: Int
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "production-queue"
     }
@@ -203,7 +202,7 @@ data class ProductionQueueDetailDTO(
 data class ProductionQueueMissingDetailDTO(
     val amount: Float,
     val count: Int
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "production-queue-missing"
     }
@@ -213,7 +212,7 @@ data class ProductionQueueMissingDetailDTO(
 data class ProductionQueueRefundDetailDTO(
     val amount: Float,
     val count: Int
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "production-queue-refund"
     }
@@ -222,7 +221,7 @@ data class ProductionQueueRefundDetailDTO(
 @JsonTypeName(GiveSharedResourceDetailDTO.TYPE)
 data class GiveSharedResourceDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "give-shared"
     }
@@ -231,7 +230,7 @@ data class GiveSharedResourceDetailDTO(
 @JsonTypeName(TakeSharedResourceDetailDTO.TYPE)
 data class TakeSharedResourceDetailDTO(
     val amount: Float
-) : EconomyLedgerDetailDTO(TYPE) {
+) : ResourceLedgerDetailDTO(TYPE) {
     companion object {
         internal const val TYPE = "take-shared"
     }
