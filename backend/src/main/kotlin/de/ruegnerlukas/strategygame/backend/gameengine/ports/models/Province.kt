@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.models
 
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
-import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
 
 data class Province(
     val provinceId: String,

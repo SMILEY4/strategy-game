@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models
 
-import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedger
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.LedgerResourceDetailBuilderImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedgerDetailBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ResourceLedgerEntryEntity.Companion.asServiceModel
 
 data class ResourceLedgerEntity(
@@ -16,7 +16,7 @@ data class ResourceLedgerEntity(
 
         fun ResourceLedgerEntity.asServiceModel(): ResourceLedger {
             val entries = this.entries.map { it.asServiceModel() }
-            return ResourceLedger(LedgerResourceDetailBuilderImpl()).also { it.setEntries(entries) }
+            return ResourceLedger(ResourceLedgerDetailBuilderImpl()).also { it.setEntries(entries) }
         }
 
     }

@@ -1,6 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GameResourceLedgerDetail
+import de.ruegnerlukas.strategygame.backend.common.detaillog.dto.DetailLogEntryDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.CityDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.ProvinceDTO
@@ -31,7 +31,7 @@ class ProvinceDTOCreator(private val countryId: String) {
                                 resourceType = entry.resourceType,
                                 amount = entry.amount,
                                 missing = entry.missing,
-                                details = entry.details.filterIsInstance<GameResourceLedgerDetail>().map { ResourceLedgerDetailDTO.of(it) },
+                                details = entry.getDetails().map { DetailLogEntryDTO.of(it) }
                             )
                         }
                     )

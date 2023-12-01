@@ -1,15 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.entity.DetailLogEntryEntity
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
-import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedgerEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.GameResourceLedgerDetail
-import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.EconomyLedgerDetailEntity.Companion.asServiceModel
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedgerDetailType
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedgerEntry
 
 data class ResourceLedgerEntryEntity(
     val resourceType: ResourceType,
     val amount: Float,
     val missing: Float,
-    val details: List<EconomyLedgerDetailEntity>
+    val details: List<DetailLogEntryEntity<ResourceLedgerDetailType>>
 ) {
 
     companion object {
@@ -18,7 +18,7 @@ data class ResourceLedgerEntryEntity(
             resourceType = serviceModel.resourceType,
             amount = serviceModel.amount,
             missing = serviceModel.missing,
-            details = serviceModel.details.filterIsInstance<GameResourceLedgerDetail>().map { EconomyLedgerDetailEntity.of(it) }
+            details = serviceModel.getDetails().map { DetailLogEntryEntity.of(it) }
         )
 
         fun ResourceLedgerEntryEntity.asServiceModel() = ResourceLedgerEntry(

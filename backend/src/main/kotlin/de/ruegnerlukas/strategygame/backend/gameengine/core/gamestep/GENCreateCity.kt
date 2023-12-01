@@ -4,8 +4,8 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
-import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedger
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.LedgerResourceDetailBuilderImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedgerDetailBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
@@ -100,7 +100,7 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
             cityIds = mutableListOf(city.cityId),
             provinceCapitalCityId = city.cityId,
             color = RGBColor.random(),
-            resourceLedger = ResourceLedger(LedgerResourceDetailBuilderImpl())
+            resourceLedger = ResourceLedger(ResourceLedgerDetailBuilderImpl())
         ).also { game.provinces.add(it) }
     }
 

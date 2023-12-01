@@ -55,25 +55,29 @@ export interface ResourceLedgerEntryDTO {
 }
 
 export interface ResourceLedgerDetailDTO {
-    type: "unknown-consumption"
-        | "unknown-production"
-        | "unknown-missing"
-        | "population-base"
-        | "population-growth"
-        | "population-base-missing"
-        | "population-growth-missing"
-        | "building-consumption"
-        | "building-production"
-        | "building-missing"
-        | "production-queue"
-        | "production-queue-missing"
-        | "production-queue-refund"
-        | "give-shared"
-        | "take-shared"
-    amount?: number,
-    buildingType?: BuildingTypeString,
-    count?: number
+    id: "UNKNOWN_CONSUMPTION"
+        | "UNKNOWN_PRODUCTION"
+        | "UNKNOWN_MISSING"
+        | "BUILDING_CONSUMPTION"
+        | "BUILDING_PRODUCTION"
+        | "BUILDING_MISSING"
+        | "POPULATION_BASE_CONSUMPTION"
+        | "POPULATION_BASE_MISSING"
+        | "POPULATION_GROWTH_CONSUMPTION"
+        | "POPULATION_GROWTH_MISSING"
+        | "PRODUCTION_QUEUE_CONSUMPTION"
+        | "PRODUCTION_QUEUE_MISSING"
+        | "PRODUCTION_QUEUE_REFUND"
+        | "SHARED_GIVE"
+        | "SHARED_TAKE",
+    data: Record<string, ResourceLedgerDetailValueDTO>
 }
+
+export interface ResourceLedgerDetailValueDTO {
+    type: string,
+    value: any
+}
+
 
 export interface CityDTO {
     dataTier1: {

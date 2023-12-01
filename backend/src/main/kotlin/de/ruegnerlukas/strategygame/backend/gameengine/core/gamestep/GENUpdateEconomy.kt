@@ -7,7 +7,6 @@ import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectNodes
-import de.ruegnerlukas.strategygame.backend.economy.ledger.ResourceLedger
 import de.ruegnerlukas.strategygame.backend.economy.logic.EconomyService
 import de.ruegnerlukas.strategygame.backend.economy.report.ConsumptionReportEntry
 import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReport
@@ -18,7 +17,8 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingE
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.ProductionQueueEconomyEntity
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.LedgerResourceDetailBuilderImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedgerDetailBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.WorldEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
@@ -67,7 +67,7 @@ class GENUpdateEconomy(
         // save ledger
         rootNode.collectNodes().forEach { node ->
             if (node is ProvinceEconomyNode) {
-                val ledger = ResourceLedger(LedgerResourceDetailBuilderImpl()).also { it.record(report, node) }
+                val ledger = ResourceLedger(ResourceLedgerDetailBuilderImpl()).also { it.record(report, node) }
                 node.province.resourceLedger = ledger
             }
         }

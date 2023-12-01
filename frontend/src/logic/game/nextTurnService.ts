@@ -151,95 +151,95 @@ export class NextTurnService {
     }
 
     private buildLedgerDetail(dto: ResourceLedgerDetailDTO): ResourceLedgerDetail {
-        switch (dto.type) {
-            case "unknown-consumption":
+        switch (dto.id) {
+            case "UNKNOWN_CONSUMPTION":
                 return {
                     type: "removed",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
                     message: "unknown",
                 };
-            case "unknown-production":
+            case "UNKNOWN_PRODUCTION":
                 return {
                     type: "added",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
                     message: "unknown",
                 };
-            case "unknown-missing":
+            case "UNKNOWN_MISSING":
                 return {
                     type: "missing",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
                     message: "unknown",
                 };
-            case "population-base":
+            case "BUILDING_CONSUMPTION":
                 return {
                     type: "removed",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
+                    message: BuildingType.fromString(dto.data["buildingType"].value).displayString + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
+                };
+            case "BUILDING_PRODUCTION":
+                return {
+                    type: "added",
+                    amount: dto.data["amount"].value,
+                    message: BuildingType.fromString(dto.data["buildingType"].value).displayString + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
+                };
+            case "BUILDING_MISSING":
+                return {
+                    type: "missing",
+                    amount: dto.data["amount"].value,
+                    message: BuildingType.fromString(dto.data["buildingType"].value).displayString + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
+                };
+            case "POPULATION_BASE_CONSUMPTION":
+                return {
+                    type: "removed",
+                    amount: dto.data["amount"].value,
                     message: "basic population needs",
                 };
-            case "population-growth":
-                return {
-                    type: "removed",
-                    amount: dto.amount!,
-                    message: "population growth",
-                };
-            case "population-base-missing":
+            case "POPULATION_BASE_MISSING":
                 return {
                     type: "missing",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
                     message: "basic population needs",
                 };
-            case "population-growth-missing":
+            case "POPULATION_GROWTH_CONSUMPTION":
                 return {
-                    type: "missing",
-                    amount: dto.amount!,
+                    type: "removed",
+                    amount: dto.data["amount"].value,
                     message: "population growth",
                 };
-            case "building-consumption":
-                return {
-                    type: "removed",
-                    amount: dto.amount!,
-                    message: BuildingType.fromString(dto.buildingType!).displayString + " (" +dto.count!+ "x)",
-                };
-            case "building-production":
-                return {
-                    type: "added",
-                    amount: dto.amount!,
-                    message: BuildingType.fromString(dto.buildingType!).displayString + " (" +dto.count!+ "x)",
-                };
-            case "building-missing":
+            case "POPULATION_GROWTH_MISSING":
                 return {
                     type: "missing",
-                    amount: dto.amount!,
-                    message: BuildingType.fromString(dto.buildingType!).displayString + " (" +dto.count!+ "x)",
+                    amount: dto.data["amount"].value,
+                    message: "population growth",
                 };
-            case "production-queue":
+            case "PRODUCTION_QUEUE_CONSUMPTION":
                 return {
                     type: "removed",
-                    amount: dto.amount!,
-                    message: "production queue(s)" + " (" +dto.count!+ "x)",
+                    amount: dto.data["amount"].value,
+                    message: "production queue(s)" + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
                 };
-            case "production-queue-missing":
+            case "PRODUCTION_QUEUE_MISSING":
                 return {
                     type: "missing",
-                    amount: dto.amount!,
-                    message: "production queue(s)" + " (" +dto.count!+ "x)",
+                    amount: dto.data["amount"].value,
+                    message: "production queue(s)" + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
                 };
-            case "production-queue-refund":
+            case "PRODUCTION_QUEUE_REFUND":
                 return {
                     type: "added",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
                     message: "refund production queue entry",
                 };
-            case "give-shared":
+            case "SHARED_GIVE":
                 return {
                     type: "removed",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
                     message: "traded with other",
                 };
-            case "take-shared":
+            case "SHARED_TAKE":
                 return {
                     type: "added",
-                    amount: dto.amount!,
+                    amount: dto.data["amount"].value,
                     message: "traded with other",
                 };
             default:
