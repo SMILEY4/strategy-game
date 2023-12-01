@@ -1,11 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
-import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.runEconomyUpdate
@@ -35,9 +35,8 @@ class BasicProductionConsumptionTest : StringSpec({
                 runEconomyUpdate()
             }
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(ResourceType.FOOD.amount(0f))
-                consumedThisTurn = listOf(ResourceType.FOOD.amount(0f))
-                producedThisTurn = listOf(ResourceType.FOOD.amount(0f))
+                consumed = listOf()
+                produced = listOf()
                 missing = listOf(ResourceType.FOOD.amount(2f))
             }
         }
@@ -64,10 +63,9 @@ class BasicProductionConsumptionTest : StringSpec({
                 runEconomyUpdate()
             }
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(ResourceType.FOOD.amount(1f))
-                consumedThisTurn = listOf(ResourceType.FOOD.amount(1f))
-                producedThisTurn = listOf(ResourceType.FOOD.amount(1f))
-                missing = listOf(ResourceType.FOOD.amount(2f - 1))
+                consumed = listOf(ResourceType.FOOD.amount(1f))
+                produced = listOf(ResourceType.FOOD.amount(1f))
+                missing = listOf(ResourceType.FOOD.amount(1f))
             }
         }
     }
@@ -98,23 +96,10 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
-                    ResourceType.FOOD.amount(0f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                consumedThisTurn = listOf(
-                    ResourceType.FOOD.amount(0f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                producedThisTurn = listOf(
+                consumed = listOf()
+                produced = listOf(
                     ResourceType.FOOD.amount(4f),
                     ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(4f),
@@ -126,23 +111,12 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
+                consumed = listOf(
                     ResourceType.FOOD.amount(4f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
-                consumedThisTurn = listOf(
-                    ResourceType.FOOD.amount(4f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(4f),
                     ResourceType.HIDE.amount(2f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(0f),
@@ -154,19 +128,11 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
+                consumed = listOf(
                     ResourceType.FOOD.amount(4f),
                     ResourceType.HIDE.amount(2f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
-                consumedThisTurn = listOf(
-                    ResourceType.FOOD.amount(4f),
-                    ResourceType.HIDE.amount(2f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(4f),
                     ResourceType.HIDE.amount(2f),
                     ResourceType.PARCHMENT.amount(1f),
@@ -183,19 +149,11 @@ class BasicProductionConsumptionTest : StringSpec({
             repeat(10) {
                 runEconomyUpdate()
                 expectProvinceResources("Test City") {
-                    producedLastTurn = listOf(
+                    consumed = listOf(
                         ResourceType.FOOD.amount(4f),
                         ResourceType.HIDE.amount(2f),
-                        ResourceType.PARCHMENT.amount(1f),
-                        ResourceType.CLOTHES.amount(1f),
                     )
-                    consumedThisTurn = listOf(
-                        ResourceType.FOOD.amount(4f),
-                        ResourceType.HIDE.amount(2f),
-                        ResourceType.PARCHMENT.amount(0f),
-                        ResourceType.CLOTHES.amount(0f),
-                    )
-                    producedThisTurn = listOf(
+                    produced = listOf(
                         ResourceType.FOOD.amount(4f),
                         ResourceType.HIDE.amount(2f),
                         ResourceType.PARCHMENT.amount(1f),
@@ -239,23 +197,13 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
+                consumed = listOf(
                     ResourceType.FOOD.amount(0f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
-                consumedThisTurn = listOf(
-                    ResourceType.FOOD.amount(0f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(3f),
                     ResourceType.HIDE.amount(0f),
                     ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(4f),
@@ -267,23 +215,13 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
+                consumed = listOf(
                     ResourceType.FOOD.amount(3f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
-                consumedThisTurn = listOf(
-                    ResourceType.FOOD.amount(3f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(3f),
                     ResourceType.HIDE.amount(1f),
                     ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(1f),
@@ -295,23 +233,14 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
+                consumed = listOf(
                     ResourceType.FOOD.amount(3f),
                     ResourceType.HIDE.amount(1f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
-                consumedThisTurn = listOf(
-                    ResourceType.FOOD.amount(3f),
-                    ResourceType.HIDE.amount(1f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(3f),
                     ResourceType.HIDE.amount(1f),
                     ResourceType.PARCHMENT.amount(1f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(1f),
@@ -324,23 +253,14 @@ class BasicProductionConsumptionTest : StringSpec({
             repeat(10) {
                 runEconomyUpdate()
                 expectProvinceResources("Test City") {
-                    producedLastTurn = listOf(
+                    consumed = listOf(
+                        ResourceType.FOOD.amount(3f),
+                        ResourceType.HIDE.amount(1f),
+                    )
+                    produced = listOf(
                         ResourceType.FOOD.amount(3f),
                         ResourceType.HIDE.amount(1f),
                         ResourceType.PARCHMENT.amount(1f),
-                        ResourceType.CLOTHES.amount(0f),
-                    )
-                    consumedThisTurn = listOf(
-                        ResourceType.FOOD.amount(3f),
-                        ResourceType.HIDE.amount(1f),
-                        ResourceType.PARCHMENT.amount(0f),
-                        ResourceType.CLOTHES.amount(0f),
-                    )
-                    producedThisTurn = listOf(
-                        ResourceType.FOOD.amount(3f),
-                        ResourceType.HIDE.amount(1f),
-                        ResourceType.PARCHMENT.amount(1f),
-                        ResourceType.CLOTHES.amount(0f),
                     )
                     missing = listOf(
                         ResourceType.FOOD.amount(1f),
@@ -378,23 +298,10 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
-                    ResourceType.FOOD.amount(0f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
+                consumed = listOf(
                 )
-                consumedThisTurn = listOf(
-                    ResourceType.FOOD.amount(0f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(4f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(3f),
@@ -406,23 +313,12 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
-                    ResourceType.FOOD.amount(4f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                consumedThisTurn = listOf(
+                consumed = listOf(
                     ResourceType.FOOD.amount(3f),
-                    ResourceType.HIDE.amount(0f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(4f),
                     ResourceType.HIDE.amount(1f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(0f),
@@ -434,23 +330,14 @@ class BasicProductionConsumptionTest : StringSpec({
 
             runEconomyUpdate()
             expectProvinceResources("Test City") {
-                producedLastTurn = listOf(
-                    ResourceType.FOOD.amount(4f),
-                    ResourceType.HIDE.amount(1f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
-                )
-                consumedThisTurn = listOf(
+                consumed = listOf(
                     ResourceType.FOOD.amount(3f),
                     ResourceType.HIDE.amount(1f),
-                    ResourceType.PARCHMENT.amount(0f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
-                producedThisTurn = listOf(
+                produced = listOf(
                     ResourceType.FOOD.amount(4f),
                     ResourceType.HIDE.amount(1f),
                     ResourceType.PARCHMENT.amount(1f),
-                    ResourceType.CLOTHES.amount(0f),
                 )
                 missing = listOf(
                     ResourceType.FOOD.amount(0f),
@@ -463,23 +350,14 @@ class BasicProductionConsumptionTest : StringSpec({
             repeat(10) {
                 runEconomyUpdate()
                 expectProvinceResources("Test City") {
-                    producedLastTurn = listOf(
-                        ResourceType.FOOD.amount(4f),
-                        ResourceType.HIDE.amount(1f),
-                        ResourceType.PARCHMENT.amount(1f),
-                        ResourceType.CLOTHES.amount(0f),
-                    )
-                    consumedThisTurn = listOf(
+                    consumed = listOf(
                         ResourceType.FOOD.amount(3f),
                         ResourceType.HIDE.amount(1f),
-                        ResourceType.PARCHMENT.amount(0f),
-                        ResourceType.CLOTHES.amount(0f),
                     )
-                    producedThisTurn = listOf(
+                    produced = listOf(
                         ResourceType.FOOD.amount(4f),
                         ResourceType.HIDE.amount(1f),
                         ResourceType.PARCHMENT.amount(1f),
-                        ResourceType.CLOTHES.amount(0f),
                     )
                     missing = listOf(
                         ResourceType.FOOD.amount(0f),

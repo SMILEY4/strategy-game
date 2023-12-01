@@ -67,7 +67,7 @@ class GENUpdateEconomy(
         // save ledger
         rootNode.collectNodes().forEach { node ->
             if (node is ProvinceEconomyNode) {
-                val ledger = ResourceLedger(ResourceLedgerDetailBuilderImpl()).also { it.record(report, node) }
+                val ledger = ResourceLedger().also { it.record(report, node) }
                 node.province.resourceLedger = ledger
             }
         }

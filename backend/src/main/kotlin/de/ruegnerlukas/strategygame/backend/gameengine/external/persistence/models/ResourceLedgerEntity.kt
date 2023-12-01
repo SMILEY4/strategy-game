@@ -16,7 +16,7 @@ data class ResourceLedgerEntity(
 
         fun ResourceLedgerEntity.asServiceModel(): ResourceLedger {
             val entries = this.entries.map { it.asServiceModel() }
-            return ResourceLedger(ResourceLedgerDetailBuilderImpl()).also { it.setEntries(entries) }
+            return ResourceLedger().also { it.setEntries(entries) }
         }
 
     }

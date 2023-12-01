@@ -8,13 +8,19 @@ import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 
 class ResourceLedgerEntry(
     val resourceType: ResourceType,
-    var amount: Float,
+    var produced: Float,
+    var consumed: Float,
     var missing: Float,
     details: MutableList<DetailLogEntry<ResourceLedgerDetailType>> = mutableListOf()
 ): DetailLog<ResourceLedgerDetailType>(details) {
 
-    fun add(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String,DetailLogValue>) {
-        this.amount += amount
+    fun addProduced(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String,DetailLogValue>) {
+        this.produced += amount
+        this.addDetail(id, data)
+    }
+
+    fun addConsumed(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String,DetailLogValue>) {
+        this.consumed += amount
         this.addDetail(id, data)
     }
 

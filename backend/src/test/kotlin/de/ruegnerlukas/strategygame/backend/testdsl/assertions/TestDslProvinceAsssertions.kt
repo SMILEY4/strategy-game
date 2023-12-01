@@ -11,11 +11,16 @@ import io.kotest.matchers.shouldBe
 
 suspend fun GameTestContext.expectProvinceResources(provinceCapitalName: String, block: suspend ProvinceResourceAssertionDsl.() -> Unit) {
     val dslConfig = ProvinceResourceAssertionDsl().coApply(block)
-    val province = getProvince(this, provinceCapitalName)
-    dslConfig.producedLastTurn?.also { province shouldHaveProducedLastTurn it }
-    dslConfig.consumedThisTurn?.also { province shouldHaveConsumedCurrentTurn it }
-    dslConfig.producedThisTurn?.also { province shouldHaveProducedCurrentTurn it }
-    dslConfig.missing?.also { province shouldBeMissing it }
+
+    val ledger = getProvince(this, provinceCapitalName).resourceLedger
+    val produced = ledger.getProduced()
+    val consumed = ledger.getConsumed()
+    val missing = ledger.getMissing()
+
+    dslConfig.consumed?.also { consumed.shouldHave(it) }
+    dslConfig.produced?.also { produced.shouldHave(it) }
+    dslConfig.missing?.also { missing.shouldHave(it) }
+
 }
 
 suspend fun getProvince(ctx: GameTestContext, provinceCapitalName: String): Province {
@@ -27,38 +32,13 @@ suspend fun getProvince(ctx: GameTestContext, provinceCapitalName: String): Prov
 
 
 class ProvinceResourceAssertionDsl {
-    var producedLastTurn: List<ResourceStack>? = null
-    var producedThisTurn: List<ResourceStack>? = null
-    var consumedThisTurn: List<ResourceStack>? = null
+    var consumed: List<ResourceStack>? = null
+    var produced: List<ResourceStack>? = null
     var missing: List<ResourceStack>? = null
 }
 
-private infix fun Province.shouldHaveProducedLastTurn(resources: Collection<ResourceStack>) {// TODO
-//    ResourceCollection.basic(resources).forEach(true) { type, amount ->
-//        this.resourcesProducedPrevTurn[type] shouldBe amount.plusOrMinus(0.0001f)
-//    }
-}
-
-private infix fun Province.shouldHaveProducedCurrentTurn(resources: Collection<ResourceStack>) {// TODO
-//    ResourceCollection.basic(resources).forEach(true) { type, amount ->
-//        this.resourcesProducedCurrTurn[type] shouldBe amount.plusOrMinus(0.0001f)
-//    }
-}
-
-private infix fun Province.shouldHaveConsumedCurrentTurn(resources: Collection<ResourceStack>) {// TODO
-//    ResourceCollection.basic(resources).forEach(true) { type, amount ->
-//        this.resourcesConsumedCurrTurn[type] shouldBe amount.plusOrMinus(0.0001f)
-//    }
-}
-
-private infix fun Province.shouldBeMissing(resources: Collection<ResourceStack>) {// TODO
-//    ResourceCollection.basic(resources).forEach(true) { type, amount ->
-//        this.resourcesMissing[type] shouldBe amount.plusOrMinus(0.0001f)
-//    }
-}
-
-private infix fun ResourceCollection.shouldBeExactly(resources: Collection<ResourceStack>) {// TODO
-//    ResourceCollection.basic(resources).forEach(true) { type, amount ->
-//        this[type] shouldBe amount.plusOrMinus(0.0001f)
-//    }
+private infix fun ResourceCollection.shouldHave(resources: Collection<ResourceStack>) {
+    ResourceCollection.basic(resources).forEach(true) { type, amount ->
+        this[type] shouldBe amount.plusOrMinus(0.0001f)
+    }
 }

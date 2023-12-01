@@ -100,7 +100,7 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
             cityIds = mutableListOf(city.cityId),
             provinceCapitalCityId = city.cityId,
             color = RGBColor.random(),
-            resourceLedger = ResourceLedger(ResourceLedgerDetailBuilderImpl())
+            resourceLedger = ResourceLedger()
         ).also { game.provinces.add(it) }
     }
 

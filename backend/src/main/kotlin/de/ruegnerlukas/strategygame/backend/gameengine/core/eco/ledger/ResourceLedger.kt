@@ -12,7 +12,9 @@ import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesRepor
 import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
 
 
-class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
+class ResourceLedger {
+
+    private val detailBuilder = ResourceLedgerDetailBuilderImpl()
 
     private val entries: MutableList<ResourceLedgerEntry> = mutableListOf()
 
@@ -35,12 +37,36 @@ class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
 
 
     /**
-     * Get the current resource balance (i.e. produced - consumed)
+     * Get the consumed resources
      */
-    fun getBalance(): ResourceCollection {
+    fun getConsumed(): ResourceCollection {
         return ResourceCollection.basic().also { balance ->
             entries.forEach { entry ->
-                balance.add(entry.resourceType, entry.amount)
+                balance.add(entry.resourceType, entry.consumed)
+            }
+        }
+    }
+
+
+    /**
+     * Get the produced resources
+     */
+    fun getProduced(): ResourceCollection {
+        return ResourceCollection.basic().also { balance ->
+            entries.forEach { entry ->
+                balance.add(entry.resourceType, entry.produced)
+            }
+        }
+    }
+
+
+    /**
+     * Get the currently missing resources
+     */
+    fun getMissing(): ResourceCollection {
+        return ResourceCollection.basic().also { balance ->
+            entries.forEach { entry ->
+                balance.add(entry.resourceType, entry.missing)
             }
         }
     }
@@ -52,7 +78,7 @@ class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
     fun recordProduce(resources: ResourceCollection, entity: EconomyEntity) {
         resources.forEach(false) { type, amount ->
             val (id, data) = detailBuilder.produce(amount, entity)
-            getEntry(type).add(id, amount, data)
+            getEntry(type).addProduced(id, amount, data)
         }
     }
 
@@ -63,7 +89,7 @@ class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
     fun recordConsume(resources: ResourceCollection, entity: EconomyEntity) {
         resources.forEach(false) { type, amount ->
             val (id, data) = detailBuilder.consume(amount, entity)
-            getEntry(type).add(id, -amount, data)
+            getEntry(type).addConsumed(id, amount, data)
         }
     }
 
@@ -74,7 +100,7 @@ class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
     fun recordGiveShare(resources: ResourceCollection, entity: EconomyEntity) {
         resources.forEach(false) { type, amount ->
             val (id, data) = detailBuilder.giveShare(amount, entity)
-            getEntry(type).add(id, -amount, data)
+            getEntry(type).addConsumed(id, 0f, data)
         }
     }
 
@@ -85,7 +111,7 @@ class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
     fun recordTakeShare(resources: ResourceCollection, entity: EconomyEntity) {
         resources.forEach(false) { type, amount ->
             val (id, data) = detailBuilder.takeShare(amount, entity)
-            getEntry(type).add(id, amount, data)
+            getEntry(type).addProduced(id, 0f, data)
         }
     }
 
@@ -101,13 +127,23 @@ class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
     }
 
 
-    fun record(
+    fun recordConsume(
         resources: ResourceCollection,
         detail: (type: ResourceType, amount: Float) -> Pair<ResourceLedgerDetailType, MutableMap<String, DetailLogValue>>
     ) {
         resources.forEach(false) { type, amount ->
             val (id, data) = detail(type, amount)
-            getEntry(type).add(id, amount, data)
+            getEntry(type).addConsumed(id, amount, data)
+        }
+    }
+
+    fun recordProduce(
+        resources: ResourceCollection,
+        detail: (type: ResourceType, amount: Float) -> Pair<ResourceLedgerDetailType, MutableMap<String, DetailLogValue>>
+    ) {
+        resources.forEach(false) { type, amount ->
+            val (id, data) = detail(type, amount)
+            getEntry(type).addProduced(id, amount, data)
         }
     }
 
@@ -152,8 +188,9 @@ class ResourceLedger(private val detailBuilder: ResourceLedgerDetailBuilder) {
             .find { it.resourceType == type }
             ?: ResourceLedgerEntry(
                 resourceType = type,
-                amount = 0F,
-                missing = 0F,
+                consumed = 0f,
+                produced = 0f,
+                missing = 0f,
             ).also { entries.add(it) }
     }
 

@@ -9,6 +9,8 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.common.utils.UUID
 import de.ruegnerlukas.strategygame.backend.common.utils.coApply
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedgerDetailBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.RouteEntity
@@ -133,7 +135,8 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
         countryId = city.countryId,
         cityIds = mutableListOf(city.cityId),
         provinceCapitalCityId = city.cityId,
-        color = RGBColor.random()
+        color = RGBColor.random(),
+        resourceLedger = ResourceLedger()
     )
     ProvinceEntity.of(province, getActiveGame()).also { entity ->
         getDb().insertDocument(Collections.PROVINCES, entity)

@@ -29,7 +29,7 @@ class ProvinceDTOCreator(private val countryId: String) {
                         entries = province.resourceLedger.getEntries().map { entry ->
                             ResourceLedgerEntryDTO(
                                 resourceType = entry.resourceType,
-                                amount = entry.amount,
+                                amount = entry.produced - entry.consumed,
                                 missing = entry.missing,
                                 details = entry.getDetails().map { DetailLogEntryDTO.of(it) }
                             )

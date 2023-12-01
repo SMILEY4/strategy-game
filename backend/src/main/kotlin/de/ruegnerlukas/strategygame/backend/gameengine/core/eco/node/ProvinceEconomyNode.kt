@@ -25,7 +25,7 @@ class ProvinceEconomyNode(
         var enablePopGrowthEntity = true
     }
 
-    override val storage: EconomyNodeStorage = EconomyNodeStorageImpl(province.resourceLedger.getBalance())
+    override val storage: EconomyNodeStorage = EconomyNodeStorageImpl(province.resourceLedger.getProduced())
 
     override val children: Collection<EconomyNode> = emptyList()
 

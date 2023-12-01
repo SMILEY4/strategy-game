@@ -30,7 +30,7 @@ class GENRemoveProductionQueueEntry(private val gameConfig: GameConfig, eventSys
     }
 
     private fun removeEntry(city: City, province: Province, entry: ProductionQueueEntry) {
-        province.resourceLedger.record(entry.collectedResources.copy().scale(gameConfig.productionQueueRefundPercentage)) { _, amount ->
+        province.resourceLedger.recordProduce(entry.collectedResources.copy().scale(gameConfig.productionQueueRefundPercentage)) { _, amount ->
             ResourceLedgerDetailType.PRODUCTION_QUEUE_REFUND to mutableMapOf("amount" to FloatDetailLogValue(amount))
         }
         city.infrastructure.productionQueue.remove(entry)

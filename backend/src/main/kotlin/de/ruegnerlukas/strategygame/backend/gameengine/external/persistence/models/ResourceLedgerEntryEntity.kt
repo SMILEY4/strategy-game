@@ -7,7 +7,8 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceL
 
 data class ResourceLedgerEntryEntity(
     val resourceType: ResourceType,
-    val amount: Float,
+    val produced: Float,
+    val consumed: Float,
     val missing: Float,
     val details: List<DetailLogEntryEntity<ResourceLedgerDetailType>>
 ) {
@@ -16,14 +17,16 @@ data class ResourceLedgerEntryEntity(
 
         fun of(serviceModel: ResourceLedgerEntry) = ResourceLedgerEntryEntity(
             resourceType = serviceModel.resourceType,
-            amount = serviceModel.amount,
+            produced = serviceModel.produced,
+            consumed = serviceModel.consumed,
             missing = serviceModel.missing,
             details = serviceModel.getDetails().map { DetailLogEntryEntity.of(it) }
         )
 
         fun ResourceLedgerEntryEntity.asServiceModel() = ResourceLedgerEntry(
             resourceType = this.resourceType,
-            amount = this.amount,
+            produced = this.produced,
+            consumed = this.consumed,
             missing = this.missing,
             details = this.details.map { it.asServiceModel() }.toMutableList()
         )
