@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.dto.DetailLogEntryDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
@@ -34,7 +35,14 @@ class CityDTOCreator(private val countryId: String) {
             ),
             dataTier3 = if (countryId == city.countryId) {
                 CityDataTier3(
-                    buildings = city.infrastructure.buildings.map { BuildingDTO(it.type.name, it.tile, it.active) },
+                    buildings = city.infrastructure.buildings.map { building ->
+                        BuildingDTO(
+                            type = building.type.name,
+                            tile = building.tile,
+                            active = building.active,
+                            details = building.details.getDetails().map { DetailLogEntryDTO.of(it) }
+                        )
+                    },
                     productionQueue = city.infrastructure.productionQueue.map { buildProductionQueueEntry(it) },
                     size = city.population.size,
                     growthProgress = city.population.growthProgress

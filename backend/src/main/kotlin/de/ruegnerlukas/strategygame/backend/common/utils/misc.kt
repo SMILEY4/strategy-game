@@ -10,3 +10,15 @@ inline fun <T> Iterable<T>.sumOf(selector: (T) -> Float): Float {
     }
     return sum
 }
+
+inline fun <K, V> buildMutableMap(builderAction: MutableMap<K, V>.() -> Unit): MutableMap<K, V> {
+    return mutableMapOf<K, V>().apply(builderAction)
+}
+
+inline fun <E> buildMutableList(builderAction: MutableList<E>.() -> Unit): MutableList<E> {
+    return mutableListOf<E>().apply(builderAction)
+}
+
+inline fun <T, R> Iterable<T>.mapMutable(transform: (T) -> R): MutableList<R> {
+    return this.map(transform).toMutableList()
+}

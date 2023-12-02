@@ -15,7 +15,7 @@ class PopulationGrowthEconomyEntity(
     override val owner: de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode,
     val city: City,
     gameConfig: GameConfig
-) : EconomyEntity {
+) : GameEconomyEntity {
 
     companion object {
         private fun getRequiredResources(config: GameConfig): ResourceCollection {

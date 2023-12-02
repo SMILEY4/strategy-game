@@ -12,21 +12,21 @@ class ResourceLedgerEntry(
     var consumed: Float,
     var missing: Float,
     details: MutableList<DetailLogEntry<ResourceLedgerDetailType>> = mutableListOf()
-): DetailLog<ResourceLedgerDetailType>(details) {
+) : DetailLog<ResourceLedgerDetailType>(details) {
 
-    fun addProduced(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String,DetailLogValue>) {
+    fun addProduced(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String, DetailLogValue>) {
         this.produced += amount
-        this.addDetail(id, data)
+        this.mergeDetail(id, data)
     }
 
-    fun addConsumed(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String,DetailLogValue>) {
+    fun addConsumed(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String, DetailLogValue>) {
         this.consumed += amount
-        this.addDetail(id, data)
+        this.mergeDetail(id, data)
     }
 
-    fun addMissing(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String,DetailLogValue>) {
+    fun addMissing(id: ResourceLedgerDetailType, amount: Float, data: MutableMap<String, DetailLogValue>) {
         this.missing += amount
-        this.addDetail(id, data)
+        this.mergeDetail(id, data)
     }
 
 }

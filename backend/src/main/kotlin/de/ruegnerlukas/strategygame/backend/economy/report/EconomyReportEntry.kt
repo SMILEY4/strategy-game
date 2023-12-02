@@ -4,14 +4,16 @@ import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceColl
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
 import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
 
-sealed interface EconomyReportEntry
+sealed interface EconomyReportEntry {
+    val entity: EconomyEntity
+}
 
 
 /**
  * Resources were consumed by the entity from the node (node does not have to be owner of entity)
  */
 data class ConsumptionReportEntry(
-    val entity: EconomyEntity,
+    override val entity: EconomyEntity,
     val fromNode: EconomyNode,
     val resources: ResourceCollection
 ) : EconomyReportEntry
@@ -21,7 +23,7 @@ data class ConsumptionReportEntry(
  * Resources were produced in the node by the entity
  */
 data class ProductionReportEntry(
-    val entity: EconomyEntity,
+    override val entity: EconomyEntity,
     val inNode: EconomyNode,
     val resources: ResourceCollection
 ) : EconomyReportEntry
@@ -31,6 +33,6 @@ data class ProductionReportEntry(
  * Resources are missing for the entity
  */
 data class MissingResourcesReportEntry(
-    val entity: EconomyEntity,
+    override val entity: EconomyEntity,
     val resources: ResourceCollection
 ) : EconomyReportEntry

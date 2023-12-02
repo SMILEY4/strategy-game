@@ -15,7 +15,7 @@ class PopulationBaseEconomyEntity(
     override val owner: EconomyNode,
     val city: City,
     popFoodConsumption: EconomyPopFoodConsumptionProvider
-) : EconomyEntity {
+) : GameEconomyEntity {
 
     companion object {
         private fun getRequiredResources(popFoodConsumption: EconomyPopFoodConsumptionProvider, city: City): ResourceCollection {

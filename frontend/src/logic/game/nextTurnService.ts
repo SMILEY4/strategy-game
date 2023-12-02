@@ -1,14 +1,14 @@
 import {
     BuildingDTO,
     CityDTO,
+    DetailLogEntryDTO,
     GameStateDTO,
     ProductionQueueEntryDTO,
-    ResourceLedgerDetailDTO,
     ResourceLedgerDTO,
     TileDTO,
 } from "./models/gameStateDTO";
 import {Tile} from "../../models/tile";
-import {orDefault, orNull} from "../../shared/utils";
+import {mapRecord, orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
 import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
@@ -27,7 +27,8 @@ import {Visibility} from "../../models/visibility";
 import {TerrainResourceType} from "../../models/terrainResourceType";
 import {MonitoringRepository} from "../../state/access/MonitoringRepository";
 import {ValueHistory} from "../../shared/valueHistory";
-import {ResourceLedger, ResourceLedgerDetail} from "../../models/resourceLedger";
+import {ResourceLedger} from "../../models/resourceLedger";
+import {DetailLogEntry} from "../../models/detailLogEntry";
 
 export class NextTurnService {
 
@@ -145,110 +146,9 @@ export class NextTurnService {
                 resourceType: ResourceType.fromString(dtoEntry.resourceType),
                 amount: dtoEntry.amount,
                 missing: dtoEntry.missing,
-                details: dtoEntry.details.map(dtoDetail => this.buildLedgerDetail(dtoDetail)),
+                details: this.convertDetails(dtoEntry.details),
             })),
         };
-    }
-
-    private buildLedgerDetail(dto: ResourceLedgerDetailDTO): ResourceLedgerDetail {
-        switch (dto.id) {
-            case "UNKNOWN_CONSUMPTION":
-                return {
-                    type: "removed",
-                    amount: dto.data["amount"].value,
-                    message: "unknown",
-                };
-            case "UNKNOWN_PRODUCTION":
-                return {
-                    type: "added",
-                    amount: dto.data["amount"].value,
-                    message: "unknown",
-                };
-            case "UNKNOWN_MISSING":
-                return {
-                    type: "missing",
-                    amount: dto.data["amount"].value,
-                    message: "unknown",
-                };
-            case "BUILDING_CONSUMPTION":
-                return {
-                    type: "removed",
-                    amount: dto.data["amount"].value,
-                    message: BuildingType.fromString(dto.data["buildingType"].value).displayString + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
-                };
-            case "BUILDING_PRODUCTION":
-                return {
-                    type: "added",
-                    amount: dto.data["amount"].value,
-                    message: BuildingType.fromString(dto.data["buildingType"].value).displayString + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
-                };
-            case "BUILDING_MISSING":
-                return {
-                    type: "missing",
-                    amount: dto.data["amount"].value,
-                    message: BuildingType.fromString(dto.data["buildingType"].value).displayString + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
-                };
-            case "POPULATION_BASE_CONSUMPTION":
-                return {
-                    type: "removed",
-                    amount: dto.data["amount"].value,
-                    message: "basic population needs",
-                };
-            case "POPULATION_BASE_MISSING":
-                return {
-                    type: "missing",
-                    amount: dto.data["amount"].value,
-                    message: "basic population needs",
-                };
-            case "POPULATION_GROWTH_CONSUMPTION":
-                return {
-                    type: "removed",
-                    amount: dto.data["amount"].value,
-                    message: "population growth",
-                };
-            case "POPULATION_GROWTH_MISSING":
-                return {
-                    type: "missing",
-                    amount: dto.data["amount"].value,
-                    message: "population growth",
-                };
-            case "PRODUCTION_QUEUE_CONSUMPTION":
-                return {
-                    type: "removed",
-                    amount: dto.data["amount"].value,
-                    message: "production queue(s)" + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
-                };
-            case "PRODUCTION_QUEUE_MISSING":
-                return {
-                    type: "missing",
-                    amount: dto.data["amount"].value,
-                    message: "production queue(s)" + " (" + orDefault(dto.data["count"]?.value, 1) + "x)",
-                };
-            case "PRODUCTION_QUEUE_REFUND":
-                return {
-                    type: "added",
-                    amount: dto.data["amount"].value,
-                    message: "refund production queue entry",
-                };
-            case "SHARED_GIVE":
-                return {
-                    type: "removed",
-                    amount: dto.data["amount"].value,
-                    message: "traded with other",
-                };
-            case "SHARED_TAKE":
-                return {
-                    type: "added",
-                    amount: dto.data["amount"].value,
-                    message: "traded with other",
-                };
-            default:
-                return {
-                    type: "added",
-                    amount: 0,
-                    message: "error",
-                };
-        }
     }
 
     private buildCities(game: GameStateDTO): City[] {
@@ -301,6 +201,7 @@ export class NextTurnService {
                 q: buildingDTO.tile.q,
                 r: buildingDTO.tile.r,
             } : null,
+            details: this.convertDetails(buildingDTO.details),
         };
     }
 
@@ -348,6 +249,13 @@ export class NextTurnService {
                 path: routeDTO.path,
             };
         });
+    }
+
+    private convertDetails<T>(dtos: DetailLogEntryDTO<T>[]): DetailLogEntry<T>[] {
+        return dtos.map(dto => ({
+            id: dto.id,
+            data: mapRecord(dto.data, (_, value) => value.value),
+        }));
     }
 
     private findOwner(game: GameStateDTO, tile: TileDTO) {
@@ -419,5 +327,6 @@ export class NextTurnService {
             throw new Error("Could not find city with id " + cityId);
         }
     }
+
 
 }

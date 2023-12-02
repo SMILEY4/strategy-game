@@ -4,6 +4,7 @@ import {ResourceTypeString} from "../../../models/resourceType";
 import {TerrainTypeString} from "../../../models/terrainType";
 import {VisibilityString} from "../../../models/visibility";
 import {TerrainResourceTypeString} from "../../../models/terrainResourceType";
+import {BuildingDetailType} from "../../../models/building";
 
 export interface GameStateDTO {
     game: {
@@ -51,32 +52,24 @@ export interface ResourceLedgerEntryDTO {
     resourceType: ResourceTypeString,
     amount: number,
     missing: number,
-    details: ResourceLedgerDetailDTO[]
+    details: DetailLogEntryDTO<ResourceLedgerDetailTypeDTO>[]
 }
 
-export interface ResourceLedgerDetailDTO {
-    id: "UNKNOWN_CONSUMPTION"
-        | "UNKNOWN_PRODUCTION"
-        | "UNKNOWN_MISSING"
-        | "BUILDING_CONSUMPTION"
-        | "BUILDING_PRODUCTION"
-        | "BUILDING_MISSING"
-        | "POPULATION_BASE_CONSUMPTION"
-        | "POPULATION_BASE_MISSING"
-        | "POPULATION_GROWTH_CONSUMPTION"
-        | "POPULATION_GROWTH_MISSING"
-        | "PRODUCTION_QUEUE_CONSUMPTION"
-        | "PRODUCTION_QUEUE_MISSING"
-        | "PRODUCTION_QUEUE_REFUND"
-        | "SHARED_GIVE"
-        | "SHARED_TAKE",
-    data: Record<string, ResourceLedgerDetailValueDTO>
-}
-
-export interface ResourceLedgerDetailValueDTO {
-    type: string,
-    value: any
-}
+export type  ResourceLedgerDetailTypeDTO = "UNKNOWN_CONSUMPTION"
+    | "UNKNOWN_PRODUCTION"
+    | "UNKNOWN_MISSING"
+    | "BUILDING_CONSUMPTION"
+    | "BUILDING_PRODUCTION"
+    | "BUILDING_MISSING"
+    | "POPULATION_BASE_CONSUMPTION"
+    | "POPULATION_BASE_MISSING"
+    | "POPULATION_GROWTH_CONSUMPTION"
+    | "POPULATION_GROWTH_MISSING"
+    | "PRODUCTION_QUEUE_CONSUMPTION"
+    | "PRODUCTION_QUEUE_MISSING"
+    | "PRODUCTION_QUEUE_REFUND"
+    | "SHARED_GIVE"
+    | "SHARED_TAKE"
 
 
 export interface CityDTO {
@@ -109,7 +102,8 @@ export interface BuildingDTO {
         q: number,
         r: number,
     },
-    active: boolean
+    active: boolean,
+    details: DetailLogEntryDTO<BuildingDetailType>[]
 }
 
 export interface ProductionQueueEntryDTO {
@@ -167,4 +161,15 @@ export interface ColorDTO {
     red: number,
     green: number,
     blue: number,
+}
+
+
+export interface DetailLogEntryDTO<T> {
+    id: T,
+    data: Record<string, DetailValueDTO>
+}
+
+export interface DetailValueDTO {
+    type: string,
+    value: any
 }

@@ -12,7 +12,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQu
 class ProductionQueueEconomyEntity(
     override val owner: EconomyNode,
     val queueEntry: ProductionQueueEntry
-) : EconomyEntity {
+) : GameEconomyEntity {
 
     override val config: EconomyEntityConfig = EconomyEntityConfig(
         input = queueEntry.getTotalRequiredResources().copy().sub(queueEntry.collectedResources),

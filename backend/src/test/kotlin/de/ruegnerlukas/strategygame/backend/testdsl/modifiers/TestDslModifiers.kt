@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.modifiers
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.DetailLog
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
@@ -111,7 +112,8 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
                 Building(
                     type = type,
                     tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
-                    active = true
+                    active = true,
+                    details = DetailLog()
                 )
             }.toMutableList(),
             productionQueue = dslConfig.queue.map { buildingType ->
@@ -161,7 +163,8 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
                 Building(
                     type = type,
                     tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
-                    active = true
+                    active = true,
+                    details = DetailLog()
                 )
             }.toMutableList(),
             productionQueue = dslConfig.queue.map { buildingType ->

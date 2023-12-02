@@ -13,7 +13,7 @@ class BuildingEconomyEntity(
     override val owner: EconomyNode,
     val city: City,
     val building: Building,
-) : EconomyEntity {
+) : GameEconomyEntity {
 
     companion object {
 
