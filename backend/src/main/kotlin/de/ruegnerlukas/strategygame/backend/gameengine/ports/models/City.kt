@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.models
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.DetailLog
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 
 class City(
@@ -36,7 +37,16 @@ class CityInfrastructure(
 
 class CityPopulation(
     var size: Int,
+    var consumedFood: Float = 0f,
     var growthProgress: Float,
-    var popConsumedFood: Float = 0f,
-    var popGrowthConsumedFood: Boolean = false
+    var growthConsumedFood: Boolean = false,
+    var growthDetailLog: DetailLog<CityPopulationGrowthDetailType> = DetailLog()
 )
+
+enum class CityPopulationGrowthDetailType {
+    MORE_FOOD_AVAILABLE,
+    NOT_ENOUGH_FOOD,
+    STARVING,
+    PROVINCE_CAPITAL,
+    MAX_SIZE_REACHED,
+}

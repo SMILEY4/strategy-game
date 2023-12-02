@@ -5,6 +5,7 @@ import {TerrainTypeString} from "../../../models/terrainType";
 import {VisibilityString} from "../../../models/visibility";
 import {TerrainResourceTypeString} from "../../../models/terrainResourceType";
 import {BuildingDetailType} from "../../../models/building";
+import {PopulationGrowthDetailType} from "../../../models/city";
 
 export interface GameStateDTO {
     game: {
@@ -92,6 +93,7 @@ export interface CityDTO {
         productionQueue: ProductionQueueEntryDTO[],
         size: number,
         growthProgress: number,
+        growthDetails: DetailLogEntryDTO<PopulationGrowthDetailType>[]
     }
 }
 

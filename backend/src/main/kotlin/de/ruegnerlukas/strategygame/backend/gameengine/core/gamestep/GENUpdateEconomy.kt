@@ -26,7 +26,6 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEco
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.WorldEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingDetailType
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.entities.GameEntity
 
 /**
  * Handles turn-income and turn-expenses
@@ -62,8 +61,8 @@ class GENUpdateEconomy(
 
         // reset
         game.cities.forEach { city ->
-            city.population.popConsumedFood = 0f
-            city.population.popGrowthConsumedFood = false
+            city.population.consumedFood = 0f
+            city.population.growthConsumedFood = false
             city.infrastructure.buildings.forEach { building ->
                 building.active = false
                 building.details.replaceDetail(BuildingDetailType.ACTIVITY, buildMutableMap {
@@ -117,7 +116,7 @@ class GENUpdateEconomy(
                     is PopulationBaseEconomyEntity -> {
                         when(entry) {
                             is ConsumptionReportEntry -> {
-                                gameEntity.city.population.popConsumedFood += entry.resources[ResourceType.FOOD]
+                                gameEntity.city.population.consumedFood += entry.resources[ResourceType.FOOD]
                             }
                             else -> Unit
                         }
@@ -126,7 +125,7 @@ class GENUpdateEconomy(
                     is PopulationGrowthEconomyEntity -> {
                         when(entry) {
                             is ConsumptionReportEntry -> {
-                                gameEntity.city.population.popConsumedFood += entry.resources[ResourceType.FOOD]
+                                gameEntity.city.population.consumedFood += entry.resources[ResourceType.FOOD]
                             }
                             else -> Unit
                         }

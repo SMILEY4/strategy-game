@@ -176,6 +176,7 @@ export class DataViewService {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
                 size: city.country.id === povCountryId ? city.population.size! : 0,
                 progress: city.country.id === povCountryId ? city.population.progress! : 0,
+                growthDetails: city.country.id === povCountryId ? city.population.growthDetails : []
             },
             buildings: {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,

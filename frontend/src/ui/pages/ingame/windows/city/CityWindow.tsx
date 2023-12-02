@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header2} from "../../../../components/header/Header";
+import {Header1, Header2, Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Text} from "../../../../components/text/Text";
@@ -15,7 +15,7 @@ import {CgClose} from "react-icons/cg";
 import {joinClassNames} from "../../../../components/utils";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
-import {CityIdentifier, CityView} from "../../../../../models/city";
+import {CityIdentifier, CityView, PopulationGrowthDetailType} from "../../../../../models/city";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {AudioType} from "../../../../../logic/audio/audioService";
 import {UIAudio} from "../../../../components/audio";
@@ -28,6 +28,9 @@ import {Building} from "../../../../../models/building";
 import {BsArrowRight} from "react-icons/bs";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
 import "./cityWindow.less";
+import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
+import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
+import {DetailLogEntry} from "../../../../../models/detailLogEntry";
 
 
 export interface CityWindowProps {
@@ -135,13 +138,70 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
                     name={"Size"}
                     value={props.city.population.visibility === InfoVisibility.KNOWN ? props.city.population.size : "?"}
                 />
-                <KeyTextValuePair
-                    name={"Growth Progress"}
-                    value={props.city.population.visibility === InfoVisibility.KNOWN ? props.city.population.progress : "?"}
-                />
+                {props.city.population.visibility === InfoVisibility.KNOWN && (
+                    <KeyValuePair name={"Growth Progress"}>
+                        <TooltipContext>
+                            <TooltipTrigger>
+                                <Text>{props.city.population.progress}</Text>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <TooltipPanel>
+                                    <VBox padding_m gap_xs fillParent>
+                                        <Header4>Population Growth</Header4>
+                                        {props.city.population.growthDetails.map(detail => buildGrowthDetail(detail))}
+                                    </VBox>
+                                </TooltipPanel>
+                            </TooltipContent>
+                        </TooltipContext>
+                    </KeyValuePair>
+                )}
+                {props.city.population.visibility !== InfoVisibility.KNOWN && (
+                    <KeyTextValuePair
+                        name={"Growth Progress"}
+                        value={"?"}
+                    />
+                )}
             </InsetPanel>
         </>
     );
+
+    function buildGrowthDetail(entry: DetailLogEntry<PopulationGrowthDetailType>): React.ReactElement {
+        switch (entry.id) {
+            case "MORE_FOOD_AVAILABLE":
+                return (
+                    <HBox gap_xs>
+                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
+                        <Text>more food available</Text>
+                    </HBox>
+                );
+            case "NOT_ENOUGH_FOOD":
+                return (
+                    <HBox gap_xs>
+                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
+                        <Text>not enough food available</Text>
+                    </HBox>
+                );
+            case "STARVING":
+                return (
+                    <HBox gap_xs>
+                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
+                        <Text>no enough food available</Text>
+                    </HBox>
+                );
+            case "PROVINCE_CAPITAL":
+                return (
+                    <HBox gap_xs>
+                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
+                        <Text>province capitol</Text>
+                    </HBox>
+                );
+            case "MAX_SIZE_REACHED":
+                return (
+                    <Text>Population reached maximum size</Text>
+                );
+
+        }
+    }
 }
 
 function RouteSectionSection(props: UseCityWindow.Data): ReactElement {
@@ -248,7 +308,7 @@ function BuildingList(props: CityView): ReactElement {
                 <Text>{"Available Building-Slots: " + props.buildings.remainingSlots + "/" + props.tier.value.buildingSlots}</Text>
             </HBox>
             <HBox gap_s top left wrap>
-                {props.buildings.items.map((building,index) => (
+                {props.buildings.items.map((building, index) => (
                     <BuildingEntry key={index} building={building}/>
                 ))}
             </HBox>
@@ -267,4 +327,20 @@ function BuildingEntry(props: { building: Building }): ReactElement {
             />
         </BuildingInfoTooltip>
     );
+}
+
+
+function formatValue(value: number, includePlus?: boolean): string {
+    const simpleValue = Math.round(value * 100) / 100;
+    if (simpleValue < 0) {
+        return "-" + Math.abs(simpleValue);
+    }
+    if (simpleValue > 0) {
+        if (includePlus === false) {
+            return "" + Math.abs(simpleValue);
+        } else {
+            return "+" + Math.abs(simpleValue);
+        }
+    }
+    return "0";
 }

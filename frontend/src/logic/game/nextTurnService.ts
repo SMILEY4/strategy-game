@@ -172,6 +172,7 @@ export class NextTurnService {
                 population: {
                     size: orNull(cityDTO.dataTier3?.size),
                     progress: orNull(cityDTO.dataTier3?.growthProgress),
+                    growthDetails: cityDTO.dataTier3 ? this.convertDetails(cityDTO.dataTier3.growthDetails) : [],
                 },
                 productionQueue: cityDTO.dataTier3
                     ? cityDTO.dataTier3.productionQueue.map(queueEntryDTO => this.buildProductionEntry(queueEntryDTO))

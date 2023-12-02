@@ -1,11 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.DetailLog
+import de.ruegnerlukas.strategygame.backend.common.detaillog.entity.DetailLogEntryEntity
 import de.ruegnerlukas.strategygame.backend.common.persistence.DbId
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
+import de.ruegnerlukas.strategygame.backend.common.utils.mapMutable
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulation
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulationGrowthDetailType
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlementTier
 
 class CityEntity(
@@ -18,8 +22,9 @@ class CityEntity(
     val isProvinceCapital: Boolean,
     val buildings: List<BuildingEntity>,
     val productionQueue: List<ProductionQueueEntryEntity>,
-    var size: Int,
-    var growthProgress: Float,
+    val size: Int,
+    val growthProgress: Float,
+    val growthDetails: List<DetailLogEntryEntity<CityPopulationGrowthDetailType>>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -37,6 +42,7 @@ class CityEntity(
             productionQueue = serviceModel.infrastructure.productionQueue.map { ProductionQueueEntryEntity.of(it) },
             size = serviceModel.population.size,
             growthProgress = serviceModel.population.growthProgress,
+            growthDetails = serviceModel.population.growthDetailLog.getDetails().map { DetailLogEntryEntity.of(it) }
         )
     }
 
@@ -58,7 +64,8 @@ class CityEntity(
         ),
         population = CityPopulation(
             size = this.size,
-            growthProgress = this.growthProgress
+            growthProgress = this.growthProgress,
+            growthDetailLog = DetailLog(this.growthDetails.mapMutable { it.asServiceModel() })
         )
     )
 

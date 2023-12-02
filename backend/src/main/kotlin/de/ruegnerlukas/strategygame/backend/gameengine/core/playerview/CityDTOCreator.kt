@@ -45,7 +45,8 @@ class CityDTOCreator(private val countryId: String) {
                     },
                     productionQueue = city.infrastructure.productionQueue.map { buildProductionQueueEntry(it) },
                     size = city.population.size,
-                    growthProgress = city.population.growthProgress
+                    growthProgress = city.population.growthProgress,
+                    growthDetails = city.population.growthDetailLog.getDetails().map { DetailLogEntryDTO.of(it) }
                 )
             } else {
                 null
