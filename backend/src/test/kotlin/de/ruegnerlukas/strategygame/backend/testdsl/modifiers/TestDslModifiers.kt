@@ -1,5 +1,6 @@
 package de.ruegnerlukas.strategygame.backend.testdsl.modifiers
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.DetailLog
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
@@ -9,6 +10,8 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoData
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.common.utils.UUID
 import de.ruegnerlukas.strategygame.backend.common.utils.coApply
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedgerDetailBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.RouteEntity
@@ -109,7 +112,8 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
                 Building(
                     type = type,
                     tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
-                    active = true
+                    active = true,
+                    details = DetailLog()
                 )
             }.toMutableList(),
             productionQueue = dslConfig.queue.map { buildingType ->
@@ -133,6 +137,8 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
         countryId = city.countryId,
         cityIds = mutableListOf(city.cityId),
         provinceCapitalCityId = city.cityId,
+        color = RGBColor.random(),
+        resourceLedger = ResourceLedger()
     )
     ProvinceEntity.of(province, getActiveGame()).also { entity ->
         getDb().insertDocument(Collections.PROVINCES, entity)
@@ -157,7 +163,8 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
                 Building(
                     type = type,
                     tile = dir?.let { d -> TileRef(tiles.find { it.position == dslConfig.tile!!.direction(d) }!!) },
-                    active = true
+                    active = true,
+                    details = DetailLog()
                 )
             }.toMutableList(),
             productionQueue = dslConfig.queue.map { buildingType ->

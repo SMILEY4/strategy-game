@@ -148,9 +148,9 @@ export class DataViewService {
                     })),
                 ],
             },
-            resourceBalance: {
-                visibility: province.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
-                items: province.resourceBalance,
+            resourceLedger: {
+                visibility: (province.country.id === povCountryId && province.resourceLedger !== null) ? InfoVisibility.KNOWN : InfoVisibility.UNCERTAIN,
+                ledger: province.resourceLedger!,
             },
         };
     }
@@ -176,6 +176,7 @@ export class DataViewService {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,
                 size: city.country.id === povCountryId ? city.population.size! : 0,
                 progress: city.country.id === povCountryId ? city.population.progress! : 0,
+                growthDetails: city.country.id === povCountryId ? city.population.growthDetails : []
             },
             buildings: {
                 visibility: city.country.id === povCountryId ? InfoVisibility.KNOWN : InfoVisibility.UNKNOWN,

@@ -4,6 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
@@ -80,7 +81,7 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
             ),
             population = CityPopulation(
                 size = 1,
-                growthProgress = 0f
+                growthProgress = 0f,
             ),
         ).also { game.cities.add(it) }
     }
@@ -97,7 +98,8 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
             countryId = country.countryId,
             cityIds = mutableListOf(city.cityId),
             provinceCapitalCityId = city.cityId,
-            color = RGBColor.random()
+            color = RGBColor.random(),
+            resourceLedger = ResourceLedger()
         ).also { game.provinces.add(it) }
     }
 

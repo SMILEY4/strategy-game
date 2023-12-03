@@ -3,12 +3,11 @@ import {ProvinceIdentifier} from "./province";
 import {TileIdentifier} from "./tile";
 import {Color} from "./color";
 import {SettlementTier} from "./settlementTier";
-import {BuildingType} from "./buildingType";
 import {InfoVisibility} from "./infoVisibility";
 import {ProductionQueueEntry, ProductionQueueEntryView} from "./productionQueueEntry";
 import {CreateCityCommand} from "./command";
 import {Building} from "./building";
-import {Route} from "./route";
+import {DetailLogEntry} from "./detailLogEntry";
 
 export interface CityIdentifier {
     id: string,
@@ -34,11 +33,19 @@ export interface City {
     tier: SettlementTier,
     population: {
         size: number | null,
-        progress: number | null
+        progress: number | null,
+        growthDetails: DetailLogEntry<PopulationGrowthDetailType>[]
     }
     buildings: Building[]
     productionQueue: ProductionQueueEntry[],
 }
+
+export type PopulationGrowthDetailType =
+    "MORE_FOOD_AVAILABLE"
+    | "NOT_ENOUGH_FOOD"
+    | "STARVING"
+    | "PROVINCE_CAPITAL"
+    | "MAX_SIZE_REACHED"
 
 export interface CityView {
     isPlayerOwned: boolean,
@@ -56,6 +63,7 @@ export interface CityView {
         visibility: InfoVisibility,
         size: number,
         progress: number
+        growthDetails: DetailLogEntry<PopulationGrowthDetailType>[]
     },
     buildings: {
         visibility: InfoVisibility,

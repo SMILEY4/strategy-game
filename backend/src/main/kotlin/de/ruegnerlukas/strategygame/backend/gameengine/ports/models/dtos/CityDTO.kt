@@ -1,7 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.dto.DetailLogEntryDTO
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Building
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulationGrowthDetailType
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
 
 class CityDTO(
@@ -27,5 +29,6 @@ data class CityDataTier3(
     val buildings: List<BuildingDTO>,
     val productionQueue: List<ProductionQueueEntryDTO>,
     val size: Int,
-    val growthProgress: Float
+    val growthProgress: Float,
+    val growthDetails: List<DetailLogEntryDTO<CityPopulationGrowthDetailType>>
 )

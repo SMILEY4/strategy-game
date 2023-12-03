@@ -4,6 +4,8 @@ import {ResourceTypeString} from "../../../models/resourceType";
 import {TerrainTypeString} from "../../../models/terrainType";
 import {VisibilityString} from "../../../models/visibility";
 import {TerrainResourceTypeString} from "../../../models/terrainResourceType";
+import {BuildingDetailType} from "../../../models/building";
+import {PopulationGrowthDetailType} from "../../../models/city";
 
 export interface GameStateDTO {
     game: {
@@ -39,9 +41,37 @@ export interface ProvinceDTO {
         provinceCapitalCityId: string,
     },
     dataTier3: null | {
-        resourceBalance: Record<ResourceTypeString, number>
+        resourceLedger: ResourceLedgerDTO
     }
 }
+
+export interface ResourceLedgerDTO {
+    entries: ResourceLedgerEntryDTO[];
+}
+
+export interface ResourceLedgerEntryDTO {
+    resourceType: ResourceTypeString,
+    amount: number,
+    missing: number,
+    details: DetailLogEntryDTO<ResourceLedgerDetailTypeDTO>[]
+}
+
+export type  ResourceLedgerDetailTypeDTO = "UNKNOWN_CONSUMPTION"
+    | "UNKNOWN_PRODUCTION"
+    | "UNKNOWN_MISSING"
+    | "BUILDING_CONSUMPTION"
+    | "BUILDING_PRODUCTION"
+    | "BUILDING_MISSING"
+    | "POPULATION_BASE_CONSUMPTION"
+    | "POPULATION_BASE_MISSING"
+    | "POPULATION_GROWTH_CONSUMPTION"
+    | "POPULATION_GROWTH_MISSING"
+    | "PRODUCTION_QUEUE_CONSUMPTION"
+    | "PRODUCTION_QUEUE_MISSING"
+    | "PRODUCTION_QUEUE_REFUND"
+    | "SHARED_GIVE"
+    | "SHARED_TAKE"
+
 
 export interface CityDTO {
     dataTier1: {
@@ -63,6 +93,7 @@ export interface CityDTO {
         productionQueue: ProductionQueueEntryDTO[],
         size: number,
         growthProgress: number,
+        growthDetails: DetailLogEntryDTO<PopulationGrowthDetailType>[]
     }
 }
 
@@ -73,7 +104,8 @@ export interface BuildingDTO {
         q: number,
         r: number,
     },
-    active: boolean
+    active: boolean,
+    details: DetailLogEntryDTO<BuildingDetailType>[]
 }
 
 export interface ProductionQueueEntryDTO {
@@ -131,4 +163,15 @@ export interface ColorDTO {
     red: number,
     green: number,
     blue: number,
+}
+
+
+export interface DetailLogEntryDTO<T> {
+    id: T,
+    data: Record<string, DetailValueDTO>
+}
+
+export interface DetailValueDTO {
+    type: string,
+    value: any
 }

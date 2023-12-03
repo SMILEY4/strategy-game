@@ -1,18 +1,17 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
-import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1} from "../../../../components/header/Header";
-import {Banner} from "../../../../components/banner/Banner";
-import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {HBox} from "../../../../components/layout/hbox/HBox";
-import {LinkButton} from "../../../../components/button/link/LinkButton";
-import {Spacer} from "../../../../components/spacer/Spacer";
-import {Text} from "../../../../components/text/Text";
-import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {UseTileWindow} from "./useTileWindow";
+import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {ETLink} from "../../../../components/textenriched/elements/ETLink";
+import {Else, If, Then, When} from "react-if";
+import {DefaultDecoratedWindow, DefaultDecoratedWindowWithBanner} from "../../../../components/windows/decorated/DecoratedWindow";
+import {Spacer} from "../../../../components/spacer/Spacer";
+import {VBox} from "../../../../components/layout/vbox/VBox";
+import {Text} from "../../../../components/text/Text";
+import {WindowSection} from "../../../../components/section/ContentSection";
+import {Tooltip} from "../../../../components/tooltip/Tooltip";
 
 export interface TileWindowProps {
     windowId: string;
@@ -24,88 +23,71 @@ export function TileWindow(props: TileWindowProps): ReactElement {
     const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            className={"window-tile"}
-            withCloseButton
-            noPadding
-            style={{
-                minWidth: "fit-content",
-                minHeight: "250px",
-            }}
-        >
-            <VBox fillParent>
-                {data && (
-                    <>
-                        <TileBanner {...data}/>
-                        <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                            <BaseInformation {...data}/>
-                            <Spacer size="s"/>
-                            <PlaceScoutButton {...data}/>
-                            <CreateColonyButton {...data}/>
-                            <CreateSettlementButton {...data}/>
-                        </VBox>
-                    </>
-                )}
-                {!data && (
+        <If condition={data === null}>
+            <Then>
+
+                <DefaultDecoratedWindow windowId={props.windowId}>
                     <VBox fillParent center>
                         <Text>No tile selected</Text>
                     </VBox>
-                )}
-            </VBox>
-        </DecoratedWindow>
+                </DefaultDecoratedWindow>
+
+            </Then>
+            <Else>
+
+                <DefaultDecoratedWindowWithBanner
+                    windowId={props.windowId}
+                    title={data?.tile.terrainType?.displayString || "Unknown"}
+                    subtitle={"Tile"}
+                >
+                    <BaseDataSection {...data!}/>
+                    <Spacer size="s"/>
+                    <PlaceScoutButton {...data!}/>
+                    <CreateColonyButton {...data!}/>
+                    <CreateSettlementButton {...data!}/>
+                </DefaultDecoratedWindowWithBanner>
+
+            </Else>
+        </If>
+
     );
 }
 
-function TileBanner(props: UseTileWindow.Data): ReactElement {
-    return (
-        <Banner spaceAbove subtitle={"Tile"}>
-            <Header1 centered>{props.tile.terrainType?.displayString || "Unknown"}</Header1>
-        </Banner>
-    );
-}
 
-function BaseInformation(props: UseTileWindow.Data): ReactElement {
+function BaseDataSection(props: UseTileWindow.Data): ReactElement {
     return (
-        <InsetPanel>
-            <KeyTextValuePair
-                name={"Id"}
-                value={props.tile.identifier.id}
-            />
-            <KeyTextValuePair
-                name={"Position"}
-                value={props.tile.identifier.q + ", " + props.tile.identifier.r}
-            />
-            <KeyTextValuePair
-                name={"Terrain"}
-                value={props.tile.terrainType?.displayString}
-            />
-            <KeyTextValuePair
-                name={"Resource"}
-                value={props.tile.resourceType?.displayString}
-            />
-            {(props.tile.owner && props.tile.owner.city !== null) && (
-                <KeyValuePair name={"Owned By"}>
-                    <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openWindow.country}>
-                            {props.tile.owner.country.name}
-                        </LinkButton>
-                        <LinkButton align="left" onClick={props.openWindow.city}>
-                            {props.tile.owner.city!!.name}
-                        </LinkButton>
-                    </HBox>
-                </KeyValuePair>
-            )}
-            {(props.tile.owner && props.tile.owner.city === null) && (
-                <KeyValuePair name={"Owned By"}>
-                    <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openWindow.country}>
-                            {props.tile.owner.country.name}
-                        </LinkButton>
-                    </HBox>
-                </KeyValuePair>
-            )}
-        </InsetPanel>
+        <WindowSection>
+            <InsetKeyValueGrid>
+
+                <EnrichedText>Id</EnrichedText>
+                <EnrichedText>{props.tile.identifier.id}</EnrichedText>
+
+                <EnrichedText>Position</EnrichedText>
+                <EnrichedText>{props.tile.identifier.q + ", " + props.tile.identifier.r}</EnrichedText>
+
+                <EnrichedText>Terrain</EnrichedText>
+                <EnrichedText>{props.tile.terrainType?.displayString || "None"}</EnrichedText>
+
+                <EnrichedText>Resource</EnrichedText>
+                <EnrichedText>{props.tile.resourceType?.displayString || "None"}</EnrichedText>
+
+                <When condition={props.tile.owner !== null && props.tile.owner.city === null}>
+                    <EnrichedText>Owned By:</EnrichedText>
+                    <EnrichedText>
+                        <ETLink onClick={props.openWindow.country}>{props.tile.owner?.country.name}</ETLink>
+                    </EnrichedText>
+                </When>
+
+                <When condition={props.tile.owner !== null && props.tile.owner.city !== null}>
+                    <EnrichedText>Owned By:</EnrichedText>
+                    <EnrichedText>
+                        <ETLink onClick={props.openWindow.country}>{props.tile.owner?.country.name}</ETLink> / <ETLink
+                        onClick={props.openWindow.city}>{props.tile.owner?.city?.name}</ETLink>
+                    </EnrichedText>
+                </When>
+
+            </InsetKeyValueGrid>
+        </WindowSection>
     );
 }
 
@@ -119,53 +101,49 @@ function PlaceScoutButton(props: UseTileWindow.Data): ReactElement {
 }
 
 
-
 function CreateColonyButton(props: UseTileWindow.Data): ReactElement {
     return (
-        <BasicTooltip
-            enabled={!props.createColony.valid}
-            delay={500}
-            content={
+        <Tooltip enabled={!props.createColony.valid}>
+            <Tooltip.Trigger>
+                <ButtonPrimary
+                    blue
+                    disabled={!props.createColony.valid}
+                    onClick={props.openWindow.createColony}
+                >
+                    Found Colony
+                </ButtonPrimary>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
                 <ul>
                     {props.createColony.reasonsInvalid.map((e, i) => (
                         <li key={i}>{e}</li>
                     ))}
                 </ul>
-            }
-        >
-            <ButtonPrimary
-                blue
-                disabled={!props.createColony.valid}
-                onClick={props.openWindow.createColony}
-            >
-                Found Colony
-            </ButtonPrimary>
-        </BasicTooltip>
+            </Tooltip.Content>
+        </Tooltip>
     );
 }
 
 
-
 function CreateSettlementButton(props: UseTileWindow.Data): ReactElement {
     return (
-        <BasicTooltip
-            enabled={!props.createSettlement.valid}
-            delay={500}
-            content={
+        <Tooltip enabled={!props.createSettlement.valid}>
+            <Tooltip.Trigger>
+                <ButtonPrimary
+                    blue
+                    disabled={!props.createSettlement.valid}
+                    onClick={props.openWindow.createSettlement}
+                >
+                    Found Settlement
+                </ButtonPrimary>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
                 <ul>
-                    {props.createSettlement.reasonsInvalid.map((e,i) => (
+                    {props.createSettlement.reasonsInvalid.map((e, i) => (
                         <li key={i}>{e}</li>
                     ))}
                 </ul>
-            }
-        >
-            <ButtonPrimary
-                blue
-                disabled={!props.createSettlement.valid}
-                onClick={props.openWindow.createSettlement}
-            >
-                Found Settlement
-            </ButtonPrimary>
-        </BasicTooltip>
+            </Tooltip.Content>
+        </Tooltip>
     );
 }

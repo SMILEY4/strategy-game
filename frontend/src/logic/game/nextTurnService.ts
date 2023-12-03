@@ -1,6 +1,14 @@
-import {BuildingDTO, CityDTO, GameStateDTO, ProductionQueueEntryDTO, ProvinceDTO, TileDTO} from "./models/gameStateDTO";
+import {
+    BuildingDTO,
+    CityDTO,
+    DetailLogEntryDTO,
+    GameStateDTO,
+    ProductionQueueEntryDTO,
+    ResourceLedgerDTO,
+    TileDTO,
+} from "./models/gameStateDTO";
 import {Tile} from "../../models/tile";
-import {orDefault, orNull} from "../../shared/utils";
+import {mapRecord, orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
 import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
@@ -19,6 +27,8 @@ import {Visibility} from "../../models/visibility";
 import {TerrainResourceType} from "../../models/terrainResourceType";
 import {MonitoringRepository} from "../../state/access/MonitoringRepository";
 import {ValueHistory} from "../../shared/valueHistory";
+import {ResourceLedger} from "../../models/resourceLedger";
+import {DetailLogEntry} from "../../models/detailLogEntry";
 
 export class NextTurnService {
 
@@ -27,7 +37,7 @@ export class NextTurnService {
     private readonly gameSessionRepository: GameSessionStateRepository;
     private readonly monitoringRepository: MonitoringRepository;
 
-    private readonly durationHistory = new ValueHistory(10)
+    private readonly durationHistory = new ValueHistory(10);
 
     constructor(gameLoopService: GameLoopService,
                 remoteGameRepository: RemoteGameStateRepository,
@@ -41,7 +51,7 @@ export class NextTurnService {
 
 
     handleNextTurn(game: GameStateDTO) {
-        const timeStart = Date.now()
+        const timeStart = Date.now();
 
         // todo: possible performance optimisation:
         //  object pools for tiles, cities, ...
@@ -60,8 +70,8 @@ export class NextTurnService {
         this.gameLoopService.onGameStateUpdate();
 
         const timeEnd = Date.now();
-        this.durationHistory.set(timeEnd - timeStart)
-        this.monitoringRepository.setNextTurnDurations(this.durationHistory.getHistory())
+        this.durationHistory.set(timeEnd - timeStart);
+        this.monitoringRepository.setNextTurnDurations(this.durationHistory.getHistory());
     }
 
     private buildCountries(game: GameStateDTO): Country[] {
@@ -125,22 +135,20 @@ export class NextTurnService {
                         isProvinceCapitol: cityDTO.dataTier1.isProvinceCapital,
                     };
                 }),
-                resourceBalance: this.buildResourceBalance(provinceDTO),
+                resourceLedger: provinceDTO.dataTier3 ? this.buildResourceLedger(provinceDTO.dataTier3.resourceLedger) : null,
             };
         });
     }
 
-    private buildResourceBalance(provinceDTO: ProvinceDTO): Map<ResourceType, number> {
-        const balance = new Map<ResourceType, number>();
-        if (provinceDTO.dataTier3) {
-            ResourceType.getValues().forEach(type => {
-                const entry = provinceDTO.dataTier3!.resourceBalance[type.id];
-                if (entry !== undefined && entry !== null) {
-                    balance.set(type, entry.valueOf());
-                }
-            });
-        }
-        return balance;
+    private buildResourceLedger(dto: ResourceLedgerDTO): ResourceLedger {
+        return {
+            entries: dto.entries.map(dtoEntry => ({
+                resourceType: ResourceType.fromString(dtoEntry.resourceType),
+                amount: dtoEntry.amount,
+                missing: dtoEntry.missing,
+                details: this.convertDetails(dtoEntry.details),
+            })),
+        };
     }
 
     private buildCities(game: GameStateDTO): City[] {
@@ -164,6 +172,7 @@ export class NextTurnService {
                 population: {
                     size: orNull(cityDTO.dataTier3?.size),
                     progress: orNull(cityDTO.dataTier3?.growthProgress),
+                    growthDetails: cityDTO.dataTier3 ? this.convertDetails(cityDTO.dataTier3.growthDetails) : [],
                 },
                 productionQueue: cityDTO.dataTier3
                     ? cityDTO.dataTier3.productionQueue.map(queueEntryDTO => this.buildProductionEntry(queueEntryDTO))
@@ -193,6 +202,7 @@ export class NextTurnService {
                 q: buildingDTO.tile.q,
                 r: buildingDTO.tile.r,
             } : null,
+            details: this.convertDetails(buildingDTO.details),
         };
     }
 
@@ -240,6 +250,13 @@ export class NextTurnService {
                 path: routeDTO.path,
             };
         });
+    }
+
+    private convertDetails<T>(dtos: DetailLogEntryDTO<T>[]): DetailLogEntry<T>[] {
+        return dtos.map(dto => ({
+            id: dto.id,
+            data: mapRecord(dto.data, (_, value) => value.value),
+        }));
     }
 
     private findOwner(game: GameStateDTO, tile: TileDTO) {
@@ -311,5 +328,6 @@ export class NextTurnService {
             throw new Error("Could not find city with id " + cityId);
         }
     }
+
 
 }

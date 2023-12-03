@@ -1,7 +1,7 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
 import {DecoratedPanel, DecoratedPanelColor} from "../panels/decorated/DecoratedPanel";
-import {Header, Header1, Header2, Header3, Header4, HeaderProps} from "./Header";
+import {Header, Header1, Header2, Header3, Header4, Header5, HeaderProps} from "./Header";
 
 const meta = {
     title: "Static/Header",
@@ -64,6 +64,7 @@ export const Stacked: Story = {
                 <Header2>Header 2</Header2>
                 <Header3>Header 3</Header3>
                 <Header4>Header 4</Header4>
+                <Header5>Header 5</Header5>
             </div>
         </DecoratedPanel>
     ),

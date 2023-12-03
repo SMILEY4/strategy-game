@@ -26,5 +26,5 @@ data class CountryDTODataTier1(
  * Data available to owner of the country
  */
 data class CountryDTODataTier3(
-    val availableSettlers: Int
+    val availableSettlers: Int,
 )

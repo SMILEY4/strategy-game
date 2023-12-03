@@ -3,7 +3,7 @@ import {joinClassNames} from "../utils";
 import "./header.scoped.less";
 
 export interface HeaderProps {
-    level?: 1 | 2 | 3 | 4,
+    level?: 1 | 2 | 3 | 4 | 5,
     centered?: boolean,
     onLight?: boolean,
     className?: string,
@@ -22,6 +22,7 @@ export function Header(props: HeaderProps): ReactElement {
     if (level === 2) return <h2 className={classNames}>{props.children}</h2>;
     if (level === 3) return <h3 className={classNames}>{props.children}</h3>;
     if (level === 4) return <h4 className={classNames}>{props.children}</h4>;
+    if (level === 5) return <h5 className={classNames}>{props.children}</h5>;
     return null as any;
 }
 
@@ -39,4 +40,8 @@ export function Header3(props: HeaderProps): ReactElement {
 
 export function Header4(props: HeaderProps): ReactElement {
     return <Header {...props} level={4}/>;
+}
+
+export function Header5(props: HeaderProps): ReactElement {
+    return <Header {...props} level={5}/>;
 }

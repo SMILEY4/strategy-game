@@ -22,7 +22,7 @@ export class ResourceType {
     public static readonly HIDE = new ResourceType("HIDE", "Hide", "/icons/resources/hide.png");
     public static readonly HORSE = new ResourceType("HORSE", "Horses", "/icons/resources/horse.png");
     public static readonly JEWELLERIES = new ResourceType("JEWELLERIES", "Jewelleries", "/icons/resources/jewelleries.png");
-    public static readonly METAL = new ResourceType("METAL", "metal", "/icons/resources/metal.png");
+    public static readonly METAL = new ResourceType("METAL", "Metal", "/icons/resources/metal.png");
     public static readonly PARCHMENT = new ResourceType("PARCHMENT", "Parchment", "/icons/resources/parchment.png");
     public static readonly STONE = new ResourceType("STONE", "Stone", "/icons/resources/stone.png");
     public static readonly TOOLS = new ResourceType("TOOLS", "Tools", "/icons/resources/tools.png");

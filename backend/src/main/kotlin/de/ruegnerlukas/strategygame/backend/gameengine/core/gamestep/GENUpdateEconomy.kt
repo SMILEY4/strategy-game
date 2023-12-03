@@ -1,25 +1,31 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.BooleanDetailLogValue
+import de.ruegnerlukas.strategygame.backend.common.detaillog.ResourcesDetailLogValue
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceCollection
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectEntities
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNode.Companion.collectNodes
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionEntityUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ConsumptionNodeUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionEntityUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.core.service.ProductionNodeUpdateService
-import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
+import de.ruegnerlukas.strategygame.backend.common.utils.buildMutableMap
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode.Companion.collectNodes
+import de.ruegnerlukas.strategygame.backend.economy.logic.EconomyService
+import de.ruegnerlukas.strategygame.backend.economy.report.ConsumptionReportEntry
+import de.ruegnerlukas.strategygame.backend.economy.report.EconomyReport
+import de.ruegnerlukas.strategygame.backend.economy.report.MissingResourcesReportEntry
+import de.ruegnerlukas.strategygame.backend.economy.report.ProductionReportEntry
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.GameEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.ProductionQueueEconomyEntity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.WorldEconomyNode
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingDetailType
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 
 /**
  * Handles turn-income and turn-expenses
@@ -32,9 +38,7 @@ class GENUpdateEconomy(
 
     object Definition : BasicEventNodeDefinition<GameExtended, GameExtended>()
 
-    private val consumptionNodeUpdateService = ConsumptionNodeUpdateService(ConsumptionEntityUpdateService())
-    private val productionNodeUpdateService = ProductionNodeUpdateService(ProductionEntityUpdateService())
-
+    private val economyService = EconomyService()
 
     init {
         eventSystem.createNode(Definition) {
@@ -42,9 +46,8 @@ class GENUpdateEconomy(
             action { game ->
                 log().debug("Update economy")
                 val rootNode = buildEconomyTree(game)
-                consumptionNodeUpdateService.update(rootNode)
-                productionNodeUpdateService.update(rootNode)
-                writeBack(rootNode)
+                val report = economyService.update(rootNode)
+                writeBack(game, report, rootNode)
                 eventResultOk(game)
             }
         }
@@ -54,35 +57,92 @@ class GENUpdateEconomy(
         return WorldEconomyNode(game, config, popFoodConsumption)
     }
 
-    private fun writeBack(rootNode: EconomyNode) {
-        rootNode.collectNodes()
-            .filterIsInstance<ProvinceEconomyNode>()
-            .forEach { writeBack(it) }
-    }
+    private fun writeBack(game: GameExtended, report: EconomyReport, rootNode: EconomyNode) {
 
-    private fun writeBack(node: ProvinceEconomyNode) {
-        node.province.resourcesProducedCurrTurn = node.getStorage().getAdded()
-        node.province.resourcesConsumedCurrTurn = ResourceCollection.basic().also {
-            it.add(node.getStorage().getRemoved())
-            it.add(node.getStorage().getRemovedFromShared())
+        // reset
+        game.cities.forEach { city ->
+            city.population.consumedFood = 0f
+            city.population.growthConsumedFood = false
+            city.infrastructure.buildings.forEach { building ->
+                building.active = false
+                building.details.replaceDetail(BuildingDetailType.ACTIVITY, buildMutableMap {
+                    this["active"] = BooleanDetailLogValue(false)
+                })
+                building.details.clear(setOf(BuildingDetailType.CONSUMED, BuildingDetailType.PRODUCED, BuildingDetailType.MISSING))
+            }
         }
-        node.province.resourcesMissing = ResourceCollection.basic().also { missing ->
-            node.collectEntities()
-                .filter { it.isActive() }
-                .forEach { entity -> missing.add(entity.getRequiredInput()) }
+
+        // save ledger
+        rootNode.collectNodes().forEach { node ->
+            if (node is ProvinceEconomyNode) {
+                val ledger = ResourceLedger().also { it.record(report, node) }
+                node.province.resourceLedger = ledger
+            }
         }
-        node.getEntities()
-            .filterIsInstance<BuildingEconomyEntity>()
-            .forEach { entity -> entity.building.active = entity.completedOutput() }
-        node.getEntities()
-            .filterIsInstance<ProductionQueueEconomyEntity>()
-            .forEach { entity -> entity.queueEntry.collectedResources.add(entity.getProvidedResources()) }
-        node.getEntities()
-            .filterIsInstance<PopulationBaseEconomyEntity>()
-            .forEach { entity -> entity.city.population.popConsumedFood = entity.getConsumedFood() }
-        node.getEntities()
-            .filterIsInstance<PopulationGrowthEconomyEntity>()
-            .forEach { entity -> entity.city.population.popGrowthConsumedFood = entity.hasConsumedFood() }
+
+        // apply report entries
+        report.getEntries().forEach { entry ->
+            if (entry.entity is GameEconomyEntity) {
+                when (val gameEntity = entry.entity as GameEconomyEntity) {
+
+                    is BuildingEconomyEntity -> {
+                        when(entry) {
+                            is ConsumptionReportEntry -> {
+                                gameEntity.building.active = true
+                                gameEntity.building.details.replaceDetail(BuildingDetailType.ACTIVITY, buildMutableMap {
+                                    this["active"] = BooleanDetailLogValue(true)
+                                })
+                                gameEntity.building.details.mergeDetail(BuildingDetailType.CONSUMED, buildMutableMap {
+                                    this["resources"] = ResourcesDetailLogValue(entry.resources)
+                                })
+                            }
+                            is ProductionReportEntry -> {
+                                gameEntity.building.active = true
+                                gameEntity.building.details.replaceDetail(BuildingDetailType.ACTIVITY, buildMutableMap {
+                                    this["active"] = BooleanDetailLogValue(true)
+                                })
+                                gameEntity.building.details.mergeDetail(BuildingDetailType.PRODUCED, buildMutableMap {
+                                    this["resources"] = ResourcesDetailLogValue(entry.resources)
+                                })
+                            }
+                            is MissingResourcesReportEntry -> {
+                                gameEntity.building.details.mergeDetail(BuildingDetailType.MISSING, buildMutableMap {
+                                    this["resources"] = ResourcesDetailLogValue(entry.resources)
+                                })
+                            }
+                        }
+                    }
+
+                    is PopulationBaseEconomyEntity -> {
+                        when(entry) {
+                            is ConsumptionReportEntry -> {
+                                gameEntity.city.population.consumedFood += entry.resources[ResourceType.FOOD]
+                            }
+                            else -> Unit
+                        }
+                    }
+
+                    is PopulationGrowthEconomyEntity -> {
+                        when(entry) {
+                            is ConsumptionReportEntry -> {
+                                gameEntity.city.population.consumedFood += entry.resources[ResourceType.FOOD]
+                            }
+                            else -> Unit
+                        }
+                    }
+
+                    is ProductionQueueEconomyEntity -> {
+                        when(entry) {
+                            is ConsumptionReportEntry -> {
+                                gameEntity.queueEntry.collectedResources.add(entry.resources)
+                            }
+                            else -> Unit
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
 }

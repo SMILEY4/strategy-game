@@ -7,7 +7,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.persistence.DatabaseProvider
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.GameStepImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializeWorldImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.common.PopFoodConsumption
