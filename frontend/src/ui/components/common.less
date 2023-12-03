@@ -1,4 +1,4 @@
-//@import url('https://fonts.googleapis.com/css2?family=Alegreya+SC:ital,wght@0,400;0,500;0,700;0,800;0,900;1,400;1,500;1,700;1,800;1,900&family=Alegreya:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+SC:ital,wght@0,400;0,500;0,700;0,800;0,900;1,400;1,500;1,700;1,800;1,900&family=Alegreya:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 @color-decorative-gold:                hsla(35, 44%, 72%, 40%); //hsla(35, 20%, 70%, 40%);
 @color-decorative-white:               hsla(35, 0%, 72%, 30%); //hsla(35, 20%, 70%, 40%);
@@ -161,31 +161,23 @@
 @font-type-primary:                    "Alegreya", sans-serif;
 @font-type-primary-special:            "Alegreya SC", sans-serif;
 
+// how to calculate crop
+// 1. add border to text element
+// 2. modify values until
+//      - top edge of border aligns with top edge of normal capital letter
+//      - bottom edge of border aligns with baseline
 @font-crop-special-top-xxl:            -15px;
 @font-crop-special-bottom-xxl:         -14px;
 @font-crop-special-top-xl:             -8px;
 @font-crop-special-bottom-xl:          -7px;
 @font-crop-special-top-l:              -7px;
 @font-crop-special-bottom-l:           -6px;
+@font-crop-special-top-s:              -5px;
+@font-crop-special-bottom-s:           -5px;
 @font-crop-primary-top-l:              -7px;
 @font-crop-primary-bottom-l:           -6px;
 
-//@border-image-primary:                 url("/borders/border_2_white.png") 345 round stretch;
-//@border-image-primary:                 url("/borders0/border_1_white.png") 505 round stretch;
-//@border-image-primary:                 url("/borders0/border_2_white.png") 505 round stretch;
-//@border-image-primary:                 url("/borders0/border_3_white.png") 505 round stretch;
-//@border-image-primary:                 url("/borders0/border_4_white.png") 505 round stretch; //? @40px
-//@border-image-primary:                 url("/borders0/border_4_white_4.png") 127 round stretch; //? @40px
-//@border-image-primary:                 url("/borders0/border_5_white.png") 505 round stretch;
-//@border-image-primary:                 url("/borders0/border_5_white_2.png") 252 round stretch;
-//@border-image-primary:                 url("/borders0/border_5_white_4.png") 120 round stretch; //* @40px, 30%
-@border-image-primary:                 url("/borders0/border_5_gold_4b.png") 120 round stretch; //* @40px, 50%
-//@border-image-primary:                 url("/borders1/border_1_white.png") 505 round stretch;
-//@border-image-primary:                 url("/borders1/border_2_white.png") 505 round stretch;
-//@border-image-primary:                 url("/borders3/border_1.png") 505 round stretch;
-//@border-image-primary:                 url("/borders3/border_2.png") 505 round stretch;
-
-
+@border-image-primary:                 url("/borders0/border_5_gold_4b.png") 120 round stretch;
 @border-image-secondary:               url("/borders/border_1_white.png") 345 round stretch;
 
 @background-texture-paper:             url("/textures/plain_white_paper_prepared.jpg");

@@ -1,18 +1,18 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
 import {DecoratedPanel, DecoratedPanelColor} from "../panels/decorated/DecoratedPanel";
-import {Header, Header1, Header2, Header3, Header4, Header5, HeaderProps} from "./Header";
+import {Text, TextProps} from "./Text";
 
 const meta = {
-    title: "Static/Header",
-    component: Header,
+    title: "Static/Text",
+    component: Text,
     parameters: {
         layout: "centered",
     },
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<HeaderProps & { panelColor: DecoratedPanelColor }>
+type Story = StoryObj<TextProps & { panelColor: DecoratedPanelColor }>
 export default meta;
 
 
@@ -25,15 +25,17 @@ export const Default: Story = {
             options: ["red", "green", "blue", "paper"],
             control: {type: "select"},
         },
-        level: {
-            options: [1, 2, 3, 4],
-            control: {type: "select"},
-        },
     },
     render: (args) => (
         <DecoratedPanel color={args.panelColor}>
             <div style={{padding: "50px"}}>
-                <Header level={args.level}>Header</Header>
+                <Text
+                    type={args.type}
+                    strikethrough={args.strikethrough}
+                    onLight={args.onLight}
+                >
+                    Hello World!
+                </Text>
             </div>
         </DecoratedPanel>
     ),
@@ -60,11 +62,10 @@ export const Stacked: Story = {
                 justifyContent: "center",
                 alignItems: "start",
             }}>
-                <Header1>Header 1</Header1>
-                <Header2>Header 2</Header2>
-                <Header3>Header 3</Header3>
-                <Header4>Header 4</Header4>
-                <Header5>Header 5</Header5>
+                <Text>Default</Text>
+                <Text type="secondary">Secondary</Text>
+                <Text type="positive">Positive</Text>
+                <Text type="negative">Negative</Text>
             </div>
         </DecoratedPanel>
     ),

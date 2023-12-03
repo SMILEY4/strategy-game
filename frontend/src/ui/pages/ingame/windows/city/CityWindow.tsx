@@ -31,6 +31,9 @@ import "./cityWindow.less";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {DetailLogEntry} from "../../../../../models/detailLogEntry";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
+import {ETText} from "../../../../components/textenriched/elements/ETText";
 
 
 export interface CityWindowProps {
@@ -169,37 +172,34 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
         switch (entry.id) {
             case "MORE_FOOD_AVAILABLE":
                 return (
-                    <HBox gap_xs>
-                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>more food available</Text>
-                    </HBox>
+                    <EnrichedText>
+                        food availability: <ETNumber>{entry.data["amount"]}</ETNumber>
+                    </EnrichedText>
                 );
             case "NOT_ENOUGH_FOOD":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>not enough food available</Text>
-                    </HBox>
+                    <EnrichedText>
+                        not enough food available: <ETNumber>{-entry.data["amount"]}</ETNumber>
+                    </EnrichedText>
                 );
             case "STARVING":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>no enough food available</Text>
-                    </HBox>
+                    <EnrichedText>
+                        no food available: <ETNumber>{-entry.data["amount"]}</ETNumber>
+                    </EnrichedText>
                 );
             case "PROVINCE_CAPITAL":
                 return (
-                    <HBox gap_xs>
-                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>province capitol</Text>
-                    </HBox>
+                    <EnrichedText>
+                        province capital: <ETNumber>{entry.data["amount"]}</ETNumber>
+                    </EnrichedText>
                 );
             case "MAX_SIZE_REACHED":
                 return (
-                    <Text>Population reached maximum size</Text>
+                    <EnrichedText>
+                        <ETText>Population reached maximum size</ETText>
+                    </EnrichedText>
                 );
-
         }
     }
 }

@@ -1,6 +1,5 @@
 import React, {ReactElement} from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Text} from "../../../../components/text/Text";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header4, Header5} from "../../../../components/header/Header";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
@@ -11,12 +10,11 @@ import {
     ResourceLedgerEntry,
 } from "../../../../../models/resourceLedger";
 import "./resourceBalanceBox.less";
-import {HBox} from "../../../../components/layout/hbox/HBox";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {DetailLogEntry} from "../../../../../models/detailLogEntry";
-import {orDefault} from "../../../../../shared/utils";
 import {BuildingType} from "../../../../../models/buildingType";
 import {SimpleDivider} from "../../../../components/divider/SimpleDivider";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 
 
 export function ResourceBalanceBox(props: { data: ResourceLedgerEntry }) {
@@ -39,12 +37,9 @@ export function ResourceBalanceBox(props: { data: ResourceLedgerEntry }) {
 
 function ResourceBalanceValue(props: ResourceLedgerEntry): ReactElement {
     return (
-        <Text
-            className="resource-box__text"
-            type={getValueType(props)}
-        >
-            {formatValue(props.amount)}
-        </Text>
+        <EnrichedText>
+            <ETNumber>{props.amount}</ETNumber>
+        </EnrichedText>
     );
 }
 
@@ -88,139 +83,95 @@ function ResourceBalanceTooltip(props: { data: ResourceLedgerEntry, children?: a
         switch (entry.id) {
             case "UNKNOWN_CONSUMPTION":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>unknown</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{-entry.data["amount"]}</ETNumber> unknown
+                    </EnrichedText>
                 );
             case "UNKNOWN_PRODUCTION":
                 return (
-                    <HBox gap_xs>
-                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>unknown</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{entry.data["amount"]}</ETNumber> unknown
+                    </EnrichedText>
                 );
             case "UNKNOWN_MISSING":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{formatValue(entry.data["amount"], false)}</Text>
-                        <Text>unknown</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber unsigned neg>{entry.data["amount"]}</ETNumber> unknown
+                    </EnrichedText>
                 );
             case "BUILDING_CONSUMPTION":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>{BuildingType.fromString(entry.data["buildingType"]).displayString}</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{-entry.data["amount"]}</ETNumber> {BuildingType.fromString(entry.data["buildingType"]).displayString}
+                    </EnrichedText>
                 );
             case "BUILDING_PRODUCTION":
                 return (
-                    <HBox gap_xs>
-                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>{BuildingType.fromString(entry.data["buildingType"]).displayString}</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{entry.data["amount"]}</ETNumber> {BuildingType.fromString(entry.data["buildingType"]).displayString}
+                    </EnrichedText>
                 );
             case "BUILDING_MISSING":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{formatValue(entry.data["amount"], false)}</Text>
-                        <Text>{BuildingType.fromString(entry.data["buildingType"]).displayString}</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber unsigned neg>{entry.data["amount"]}</ETNumber> {BuildingType.fromString(entry.data["buildingType"]).displayString}
+                    </EnrichedText>
                 );
             case "POPULATION_BASE_CONSUMPTION":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>basic population needs</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{-entry.data["amount"]}</ETNumber> basic population needs
+                    </EnrichedText>
                 );
             case "POPULATION_BASE_MISSING":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{formatValue(entry.data["amount"], false)}</Text>
-                        <Text>basic population needs</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber unsigned neg>{entry.data["amount"]}</ETNumber> basic population needs
+                    </EnrichedText>
                 );
             case "POPULATION_GROWTH_CONSUMPTION":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>basic growth</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{-entry.data["amount"]}</ETNumber> population growth
+                    </EnrichedText>
                 );
             case "POPULATION_GROWTH_MISSING":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{formatValue(entry.data["amount"], false)}</Text>
-                        <Text>basic growth</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber unsigned neg>{entry.data["amount"]}</ETNumber> population growth
+                    </EnrichedText>
                 );
             case "PRODUCTION_QUEUE_CONSUMPTION":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>{"production queue(s)" + " (" + orDefault(entry.data["count"], 1) + "x)"}</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{-entry.data["amount"]}</ETNumber> production queue
+                    </EnrichedText>
                 );
             case "PRODUCTION_QUEUE_MISSING":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{formatValue(entry.data["amount"], false)}</Text>
-                        <Text>{"production queue(s)" + " (" + orDefault(entry.data["count"], 1) + "x)"}</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber unsigned neg>{entry.data["amount"]}</ETNumber> production queue
+                    </EnrichedText>
                 );
             case "PRODUCTION_QUEUE_REFUND":
                 return (
-                    <HBox gap_xs>
-                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>refund production queue entry</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{entry.data["amount"]}</ETNumber> production queue refund
+                    </EnrichedText>
                 );
             case "SHARED_GIVE":
                 return (
-                    <HBox gap_xs>
-                        <Text type="negative">{"-" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>trade</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{-entry.data["amount"]}</ETNumber> trade
+                    </EnrichedText>
                 );
             case "SHARED_TAKE":
                 return (
-                    <HBox gap_xs>
-                        <Text type="positive">{"+" + formatValue(entry.data["amount"], false)}</Text>
-                        <Text>trade</Text>
-                    </HBox>
+                    <EnrichedText>
+                        <ETNumber>{entry.data["amount"]}</ETNumber> trade
+                    </EnrichedText>
                 );
         }
     }
 
-}
-
-
-function getValueType(entry: ResourceLedgerEntry): "positive" | "negative" | undefined {
-    if (entry.amount > 0 && entry.missing === 0) {
-        return "positive";
-    }
-    if (entry.amount === 0 && entry.missing === 0) {
-        return undefined;
-    }
-    if (entry.missing > 0) {
-        return "negative";
-    }
-    return undefined;
-}
-
-function formatValue(value: number, includePlus?: boolean): string {
-    const simpleValue = Math.round(value * 100) / 100;
-    if (simpleValue < 0) {
-        return "-" + Math.abs(simpleValue);
-    }
-    if (simpleValue > 0) {
-        if (includePlus === false) {
-            return "" + Math.abs(simpleValue);
-        } else {
-            return "+" + Math.abs(simpleValue);
-        }
-    }
-    return "0";
 }

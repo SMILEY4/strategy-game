@@ -1,7 +1,7 @@
 @import "./../common.less";
 
 .header {
-  position: relative;
+  position:    relative;
   text-shadow: @shadow-content;
   padding:     unset;
   margin:      unset;
@@ -21,6 +21,7 @@
   &.header--on-light {
     text-shadow: @shadow-content-light
   }
+
 }
 
 
@@ -91,12 +92,12 @@ h5.header {
   font-family: @font-type-primary-special;
 
 
-  //&::before {
-  //  margin-bottom: @font-crop-primary-top-l;
-  //}
-  //
-  //&::after {
-  //  margin-bottom: @font-crop-primary-bottom-l;
-  //}
+  &::before {
+    margin-bottom: @font-crop-special-top-s;
+  }
+
+  &::after {
+    margin-bottom: @font-crop-special-bottom-s;
+  }
 
 }

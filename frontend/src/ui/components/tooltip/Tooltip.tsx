@@ -4,6 +4,7 @@ import {FloatingPortal} from "@floating-ui/react";
 
 export interface TooltipContextProps {
     delay?: number;
+    inline?: boolean,
     children?: any;
 }
 
@@ -31,9 +32,17 @@ export function TooltipContext(props: TooltipContextProps) {
 
     return (
         <>
-            <div className="tooltip-trigger" ref={refTrigger}{...propsTrigger}>
-                {trigger}
-            </div>
+
+            {props.inline === true && (
+                <span className="tooltip-trigger" ref={refTrigger}{...propsTrigger}>
+                    {trigger}
+                </span>
+            )}
+            {props.inline !== true && (
+                <div className="tooltip-trigger" ref={refTrigger}{...propsTrigger}>
+                    {trigger}
+                </div>
+            )}
 
             {isOpen && (
                 <FloatingPortal id="root">
