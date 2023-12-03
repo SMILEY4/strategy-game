@@ -5,9 +5,12 @@ import {UseCityPlannedWindow} from "./useCityPlannedWindow";
 import {Banner} from "../../../../components/banner/Banner";
 import {Header1} from "../../../../components/header/Header";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
+import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {ETLink} from "../../../../components/textenriched/elements/ETLink";
+import {If} from "../../../../components/if/If";
 
 export interface CityPlannedWindowProps {
     windowId: string;
@@ -53,33 +56,26 @@ function CityPlannedBanner(props: UseCityPlannedWindow.Data): ReactElement {
 function BaseDataSection(props: UseCityPlannedWindow.Data): ReactElement {
     return (
         <InsetPanel>
-            <KeyLinkValuePair
-                name={"Country"}
-                value={props.country.name}
-                onClick={props.openWindow.country}
-            />
-            {
-                props.province
-                    ? (<KeyLinkValuePair
-                        name={"Province"}
-                        value={props.province.name}
-                        onClick={props.openWindow.province}
-                    />)
-                    : (<KeyTextValuePair
-                        name={"Province"}
-                        value={"create new"}
-                    />)
-            }
-            <KeyLinkValuePair
-                name={"Province"}
-                value={props.province ? props.province.name : "create new"}
-                onClick={props.openWindow.province}
-            />
-            <KeyLinkValuePair
-                name={"Tile"}
-                value={props.tile.q + ", " + props.tile.r}
-                onClick={props.openWindow.tile}
-            />
+            <KeyValueGrid>
+
+                <EnrichedText>Country:</EnrichedText>
+                <EnrichedText><ETLink onClick={props.openWindow.country}>{props.country.name}</ETLink></EnrichedText>
+
+                <If condition={props.province !== null}>
+                    <EnrichedText>Province:</EnrichedText>
+                    <EnrichedText><ETLink onClick={props.openWindow.province}>{props.province?.name}</ETLink></EnrichedText>
+                </If>
+
+                <If condition={props.province === null}>
+                    <EnrichedText>Province:</EnrichedText>
+                    <EnrichedText>create new</EnrichedText>
+                </If>
+
+                <EnrichedText>Tile:</EnrichedText>
+                <EnrichedText><ETLink onClick={props.openWindow.tile}>{props.tile.q + ", " + props.tile.r}</ETLink></EnrichedText>
+
+            </KeyValueGrid>
+
         </InsetPanel>
     );
 }

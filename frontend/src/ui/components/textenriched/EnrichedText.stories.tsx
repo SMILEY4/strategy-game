@@ -1,8 +1,7 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {DecoratedPanel, DecoratedPanelColor} from "../panels/decorated/DecoratedPanel";
-import {EnrichedText, EnrichedTextBlockProps} from "./EnrichedText";
-import {Text} from "../text/Text";
+import {DecoratedPanel} from "../panels/decorated/DecoratedPanel";
+import {EnrichedText, EnrichedTextProps} from "./EnrichedText";
 import {ETNumber} from "./elements/ETNumber";
 import {VBox} from "../layout/vbox/VBox";
 import {Spacer} from "../spacer/Spacer";
@@ -12,14 +11,14 @@ import {ETText} from "./elements/ETText";
 
 const meta = {
     title: "Static/EnrichedText",
-    component: Text,
+    component: EnrichedText,
     parameters: {
         layout: "centered",
     },
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<EnrichedTextBlockProps & { panelColor: DecoratedPanelColor }>
+type Story = StoryObj<EnrichedTextProps>
 export default meta;
 
 
@@ -42,28 +41,35 @@ export const Default: Story = {
                     <Spacer size={"s"}/>
 
                     <EnrichedText>
-                        Number with types: <ETNumber typeNone>{4}</ETNumber> default, <ETNumber pos>{4}</ETNumber> added, <ETNumber neg>{4}</ETNumber> removed, <ETNumber info>{4}</ETNumber> info
+                        Number with types: <ETNumber typeNone>{4}</ETNumber> default, <ETNumber pos>{4}</ETNumber> added, <ETNumber
+                        neg>{4}</ETNumber> removed, <ETNumber info>{4}</ETNumber> info
                     </EnrichedText>
                     <EnrichedText>
                         Numbers with auto types: <ETNumber>{-3}</ETNumber>, <ETNumber>{0}</ETNumber>, <ETNumber>{5}</ETNumber>
                     </EnrichedText>
                     <EnrichedText>
-                        Numbers with inverted auto types: <ETNumber typeAutoInv>{-3}</ETNumber>, <ETNumber typeAutoInv>{0}</ETNumber>, <ETNumber typeAutoInv>{5}</ETNumber>
+                        Numbers with inverted auto types: <ETNumber typeAutoInv>{-3}</ETNumber>, <ETNumber
+                        typeAutoInv>{0}</ETNumber>, <ETNumber typeAutoInv>{5}</ETNumber>
                     </EnrichedText>
                     <EnrichedText>
-                        Number with rounding: <ETNumber>{1.234567}</ETNumber>, <ETNumber decPlaces={2}>{1.234567}</ETNumber>, <ETNumber decPlaces={1}>{1.234567}</ETNumber>, <ETNumber decPlaces={0}>{1.234567}</ETNumber>
-                    </EnrichedText>
-
-                    <Spacer size={"s"}/>
-
-                    <EnrichedText>
-                        Tooltips:  some number <ETTooltip content={"some value"}><ETNumber>{42}</ETNumber></ETTooltip> and some <ETTooltip content={"some text"}>text</ETTooltip> and some <ETTooltip content={"some text"}><ETText pos>highlighted text</ETText></ETTooltip>
+                        Number with rounding: <ETNumber>{1.234567}</ETNumber>, <ETNumber decPlaces={2}>{1.234567}</ETNumber>, <ETNumber
+                        decPlaces={1}>{1.234567}</ETNumber>, <ETNumber decPlaces={0}>{1.234567}</ETNumber>
                     </EnrichedText>
 
                     <Spacer size={"s"}/>
 
                     <EnrichedText>
-                        Links:  some number <ETLink onClick={() => alert("click")}><ETNumber>{42}</ETNumber></ETLink> and some <ETLink onClick={() => alert("click")}>text</ETLink> and some <ETLink onClick={() => alert("click")}><ETText pos>highlighted text</ETText></ETLink>
+                        Tooltips: some number <ETTooltip content={"some value"}><ETNumber>{42}</ETNumber></ETTooltip> and some <ETTooltip
+                        content={"some text"}>text</ETTooltip> and some <ETTooltip content={"some text"}><ETText pos>highlighted
+                        text</ETText></ETTooltip>
+                    </EnrichedText>
+
+                    <Spacer size={"s"}/>
+
+                    <EnrichedText>
+                        Links: some number <ETLink onClick={() => alert("click")}><ETNumber>{42}</ETNumber></ETLink> and some <ETLink
+                        onClick={() => alert("click")}>text</ETLink> and some <ETLink onClick={() => alert("click")}><ETText pos>highlighted
+                        text</ETText></ETLink>
                     </EnrichedText>
 
                 </VBox>

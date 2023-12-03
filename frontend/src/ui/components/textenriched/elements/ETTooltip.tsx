@@ -5,7 +5,7 @@ import {VBox} from "../../layout/vbox/VBox";
 import "./etElements.scoped.less";
 
 export interface ETTooltipProps {
-    content?: string,
+    content?: any,
     children?: any
 }
 

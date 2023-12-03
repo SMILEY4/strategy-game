@@ -4,15 +4,16 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Banner} from "../../../../components/banner/Banner";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {TileIdentifier} from "../../../../../models/tile";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {HBox} from "../../../../components/layout/hbox/HBox";
-import {LinkButton} from "../../../../components/button/link/LinkButton";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {Text} from "../../../../components/text/Text";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {UseTileWindow} from "./useTileWindow";
+import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {If} from "../../../../components/if/If";
+import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 
 export interface TileWindowProps {
     windowId: string;
@@ -68,43 +69,35 @@ function TileBanner(props: UseTileWindow.Data): ReactElement {
 function BaseInformation(props: UseTileWindow.Data): ReactElement {
     return (
         <InsetPanel>
-            <KeyTextValuePair
-                name={"Id"}
-                value={props.tile.identifier.id}
-            />
-            <KeyTextValuePair
-                name={"Position"}
-                value={props.tile.identifier.q + ", " + props.tile.identifier.r}
-            />
-            <KeyTextValuePair
-                name={"Terrain"}
-                value={props.tile.terrainType?.displayString}
-            />
-            <KeyTextValuePair
-                name={"Resource"}
-                value={props.tile.resourceType?.displayString}
-            />
-            {(props.tile.owner && props.tile.owner.city !== null) && (
-                <KeyValuePair name={"Owned By"}>
-                    <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openWindow.country}>
-                            {props.tile.owner.country.name}
-                        </LinkButton>
-                        <LinkButton align="left" onClick={props.openWindow.city}>
-                            {props.tile.owner.city!!.name}
-                        </LinkButton>
-                    </HBox>
-                </KeyValuePair>
-            )}
-            {(props.tile.owner && props.tile.owner.city === null) && (
-                <KeyValuePair name={"Owned By"}>
-                    <HBox gap_xs left>
-                        <LinkButton align="left" onClick={props.openWindow.country}>
-                            {props.tile.owner.country.name}
-                        </LinkButton>
-                    </HBox>
-                </KeyValuePair>
-            )}
+            <KeyValueGrid>
+
+                <EnrichedText>Id</EnrichedText>
+                <EnrichedText>{props.tile.identifier.id}</EnrichedText>
+
+                <EnrichedText>Position</EnrichedText>
+                <EnrichedText>{props.tile.identifier.q + ", " + props.tile.identifier.r}</EnrichedText>
+
+                <EnrichedText>Terrain</EnrichedText>
+                <EnrichedText>{props.tile.terrainType?.displayString || "None"}</EnrichedText>
+
+                <EnrichedText>Resource</EnrichedText>
+                <EnrichedText>{props.tile.resourceType?.displayString || "None"}</EnrichedText>
+
+                <If condition={props.tile.owner !== null && props.tile.owner.city === null}>
+                    <EnrichedText>Owned By:</EnrichedText>
+                    <EnrichedText>
+                        <ETLink onClick={props.openWindow.country}>{props.tile.owner?.country.name}</ETLink>
+                    </EnrichedText>
+                </If>
+
+                <If condition={props.tile.owner !== null && props.tile.owner.city !== null}>
+                    <EnrichedText>Owned By:</EnrichedText>
+                    <EnrichedText>
+                        <ETLink onClick={props.openWindow.country}>{props.tile.owner?.country.name}</ETLink> / <ETLink onClick={props.openWindow.city}>{props.tile.owner?.city?.name}</ETLink>
+                    </EnrichedText>
+                </If>
+
+            </KeyValueGrid>
         </InsetPanel>
     );
 }
@@ -117,7 +110,6 @@ function PlaceScoutButton(props: UseTileWindow.Data): ReactElement {
         </ButtonPrimary>
     );
 }
-
 
 
 function CreateColonyButton(props: UseTileWindow.Data): ReactElement {
@@ -145,7 +137,6 @@ function CreateColonyButton(props: UseTileWindow.Data): ReactElement {
 }
 
 
-
 function CreateSettlementButton(props: UseTileWindow.Data): ReactElement {
     return (
         <BasicTooltip
@@ -153,7 +144,7 @@ function CreateSettlementButton(props: UseTileWindow.Data): ReactElement {
             delay={500}
             content={
                 <ul>
-                    {props.createSettlement.reasonsInvalid.map((e,i) => (
+                    {props.createSettlement.reasonsInvalid.map((e, i) => (
                         <li key={i}>{e}</li>
                     ))}
                 </ul>

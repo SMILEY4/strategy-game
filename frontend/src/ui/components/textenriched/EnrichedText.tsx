@@ -2,12 +2,12 @@ import {ReactElement} from "react";
 import {joinClassNames} from "../utils";
 import "./enrichedText.scoped.less"
 
-export interface EnrichedTextBlockProps {
+export interface EnrichedTextProps {
     children?: any;
     className?: string;
 }
 
-export function EnrichedText(props: EnrichedTextBlockProps): ReactElement {
+export function EnrichedText(props: EnrichedTextProps): ReactElement {
     return (
         <div className={joinClassNames(["enriched-text", props.className])}>
             {props.children}

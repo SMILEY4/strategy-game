@@ -8,7 +8,6 @@ import {Text} from "../../../../components/text/Text";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {KeyLinkValuePair, KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {FiPlus} from "react-icons/fi";
 import {CgClose} from "react-icons/cg";
@@ -28,12 +27,14 @@ import {Building} from "../../../../../models/building";
 import {BsArrowRight} from "react-icons/bs";
 import {LinkButton} from "../../../../components/button/link/LinkButton";
 import "./cityWindow.less";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
-import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {DetailLogEntry} from "../../../../../models/detailLogEntry";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {ETText} from "../../../../components/textenriched/elements/ETText";
+import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {ETLink} from "../../../../components/textenriched/elements/ETLink";
+import {If} from "../../../../components/if/If";
+import {ETTooltip} from "../../../../components/textenriched/elements/ETTooltip";
 
 
 export interface CityWindowProps {
@@ -104,28 +105,24 @@ function UpgradeTierButton(props: UseCityWindow.Data) {
 function BaseDataSection(props: UseCityWindow.Data): ReactElement {
     return (
         <InsetPanel>
-            <KeyTextValuePair
-                name={"Id"}
-                value={props.city.identifier.id}
-            />
-            <KeyValuePair name={"Tier"}>
+            <KeyValueGrid>
+
+                <EnrichedText>Id:</EnrichedText>
+                <EnrichedText>{props.city.identifier.id}</EnrichedText>
+
+                <EnrichedText>Tier:</EnrichedText>
                 <ChangeInfoText prevValue={props.city.tier.value.displayString} nextValue={props.city.tier.modifiedValue?.displayString}/>
-            </KeyValuePair>
-            <KeyLinkValuePair
-                name={"Country"}
-                value={props.city.country.name}
-                onClick={props.openWindow.country}
-            />
-            <KeyLinkValuePair
-                name={"Province"}
-                value={props.city.province.name}
-                onClick={props.openWindow.province}
-            />
-            <KeyLinkValuePair
-                name={"Tile"}
-                value={props.city.tile.q + ", " + props.city.tile.r}
-                onClick={props.openWindow.tile}
-            />
+
+                <EnrichedText>Country:</EnrichedText>
+                <EnrichedText><ETLink onClick={props.openWindow.country}>{props.city.country.name}</ETLink></EnrichedText>
+
+                <EnrichedText>Province:</EnrichedText>
+                <EnrichedText><ETLink onClick={props.openWindow.province}>{props.city.province.name}</ETLink></EnrichedText>
+
+                <EnrichedText>Tile:</EnrichedText>
+                <EnrichedText><ETLink onClick={props.openWindow.tile}>{props.city.tile.q + ", " + props.city.tile.r}</ETLink></EnrichedText>
+
+            </KeyValueGrid>
         </InsetPanel>
     );
 }
@@ -137,33 +134,38 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
             <Header2 centered>Population</Header2>
             <Divider/>
             <InsetPanel>
-                <KeyTextValuePair
-                    name={"Size"}
-                    value={props.city.population.visibility === InfoVisibility.KNOWN ? props.city.population.size : "?"}
-                />
-                {props.city.population.visibility === InfoVisibility.KNOWN && (
-                    <KeyValuePair name={"Growth Progress"}>
-                        <TooltipContext>
-                            <TooltipTrigger>
-                                <Text>{props.city.population.progress}</Text>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <TooltipPanel>
-                                    <VBox padding_m gap_xs fillParent>
-                                        <Header4>Population Growth</Header4>
-                                        {props.city.population.growthDetails.map(detail => buildGrowthDetail(detail))}
-                                    </VBox>
-                                </TooltipPanel>
-                            </TooltipContent>
-                        </TooltipContext>
-                    </KeyValuePair>
-                )}
-                {props.city.population.visibility !== InfoVisibility.KNOWN && (
-                    <KeyTextValuePair
-                        name={"Growth Progress"}
-                        value={"?"}
-                    />
-                )}
+                <KeyValueGrid>
+
+                    <If condition={props.city.population.visibility === InfoVisibility.KNOWN}>
+
+                        <EnrichedText>Size</EnrichedText>
+                        <EnrichedText>{props.city.population.size}</EnrichedText>
+
+                        <EnrichedText>Growth Progress</EnrichedText>
+                        <EnrichedText>
+                            <ETTooltip content={
+                                <>
+                                    <Header4>Population Growth</Header4>
+                                    {props.city.population.growthDetails.map(detail => buildGrowthDetail(detail))}
+                                </>
+                            }>
+                                {props.city.population.progress}
+                            </ETTooltip>
+                        </EnrichedText>
+
+                    </If>
+
+                    <If condition={props.city.population.visibility !== InfoVisibility.KNOWN}>
+
+                        <EnrichedText>Size</EnrichedText>
+                        <EnrichedText>?</EnrichedText>
+
+                        <EnrichedText>Growth Progress</EnrichedText>
+                        <EnrichedText>?</EnrichedText>
+
+                    </If>
+
+                </KeyValueGrid>
             </InsetPanel>
         </>
     );

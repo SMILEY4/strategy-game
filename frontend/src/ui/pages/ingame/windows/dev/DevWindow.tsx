@@ -5,9 +5,10 @@ import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {roundToPlaces} from "../../../../../shared/utils";
 import {UseDevWindow} from "./useDevWindow";
+import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 
 export interface DevWindowProps {
     windowId: string;
@@ -53,14 +54,18 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 function BaseInformation(props: UseDevWindow.Data): ReactElement {
     return (
         <InsetPanel>
-            <KeyTextValuePair
-                name={"Camera.Pos"}
-                value={roundToPlaces(props.camera.x, 4) + ", " + roundToPlaces(props.camera.y, 4)}
-            />
-            <KeyTextValuePair
-                name={"Camera.Zoom"}
-                value={roundToPlaces(props.camera.zoom, 4)}
-            />
+            <KeyValueGrid>
+                <EnrichedText>Camera.Pos</EnrichedText>
+                <EnrichedText>
+                    <ETNumber typeNone unsigned decPlaces={2}>{props.camera.x}</ETNumber>, <ETNumber typeNone unsigned decPlaces={2}>{props.camera.y}</ETNumber>
+                </EnrichedText>
+
+                <EnrichedText>Camera.Zoom</EnrichedText>
+                <EnrichedText>
+                    <ETNumber typeNone unsigned decPlaces={4}>{props.camera.zoom}</ETNumber>
+                </EnrichedText>
+
+            </KeyValueGrid>
         </InsetPanel>
     );
 }

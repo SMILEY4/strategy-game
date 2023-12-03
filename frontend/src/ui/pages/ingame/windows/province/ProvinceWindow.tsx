@@ -6,12 +6,14 @@ import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
-import {KeyLinkValuePair, KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {CityListEntry} from "../common/CityListEntry";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {UseProvinceWindow} from "./useProvinceWindow";
+import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 
 
 export interface ProvinceWindowProps {
@@ -59,8 +61,15 @@ function ProvinceBanner(props: UseProvinceWindow.Data): ReactElement {
 function BaseInformation(props: UseProvinceWindow.Data): ReactElement {
     return (
         <InsetPanel>
-            <KeyTextValuePair name={"Id"} value={props.province.identifier.id}/>
-            <KeyLinkValuePair name={"Country"} value={props.province.country.name} onClick={props.openWindow.country}/>
+            <KeyValueGrid>
+
+                <EnrichedText>Id:</EnrichedText>
+                <EnrichedText>{props.province.identifier.id}</EnrichedText>
+
+                <EnrichedText>Country:</EnrichedText>
+                <EnrichedText><ETLink onClick={props.openWindow.country}>{props.province.country.name}</ETLink></EnrichedText>
+
+            </KeyValueGrid>
         </InsetPanel>
     );
 }

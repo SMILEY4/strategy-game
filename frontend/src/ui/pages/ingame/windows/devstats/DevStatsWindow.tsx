@@ -4,11 +4,12 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {KeyTextValuePair} from "../../../../components/keyvalue/KeyValuePair";
-import {roundToPlaces} from "../../../../../shared/utils";
 import {UseDevStatsWindow} from "./useDevStatsWindow";
 import {Area, Bar, BarChart, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, YAxis} from "recharts";
 import {Text} from "../../../../components/text/Text";
+import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 
 export interface DevStatsWindowProps {
     windowId: string;
@@ -47,38 +48,34 @@ export function DevStatsWindow(props: DevStatsWindowProps): ReactElement {
 function MonitoringInformation(props: UseDevStatsWindow.Data): ReactElement {
     return (
         <InsetPanel>
-            <KeyTextValuePair
-                name={"FPS"}
-                value={roundToPlaces(props.rendering.webGLMonitorData.fps.getAverage(), 0)}
-            />
-            <KeyTextValuePair
-                name={"FrameDuration"}
-                value={roundToPlaces(props.rendering.webGLMonitorData.frameDuration.getAverage(), 0) + " ms"}
-            />
-            <KeyTextValuePair
-                name={"DrawCalls/Frame"}
-                value={props.rendering.webGLMonitorData.countDrawCalls}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Buffers"}
-                value={props.rendering.webGLMonitorData.countBuffers}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.VertexArray"}
-                value={props.rendering.webGLMonitorData.countVertexArrays}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Textures"}
-                value={props.rendering.webGLMonitorData.countTextures}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Framebuffers"}
-                value={props.rendering.webGLMonitorData.countFramebuffers}
-            />
-            <KeyTextValuePair
-                name={"GLObjects.Programs"}
-                value={props.rendering.webGLMonitorData.countPrograms}
-            />
+
+            <KeyValueGrid>
+
+                <EnrichedText>FPS:</EnrichedText>
+                <EnrichedText><ETNumber typeNone unsigned decPlaces={0}>{props.rendering.webGLMonitorData.fps.getAverage()}</ETNumber></EnrichedText>
+
+                <EnrichedText>Frame Duration:</EnrichedText>
+                <EnrichedText><ETNumber typeNone unsigned decPlaces={3}>{props.rendering.webGLMonitorData.frameDuration.getAverage()}</ETNumber> ms</EnrichedText>
+
+                <EnrichedText>Draw Calls:</EnrichedText>
+                <EnrichedText>{props.rendering.webGLMonitorData.countDrawCalls}</EnrichedText>
+
+                <EnrichedText>GLObjects.Buffers:</EnrichedText>
+                <EnrichedText>{props.rendering.webGLMonitorData.countBuffers}</EnrichedText>
+
+                <EnrichedText>GLObjects.VertexArray:</EnrichedText>
+                <EnrichedText>{props.rendering.webGLMonitorData.countVertexArrays}</EnrichedText>
+
+                <EnrichedText>GLObjects.Textures:</EnrichedText>
+                <EnrichedText>{props.rendering.webGLMonitorData.countTextures}</EnrichedText>
+
+                <EnrichedText>GLObjects.Framebuffers:</EnrichedText>
+                <EnrichedText>{props.rendering.webGLMonitorData.countFramebuffers}</EnrichedText>
+
+                <EnrichedText>GLObjects.Programs:</EnrichedText>
+                <EnrichedText>{props.rendering.webGLMonitorData.countPrograms}</EnrichedText>
+
+            </KeyValueGrid>
         </InsetPanel>
     );
 }

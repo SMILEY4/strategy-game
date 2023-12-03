@@ -6,13 +6,14 @@ import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
 import {Banner} from "../../../../components/banner/Banner";
-import {KeyTextValuePair, KeyValuePair} from "../../../../components/keyvalue/KeyValuePair";
 import {ProvinceListEntry} from "../common/ProvinceListEntry";
 import {CityListEntry} from "../common/CityListEntry";
-import {Text} from "../../../../components/text/Text";
-import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {UseCountryWindow} from "./useCountryWindow";
+import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {If} from "../../../../components/if/If";
+import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 
 export interface CountryWindowProps {
     windowId: string;
@@ -58,16 +59,25 @@ function CountryBanner(props: UseCountryWindow.Data): ReactElement {
 function BaseInformation(props: UseCountryWindow.Data): ReactElement {
     return (
         <InsetPanel>
-            <KeyTextValuePair name={"Id"} value={props.country.identifier.id}/>
-            <KeyTextValuePair name={"Player"} value={props.country.player.name}/>
-            <KeyValuePair name={"Settlers"}>
-                {props.country.settlers.visibility === InfoVisibility.KNOWN && (
+            <KeyValueGrid>
+
+                <EnrichedText>Id:</EnrichedText>
+                <EnrichedText>{props.country.identifier.id}</EnrichedText>
+
+                <EnrichedText>Player:</EnrichedText>
+                <EnrichedText>{props.country.player.name}</EnrichedText>
+
+                <If condition={props.country.settlers.visibility === InfoVisibility.KNOWN}>
+                    <EnrichedText>Settlers:</EnrichedText>
                     <ChangeInfoText prevValue={props.country.settlers.value} nextValue={props.country.settlers.modifiedValue}/>
-                )}
-                {props.country.settlers.visibility === InfoVisibility.UNKNOWN && (
-                    <Text>?</Text>
-                )}
-            </KeyValuePair>
+                </If>
+                <If condition={props.country.settlers.visibility === InfoVisibility.UNKNOWN}>
+                    <EnrichedText>Settlers:</EnrichedText>
+                    <EnrichedText>?</EnrichedText>
+                </If>
+
+            </KeyValueGrid>
+
         </InsetPanel>
     );
 }
@@ -81,6 +91,7 @@ function ProvincesAndCities(props: UseCountryWindow.Data): ReactElement {
                     ? "Provinces & Cities"
                     : "Known Provinces & Cities"}
             </Header2>
+
             <Divider/>
 
             <InsetPanel>
