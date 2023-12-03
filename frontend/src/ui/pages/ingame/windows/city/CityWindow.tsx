@@ -1,12 +1,9 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
-import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header2, Header4} from "../../../../components/header/Header";
+import {DefaultDecoratedWindowWithBanner} from "../../../../components/windows/decorated/DecoratedWindow";
+import {Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Text} from "../../../../components/text/Text";
-import {Divider} from "../../../../components/divider/Divider";
-import {Banner} from "../../../../components/banner/Banner";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {FiPlus} from "react-icons/fi";
@@ -14,11 +11,9 @@ import {CgClose} from "react-icons/cg";
 import {joinClassNames} from "../../../../components/utils";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
-import {CityIdentifier, CityView, PopulationGrowthDetailType} from "../../../../../models/city";
-import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
+import {CityView, PopulationGrowthDetailType} from "../../../../../models/city";
 import {AudioType} from "../../../../../logic/audio/audioService";
 import {UIAudio} from "../../../../components/audio";
-import {SettlementTier} from "../../../../../models/settlementTier";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {UseCityWindow} from "./useCityWindow";
@@ -31,10 +26,13 @@ import {DetailLogEntry} from "../../../../../models/detailLogEntry";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {ETText} from "../../../../components/textenriched/elements/ETText";
-import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {ETLink} from "../../../../components/textenriched/elements/ETLink";
-import {If} from "../../../../components/if/If";
 import {ETTooltip} from "../../../../components/textenriched/elements/ETTooltip";
+import {Else, If, Then, When} from "react-if";
+import {WindowSection} from "../../../../components/section/ContentSection";
+import {Tooltip} from "../../../../components/tooltip/Tooltip";
+import {SimpleDivider} from "../../../../components/divider/SimpleDivider";
 
 
 export interface CityWindowProps {
@@ -45,67 +43,46 @@ export interface CityWindowProps {
 export function CityWindow(props: CityWindowProps): ReactElement {
     const data: UseCityWindow.Data = UseCityWindow.useData(props.cityId);
     return (
-        <DecoratedWindow
+        <DefaultDecoratedWindowWithBanner
             windowId={props.windowId}
-            withCloseButton
-            noPadding
-            style={{
-                minWidth: "fit-content",
-                minHeight: "300px",
-            }}
+            title={data.city.identifier.name}
+            subtitle={data.city.tier.value.displayString}
         >
-            <VBox fillParent>
-                <CityBanner identifier={data.city.identifier} tier={data.city.tier.value}/>
-                <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <BaseDataSection {...data}/>
-                    <UpgradeTierButton {...data}/>
-                    <Spacer size="m"/>
-                    <PopulationSection {...data}/>
-                    <Spacer size="m"/>
-                    <RouteSectionSection {...data}/>
-                    <Spacer size="m"/>
-                    <ContentSection {...data}/>
-                </VBox>
-            </VBox>
-        </DecoratedWindow>
-    );
-}
-
-
-function CityBanner(props: { identifier: CityIdentifier, tier: SettlementTier }): ReactElement {
-    return (
-        <Banner spaceAbove subtitle={props.tier.displayString}>
-            <Header1 centered>{props.identifier.name}</Header1>
-        </Banner>
+            <BaseDataSection {...data}/>
+            <UpgradeTierButton {...data}/>
+            <Spacer size="m"/>
+            <PopulationSection {...data}/>
+            <Spacer size="m"/>
+            <RouteSectionSection {...data}/>
+            <Spacer size="m"/>
+            <ContentSection {...data}/>
+        </DefaultDecoratedWindowWithBanner>
     );
 }
 
 function UpgradeTierButton(props: UseCityWindow.Data) {
     return (
-        <BasicTooltip
-            enabled={!props.upgradeCityTier.valid}
-            delay={500}
-            content={
-                <ul>
-                    {props.upgradeCityTier.reasonsInvalid.map((reason, index) => (
-                        <li key={index}>{reason}</li>
-                    ))}
-                </ul>
-            }
-        >
-            <ButtonPrimary blue disabled={!props.upgradeCityTier.valid} onClick={() => props.upgradeCityTier.upgrade()}>
-                {props.city.tier.value.nextTier === null
-                    ? "Upgrade Tier"
-                    : "Upgrade Tier to " + props.city.tier.value.nextTier.displayString}
-            </ButtonPrimary>
-        </BasicTooltip>
+        <Tooltip>
+            <Tooltip.Trigger>
+                <ButtonPrimary blue disabled={!props.upgradeCityTier.valid} onClick={() => props.upgradeCityTier.upgrade()}>
+                    {props.city.tier.value.nextTier === null
+                        ? "Upgrade Tier"
+                        : "Upgrade Tier to " + props.city.tier.value.nextTier.displayString}
+                </ButtonPrimary>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+                {props.upgradeCityTier.reasonsInvalid.map((reason, index) => (
+                    <EnrichedText key={index}>{reason}</EnrichedText>
+                ))}
+            </Tooltip.Content>
+        </Tooltip>
     );
 }
 
 function BaseDataSection(props: UseCityWindow.Data): ReactElement {
     return (
-        <InsetPanel>
-            <KeyValueGrid>
+        <WindowSection>
+            <InsetKeyValueGrid>
 
                 <EnrichedText>Id:</EnrichedText>
                 <EnrichedText>{props.city.identifier.id}</EnrichedText>
@@ -122,40 +99,38 @@ function BaseDataSection(props: UseCityWindow.Data): ReactElement {
                 <EnrichedText>Tile:</EnrichedText>
                 <EnrichedText><ETLink onClick={props.openWindow.tile}>{props.city.tile.q + ", " + props.city.tile.r}</ETLink></EnrichedText>
 
-            </KeyValueGrid>
-        </InsetPanel>
+            </InsetKeyValueGrid>
+        </WindowSection>
     );
 }
 
 
 function PopulationSection(props: UseCityWindow.Data): ReactElement {
     return (
-        <>
-            <Header2 centered>Population</Header2>
-            <Divider/>
-            <InsetPanel>
-                <KeyValueGrid>
-
-                    <If condition={props.city.population.visibility === InfoVisibility.KNOWN}>
+        <WindowSection title="Population">
+            <InsetKeyValueGrid>
+                <If condition={props.city.population.visibility === InfoVisibility.KNOWN}>
+                    <Then>
 
                         <EnrichedText>Size</EnrichedText>
                         <EnrichedText>{props.city.population.size}</EnrichedText>
 
                         <EnrichedText>Growth Progress</EnrichedText>
                         <EnrichedText>
-                            <ETTooltip content={
-                                <>
+                            <ETTooltip>
+                                <Tooltip.Trigger>
+                                    <EnrichedText><ETNumber typeNone>{props.city.population.progress * 100}</ETNumber>%</EnrichedText>
+                                </Tooltip.Trigger>
+                                <Tooltip.Content>
                                     <Header4>Population Growth</Header4>
+                                    <SimpleDivider/>
                                     {props.city.population.growthDetails.map(detail => buildGrowthDetail(detail))}
-                                </>
-                            }>
-                                {props.city.population.progress}
+                                </Tooltip.Content>
                             </ETTooltip>
                         </EnrichedText>
 
-                    </If>
-
-                    <If condition={props.city.population.visibility !== InfoVisibility.KNOWN}>
+                    </Then>
+                    <Else>
 
                         <EnrichedText>Size</EnrichedText>
                         <EnrichedText>?</EnrichedText>
@@ -163,11 +138,11 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
                         <EnrichedText>Growth Progress</EnrichedText>
                         <EnrichedText>?</EnrichedText>
 
-                    </If>
+                    </Else>
+                </If>
+            </InsetKeyValueGrid>
+        </WindowSection>
 
-                </KeyValueGrid>
-            </InsetPanel>
-        </>
     );
 
     function buildGrowthDetail(entry: DetailLogEntry<PopulationGrowthDetailType>): React.ReactElement {
@@ -208,46 +183,34 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
 
 function RouteSectionSection(props: UseCityWindow.Data): ReactElement {
     return (
-        <>
-            <Header2 centered>Connected Cities</Header2>
-            <Divider/>
+        <WindowSection title="Connected Cities">
             <InsetPanel>
-                {props.city.connectedCities.map(entry => {
-                    return (
-                        <HBox left centerVertical gap_s key={entry.routeId}>
-                            <BsArrowRight/>
-                            <LinkButton align="left" onClick={() => props.openWindow.connectedCity(entry)}>
-                                {entry.city.name}
-                            </LinkButton>
-                            <Spacer size={"xs"}/>
-                            <Text>
-                                {"(" + entry.routeLength + ")"}
-                            </Text>
-                        </HBox>
-                    );
-                })}
+                {props.city.connectedCities.map(entry => (
+                    <HBox left centerVertical gap_s key={entry.routeId}>
+                        <BsArrowRight/>
+                        <LinkButton align="left" onClick={() => props.openWindow.connectedCity(entry)}>
+                            {entry.city.name}
+                        </LinkButton>
+                        <Spacer size={"xs"}/>
+                        <Text>
+                            {"(" + entry.routeLength + ")"}
+                        </Text>
+                    </HBox>
+                ))}
             </InsetPanel>
-        </>
+        </WindowSection>
     );
 }
 
 function ContentSection(props: UseCityWindow.Data): ReactElement {
     return (
-        <>
-            <Header2 centered>
-                {props.city.buildings.visibility === InfoVisibility.KNOWN
-                    ? "Buildings"
-                    : "Known Buildings"}
-            </Header2>
-            <Divider/>
-            {props.city.isPlayerOwned && (
-                <>
-                    <ProductionQueue {...props}/>
-                    <Spacer size={"xs"}/>
-                </>
-            )}
+        <WindowSection title={props.city.buildings.visibility === InfoVisibility.KNOWN ? "Buildings" : "Known Buildings"}>
+            <When condition={props.city.isPlayerOwned}>
+                <ProductionQueue {...props}/>
+                <Spacer size={"xs"}/>
+            </When>
             <BuildingList {...props.city}/>
-        </>
+        </WindowSection>
     );
 }
 
@@ -329,20 +292,4 @@ function BuildingEntry(props: { building: Building }): ReactElement {
             />
         </BuildingInfoTooltip>
     );
-}
-
-
-function formatValue(value: number, includePlus?: boolean): string {
-    const simpleValue = Math.round(value * 100) / 100;
-    if (simpleValue < 0) {
-        return "-" + Math.abs(simpleValue);
-    }
-    if (simpleValue > 0) {
-        if (includePlus === false) {
-            return "" + Math.abs(simpleValue);
-        } else {
-            return "+" + Math.abs(simpleValue);
-        }
-    }
-    return "0";
 }

@@ -1,7 +1,7 @@
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header4} from "../../../../components/header/Header";
 import React, {ReactElement} from "react";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
+import {TooltipContent} from "../../../../components/tooltip/TooltipContext";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {Building, BuildingDetailType} from "../../../../../models/building";
 import {DetailLogEntry} from "../../../../../models/detailLogEntry";
@@ -9,6 +9,7 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
 import {ResourceType, ResourceTypeString} from "../../../../../models/resourceType";
 import {SimpleDivider} from "../../../../components/divider/SimpleDivider";
+import {TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 
 const BUILDING_DETAIL_TYPE_ORDER: BuildingDetailType[] = [
     "WORKED_TILE",

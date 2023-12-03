@@ -1,16 +1,13 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
-import {VBox} from "../../../../components/layout/vbox/VBox";
+import {DefaultDecoratedWindowWithBanner} from "../../../../components/windows/decorated/DecoratedWindow";
 import {UseCityPlannedWindow} from "./useCityPlannedWindow";
-import {Banner} from "../../../../components/banner/Banner";
-import {Header1} from "../../../../components/header/Header";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETLink} from "../../../../components/textenriched/elements/ETLink";
-import {If} from "../../../../components/if/If";
+import {Else, If, Then} from "react-if";
 
 export interface CityPlannedWindowProps {
     windowId: string;
@@ -23,35 +20,14 @@ export function CityPlannedWindow(props: CityPlannedWindowProps): ReactElement {
     const data: UseCityPlannedWindow.Data = UseCityPlannedWindow.useData(props.commandId);
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            noPadding
-            style={{
-                minWidth: "fit-content",
-                minHeight: "300px",
-            }}
-        >
-            <VBox fillParent>
-                <CityPlannedBanner {...data}/>
-                <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <BaseDataSection {...data}/>
-                    <Spacer size={"m"}/>
-                    <CancelButton {...data}/>
-                </VBox>
-            </VBox>
-        </DecoratedWindow>
+        <DefaultDecoratedWindowWithBanner windowId={props.windowId} title={data.name} subtitle="Planned Settlement">
+            <BaseDataSection {...data}/>
+            <Spacer size={"m"}/>
+            <CancelButton {...data}/>
+        </DefaultDecoratedWindowWithBanner>
     );
 }
 
-
-function CityPlannedBanner(props: UseCityPlannedWindow.Data): ReactElement {
-    return (
-        <Banner spaceAbove subtitle={"Planned Settlement"}>
-            <Header1 centered>{props.name}</Header1>
-        </Banner>
-    );
-}
 
 function BaseDataSection(props: UseCityPlannedWindow.Data): ReactElement {
     return (
@@ -62,13 +38,14 @@ function BaseDataSection(props: UseCityPlannedWindow.Data): ReactElement {
                 <EnrichedText><ETLink onClick={props.openWindow.country}>{props.country.name}</ETLink></EnrichedText>
 
                 <If condition={props.province !== null}>
-                    <EnrichedText>Province:</EnrichedText>
-                    <EnrichedText><ETLink onClick={props.openWindow.province}>{props.province?.name}</ETLink></EnrichedText>
-                </If>
-
-                <If condition={props.province === null}>
-                    <EnrichedText>Province:</EnrichedText>
-                    <EnrichedText>create new</EnrichedText>
+                    <Then>
+                        <EnrichedText>Province:</EnrichedText>
+                        <EnrichedText><ETLink onClick={props.openWindow.province}>{props.province?.name}</ETLink></EnrichedText>
+                    </Then>
+                    <Else>
+                        <EnrichedText>Province:</EnrichedText>
+                        <EnrichedText>create new</EnrichedText>
+                    </Else>
                 </If>
 
                 <EnrichedText>Tile:</EnrichedText>

@@ -1,19 +1,17 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithBanner} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header2} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Divider} from "../../../../components/divider/Divider";
-import {Banner} from "../../../../components/banner/Banner";
 import {ProvinceListEntry} from "../common/ProvinceListEntry";
 import {CityListEntry} from "../common/CityListEntry";
 import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {UseCountryWindow} from "./useCountryWindow";
-import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
+import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {If} from "../../../../components/if/If";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
+import {Else, If, Then} from "react-if";
+import {WindowSection} from "../../../../components/section/ContentSection";
 
 export interface CountryWindowProps {
     windowId: string;
@@ -25,41 +23,20 @@ export function CountryWindow(props: CountryWindowProps): ReactElement {
     const data: UseCountryWindow.Data = UseCountryWindow.useData(props.countryId);
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            style={{
-                minWidth: "fit-content",
-                minHeight: "300px",
-            }}
-            noPadding
-        >
-            <VBox fillParent>
-                <CountryBanner {...data}/>
-                <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <BaseInformation {...data}/>
-                    <Spacer size="m"/>
-                    <ProvincesAndCities {...data}/>
-                </VBox>
-            </VBox>
-        </DecoratedWindow>
+        <DefaultDecoratedWindowWithBanner windowId={props.windowId} title={data.country.identifier.name} subtitle="Country">
+            <BaseDataSection {...data}/>
+            <Spacer size="m"/>
+            <ProvincesAndCitiesSection {...data}/>
+        </DefaultDecoratedWindowWithBanner>
     );
 
 }
 
 
-function CountryBanner(props: UseCountryWindow.Data): ReactElement {
+function BaseDataSection(props: UseCountryWindow.Data): ReactElement {
     return (
-        <Banner spaceAbove subtitle={"Country"}>
-            <Header1 centered>{props.country.identifier.name}</Header1>
-        </Banner>
-    );
-}
-
-function BaseInformation(props: UseCountryWindow.Data): ReactElement {
-    return (
-        <InsetPanel>
-            <KeyValueGrid>
+        <WindowSection>
+            <InsetKeyValueGrid>
 
                 <EnrichedText>Id:</EnrichedText>
                 <EnrichedText>{props.country.identifier.id}</EnrichedText>
@@ -68,32 +45,27 @@ function BaseInformation(props: UseCountryWindow.Data): ReactElement {
                 <EnrichedText>{props.country.player.name}</EnrichedText>
 
                 <If condition={props.country.settlers.visibility === InfoVisibility.KNOWN}>
-                    <EnrichedText>Settlers:</EnrichedText>
-                    <ChangeInfoText prevValue={props.country.settlers.value} nextValue={props.country.settlers.modifiedValue}/>
-                </If>
-                <If condition={props.country.settlers.visibility === InfoVisibility.UNKNOWN}>
-                    <EnrichedText>Settlers:</EnrichedText>
-                    <EnrichedText>?</EnrichedText>
+                    <Then>
+                        <EnrichedText>Settlers:</EnrichedText>
+                        <ChangeInfoText prevValue={props.country.settlers.value} nextValue={props.country.settlers.modifiedValue}/>
+                    </Then>
+                    <Else>
+                        <EnrichedText>Settlers:</EnrichedText>
+                        <EnrichedText>?</EnrichedText>
+                    </Else>
                 </If>
 
-            </KeyValueGrid>
-
-        </InsetPanel>
+            </InsetKeyValueGrid>
+        </WindowSection>
     );
 }
 
 
-function ProvincesAndCities(props: UseCountryWindow.Data): ReactElement {
+function ProvincesAndCitiesSection(props: UseCountryWindow.Data): ReactElement {
     return (
-        <>
-            <Header2 centered>
-                {props.country.provinces.visibility === InfoVisibility.KNOWN
-                    ? "Provinces & Cities"
-                    : "Known Provinces & Cities"}
-            </Header2>
-
-            <Divider/>
-
+        <WindowSection
+            title={props.country.provinces.visibility === InfoVisibility.KNOWN ? "Provinces & Cities" : "Known Provinces & Cities"}
+        >
             <InsetPanel>
                 <VBox fillParent gap_s top stretch>
                     {props.country.provinces.items.map(province => (
@@ -113,7 +85,7 @@ function ProvincesAndCities(props: UseCountryWindow.Data): ReactElement {
                     ))}
                 </VBox>
             </InsetPanel>
-        </>
+        </WindowSection>
     );
 }
 

@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header4} from "../../../../components/header/Header";
+import {Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {
     AddProductionQueueCommand,
@@ -31,23 +31,11 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
     const data: UseCommandLogWindow.Data = UseCommandLogWindow.useData();
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            className={"window-map"}
-            style={{
-                minWidth: "fit-content",
-                minHeight: "250px",
-            }}
-        >
-            <VBox fillParent gap_s top stretch scrollable stableScrollbar>
-                <Header1>Commands</Header1>
-                <Spacer size="s"/>
-                {data.entries.map(commandEntry => (
-                    <CommandEntry data={data} entry={commandEntry} key={commandEntry.command.id}/>
-                ))}
-            </VBox>
-        </DecoratedWindow>
+        <DefaultDecoratedWindowWithHeader windowId={props.windowId} title="Commands">
+            {data.entries.map(commandEntry => (
+                <CommandEntry data={data} entry={commandEntry} key={commandEntry.command.id}/>
+            ))}
+        </DefaultDecoratedWindowWithHeader>
     );
 }
 

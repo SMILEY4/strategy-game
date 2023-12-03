@@ -1,8 +1,6 @@
 import React, {ReactElement} from "react";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../tooltip/Tooltip";
-import {TooltipPanel} from "../../panels/tooltip/TooltipPanel";
-import {VBox} from "../../layout/vbox/VBox";
 import "./etElements.scoped.less";
+import {Tooltip} from "../../tooltip/Tooltip";
 
 export interface ETTooltipProps {
     content?: any,
@@ -10,31 +8,41 @@ export interface ETTooltipProps {
 }
 
 export function ETTooltip(props: ETTooltipProps): ReactElement {
+
+    let content = props.content ? props.content : getContent(props.children);
+    let trigger = getTrigger(props.children);
+
     return (
-        <TooltipContext delay={500} inline>
-            <TooltipTrigger>
+        <Tooltip>
+            <Tooltip.Trigger>
                 <span className={"et-tooltip"}>
-                    {props.children}
+                    {trigger}
                 </span>
-            </TooltipTrigger>
-            <TooltipContent>
-                <TooltipPanel>
-                    {getContent()}
-                </TooltipPanel>
-            </TooltipContent>
-        </TooltipContext>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+                {content}
+            </Tooltip.Content>
+        </Tooltip>
     );
 
-    function getContent(): ReactElement {
-        if (props.content) {
-            return (
-                <VBox padding_m gap_s fillParent>
-                    {props.content}
-                </VBox>
-            );
-        } else {
-            return props.children;
-        }
+    function getContent(children: any) {
+        let element = null;
+        React.Children.forEach(children, child => {
+            if (React.isValidElement(child) && child.type === Tooltip.Content) {
+                element = child;
+            }
+        });
+        return element;
+    }
+
+    function getTrigger(children: any) {
+        let element = null;
+        React.Children.forEach(children, child => {
+            if (React.isValidElement(child) && child.type === Tooltip.Trigger) {
+                element = child;
+            }
+        });
+        return element;
     }
 
 }

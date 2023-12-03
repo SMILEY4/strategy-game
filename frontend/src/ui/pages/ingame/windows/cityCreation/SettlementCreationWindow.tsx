@@ -1,12 +1,9 @@
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
-import {VBox} from "../../../../components/layout/vbox/VBox";
+import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
 import React from "react";
 import {TileIdentifier} from "../../../../../models/tile";
-import {Header2} from "../../../../components/header/Header";
 import {TextField} from "../../../../components/textfield/TextField";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
 import {UseSettlementCreationWindow} from "./useSettlementCreationWindow";
 
@@ -23,20 +20,15 @@ export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
     const data: UseSettlementCreationWindow.Data = UseSettlementCreationWindow.useData(props.windowId, props.tile, props.asColony);
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            className={"window-tile"}
-            withCloseButton
-            style={{
-                minWidth: "fit-content",
-                minHeight: "150px",
-            }}
-        >
-            <VBox fillParent gap_s top stretch>
+        <>
 
-                <Header2>{"Found " + (props.asColony ? "Colony" : "Settlement")}</Header2>
-
-                <Spacer size="s"/>
+            <DefaultDecoratedWindowWithHeader
+                windowId={props.windowId}
+                minHeight="150px"
+                withoutScroll
+                header={2}
+                title={"Found " + (props.asColony ? "Colony" : "Settlement")}
+            >
 
                 <TextField
                     value={data.input.name.value}
@@ -46,6 +38,7 @@ export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
                 />
 
                 <HBox right centerVertical gap_s>
+
                     <ButtonPrimary red onClick={data.cancel}>
                         Cancel
                     </ButtonPrimary>
@@ -62,7 +55,7 @@ export function SettlementCreationWindow(props: SettlementCreationWindowProps) {
 
                 </HBox>
 
-            </VBox>
-        </DecoratedWindow>
+            </DefaultDecoratedWindowWithHeader>
+        </>
     );
 }

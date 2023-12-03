@@ -1,6 +1,6 @@
 import {CityIdentifier} from "../../../../../models/city";
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DecoratedWindow, DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
@@ -27,34 +27,22 @@ export function CityProductionQueueWindow(props: CityProductionQueueWindowProps)
     const data: UseCityProductionQueueWindow.Data = UseCityProductionQueueWindow.useData(props.city);
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            className={"window-city-production"}
-            style={{
-                minWidth: "fit-content",
-                minHeight: "250px",
-            }}
-        >
-            <VBox fillParent gap_s top stretch>
-                <Header1>Production Queue</Header1>
-                <Spacer size="s"/>
-                <InsetPanel fillParent hideOverflow noPadding>
-                    <VBox top stretch gap_xs padding_s scrollable fillParent>
+        <DefaultDecoratedWindowWithHeader windowId={props.windowId} title="Production Queue" withoutScroll>
 
-                        {data.queueEntries.map((entry, index) => (
-                            <QueueEntry
-                                key={entry.entry.id}
-                                data={data}
-                                entry={entry}
-                                position={index + 1}
-                            />
-                        ))}
+            <InsetPanel fillParent hideOverflow noPadding>
+                <VBox top stretch gap_xs padding_s scrollable fillParent>
+                    {data.queueEntries.map((entry, index) => (
+                        <QueueEntry
+                            key={entry.entry.id}
+                            data={data}
+                            entry={entry}
+                            position={index + 1}
+                        />
+                    ))}
+                </VBox>
+            </InsetPanel>
 
-                    </VBox>
-                </InsetPanel>
-            </VBox>
-        </DecoratedWindow>
+        </DefaultDecoratedWindowWithHeader>
     );
 }
 

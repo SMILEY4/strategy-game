@@ -3,7 +3,7 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Header4, Header5} from "../../../../components/header/Header";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/Tooltip";
+import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {
     RESOURCE_LEDGER_DETAIL_TYPE_CLASSIFICATIONS,
     ResourceLedgerDetailType,

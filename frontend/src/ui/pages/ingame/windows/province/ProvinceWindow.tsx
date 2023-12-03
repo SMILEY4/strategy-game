@@ -1,11 +1,8 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithBanner} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1, Header2} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {Divider} from "../../../../components/divider/Divider";
-import {Banner} from "../../../../components/banner/Banner";
 import {CityListEntry} from "../common/CityListEntry";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ResourceBalanceBox} from "../common/ResourceBalanceBox";
@@ -14,6 +11,7 @@ import {UseProvinceWindow} from "./useProvinceWindow";
 import {KeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETLink} from "../../../../components/textenriched/elements/ETLink";
+import {WindowSection} from "../../../../components/section/ContentSection";
 
 
 export interface ProvinceWindowProps {
@@ -26,64 +24,39 @@ export function ProvinceWindow(props: ProvinceWindowProps): ReactElement {
     const data: UseProvinceWindow.Data = UseProvinceWindow.useData(props.provinceId);
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            style={{
-                minWidth: "fit-content",
-                minHeight: "300px",
-            }}
-            noPadding
-        >
-            <VBox fillParent>
-                <ProvinceBanner {...data}/>
-                <VBox className="window-content" scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    <BaseInformation {...data}/>
-                    <Spacer size="m"/>
-                    <ProvinceResourceBalanceSection {...data}/>
-                    <Spacer size="m"/>
-                    <CitiesSection {...data}/>
-                </VBox>
-            </VBox>
-        </DecoratedWindow>
+        <DefaultDecoratedWindowWithBanner windowId={props.windowId} title={data.province.identifier.name} subtitle="Province">
+            <BaseDataSection {...data}/>
+            <Spacer size="m"/>
+            <ProvinceResourceBalanceSection {...data}/>
+            <Spacer size="m"/>
+            <CitiesSection {...data}/>
+        </DefaultDecoratedWindowWithBanner>
     );
 }
 
-
-function ProvinceBanner(props: UseProvinceWindow.Data): ReactElement {
+function BaseDataSection(props: UseProvinceWindow.Data): ReactElement {
     return (
-        <Banner spaceAbove subtitle={"Province"}>
-            <Header1 centered>{props.province.identifier.name}</Header1>
-        </Banner>
-    );
-}
+        <WindowSection>
+            <InsetPanel>
+                <KeyValueGrid>
 
-function BaseInformation(props: UseProvinceWindow.Data): ReactElement {
-    return (
-        <InsetPanel>
-            <KeyValueGrid>
+                    <EnrichedText>Id:</EnrichedText>
+                    <EnrichedText>{props.province.identifier.id}</EnrichedText>
 
-                <EnrichedText>Id:</EnrichedText>
-                <EnrichedText>{props.province.identifier.id}</EnrichedText>
+                    <EnrichedText>Country:</EnrichedText>
+                    <EnrichedText><ETLink onClick={props.openWindow.country}>{props.province.country.name}</ETLink></EnrichedText>
 
-                <EnrichedText>Country:</EnrichedText>
-                <EnrichedText><ETLink onClick={props.openWindow.country}>{props.province.country.name}</ETLink></EnrichedText>
-
-            </KeyValueGrid>
-        </InsetPanel>
+                </KeyValueGrid>
+            </InsetPanel>
+        </WindowSection>
     );
 }
 
 function ProvinceResourceBalanceSection(props: UseProvinceWindow.Data): ReactElement {
     return (
-        <>
-            <Header2 centered>
-                {props.province.resourceLedger.visibility === InfoVisibility.KNOWN
-                    ? "Resource Balance"
-                    : "Known Resource Balance"}
-            </Header2>
-            <Divider/>
-
+        <WindowSection
+            title={props.province.resourceLedger.visibility === InfoVisibility.KNOWN ? "Resource Balance" : "Known Resource Balance"}
+        >
             <InsetPanel>
 
                 <HBox fillParent gap_s top left wrap>
@@ -96,22 +69,13 @@ function ProvinceResourceBalanceSection(props: UseProvinceWindow.Data): ReactEle
                 </HBox>
 
             </InsetPanel>
-        </>
+        </WindowSection>
     );
 }
 
 function CitiesSection(props: UseProvinceWindow.Data): ReactElement {
     return (
-        <>
-
-            <Header2 centered>
-                {props.province.cities.visibility === InfoVisibility.KNOWN
-                    ? "Cities"
-                    : "Known Cities"}
-            </Header2>
-
-            <Divider/>
-
+        <WindowSection title={props.province.cities.visibility === InfoVisibility.KNOWN ? "Cities" : "Known Cities"}>
             <InsetPanel>
                 <VBox fillParent gap_s top stretch>
                     {props.province.cities.items.map(city => {
@@ -125,6 +89,6 @@ function CitiesSection(props: UseProvinceWindow.Data): ReactElement {
                     })}
                 </VBox>
             </InsetPanel>
-        </>
+        </WindowSection>
     );
 }

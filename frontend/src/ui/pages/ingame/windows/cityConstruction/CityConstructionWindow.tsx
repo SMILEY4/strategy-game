@@ -1,8 +1,6 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindow, DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1} from "../../../../components/header/Header";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
@@ -24,31 +22,19 @@ export function CityConstructionWindow(props: CityConstructionWindowProps): Reac
     const data: UseCityConstructionWindow.Data = UseCityConstructionWindow.useData(props.city);
 
     return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            className={"window-city-production"}
-            style={{
-                minWidth: "fit-content",
-                minHeight: "250px",
-            }}
-        >
-            <VBox fillParent gap_s top stretch>
-                <Header1>Construction</Header1>
-                <Spacer size="s"/>
-                <InsetPanel fillParent hideOverflow noPadding>
-                    <VBox top stretch gap_xs padding_s scrollable fillParent>
-                        {data.entries.map(entry => (
-                            <ConstructionListEntry
-                                key={entry.entry.id}
-                                data={data}
-                                entry={entry}
-                            />
-                        ))}
-                    </VBox>
-                </InsetPanel>
-            </VBox>
-        </DecoratedWindow>
+        <DefaultDecoratedWindowWithHeader windowId={props.windowId} title="Construction" withoutScroll>
+            <InsetPanel fillParent hideOverflow noPadding>
+                <VBox top stretch gap_xs padding_s scrollable fillParent>
+                    {data.entries.map(entry => (
+                        <ConstructionListEntry
+                            key={entry.entry.id}
+                            data={data}
+                            entry={entry}
+                        />
+                    ))}
+                </VBox>
+            </InsetPanel>
+        </DefaultDecoratedWindowWithHeader>
     );
 }
 

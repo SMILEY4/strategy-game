@@ -1,75 +1,71 @@
-import {useTooltip} from "../headless/useTooltip";
-import React from "react";
-import {FloatingPortal} from "@floating-ui/react";
+import React, {ReactElement} from "react";
+import {TooltipPanel} from "../panels/tooltip/TooltipPanel";
+import {TooltipContent, TooltipContext, TooltipTrigger} from "./TooltipContext";
+import {VBox} from "../layout/vbox/VBox";
 
-export interface TooltipContextProps {
-    delay?: number;
-    inline?: boolean,
+export interface TooltipProps {
+    enabled?: boolean,
     children?: any;
 }
 
-export function TooltipContext(props: TooltipContextProps) {
+export function Tooltip(props: TooltipProps): ReactElement | null {
 
-    const {
-        isOpen,
-        refTrigger,
-        propsTrigger,
-        refTooltip,
-        propsTooltip,
-        styleTooltip,
-    } = useTooltip(props.delay);
+    let content = getContent(props.children);
+    let target = getTarget(props.children);
 
-    let trigger = null;
-    let content = null;
-    for (let child in props.children) {
-        if (props.children[child].type.name === "TooltipTrigger") {
-            trigger = props.children[child];
-        }
-        if (props.children[child].type.name === "TooltipContent") {
-            content = props.children[child];
-        }
+    if (props.enabled !== false) {
+        return (
+            <TooltipContext>
+                <TooltipTrigger>
+                    {target}
+                </TooltipTrigger>
+                <TooltipContent>
+                    <TooltipPanel>
+                        <VBox padding_m gap_xs fillParent>
+                            {content}
+                        </VBox>
+                    </TooltipPanel>
+                </TooltipContent>
+            </TooltipContext>
+        );
+    } else {
+        return content;
     }
 
-    return (
-        <>
 
-            {props.inline === true && (
-                <span className="tooltip-trigger" ref={refTrigger}{...propsTrigger}>
-                    {trigger}
-                </span>
-            )}
-            {props.inline !== true && (
-                <div className="tooltip-trigger" ref={refTrigger}{...propsTrigger}>
-                    {trigger}
-                </div>
-            )}
+    function getContent(children: any) {
+        let element = null;
+        React.Children.forEach(children, child => {
+            if (React.isValidElement(child) && child.type === Tooltip.Content) {
+                element = child;
+            }
+        });
+        return element;
+    }
 
-            {isOpen && (
-                <FloatingPortal id="root">
-                    <div
-                        ref={refTooltip}
-                        style={styleTooltip}
-                        className={"tooltip-content"}
-                        {...propsTooltip}
-                    >
-                        {content}
-                    </div>
-                </FloatingPortal>
-            )}
-        </>
-    );
+    function getTarget(children: any) {
+        let element = null;
+        React.Children.forEach(children, child => {
+            if (React.isValidElement(child) && child.type === Tooltip.Trigger) {
+                element = child;
+            }
+        });
+        return element;
+    }
+
 }
 
+export namespace Tooltip {
 
-export function TooltipTrigger(props: { children?: any }) {
-    return (
-        props.children
-    );
+
+    export function Content(props: { children?: any }): ReactElement {
+        return props.children;
+    }
+
+
+    export function Trigger(props: { children?: any }): ReactElement {
+        return props.children;
+    }
+
 }
 
-
-export function TooltipContent(props: { children?: any }) {
-    return (
-        props.children
-    );
-}

@@ -31,7 +31,15 @@ export interface ETNumberProps {
     /*
     number of decimal places
      */
-    decPlaces?: number;
+    decPlaces?: number,
+    /*
+    shortcut for "no decimal places"
+    */
+    int?: boolean,
+    /*
+    shortcut for "typeNone", "unsigned"
+     */
+    unstyled?: boolean,
     /*
     the value to format and display
     */
@@ -62,14 +70,14 @@ export function ETNumber(props: ETNumberProps): ReactElement {
         if (props.format === "signed-0n" || props.signed0n) {
             return "signed-0n";
         }
-        if (props.format === "unsigned" || props.unsigned) {
+        if (props.format === "unsigned" || props.unsigned || props.unstyled) {
             return "unsigned";
         }
         return "signed";
     }
 
     function getType(props: ETNumberProps, format: "signed" | "signed-0p" | "signed-0n" | "unsigned", value: number): "pos" | "neg" | "info" | "none" {
-        if (props.type === "none" || props.typeNone) {
+        if (props.type === "none" || props.typeNone || props.unstyled) {
             return "none";
         }
         if (props.type === "pos" || props.pos) {
@@ -110,7 +118,13 @@ export function ETNumber(props: ETNumberProps): ReactElement {
     }
 
     function getDecimalPlaces(props: ETNumberProps): number {
-        return (props.decPlaces === undefined || props.decPlaces === null) ? 4 : props.decPlaces;
+        if(props.int) {
+            return 0
+        } else if(props.decPlaces === undefined || props.decPlaces === null) {
+            return 4
+        } else {
+            return props.decPlaces
+        }
     }
 
     function formatValue(format: "signed" | "signed-0p" | "signed-0n" | "unsigned", value: number, decPlaces: number): string {
