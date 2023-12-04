@@ -1,4 +1,4 @@
-import {DIContext} from "./shared/di";
+import {DIContext} from "./shared/dependencyinjection/di";
 import {HttpClient} from "./shared/httpClient";
 import {WebsocketClient} from "./shared/websocketClient";
 import {AuthProvider} from "./logic/user/authProvider";
