@@ -13,6 +13,8 @@
   "dependencies": {
     "@floating-ui/react": "^0.25.1",
     "@types/howler": "^2.2.10",
+    "blinkdb": "^0.14.0",
+    "btreemap": "^0.1.14",
     "howler": "^2.2.4",
     "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
