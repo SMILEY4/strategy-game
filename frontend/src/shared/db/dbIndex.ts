@@ -1,73 +1,51 @@
-import {QueryProcessor} from "./queryProcessor";
+import {BTreeMap} from "btreemap";
 
-export interface DBIndex {
-    getName: () => string,
-    getFieldPath: () => string,
-    estimateCost: (op: "eq" | "lt", path: string) => number;
+export type IndexDefinitions = {
+    [K: string]: DbIndex<any>
+}
+
+export type IndexSingleResponse = string | undefined
+
+export type IndexMultiResponse = (callback: (entityId: string) => boolean) => void
+
+
+export interface DbIndex<K> {
+    insert: (key: K, entityId: string) => void,
 }
 
 
-export class HashIndex implements DBIndex {
+export class MapIndex<K> implements DbIndex<K> {
 
-    private readonly name: string;
-    private readonly fieldPath: string;
+    private readonly entries = new Map<K, string>();
 
-    constructor(name: string, fieldPath: string) {
-        this.name = name
-        this.fieldPath = fieldPath;
+    public insert(key: K, entityId: string) {
+        this.entries.set(key, entityId);
     }
 
-    public getName(): string {
-        return this.name;
-    }
 
-    public getFieldPath(): string {
-        return this.fieldPath;
-    }
-
-    public estimateCost(op: "eq" | "lt", path: string): number {
-        if (path !== this.fieldPath) {
-            return QueryProcessor.FTS_RATING;
-        }
-        switch (op) {
-            case "eq":
-                return QueryProcessor.BEST_RATING;
-            case "lt":
-                return 10;
-        }
+    public get(key: K): IndexSingleResponse {
+        return this.entries.get(key);
     }
 
 }
 
 
-export class BTreeIndex implements DBIndex {
+export class BTreeIndex<K> implements DbIndex<K> {
 
-    private readonly name: string;
-    private readonly fieldPath: string;
+    private readonly entries = new BTreeMap();
 
-    constructor(name: string, fieldPath: string) {
-        this.name = name
-        this.fieldPath = fieldPath;
+    public insert(key: K, entityId: string) {
+        this.entries.set(key, entityId);
     }
 
-    public getName(): string {
-        return this.name;
-    }
-
-    public getFieldPath(): string {
-        return this.fieldPath;
-    }
-
-    public estimateCost(op: "eq" | "lt", path: string): number {
-        if (path !== this.fieldPath) {
-            return QueryProcessor.FTS_RATING;
-        }
-        switch (op) {
-            case "eq":
-                return 10;
-            case "lt":
-                return QueryProcessor.BEST_RATING;
-        }
+    public getRange(start: K, end: K): IndexMultiResponse {
+        return (callback: (entityId: string) => boolean) => {
+            for (const entityId of this.entries.get(start, end)) {
+                if (callback(entityId)) {
+                    break;
+                }
+            }
+        };
     }
 
 }
