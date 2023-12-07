@@ -18,6 +18,15 @@ export class Database<ENTITY, INDEX extends IndexDefinitions> {
     }
 
 
+    public subscribe<ARG, OUT>(query: Query<ENTITY, INDEX, ARG, OUT>, arg: ARG, callback: (result: OUT) => void): string {
+        // TODO
+        return "subscriberId"
+    }
+
+    public unsubscribe(subscriberId: string) {
+
+    }
+
     public query<ARG, OUT>(query: Query<ENTITY, INDEX, ARG, OUT>, arg: ARG): OUT {
         if (query.matchMultiple) {
             return this.queryHandleMultiple(query, arg);
