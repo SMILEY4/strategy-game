@@ -1,8 +1,8 @@
 import {Database} from "./database";
 import {IndexDefinitions} from "./dbIndex";
-import {Query} from "./queryBuilder";
 import {useEffect, useState} from "react";
 import {UID} from "../uid";
+import {Query} from "./query";
 
 export function useDbQuery<ENTITY, INDEX extends IndexDefinitions, ARG, OUT>(db: Database<ENTITY, INDEX>, query: Query<ENTITY, INDEX, ARG, OUT>, arg: ARG): OUT {
     return db.query(query, arg);

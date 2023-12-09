@@ -1,7 +1,11 @@
 import {BTreeMap} from "btreemap";
 
-export type IndexDefinitions = {
-    [K: string]: DbIndex<any>
+export type IndexDefinitions<ENTITY> = {
+    [K: string]: DbIndex<ENTITY, any>
+}
+
+export interface IndexConfig<ENTITY, K> {
+    keyProvider: (entity: ENTITY) => K;
 }
 
 export type IndexSingleResponse = string | undefined
@@ -9,33 +13,70 @@ export type IndexSingleResponse = string | undefined
 export type IndexMultiResponse = (callback: (entityId: string) => boolean) => void
 
 
-export interface DbIndex<K> {
-    insert: (key: K, entityId: string) => void,
+export interface DbIndex<ENTITY, K> {
+    insert: (entity: ENTITY, entityId: string) => void,
+    delete: (entity: ENTITY, entityId: string) => void,
 }
 
 
-export class MapIndex<K> implements DbIndex<K> {
+export class MapIndex<ENTITY, K> implements DbIndex<ENTITY, K> {
 
+    private readonly config: IndexConfig<ENTITY, K>;
     private readonly entries = new Map<K, string>();
 
-    public insert(key: K, entityId: string) {
-        this.entries.set(key, entityId);
+    constructor(config: IndexConfig<ENTITY, K>) {
+        this.config = config;
     }
 
 
+    public insert(entity: ENTITY, entityId: string) {
+        const key = this.config.keyProvider(entity);
+        this.entries.set(key, entityId);
+    }
+
+    public delete(entity: ENTITY, entityId: string) {
+        const key = this.config.keyProvider(entity);
+        if (this.entries.get(key) === entityId) {
+            this.entries.delete(key);
+        }
+    }
+
     public get(key: K): IndexSingleResponse {
+        // todo: request of already exists
         return this.entries.get(key);
     }
 
 }
 
 
-export class BTreeIndex<K> implements DbIndex<K> {
+export class BTreeIndex<ENTITY, K> implements DbIndex<ENTITY, K> {
 
+    private readonly config: IndexConfig<ENTITY, K>;
     private readonly entries = new BTreeMap();
 
-    public insert(key: K, entityId: string) {
+    constructor(config: IndexConfig<ENTITY, K>) {
+        this.config = config;
+    }
+
+
+    public insert(entity: ENTITY, entityId: string) {
+        const key = this.config.keyProvider(entity);
         this.entries.set(key, entityId);
+    }
+
+    public delete(entity: ENTITY, entityId: string) {
+        const key = this.config.keyProvider(entity);
+        const remaining: string[] = [];
+        this.getRange(key, key)(id => {
+            if (id !== entityId) {
+                remaining.push(entityId);
+            }
+            return false;
+        });
+        this.entries.delete(key);
+        for (const r of remaining) {
+            this.entries.set(key, r);
+        }
     }
 
     public getRange(start: K, end: K): IndexMultiResponse {
@@ -47,5 +88,6 @@ export class BTreeIndex<K> implements DbIndex<K> {
             }
         };
     }
+
 
 }
