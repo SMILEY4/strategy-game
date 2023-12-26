@@ -1,234 +1,332 @@
-import {IndexDefinitions} from "./dbIndex";
-import {DbStorage} from "./dbStorage";
-import {QueryExecutor} from "./queryExecutor";
-import {Query} from "./query";
 import {UID} from "../uid";
-import {DeleteManyResult, DeleteResult, InsertManyResult, InsertResult} from "./insertResult";
 
-interface DBQuerySubscriber<ENTITY, INDEX extends IndexDefinitions<ENTITY>> {
-    query: Query<ENTITY, INDEX, any, any>,
-    arg: any,
-    callback: (result: any) => void
+export interface Query<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS> {
+    run(storage: STORAGE, args: ARGS): ENTITY[];
 }
 
-
-interface DBEntitySubscriber<ENTITY> {
-    entityId: string,
-    callback: (entity: ENTITY) => void
-}
-
-
-export class Database<ENTITY, INDEX extends IndexDefinitions<ENTITY>> {
-
-    readonly queryExecutor: QueryExecutor<ENTITY, INDEX> = new QueryExecutor();
-
-    readonly subscriptionsQuery = new Map<string, DBQuerySubscriber<ENTITY, INDEX>>;
-    readonly subscriptionsEntities = new Map<string, DBEntitySubscriber<ENTITY>>;
-
-
-    readonly storage: DbStorage<ENTITY>;
-    readonly indexDefinition: INDEX;
-
-
-    constructor(storage: DbStorage<ENTITY>, indexDefinition: INDEX) {
-        this.storage = storage;
-        this.indexDefinition = indexDefinition;
-    }
-
-
-    //==================//
-    //      INSERT      //
-    //==================//
-
+export interface DatabaseStorage<ENTITY, ID> {
     /**
-     * Insert the given entity.
+     * Insert the given entity
      * @param entity the entity to insert
-     * @return the result of the insert
+     * @return the id of the inserted entity
      */
-    public insert(entity: ENTITY): InsertResult<ENTITY> {
-        const result = this.storage.insert(entity);
-        if (result.inserted) {
-            this.insertIntoIndices(entity, result.entityId);
-
-            for (const [_, subscriber] of this.subscriptionsEntities) {
-                if (subscriber.entityId == result.entityId) {
-                    subscriber.callback(result.entity);
-                }
-            }
-
-        }
-        return result;
-    }
+    insert(entity: ENTITY): ID;
 
     /**
-     * Insert the given entities.
+     * Insert the given entities
      * @param entities the entities to insert
-     * @return the result of the insert
+     * @return the ids of the inserted entities
      */
-    public insertMany(entities: ENTITY[]): InsertManyResult<ENTITY> {
-        const result = this.storage.insertMany(entities);
-        for (let i = 0, n = result.insertedEntities.length; i < n; i++) {
-            const entityId = result.insertedIds[i];
-            const entity = result.insertedEntities[i];
-            this.insertIntoIndices(entity, entityId);
-        }
-        this.checkSubscriptionsOnInsertMany(result);
-        return result;
-    }
-
-
-    //==================//
-    //     DELETE       //
-    //==================//
+    insertMany(entities: ENTITY[]): ID[];
 
     /**
-     * Delete the entity with the given entity-id
-     * @param entityId the entity-id of the entity to delete
-     * @return the deleted entity or null, if no entity for the id exists
+     * Delete the entity with the given id
+     * @param id the id of the entity to delete
+     * @return the deleted entity
      */
-    public delete(entityId: string): DeleteResult<ENTITY> {
-        const result = this.storage.delete(entityId);
-        if (result.deleted) {
-            this.deleteFromIndices(result.entity!, entityId);
-            this.checkSubscriptionsOnDelete(result);
-        }
-        return result;
-    }
+    delete(id: ID): ENTITY;
 
     /**
-     * Delete the entities for the given entity-ids
-     * @param entityIds the entity-ids of the entities to delete
-     * @return the deleted entities (or null if no entity for the id exists)
+     * Delete the entities with the given ids
+     * @param ids the ids of the entities to delete
+     * @return the deleted entities
      */
-    public deleteMany(entityIds: string[]): DeleteManyResult<ENTITY> {
-        const result = this.storage.deleteMany(entityIds);
-        for (let i = 0, n = result.deletedEntities.length; i < n; i++) {
-            const entityId = result.deletedIds[i];
-            const entity = result.deletedEntities[i];
-            this.deleteFromIndices(entity, entityId);
-        }
-        this.checkSubscriptionsOnDeleteMany(result);
-        return result;
-    }
-
-    //==================//
-    //      UPDATE      //
-    //==================//
-
-    // todo
-
-    //==================//
-    //        GET       //
-    //==================//
+    deleteMany(ids: ID[]): ENTITY[];
 
     /**
-     * Retrieve the entity with the given entity-id
-     * @param entityId the entity-id of the requested entity
-     * @return the entity or null, if no entity with the given id exists
+     * Delete all entities
+     * @return the deleted entities
      */
-    public get(entityId: string): ENTITY | null {
-        return this.storage.get(entityId);
-    }
+    deleteAll(): ENTITY[];
+
+}
+
+export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> {
 
     /**
-     * Retrieve the entities with the given entity-ids
-     * @param entityIds the entity-ids of the requested entities
-     * @return the entities (or null of no entity with the id exists) for the given entity-ids
+     * Subscribe to all changes
+     * @param callback the event callback
+     * @return the id of the subscriber
      */
-    public getMany(entityIds: string[]): (ENTITY | null)[] {
-        return this.storage.getMany(entityIds);
-    }
+    subscribe(callback: (entities: ENTITY[], operation: DatabaseOperation) => void): string;
 
     /**
-     * Retrieve the entities with the given entity-ids
-     * @param entityIds the entity-ids of the requested entities
-     * @return the existing entities for the given entity-ids
+     * Subscribe to changes to a specific entity
+     * @param entityId the id of the entity
+     * @param callback the event callback
+     * @return the id of the subscriber
      */
-    public getManyNoNulls(entityIds: string[]): ENTITY[] {
-        return this.storage.getManyNoNulls(entityIds);
-    }
+    subscribeOnEntity(entityId: ID, callback: (entities: ENTITY[], operation: DatabaseOperation) => void): string;
 
     /**
-     * Retrieve all stored entities
-     * @return all entities
+     * Subscribe to changes of a given query
+     * @param query the query to perform and check for changes
+     * @param args the dynamic query arguments
+     * @param callback the event callback
+     * @return the id of the subscriber
      */
-    public getAll(): ENTITY[] {
-        return this.storage.getAll();
+    subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): string;
+
+    /**
+     * Remove the subscriber with the given id
+     * @param subscriberId the id of the subscriber to remove
+     */
+    unsubscribe(subscriberId: string): void;
+
+    /**
+     * Insert the given entity
+     * @param entity the entity to insert
+     * @return the id of inserted entity
+     */
+    insert(entity: ENTITY): ID;
+
+    /**
+     * Insert the given entities
+     * @param entities the entities to insert
+     * @return the ids of the inserted entities
+     */
+    insertMany(entities: ENTITY[]): ID[];
+
+    /**
+     * Delete the entity with the given id
+     * @param id the id of the entity to delete
+     * @return the deleted entity
+     */
+    delete(id: ID): ENTITY;
+
+    /**
+     * Delete the entities with the given ids
+     * @param ids the ids of the entities to delete
+     * @return the deleted entities
+     */
+    deleteMany(ids: ID[]): ENTITY[];
+
+    /**
+     * Delete the entities returned by the given query
+     * @param query the query
+     * @param args the dynamic arguments for the query
+     * @return the deleted entities
+     */
+    deleteByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[];
+
+    /**
+     * Delete all entities
+     * @return the deleted entities
+     */
+    deleteAll(): ENTITY[];
+
+    /**
+     * Retrieve a single entity with the given query
+     * @param query the query
+     * @param args the dynamic argument for the query
+     * @return the query result or null if no entity matches
+     */
+    querySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY | null;
+
+    /**
+     * Retrieve entities with the given query
+     * @param query the query
+     * @param args the dynamic argument for the query
+     * @return the query result
+     */
+    queryMany<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[];
+
+}
+
+export enum DatabaseOperation {
+    INSERT, DELETE
+}
+
+export interface DbSubscriber<ENTITY> {
+    callback: (entities: ENTITY[], operation: DatabaseOperation) => void;
+}
+
+export interface QuerySubscriber<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> {
+    query: Query<STORAGE, ENTITY, ID, any>,
+    args: any,
+    callback: (entities: ENTITY[]) => void,
+    lastIds: ID[]
+}
+
+export interface EntitySubscriber<ENTITY, ID> {
+    entityId: ID,
+    callback: (entities: ENTITY[], operation: DatabaseOperation) => void
+}
+
+
+export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> implements Database<STORAGE, ENTITY, ID> {
+
+    private readonly storage: STORAGE;
+
+    private readonly idProvider: (entity: ENTITY) => ID;
+
+    private readonly subscribers = {
+        db: new Map<string, DbSubscriber<ENTITY>>,
+        entity: new Map<string, EntitySubscriber<ENTITY, ID>>,
+        query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID>>,
+    };
+
+    constructor(storage: STORAGE, idProvider: (entity: ENTITY) => ID) {
+        this.storage = storage;
+        this.idProvider = idProvider;
     }
 
 
-    //==================//
-    //      QUERY       //
-    //==================//
+    //==== SUBSCRIPTIONS ===================================================
 
-    public query<ARG, OUT>(query: Query<ENTITY, INDEX, ARG, OUT>, arg: ARG): OUT {
-        return this.queryExecutor.query(this.storage, this.indexDefinition, query, arg);
-    }
-
-
-    //==================//
-    //     SUBSCRIBE    //
-    //==================//
-
-    public subscribeOnQuery<ARG, OUT extends ENTITY | ENTITY[]>(query: Query<ENTITY, INDEX, ARG, OUT>, arg: ARG, callback: (result: OUT) => void): string {
-        const subscriberId = UID.generate();
-        this.subscriptionsQuery.set(subscriberId, {
-            query: query,
-            arg: arg,
+    public subscribe(callback: (entities: ENTITY[], operation: DatabaseOperation) => void): string {
+        const subscriberId = this.genSubscriberId();
+        this.subscribers.db.set(subscriberId, {
             callback: callback,
         });
         return subscriberId;
     }
 
-    public subscribeOnEntity(entityId: string, callback: (entity: ENTITY) => void): string {
-        const subscriberId = UID.generate();
-        this.subscriptionsEntities.set(subscriberId, {
+    public subscribeOnEntity(entityId: ID, callback: (entities: ENTITY[], operation: DatabaseOperation) => void): string {
+        const subscriberId = this.genSubscriberId();
+        this.subscribers.entity.set(subscriberId, {
             entityId: entityId,
             callback: callback,
         });
         return subscriberId;
     }
 
-    public unsubscribe(subscriberId: string) {
-        this.subscriptionsQuery.delete(subscriberId);
-        this.subscriptionsEntities.delete(subscriberId);
+    public subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): string {
+        const subscriberId = this.genSubscriberId();
+        this.subscribers.query.set(subscriberId, {
+            query: query,
+            args: args,
+            callback: callback,
+            lastIds: [],
+        });
+        return subscriberId;
     }
 
+    public unsubscribe(subscriberId: string): void {
+        this.subscribers.entity.delete(subscriberId);
+        this.subscribers.query.delete(subscriberId);
+    }
 
-    private checkQuerySubscriptions(relevantEntityIds: string[]) {
-        for (const [_, subscriber] of this.subscriptionsQuery) {
-            const queryResult = this.query<any, any>(subscriber.query, subscriber.arg);
-            if (Array.isArray(queryResult)) {
-                const specQueryResult = queryResult as ENTITY[]
-                subscriber.callback(specQueryResult);
-            } else {
-                const specQueryResult = queryResult as ENTITY
-                subscriber.callback(specQueryResult);
+    private genSubscriberId(): string {
+        return UID.generate();
+    }
+
+    private checkSubscribersQuery() {
+        for (let [_, subscriber] of this.subscribers.query) {
+            this.checkSubscriberQuery(subscriber);
+        }
+    }
+
+    private checkSubscriberQuery(subscriber: QuerySubscriber<STORAGE, ENTITY, ID>) {
+        const result: ENTITY[] = this.queryMany(subscriber.query, subscriber.args);
+        const resultIds = result.map(this.idProvider).sort();
+        if (this.arrEquals(subscriber.lastIds, resultIds)) {
+            subscriber.lastIds = resultIds;
+            subscriber.callback(result);
+        }
+    }
+
+    private checkSubscribersEntity(entities: ENTITY[], ids: ID[], operation: DatabaseOperation) {
+        for (let [_, subscriber] of this.subscribers.entity) {
+            this.checkSubscriberEntity(subscriber, entities, ids, operation);
+        }
+    }
+
+    private checkSubscriberEntity(subscriber: EntitySubscriber<ENTITY, ID>, entities: ENTITY[], ids: ID[], operation: DatabaseOperation) {
+        if (ids.indexOf(subscriber.entityId) !== -1) {
+            subscriber.callback(entities, operation);
+        }
+    }
+
+    private checkSubscribersDb(entities: ENTITY[], operation: DatabaseOperation) {
+        for (let [_, subscriber] of this.subscribers.db) {
+            subscriber.callback(entities, operation);
+        }
+    }
+
+    private arrEquals(a: any[], b: any[]): boolean {
+        // both arrays must be sorted before
+        if (a.length !== b.length) {
+            return false;
+        }
+        for (let i = 0, n = a.length; i < n; i++) {
+            if (a[i] !== b[n]) {
+                return false;
             }
         }
+        return true;
     }
 
-    //==================//
-    //     INDICES      //
-    //==================//
 
-    private insertIntoIndices(entity: ENTITY, entityId: string) {
-        for (let indexName in this.indexDefinition) {
-            const index = this.indexDefinition[indexName];
-            index.insert(entity, entityId);
+    //==== CRUD ============================================================
+
+    public insert(entity: ENTITY): ID {
+        const id = this.storage.insert(entity);
+        this.checkSubscribersQuery();
+        this.checkSubscribersEntity([entity], [id], DatabaseOperation.INSERT);
+        this.checkSubscribersDb([entity], DatabaseOperation.INSERT)
+        return id;
+    }
+
+    public insertMany(entities: ENTITY[]): ID[] {
+        const ids = this.storage.insertMany(entities);
+        this.checkSubscribersQuery();
+        this.checkSubscribersEntity(entities, ids, DatabaseOperation.INSERT);
+        this.checkSubscribersDb(entities, DatabaseOperation.INSERT)
+
+        return ids;
+    }
+
+    public delete(id: ID): ENTITY {
+        const entity = this.storage.delete(id);
+        this.checkSubscribersQuery();
+        this.checkSubscribersEntity([entity], [id], DatabaseOperation.DELETE);
+        this.checkSubscribersDb([entity], DatabaseOperation.DELETE)
+
+        return entity;
+    }
+
+    public deleteMany(ids: ID[]): ENTITY[] {
+        const entities = this.storage.deleteMany(ids);
+        this.checkSubscribersQuery();
+        this.checkSubscribersEntity(entities, ids, DatabaseOperation.DELETE);
+        this.checkSubscribersDb(entities, DatabaseOperation.DELETE)
+        return entities;
+    }
+
+    public deleteByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[] {
+        const result = this.queryMany(query, args);
+        const ids: ID[] = [];
+        for (const entity of result) {
+            const id = this.idProvider(entity);
+            this.delete(id);
+            ids.push(id);
         }
+        this.checkSubscribersQuery();
+        this.checkSubscribersEntity(result, ids, DatabaseOperation.DELETE);
+        this.checkSubscribersDb(result, DatabaseOperation.DELETE)
+        return result;
     }
 
-    private deleteFromIndices(entity: ENTITY, entityId: string) {
-        for (let indexName in this.indexDefinition) {
-            const index = this.indexDefinition[indexName];
-            index.delete(entity, entityId);
+    public deleteAll(): ENTITY[] {
+        const entities = this.storage.deleteAll();
+        this.checkSubscribersQuery();
+        this.checkSubscribersEntity(entities, entities.map(this.idProvider), DatabaseOperation.DELETE);
+        this.checkSubscribersDb(entities, DatabaseOperation.DELETE)
+        return entities;
+    }
+
+    public queryMany<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[] {
+        return query.run(this.storage, args);
+    }
+
+    public querySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY | null {
+        const result = this.queryMany(query, args);
+        if (result.length > 0) {
+            return result[0];
+        } else {
+            return null;
         }
-    }
-
-    private rebuildIndices(prevEntity: ENTITY, newEntity: ENTITY, entityId: string) {
-        this.deleteFromIndices(prevEntity, entityId);
-        this.insertIntoIndices(newEntity, entityId);
     }
 
 }

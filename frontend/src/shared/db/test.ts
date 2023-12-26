@@ -1,68 +1,48 @@
-import {Database} from "./database";
-import {BTreeIndex, IndexDefinitions, MapIndex} from "./dbIndex";
-import {MapStorage} from "./dbStorage";
-import {CountryIdentifier} from "../../models/country";
-import {Query} from "./query";
-import {UID_ENTITY_ID_PROVIDER} from "./idprovider";
+import {Country} from "../../models/country";
+import {Color} from "../../models/color";
+import {COUNTRY_QUERY_BY_SETTLER_COUNT, CountryDatabase} from "./countryDatabase";
 
-export interface CountryDbIndices extends IndexDefinitions<CountryIdentifier> {
-    countryId: MapIndex<CountryIdentifier, string>,
-    countryName: MapIndex<CountryIdentifier, string>
-    settlerCount: BTreeIndex<CountryIdentifier, number>
+
+export async function testDB() {
+
+    const db = new CountryDatabase()
+
+    db.insert(createCountry("country1a", "user1", []))
+    db.insert(createCountry("country1b", "user1", []))
+    db.insert(createCountry("country2", "user2", []))
+
+
+    const countriesWithoutSettlers = db.queryMany(COUNTRY_QUERY_BY_SETTLER_COUNT, 1)
+
+    db.subscribeOnQuery(COUNTRY_QUERY_BY_SETTLER_COUNT, null, () => {
+        console.log("changes!!!")
+    })
+
+
 }
 
 
-const db = new Database<CountryIdentifier, CountryDbIndices>(
-    new MapStorage<CountryIdentifier>(UID_ENTITY_ID_PROVIDER),
-    {
-        countryId: new MapIndex<CountryIdentifier, string>({
-            keyProvider: entity => entity.id,
-        }),
-        countryName: new MapIndex<CountryIdentifier, string>({
-            keyProvider: entity => entity.name,
-        }),
-        settlerCount: new BTreeIndex<CountryIdentifier, number>({
-            keyProvider: _ => 4,
-        }),
-    },
-);
-
-export function testDB() {
-
-    const query1 = Query.build<CountryIdentifier, CountryDbIndices, number>()
-        .matchMultiple((indices, arg) => indices.settlerCount.getRange(0, arg))
-        .filter(country => country.name.startsWith("test"))
-        .take(2)
-        .iterate(e => console.log(e));
-
-    db.query(query1, 4);
-
-
-    const query2 = Query.build<CountryIdentifier, CountryDbIndices, number>()
-        .matchMultiple((indices, arg) => indices.settlerCount.getRange(0, arg))
-        .filter(country => country.name.startsWith("test"))
-        .take(2)
-        .return();
-
-    const result2: CountryIdentifier[] = db.query(query2, 4);
-
-
-    const query3 = Query.build<CountryIdentifier, CountryDbIndices, number>()
-        .matchMultiple((indices, arg) => indices.settlerCount.getRange(0, arg))
-        .filter(country => country.name.startsWith("test"))
-        .takeOne()
-        .return();
-
-    const result3: CountryIdentifier | undefined = db.query(query3, 4);
-
-
-    const query4 = Query.build<CountryIdentifier, CountryDbIndices, string>()
-        .matchSingle((indices, arg) => indices.countryId.get(arg))
-        .filter(country => country.name.startsWith("test"))
-        .return();
-
-    const result4: CountryIdentifier | undefined = db.query(query4, "myid");
-
+function createCountry(countryId: string, userId: string, provinceIds: string[]): Country {
+    return {
+        identifier: {
+            id: countryId,
+            name: countryId,
+            color: Color.BLACK,
+        },
+        player: {
+            userId: userId,
+            name: userId
+        },
+        settlers: Math.round(Math.random() * 10),
+        provinces: provinceIds.map(id => ({
+            identifier: {
+                id: id,
+                name: id,
+                color: Color.BLACK
+            },
+            cities: [],
+            isPlanned: false
+        }))
+    }
 }
-
 
