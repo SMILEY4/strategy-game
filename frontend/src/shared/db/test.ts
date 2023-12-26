@@ -3,6 +3,7 @@ import {BTreeIndex, IndexDefinitions, MapIndex} from "./dbIndex";
 import {MapStorage} from "./dbStorage";
 import {CountryIdentifier} from "../../models/country";
 import {Query} from "./query";
+import {UID_ENTITY_ID_PROVIDER} from "./idprovider";
 
 export interface CountryDbIndices extends IndexDefinitions<CountryIdentifier> {
     countryId: MapIndex<CountryIdentifier, string>,
@@ -12,7 +13,7 @@ export interface CountryDbIndices extends IndexDefinitions<CountryIdentifier> {
 
 
 const db = new Database<CountryIdentifier, CountryDbIndices>(
-    new MapStorage<CountryIdentifier>(),
+    new MapStorage<CountryIdentifier>(UID_ENTITY_ID_PROVIDER),
     {
         countryId: new MapIndex<CountryIdentifier, string>({
             keyProvider: entity => entity.id,
