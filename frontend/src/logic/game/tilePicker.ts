@@ -3,18 +3,18 @@ import {Camera} from "../../shared/webgl/camera";
 import {Tile} from "../../models/tile";
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {TilemapUtils} from "./tilemapUtils";
-import {CameraRepository} from "../../state/access/CameraRepository";
 import {TileRepository} from "../../state/access/TileRepository";
+import {CameraDatabase} from "../../state_new/cameraDatabase";
 
 export class TilePicker {
 
     private readonly canvasHandle: CanvasHandle;
-    private readonly cameraRepository: CameraRepository;
+    private readonly cameraDb: CameraDatabase;
     private readonly tileRepository: TileRepository;
 
-    constructor(canvasHandle: CanvasHandle, cameraRepository: CameraRepository, tileRepository: TileRepository) {
+    constructor(canvasHandle: CanvasHandle, cameraDb: CameraDatabase, tileRepository: TileRepository) {
         this.canvasHandle = canvasHandle;
-        this.cameraRepository = cameraRepository;
+        this.cameraDb = cameraDb;
         this.tileRepository = tileRepository;
     }
 
@@ -36,7 +36,7 @@ export class TilePicker {
 
 
     private cameraMatrix(width: number, height: number): Float32Array {
-        const cameraData = this.cameraRepository.getCamera();
+        const cameraData = this.cameraDb.get();
         const camera = Camera.create(cameraData, width, height, 0, 0);
         return camera.getViewProjectionMatrixOrThrow();
     }

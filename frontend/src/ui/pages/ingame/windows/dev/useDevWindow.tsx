@@ -1,14 +1,11 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {DevWindow} from "./DevWindow";
-import {CameraRepository} from "../../../../../state/access/CameraRepository";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppCtx} from "../../../../../appContext";
 import {CameraData} from "../../../../../models/cameraData";
-import {MonitoringRepository} from "../../../../../state/access/MonitoringRepository";
-import {WebGLMonitor} from "../../../../../shared/webgl/monitor/webGLMonitor";
-import {DevStatsWindow} from "../devstats/DevStatsWindow";
 import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
+import {CameraDatabase} from "../../../../../state_new/cameraDatabase";
 
 export namespace UseDevWindow {
 
@@ -44,13 +41,13 @@ export namespace UseDevWindow {
     }
 
     export function useData(): UseDevWindow.Data {
-        const openDevStats = UseDevStatsWindow.useOpen()
-        const camera = CameraRepository.useCamera();
+        const openDevStats = UseDevStatsWindow.useOpen();
+        const camera = CameraDatabase.useCamera();
         const [enterFullscreen, exitFullscreen] = useFullscreen("root");
         const [looseWGLContext, restoreWGLContext] = useWebGlContext();
         return {
             open: {
-                devStats: openDevStats
+                devStats: openDevStats,
             },
             fullscreen: {
                 enter: enterFullscreen,

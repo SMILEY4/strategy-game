@@ -1,16 +1,16 @@
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
-import {CameraRepository} from "../../state/access/CameraRepository";
 import {TileRepository} from "../../state/access/TileRepository";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
 import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
+import {CameraDatabase} from "../../state_new/cameraDatabase";
 
 export class GameLoopService {
 
     private readonly canvasHandle: CanvasHandle;
-    private readonly cameraRepository: CameraRepository;
+    private readonly cameraDb: CameraDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly tileRepository: TileRepository;
     private readonly tilePicker: TilePicker;
@@ -21,7 +21,7 @@ export class GameLoopService {
     constructor(
         canvasHandle: CanvasHandle,
         tilePicker: TilePicker,
-        cameraRepository: CameraRepository,
+        cameraDb: CameraDatabase,
         gameSessionDb: GameSessionDatabase,
         tileRepository: TileRepository,
         gameRenderer: GameRenderer,
@@ -29,7 +29,7 @@ export class GameLoopService {
     ) {
         this.canvasHandle = canvasHandle;
         this.tilePicker = tilePicker;
-        this.cameraRepository = cameraRepository;
+        this.cameraDb = cameraDb;
         this.gameSessionDb = gameSessionDb;
         this.tileRepository = tileRepository;
         this.gameRenderer = gameRenderer;
@@ -67,8 +67,8 @@ export class GameLoopService {
 
     public mouseMove(dx: number, dy: number, x: number, y: number, leftBtnDown: boolean) {
         if (leftBtnDown) {
-            const camera = this.cameraRepository.getCamera();
-            this.cameraRepository.setCamera({
+            const camera = this.cameraDb.get();
+            this.cameraDb.set({
                 // todo: drag-speed (+zoom) seems to be dependent on dpi / screen resolution
                 x: camera.x + (dx / camera.zoom),
                 y: camera.y - (dy / camera.zoom),
@@ -83,10 +83,10 @@ export class GameLoopService {
     }
 
     public mouseScroll(d: number) {
-        const camera = this.cameraRepository.getCamera();
+        const camera = this.cameraDb.get();
         const dz = d > 0 ? 0.1 : -0.1;
         const zoom = Math.max(0.01, camera.zoom - dz);
-        this.cameraRepository.setCamera({
+        this.cameraDb.set({
             x: camera.x,
             y: camera.y,
             zoom: zoom,

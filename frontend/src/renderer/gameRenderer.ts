@@ -1,6 +1,5 @@
 import {CanvasHandle} from "../shared/webgl/canvasHandle";
 import {Camera} from "../shared/webgl/camera";
-import {CameraRepository} from "../state/access/CameraRepository";
 import {TilemapRenderer} from "./tilemap/tilemapRenderer";
 import {RenderModule} from "./renderModule";
 import {BaseRenderer} from "../shared/webgl/baseRenderer";
@@ -9,16 +8,16 @@ import {RenderDataManager} from "./data/renderDataManager";
 import {EntityMaskRenderer} from "./entitymask/entityMaskRenderer";
 import {StampRenderer} from "./stamps/stampRenderer";
 import {RoutesRenderer} from "./routes/routesRenderer";
-import {TileRepository} from "../state/access/TileRepository";
 import {WebGLMonitor} from "../shared/webgl/monitor/webGLMonitor";
 import {MonitoringRepository} from "../state/access/MonitoringRepository";
+import {CameraDatabase} from "../state_new/cameraDatabase";
 
 export class GameRenderer {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly monitor: WebGLMonitor;
     private readonly monitoringRepository: MonitoringRepository;
-    private readonly cameraRepository: CameraRepository;
+    private readonly cameraDb: CameraDatabase;
     private readonly renderDataManager: RenderDataManager;
     private readonly modules: RenderModule[];
     private renderer: BaseRenderer | null = null;
@@ -28,13 +27,13 @@ export class GameRenderer {
         canvasHandle: CanvasHandle,
         monitor: WebGLMonitor,
         monitoringRepository: MonitoringRepository,
-        cameraRepository: CameraRepository,
+        cameraDb: CameraDatabase,
         renderDataManager: RenderDataManager,
     ) {
         this.canvasHandle = canvasHandle;
         this.monitor = monitor;
         this.monitoringRepository = monitoringRepository;
-        this.cameraRepository = cameraRepository;
+        this.cameraDb = cameraDb;
         this.renderDataManager = renderDataManager;
         this.modules = [
             new RoutesRenderer(canvasHandle),
@@ -71,7 +70,7 @@ export class GameRenderer {
     }
 
     private getRenderCamera(): Camera {
-        const data = this.cameraRepository.getCamera();
+        const data = this.cameraDb.get();
         return Camera.create(
             data,
             this.canvasHandle.getCanvasWidth(),

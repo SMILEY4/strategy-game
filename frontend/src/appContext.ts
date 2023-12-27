@@ -15,7 +15,6 @@ import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
 import {UserClient} from "./logic/user/userClient";
 import {UserRepository} from "./state/access/UserRepository";
-import {CameraRepository} from "./state/access/CameraRepository";
 import {CommandRepository} from "./state/access/CommandRepository";
 import {CountryRepository} from "./state/access/CountryRepository";
 import {ProvinceRepository} from "./state/access/ProvinceRepository";
@@ -79,7 +78,6 @@ interface AppCtxDef {
 
     MonitoringRepository: () => MonitoringRepository,
     UserRepository: () => UserRepository,
-    CameraRepository: () => CameraRepository,
     CommandRepository: () => CommandRepository,
     RemoteGameStateRepository: () => RemoteGameStateRepository,
     CountryRepository: () => CountryRepository,
@@ -183,8 +181,8 @@ export const AppCtx: AppCtxDef = {
         "GameLoopService",
         () => new GameLoopService(
             AppCtx.CanvasHandle(),
-            new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraRepository(), AppCtx.TileRepository()),
-            AppCtx.CameraRepository(),
+            new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraDatabase(), AppCtx.TileRepository()),
+            AppCtx.CameraDatabase(),
             AppCtx.GameSessionDatabase(),
             AppCtx.TileRepository(),
             AppCtx.GameRenderer(),
@@ -202,7 +200,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.CanvasHandle(),
             AppCtx.WebGLMonitor(),
             AppCtx.MonitoringRepository(),
-            AppCtx.CameraRepository(),
+            AppCtx.CameraDatabase(),
             AppCtx.RenderDataManager(),
         ),
     ),
@@ -247,9 +245,9 @@ export const AppCtx: AppCtxDef = {
         "UserRepository",
         () => new UserRepository(),
     ),
-    CameraRepository: diContext.register(
+    CameraDatabase: diContext.register(
         "CameraRepository",
-        () => new CameraRepository(),
+        () => new CameraDatabase(),
     ),
     CommandRepository: diContext.register(
         "CommandRepository",
@@ -285,10 +283,6 @@ export const AppCtx: AppCtxDef = {
     ),
 
 
-    CameraDatabase: diContext.register(
-        "CameraDatabase",
-        () => new CameraDatabase(),
-    ),
     CityDatabase: diContext.register(
         "CityDatabase",
         () => new CityDatabase(),
