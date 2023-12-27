@@ -1,17 +1,17 @@
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {CameraRepository} from "../../state/access/CameraRepository";
-import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {TileRepository} from "../../state/access/TileRepository";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
+import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
 
 export class GameLoopService {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraRepository: CameraRepository;
-    private readonly gameSessionRepository: GameSessionStateRepository;
+    private readonly gameSessionDb: GameSessionDatabase;
     private readonly tileRepository: TileRepository;
     private readonly tilePicker: TilePicker;
     private readonly gameRenderer: GameRenderer;
@@ -22,7 +22,7 @@ export class GameLoopService {
         canvasHandle: CanvasHandle,
         tilePicker: TilePicker,
         cameraRepository: CameraRepository,
-        gameSessionRepository: GameSessionStateRepository,
+        gameSessionDb: GameSessionDatabase,
         tileRepository: TileRepository,
         gameRenderer: GameRenderer,
         audioService: AudioService
@@ -30,7 +30,7 @@ export class GameLoopService {
         this.canvasHandle = canvasHandle;
         this.tilePicker = tilePicker;
         this.cameraRepository = cameraRepository;
-        this.gameSessionRepository = gameSessionRepository;
+        this.gameSessionDb = gameSessionDb;
         this.tileRepository = tileRepository;
         this.gameRenderer = gameRenderer;
         this.audioService = audioService;
@@ -43,7 +43,7 @@ export class GameLoopService {
 
 
     public onGameStateUpdate() {
-        this.gameSessionRepository.setGameTurnState("playing");
+        this.gameSessionDb.setTurnState("playing");
     }
 
     public update() {

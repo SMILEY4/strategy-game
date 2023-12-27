@@ -18,7 +18,6 @@ import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
 import {ResourceType} from "../../models/resourceType";
 import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
-import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
 import {BuildingProductionQueueEntry, ProductionQueueEntry, SettlerProductionQueueEntry} from "../../models/productionQueueEntry";
 import {Building} from "../../models/building";
 import {Route} from "../../models/route";
@@ -29,23 +28,24 @@ import {MonitoringRepository} from "../../state/access/MonitoringRepository";
 import {ValueHistory} from "../../shared/valueHistory";
 import {ResourceLedger} from "../../models/resourceLedger";
 import {DetailLogEntry} from "../../models/detailLogEntry";
+import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
 
 export class NextTurnService {
 
     private readonly gameLoopService: GameLoopService;
     private readonly remoteGameRepository: RemoteGameStateRepository;
-    private readonly gameSessionRepository: GameSessionStateRepository;
+    private readonly gameSessionDb: GameSessionDatabase;
     private readonly monitoringRepository: MonitoringRepository;
 
     private readonly durationHistory = new ValueHistory(10);
 
     constructor(gameLoopService: GameLoopService,
                 remoteGameRepository: RemoteGameStateRepository,
-                gameSessionRepository: GameSessionStateRepository,
+                gameSessionDb: GameSessionDatabase,
                 monitoringRepository: MonitoringRepository) {
         this.gameLoopService = gameLoopService;
         this.remoteGameRepository = remoteGameRepository;
-        this.gameSessionRepository = gameSessionRepository;
+        this.gameSessionDb = gameSessionDb;
         this.monitoringRepository = monitoringRepository;
     }
 
@@ -64,8 +64,8 @@ export class NextTurnService {
             tiles: TileContainer.create(this.buildTiles(game), 11),
             routes: this.buildRoutes(game),
         });
-        if (this.gameSessionRepository.getGameSessionState() === "loading") {
-            this.gameSessionRepository.setGameSessionState("playing");
+        if (this.gameSessionDb.getState() === "loading") {
+            this.gameSessionDb.setState("playing");
         }
         this.gameLoopService.onGameStateUpdate();
 

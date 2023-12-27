@@ -1,7 +1,15 @@
+import {TransactionObject} from "./transaction";
+
 /**
  * A database storing a single entity
  */
-export interface SingletonDatabase<ENTITY> {
+export interface SingletonDatabase<ENTITY> extends TransactionObject {
+
+    /**
+     * Perform the given action in a "transaction". All changes are collected and subscribers are notified after the action.
+     * @param action the action to perform inside the "transaction"
+     */
+    transaction(action: () => void): void
 
     /**
      * Subscribe to changes

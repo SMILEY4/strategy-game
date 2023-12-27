@@ -3,32 +3,32 @@ import {Country} from "../../models/country";
 import {getMaxOrDefault, orDefault} from "../../shared/utils";
 import {CommandService} from "./commandService";
 import {UserService} from "../user/userService";
-import {GameConfigRepository} from "../../state/access/GameConfigRepository";
 import {CountryRepository} from "../../state/access/CountryRepository";
 import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
 import {CreateCityCommand} from "../../models/command";
 import {ProvinceIdentifier} from "../../models/province";
 import {TerrainType} from "../../models/terrainType";
+import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
 
 export class CityCreationService {
 
     private readonly commandService: CommandService;
     private readonly userService: UserService;
-    private readonly gameConfigRepository: GameConfigRepository;
+    private readonly gameSessionDb: GameSessionDatabase;
     private readonly countryRepository: CountryRepository;
     private readonly commandRepository: CommandRepository;
 
     constructor(
         commandService: CommandService,
         userService: UserService,
-        gameConfigRepository: GameConfigRepository,
+        gameSessionDb: GameSessionDatabase,
         countryRepository: CountryRepository,
         commandRepository: CommandRepository,
     ) {
         this.commandService = commandService;
         this.userService = userService;
-        this.gameConfigRepository = gameConfigRepository;
+        this.gameSessionDb = gameSessionDb;
         this.countryRepository = countryRepository;
         this.commandRepository = commandRepository;
     }
@@ -98,7 +98,7 @@ export class CityCreationService {
             e => e,
             0,
         );
-        const cityTileMaxForeignInfluence = this.gameConfigRepository.getGameConfig().cityTileMaxForeignInfluence;
+        const cityTileMaxForeignInfluence = this.gameSessionDb.getGameConfig().cityTileMaxForeignInfluence;
         if (maxForeignInfluence < cityTileMaxForeignInfluence) {
             return true;
         }

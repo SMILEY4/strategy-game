@@ -1,19 +1,16 @@
 import {GameSessionClient} from "./gameSessionClient";
 import {handleResponseError} from "../../shared/httpClient";
 import {UnauthorizedError} from "../../models/UnauthorizedError";
-import {GameSessionStateRepository} from "../../state/access/GameSessionStateRepository";
-import {GameConfigRepository} from "../../state/access/GameConfigRepository";
+import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
 
 export class GameSessionService {
 
     private readonly client: GameSessionClient;
-    private readonly gameSessionRepository: GameSessionStateRepository;
-    private readonly gameConfigRepository: GameConfigRepository;
+    private readonly gameSessionDb: GameSessionDatabase;
 
-    constructor(client: GameSessionClient, gameSessionRepository: GameSessionStateRepository, gameConfigRepository: GameConfigRepository) {
+    constructor(client: GameSessionClient, gameSessionDb: GameSessionDatabase) {
         this.client = client;
-        this.gameSessionRepository = gameSessionRepository;
-        this.gameConfigRepository = gameConfigRepository;
+        this.gameSessionDb = gameSessionDb;
     }
 
 
@@ -47,11 +44,11 @@ export class GameSessionService {
 
     public connectSession(gameId: string): Promise<void> {
         return Promise.resolve()
-            .then(() => this.gameSessionRepository.setGameSessionState("loading"))
+            .then(() => this.gameSessionDb.setState("loading"))
             .then(() => this.client.config())
-            .then(config => this.gameConfigRepository.setGameConfig(config))
+            .then(config => this.gameSessionDb.setConfig(config))
             .then(() => this.client.connect(gameId))
-            .catch(() => this.gameSessionRepository.setGameSessionState("error"));
+            .catch(() => this.gameSessionDb.setState("error"));
     }
 
 }

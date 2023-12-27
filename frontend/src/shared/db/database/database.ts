@@ -1,21 +1,12 @@
 import {Query} from "../query/query";
 import {DatabaseStorage} from "../storage/databaseStorage";
 import {DatabaseOperation} from "./databaseOperation";
+import {TransactionObject} from "./transaction";
 
 /**
  * A database storing entities of a given type with unique ids of a given type.
  */
-export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> {
-
-    /**
-     * Start a new "transaction", during which no subscribers will be notified. All changes are collected and passed on to subscribers at the end.
-     */
-    startTransaction(): void;
-
-    /**
-     * End a "transaction" and notify subscribers of all collected changes
-     */
-    endTransaction(): void;
+export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> extends TransactionObject {
 
     /**
      * Perform the given action in a "transaction". All changes are collected and subscribers are notified after the action.
