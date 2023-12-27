@@ -50,8 +50,15 @@ export class MapDatabaseStorage<ENTITY, ID> implements DatabaseStorage<ENTITY, I
         return deletedEntities;
     }
 
+    public replace(id: ID, replacement: ENTITY): void {
+        if (this.entities.has(id)) {
+            this.entities.set(id, replacement);
+        }
+    }
+
+
     public count(): number {
-        return this.entities.size
+        return this.entities.size;
     }
 
     public getById(id: ID): ENTITY | null {

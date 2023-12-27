@@ -34,8 +34,22 @@ export interface DatabaseStorage<ENTITY, ID> {
     deleteAll(): ENTITY[];
 
     /**
+     * Replaces the entity with the given id with the new given entity
+     * @param id the id of the original entity
+     * @param replacement the entity to replace the original one with
+     */
+    replace(id: ID, replacement: ENTITY): void
+
+    /**
      * Counts all stored entities
      * @return the amount of stored documents
      */
-    count(): number
+    count(): number;
+
+    /**
+     * Retrieve an entity by its id
+     * @param id the id of the entity
+     * @return the entity with the given id or null
+     */
+    getById(id: ID): ENTITY | null;
 }

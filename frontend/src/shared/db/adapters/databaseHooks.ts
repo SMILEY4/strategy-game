@@ -5,7 +5,7 @@ import {Database} from "../database/database";
 import {DatabaseOperation} from "../database/databaseOperation";
 import {Query} from "../query/query";
 
-export function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
+function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
     const [data, setData] = useState<{ refId: string, item: T }>({refId: UID.generate(), item: initial});
     return [
         data.item,

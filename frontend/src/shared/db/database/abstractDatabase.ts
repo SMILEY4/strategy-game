@@ -40,6 +40,8 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         insertedIds: ID[],
         deletedEntities: ENTITY[],
         deletedIds: ID[],
+        modifiedEntities: ENTITY[],
+        modifiedIds: ID[],
     } = null;
 
     public startTransaction() {
@@ -48,6 +50,8 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
             insertedIds: [],
             deletedEntities: [],
             deletedIds: [],
+            modifiedEntities: [],
+            modifiedIds: [],
         };
     }
 
@@ -56,8 +60,10 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
             if (this.transactionContext !== null) {
                 this.checkSubscribersQuery();
                 this.checkSubscribersEntity(this.transactionContext.deletedEntities, this.transactionContext.deletedIds, DatabaseOperation.DELETE);
+                this.checkSubscribersEntity(this.transactionContext.modifiedEntities, this.transactionContext.modifiedIds, DatabaseOperation.MODIFY);
                 this.checkSubscribersEntity(this.transactionContext.insertedEntities, this.transactionContext.insertedIds, DatabaseOperation.INSERT);
                 this.checkSubscribersDb(this.transactionContext.deletedEntities, DatabaseOperation.DELETE);
+                this.checkSubscribersDb(this.transactionContext.modifiedEntities, DatabaseOperation.MODIFY);
                 this.checkSubscribersDb(this.transactionContext.insertedEntities, DatabaseOperation.INSERT);
             }
         } finally {
@@ -86,21 +92,28 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
     public subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): string {
         const subscriberId = this.genSubscriberId();
-        this.subscribers.entity.set(subscriberId, {
+        const subscriber = {
             entityId: entityId,
             callback: callback,
-        });
+        };
+        this.subscribers.entity.set(subscriberId, subscriber);
+        const entity = this.storage.getById(entityId);
+        if (entity !== null) {
+            this.checkSubscriberEntity(subscriber, [entity], [entityId], DatabaseOperation.INSERT);
+        }
         return subscriberId;
     }
 
     public subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): string {
         const subscriberId = this.genSubscriberId();
-        this.subscribers.query.set(subscriberId, {
+        const subscriber = {
             query: query,
             args: args,
             callback: callback,
             lastIds: [],
-        });
+        };
+        this.subscribers.query.set(subscriberId, subscriber);
+        this.checkSubscriberQuery(subscriber);
         return subscriberId;
     }
 
@@ -126,6 +139,14 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
                     this.transactionContext.deletedIds.push(...ids);
                     this.transactionContext.deletedEntities.push(...entities);
                     break;
+                }
+                case DatabaseOperation.MODIFY: {
+                    this.transactionContext.modifiedIds.push(...ids);
+                    this.transactionContext.modifiedEntities.push(...entities);
+                    break;
+                }
+                default: {
+                    throw new Error("Unhandled database-operation: " + operation)
                 }
             }
         } else {
@@ -184,7 +205,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     }
 
 
-    //==== CRUD ============================================================
+    //==== INSERT ==========================================================
 
     public insert(entity: ENTITY): ID {
         const id = this.storage.insert(entity);
@@ -197,6 +218,8 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         this.notify(entities, ids, DatabaseOperation.INSERT);
         return ids;
     }
+
+    //==== DELETE ==========================================================
 
     public delete(id: ID): ENTITY | null {
         const entity = this.storage.delete(id);
@@ -233,6 +256,101 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         this.notify(entities, entities.map(this.idProvider), DatabaseOperation.DELETE);
         return entities;
     }
+
+
+    //==== UPDATE ==========================================================
+
+    public update(id: ID, action: (entity: ENTITY) => Partial<ENTITY>): ENTITY | null {
+        const entity = this.storage.getById(id);
+        if (entity !== null) {
+            const modified = {...entity, ...action(entity)};
+            this.storage.replace(id, modified);
+            this.notify([entity], [id], DatabaseOperation.MODIFY);
+            return modified;
+        } else {
+            return null;
+        }
+    }
+
+    public updateMany(ids: ID[], action: (entity: ENTITY) => Partial<ENTITY>): ENTITY[] {
+        const modifiedEntities: ENTITY[] = [];
+        const modifiedIds: ID[] = [];
+        for (let id of ids) {
+            const entity = this.storage.getById(id);
+            if (entity !== null) {
+                const modified = {...entity, ...action(entity)};
+                this.storage.replace(id, modified);
+                modifiedEntities.push(modified);
+                modifiedIds.push(id);
+            }
+        }
+        this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
+        return modifiedEntities;
+    }
+
+    public updateByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, action: (entity: ENTITY) => Partial<ENTITY>): ENTITY[] {
+        const modifiedEntities: ENTITY[] = [];
+        const modifiedIds: ID[] = [];
+        const entities = query.run(this.storage, args);
+        for (let entity of entities) {
+            const modified = {...entity, ...action(entity)};
+            const id = this.idProvider(entity);
+            this.storage.replace(id, modified);
+            modifiedEntities.push(modified);
+            modifiedIds.push(id);
+        }
+        this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
+        return modifiedEntities;
+    }
+
+
+    //==== REPLACE =========================================================
+
+    public replace(id: ID, action: (entity: ENTITY) => ENTITY): ENTITY | null {
+        const entity = this.storage.getById(id);
+        if (entity !== null) {
+            const modified = action(entity);
+            this.storage.replace(id, modified);
+            this.notify([entity], [id], DatabaseOperation.MODIFY);
+            return modified;
+        } else {
+            return null;
+        }
+    }
+
+    public replaceMany(ids: ID[], action: (entity: ENTITY) => ENTITY): ENTITY[] {
+        const modifiedEntities: ENTITY[] = [];
+        const modifiedIds: ID[] = [];
+        for (let id of ids) {
+            const entity = this.storage.getById(id);
+            if (entity !== null) {
+                const modified = action(entity);
+                this.storage.replace(id, modified);
+                modifiedEntities.push(modified);
+                modifiedIds.push(id);
+            }
+        }
+        this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
+        return modifiedEntities;
+    }
+
+    public replaceByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, action: (entity: ENTITY) => ENTITY): ENTITY[] {
+        const modifiedEntities: ENTITY[] = [];
+        const modifiedIds: ID[] = [];
+        const entities = query.run(this.storage, args);
+        for (let entity of entities) {
+            const modified = action(entity);
+            const id = this.idProvider(entity);
+            this.storage.replace(id, modified);
+            modifiedEntities.push(modified);
+            modifiedIds.push(id);
+        }
+        this.notify(modifiedEntities, modifiedIds, DatabaseOperation.MODIFY);
+        return modifiedEntities;
+    }
+
+
+    //==== QUERY ===========================================================
 
     public queryMany<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[] {
         return query.run(this.storage, args);

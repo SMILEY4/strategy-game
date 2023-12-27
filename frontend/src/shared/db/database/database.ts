@@ -1,10 +1,6 @@
-import {UID} from "../../uid";
 import {Query} from "../query/query";
 import {DatabaseStorage} from "../storage/databaseStorage";
 import {DatabaseOperation} from "./databaseOperation";
-import {DbSubscriber, EntitySubscriber, QuerySubscriber} from "../subscriber/databaseSubscriber";
-
-
 
 
 export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> {
@@ -102,7 +98,56 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
      */
     deleteAll(): ENTITY[];
 
-    // todo: update
+    /**
+     * Update the entity with the given id. The entity-id may not be modified!
+     * @param id the id of the entity to update
+     * @param action the update to perform. Returns a (partial) entity with new values that are merged into the original.
+     * @return the modified entity (or null)
+     */
+    update(id: ID, action: (entity: ENTITY) => Partial<ENTITY>): ENTITY | null;
+
+    /**
+     * Update the entities with the given ids. The entity-id may not be modified!
+     * @param ids the ids of the entities to update
+     * @param action the update to perform. Returns a (partial) entity with new values that are merged into the original.
+     * @return the modified entities
+     */
+    updateMany(ids: ID[], action: (entity: ENTITY) => Partial<ENTITY>): ENTITY[];
+
+    /**
+     * Update the entities returned from the query. The entity-id may not be modified!
+     * @param query the query
+     * @param args the dynamic arguments for the query
+     * @param action the update to perform. Returns a (partial) entity with new values that are merged into the original.
+     * @return the modified entities
+     */
+    updateByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, action: (entity: ENTITY) => Partial<ENTITY>): ENTITY[];
+
+
+    /**
+     * Replace the entity with the given id. The entity-id may not be modified!
+     * @param id the id of the entity to replace
+     * @param action the update to perform. Returns a new entity that replaces the original.
+     * @return the modified entity (or null)
+     */
+    replace(id: ID, action: (entity: ENTITY) => ENTITY): ENTITY | null;
+
+    /**
+     * Replace the entities with the given ids. The entity-id may not be modified!
+     * @param ids the ids of the entities to replace
+     * @param action the update to perform. Returns a new entity that replaces the original.
+     * @return the modified entities
+     */
+    replaceMany(ids: ID[], action: (entity: ENTITY) => ENTITY): ENTITY[];
+
+    /**
+     * Replace the entities returned from the query. The entity-id may not be modified!
+     * @param query the query
+     * @param args the dynamic arguments for the query
+     * @param action the update to perform. Returns a new entity that replaces the original.
+     * @return the modified entities
+     */
+    replaceByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, action: (entity: ENTITY) => ENTITY): ENTITY[];
 
     /**
      * Retrieve a single entity with the given query
