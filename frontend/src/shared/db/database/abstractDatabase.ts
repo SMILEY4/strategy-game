@@ -5,9 +5,10 @@ import {Query} from "../query/query";
 import {UID} from "../../uid";
 import {Database} from "./database";
 
+/**
+ * Base implementation of a database
+ */
 export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> implements Database<STORAGE, ENTITY, ID> {
-
-    private readonly name: string;
 
     private readonly storage: STORAGE;
 
@@ -19,14 +20,13 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID>>,
     };
 
-    constructor(name: string, storage: STORAGE, idProvider: (entity: ENTITY) => ID) {
-        this.name = name;
+    /**
+     * @param storage the raw storage for the entities
+     * @param idProvider a function providing the (unique) id of a given entity
+     */
+    constructor(storage: STORAGE, idProvider: (entity: ENTITY) => ID) {
         this.storage = storage;
         this.idProvider = idProvider;
-    }
-
-    public getName(): string {
-        return this.name;
     }
 
     public getStorage(): STORAGE {
@@ -92,28 +92,32 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
     public subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): string {
         const subscriberId = this.genSubscriberId();
-        const subscriber = {
+        this.subscribers.entity.set(subscriberId, {
             entityId: entityId,
             callback: callback,
-        };
-        this.subscribers.entity.set(subscriberId, subscriber);
-        const entity = this.storage.getById(entityId);
-        if (entity !== null) {
-            this.checkSubscriberEntity(subscriber, [entity], [entityId], DatabaseOperation.INSERT);
-        }
+        });
         return subscriberId;
     }
 
     public subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): string {
         const subscriberId = this.genSubscriberId();
-        const subscriber = {
+        this.subscribers.query.set(subscriberId, {
             query: query,
             args: args,
             callback: callback,
             lastIds: [],
-        };
-        this.subscribers.query.set(subscriberId, subscriber);
-        this.checkSubscriberQuery(subscriber);
+        });
+        return subscriberId;
+    }
+
+    public subscribeOnQuerySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entity: ENTITY | null) => void): string {
+        const subscriberId = this.genSubscriberId();
+        this.subscribers.query.set(subscriberId, {
+            query: query,
+            args: args,
+            callback: entities => entities.length > 0 ? callback(entities[0]) : callback(null),
+            lastIds: [],
+        });
         return subscriberId;
     }
 
@@ -146,7 +150,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
                     break;
                 }
                 default: {
-                    throw new Error("Unhandled database-operation: " + operation)
+                    throw new Error("Unhandled database-operation: " + operation);
                 }
             }
         } else {
@@ -351,6 +355,10 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
 
     //==== QUERY ===========================================================
+
+    public queryById(id: ID): ENTITY | null {
+        return this.storage.getById(id);
+    }
 
     public queryMany<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[] {
         return query.run(this.storage, args);

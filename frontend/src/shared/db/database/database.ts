@@ -2,13 +2,10 @@ import {Query} from "../query/query";
 import {DatabaseStorage} from "../storage/databaseStorage";
 import {DatabaseOperation} from "./databaseOperation";
 
-
+/**
+ * A database storing entities of a given type with unique ids of a given type.
+ */
 export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> {
-
-    /**
-     * @return the name of the database
-     */
-    getName(): string;
 
     /**
      * Start a new "transaction", during which no subscribers will be notified. All changes are collected and passed on to subscribers at the end.
@@ -49,6 +46,15 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
      * @return the id of the subscriber
      */
     subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): string;
+
+    /**
+     * Subscribe to changes of single entity of a given query
+     * @param query the query to perform and check for changes
+     * @param args the dynamic query arguments
+     * @param callback the event callback
+     * @return the id of the subscriber
+     */
+    subscribeOnQuerySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entity: ENTITY | null) => void): string;
 
     /**
      * Remove the subscriber with the given id
@@ -150,6 +156,13 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
     replaceByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, action: (entity: ENTITY) => ENTITY): ENTITY[];
 
     /**
+     * Retrieve a single entity with the given id
+     * @param id the id of the entity
+     * @return the entity with the given id or null
+     */
+    queryById(id: ID): ENTITY | null
+
+    /**
      * Retrieve a single entity with the given query
      * @param query the query
      * @param args the dynamic argument for the query
@@ -166,5 +179,3 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
     queryMany<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY[];
 
 }
-
-

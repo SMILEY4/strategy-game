@@ -5,6 +5,7 @@ import {AbstractDatabase} from "./shared/db/database/abstractDatabase";
 import {Query} from "./shared/db/query/query";
 import {useEntity, useQueryMultiple} from "./shared/db/adapters/databaseHooks";
 import {UID} from "./shared/uid";
+import generate = UID.generate;
 
 // ReactDOM.createRoot(document.getElementById("root")!).render(<App/>);
 ReactDOM.createRoot(document.getElementById("root")!).render(<TodoApp/>);
@@ -71,6 +72,8 @@ function TodoApp(): ReactElement {
 function TodoEntry(props: { id: string, onRemove: (id: string) => void }): ReactElement {
 
     const entity = useEntity(db, props.id);
+
+    console.log("RENDER ENTITY", entity)
 
     if (entity) {
         return (

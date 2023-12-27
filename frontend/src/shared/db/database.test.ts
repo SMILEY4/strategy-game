@@ -19,7 +19,7 @@ class TestStorage extends MapDatabaseStorage<TestEntity, string> {
 
 class TestDatabase extends AbstractDatabase<TestStorage, TestEntity, string> {
     constructor() {
-        super("test", new TestStorage(), e => e.id);
+        super(new TestStorage(), e => e.id);
     }
 }
 
