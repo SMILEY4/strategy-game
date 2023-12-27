@@ -5,7 +5,6 @@ import {EntityMeshBuilder} from "./builders/entities/entityMeshBuilder";
 import {RoutesMeshBuilder} from "./builders/routes/routesMeshBuilder";
 import {TileRepository} from "../../state/access/TileRepository";
 import {RouteRepository} from "../../state/access/RouteRepository";
-import {MapModeRepository} from "../../state/access/MapModeRepository";
 import {RenderEntityCollector} from "./builders/entities/renderEntityCollector";
 import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
 import {ChangeDetector} from "../../shared/changeDetector";
@@ -13,6 +12,7 @@ import {CommandRepository} from "../../state/access/CommandRepository";
 import {StampBuilder} from "./builders/stamps/stampBuilder";
 import {Camera} from "../../shared/webgl/camera";
 import {RenderEntity} from "./builders/entities/renderEntity";
+import {LocalGameDatabase} from "../../state_new/localGameDatabase";
 
 interface Changes {
     mapMode: boolean,
@@ -26,7 +26,7 @@ export class RenderDataUpdater {
     private readonly remoteGameStateRepository: RemoteGameStateRepository;
     private readonly tileRepository: TileRepository;
     private readonly routesRepository: RouteRepository;
-    private readonly mapModeRepository: MapModeRepository;
+    private readonly localGameDb: LocalGameDatabase;
     private readonly commandRepository: CommandRepository;
 
     private readonly entityCollector: RenderEntityCollector;
@@ -41,14 +41,14 @@ export class RenderDataUpdater {
         removeGameStateRepository: RemoteGameStateRepository,
         tileRepository: TileRepository,
         routesRepository: RouteRepository,
-        mapModeRepository: MapModeRepository,
+        localGameDb: LocalGameDatabase,
         commandRepository: CommandRepository,
         entityCollector: RenderEntityCollector,
     ) {
         this.remoteGameStateRepository = removeGameStateRepository;
         this.tileRepository = tileRepository;
         this.routesRepository = routesRepository;
-        this.mapModeRepository = mapModeRepository;
+        this.localGameDb = localGameDb;
         this.commandRepository = commandRepository;
         this.entityCollector = entityCollector;
     }
@@ -63,7 +63,7 @@ export class RenderDataUpdater {
     }
 
     private findChanges(camera: Camera): Changes {
-        const mapMode = this.mapModeRepository.getMapMode();
+        const mapMode = this.localGameDb.getMapMode();
         return {
             mapMode: this.detectorMapMode.check(mapMode),
             remoteGameState: this.detectorRemoteGameStateRevId.check(this.remoteGameStateRepository.getRevId()),
@@ -73,9 +73,9 @@ export class RenderDataUpdater {
     }
 
     private updateMeta(renderData: RenderData) {
-        const mapMode = this.mapModeRepository.getMapMode();
-        const selectedTile = this.tileRepository.getSelectedTile();
-        const mouseOverTile = this.tileRepository.getHoverTile();
+        const mapMode = this.localGameDb.getMapMode();
+        const selectedTile = this.localGameDb.getSelectedTile();
+        const mouseOverTile = this.localGameDb.getHoverTile();
         renderData.meta.mapMode = mapMode;
         renderData.meta.grayscale = mapMode.renderData.grayscale;
         renderData.meta.time = (renderData.meta.time + 1) % 10000;
@@ -90,7 +90,7 @@ export class RenderDataUpdater {
             renderData.tilemap.instances.instanceBaseBuffer.setData(baseDataArray, true);
         }
         if (changes.remoteGameState || changes.mapMode) {
-            const mapMode = this.mapModeRepository.getMapMode();
+            const mapMode = this.localGameDb.getMapMode();
             const [count, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileRepository.getTileContainer(), mapMode);
             renderData.tilemap.instances.instanceCount = count;
             renderData.tilemap.instances.instanceOverlayBuffer.setData(overlayDataArray, true);
@@ -120,7 +120,7 @@ export class RenderDataUpdater {
 
     private updateStamps(renderData: RenderData, camera: Camera, entities: RenderEntity[], changes: Changes) {
         if (changes.remoteGameState || changes.commands || changes.mapMode || changes.camera) {
-            renderData.stamps.items = StampBuilder.build(camera, entities, this.tileRepository.getTileContainer(), this.mapModeRepository.getMapMode());
+            renderData.stamps.items = StampBuilder.build(camera, entities, this.tileRepository.getTileContainer(), this.localGameDb.getMapMode());
             renderData.stamps.dirty = true;
         } else {
             renderData.stamps.dirty = false;

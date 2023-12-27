@@ -1,8 +1,8 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {MapWindow} from "./MapWindow";
-import {MapModeRepository} from "../../../../../state/access/MapModeRepository";
 import {MapMode} from "../../../../../models/mapMode";
+import {LocalGameDatabase} from "../../../../../state_new/localGameDatabase";
 
 export namespace UseMapWindow {
 
@@ -28,7 +28,7 @@ export namespace UseMapWindow {
     }
 
     export function useData(): UseMapWindow.Data {
-        const [selectedMapMode, setMapMode] = MapModeRepository.useMapMode();
+        const [selectedMapMode, setMapMode] = LocalGameDatabase.useMapMode();
         return {
             selectedMapMode: selectedMapMode,
             setMapMode: setMapMode,

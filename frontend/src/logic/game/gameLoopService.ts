@@ -6,13 +6,15 @@ import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
 import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
 import {CameraDatabase} from "../../state_new/cameraDatabase";
+import {LocalGameDatabase} from "../../state_new/localGameDatabase";
 
 export class GameLoopService {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraDb: CameraDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
-    private readonly tileRepository: TileRepository;
+    private readonly localGameDb: LocalGameDatabase
+        private readonly tileRepository: TileRepository;
     private readonly tilePicker: TilePicker;
     private readonly gameRenderer: GameRenderer;
     private readonly audioService: AudioService;
@@ -23,6 +25,7 @@ export class GameLoopService {
         tilePicker: TilePicker,
         cameraDb: CameraDatabase,
         gameSessionDb: GameSessionDatabase,
+        localGameDb: LocalGameDatabase,
         tileRepository: TileRepository,
         gameRenderer: GameRenderer,
         audioService: AudioService
@@ -31,6 +34,7 @@ export class GameLoopService {
         this.tilePicker = tilePicker;
         this.cameraDb = cameraDb;
         this.gameSessionDb = gameSessionDb;
+        this.localGameDb = localGameDb;
         this.tileRepository = tileRepository;
         this.gameRenderer = gameRenderer;
         this.audioService = audioService;
@@ -56,8 +60,8 @@ export class GameLoopService {
 
     public mouseClick(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
-        if (this.tileRepository.getSelectedTile()?.id !== tile?.identifier) {
-            this.tileRepository.setSelectedTile(tile?.identifier || null);
+        if (this.localGameDb.getSelectedTile()?.id !== tile?.identifier) {
+            this.localGameDb.setSelectedTile(tile?.identifier || null);
             if (tile) {
                 AudioType.CLICK_PRIMARY.play(this.audioService)
                 UseTileWindow.open(tile.identifier);
@@ -76,8 +80,8 @@ export class GameLoopService {
             });
         } else {
             const tile = this.tilePicker.tileAt(x, y);
-            if (tile?.identifier.id !== this.tileRepository.getHoverTile()?.id) {
-                this.tileRepository.setHoverTile(tile?.identifier || null);
+            if (tile?.identifier.id !== this.localGameDb.getHoverTile()?.id) {
+                this.localGameDb.setHoverTile(tile?.identifier || null);
             }
         }
     }

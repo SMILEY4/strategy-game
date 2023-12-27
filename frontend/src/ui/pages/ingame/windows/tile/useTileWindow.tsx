@@ -8,6 +8,7 @@ import {UseCountryWindow} from "../country/useCountryWindow";
 import {AppCtx} from "../../../../../appContext";
 import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {UseSettlementCreationWindow} from "../cityCreation/useSettlementCreationWindow";
+import {LocalGameDatabase} from "../../../../../state_new/localGameDatabase";
 
 export namespace UseTileWindow {
 
@@ -64,7 +65,7 @@ export namespace UseTileWindow {
     export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
 
         const commands = CommandRepository.useCommands();
-        const selectedTileIdentifier = TileRepository.useSelectedTile();
+        const selectedTileIdentifier = LocalGameDatabase.useSelectedTile();
         const tile = TileRepository.useTileById(overwriteTile === null ? selectedTileIdentifier : overwriteTile);
         const tileView = tile ? AppCtx.DataViewService().getTileView(tile, commands) : null;
 

@@ -22,7 +22,6 @@ import {CityRepository} from "./state/access/CityRepository";
 import {TileRepository} from "./state/access/TileRepository";
 import {RemoteGameStateRepository} from "./state/access/RemoteGameStateRepository";
 import {TilePicker} from "./logic/game/tilePicker";
-import {MapModeRepository} from "./state/access/MapModeRepository";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
 import {RouteRepository} from "./state/access/RouteRepository";
@@ -84,7 +83,6 @@ interface AppCtxDef {
     ProvinceRepository: () => ProvinceRepository,
     CityRepository: () => CityRepository,
     TileRepository: () => TileRepository,
-    MapModeRepository: () => MapModeRepository,
     RouteRepository: () => RouteRepository,
 
     CameraDatabase: () => CameraDatabase,
@@ -184,6 +182,7 @@ export const AppCtx: AppCtxDef = {
             new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraDatabase(), AppCtx.TileRepository()),
             AppCtx.CameraDatabase(),
             AppCtx.GameSessionDatabase(),
+            AppCtx.LocalGameDatabase(),
             AppCtx.TileRepository(),
             AppCtx.GameRenderer(),
             AppCtx.AudioService(),
@@ -218,7 +217,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.RemoteGameStateRepository(),
             AppCtx.TileRepository(),
             AppCtx.RouteRepository(),
-            AppCtx.MapModeRepository(),
+            AppCtx.LocalGameDatabase(),
             AppCtx.CommandRepository(),
             AppCtx.RenderEntityCollector(),
         ),
@@ -272,10 +271,6 @@ export const AppCtx: AppCtxDef = {
     TileRepository: diContext.register(
         "TileRepository",
         () => new TileRepository(AppCtx.RemoteGameStateRepository()),
-    ),
-    MapModeRepository: diContext.register(
-        "MapModeRepository",
-        () => new MapModeRepository(),
     ),
     RouteRepository: diContext.register(
         "RouteRepository",
