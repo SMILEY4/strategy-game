@@ -44,6 +44,27 @@ export interface DatabaseStorage<ENTITY, ID> {
 export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> {
 
     /**
+     * @return the name of the database
+     */
+    getName(): string;
+
+    /**
+     * Start a new "transaction", during which no subscribers will be notified. All changes are collected and passed on to subscribers at the end.
+     */
+    startTransaction(): void;
+
+    /**
+     * End a "transaction" and notify subscribers of all collected changes
+     */
+    endTransaction(): void;
+
+    /**
+     * Perform the given action in a "transaction". All changes are collected and subscribers are notified after the action.
+     * @param action the action to perform inside the "transaction"
+     */
+    transaction(action: () => void): void;
+
+    /**
      * Subscribe to all changes
      * @param callback the event callback
      * @return the id of the subscriber
@@ -56,7 +77,7 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
      * @param callback the event callback
      * @return the id of the subscriber
      */
-    subscribeOnEntity(entityId: ID, callback: (entities: ENTITY[], operation: DatabaseOperation) => void): string;
+    subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): string;
 
     /**
      * Subscribe to changes of a given query
@@ -115,6 +136,8 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
      */
     deleteAll(): ENTITY[];
 
+    // todo: update
+
     /**
      * Retrieve a single entity with the given query
      * @param query the query
@@ -150,11 +173,13 @@ export interface QuerySubscriber<STORAGE extends DatabaseStorage<ENTITY, ID>, EN
 
 export interface EntitySubscriber<ENTITY, ID> {
     entityId: ID,
-    callback: (entities: ENTITY[], operation: DatabaseOperation) => void
+    callback: (entity: ENTITY, operation: DatabaseOperation) => void
 }
 
 
 export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> implements Database<STORAGE, ENTITY, ID> {
+
+    private readonly name: string;
 
     private readonly storage: STORAGE;
 
@@ -166,11 +191,56 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID>>,
     };
 
-    constructor(storage: STORAGE, idProvider: (entity: ENTITY) => ID) {
+    constructor(name: string, storage: STORAGE, idProvider: (entity: ENTITY) => ID) {
+        this.name = name;
         this.storage = storage;
         this.idProvider = idProvider;
     }
 
+    public getName(): string {
+        return this.name;
+    }
+
+    //==== TRANSACTION =====================================================
+
+    private transactionContext: null | {
+        insertedEntities: ENTITY[],
+        insertedIds: ID[],
+        deletedEntities: ENTITY[],
+        deletedIds: ID[],
+    } = null;
+
+    public startTransaction() {
+        this.transactionContext = {
+            insertedEntities: [],
+            insertedIds: [],
+            deletedEntities: [],
+            deletedIds: [],
+        };
+    }
+
+    public endTransaction() {
+        try {
+            this.checkSubscribersQuery();
+            if (this.transactionContext) {
+                this.checkSubscribersEntity(this.transactionContext.deletedEntities, this.transactionContext.deletedIds, DatabaseOperation.DELETE);
+                this.checkSubscribersDb(this.transactionContext.deletedEntities, DatabaseOperation.DELETE);
+                this.checkSubscribersEntity(this.transactionContext.insertedEntities, this.transactionContext.insertedIds, DatabaseOperation.INSERT);
+                this.checkSubscribersDb(this.transactionContext.insertedEntities, DatabaseOperation.INSERT);
+            }
+        } finally {
+            this.transactionContext = null;
+        }
+    }
+
+    public transaction(action: () => void) {
+        try {
+            this.startTransaction();
+            action();
+        } finally {
+            this.endTransaction();
+        }
+    }
 
     //==== SUBSCRIPTIONS ===================================================
 
@@ -182,7 +252,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         return subscriberId;
     }
 
-    public subscribeOnEntity(entityId: ID, callback: (entities: ENTITY[], operation: DatabaseOperation) => void): string {
+    public subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): string {
         const subscriberId = this.genSubscriberId();
         this.subscribers.entity.set(subscriberId, {
             entityId: entityId,
@@ -203,6 +273,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     }
 
     public unsubscribe(subscriberId: string): void {
+        this.subscribers.db.delete(subscriberId);
         this.subscribers.entity.delete(subscriberId);
         this.subscribers.query.delete(subscriberId);
     }
@@ -210,6 +281,28 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     private genSubscriberId(): string {
         return UID.generate();
     }
+
+    private notify(entities: ENTITY[], ids: ID[], operation: DatabaseOperation) {
+        if (this.transactionContext) {
+            switch (operation) {
+                case DatabaseOperation.INSERT: {
+                    this.transactionContext.insertedIds.push(...ids);
+                    this.transactionContext.insertedEntities.push(...entities);
+                    break;
+                }
+                case DatabaseOperation.DELETE: {
+                    this.transactionContext.deletedIds.push(...ids);
+                    this.transactionContext.deletedEntities.push(...entities);
+                    break;
+                }
+            }
+        } else {
+            this.checkSubscribersQuery();
+            this.checkSubscribersEntity(entities, ids, operation);
+            this.checkSubscribersDb(entities, operation);
+        }
+    }
+
 
     private checkSubscribersQuery() {
         for (let [_, subscriber] of this.subscribers.query) {
@@ -233,8 +326,9 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     }
 
     private checkSubscriberEntity(subscriber: EntitySubscriber<ENTITY, ID>, entities: ENTITY[], ids: ID[], operation: DatabaseOperation) {
-        if (ids.indexOf(subscriber.entityId) !== -1) {
-            subscriber.callback(entities, operation);
+        const index = ids.indexOf(subscriber.entityId);
+        if (index !== -1) {
+            subscriber.callback(entities[index], operation);
         }
     }
 
@@ -262,35 +356,25 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
     public insert(entity: ENTITY): ID {
         const id = this.storage.insert(entity);
-        this.checkSubscribersQuery();
-        this.checkSubscribersEntity([entity], [id], DatabaseOperation.INSERT);
-        this.checkSubscribersDb([entity], DatabaseOperation.INSERT)
+        this.notify([entity], [id], DatabaseOperation.INSERT);
         return id;
     }
 
     public insertMany(entities: ENTITY[]): ID[] {
         const ids = this.storage.insertMany(entities);
-        this.checkSubscribersQuery();
-        this.checkSubscribersEntity(entities, ids, DatabaseOperation.INSERT);
-        this.checkSubscribersDb(entities, DatabaseOperation.INSERT)
-
+        this.notify(entities, ids, DatabaseOperation.INSERT);
         return ids;
     }
 
     public delete(id: ID): ENTITY {
         const entity = this.storage.delete(id);
-        this.checkSubscribersQuery();
-        this.checkSubscribersEntity([entity], [id], DatabaseOperation.DELETE);
-        this.checkSubscribersDb([entity], DatabaseOperation.DELETE)
-
+        this.notify([entity], [id], DatabaseOperation.DELETE);
         return entity;
     }
 
     public deleteMany(ids: ID[]): ENTITY[] {
         const entities = this.storage.deleteMany(ids);
-        this.checkSubscribersQuery();
-        this.checkSubscribersEntity(entities, ids, DatabaseOperation.DELETE);
-        this.checkSubscribersDb(entities, DatabaseOperation.DELETE)
+        this.notify(entities, ids, DatabaseOperation.DELETE);
         return entities;
     }
 
@@ -302,17 +386,13 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
             this.delete(id);
             ids.push(id);
         }
-        this.checkSubscribersQuery();
-        this.checkSubscribersEntity(result, ids, DatabaseOperation.DELETE);
-        this.checkSubscribersDb(result, DatabaseOperation.DELETE)
+        this.notify(result, ids, DatabaseOperation.DELETE);
         return result;
     }
 
     public deleteAll(): ENTITY[] {
         const entities = this.storage.deleteAll();
-        this.checkSubscribersQuery();
-        this.checkSubscribersEntity(entities, entities.map(this.idProvider), DatabaseOperation.DELETE);
-        this.checkSubscribersDb(entities, DatabaseOperation.DELETE)
+        this.notify(entities, entities.map(this.idProvider), DatabaseOperation.DELETE);
         return entities;
     }
 

@@ -36,7 +36,7 @@ class CountryDbStorage implements DatabaseStorage<Country, string> {
 
 export class CountryDatabase extends AbstractDatabase<CountryDbStorage, Country, string> {
     constructor() {
-        super(new CountryDbStorage(), country => country.identifier.id);
+        super("country", new CountryDbStorage(), country => country.identifier.id);
     }
 }
 
