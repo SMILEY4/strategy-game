@@ -1,6 +1,9 @@
-import {Database, DatabaseOperation, DatabaseStorage, Query} from "./database";
 import {useEffect, useState} from "react";
-import {UID} from "../uid";
+import {UID} from "../../uid";
+import {DatabaseStorage} from "../storage/databaseStorage";
+import {Database} from "../database/database";
+import {DatabaseOperation} from "../database/databaseOperation";
+import {Query} from "../query/query";
 
 export function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
     const [data, setData] = useState<{ refId: string, item: T }>({refId: UID.generate(), item: initial});
@@ -10,7 +13,7 @@ export function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
     ];
 }
 
-export function useEntity<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
+export function useEntity<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID>(
     db: Database<STORAGE, ENTITY, ID>,
     id: ID,
 ): ENTITY | null {
