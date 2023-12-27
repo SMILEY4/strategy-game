@@ -26,3 +26,10 @@ export interface EntitySubscriber<ENTITY, ID> {
     entityId: ID,
     callback: (entity: ENTITY, operation: DatabaseOperation) => void
 }
+
+/**
+ * A subscriber listening to changes of a singleton-database
+ */
+export interface SingletonSubscriber<ENTITY> {
+    callback: (entity: ENTITY) => void
+}

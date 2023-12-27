@@ -4,6 +4,7 @@ import {DatabaseStorage} from "../storage/databaseStorage";
 import {Database} from "../database/database";
 import {DatabaseOperation} from "../database/databaseOperation";
 import {Query} from "../query/query";
+import {SingletonDatabase} from "../database/singletonDatabase";
 
 /**
  * Stores the state and forces a re-render on every set (independent of value)
@@ -19,9 +20,24 @@ function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
 }
 
 /**
+ * Access (and watch) the entity in a given singleton-database
+ * @param db the database
+ * @return the current singleton entity
+ */
+export function useSingletonEntity<ENTITY>(db: SingletonDatabase<ENTITY>): ENTITY {
+    const [entity, setEntity] = useForceRepaintState<ENTITY>(db.get());
+    useEffect(() => {
+        const subscriberId = db.subscribe(entity => setEntity(entity));
+        return () => db.unsubscribe(subscriberId);
+    }, []);
+    return entity;
+}
+
+/**
  * Access (and watch) an entity in the given database by its id
  * @param db the database
  * @param id the id of the entity
+ * @return the current entity or null
  */
 export function useEntity<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID>(
     db: Database<STORAGE, ENTITY, ID>,
@@ -46,7 +62,7 @@ export function useEntity<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
  * @param db the database
  * @param query the query
  * @param args the dynamic arguments of the query
- * @return the resulting entity or null
+ * @return the current resulting entity or null
  */
 export function useQuerySingle<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
     db: Database<STORAGE, ENTITY, ID>,
@@ -67,7 +83,7 @@ export function useQuerySingle<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTI
  * @param db the database
  * @param query the query
  * @param args the dynamic arguments of the query
- * @return the resulting entities
+ * @return the current resulting entities
  */
 export function useQueryMultiple<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
     db: Database<STORAGE, ENTITY, ID>,

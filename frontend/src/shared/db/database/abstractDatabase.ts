@@ -20,6 +20,15 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID>>,
     };
 
+    private transactionContext: null | {
+        insertedEntities: ENTITY[],
+        insertedIds: ID[],
+        deletedEntities: ENTITY[],
+        deletedIds: ID[],
+        modifiedEntities: ENTITY[],
+        modifiedIds: ID[],
+    } = null;
+
     /**
      * @param storage the raw storage for the entities
      * @param idProvider a function providing the (unique) id of a given entity
@@ -34,15 +43,6 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     }
 
     //==== TRANSACTION =====================================================
-
-    private transactionContext: null | {
-        insertedEntities: ENTITY[],
-        insertedIds: ID[],
-        deletedEntities: ENTITY[],
-        deletedIds: ID[],
-        modifiedEntities: ENTITY[],
-        modifiedIds: ID[],
-    } = null;
 
     public startTransaction() {
         this.transactionContext = {
