@@ -1,55 +1,99 @@
-export interface DatabaseStorage<ENTITY, ID> {
-    /**
-     * Insert the given entity
-     * @param entity the entity to insert
-     * @return the id of the inserted entity
-     */
-    insert(entity: ENTITY): ID;
+import {
+    ManyDatabaseStorageResult,
+    ModifyDatabaseStorageResult,
+    PrimaryDatabaseStorage,
+    SingleDatabaseStorageResult,
+} from "./primary/primaryDatabaseStorage";
 
-    /**
-     * Insert the given entities
-     * @param entities the entities to insert
-     * @return the ids of the inserted entities
-     */
-    insertMany(entities: ENTITY[]): ID[];
+export interface DatabaseStorageConfig<ENTITY, ID> {
+    primary: PrimaryDatabaseStorage<ENTITY, ID>,
+    supporting?: {
+        [K: string]: SupportingDatabaseStorage<ENTITY>
+    }
+}
 
-    /**
-     * Delete the entity with the given id
-     * @param id the id of the entity to delete
-     * @return the deleted entity or null
-     */
-    delete(id: ID): ENTITY | null;
+export class DatabaseStorage<CONFIG extends DatabaseStorageConfig<ENTITY, ID>, ENTITY, ID> implements PrimaryDatabaseStorage<ENTITY, ID> {
 
-    /**
-     * Delete the entities with the given ids
-     * @param ids the ids of the entities to delete
-     * @return the deleted entities
-     */
-    deleteMany(ids: ID[]): ENTITY[];
+    readonly config: CONFIG;
+    private readonly primaryStorage: PrimaryDatabaseStorage<ENTITY, ID>;
+    private readonly supportingStorages: SupportingDatabaseStorage<ENTITY>[] = [];
 
-    /**
-     * Delete all entities
-     * @return the deleted entities
-     */
-    deleteAll(): ENTITY[];
+    constructor(config: CONFIG) {
+        this.config = config;
+        this.primaryStorage = config.primary;
+        if (config.supporting) {
+            for (const [_, s] of Object.entries(config.supporting)) {
+                this.supportingStorages.push(s);
+            }
+        }
+    }
 
-    /**
-     * Replaces the entity with the given id with the new given entity
-     * @param id the id of the original entity
-     * @param replacement the entity to replace the original one with
-     */
-    replace(id: ID, replacement: ENTITY): void
+    public insert(entity: ENTITY): SingleDatabaseStorageResult<ENTITY, ID> | null {
+        const result = this.config.primary.insert(entity);
+        if (result !== null && this.supportingStorages) {
+            for (let supporting of this.supportingStorages) {
+                supporting.onInsert(entity);
+            }
+        }
+        return result;
+    }
 
-    /**
-     * Counts all stored entities
-     * @return the amount of stored documents
-     */
-    count(): number;
+    public insertMany(entities: ENTITY[]): ManyDatabaseStorageResult<ENTITY, ID> {
+        const result = this.primaryStorage.insertMany(entities);
+        if (result.entities.length > 0 && this.supportingStorages) {
+            for (let supporting of this.supportingStorages) {
+                supporting.onInsertMany(result.entities);
+            }
+        }
+        return result;
+    }
 
-    /**
-     * Retrieve an entity by its id
-     * @param id the id of the entity
-     * @return the entity with the given id or null
-     */
-    getById(id: ID): ENTITY | null;
+    public delete(id: ID): SingleDatabaseStorageResult<ENTITY, ID> | null {
+        const result = this.primaryStorage.delete(id);
+        if (result !== null && this.supportingStorages) {
+            for (let supporting of this.supportingStorages) {
+                supporting.onDelete(result.entity);
+            }
+        }
+        return result;
+    }
+
+    public deleteMany(ids: ID[]): ManyDatabaseStorageResult<ENTITY, ID> {
+        const result = this.primaryStorage.deleteMany(ids);
+        if (result.entities.length > 0 && this.supportingStorages) {
+            for (let supporting of this.supportingStorages) {
+                supporting.onDeleteMany(result.entities);
+            }
+        }
+        return result;
+    }
+
+    public deleteAll(): ManyDatabaseStorageResult<ENTITY, ID> {
+        const result = this.primaryStorage.deleteAll();
+        if (result.entities.length > 0 && this.supportingStorages) {
+            for (let supporting of this.supportingStorages) {
+                supporting.onDeleteAll();
+            }
+        }
+        return result;
+    }
+
+    public replace(id: ID, replacement: ENTITY): ModifyDatabaseStorageResult<ENTITY, ID> | null {
+        const result = this.primaryStorage.replace(id, replacement);
+        if (result !== null && this.supportingStorages) {
+            for (let supporting of this.supportingStorages) {
+                supporting.onModify(result.original, result.replacement);
+            }
+        }
+        return result;
+    }
+
+    public get(id: ID): ENTITY | null {
+        return this.primaryStorage.get(id);
+    }
+
+    public count(): number {
+        return this.primaryStorage.count();
+    }
+
 }

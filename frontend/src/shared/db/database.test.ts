@@ -1,5 +1,5 @@
 import {AbstractDatabase} from "./database/abstractDatabase";
-import {MapDatabaseStorage} from "./storage/mapDatabaseStorage";
+import {MapPrimaryStorage} from "./storage/primary/mapPrimaryStorage";
 import {Query} from "./query/query";
 import {DatabaseOperation} from "./database/databaseOperation";
 
@@ -11,7 +11,7 @@ interface TestEntity {
     }
 }
 
-class TestStorage extends MapDatabaseStorage<TestEntity, string> {
+class TestStorage extends MapPrimaryStorage<TestEntity, string> {
     constructor() {
         super(e => e.id);
     }
@@ -46,13 +46,13 @@ describe("database", () => {
             const id1 = db.insert({id: "1", size: 1, nested: {value: "a"}});
             expect(id1).toBe("1");
             expect(db.getStorage().count()).toBe(1);
-            expect(db.getStorage().getById("1")?.nested.value).toBe("a");
+            expect(db.getStorage().get("1")?.nested.value).toBe("a");
 
             const id2 = db.insert({id: "2", size: 2, nested: {value: "b"}});
             expect(id2).toBe("2");
             expect(db.getStorage().count()).toBe(2);
-            expect(db.getStorage().getById("1")?.nested.value).toBe("a");
-            expect(db.getStorage().getById("2")?.nested.value).toBe("b");
+            expect(db.getStorage().get("1")?.nested.value).toBe("a");
+            expect(db.getStorage().get("2")?.nested.value).toBe("b");
 
             expect(callback.mock.calls).toHaveLength(2);
             expectDbCallback(callback.mock.calls[0], ["1"], DatabaseOperation.INSERT);
@@ -77,8 +77,8 @@ describe("database", () => {
             ]);
             expect(ids2).toEqual(["1", "2"]);
             expect(db.getStorage().count()).toBe(2);
-            expect(db.getStorage().getById("1")?.nested.value).toBe("a");
-            expect(db.getStorage().getById("2")?.nested.value).toBe("b");
+            expect(db.getStorage().get("1")?.nested.value).toBe("a");
+            expect(db.getStorage().get("2")?.nested.value).toBe("b");
 
             expect(callback.mock.calls).toHaveLength(2);
             expectDbCallback(callback.mock.calls[0], [], DatabaseOperation.INSERT);
@@ -99,8 +99,8 @@ describe("database", () => {
             const deleted = db.delete("2");
             expect(deleted?.id).toBe("2");
             expect(db.getStorage().count()).toBe(1);
-            expect(db.getStorage().getById("1")).not.toBe(null);
-            expect(db.getStorage().getById("2")).toBe(null);
+            expect(db.getStorage().get("1")).not.toBe(null);
+            expect(db.getStorage().get("2")).toBe(null);
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2"], DatabaseOperation.DELETE);
@@ -122,9 +122,9 @@ describe("database", () => {
             expect(deleted[0].id).toBe("1");
             expect(deleted[1].id).toBe("3");
             expect(db.getStorage().count()).toBe(1);
-            expect(db.getStorage().getById("1")).toBe(null);
-            expect(db.getStorage().getById("2")).not.toBe(null);
-            expect(db.getStorage().getById("3")).toBe(null);
+            expect(db.getStorage().get("1")).toBe(null);
+            expect(db.getStorage().get("2")).not.toBe(null);
+            expect(db.getStorage().get("3")).toBe(null);
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["1", "3"], DatabaseOperation.DELETE);
@@ -146,9 +146,9 @@ describe("database", () => {
             expect(deleted[0].id).toBe("2");
             expect(deleted[1].id).toBe("3");
             expect(db.getStorage().count()).toBe(1);
-            expect(db.getStorage().getById("1")).not.toBe(null);
-            expect(db.getStorage().getById("2")).toBe(null);
-            expect(db.getStorage().getById("3")).toBe(null);
+            expect(db.getStorage().get("1")).not.toBe(null);
+            expect(db.getStorage().get("2")).toBe(null);
+            expect(db.getStorage().get("3")).toBe(null);
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2", "3"], DatabaseOperation.DELETE);
@@ -167,9 +167,9 @@ describe("database", () => {
 
             const deleted = db.deleteAll();
             expect(deleted.length).toBe(3);
-            expect(db.getStorage().getById("1")).toBe(null);
-            expect(db.getStorage().getById("2")).toBe(null);
-            expect(db.getStorage().getById("3")).toBe(null);
+            expect(db.getStorage().get("1")).toBe(null);
+            expect(db.getStorage().get("2")).toBe(null);
+            expect(db.getStorage().get("3")).toBe(null);
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["1", "2", "3"], DatabaseOperation.DELETE);
@@ -187,9 +187,9 @@ describe("database", () => {
             db.subscribe(callback);
 
             db.update("2", e => ({size: e.size + 10}));
-            expect(db.getStorage().getById("2")?.id).toBe("2");
-            expect(db.getStorage().getById("2")?.size).toBe(12);
-            expect(db.getStorage().getById("2")?.nested?.value).toBe("b");
+            expect(db.getStorage().get("2")?.id).toBe("2");
+            expect(db.getStorage().get("2")?.size).toBe(12);
+            expect(db.getStorage().get("2")?.nested?.value).toBe("b");
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2"], DatabaseOperation.MODIFY);
@@ -208,12 +208,12 @@ describe("database", () => {
             db.subscribe(callback);
 
             db.updateMany(["2", "3"], e => ({size: e.size + 10}));
-            expect(db.getStorage().getById("2")?.id).toBe("2");
-            expect(db.getStorage().getById("2")?.size).toBe(12);
-            expect(db.getStorage().getById("2")?.nested?.value).toBe("b");
-            expect(db.getStorage().getById("3")?.id).toBe("3");
-            expect(db.getStorage().getById("3")?.size).toBe(13);
-            expect(db.getStorage().getById("3")?.nested?.value).toBe("c");
+            expect(db.getStorage().get("2")?.id).toBe("2");
+            expect(db.getStorage().get("2")?.size).toBe(12);
+            expect(db.getStorage().get("2")?.nested?.value).toBe("b");
+            expect(db.getStorage().get("3")?.id).toBe("3");
+            expect(db.getStorage().get("3")?.size).toBe(13);
+            expect(db.getStorage().get("3")?.nested?.value).toBe("c");
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2", "3"], DatabaseOperation.MODIFY);
@@ -232,12 +232,12 @@ describe("database", () => {
             db.subscribe(callback);
 
             db.updateByQuery(QUERY_SIZE_GREATER_OR_EQUAL, 2, e => ({size: e.size + 10}));
-            expect(db.getStorage().getById("2")?.id).toBe("2");
-            expect(db.getStorage().getById("2")?.size).toBe(12);
-            expect(db.getStorage().getById("2")?.nested?.value).toBe("b");
-            expect(db.getStorage().getById("3")?.id).toBe("3");
-            expect(db.getStorage().getById("3")?.size).toBe(13);
-            expect(db.getStorage().getById("3")?.nested?.value).toBe("c");
+            expect(db.getStorage().get("2")?.id).toBe("2");
+            expect(db.getStorage().get("2")?.size).toBe(12);
+            expect(db.getStorage().get("2")?.nested?.value).toBe("b");
+            expect(db.getStorage().get("3")?.id).toBe("3");
+            expect(db.getStorage().get("3")?.size).toBe(13);
+            expect(db.getStorage().get("3")?.nested?.value).toBe("c");
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2", "3"], DatabaseOperation.MODIFY);
@@ -262,9 +262,9 @@ describe("database", () => {
                     value: "x",
                 },
             }));
-            expect(db.getStorage().getById("2")?.id).toBe("2");
-            expect(db.getStorage().getById("2")?.size).toBe(12);
-            expect(db.getStorage().getById("2")?.nested?.value).toBe("x");
+            expect(db.getStorage().get("2")?.id).toBe("2");
+            expect(db.getStorage().get("2")?.size).toBe(12);
+            expect(db.getStorage().get("2")?.nested?.value).toBe("x");
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2"], DatabaseOperation.MODIFY);
@@ -289,12 +289,12 @@ describe("database", () => {
                     value: "x",
                 },
             }));
-            expect(db.getStorage().getById("2")?.id).toBe("2");
-            expect(db.getStorage().getById("2")?.size).toBe(12);
-            expect(db.getStorage().getById("2")?.nested?.value).toBe("x");
-            expect(db.getStorage().getById("3")?.id).toBe("3");
-            expect(db.getStorage().getById("3")?.size).toBe(13);
-            expect(db.getStorage().getById("3")?.nested?.value).toBe("x");
+            expect(db.getStorage().get("2")?.id).toBe("2");
+            expect(db.getStorage().get("2")?.size).toBe(12);
+            expect(db.getStorage().get("2")?.nested?.value).toBe("x");
+            expect(db.getStorage().get("3")?.id).toBe("3");
+            expect(db.getStorage().get("3")?.size).toBe(13);
+            expect(db.getStorage().get("3")?.nested?.value).toBe("x");
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2", "3"], DatabaseOperation.MODIFY);
@@ -319,12 +319,12 @@ describe("database", () => {
                     value: "x",
                 },
             }));
-            expect(db.getStorage().getById("2")?.id).toBe("2");
-            expect(db.getStorage().getById("2")?.size).toBe(12);
-            expect(db.getStorage().getById("2")?.nested?.value).toBe("x");
-            expect(db.getStorage().getById("3")?.id).toBe("3");
-            expect(db.getStorage().getById("3")?.size).toBe(13);
-            expect(db.getStorage().getById("3")?.nested?.value).toBe("x");
+            expect(db.getStorage().get("2")?.id).toBe("2");
+            expect(db.getStorage().get("2")?.size).toBe(12);
+            expect(db.getStorage().get("2")?.nested?.value).toBe("x");
+            expect(db.getStorage().get("3")?.id).toBe("3");
+            expect(db.getStorage().get("3")?.size).toBe(13);
+            expect(db.getStorage().get("3")?.nested?.value).toBe("x");
 
             expect(callback.mock.calls).toHaveLength(1);
             expectDbCallback(callback.mock.calls[0], ["2", "3"], DatabaseOperation.MODIFY);

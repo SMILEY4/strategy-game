@@ -1,19 +1,36 @@
-import {MapDatabaseStorage} from "../shared/db/storage/mapDatabaseStorage";
+import {MapPrimaryStorage} from "../shared/db/storage/primary/mapPrimaryStorage";
 import {AbstractDatabase} from "../shared/db/database/abstractDatabase";
 import {Query} from "../shared/db/query/query";
 import {City} from "../models/city";
 import {useQuerySingleOrThrow} from "../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../appContext";
+import {DatabaseStorage, DatabaseStorageConfig} from "../shared/db/storage/databaseStorage";
+import {ArraySupportingStorage} from "../shared/db/storage/supporting/arraySupportingStorage";
 
 function provideId(e: City): string {
     return e.identifier.id;
 }
 
-class CityStorage extends MapDatabaseStorage<City, string> {
-    constructor() {
-        super(provideId);
+
+interface CityStorageConfig extends DatabaseStorageConfig<City, string> {
+    primary: MapPrimaryStorage<City, string>,
+    supporting: {
+        array: ArraySupportingStorage<City>
     }
 }
+
+
+class CityStorage extends DatabaseStorage<CityStorageConfig, City, string> {
+    constructor() {
+        super({
+            primary: new MapPrimaryStorage<City, string>(provideId),
+            supporting: {
+                array: new ArraySupportingStorage<City>()
+            }
+        });
+    }
+}
+
 
 export class CityDatabase extends AbstractDatabase<CityStorage, City, string> {
     constructor() {
@@ -21,26 +38,21 @@ export class CityDatabase extends AbstractDatabase<CityStorage, City, string> {
     }
 }
 
+
 interface CityQuery<ARGS> extends Query<CityStorage, City, string, ARGS> {
 }
-
 
 export namespace CityDatabase {
 
     export const QUERY_BY_ID: CityQuery<string> = {
-        run(storage: CityStorage, args: string): City[] {
-            const result = storage.getById(args);
-            if (result === null) {
-                return [];
-            } else {
-                return [result];
-            }
+        run(storage: CityStorage, args: string): City | null {
+            return storage.get(args)
         },
     };
 
     export const QUERY_ALL: CityQuery<void> = {
         run(storage: CityStorage, args: void): City[] {
-            return storage.getAll();
+            return storage.config.supporting.array.getAll()
         },
     };
 

@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {UID} from "../../uid";
-import {DatabaseStorage} from "../storage/databaseStorage";
+import {PrimaryDatabaseStorage} from "../storage/primary/primaryDatabaseStorage";
 import {Database} from "../database/database";
 import {DatabaseOperation} from "../database/databaseOperation";
 import {Query} from "../query/query";
@@ -39,7 +39,7 @@ export function useSingletonEntity<ENTITY>(db: SingletonDatabase<ENTITY>): ENTIT
  * @param id the id of the entity
  * @return the current entity or null
  */
-export function useEntity<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID>(
+export function useEntity<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID>(
     db: Database<STORAGE, ENTITY, ID>,
     id: ID,
 ): ENTITY | null {
@@ -64,7 +64,7 @@ export function useEntity<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
  * @param args the dynamic arguments of the query
  * @return the current resulting entity or null
  */
-export function useQuerySingle<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
+export function useQuerySingle<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
     db: Database<STORAGE, ENTITY, ID>,
     query: Query<STORAGE, ENTITY, ID, ARGS>,
     args: ARGS,
@@ -84,7 +84,7 @@ export function useQuerySingle<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTI
  * @param args the dynamic arguments of the query
  * @return the current resulting entity
  */
-export function useQuerySingleOrThrow<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
+export function useQuerySingleOrThrow<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
     db: Database<STORAGE, ENTITY, ID>,
     query: Query<STORAGE, ENTITY, ID, ARGS>,
     args: ARGS,
@@ -105,7 +105,7 @@ export function useQuerySingleOrThrow<STORAGE extends DatabaseStorage<ENTITY, ID
  * @param args the dynamic arguments of the query
  * @return the current resulting entities
  */
-export function useQueryMultiple<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
+export function useQueryMultiple<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
     db: Database<STORAGE, ENTITY, ID>,
     query: Query<STORAGE, ENTITY, ID, ARGS>,
     args: ARGS,

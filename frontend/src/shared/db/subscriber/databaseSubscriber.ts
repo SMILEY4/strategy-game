@@ -1,5 +1,5 @@
 import {DatabaseOperation} from "../database/databaseOperation";
-import {DatabaseStorage} from "../storage/databaseStorage";
+import {PrimaryDatabaseStorage} from "../storage/primary/primaryDatabaseStorage";
 import {Query} from "../query/query";
 
 /**
@@ -12,7 +12,7 @@ export interface DbSubscriber<ENTITY> {
 /**
  * A subscriber listening to changes of a given query
  */
-export interface QuerySubscriber<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> {
+export interface QuerySubscriber<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID> {
     query: Query<STORAGE, ENTITY, ID, any>,
     args: any,
     callback: (entities: ENTITY[]) => void,

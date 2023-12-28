@@ -1,16 +1,29 @@
-import {MapDatabaseStorage} from "../shared/db/storage/mapDatabaseStorage";
+import {MapPrimaryStorage} from "../shared/db/storage/primary/mapPrimaryStorage";
 import {AbstractDatabase} from "../shared/db/database/abstractDatabase";
 import {Query} from "../shared/db/query/query";
 import {Route} from "../models/route";
-import {City} from "../models/city";
+import {DatabaseStorage, DatabaseStorageConfig} from "../shared/db/storage/databaseStorage";
+import {ArraySupportingStorage} from "../shared/db/storage/supporting/arraySupportingStorage";
 
 function provideId(e: Route): string {
     return e.routeId;
 }
 
-class RouteStorage extends MapDatabaseStorage<Route, string> {
+interface RouteStorageConfig extends DatabaseStorageConfig<Route, string> {
+    primary: MapPrimaryStorage<Route, string>,
+    supporting: {
+        array: ArraySupportingStorage<Route>
+    }
+}
+
+class RouteStorage extends DatabaseStorage<RouteStorageConfig, Route, string> {
     constructor() {
-        super(provideId);
+        super({
+            primary: new MapPrimaryStorage<Route, string>(provideId),
+            supporting: {
+                array: new ArraySupportingStorage<Route>()
+            }
+        });
     }
 }
 
@@ -27,14 +40,13 @@ export namespace RouteDatabase {
 
     export const QUERY_ALL: RouteQuery<void> = {
         run(storage: RouteStorage, args: void): Route[] {
-            return storage.getAll();
+            return storage.config.supporting.array.getAll()
         },
     };
 
-
     export const QUERY_BY_CITY_ID: RouteQuery<string> = {
         run(storage: RouteStorage, args: string): Route[] {
-            return storage.getAll().filter(r => r.cityA.id === args || r.cityB.id === args);
+            return storage.config.supporting.array.getAll().filter(r => r.cityA.id === args || r.cityB.id === args);
         },
     };
 

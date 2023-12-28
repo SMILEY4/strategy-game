@@ -1,12 +1,12 @@
 import {Query} from "../query/query";
-import {DatabaseStorage} from "../storage/databaseStorage";
+import {PrimaryDatabaseStorage} from "../storage/primary/primaryDatabaseStorage";
 import {DatabaseOperation} from "./databaseOperation";
 import {TransactionObject} from "./transaction";
 
 /**
  * A database storing entities of a given type with unique ids of a given type.
  */
-export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> extends TransactionObject {
+export interface Database<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, ENTITY, ID> extends TransactionObject {
 
     /**
      * @return a unique revision id that gets updated every time the content of the database is changed
@@ -63,7 +63,7 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
      * @param entity the entity to insert
      * @return the id of inserted entity
      */
-    insert(entity: ENTITY): ID;
+    insert(entity: ENTITY): ID | null;
 
     /**
      * Insert the given entities

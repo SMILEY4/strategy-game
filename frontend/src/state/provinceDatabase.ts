@@ -1,17 +1,36 @@
-import {MapDatabaseStorage} from "../shared/db/storage/mapDatabaseStorage";
+import {MapPrimaryStorage} from "../shared/db/storage/primary/mapPrimaryStorage";
 import {AbstractDatabase} from "../shared/db/database/abstractDatabase";
 import {Query} from "../shared/db/query/query";
 import {Province} from "../models/province";
 import {useQuerySingleOrThrow} from "../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../appContext";
+import {DatabaseStorage, DatabaseStorageConfig} from "../shared/db/storage/databaseStorage";
+import {Country} from "../models/country";
+import {MapUniqueSupportingStorage} from "../shared/db/storage/supporting/mapUniqueSupportingStorage";
+import {MapSupportingStorage} from "../shared/db/storage/supporting/mapSupportingStorage";
+import {MapUniqueMultikeySupportingStorage} from "../shared/db/storage/supporting/mapUniqueMultikeySupportingStorage";
+import {Simulate} from "react-dom/test-utils";
 
 function provideId(e: Province): string {
     return e.identifier.id;
 }
 
-class ProvinceStorage extends MapDatabaseStorage<Province, string> {
+
+interface ProvinceStorageConfig extends DatabaseStorageConfig<Province, string> {
+    primary: MapPrimaryStorage<Province, string>,
+    supporting: {
+        byCityId: MapUniqueMultikeySupportingStorage<Province, string>
+    }
+}
+
+class ProvinceStorage extends DatabaseStorage<ProvinceStorageConfig, Province, string> {
     constructor() {
-        super(provideId);
+        super({
+            primary: new MapPrimaryStorage<Province, string>(provideId),
+            supporting: {
+                byCityId: new MapUniqueMultikeySupportingStorage<Province, string>(e => e.cities.map(c => c.identifier.id))
+            }
+        });
     }
 }
 
@@ -27,24 +46,14 @@ interface ProvinceQuery<ARGS> extends Query<ProvinceStorage, Province, string, A
 export namespace ProvinceDatabase {
 
     export const QUERY_BY_ID: ProvinceQuery<string> = {
-        run(storage: ProvinceStorage, args: string): Province[] {
-            const result = storage.getById(args);
-            if (result === null) {
-                return [];
-            } else {
-                return [result];
-            }
+        run(storage: ProvinceStorage, args: string): Province | null {
+            return storage.get(args);
         },
     };
 
     export const QUERY_BY_CITY_ID: ProvinceQuery<string> = {
-        run(storage: ProvinceStorage, args: string): Province[] {
-            const result = storage.getAll().find(p => p.cities.map(c => c.identifier.id).indexOf(args) !== -1);
-            if (result) {
-                return [result];
-            } else {
-                return [];
-            }
+        run(storage: ProvinceStorage, args: string): Province | null {
+            return storage.config.supporting.byCityId.getByKey(args)
         },
     };
 
