@@ -29,7 +29,7 @@ export function Tooltip(props: TooltipProps): ReactElement | null {
             </TooltipContext>
         );
     } else {
-        return content;
+        return target;
     }
 
 

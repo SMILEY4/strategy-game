@@ -98,7 +98,7 @@ export function Canvas() {
     }
 
     function scroll(e: WheelEvent) {
-        gameLoopService.mouseScroll(e.deltaY);
+        gameLoopService.mouseScroll(e.deltaY, e.clientX, e.clientY);
     }
 
     function click(duration: number, e: MouseEvent) {

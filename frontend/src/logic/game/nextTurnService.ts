@@ -26,7 +26,6 @@ import {Route} from "../../models/route";
 import {TerrainType} from "../../models/terrainType";
 import {Visibility} from "../../models/visibility";
 import {TerrainResourceType} from "../../models/terrainResourceType";
-import {MonitoringRepository} from "../../state/MonitoringRepository";
 import {ValueHistory} from "../../shared/valueHistory";
 import {ResourceLedger} from "../../models/resourceLedger";
 import {DetailLogEntry} from "../../models/detailLogEntry";
@@ -37,6 +36,7 @@ import {ProvinceDatabase} from "../../state/provinceDatabase";
 import {RouteDatabase} from "../../state/routeDatabase";
 import {TileDatabase} from "../../state/tileDatabase";
 import {Transaction} from "../../shared/db/database/transaction";
+import {MonitoringRepository} from "../../state/monitoringRepository";
 
 export class NextTurnService {
 
@@ -81,6 +81,12 @@ export class NextTurnService {
         //  move old game state to pool instead of gc -> allocate new state from pool
 
         Transaction.run([this.countryDb, this.provinceDb, this.cityDb, this.tileDb, this.routeDb, this.gameSessionDb], () => {
+            this.countryDb.deleteAll()
+            this.provinceDb.deleteAll()
+            this.cityDb.deleteAll()
+            this.tileDb.deleteAll()
+            this.routeDb.deleteAll()
+
             this.countryDb.insertMany(this.buildCountries(game));
             this.provinceDb.insertMany(this.buildProvinces(game));
             this.cityDb.insertMany(this.buildCities(game));

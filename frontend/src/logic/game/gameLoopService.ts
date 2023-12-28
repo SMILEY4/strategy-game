@@ -75,14 +75,11 @@ export class GameLoopService {
                 zoom: camera.zoom,
             });
         } else {
-            const tile = this.tilePicker.tileAt(x, y);
-            if (tile?.identifier.id !== this.localGameDb.getHoverTile()?.id) {
-                this.localGameDb.setHoverTile(tile?.identifier || null);
-            }
+            this.updateHoverTile(x, y)
         }
     }
 
-    public mouseScroll(d: number) {
+    public mouseScroll(d: number, x: number, y: number) {
         const camera = this.cameraDb.get();
         const dz = d > 0 ? 0.1 : -0.1;
         const zoom = Math.max(0.01, camera.zoom - dz);
@@ -91,6 +88,14 @@ export class GameLoopService {
             y: camera.y,
             zoom: zoom,
         });
+        this.updateHoverTile(x, y)
+    }
+
+    private updateHoverTile(x: number, y: number) {
+        const tile = this.tilePicker.tileAt(x, y);
+        if (tile?.identifier.id !== this.localGameDb.getHoverTile()?.id) {
+            this.localGameDb.setHoverTile(tile?.identifier || null);
+        }
     }
 
 }

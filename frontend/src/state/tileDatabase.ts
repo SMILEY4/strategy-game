@@ -54,7 +54,7 @@ export namespace TileDatabase {
             if (args === null) {
                 return null;
             }
-            return storage.get(args);
+            return storage.config.primary.get(args);
         },
     };
 

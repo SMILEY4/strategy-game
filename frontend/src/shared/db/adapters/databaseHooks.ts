@@ -13,6 +13,9 @@ import {SingletonDatabase} from "../database/singletonDatabase";
  */
 function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
     const [data, setData] = useState<{ refId: string, item: T }>({refId: UID.generate(), item: initial});
+    useEffect(() => {
+        setData({refId: UID.generate(), item: initial})
+    }, [initial]);
     return [
         data.item,
         (item: T) => setData({refId: UID.generate(), item: item}),
