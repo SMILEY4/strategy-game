@@ -9,6 +9,11 @@ import {TransactionObject} from "./transaction";
 export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID> extends TransactionObject {
 
     /**
+     * @return a unique revision id that gets updated every time the content of the database is changed
+     */
+    getRevId(): string
+
+    /**
      * Perform the given action in a "transaction". All changes are collected and subscribers are notified after the action.
      * @param action the action to perform inside the "transaction"
      */

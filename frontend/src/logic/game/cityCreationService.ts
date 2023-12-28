@@ -4,33 +4,33 @@ import {getMaxOrDefault, orDefault} from "../../shared/utils";
 import {CommandService} from "./commandService";
 import {UserService} from "../user/userService";
 import {CountryRepository} from "../../state/access/CountryRepository";
-import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
 import {CreateCityCommand} from "../../models/command";
 import {ProvinceIdentifier} from "../../models/province";
 import {TerrainType} from "../../models/terrainType";
 import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
+import {CommandDatabase} from "../../state_new/commandDatabase";
 
 export class CityCreationService {
 
     private readonly commandService: CommandService;
     private readonly userService: UserService;
     private readonly gameSessionDb: GameSessionDatabase;
+    private readonly commandDb: CommandDatabase;
     private readonly countryRepository: CountryRepository;
-    private readonly commandRepository: CommandRepository;
 
     constructor(
         commandService: CommandService,
         userService: UserService,
         gameSessionDb: GameSessionDatabase,
+        commandDb: CommandDatabase,
         countryRepository: CountryRepository,
-        commandRepository: CommandRepository,
     ) {
         this.commandService = commandService;
         this.userService = userService;
         this.gameSessionDb = gameSessionDb;
+        this.commandDb = commandDb;
         this.countryRepository = countryRepository;
-        this.commandRepository = commandRepository;
     }
 
 
@@ -75,12 +75,21 @@ export class CityCreationService {
     }
 
     private isOccupied(tile: Tile): boolean {
-        return this.getCityPositions().findIndex(t => t.id === tile.identifier.id) !== -1
-            || this.commandRepository.getCommands().some(cmd => cmd.type === CommandType.CITY_CREATE && (cmd as CreateCityCommand).tile.id === tile.identifier.id);
+        return this.isAlreadyOccupied(tile) || this.isPlannedOccupied(tile)
     }
 
+    private isAlreadyOccupied(tile: Tile): boolean {
+        return this.getCityPositions().findIndex(t => t.id === tile.identifier.id) !== -1;
+    }
+
+    private isPlannedOccupied(tile: Tile): boolean {
+        return this.commandDb.queryMany(CommandDatabase.QUERY_BY_TYPE, CommandType.CITY_CREATE)
+            .some(cmd => (cmd as CreateCityCommand).tile.id === tile.identifier.id);
+    }
+
+
     private getCityPositions(): TileIdentifier[] {
-        return [];
+        return []; // todo
     }
 
     private availableSettlers(country: Country): number | null {

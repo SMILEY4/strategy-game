@@ -1,6 +1,5 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
-import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CityPlannedWindow} from "./CityPlannedWindow";
 import {CountryIdentifier} from "../../../../../models/country";
 import {ProvinceIdentifier} from "../../../../../models/province";
@@ -11,6 +10,7 @@ import {UseTileWindow} from "../tile/useTileWindow";
 import {CreateCityCommand} from "../../../../../models/command";
 import {CountryRepository} from "../../../../../state/access/CountryRepository";
 import {AppCtx} from "../../../../../appContext";
+import {CommandDatabase} from "../../../../../state_new/commandDatabase";
 
 export namespace UseCityPlannedWindow {
 
@@ -48,7 +48,7 @@ export namespace UseCityPlannedWindow {
 
     export function useData(commandId: string): UseCityPlannedWindow.Data {
 
-        const command = CommandRepository.useCommandById(commandId) as CreateCityCommand;
+        const command = CommandDatabase.useCommandById(commandId) as CreateCityCommand;
         const country = CountryRepository.useCountryByUserId(AppCtx.UserService().getUserId());
 
         const openCountryWindow = UseCountryWindow.useOpen();

@@ -7,25 +7,25 @@ import {CountryIdentifier} from "../../../../models/country";
 import {Color} from "../../../../models/color";
 import {TileRepository} from "../../../../state/access/TileRepository";
 import {CityRepository} from "../../../../state/access/CityRepository";
-import {CommandRepository} from "../../../../state/access/CommandRepository";
+import {CommandDatabase} from "../../../../state_new/commandDatabase";
 
 export class RenderEntityCollector {
 
     private readonly tileRepository: TileRepository;
     private readonly cityRepository: CityRepository;
-    private readonly commandRepository: CommandRepository;
+    private readonly commandDb: CommandDatabase;
 
-    constructor(tileRepository: TileRepository, cityRepository: CityRepository, commandRepository: CommandRepository) {
+    constructor(tileRepository: TileRepository, cityRepository: CityRepository, commandDb: CommandDatabase) {
         this.tileRepository = tileRepository;
         this.cityRepository = cityRepository;
-        this.commandRepository = commandRepository;
+        this.commandDb = commandDb;
     }
 
     public collect(): RenderEntity[] {
         return this.collectEntities(
             this.tileRepository.getTiles(),
             this.cityRepository.getCities(),
-            this.commandRepository.getCommands(),
+            this.commandDb.queryMany(CommandDatabase.QUERY_ALL, null),
         );
     }
 

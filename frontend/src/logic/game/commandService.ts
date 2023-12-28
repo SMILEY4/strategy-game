@@ -1,7 +1,6 @@
 import {CityIdentifier} from "../../models/city";
 import {TileIdentifier} from "../../models/tile";
 import {SettlementTier} from "../../models/settlementTier";
-import {CommandRepository} from "../../state/access/CommandRepository";
 import {
     AddProductionQueueCommand,
     CancelProductionQueueCommand,
@@ -12,17 +11,18 @@ import {
 import {ConstructionEntry} from "../../models/constructionEntry";
 import {ProductionQueueEntry} from "../../models/productionQueueEntry";
 import {ProvinceIdentifier} from "../../models/province";
+import {CommandDatabase} from "../../state_new/commandDatabase";
 
 export class CommandService {
 
-    private readonly commandRepository: CommandRepository;
+    private readonly commandDb: CommandDatabase;
 
-    constructor(commandRepository: CommandRepository) {
-        this.commandRepository = commandRepository;
+    constructor(commandDb: CommandDatabase) {
+        this.commandDb = commandDb;
     }
 
     public cancelCommand(id: string) {
-        this.commandRepository.removeCommand(id);
+        this.commandDb.delete(id)
     }
 
     public createSettlement(tile: TileIdentifier, name: string, province: ProvinceIdentifier | null) {
@@ -31,7 +31,7 @@ export class CommandService {
             name: name,
             province: province,
         });
-        this.commandRepository.addCommand(command);
+        this.commandDb.insert(command);
     }
 
     public upgradeSettlementTier(city: CityIdentifier, currentTier: SettlementTier, targetTier: SettlementTier) {
@@ -40,7 +40,7 @@ export class CommandService {
             currentTier: currentTier,
             targetTier: targetTier,
         });
-        this.commandRepository.addCommand(command);
+        this.commandDb.insert(command);
     }
 
     public addProductionQueueEntry(city: CityIdentifier, entry: ConstructionEntry) {
@@ -48,7 +48,7 @@ export class CommandService {
             city: city,
             entry: entry,
         });
-        this.commandRepository.addCommand(command);
+        this.commandDb.insert(command);
     }
 
     public cancelProductionQueueEntry(city: CityIdentifier, entry: ProductionQueueEntry) {
@@ -56,14 +56,14 @@ export class CommandService {
             city: city,
             entry: entry,
         });
-        this.commandRepository.addCommand(command);
+        this.commandDb.insert(command);
     }
 
     public placeScout(tile: TileIdentifier) {
         const command = new PlaceScoutCommand({
             tile: tile,
         });
-        this.commandRepository.addCommand(command);
+        this.commandDb.insert(command);
     }
 
 }

@@ -2,7 +2,6 @@ import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {CountryWindow} from "./CountryWindow";
 import {CountryRepository} from "../../../../../state/access/CountryRepository";
-import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {AppCtx} from "../../../../../appContext";
 import {UseCityWindow} from "../city/useCityWindow";
 import {CountryView} from "../../../../../models/country";
@@ -10,6 +9,7 @@ import {ProvinceReduced} from "../../../../../models/province";
 import {CityReduced} from "../../../../../models/city";
 import {UseProvinceWindow} from "../province/useProvinceWindow";
 import {UseCityPlannedWindow} from "../cityPlanned/useCityPlannedWindow";
+import {CommandDatabase} from "../../../../../state_new/commandDatabase";
 
 export namespace UseCountryWindow {
 
@@ -40,7 +40,7 @@ export namespace UseCountryWindow {
     export function useData(countryId: string): UseCountryWindow.Data {
 
         const country = CountryRepository.useCountryById(countryId);
-        const commands = CommandRepository.useCommands();
+        const commands = CommandDatabase.useCommands();
         const countryView = AppCtx.DataViewService().getCountryView(country, commands);
 
         const openProvinceWindow = UseProvinceWindow.useOpen();

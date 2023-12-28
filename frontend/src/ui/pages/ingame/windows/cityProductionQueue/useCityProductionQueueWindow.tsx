@@ -2,7 +2,6 @@ import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {City, CityIdentifier} from "../../../../../models/city";
 import React from "react";
 import {CityProductionQueueWindow} from "./CityProductionQueueWindow";
-import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {CommandType} from "../../../../../models/commandType";
 import {AddProductionQueueCommand, CancelProductionQueueCommand} from "../../../../../models/command";
 import {CityRepository} from "../../../../../state/access/CityRepository";
@@ -14,6 +13,7 @@ import {
     SettlerProductionQueueEntry,
 } from "../../../../../models/productionQueueEntry";
 import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../../../../models/constructionEntry";
+import {CommandDatabase} from "../../../../../state_new/commandDatabase";
 
 export namespace UseCityProductionQueueWindow {
 
@@ -54,12 +54,12 @@ export namespace UseCityProductionQueueWindow {
 
     function useMergedProductionQueueEntries(city: City): ProductionQueueEntryView[] {
 
-        const cancelledEntries: string[] = CommandRepository.useCommands()
+        const cancelledEntries: string[] = CommandDatabase.useCommands()
             .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_CANCEL)
             .filter(cmd => (cmd as CancelProductionQueueCommand).city.id === city.identifier.id)
             .map(cmd => (cmd as CancelProductionQueueCommand).entry.id);
 
-        const addCommands: AddProductionQueueCommand[] = CommandRepository.useCommands()
+        const addCommands: AddProductionQueueCommand[] = CommandDatabase.useCommands()
             .filter(cmd => cmd.type === CommandType.PRODUCTION_QUEUE_ADD)
             .map(cmd => cmd as AddProductionQueueCommand)
             .filter(cmd => cmd.city.id === city.identifier.id);

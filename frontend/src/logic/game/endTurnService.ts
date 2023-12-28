@@ -7,27 +7,27 @@ import {
     PlaceScoutCommand,
     UpgradeCityCommand,
 } from "../../models/command";
-import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
 import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../models/constructionEntry";
+import {CommandDatabase} from "../../state_new/commandDatabase";
 
 export class EndTurnService {
 
     private readonly gameSessionClient: GameSessionClient;
-    private readonly commandRepository: CommandRepository;
+    private readonly commandDb: CommandDatabase;
 
-    constructor(gameSessionClient: GameSessionClient, commandRepository: CommandRepository) {
+    constructor(gameSessionClient: GameSessionClient, commandDb: CommandDatabase) {
         this.gameSessionClient = gameSessionClient;
-        this.commandRepository = commandRepository;
+        this.commandDb = commandDb;
     }
 
     public endTurn() {
-        const commands = this.commandRepository.getCommands();
+        const commands = this.commandDb.queryMany(CommandDatabase.QUERY_ALL, null);
         this.gameSessionClient.sendMessage(
             "submit-turn",
             {commands: commands.map(c => this.buildPayloadCommand(c))},
         );
-        this.commandRepository.setCommands([]);
+        this.commandDb.deleteAll();
     }
 
     private buildPayloadCommand(command: Command): object {

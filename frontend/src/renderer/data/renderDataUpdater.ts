@@ -8,11 +8,11 @@ import {RouteRepository} from "../../state/access/RouteRepository";
 import {RenderEntityCollector} from "./builders/entities/renderEntityCollector";
 import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
 import {ChangeDetector} from "../../shared/changeDetector";
-import {CommandRepository} from "../../state/access/CommandRepository";
 import {StampBuilder} from "./builders/stamps/stampBuilder";
 import {Camera} from "../../shared/webgl/camera";
 import {RenderEntity} from "./builders/entities/renderEntity";
 import {LocalGameDatabase} from "../../state_new/localGameDatabase";
+import {CommandDatabase} from "../../state_new/commandDatabase";
 
 interface Changes {
     mapMode: boolean,
@@ -27,7 +27,7 @@ export class RenderDataUpdater {
     private readonly tileRepository: TileRepository;
     private readonly routesRepository: RouteRepository;
     private readonly localGameDb: LocalGameDatabase;
-    private readonly commandRepository: CommandRepository;
+    private readonly commandDb: CommandDatabase;
 
     private readonly entityCollector: RenderEntityCollector;
 
@@ -42,14 +42,14 @@ export class RenderDataUpdater {
         tileRepository: TileRepository,
         routesRepository: RouteRepository,
         localGameDb: LocalGameDatabase,
-        commandRepository: CommandRepository,
+        commandDb: CommandDatabase,
         entityCollector: RenderEntityCollector,
     ) {
         this.remoteGameStateRepository = removeGameStateRepository;
         this.tileRepository = tileRepository;
         this.routesRepository = routesRepository;
         this.localGameDb = localGameDb;
-        this.commandRepository = commandRepository;
+        this.commandDb = commandDb;
         this.entityCollector = entityCollector;
     }
 
@@ -67,7 +67,7 @@ export class RenderDataUpdater {
         return {
             mapMode: this.detectorMapMode.check(mapMode),
             remoteGameState: this.detectorRemoteGameStateRevId.check(this.remoteGameStateRepository.getRevId()),
-            commands: this.detectorCommandRevId.check(this.commandRepository.getRevId()),
+            commands: this.detectorCommandRevId.check(this.commandDb.getRevId()),
             camera: this.detectorCamera.check(camera.getHash()),
         };
     }

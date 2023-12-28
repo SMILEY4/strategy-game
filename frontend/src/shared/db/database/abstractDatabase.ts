@@ -12,6 +12,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
     private readonly storage: STORAGE;
 
+
     private readonly idProvider: (entity: ENTITY) => ID;
 
     private readonly subscribers = {
@@ -20,7 +21,10 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID>>,
     };
 
+    private revId: string = UID.generate()
+
     private transactionContext: null | {
+        changed: boolean,
         insertedEntities: ENTITY[],
         insertedIds: ID[],
         deletedEntities: ENTITY[],
@@ -38,14 +42,26 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         this.idProvider = idProvider;
     }
 
+
     public getStorage(): STORAGE {
         return this.storage;
+    }
+
+    //==== REVISION ID =====================================================
+
+    public getRevId(): string {
+        return this.revId
+    }
+
+    private updateRevId() {
+        this.revId = UID.generate()
     }
 
     //==== TRANSACTION =====================================================
 
     public startTransaction() {
         this.transactionContext = {
+            changed: false,
             insertedEntities: [],
             insertedIds: [],
             deletedEntities: [],
@@ -57,7 +73,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
     public endTransaction() {
         try {
-            if (this.transactionContext !== null) {
+            if (this.transactionContext !== null && this.transactionContext.changed) {
                 this.checkSubscribersQuery();
                 this.checkSubscribersEntity(this.transactionContext.deletedEntities, this.transactionContext.deletedIds, DatabaseOperation.DELETE);
                 this.checkSubscribersEntity(this.transactionContext.modifiedEntities, this.transactionContext.modifiedIds, DatabaseOperation.MODIFY);
@@ -65,6 +81,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
                 this.checkSubscribersDb(this.transactionContext.deletedEntities, DatabaseOperation.DELETE);
                 this.checkSubscribersDb(this.transactionContext.modifiedEntities, DatabaseOperation.MODIFY);
                 this.checkSubscribersDb(this.transactionContext.insertedEntities, DatabaseOperation.INSERT);
+                this.updateRevId()
             }
         } finally {
             this.transactionContext = null;
@@ -132,7 +149,8 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     }
 
     private notify(entities: ENTITY[], ids: ID[], operation: DatabaseOperation) {
-        if (this.transactionContext) {
+        if (this.transactionContext && ids.length > 0) {
+            this.transactionContext.changed = true
             switch (operation) {
                 case DatabaseOperation.INSERT: {
                     this.transactionContext.insertedIds.push(...ids);
@@ -157,6 +175,9 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
             this.checkSubscribersQuery();
             this.checkSubscribersEntity(entities, ids, operation);
             this.checkSubscribersDb(entities, operation);
+            if(ids.length > 0) {
+                this.updateRevId()
+            }
         }
     }
 

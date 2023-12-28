@@ -1,8 +1,8 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {CommandLogWindow} from "./CommandLogWindow";
-import {CommandRepository} from "../../../../../state/access/CommandRepository";
 import {AppCtx} from "../../../../../appContext";
 import {Command} from "../../../../../models/command";
+import {CommandDatabase} from "../../../../../state_new/commandDatabase";
 
 export namespace UseCommandLogWindow {
 
@@ -32,7 +32,7 @@ export namespace UseCommandLogWindow {
     }
 
     export function useData(): UseCommandLogWindow.Data {
-        const entries: CommandLogEntry[] = CommandRepository.useCommands()
+        const entries: CommandLogEntry[] = CommandDatabase.useCommands()
             .map(cmd => ({command: cmd}));
         const cancel = useCommandCancel();
         return {

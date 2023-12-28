@@ -6,9 +6,9 @@ import {Country} from "../../models/country";
 import {CountryRepository} from "../../state/access/CountryRepository";
 import {ProvinceRepository} from "../../state/access/ProvinceRepository";
 import {CityRepository} from "../../state/access/CityRepository";
-import {CommandRepository} from "../../state/access/CommandRepository";
 import {CommandType} from "../../models/commandType";
 import {UpgradeCityCommand} from "../../models/command";
+import {CommandDatabase} from "../../state_new/commandDatabase";
 
 export class CityUpgradeService {
 
@@ -17,21 +17,21 @@ export class CityUpgradeService {
     private readonly countryRepository: CountryRepository;
     private readonly provinceRepository: ProvinceRepository;
     private readonly cityRepository: CityRepository;
-    private readonly commandRepository: CommandRepository;
+    private readonly commandDb: CommandDatabase;
 
     constructor(commandService: CommandService,
                 userService: UserService,
                 countryRepository: CountryRepository,
                 provinceRepository: ProvinceRepository,
                 cityRepository: CityRepository,
-                commandRepository: CommandRepository,
+                commandDb: CommandDatabase,
     ) {
         this.commandService = commandService;
         this.userService = userService;
         this.countryRepository = countryRepository;
         this.provinceRepository = provinceRepository;
         this.cityRepository = cityRepository;
-        this.commandRepository = commandRepository;
+        this.commandDb = commandDb;
     }
 
 
@@ -64,9 +64,8 @@ export class CityUpgradeService {
     }
 
     private isAlreadyUpgrading(city: City): boolean {
-        return this.commandRepository.getCommands().some(cmd =>
-            cmd.type === CommandType.CITY_UPGRADE && (cmd as UpgradeCityCommand).city.id === city.identifier.id,
-        );
+        return this.commandDb.queryMany(CommandDatabase.QUERY_BY_TYPE, CommandType.CITY_UPGRADE)
+            .some(cmd => (cmd as UpgradeCityCommand).city.id === city.identifier.id);
     }
 
     public upgrade(city: City) {
@@ -76,7 +75,6 @@ export class CityUpgradeService {
             city.tier.nextTier!,
         );
     }
-
 
     private getPlayerCountry(): Country {
         return this.countryRepository.getCountryByUserId(this.userService.getUserId());

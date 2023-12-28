@@ -15,7 +15,6 @@ import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
 import {UserClient} from "./logic/user/userClient";
 import {UserRepository} from "./state/access/UserRepository";
-import {CommandRepository} from "./state/access/CommandRepository";
 import {CountryRepository} from "./state/access/CountryRepository";
 import {ProvinceRepository} from "./state/access/ProvinceRepository";
 import {CityRepository} from "./state/access/CityRepository";
@@ -77,7 +76,6 @@ interface AppCtxDef {
 
     MonitoringRepository: () => MonitoringRepository,
     UserRepository: () => UserRepository,
-    CommandRepository: () => CommandRepository,
     RemoteGameStateRepository: () => RemoteGameStateRepository,
     CountryRepository: () => CountryRepository,
     ProvinceRepository: () => ProvinceRepository,
@@ -161,19 +159,19 @@ export const AppCtx: AppCtxDef = {
     ),
     EndTurnService: diContext.register(
         "EndTurnService",
-        () => new EndTurnService(AppCtx.GameSessionClient(), AppCtx.CommandRepository()),
+        () => new EndTurnService(AppCtx.GameSessionClient(), AppCtx.CommandDatabase()),
     ),
     CommandService: diContext.register(
         "CommandService",
-        () => new CommandService(AppCtx.CommandRepository()),
+        () => new CommandService(AppCtx.CommandDatabase()),
     ),
     CityCreationService: diContext.register(
         "CityCreationService",
-        () => new CityCreationService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.GameSessionDatabase(), AppCtx.CountryRepository(), AppCtx.CommandRepository()),
+        () => new CityCreationService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.GameSessionDatabase(), AppCtx.CommandDatabase(), AppCtx.CountryRepository()),
     ),
     CityUpgradeService: diContext.register(
         "CityUpgradeService",
-        () => new CityUpgradeService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.ProvinceRepository(), AppCtx.CityRepository(), AppCtx.CommandRepository()),
+        () => new CityUpgradeService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.ProvinceRepository(), AppCtx.CityRepository(), AppCtx.CommandDatabase()),
     ),
     GameLoopService: diContext.register(
         "GameLoopService",
@@ -208,7 +206,7 @@ export const AppCtx: AppCtxDef = {
         () => new RenderEntityCollector(
             AppCtx.TileRepository(),
             AppCtx.CityRepository(),
-            AppCtx.CommandRepository(),
+            AppCtx.CommandDatabase(),
         ),
     ),
     RenderDataUpdater: diContext.register(
@@ -218,7 +216,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.TileRepository(),
             AppCtx.RouteRepository(),
             AppCtx.LocalGameDatabase(),
-            AppCtx.CommandRepository(),
+            AppCtx.CommandDatabase(),
             AppCtx.RenderEntityCollector(),
         ),
     ),
@@ -247,10 +245,6 @@ export const AppCtx: AppCtxDef = {
     CameraDatabase: diContext.register(
         "CameraRepository",
         () => new CameraDatabase(),
-    ),
-    CommandRepository: diContext.register(
-        "CommandRepository",
-        () => new CommandRepository(),
     ),
     RemoteGameStateRepository: diContext.register(
         "RemoteGameStateRepository",
