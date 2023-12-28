@@ -3,13 +3,13 @@ import {Country} from "../../models/country";
 import {getMaxOrDefault, orDefault} from "../../shared/utils";
 import {CommandService} from "./commandService";
 import {UserService} from "../user/userService";
-import {CountryRepository} from "../../state/access/CountryRepository";
 import {CommandType} from "../../models/commandType";
 import {CreateCityCommand} from "../../models/command";
 import {ProvinceIdentifier} from "../../models/province";
 import {TerrainType} from "../../models/terrainType";
 import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
 import {CommandDatabase} from "../../state_new/commandDatabase";
+import {CountryDatabase} from "../../state_new/countryDatabase";
 
 export class CityCreationService {
 
@@ -17,20 +17,20 @@ export class CityCreationService {
     private readonly userService: UserService;
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly commandDb: CommandDatabase;
-    private readonly countryRepository: CountryRepository;
+    private readonly countryDb: CountryDatabase;
 
     constructor(
         commandService: CommandService,
         userService: UserService,
         gameSessionDb: GameSessionDatabase,
         commandDb: CommandDatabase,
-        countryRepository: CountryRepository,
+        countryDb: CountryDatabase,
     ) {
         this.commandService = commandService;
         this.userService = userService;
         this.gameSessionDb = gameSessionDb;
         this.commandDb = commandDb;
-        this.countryRepository = countryRepository;
+        this.countryDb = countryDb;
     }
 
 
@@ -71,7 +71,7 @@ export class CityCreationService {
     }
 
     private getPlayerCountry(): Country {
-        return this.countryRepository.getCountryByUserId(this.userService.getUserId());
+        return this.countryDb.querySingleOrThrow(CountryDatabase.QUERY_BY_USER_ID, this.userService.getUserId());
     }
 
     private isOccupied(tile: Tile): boolean {

@@ -10,8 +10,8 @@ import {
     ConstructionEntryView,
     SettlerConstructionEntry,
 } from "../../../../../models/constructionEntry";
-import {CityRepository} from "../../../../../state/access/CityRepository";
 import {CommandDatabase} from "../../../../../state_new/commandDatabase";
+import {CityDatabase} from "../../../../../state_new/cityDatabase";
 
 export namespace UseCityConstructionWindow {
 
@@ -37,7 +37,7 @@ export namespace UseCityConstructionWindow {
     }
 
     export function useData(cityIdentifier: CityIdentifier): UseCityConstructionWindow.Data {
-        const city = CityRepository.useCityById(cityIdentifier.id);
+        const city = CityDatabase.useCityById(cityIdentifier.id);
         const commands = CommandDatabase.useCommands();
         const dataViewService = AppCtx.DataViewService();
         const entries: ConstructionEntryView[] = useAvailableConstructionEntries()

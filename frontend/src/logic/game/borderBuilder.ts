@@ -1,5 +1,5 @@
-import {TileContainer} from "../../models/tileContainer";
 import {Tile} from "../../models/tile";
+import {TileDatabase} from "../../state_new/tileDatabase";
 
 export namespace BorderBuilder {
 
@@ -18,18 +18,18 @@ export namespace BorderBuilder {
         city: boolean,
     }
 
-    export function buildComplete(tile: Tile, tiles: TileContainer): BorderData[] {
-        const country = build(tile, tiles, false, (ta, tb) => {
+    export function buildComplete(tile: Tile, tileDb: TileDatabase): BorderData[] {
+        const country = build(tile, tileDb, false, (ta, tb) => {
             const a = ta.owner?.country.id;
             const b = tb.owner?.country.id;
             return (!a && !b) ? false : !!a && a !== b;
         });
-        const province = build(tile, tiles, false, (ta, tb) => {
+        const province = build(tile, tileDb, false, (ta, tb) => {
             const a = ta.owner?.province.id;
             const b = tb.owner?.province.id;
             return (!a && !b) ? false : !!a && a !== b;
         });
-        const city = build(tile, tiles, false, (ta, tb) => {
+        const city = build(tile, tileDb, false, (ta, tb) => {
             const a = ta.owner?.city?.id;
             const b = tb.owner?.city?.id;
             return (!a && !b) ? false : !!a && a !== b;
@@ -46,9 +46,9 @@ export namespace BorderBuilder {
         return data;
     }
 
-    export function build(tile: Tile, tiles: TileContainer, defaultValue: boolean, isBorder: (a: Tile, b: Tile) => boolean): boolean[] {
+    export function build(tile: Tile, tileDb: TileDatabase, defaultValue: boolean, isBorder: (a: Tile, b: Tile) => boolean): boolean[] {
         return NEIGHBOUR_OFFSETS.map(offset => {
-            const neighbour = tiles.getTileAtOrNull(tile.identifier.q + offset[0], tile.identifier.r + offset[1]);
+            const neighbour = tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [tile.identifier.q + offset[0], tile.identifier.r + offset[1]]);
             if (neighbour) {
                 return isBorder(tile, neighbour);
             } else {

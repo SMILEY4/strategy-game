@@ -77,6 +77,26 @@ export function useQuerySingle<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTI
     return entity;
 }
 
+/**
+ * Access (and watch) an entity in the given database provided by the given query. Throw if no entity was found.
+ * @param db the database
+ * @param query the query
+ * @param args the dynamic arguments of the query
+ * @return the current resulting entity
+ */
+export function useQuerySingleOrThrow<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, ID, ARGS>(
+    db: Database<STORAGE, ENTITY, ID>,
+    query: Query<STORAGE, ENTITY, ID, ARGS>,
+    args: ARGS,
+): ENTITY {
+    const entity = useQuerySingle(db, query, args);
+    if (entity !== null) {
+        return entity;
+    } else {
+        throw new Error("No entity found by query with args " + args);
+    }
+}
+
 
 /**
  * Access (and watch) entities in the given database provided by the given query

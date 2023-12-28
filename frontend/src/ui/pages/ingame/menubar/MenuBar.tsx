@@ -8,13 +8,13 @@ import {PiScrollBold} from "react-icons/pi";
 import "./menubar.scoped.less";
 import {Country} from "../../../../models/country";
 import {AppCtx} from "../../../../appContext";
-import {CountryRepository} from "../../../../state/access/CountryRepository";
 import {UseCommandLogWindow} from "../windows/commandLog/useCommandLogWindow";
 import {UseCountryWindow} from "../windows/country/useCountryWindow";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseTileWindow} from "../windows/tile/useTileWindow";
 import {GameSessionDatabase} from "../../../../state_new/gameSessionDatabase";
+import {CountryDatabase} from "../../../../state_new/countryDatabase";
 
 export function MenuBar(): ReactElement {
 
@@ -63,7 +63,7 @@ export function MenuBar(): ReactElement {
 
 function usePlayerCountry(): Country {
     const userId = AppCtx.UserService().getUserId();
-    return CountryRepository.useCountryByUserId(userId);
+    return CountryDatabase.useCountryByUserId(userId);
 }
 
 function useEndTurn(): [boolean, () => void] {

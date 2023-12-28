@@ -21,7 +21,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
         query: new Map<string, QuerySubscriber<STORAGE, ENTITY, ID>>,
     };
 
-    private revId: string = UID.generate()
+    private revId: string = UID.generate();
 
     private transactionContext: null | {
         changed: boolean,
@@ -50,11 +50,11 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     //==== REVISION ID =====================================================
 
     public getRevId(): string {
-        return this.revId
+        return this.revId;
     }
 
     private updateRevId() {
-        this.revId = UID.generate()
+        this.revId = UID.generate();
     }
 
     //==== TRANSACTION =====================================================
@@ -74,6 +74,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
     public endTransaction() {
         try {
             if (this.transactionContext !== null && this.transactionContext.changed) {
+                this.updateRevId();
                 this.checkSubscribersQuery();
                 this.checkSubscribersEntity(this.transactionContext.deletedEntities, this.transactionContext.deletedIds, DatabaseOperation.DELETE);
                 this.checkSubscribersEntity(this.transactionContext.modifiedEntities, this.transactionContext.modifiedIds, DatabaseOperation.MODIFY);
@@ -81,7 +82,6 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
                 this.checkSubscribersDb(this.transactionContext.deletedEntities, DatabaseOperation.DELETE);
                 this.checkSubscribersDb(this.transactionContext.modifiedEntities, DatabaseOperation.MODIFY);
                 this.checkSubscribersDb(this.transactionContext.insertedEntities, DatabaseOperation.INSERT);
-                this.updateRevId()
             }
         } finally {
             this.transactionContext = null;
@@ -150,7 +150,7 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
     private notify(entities: ENTITY[], ids: ID[], operation: DatabaseOperation) {
         if (this.transactionContext && ids.length > 0) {
-            this.transactionContext.changed = true
+            this.transactionContext.changed = true;
             switch (operation) {
                 case DatabaseOperation.INSERT: {
                     this.transactionContext.insertedIds.push(...ids);
@@ -175,8 +175,8 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
             this.checkSubscribersQuery();
             this.checkSubscribersEntity(entities, ids, operation);
             this.checkSubscribersDb(entities, operation);
-            if(ids.length > 0) {
-                this.updateRevId()
+            if (ids.length > 0) {
+                this.updateRevId();
             }
         }
     }
@@ -377,6 +377,10 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
 
     //==== QUERY ===========================================================
 
+    public count(): number {
+        return this.storage.count()
+    }
+
     public queryById(id: ID): ENTITY | null {
         return this.storage.getById(id);
     }
@@ -391,6 +395,15 @@ export class AbstractDatabase<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTIT
             return result[0];
         } else {
             return null;
+        }
+    }
+
+    public querySingleOrThrow<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY {
+        const result = this.queryMany(query, args);
+        if (result.length > 0) {
+            return result[0];
+        } else {
+            throw new Error("No entity returned by query with args " + args);
         }
     }
 

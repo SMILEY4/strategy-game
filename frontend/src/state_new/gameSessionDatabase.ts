@@ -12,6 +12,7 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
         super({
             state: "none",
             turnState: "playing",
+            turn: -1,
             config: null,
         });
     }
@@ -30,6 +31,16 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
         this.update(() => ({
             turnState: turnState,
         }));
+    }
+
+    public setTurn(turn: number) {
+        this.update(() => ({
+            turn: turn,
+        }));
+    }
+
+    public getTurn(): number {
+        return this.get().turn;
     }
 
     public setConfig(config: GameConfig | null) {

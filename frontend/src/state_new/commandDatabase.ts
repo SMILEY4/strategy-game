@@ -3,7 +3,7 @@ import {AbstractDatabase} from "../shared/db/database/abstractDatabase";
 import {Query} from "../shared/db/query/query";
 import {Command} from "../models/command";
 import {AppCtx} from "../appContext";
-import {useQueryMultiple, useQuerySingle} from "../shared/db/adapters/databaseHooks";
+import {useQueryMultiple, useQuerySingleOrThrow} from "../shared/db/adapters/databaseHooks";
 import {CommandType} from "../models/commandType";
 
 function provideId(e: Command): string {
@@ -55,12 +55,7 @@ export namespace CommandDatabase {
     }
 
     export function useCommandById(commandId: string): Command {
-        const command = useQuerySingle(AppCtx.CommandDatabase(), QUERY_BY_ID, null);
-        if (command) {
-            return command;
-        } else {
-            throw new Error("No command with id " + commandId + " found");
-        }
+        return useQuerySingleOrThrow(AppCtx.CommandDatabase(), QUERY_BY_ID, null);
     }
 
 }

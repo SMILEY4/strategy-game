@@ -3,27 +3,26 @@ import {Camera} from "../../shared/webgl/camera";
 import {Tile} from "../../models/tile";
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {TilemapUtils} from "./tilemapUtils";
-import {TileRepository} from "../../state/access/TileRepository";
 import {CameraDatabase} from "../../state_new/cameraDatabase";
+import {TileDatabase} from "../../state_new/tileDatabase";
 
 export class TilePicker {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraDb: CameraDatabase;
-    private readonly tileRepository: TileRepository;
+    private readonly tileDb: TileDatabase;
 
-    constructor(canvasHandle: CanvasHandle, cameraDb: CameraDatabase, tileRepository: TileRepository) {
+    constructor(canvasHandle: CanvasHandle, cameraDb: CameraDatabase, tileDb: TileDatabase) {
         this.canvasHandle = canvasHandle;
         this.cameraDb = cameraDb;
-        this.tileRepository = tileRepository;
+        this.tileDb = tileDb;
     }
 
     public tileAt(x: number, y: number): Tile | null {
         const mouseClipPos = this.toClipSpace(x, y, this.canvasHandle.getClientWidth(), this.canvasHandle.getClientHeight());
         const viewProjMatrix = this.cameraMatrix(this.canvasHandle.getCanvasWidth(), this.canvasHandle.getCanvasHeight());
         const hexPos = TilePicker.toHexPos(viewProjMatrix, mouseClipPos);
-        const tile = this.tileRepository.getTileContainer().getTileAtOrNull(hexPos[0], hexPos[1]);
-        return tile ? tile : null;
+        return this.tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, hexPos);
     }
 
 

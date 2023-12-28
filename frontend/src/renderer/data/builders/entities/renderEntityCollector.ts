@@ -5,26 +5,26 @@ import {Command, CreateCityCommand, PlaceScoutCommand} from "../../../../models/
 import {CommandType} from "../../../../models/commandType";
 import {CountryIdentifier} from "../../../../models/country";
 import {Color} from "../../../../models/color";
-import {TileRepository} from "../../../../state/access/TileRepository";
-import {CityRepository} from "../../../../state/access/CityRepository";
 import {CommandDatabase} from "../../../../state_new/commandDatabase";
+import {CityDatabase} from "../../../../state_new/cityDatabase";
+import {TileDatabase} from "../../../../state_new/tileDatabase";
 
 export class RenderEntityCollector {
 
-    private readonly tileRepository: TileRepository;
-    private readonly cityRepository: CityRepository;
+    private readonly tileDb: TileDatabase;
+    private readonly cityDb: CityDatabase;
     private readonly commandDb: CommandDatabase;
 
-    constructor(tileRepository: TileRepository, cityRepository: CityRepository, commandDb: CommandDatabase) {
-        this.tileRepository = tileRepository;
-        this.cityRepository = cityRepository;
+    constructor(tileDb: TileDatabase, cityDb: CityDatabase, commandDb: CommandDatabase) {
+        this.tileDb = tileDb;
+        this.cityDb = cityDb;
         this.commandDb = commandDb;
     }
 
     public collect(): RenderEntity[] {
         return this.collectEntities(
-            this.tileRepository.getTiles(),
-            this.cityRepository.getCities(),
+            this.tileDb.queryMany(TileDatabase.QUERY_ALL, null),
+            this.cityDb.queryMany(CityDatabase.QUERY_ALL, null),
             this.commandDb.queryMany(CommandDatabase.QUERY_ALL, null),
         );
     }

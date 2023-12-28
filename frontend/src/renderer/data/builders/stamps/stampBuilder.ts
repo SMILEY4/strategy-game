@@ -1,11 +1,11 @@
 import {RenderEntity} from "../entities/renderEntity";
-import {TileContainer} from "../../../../models/tileContainer";
 import {MapMode} from "../../../../models/mapMode";
 import {Stamp} from "./stamp";
 import {Camera} from "../../../../shared/webgl/camera";
 import {TileIdentifier} from "../../../../models/tile";
 import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 import {mat3} from "../../../../shared/webgl/mat3";
+import {TileDatabase} from "../../../../state_new/tileDatabase";
 
 export namespace StampBuilder {
 
@@ -13,9 +13,9 @@ export namespace StampBuilder {
     const ICON_OFFSET: [number, number] = [0, 0];
 
 
-    export function build(camera: Camera, entities: RenderEntity[], tileContainer: TileContainer, mapMode: MapMode): Stamp[] {
+    export function build(camera: Camera, entities: RenderEntity[], tileDb: TileDatabase, mapMode: MapMode): Stamp[] {
 
-        const tiles = tileContainer.getTiles();
+        const tiles = tileDb.queryMany(TileDatabase.QUERY_ALL, null);
         const canvasSize: [number, number] = [camera.getClientWidth(), camera.getClientHeight()];
 
         const stamps: Stamp[] = [];

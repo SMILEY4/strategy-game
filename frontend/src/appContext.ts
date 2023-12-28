@@ -14,21 +14,15 @@ import {GameLoopService} from "./logic/game/gameLoopService";
 import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
 import {UserClient} from "./logic/user/userClient";
-import {UserRepository} from "./state/access/UserRepository";
-import {CountryRepository} from "./state/access/CountryRepository";
-import {ProvinceRepository} from "./state/access/ProvinceRepository";
-import {CityRepository} from "./state/access/CityRepository";
-import {TileRepository} from "./state/access/TileRepository";
-import {RemoteGameStateRepository} from "./state/access/RemoteGameStateRepository";
+import {UserRepository} from "./state_new/UserRepository";
 import {TilePicker} from "./logic/game/tilePicker";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
-import {RouteRepository} from "./state/access/RouteRepository";
 import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
 import {RenderDataManager} from "./renderer/data/renderDataManager";
 import {GameRenderer} from "./renderer/gameRenderer";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
-import {MonitoringRepository} from "./state/access/MonitoringRepository";
+import {MonitoringRepository} from "./state_new/MonitoringRepository";
 import {RenderDataUpdater} from "./renderer/data/renderDataUpdater";
 import {CameraDatabase} from "./state_new/cameraDatabase";
 import {CityDatabase} from "./state_new/cityDatabase";
@@ -76,12 +70,6 @@ interface AppCtxDef {
 
     MonitoringRepository: () => MonitoringRepository,
     UserRepository: () => UserRepository,
-    RemoteGameStateRepository: () => RemoteGameStateRepository,
-    CountryRepository: () => CountryRepository,
-    ProvinceRepository: () => ProvinceRepository,
-    CityRepository: () => CityRepository,
-    TileRepository: () => TileRepository,
-    RouteRepository: () => RouteRepository,
 
     CameraDatabase: () => CameraDatabase,
     CityDatabase: () => CityDatabase,
@@ -146,15 +134,19 @@ export const AppCtx: AppCtxDef = {
 
     DataViewService: diContext.register(
         "ModifiedAccessService",
-        () => new DataViewService(AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.RouteRepository()),
+        () => new DataViewService(AppCtx.UserService(), AppCtx.CountryDatabase(), AppCtx.RouteDatabase()),
     ),
     NextTurnService: diContext.register(
         "NextTurnService",
         () => new NextTurnService(
             AppCtx.GameLoopService(),
-            AppCtx.RemoteGameStateRepository(),
             AppCtx.GameSessionDatabase(),
             AppCtx.MonitoringRepository(),
+            AppCtx.CityDatabase(),
+            AppCtx.CountryDatabase(),
+            AppCtx.ProvinceDatabase(),
+            AppCtx.RouteDatabase(),
+            AppCtx.TileDatabase(),
         ),
     ),
     EndTurnService: diContext.register(
@@ -167,21 +159,33 @@ export const AppCtx: AppCtxDef = {
     ),
     CityCreationService: diContext.register(
         "CityCreationService",
-        () => new CityCreationService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.GameSessionDatabase(), AppCtx.CommandDatabase(), AppCtx.CountryRepository()),
+        () => new CityCreationService(
+            AppCtx.CommandService(),
+            AppCtx.UserService(),
+            AppCtx.GameSessionDatabase(),
+            AppCtx.CommandDatabase(),
+            AppCtx.CountryDatabase(),
+        ),
     ),
     CityUpgradeService: diContext.register(
         "CityUpgradeService",
-        () => new CityUpgradeService(AppCtx.CommandService(), AppCtx.UserService(), AppCtx.CountryRepository(), AppCtx.ProvinceRepository(), AppCtx.CityRepository(), AppCtx.CommandDatabase()),
+        () => new CityUpgradeService(
+            AppCtx.CommandService(),
+            AppCtx.UserService(),
+            AppCtx.CountryDatabase(),
+            AppCtx.ProvinceDatabase(),
+            AppCtx.CityDatabase(),
+            AppCtx.CommandDatabase(),
+        ),
     ),
     GameLoopService: diContext.register(
         "GameLoopService",
         () => new GameLoopService(
             AppCtx.CanvasHandle(),
-            new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraDatabase(), AppCtx.TileRepository()),
+            new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraDatabase(), AppCtx.TileDatabase()),
             AppCtx.CameraDatabase(),
             AppCtx.GameSessionDatabase(),
             AppCtx.LocalGameDatabase(),
-            AppCtx.TileRepository(),
             AppCtx.GameRenderer(),
             AppCtx.AudioService(),
         ),
@@ -204,17 +208,17 @@ export const AppCtx: AppCtxDef = {
     RenderEntityCollector: diContext.register(
         "RenderEntityCollector",
         () => new RenderEntityCollector(
-            AppCtx.TileRepository(),
-            AppCtx.CityRepository(),
+            AppCtx.TileDatabase(),
+            AppCtx.CityDatabase(),
             AppCtx.CommandDatabase(),
         ),
     ),
     RenderDataUpdater: diContext.register(
         "RenderDataUpdater",
         () => new RenderDataUpdater(
-            AppCtx.RemoteGameStateRepository(),
-            AppCtx.TileRepository(),
-            AppCtx.RouteRepository(),
+            AppCtx.GameSessionDatabase(),
+            AppCtx.TileDatabase(),
+            AppCtx.RouteDatabase(),
             AppCtx.LocalGameDatabase(),
             AppCtx.CommandDatabase(),
             AppCtx.RenderEntityCollector(),
@@ -246,31 +250,6 @@ export const AppCtx: AppCtxDef = {
         "CameraRepository",
         () => new CameraDatabase(),
     ),
-    RemoteGameStateRepository: diContext.register(
-        "RemoteGameStateRepository",
-        () => new RemoteGameStateRepository(),
-    ),
-    CountryRepository: diContext.register(
-        "CountryRepository",
-        () => new CountryRepository(AppCtx.RemoteGameStateRepository()),
-    ),
-    ProvinceRepository: diContext.register(
-        "ProvinceRepository",
-        () => new ProvinceRepository(AppCtx.RemoteGameStateRepository()),
-    ),
-    CityRepository: diContext.register(
-        "CityRepository",
-        () => new CityRepository(AppCtx.RemoteGameStateRepository()),
-    ),
-    TileRepository: diContext.register(
-        "TileRepository",
-        () => new TileRepository(AppCtx.RemoteGameStateRepository()),
-    ),
-    RouteRepository: diContext.register(
-        "RouteRepository",
-        () => new RouteRepository(AppCtx.RemoteGameStateRepository()),
-    ),
-
 
     CityDatabase: diContext.register(
         "CityDatabase",

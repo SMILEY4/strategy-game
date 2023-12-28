@@ -1,8 +1,8 @@
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
-import {TileContainer} from "../../../../models/tileContainer";
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {packBorder} from "./packBorder";
 import {MapMode} from "../../../../models/mapMode";
+import {TileDatabase} from "../../../../state_new/tileDatabase";
 
 export namespace InstanceOverlayDataBuilder {
 
@@ -19,10 +19,11 @@ export namespace InstanceOverlayDataBuilder {
     const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
 
 
-    export function build(tileContainer: TileContainer, mapMode: MapMode): [number, ArrayBuffer] {
-        const [buffer, cursor] = createMixedArray(tileContainer.getTileCount());
-        appendTiles(cursor, tileContainer, mapMode);
-        return [tileContainer.getTileCount(), buffer.getRawBuffer()!];
+    export function build(tileDb: TileDatabase, mapMode: MapMode): [number, ArrayBuffer] {
+        const tileCount = tileDb.count()
+        const [buffer, cursor] = createMixedArray(tileCount);
+        appendTiles(cursor, tileDb, mapMode);
+        return [tileCount, buffer.getRawBuffer()!];
     }
 
 
@@ -36,13 +37,13 @@ export namespace InstanceOverlayDataBuilder {
     }
 
 
-    function appendTiles(cursor: MixedArrayBufferCursor, tileContainer: TileContainer, mapMode: MapMode) {
-        const tiles = tileContainer.getTiles();
+    function appendTiles(cursor: MixedArrayBufferCursor, tileDb: TileDatabase, mapMode: MapMode) {
+        const tiles = tileDb.queryMany(TileDatabase.QUERY_ALL, null);
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
 
             // border mask
-            const border = BorderBuilder.build(tile, tileContainer, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
+            const border = BorderBuilder.build(tile, tileDb, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
             const borderPacked = packBorder(border);
             cursor.append(borderPacked);
 

@@ -2,13 +2,13 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import {Tile, TileIdentifier, TileView} from "../../../../../models/tile";
 import React from "react";
 import {TileWindow} from "./TileWindow";
-import {TileRepository} from "../../../../../state/access/TileRepository";
 import {UseCityWindow} from "../city/useCityWindow";
 import {UseCountryWindow} from "../country/useCountryWindow";
 import {AppCtx} from "../../../../../appContext";
 import {UseSettlementCreationWindow} from "../cityCreation/useSettlementCreationWindow";
 import {LocalGameDatabase} from "../../../../../state_new/localGameDatabase";
 import {CommandDatabase} from "../../../../../state_new/commandDatabase";
+import {TileDatabase} from "../../../../../state_new/tileDatabase";
 
 export namespace UseTileWindow {
 
@@ -66,7 +66,7 @@ export namespace UseTileWindow {
 
         const commands = CommandDatabase.useCommands();
         const selectedTileIdentifier = LocalGameDatabase.useSelectedTile();
-        const tile = TileRepository.useTileById(overwriteTile === null ? selectedTileIdentifier : overwriteTile);
+        const tile = TileDatabase.useTileById(overwriteTile === null ? selectedTileIdentifier : overwriteTile);
         const tileView = tile ? AppCtx.DataViewService().getTileView(tile, commands) : null;
 
         const openCity = UseCityWindow.useOpen();

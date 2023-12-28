@@ -9,7 +9,7 @@ import {EntityMaskRenderer} from "./entitymask/entityMaskRenderer";
 import {StampRenderer} from "./stamps/stampRenderer";
 import {RoutesRenderer} from "./routes/routesRenderer";
 import {WebGLMonitor} from "../shared/webgl/monitor/webGLMonitor";
-import {MonitoringRepository} from "../state/access/MonitoringRepository";
+import {MonitoringRepository} from "../state_new/MonitoringRepository";
 import {CameraDatabase} from "../state_new/cameraDatabase";
 
 export class GameRenderer {

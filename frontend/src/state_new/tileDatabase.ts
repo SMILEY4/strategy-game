@@ -1,9 +1,9 @@
 import {MapDatabaseStorage} from "../shared/db/storage/mapDatabaseStorage";
-import {Country} from "../models/country";
 import {AbstractDatabase} from "../shared/db/database/abstractDatabase";
 import {Query} from "../shared/db/query/query";
-import {City} from "../models/city";
-import {Tile} from "../models/tile";
+import {Tile, TileIdentifier} from "../models/tile";
+import {useQuerySingle} from "../shared/db/adapters/databaseHooks";
+import {AppCtx} from "../appContext";
 
 function provideId(e: Tile): string {
     return e.identifier.id;
@@ -22,4 +22,31 @@ export class TileDatabase extends AbstractDatabase<TileStorage, Tile, string> {
 }
 
 interface TileQuery<ARGS> extends Query<TileStorage, Tile, string, ARGS> {
+}
+
+
+export namespace TileDatabase {
+
+    export const QUERY_BY_ID: TileQuery<TileIdentifier> = {
+        run(storage: TileStorage, args: TileIdentifier): Tile[] {
+            return [] // todo
+        },
+    };
+
+    export const QUERY_BY_POSITION: TileQuery<[number, number]> = {
+        run(storage: TileStorage, args: [number, number]): Tile[] {
+            return [] // todo
+        },
+    };
+
+    export const QUERY_ALL: TileQuery<void> = {
+        run(storage: TileStorage, args: void): Tile[] {
+            return [] // todo
+        },
+    };
+
+    export function useTileById(tileIdentifier: TileIdentifier | null): Tile | null {
+        return useQuerySingle(AppCtx.TileDatabase(), QUERY_BY_ID, tileIdentifier)
+    }
+
 }

@@ -3,16 +3,16 @@ import {InstanceBaseDataBuilder} from "./builders/tilemap/instanceBaseDataBuilde
 import {InstanceOverlayDataBuilder} from "./builders/tilemap/instanceOverlayDataBuilder";
 import {EntityMeshBuilder} from "./builders/entities/entityMeshBuilder";
 import {RoutesMeshBuilder} from "./builders/routes/routesMeshBuilder";
-import {TileRepository} from "../../state/access/TileRepository";
-import {RouteRepository} from "../../state/access/RouteRepository";
 import {RenderEntityCollector} from "./builders/entities/renderEntityCollector";
-import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
 import {ChangeDetector} from "../../shared/changeDetector";
 import {StampBuilder} from "./builders/stamps/stampBuilder";
 import {Camera} from "../../shared/webgl/camera";
 import {RenderEntity} from "./builders/entities/renderEntity";
 import {LocalGameDatabase} from "../../state_new/localGameDatabase";
 import {CommandDatabase} from "../../state_new/commandDatabase";
+import {RouteDatabase} from "../../state_new/routeDatabase";
+import {TileDatabase} from "../../state_new/tileDatabase";
+import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
 
 interface Changes {
     mapMode: boolean,
@@ -23,9 +23,9 @@ interface Changes {
 
 export class RenderDataUpdater {
 
-    private readonly remoteGameStateRepository: RemoteGameStateRepository;
-    private readonly tileRepository: TileRepository;
-    private readonly routesRepository: RouteRepository;
+    private readonly gameSessionDb: GameSessionDatabase;
+    private readonly tileDb: TileDatabase;
+    private readonly routeDb: RouteDatabase;
     private readonly localGameDb: LocalGameDatabase;
     private readonly commandDb: CommandDatabase;
 
@@ -38,16 +38,16 @@ export class RenderDataUpdater {
 
 
     constructor(
-        removeGameStateRepository: RemoteGameStateRepository,
-        tileRepository: TileRepository,
-        routesRepository: RouteRepository,
+        gameSessionDb: GameSessionDatabase,
+        tileDb: TileDatabase,
+        routeDb: RouteDatabase,
         localGameDb: LocalGameDatabase,
         commandDb: CommandDatabase,
         entityCollector: RenderEntityCollector,
     ) {
-        this.remoteGameStateRepository = removeGameStateRepository;
-        this.tileRepository = tileRepository;
-        this.routesRepository = routesRepository;
+        this.gameSessionDb = gameSessionDb;
+        this.tileDb = tileDb;
+        this.routeDb = routeDb;
         this.localGameDb = localGameDb;
         this.commandDb = commandDb;
         this.entityCollector = entityCollector;
@@ -66,7 +66,7 @@ export class RenderDataUpdater {
         const mapMode = this.localGameDb.getMapMode();
         return {
             mapMode: this.detectorMapMode.check(mapMode),
-            remoteGameState: this.detectorRemoteGameStateRevId.check(this.remoteGameStateRepository.getRevId()),
+            remoteGameState: this.detectorRemoteGameStateRevId.check(this.gameSessionDb.getRevId()),
             commands: this.detectorCommandRevId.check(this.commandDb.getRevId()),
             camera: this.detectorCamera.check(camera.getHash()),
         };
@@ -85,13 +85,13 @@ export class RenderDataUpdater {
 
     private updateTilemapInstances(renderData: RenderData, changes: Changes) {
         if (changes.remoteGameState) {
-            const [count, baseDataArray] = InstanceBaseDataBuilder.build(this.tileRepository.getTileContainer());
+            const [count, baseDataArray] = InstanceBaseDataBuilder.build(this.tileDb);
             renderData.tilemap.instances.instanceCount = count;
             renderData.tilemap.instances.instanceBaseBuffer.setData(baseDataArray, true);
         }
         if (changes.remoteGameState || changes.mapMode) {
             const mapMode = this.localGameDb.getMapMode();
-            const [count, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileRepository.getTileContainer(), mapMode);
+            const [count, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileDb, mapMode);
             renderData.tilemap.instances.instanceCount = count;
             renderData.tilemap.instances.instanceOverlayBuffer.setData(overlayDataArray, true);
         }
@@ -112,7 +112,7 @@ export class RenderDataUpdater {
 
     private updateRoutes(renderData: RenderData, changes: Changes) {
         if (changes.remoteGameState) {
-            const [count, vertices] = RoutesMeshBuilder.build(this.routesRepository.getRoutes());
+            const [count, vertices] = RoutesMeshBuilder.build(this.routeDb.queryMany(RouteDatabase.QUERY_ALL, null));
             renderData.routes.vertexCount = count;
             renderData.routes.vertexBuffer.setData(vertices, true);
         }
@@ -120,7 +120,7 @@ export class RenderDataUpdater {
 
     private updateStamps(renderData: RenderData, camera: Camera, entities: RenderEntity[], changes: Changes) {
         if (changes.remoteGameState || changes.commands || changes.mapMode || changes.camera) {
-            renderData.stamps.items = StampBuilder.build(camera, entities, this.tileRepository.getTileContainer(), this.localGameDb.getMapMode());
+            renderData.stamps.items = StampBuilder.build(camera, entities, this.tileDb, this.localGameDb.getMapMode());
             renderData.stamps.dirty = true;
         } else {
             renderData.stamps.dirty = false;

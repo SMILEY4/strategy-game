@@ -9,7 +9,6 @@ import {
 import {CommandType} from "../../models/commandType";
 import {InfoVisibility} from "../../models/infoVisibility";
 import {UserService} from "../user/userService";
-import {CountryRepository} from "../../state/access/CountryRepository";
 import {Province, ProvinceView} from "../../models/province";
 import {City, CityView} from "../../models/city";
 import {
@@ -26,18 +25,19 @@ import {
 } from "../../models/productionQueueEntry";
 import {Tile, TileView} from "../../models/tile";
 import {Color} from "../../models/color";
-import {RouteRepository} from "../../state/access/RouteRepository";
+import {CountryDatabase} from "../../state_new/countryDatabase";
+import {RouteDatabase} from "../../state_new/routeDatabase";
 
 export class DataViewService {
 
     private readonly userService: UserService;
-    private readonly countryRepository: CountryRepository;
-    private readonly routeRepository: RouteRepository;
+    private readonly countryDb: CountryDatabase;
+    private readonly routeDb: RouteDatabase;
 
-    constructor(userService: UserService, countryRepository: CountryRepository, routeRepository: RouteRepository) {
+    constructor(userService: UserService, countryDb: CountryDatabase, routeDb: RouteDatabase) {
         this.userService = userService;
-        this.countryRepository = countryRepository;
-        this.routeRepository = routeRepository;
+        this.countryDb = countryDb;
+        this.routeDb = routeDb;
     }
 
 
@@ -159,7 +159,7 @@ export class DataViewService {
     public getCityView(city: City, commands: Command[]): CityView {
         const povCountryId = this.getPlayerCountry().identifier.id;
         const commandUpgradeTier = commands.find(cmd => cmd.type === CommandType.CITY_UPGRADE && (cmd as UpgradeCityCommand).city.id === city.identifier.id);
-        const routes = this.routeRepository.getRoutes().filter(r => r.cityA.id === city.identifier.id || r.cityB.id === city.identifier.id);
+        const routes = this.routeDb.queryMany(RouteDatabase.QUERY_BY_CITY_ID, city.identifier.id)
         return {
             isPlayerOwned: city.country.id === povCountryId,
             identifier: city.identifier,
@@ -283,7 +283,7 @@ export class DataViewService {
     }
 
     private getPlayerCountry(): Country {
-        return this.countryRepository.getCountryByUserId(this.userService.getUserId());
+        return this.countryDb.querySingleOrThrow(CountryDatabase.QUERY_BY_USER_ID, this.userService.getUserId());
     }
 
 }

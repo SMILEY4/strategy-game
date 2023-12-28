@@ -1,10 +1,9 @@
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
-import {Tile} from "../../../../models/tile";
 import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
-import {TileContainer} from "../../../../models/tileContainer";
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {packBorder} from "./packBorder";
 import {TerrainType} from "../../../../models/terrainType";
+import {TileDatabase} from "../../../../state_new/tileDatabase";
 
 export namespace InstanceBaseDataBuilder {
 
@@ -24,10 +23,11 @@ export namespace InstanceBaseDataBuilder {
     const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
 
 
-    export function build(tileContainer: TileContainer): [number, ArrayBuffer] {
-        const [buffer, cursor] = createMixedArray(tileContainer.getTileCount());
-        appendTiles(cursor, tileContainer);
-        return [tileContainer.getTileCount(), buffer.getRawBuffer()!];
+    export function build(tileDb: TileDatabase): [number, ArrayBuffer] {
+        const tileCount = tileDb.count()
+        const [buffer, cursor] = createMixedArray(tileCount);
+        appendTiles(cursor, tileDb);
+        return [tileCount, buffer.getRawBuffer()!];
     }
 
 
@@ -40,8 +40,8 @@ export namespace InstanceBaseDataBuilder {
         return [array, cursor];
     }
 
-    export function appendTiles(cursor: MixedArrayBufferCursor, tileContainer: TileContainer) {
-        const tiles = tileContainer.getTiles();
+    export function appendTiles(cursor: MixedArrayBufferCursor, tileDb: TileDatabase) {
+        const tiles = tileDb.queryMany(TileDatabase.QUERY_ALL, null);
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
 
@@ -61,7 +61,7 @@ export namespace InstanceBaseDataBuilder {
             cursor.append(tile.visibility.renderId);
 
             // water border mask
-            const border = BorderBuilder.build(tile, tileContainer, false, (ta, tb) => {
+            const border = BorderBuilder.build(tile, tileDb, false, (ta, tb) => {
                 const a = ta.terrainType;
                 const b = tb.terrainType;
                 return (!a && !b) ? false : a === TerrainType.WATER && b !== null && a !== b;

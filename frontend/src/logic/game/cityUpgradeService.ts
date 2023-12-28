@@ -3,34 +3,34 @@ import {UserService} from "../user/userService";
 import {City} from "../../models/city";
 import {SettlementTier} from "../../models/settlementTier";
 import {Country} from "../../models/country";
-import {CountryRepository} from "../../state/access/CountryRepository";
-import {ProvinceRepository} from "../../state/access/ProvinceRepository";
-import {CityRepository} from "../../state/access/CityRepository";
 import {CommandType} from "../../models/commandType";
 import {UpgradeCityCommand} from "../../models/command";
 import {CommandDatabase} from "../../state_new/commandDatabase";
+import {CityDatabase} from "../../state_new/cityDatabase";
+import {CountryDatabase} from "../../state_new/countryDatabase";
+import {ProvinceDatabase} from "../../state_new/provinceDatabase";
 
 export class CityUpgradeService {
 
     private readonly commandService: CommandService;
     private readonly userService: UserService;
-    private readonly countryRepository: CountryRepository;
-    private readonly provinceRepository: ProvinceRepository;
-    private readonly cityRepository: CityRepository;
+    private readonly countryDb: CountryDatabase;
+    private readonly provinceDb: ProvinceDatabase;
+    private readonly cityDb: CityDatabase;
     private readonly commandDb: CommandDatabase;
 
     constructor(commandService: CommandService,
                 userService: UserService,
-                countryRepository: CountryRepository,
-                provinceRepository: ProvinceRepository,
-                cityRepository: CityRepository,
+                countryDb: CountryDatabase,
+                provinceDb: ProvinceDatabase,
+                cityDb: CityDatabase,
                 commandDb: CommandDatabase,
     ) {
         this.commandService = commandService;
         this.userService = userService;
-        this.countryRepository = countryRepository;
-        this.provinceRepository = provinceRepository;
-        this.cityRepository = cityRepository;
+        this.countryDb = countryDb;
+        this.provinceDb = provinceDb;
+        this.cityDb = cityDb;
         this.commandDb = commandDb;
     }
 
@@ -77,15 +77,14 @@ export class CityUpgradeService {
     }
 
     private getPlayerCountry(): Country {
-        return this.countryRepository.getCountryByUserId(this.userService.getUserId());
+        return this.countryDb.querySingleOrThrow(CountryDatabase.QUERY_BY_USER_ID, this.userService.getUserId());
     }
 
     private getProvinceCityCount(city: City): number {
-        const province = this.provinceRepository.getProvinceByCity(city.identifier.id);
+        const province = this.provinceDb.querySingleOrThrow(ProvinceDatabase.QUERY_BY_CITY_ID, city.identifier.id);
         let count = 0;
-        for (let i = 0; i < province.cities.length; i++) {
-            const cityReduced = province.cities[i];
-            const city = this.cityRepository.getCity(cityReduced.identifier.id);
+        for (const cityReduced of province.cities) {
+            const city = this.cityDb.querySingleOrThrow(CityDatabase.QUERY_BY_ID, cityReduced.identifier.id);
             if (city.tier === SettlementTier.CITY) {
                 count++;
             }

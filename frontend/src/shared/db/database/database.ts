@@ -11,7 +11,7 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
     /**
      * @return a unique revision id that gets updated every time the content of the database is changed
      */
-    getRevId(): string
+    getRevId(): string;
 
     /**
      * Perform the given action in a "transaction". All changes are collected and subscribers are notified after the action.
@@ -152,11 +152,17 @@ export interface Database<STORAGE extends DatabaseStorage<ENTITY, ID>, ENTITY, I
     replaceByQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, action: (entity: ENTITY) => ENTITY): ENTITY[];
 
     /**
+     * Count the number of stored entities
+     * @return the number of entities
+     */
+    count(): number;
+
+    /**
      * Retrieve a single entity with the given id
      * @param id the id of the entity
      * @return the entity with the given id or null
      */
-    queryById(id: ID): ENTITY | null
+    queryById(id: ID): ENTITY | null;
 
     /**
      * Retrieve a single entity with the given query

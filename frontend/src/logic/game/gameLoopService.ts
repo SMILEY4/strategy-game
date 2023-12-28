@@ -1,6 +1,5 @@
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
-import {TileRepository} from "../../state/access/TileRepository";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
@@ -13,8 +12,7 @@ export class GameLoopService {
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraDb: CameraDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
-    private readonly localGameDb: LocalGameDatabase
-        private readonly tileRepository: TileRepository;
+    private readonly localGameDb: LocalGameDatabase;
     private readonly tilePicker: TilePicker;
     private readonly gameRenderer: GameRenderer;
     private readonly audioService: AudioService;
@@ -26,16 +24,14 @@ export class GameLoopService {
         cameraDb: CameraDatabase,
         gameSessionDb: GameSessionDatabase,
         localGameDb: LocalGameDatabase,
-        tileRepository: TileRepository,
         gameRenderer: GameRenderer,
-        audioService: AudioService
+        audioService: AudioService,
     ) {
         this.canvasHandle = canvasHandle;
         this.tilePicker = tilePicker;
         this.cameraDb = cameraDb;
         this.gameSessionDb = gameSessionDb;
         this.localGameDb = localGameDb;
-        this.tileRepository = tileRepository;
         this.gameRenderer = gameRenderer;
         this.audioService = audioService;
     }
@@ -63,7 +59,7 @@ export class GameLoopService {
         if (this.localGameDb.getSelectedTile()?.id !== tile?.identifier) {
             this.localGameDb.setSelectedTile(tile?.identifier || null);
             if (tile) {
-                AudioType.CLICK_PRIMARY.play(this.audioService)
+                AudioType.CLICK_PRIMARY.play(this.audioService);
                 UseTileWindow.open(tile.identifier);
             }
         }

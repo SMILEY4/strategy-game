@@ -4,7 +4,6 @@ import React from "react";
 import {CityProductionQueueWindow} from "./CityProductionQueueWindow";
 import {CommandType} from "../../../../../models/commandType";
 import {AddProductionQueueCommand, CancelProductionQueueCommand} from "../../../../../models/command";
-import {CityRepository} from "../../../../../state/access/CityRepository";
 import {AppCtx} from "../../../../../appContext";
 import {
     BuildingProductionQueueEntry,
@@ -14,10 +13,9 @@ import {
 } from "../../../../../models/productionQueueEntry";
 import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../../../../models/constructionEntry";
 import {CommandDatabase} from "../../../../../state_new/commandDatabase";
+import {CityDatabase} from "../../../../../state_new/cityDatabase";
 
 export namespace UseCityProductionQueueWindow {
-
-    import useCityById = CityRepository.useCityById;
 
     export function useOpen() {
         const WINDOW_ID = "city-production-queue";
@@ -43,7 +41,7 @@ export namespace UseCityProductionQueueWindow {
 
 
     export function useData(cityIdentifier: CityIdentifier): UseCityProductionQueueWindow.Data {
-        const city = useCityById(cityIdentifier.id);
+        const city = CityDatabase.useCityById(cityIdentifier.id);
         const queueEntries: ProductionQueueEntryView[] = useMergedProductionQueueEntries(city);
         const cancelEntry = useCancelEntry(cityIdentifier);
         return {

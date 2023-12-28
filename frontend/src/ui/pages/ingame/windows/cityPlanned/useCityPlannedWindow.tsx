@@ -8,9 +8,9 @@ import {UseCountryWindow} from "../country/useCountryWindow";
 import {UseProvinceWindow} from "../province/useProvinceWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {CreateCityCommand} from "../../../../../models/command";
-import {CountryRepository} from "../../../../../state/access/CountryRepository";
 import {AppCtx} from "../../../../../appContext";
 import {CommandDatabase} from "../../../../../state_new/commandDatabase";
+import {CountryDatabase} from "../../../../../state_new/countryDatabase";
 
 export namespace UseCityPlannedWindow {
 
@@ -49,7 +49,7 @@ export namespace UseCityPlannedWindow {
     export function useData(commandId: string): UseCityPlannedWindow.Data {
 
         const command = CommandDatabase.useCommandById(commandId) as CreateCityCommand;
-        const country = CountryRepository.useCountryByUserId(AppCtx.UserService().getUserId());
+        const country = CountryDatabase.useCountryByUserId(AppCtx.UserService().getUserId());
 
         const openCountryWindow = UseCountryWindow.useOpen();
         const openProvinceWindow = UseProvinceWindow.useOpen();

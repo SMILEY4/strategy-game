@@ -2,8 +2,8 @@ import {useCloseWindow, useOpenWindow} from "../../../../components/headless/use
 import {Tile, TileIdentifier} from "../../../../../models/tile";
 import React, {useState} from "react";
 import {SettlementCreationWindow} from "./SettlementCreationWindow";
-import {TileRepository} from "../../../../../state/access/TileRepository";
 import {AppCtx} from "../../../../../appContext";
+import {TileDatabase} from "../../../../../state_new/tileDatabase";
 
 export namespace UseSettlementCreationWindow {
 
@@ -39,7 +39,7 @@ export namespace UseSettlementCreationWindow {
 
     export function useData(windowId: string, tileIdentifier: TileIdentifier, asColony: boolean): UseSettlementCreationWindow.Data {
 
-        const tile = TileRepository.useTileById(tileIdentifier)!;
+        const tile = TileDatabase.useTileById(tileIdentifier)!;
 
         const [name, setName] = useState("");
         const [valid, failedValidations, create] = useCreateSettlement(tile, name, asColony);

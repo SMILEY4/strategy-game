@@ -1,4 +1,3 @@
-import {CityRepository} from "../../../../../state/access/CityRepository";
 import {AppCtx} from "../../../../../appContext";
 import {City, CityIdentifier, CityView, ConnectedCityView} from "../../../../../models/city";
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
@@ -11,6 +10,7 @@ import {UseCountryWindow} from "../country/useCountryWindow";
 import {UseProvinceWindow} from "../province/useProvinceWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {CommandDatabase} from "../../../../../state_new/commandDatabase";
+import {CityDatabase} from "../../../../../state_new/cityDatabase";
 
 export namespace UseCityWindow {
 
@@ -53,7 +53,7 @@ export namespace UseCityWindow {
 
     export function useData(cityId: string): UseCityWindow.Data {
 
-        const city = CityRepository.useCityById(cityId);
+        const city = CityDatabase.useCityById(cityId);
         const commands = CommandDatabase.useCommands();
         const cityView = AppCtx.DataViewService().getCityView(city, commands);
 

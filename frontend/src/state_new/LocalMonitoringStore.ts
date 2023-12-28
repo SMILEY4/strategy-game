@@ -1,7 +1,6 @@
-import {SetState} from "../../shared/zustandUtils";
+import {SetState} from "../shared/zustandUtils";
 import create from "zustand";
-import {WebGLMonitor} from "../../shared/webgl/monitor/webGLMonitor";
-import {ValueHistory} from "../../shared/valueHistory";
+import {WebGLMonitor} from "../shared/webgl/monitor/webGLMonitor";
 
 export namespace LocalMonitoringStore {
 

@@ -1,5 +1,5 @@
-import {LocalMonitoringStore} from "../local/LocalMonitoringStore";
-import {WebGLMonitor} from "../../shared/webgl/monitor/webGLMonitor";
+import {LocalMonitoringStore} from "./LocalMonitoringStore";
+import {WebGLMonitor} from "../shared/webgl/monitor/webGLMonitor";
 
 export class MonitoringRepository {
 

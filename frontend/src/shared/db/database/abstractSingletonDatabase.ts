@@ -9,6 +9,8 @@ export class AbstractSingletonDatabase<ENTITY> implements SingletonDatabase<ENTI
 
     private entity: ENTITY;
 
+    private revId: string = UID.generate();
+
     private readonly subscribers = new Map<string, SingletonSubscriber<ENTITY>>();
 
     private transactionContext: null | { modified: boolean } = null;
@@ -18,6 +20,16 @@ export class AbstractSingletonDatabase<ENTITY> implements SingletonDatabase<ENTI
      */
     constructor(initialValue: ENTITY) {
         this.entity = initialValue;
+    }
+
+    //==== REVISION ID =====================================================
+
+    public getRevId(): string {
+        return this.revId;
+    }
+
+    private updateRevId() {
+        this.revId = UID.generate();
     }
 
     //==== TRANSACTION =====================================================
@@ -31,6 +43,7 @@ export class AbstractSingletonDatabase<ENTITY> implements SingletonDatabase<ENTI
     public endTransaction() {
         try {
             if (this.transactionContext !== null && this.transactionContext.modified) {
+                this.updateRevId();
                 this.checkSubscribers();
             }
         } finally {
@@ -69,6 +82,7 @@ export class AbstractSingletonDatabase<ENTITY> implements SingletonDatabase<ENTI
         if (this.transactionContext !== null) {
             this.transactionContext.modified = true;
         } else {
+            this.updateRevId()
             this.checkSubscribers()
         }
     }

@@ -10,43 +10,66 @@ import {
 import {Tile} from "../../models/tile";
 import {mapRecord, orDefault, orNull} from "../../shared/utils";
 import {GameLoopService} from "./gameLoopService";
-import {TileContainer} from "../../models/tileContainer";
 import {Country, CountryIdentifier} from "../../models/country";
 import {Province, ProvinceIdentifier} from "../../models/province";
 import {City, CityIdentifier} from "../../models/city";
 import {SettlementTier} from "../../models/settlementTier";
 import {BuildingType} from "../../models/buildingType";
 import {ResourceType} from "../../models/resourceType";
-import {RemoteGameStateRepository} from "../../state/access/RemoteGameStateRepository";
-import {BuildingProductionQueueEntry, ProductionQueueEntry, SettlerProductionQueueEntry} from "../../models/productionQueueEntry";
+import {
+    BuildingProductionQueueEntry,
+    ProductionQueueEntry,
+    SettlerProductionQueueEntry,
+} from "../../models/productionQueueEntry";
 import {Building} from "../../models/building";
 import {Route} from "../../models/route";
 import {TerrainType} from "../../models/terrainType";
 import {Visibility} from "../../models/visibility";
 import {TerrainResourceType} from "../../models/terrainResourceType";
-import {MonitoringRepository} from "../../state/access/MonitoringRepository";
+import {MonitoringRepository} from "../../state_new/MonitoringRepository";
 import {ValueHistory} from "../../shared/valueHistory";
 import {ResourceLedger} from "../../models/resourceLedger";
 import {DetailLogEntry} from "../../models/detailLogEntry";
 import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
+import {CityDatabase} from "../../state_new/cityDatabase";
+import {CountryDatabase} from "../../state_new/countryDatabase";
+import {ProvinceDatabase} from "../../state_new/provinceDatabase";
+import {RouteDatabase} from "../../state_new/routeDatabase";
+import {TileDatabase} from "../../state_new/tileDatabase";
+import {Transaction} from "../../shared/db/database/transaction";
 
 export class NextTurnService {
 
     private readonly gameLoopService: GameLoopService;
-    private readonly remoteGameRepository: RemoteGameStateRepository;
-    private readonly gameSessionDb: GameSessionDatabase;
     private readonly monitoringRepository: MonitoringRepository;
+
+    private readonly gameSessionDb: GameSessionDatabase;
+    private readonly cityDb: CityDatabase;
+    private readonly countryDb: CountryDatabase;
+    private readonly provinceDb: ProvinceDatabase;
+    private readonly routeDb: RouteDatabase;
+    private readonly tileDb: TileDatabase;
 
     private readonly durationHistory = new ValueHistory(10);
 
-    constructor(gameLoopService: GameLoopService,
-                remoteGameRepository: RemoteGameStateRepository,
-                gameSessionDb: GameSessionDatabase,
-                monitoringRepository: MonitoringRepository) {
+    constructor(
+        gameLoopService: GameLoopService,
+        gameSessionDb: GameSessionDatabase,
+        monitoringRepository: MonitoringRepository,
+        cityDb: CityDatabase,
+        countryDb: CountryDatabase,
+        provinceDb: ProvinceDatabase,
+        routeDb: RouteDatabase,
+        tileDb: TileDatabase,
+    ) {
         this.gameLoopService = gameLoopService;
-        this.remoteGameRepository = remoteGameRepository;
         this.gameSessionDb = gameSessionDb;
         this.monitoringRepository = monitoringRepository;
+        this.cityDb = cityDb;
+        this.countryDb = countryDb;
+        this.provinceDb = provinceDb;
+        this.routeDb = routeDb;
+        this.tileDb = tileDb;
     }
 
 
@@ -56,17 +79,19 @@ export class NextTurnService {
         // todo: possible performance optimisation:
         //  object pools for tiles, cities, ...
         //  move old game state to pool instead of gc -> allocate new state from pool
-        this.remoteGameRepository.setGameState({
-            ...this.remoteGameRepository.getGameState(),
-            countries: this.buildCountries(game),
-            provinces: this.buildProvinces(game),
-            cities: this.buildCities(game),
-            tiles: TileContainer.create(this.buildTiles(game), 11),
-            routes: this.buildRoutes(game),
+
+        Transaction.run([this.countryDb, this.provinceDb, this.cityDb, this.tileDb, this.routeDb, this.gameSessionDb], () => {
+            this.countryDb.insertMany(this.buildCountries(game));
+            this.provinceDb.insertMany(this.buildProvinces(game));
+            this.cityDb.insertMany(this.buildCities(game));
+            this.tileDb.insertMany(this.buildTiles(game));
+            this.routeDb.insertMany(this.buildRoutes(game));
+            this.gameSessionDb.setTurn(game.game.turn);
+            if (this.gameSessionDb.getState() === "loading") {
+                this.gameSessionDb.setState("playing");
+            }
         });
-        if (this.gameSessionDb.getState() === "loading") {
-            this.gameSessionDb.setState("playing");
-        }
+
         this.gameLoopService.onGameStateUpdate();
 
         const timeEnd = Date.now();

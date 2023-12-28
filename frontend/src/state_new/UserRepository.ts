@@ -1,4 +1,4 @@
-import {LocalUserStore} from "../local/LocalUserStore";
+import {LocalUserStore} from "./LocalUserStore";
 
 export class UserRepository {
 
