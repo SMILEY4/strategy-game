@@ -3,9 +3,9 @@ import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
 import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
-import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
-import {CameraDatabase} from "../../state_new/cameraDatabase";
-import {LocalGameDatabase} from "../../state_new/localGameDatabase";
+import {GameSessionDatabase} from "../../state/gameSessionDatabase";
+import {CameraDatabase} from "../../state/cameraDatabase";
+import {LocalGameDatabase} from "../../state/localGameDatabase";
 
 export class GameLoopService {
 

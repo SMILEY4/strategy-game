@@ -9,8 +9,8 @@ import {ProductionQueueEntryView} from "../../../../../models/productionQueueEnt
 import {UseCountryWindow} from "../country/useCountryWindow";
 import {UseProvinceWindow} from "../province/useProvinceWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
-import {CommandDatabase} from "../../../../../state_new/commandDatabase";
-import {CityDatabase} from "../../../../../state_new/cityDatabase";
+import {CommandDatabase} from "../../../../../state/commandDatabase";
+import {CityDatabase} from "../../../../../state/cityDatabase";
 
 export namespace UseCityWindow {
 

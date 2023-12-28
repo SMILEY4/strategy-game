@@ -3,7 +3,7 @@ import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {packBorder} from "./packBorder";
 import {TerrainType} from "../../../../models/terrainType";
-import {TileDatabase} from "../../../../state_new/tileDatabase";
+import {TileDatabase} from "../../../../state/tileDatabase";
 
 export namespace InstanceBaseDataBuilder {
 

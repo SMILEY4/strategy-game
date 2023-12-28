@@ -12,8 +12,8 @@ import {
     SettlerProductionQueueEntry,
 } from "../../../../../models/productionQueueEntry";
 import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../../../../models/constructionEntry";
-import {CommandDatabase} from "../../../../../state_new/commandDatabase";
-import {CityDatabase} from "../../../../../state_new/cityDatabase";
+import {CommandDatabase} from "../../../../../state/commandDatabase";
+import {CityDatabase} from "../../../../../state/cityDatabase";
 
 export namespace UseCityProductionQueueWindow {
 

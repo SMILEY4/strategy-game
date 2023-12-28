@@ -8,11 +8,11 @@ import {ChangeDetector} from "../../shared/changeDetector";
 import {StampBuilder} from "./builders/stamps/stampBuilder";
 import {Camera} from "../../shared/webgl/camera";
 import {RenderEntity} from "./builders/entities/renderEntity";
-import {LocalGameDatabase} from "../../state_new/localGameDatabase";
-import {CommandDatabase} from "../../state_new/commandDatabase";
-import {RouteDatabase} from "../../state_new/routeDatabase";
-import {TileDatabase} from "../../state_new/tileDatabase";
-import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
+import {LocalGameDatabase} from "../../state/localGameDatabase";
+import {CommandDatabase} from "../../state/commandDatabase";
+import {RouteDatabase} from "../../state/routeDatabase";
+import {TileDatabase} from "../../state/tileDatabase";
+import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 
 interface Changes {
     mapMode: boolean,

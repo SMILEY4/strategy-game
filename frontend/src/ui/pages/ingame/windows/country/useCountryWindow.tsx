@@ -8,8 +8,8 @@ import {ProvinceReduced} from "../../../../../models/province";
 import {CityReduced} from "../../../../../models/city";
 import {UseProvinceWindow} from "../province/useProvinceWindow";
 import {UseCityPlannedWindow} from "../cityPlanned/useCityPlannedWindow";
-import {CommandDatabase} from "../../../../../state_new/commandDatabase";
-import {CountryDatabase} from "../../../../../state_new/countryDatabase";
+import {CommandDatabase} from "../../../../../state/commandDatabase";
+import {CountryDatabase} from "../../../../../state/countryDatabase";
 
 export namespace UseCountryWindow {
 

@@ -13,8 +13,8 @@ import {UseCountryWindow} from "../windows/country/useCountryWindow";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseTileWindow} from "../windows/tile/useTileWindow";
-import {GameSessionDatabase} from "../../../../state_new/gameSessionDatabase";
-import {CountryDatabase} from "../../../../state_new/countryDatabase";
+import {GameSessionDatabase} from "../../../../state/gameSessionDatabase";
+import {CountryDatabase} from "../../../../state/countryDatabase";
 
 export function MenuBar(): ReactElement {
 

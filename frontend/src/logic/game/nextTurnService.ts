@@ -26,16 +26,16 @@ import {Route} from "../../models/route";
 import {TerrainType} from "../../models/terrainType";
 import {Visibility} from "../../models/visibility";
 import {TerrainResourceType} from "../../models/terrainResourceType";
-import {MonitoringRepository} from "../../state_new/MonitoringRepository";
+import {MonitoringRepository} from "../../state/MonitoringRepository";
 import {ValueHistory} from "../../shared/valueHistory";
 import {ResourceLedger} from "../../models/resourceLedger";
 import {DetailLogEntry} from "../../models/detailLogEntry";
-import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
-import {CityDatabase} from "../../state_new/cityDatabase";
-import {CountryDatabase} from "../../state_new/countryDatabase";
-import {ProvinceDatabase} from "../../state_new/provinceDatabase";
-import {RouteDatabase} from "../../state_new/routeDatabase";
-import {TileDatabase} from "../../state_new/tileDatabase";
+import {GameSessionDatabase} from "../../state/gameSessionDatabase";
+import {CityDatabase} from "../../state/cityDatabase";
+import {CountryDatabase} from "../../state/countryDatabase";
+import {ProvinceDatabase} from "../../state/provinceDatabase";
+import {RouteDatabase} from "../../state/routeDatabase";
+import {TileDatabase} from "../../state/tileDatabase";
 import {Transaction} from "../../shared/db/database/transaction";
 
 export class NextTurnService {

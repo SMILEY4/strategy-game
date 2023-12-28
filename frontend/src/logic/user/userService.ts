@@ -1,6 +1,6 @@
 import {UserClient} from "./userClient";
 import jwt_decode from "jwt-decode";
-import {UserRepository} from "../../state_new/UserRepository";
+import {UserRepository} from "../../state/UserRepository";
 
 export class UserService {
 

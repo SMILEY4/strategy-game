@@ -3,8 +3,8 @@ import {Camera} from "../../shared/webgl/camera";
 import {Tile} from "../../models/tile";
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {TilemapUtils} from "./tilemapUtils";
-import {CameraDatabase} from "../../state_new/cameraDatabase";
-import {TileDatabase} from "../../state_new/tileDatabase";
+import {CameraDatabase} from "../../state/cameraDatabase";
+import {TileDatabase} from "../../state/tileDatabase";
 
 export class TilePicker {
 

@@ -2,7 +2,7 @@ import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {CommandLogWindow} from "./CommandLogWindow";
 import {AppCtx} from "../../../../../appContext";
 import {Command} from "../../../../../models/command";
-import {CommandDatabase} from "../../../../../state_new/commandDatabase";
+import {CommandDatabase} from "../../../../../state/commandDatabase";
 
 export namespace UseCommandLogWindow {
 

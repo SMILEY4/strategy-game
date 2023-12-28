@@ -1,4 +1,4 @@
-import {UserRepository} from "../../state_new/UserRepository";
+import {UserRepository} from "../../state/UserRepository";
 
 export class AuthProvider {
 

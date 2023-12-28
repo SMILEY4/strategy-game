@@ -11,7 +11,7 @@ import {
 import {ConstructionEntry} from "../../models/constructionEntry";
 import {ProductionQueueEntry} from "../../models/productionQueueEntry";
 import {ProvinceIdentifier} from "../../models/province";
-import {CommandDatabase} from "../../state_new/commandDatabase";
+import {CommandDatabase} from "../../state/commandDatabase";
 
 export class CommandService {
 

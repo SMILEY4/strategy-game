@@ -1,5 +1,5 @@
 import {Tile} from "../../models/tile";
-import {TileDatabase} from "../../state_new/tileDatabase";
+import {TileDatabase} from "../../state/tileDatabase";
 
 export namespace BorderBuilder {
 

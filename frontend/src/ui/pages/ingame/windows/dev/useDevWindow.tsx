@@ -5,7 +5,7 @@ import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppCtx} from "../../../../../appContext";
 import {CameraData} from "../../../../../models/cameraData";
 import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
-import {CameraDatabase} from "../../../../../state_new/cameraDatabase";
+import {CameraDatabase} from "../../../../../state/cameraDatabase";
 
 export namespace UseDevWindow {
 

@@ -7,9 +7,9 @@ import {CommandType} from "../../models/commandType";
 import {CreateCityCommand} from "../../models/command";
 import {ProvinceIdentifier} from "../../models/province";
 import {TerrainType} from "../../models/terrainType";
-import {GameSessionDatabase} from "../../state_new/gameSessionDatabase";
-import {CommandDatabase} from "../../state_new/commandDatabase";
-import {CountryDatabase} from "../../state_new/countryDatabase";
+import {GameSessionDatabase} from "../../state/gameSessionDatabase";
+import {CommandDatabase} from "../../state/commandDatabase";
+import {CountryDatabase} from "../../state/countryDatabase";
 
 export class CityCreationService {
 

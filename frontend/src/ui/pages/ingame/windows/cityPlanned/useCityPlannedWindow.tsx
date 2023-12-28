@@ -9,8 +9,8 @@ import {UseProvinceWindow} from "../province/useProvinceWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {CreateCityCommand} from "../../../../../models/command";
 import {AppCtx} from "../../../../../appContext";
-import {CommandDatabase} from "../../../../../state_new/commandDatabase";
-import {CountryDatabase} from "../../../../../state_new/countryDatabase";
+import {CommandDatabase} from "../../../../../state/commandDatabase";
+import {CountryDatabase} from "../../../../../state/countryDatabase";
 
 export namespace UseCityPlannedWindow {
 

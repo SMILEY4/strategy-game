@@ -2,7 +2,7 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {packBorder} from "./packBorder";
 import {MapMode} from "../../../../models/mapMode";
-import {TileDatabase} from "../../../../state_new/tileDatabase";
+import {TileDatabase} from "../../../../state/tileDatabase";
 
 export namespace InstanceOverlayDataBuilder {
 

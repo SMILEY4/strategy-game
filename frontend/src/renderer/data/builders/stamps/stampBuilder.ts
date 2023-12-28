@@ -5,7 +5,7 @@ import {Camera} from "../../../../shared/webgl/camera";
 import {TileIdentifier} from "../../../../models/tile";
 import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 import {mat3} from "../../../../shared/webgl/mat3";
-import {TileDatabase} from "../../../../state_new/tileDatabase";
+import {TileDatabase} from "../../../../state/tileDatabase";
 
 export namespace StampBuilder {
 

@@ -6,9 +6,9 @@ import {UseCityWindow} from "../city/useCityWindow";
 import {UseCountryWindow} from "../country/useCountryWindow";
 import {AppCtx} from "../../../../../appContext";
 import {UseSettlementCreationWindow} from "../cityCreation/useSettlementCreationWindow";
-import {LocalGameDatabase} from "../../../../../state_new/localGameDatabase";
-import {CommandDatabase} from "../../../../../state_new/commandDatabase";
-import {TileDatabase} from "../../../../../state_new/tileDatabase";
+import {LocalGameDatabase} from "../../../../../state/localGameDatabase";
+import {CommandDatabase} from "../../../../../state/commandDatabase";
+import {TileDatabase} from "../../../../../state/tileDatabase";
 
 export namespace UseTileWindow {
 

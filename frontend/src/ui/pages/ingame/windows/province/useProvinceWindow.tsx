@@ -7,8 +7,8 @@ import {UseCityWindow} from "../city/useCityWindow";
 import {ProvinceView} from "../../../../../models/province";
 import {CityReduced} from "../../../../../models/city";
 import {UseCityPlannedWindow} from "../cityPlanned/useCityPlannedWindow";
-import {CommandDatabase} from "../../../../../state_new/commandDatabase";
-import {ProvinceDatabase} from "../../../../../state_new/provinceDatabase";
+import {CommandDatabase} from "../../../../../state/commandDatabase";
+import {ProvinceDatabase} from "../../../../../state/provinceDatabase";
 
 export namespace UseProvinceWindow {
 

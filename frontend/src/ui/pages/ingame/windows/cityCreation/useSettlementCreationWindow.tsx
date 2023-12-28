@@ -3,7 +3,7 @@ import {Tile, TileIdentifier} from "../../../../../models/tile";
 import React, {useState} from "react";
 import {SettlementCreationWindow} from "./SettlementCreationWindow";
 import {AppCtx} from "../../../../../appContext";
-import {TileDatabase} from "../../../../../state_new/tileDatabase";
+import {TileDatabase} from "../../../../../state/tileDatabase";
 
 export namespace UseSettlementCreationWindow {
 

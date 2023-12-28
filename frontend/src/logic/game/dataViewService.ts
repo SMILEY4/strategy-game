@@ -25,8 +25,8 @@ import {
 } from "../../models/productionQueueEntry";
 import {Tile, TileView} from "../../models/tile";
 import {Color} from "../../models/color";
-import {CountryDatabase} from "../../state_new/countryDatabase";
-import {RouteDatabase} from "../../state_new/routeDatabase";
+import {CountryDatabase} from "../../state/countryDatabase";
+import {RouteDatabase} from "../../state/routeDatabase";
 
 export class DataViewService {
 

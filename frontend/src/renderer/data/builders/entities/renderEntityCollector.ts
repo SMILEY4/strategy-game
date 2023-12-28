@@ -5,9 +5,9 @@ import {Command, CreateCityCommand, PlaceScoutCommand} from "../../../../models/
 import {CommandType} from "../../../../models/commandType";
 import {CountryIdentifier} from "../../../../models/country";
 import {Color} from "../../../../models/color";
-import {CommandDatabase} from "../../../../state_new/commandDatabase";
-import {CityDatabase} from "../../../../state_new/cityDatabase";
-import {TileDatabase} from "../../../../state_new/tileDatabase";
+import {CommandDatabase} from "../../../../state/commandDatabase";
+import {CityDatabase} from "../../../../state/cityDatabase";
+import {TileDatabase} from "../../../../state/tileDatabase";
 
 export class RenderEntityCollector {
 

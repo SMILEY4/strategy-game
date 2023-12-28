@@ -5,10 +5,10 @@ import {SettlementTier} from "../../models/settlementTier";
 import {Country} from "../../models/country";
 import {CommandType} from "../../models/commandType";
 import {UpgradeCityCommand} from "../../models/command";
-import {CommandDatabase} from "../../state_new/commandDatabase";
-import {CityDatabase} from "../../state_new/cityDatabase";
-import {CountryDatabase} from "../../state_new/countryDatabase";
-import {ProvinceDatabase} from "../../state_new/provinceDatabase";
+import {CommandDatabase} from "../../state/commandDatabase";
+import {CityDatabase} from "../../state/cityDatabase";
+import {CountryDatabase} from "../../state/countryDatabase";
+import {ProvinceDatabase} from "../../state/provinceDatabase";
 
 export class CityUpgradeService {
 

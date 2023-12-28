@@ -14,7 +14,7 @@ import {GameLoopService} from "./logic/game/gameLoopService";
 import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
 import {UserClient} from "./logic/user/userClient";
-import {UserRepository} from "./state_new/UserRepository";
+import {UserRepository} from "./state/UserRepository";
 import {TilePicker} from "./logic/game/tilePicker";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
@@ -22,17 +22,17 @@ import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEnt
 import {RenderDataManager} from "./renderer/data/renderDataManager";
 import {GameRenderer} from "./renderer/gameRenderer";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
-import {MonitoringRepository} from "./state_new/MonitoringRepository";
+import {MonitoringRepository} from "./state/MonitoringRepository";
 import {RenderDataUpdater} from "./renderer/data/renderDataUpdater";
-import {CameraDatabase} from "./state_new/cameraDatabase";
-import {CityDatabase} from "./state_new/cityDatabase";
-import {CommandDatabase} from "./state_new/commandDatabase";
-import {CountryDatabase} from "./state_new/countryDatabase";
-import {GameSessionDatabase} from "./state_new/gameSessionDatabase";
-import {LocalGameDatabase} from "./state_new/localGameDatabase";
-import {ProvinceDatabase} from "./state_new/provinceDatabase";
-import {RouteDatabase} from "./state_new/routeDatabase";
-import {TileDatabase} from "./state_new/tileDatabase";
+import {CameraDatabase} from "./state/cameraDatabase";
+import {CityDatabase} from "./state/cityDatabase";
+import {CommandDatabase} from "./state/commandDatabase";
+import {CountryDatabase} from "./state/countryDatabase";
+import {GameSessionDatabase} from "./state/gameSessionDatabase";
+import {LocalGameDatabase} from "./state/localGameDatabase";
+import {ProvinceDatabase} from "./state/provinceDatabase";
+import {RouteDatabase} from "./state/routeDatabase";
+import {TileDatabase} from "./state/tileDatabase";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
