@@ -83,3 +83,16 @@ export function mapRecord<K extends keyof any, I, O>(record: Record<K, I>, trans
     }
     return transformed;
 }
+
+export function chooseRandom<T>(array: T[]): T {
+    return array[Math.floor(Math.random() * array.length)]
+}
+
+export function shuffleArray<T>(array: T[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
