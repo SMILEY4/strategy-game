@@ -424,7 +424,7 @@ export class AbstractDatabase<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>
     }
 
     public querySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS): ENTITY | null {
-        const queryResult = this.queryMany(query, args);
+        const queryResult = query.run(this.storage, args);
         if (queryResult === null) {
             return null;
         } else if (Array.isArray(queryResult)) {
