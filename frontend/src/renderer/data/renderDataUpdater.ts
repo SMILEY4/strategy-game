@@ -8,7 +8,6 @@ import {ChangeDetector} from "../../shared/changeDetector";
 import {StampBuilder} from "./builders/stamps/stampBuilder";
 import {Camera} from "../../shared/webgl/camera";
 import {RenderEntity} from "./builders/entities/renderEntity";
-import {LocalGameDatabase} from "../../state/localGameDatabase";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {RouteDatabase} from "../../state/routeDatabase";
 import {TileDatabase} from "../../state/tileDatabase";
@@ -26,7 +25,6 @@ export class RenderDataUpdater {
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly tileDb: TileDatabase;
     private readonly routeDb: RouteDatabase;
-    private readonly localGameDb: LocalGameDatabase;
     private readonly commandDb: CommandDatabase;
 
     private readonly entityCollector: RenderEntityCollector;
@@ -41,14 +39,12 @@ export class RenderDataUpdater {
         gameSessionDb: GameSessionDatabase,
         tileDb: TileDatabase,
         routeDb: RouteDatabase,
-        localGameDb: LocalGameDatabase,
         commandDb: CommandDatabase,
         entityCollector: RenderEntityCollector,
     ) {
         this.gameSessionDb = gameSessionDb;
         this.tileDb = tileDb;
         this.routeDb = routeDb;
-        this.localGameDb = localGameDb;
         this.commandDb = commandDb;
         this.entityCollector = entityCollector;
     }
@@ -63,7 +59,7 @@ export class RenderDataUpdater {
     }
 
     private findChanges(camera: Camera): Changes {
-        const mapMode = this.localGameDb.getMapMode();
+        const mapMode = this.gameSessionDb.getMapMode();
         return {
             mapMode: this.detectorMapMode.check(mapMode),
             remoteGameState: this.detectorRemoteGameStateRevId.check(this.gameSessionDb.getRevId()),
@@ -73,9 +69,9 @@ export class RenderDataUpdater {
     }
 
     private updateMeta(renderData: RenderData) {
-        const mapMode = this.localGameDb.getMapMode();
-        const selectedTile = this.localGameDb.getSelectedTile();
-        const mouseOverTile = this.localGameDb.getHoverTile();
+        const mapMode = this.gameSessionDb.getMapMode();
+        const selectedTile = this.gameSessionDb.getSelectedTile();
+        const mouseOverTile = this.gameSessionDb.getHoverTile();
         renderData.meta.mapMode = mapMode;
         renderData.meta.grayscale = mapMode.renderData.grayscale;
         renderData.meta.time = (renderData.meta.time + 1) % 10000;
@@ -90,7 +86,7 @@ export class RenderDataUpdater {
             renderData.tilemap.instances.instanceBaseBuffer.setData(baseDataArray, true);
         }
         if (changes.remoteGameState || changes.mapMode) {
-            const mapMode = this.localGameDb.getMapMode();
+            const mapMode = this.gameSessionDb.getMapMode();
             const [count, overlayDataArray] = InstanceOverlayDataBuilder.build(this.tileDb, mapMode);
             renderData.tilemap.instances.instanceCount = count;
             renderData.tilemap.instances.instanceOverlayBuffer.setData(overlayDataArray, true);
@@ -120,7 +116,7 @@ export class RenderDataUpdater {
 
     private updateStamps(renderData: RenderData, camera: Camera, entities: RenderEntity[], changes: Changes) {
         if (changes.remoteGameState || changes.commands || changes.mapMode || changes.camera) {
-            renderData.stamps.items = StampBuilder.build(camera, entities, this.tileDb, this.localGameDb.getMapMode());
+            renderData.stamps.items = StampBuilder.build(camera, entities, this.tileDb, this.gameSessionDb.getMapMode());
             renderData.stamps.dirty = true;
         } else {
             renderData.stamps.dirty = false;

@@ -14,7 +14,6 @@ import {GameLoopService} from "./logic/game/gameLoopService";
 import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
 import {UserClient} from "./logic/user/userClient";
-import {UserRepository} from "./state/UserRepository";
 import {TilePicker} from "./logic/game/tilePicker";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
@@ -22,17 +21,17 @@ import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEnt
 import {RenderDataManager} from "./renderer/data/renderDataManager";
 import {GameRenderer} from "./renderer/gameRenderer";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
-import {MonitoringRepository} from "./state/MonitoringRepository";
 import {RenderDataUpdater} from "./renderer/data/renderDataUpdater";
 import {CameraDatabase} from "./state/cameraDatabase";
 import {CityDatabase} from "./state/cityDatabase";
 import {CommandDatabase} from "./state/commandDatabase";
 import {CountryDatabase} from "./state/countryDatabase";
 import {GameSessionDatabase} from "./state/gameSessionDatabase";
-import {LocalGameDatabase} from "./state/localGameDatabase";
 import {ProvinceDatabase} from "./state/provinceDatabase";
 import {RouteDatabase} from "./state/routeDatabase";
 import {TileDatabase} from "./state/tileDatabase";
+import {MonitoringRepository} from "./state/monitoringRepository";
+import {UserRepository} from "./state/userRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -76,7 +75,6 @@ interface AppCtxDef {
     CommandDatabase: () => CommandDatabase,
     CountryDatabase: () => CountryDatabase,
     GameSessionDatabase: () => GameSessionDatabase,
-    LocalGameDatabase: () => LocalGameDatabase,
     ProvinceDatabase: () => ProvinceDatabase,
     RouteDatabase: () => RouteDatabase,
     TileDatabase: () => TileDatabase,
@@ -185,7 +183,6 @@ export const AppCtx: AppCtxDef = {
             new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraDatabase(), AppCtx.TileDatabase()),
             AppCtx.CameraDatabase(),
             AppCtx.GameSessionDatabase(),
-            AppCtx.LocalGameDatabase(),
             AppCtx.GameRenderer(),
             AppCtx.AudioService(),
         ),
@@ -219,7 +216,6 @@ export const AppCtx: AppCtxDef = {
             AppCtx.GameSessionDatabase(),
             AppCtx.TileDatabase(),
             AppCtx.RouteDatabase(),
-            AppCtx.LocalGameDatabase(),
             AppCtx.CommandDatabase(),
             AppCtx.RenderEntityCollector(),
         ),
@@ -266,10 +262,6 @@ export const AppCtx: AppCtxDef = {
     GameSessionDatabase: diContext.register(
         "GameSessionDatabase",
         () => new GameSessionDatabase(),
-    ),
-    LocalGameDatabase: diContext.register(
-        "LocalGameDatabase",
-        () => new LocalGameDatabase(),
     ),
     ProvinceDatabase: diContext.register(
         "ProvinceDatabase",

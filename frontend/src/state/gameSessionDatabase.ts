@@ -5,6 +5,8 @@ import {GameSessionState} from "../models/gameSessionState";
 import {GameTurnState} from "../models/gameTurnState";
 import {AppCtx} from "../appContext";
 import {usePartialSingletonEntity, useSingletonEntity} from "../shared/db/adapters/databaseHooks";
+import {MapMode} from "../models/mapMode";
+import {TileIdentifier} from "../models/tile";
 
 export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> {
 
@@ -14,6 +16,9 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
             turnState: "playing",
             turn: -1,
             config: null,
+            selectedTile: null,
+            hoverTile: null,
+            mapMode: MapMode.DEFAULT,
         });
     }
 
@@ -59,6 +64,36 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
         }
     }
 
+    public setMapMode(mode: MapMode) {
+        this.update(() => ({
+            mapMode: mode,
+        }));
+    }
+
+    public getMapMode(): MapMode {
+        return this.get().mapMode;
+    }
+
+    public setSelectedTile(tile: TileIdentifier | null) {
+        this.update(() => ({
+            selectedTile: tile,
+        }));
+    }
+
+    public getSelectedTile(): TileIdentifier | null {
+        return this.get().selectedTile;
+    }
+
+    public setHoverTile(tile: TileIdentifier | null) {
+        this.update(() => ({
+            hoverTile: tile,
+        }));
+    }
+
+    public getHoverTile(): TileIdentifier | null {
+        return this.get().hoverTile;
+    }
+
 }
 
 export namespace GameSessionDatabase {
@@ -78,5 +113,17 @@ export namespace GameSessionDatabase {
         };
     }
 
-}
+    export function useMapMode(): [MapMode, (mode: MapMode) => void] {
+        const db = AppCtx.GameSessionDatabase();
+        const mapMode = usePartialSingletonEntity(db, e => e.mapMode);
+        return [
+            mapMode,
+            (m: MapMode) => db.setMapMode(m),
+        ];
+    }
 
+    export function useSelectedTile(): TileIdentifier | null {
+        return usePartialSingletonEntity(AppCtx.GameSessionDatabase(), e => e.selectedTile)
+    }
+
+}

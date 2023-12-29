@@ -5,14 +5,12 @@ import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CameraDatabase} from "../../state/cameraDatabase";
-import {LocalGameDatabase} from "../../state/localGameDatabase";
 
 export class GameLoopService {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraDb: CameraDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
-    private readonly localGameDb: LocalGameDatabase;
     private readonly tilePicker: TilePicker;
     private readonly gameRenderer: GameRenderer;
     private readonly audioService: AudioService;
@@ -23,7 +21,6 @@ export class GameLoopService {
         tilePicker: TilePicker,
         cameraDb: CameraDatabase,
         gameSessionDb: GameSessionDatabase,
-        localGameDb: LocalGameDatabase,
         gameRenderer: GameRenderer,
         audioService: AudioService,
     ) {
@@ -31,7 +28,6 @@ export class GameLoopService {
         this.tilePicker = tilePicker;
         this.cameraDb = cameraDb;
         this.gameSessionDb = gameSessionDb;
-        this.localGameDb = localGameDb;
         this.gameRenderer = gameRenderer;
         this.audioService = audioService;
     }
@@ -56,8 +52,8 @@ export class GameLoopService {
 
     public mouseClick(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
-        if (this.localGameDb.getSelectedTile()?.id !== tile?.identifier) {
-            this.localGameDb.setSelectedTile(tile?.identifier ?? null);
+        if (this.gameSessionDb.getSelectedTile()?.id !== tile?.identifier) {
+            this.gameSessionDb.setSelectedTile(tile?.identifier ?? null);
             if (tile) {
                 AudioType.CLICK_PRIMARY.play(this.audioService);
                 UseTileWindow.open(tile.identifier);
@@ -93,8 +89,8 @@ export class GameLoopService {
 
     private updateHoverTile(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
-        if (tile?.identifier.id !== this.localGameDb.getHoverTile()?.id) {
-            this.localGameDb.setHoverTile(tile?.identifier ?? null);
+        if (tile?.identifier.id !== this.gameSessionDb.getHoverTile()?.id) {
+            this.gameSessionDb.setHoverTile(tile?.identifier ?? null);
         }
     }
 
