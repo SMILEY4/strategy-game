@@ -57,7 +57,7 @@ export class GameLoopService {
     public mouseClick(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
         if (this.localGameDb.getSelectedTile()?.id !== tile?.identifier) {
-            this.localGameDb.setSelectedTile(tile?.identifier || null);
+            this.localGameDb.setSelectedTile(tile?.identifier ?? null);
             if (tile) {
                 AudioType.CLICK_PRIMARY.play(this.audioService);
                 UseTileWindow.open(tile.identifier);
@@ -94,7 +94,7 @@ export class GameLoopService {
     private updateHoverTile(x: number, y: number) {
         const tile = this.tilePicker.tileAt(x, y);
         if (tile?.identifier.id !== this.localGameDb.getHoverTile()?.id) {
-            this.localGameDb.setHoverTile(tile?.identifier || null);
+            this.localGameDb.setHoverTile(tile?.identifier ?? null);
         }
     }
 

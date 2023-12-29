@@ -4,7 +4,7 @@ import {GameConfig} from "../models/gameConfig";
 import {GameSessionState} from "../models/gameSessionState";
 import {GameTurnState} from "../models/gameTurnState";
 import {AppCtx} from "../appContext";
-import {useSingletonEntity} from "../shared/db/adapters/databaseHooks";
+import {usePartialSingletonEntity, useSingletonEntity} from "../shared/db/adapters/databaseHooks";
 
 export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> {
 
@@ -64,11 +64,11 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
 export namespace GameSessionDatabase {
 
     export function useGameSessionState(): GameSessionState {
-        return useSingletonEntity(AppCtx.GameSessionDatabase()).state;
+        return usePartialSingletonEntity(AppCtx.GameSessionDatabase(), e => e.state);
     }
 
     export function useGameTurnState(): GameTurnState {
-        return useSingletonEntity(AppCtx.GameSessionDatabase()).turnState;
+        return usePartialSingletonEntity(AppCtx.GameSessionDatabase(), e => e.turnState);
     }
 
     export function useSetGameTurnState(): (state: GameTurnState) => void {

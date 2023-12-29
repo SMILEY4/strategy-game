@@ -1,10 +1,10 @@
 import {AbstractSingletonDatabase} from "../shared/db/database/abstractSingletonDatabase";
 import {TileIdentifier} from "../models/tile";
 import {MapMode} from "../models/mapMode";
-import {useSingletonEntity} from "../shared/db/adapters/databaseHooks";
+import {usePartialSingletonEntity} from "../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../appContext";
 
-export class LocalGameDatabase extends AbstractSingletonDatabase<{ // todo: split into own dbs ?
+export class LocalGameDatabase extends AbstractSingletonDatabase<{
     selectedTile: TileIdentifier | null;
     hoverTile: TileIdentifier | null;
     mapMode: MapMode;
@@ -54,16 +54,15 @@ export namespace LocalGameDatabase {
 
     export function useMapMode(): [MapMode, (mode: MapMode) => void] {
         const db = AppCtx.LocalGameDatabase();
-        const mapMode = useSingletonEntity(db).mapMode;
+        const mapMode = usePartialSingletonEntity(db, e => e.mapMode);
         return [
             mapMode,
             (m: MapMode) => db.setMapMode(m),
         ];
     }
 
-
     export function useSelectedTile(): TileIdentifier | null {
-        return useSingletonEntity(AppCtx.LocalGameDatabase()).selectedTile
+        return usePartialSingletonEntity(AppCtx.LocalGameDatabase(), e => e.selectedTile)
     }
 
 }

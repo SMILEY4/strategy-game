@@ -37,6 +37,21 @@ export function useSingletonEntity<ENTITY>(db: SingletonDatabase<ENTITY>): ENTIT
 }
 
 /**
+ * Access (and watch) part of the entity in a given singleton-database
+ * @param db the database
+ * @param selector selected the value to watch from the current entity
+ * @return the current partial value of the singleton entity
+ */
+export function usePartialSingletonEntity<ENTITY, T>(db: SingletonDatabase<ENTITY>, selector: (entity: ENTITY) => T): T {
+    const [value, setValue] = useForceRepaintState<T>(selector(db.get()));
+    useEffect(() => {
+        const subscriberId = db.subscribePartial(selector, setValue);
+        return () => db.unsubscribe(subscriberId);
+    }, []);
+    return value;
+}
+
+/**
  * Access (and watch) an entity in the given database by its id
  * @param db the database
  * @param id the id of the entity
