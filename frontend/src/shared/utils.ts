@@ -18,11 +18,6 @@ export function orNull<T>(value: T | null | undefined): T | null {
     }
 }
 
-export function generateId(): string {
-    return crypto.randomUUID();
-}
-
-
 export function getMax<T>(array: T[], value: (e: T) => number): T | null {
     let maxElement: T | null = null;
     let maxValue = Number.MIN_VALUE;
