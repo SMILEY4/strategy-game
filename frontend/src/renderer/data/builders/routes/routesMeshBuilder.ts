@@ -24,7 +24,7 @@ export namespace RoutesMeshBuilder {
         const [triangleCount, _, lineMeshes] = buildLineMeshes(lines);
 
         const vertices = new MixedArrayBuffer(
-            MixedArrayBuffer.getTotalRequiredBytes(triangleCount*3 * PATTERN_VERTEX.length, PATTERN_VERTEX),
+            MixedArrayBuffer.getTotalRequiredBytes(triangleCount * 3, PATTERN_VERTEX),
             PATTERN_VERTEX,
         );
         const cursorVertices = new MixedArrayBufferCursor(vertices);

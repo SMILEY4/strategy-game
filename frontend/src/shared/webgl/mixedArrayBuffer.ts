@@ -149,9 +149,7 @@ export class MixedArrayBuffer {
         return maxBytes;
     }
 
-    public static getTotalRequiredBytes(amountValues: number, pattern: MixedArrayBufferType[]): number {
-        // todo: change parameter amountValues -> amountPatternRepetition
-        const amountRepetitions = amountValues / pattern.length;
+    public static getTotalRequiredBytes(amountRepetitions: number, pattern: MixedArrayBufferType[]): number {
         let bytesPerPattern = 0;
         pattern.forEach(type => {
             bytesPerPattern += MixedArrayBuffer.getBytes(type);

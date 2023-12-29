@@ -263,7 +263,7 @@ export class NextTurnService {
                     };
                 }) : []),
                 content: orDefault(tileDTO.dataTier2?.content, [])
-                    // todo: currently only handles scouts
+                    // todo: currently only handles scouts -> improved/generalized entity handling ?
                     .filter(contentDTO => contentDTO.type === "scout")
                     .map(scoutDTO => ({
                         country: this.findCountry(game, scoutDTO.countryId!!),

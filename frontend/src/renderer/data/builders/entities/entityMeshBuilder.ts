@@ -11,7 +11,6 @@ export namespace EntityMeshBuilder {
         ...MixedArrayBufferType.VEC2,
     ];
 
-    const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
     const VERTICES_PER_ENTITY = 6;
 
 
@@ -24,7 +23,7 @@ export namespace EntityMeshBuilder {
 
     function createMixedArray(entityCount: number): [MixedArrayBuffer, MixedArrayBufferCursor] {
         const array = new MixedArrayBuffer(
-            MixedArrayBuffer.getTotalRequiredBytes(VALUES_PER_INSTANCE * VERTICES_PER_ENTITY * entityCount, PATTERN_VERTEX),
+            MixedArrayBuffer.getTotalRequiredBytes(VERTICES_PER_ENTITY * entityCount, PATTERN_VERTEX),
             PATTERN_VERTEX,
         );
         const cursor = new MixedArrayBufferCursor(array);

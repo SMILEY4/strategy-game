@@ -28,7 +28,6 @@ export namespace BaseMeshBuilder {
     ];
 
     const VERTICES_PER_TILE = 6 * 3; // "6 triangles" * "3 vertices"
-    const VALUES_PER_VERTEX = PATTERN_VERTEX.length;
 
 
     export function build(): [number, ArrayBuffer] {
@@ -39,7 +38,7 @@ export namespace BaseMeshBuilder {
 
     function createMixedArray(): [MixedArrayBuffer, MixedArrayBufferCursor] {
         const array = new MixedArrayBuffer(
-            MixedArrayBuffer.getTotalRequiredBytes(VERTICES_PER_TILE * VALUES_PER_VERTEX, PATTERN_VERTEX),
+            MixedArrayBuffer.getTotalRequiredBytes(VERTICES_PER_TILE, PATTERN_VERTEX),
             PATTERN_VERTEX,
         );
         const cursor = new MixedArrayBufferCursor(array);

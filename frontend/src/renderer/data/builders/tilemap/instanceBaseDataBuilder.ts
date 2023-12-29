@@ -20,8 +20,6 @@ export namespace InstanceBaseDataBuilder {
         MixedArrayBufferType.INT,
     ];
 
-    const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
-
 
     export function build(tileDb: TileDatabase): [number, ArrayBuffer] {
         const tileCount = tileDb.count()
@@ -33,7 +31,7 @@ export namespace InstanceBaseDataBuilder {
 
     function createMixedArray(tileCount: number): [MixedArrayBuffer, MixedArrayBufferCursor] {
         const array = new MixedArrayBuffer(
-            MixedArrayBuffer.getTotalRequiredBytes(VALUES_PER_INSTANCE * tileCount, PATTERN_VERTEX),
+            MixedArrayBuffer.getTotalRequiredBytes(tileCount, PATTERN_VERTEX),
             PATTERN_VERTEX,
         );
         const cursor = new MixedArrayBufferCursor(array);

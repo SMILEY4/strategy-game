@@ -16,8 +16,6 @@ export namespace InstanceOverlayDataBuilder {
         ...MixedArrayBufferType.VEC3,
     ];
 
-    const VALUES_PER_INSTANCE = PATTERN_VERTEX.length;
-
 
     export function build(tileDb: TileDatabase, mapMode: MapMode): [number, ArrayBuffer] {
         const tileCount = tileDb.count()
@@ -29,7 +27,7 @@ export namespace InstanceOverlayDataBuilder {
 
     function createMixedArray(tileCount: number): [MixedArrayBuffer, MixedArrayBufferCursor] {
         const array = new MixedArrayBuffer(
-            MixedArrayBuffer.getTotalRequiredBytes(VALUES_PER_INSTANCE * tileCount, PATTERN_VERTEX),
+            MixedArrayBuffer.getTotalRequiredBytes(tileCount, PATTERN_VERTEX),
             PATTERN_VERTEX,
         );
         const cursor = new MixedArrayBufferCursor(array);
