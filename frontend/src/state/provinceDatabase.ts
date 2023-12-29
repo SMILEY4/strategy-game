@@ -5,11 +5,7 @@ import {Province} from "../models/province";
 import {useQuerySingleOrThrow} from "../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../appContext";
 import {DatabaseStorage, DatabaseStorageConfig} from "../shared/db/storage/databaseStorage";
-import {Country} from "../models/country";
-import {MapUniqueSupportingStorage} from "../shared/db/storage/supporting/mapUniqueSupportingStorage";
-import {MapSupportingStorage} from "../shared/db/storage/supporting/mapSupportingStorage";
 import {MapUniqueMultikeySupportingStorage} from "../shared/db/storage/supporting/mapUniqueMultikeySupportingStorage";
-import {Simulate} from "react-dom/test-utils";
 
 function provideId(e: Province): string {
     return e.identifier.id;

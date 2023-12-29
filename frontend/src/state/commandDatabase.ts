@@ -69,7 +69,7 @@ export namespace CommandDatabase {
     }
 
     export function useCommandById(commandId: string): Command {
-        return useQuerySingleOrThrow(AppCtx.CommandDatabase(), QUERY_BY_ID, null);
+        return useQuerySingleOrThrow(AppCtx.CommandDatabase(), QUERY_BY_ID, commandId);
     }
 
 }

@@ -163,6 +163,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.GameSessionDatabase(),
             AppCtx.CommandDatabase(),
             AppCtx.CountryDatabase(),
+            AppCtx.CityDatabase(),
         ),
     ),
     CityUpgradeService: diContext.register(

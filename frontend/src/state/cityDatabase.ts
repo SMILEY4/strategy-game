@@ -6,6 +6,7 @@ import {useQuerySingleOrThrow} from "../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../appContext";
 import {DatabaseStorage, DatabaseStorageConfig} from "../shared/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../shared/db/storage/supporting/arraySupportingStorage";
+import {MapUniqueSupportingStorage} from "../shared/db/storage/supporting/mapUniqueSupportingStorage";
 
 function provideId(e: City): string {
     return e.identifier.id;
@@ -15,7 +16,8 @@ function provideId(e: City): string {
 interface CityStorageConfig extends DatabaseStorageConfig<City, string> {
     primary: MapPrimaryStorage<City, string>,
     supporting: {
-        array: ArraySupportingStorage<City>
+        array: ArraySupportingStorage<City>,
+        byTileId: MapUniqueSupportingStorage<City, string>
     }
 }
 
@@ -25,7 +27,8 @@ class CityStorage extends DatabaseStorage<CityStorageConfig, City, string> {
         super({
             primary: new MapPrimaryStorage<City, string>(provideId),
             supporting: {
-                array: new ArraySupportingStorage<City>()
+                array: new ArraySupportingStorage<City>(),
+                byTileId: new MapUniqueSupportingStorage<City, string>(e => e.tile.id)
             }
         });
     }
@@ -47,6 +50,12 @@ export namespace CityDatabase {
     export const QUERY_BY_ID: CityQuery<string> = {
         run(storage: CityStorage, args: string): City | null {
             return storage.get(args)
+        },
+    };
+
+    export const QUERY_BY_TILE_ID: CityQuery<string> = {
+        run(storage: CityStorage, args: string): City | null {
+            return storage.config.supporting.byTileId.getByKey(args)
         },
     };
 

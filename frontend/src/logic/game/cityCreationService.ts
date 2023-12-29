@@ -10,6 +10,7 @@ import {TerrainType} from "../../models/terrainType";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {CountryDatabase} from "../../state/countryDatabase";
+import {CityDatabase} from "../../state/cityDatabase";
 
 export class CityCreationService {
 
@@ -18,6 +19,7 @@ export class CityCreationService {
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly commandDb: CommandDatabase;
     private readonly countryDb: CountryDatabase;
+    private readonly cityDb: CityDatabase
 
     constructor(
         commandService: CommandService,
@@ -25,12 +27,14 @@ export class CityCreationService {
         gameSessionDb: GameSessionDatabase,
         commandDb: CommandDatabase,
         countryDb: CountryDatabase,
+        cityDb: CityDatabase
     ) {
         this.commandService = commandService;
         this.userService = userService;
         this.gameSessionDb = gameSessionDb;
         this.commandDb = commandDb;
         this.countryDb = countryDb;
+        this.cityDb = cityDb
     }
 
 
@@ -79,17 +83,12 @@ export class CityCreationService {
     }
 
     private isAlreadyOccupied(tile: Tile): boolean {
-        return this.getCityPositions().findIndex(t => t.id === tile.identifier.id) !== -1;
+        return this.cityDb.querySingle(CityDatabase.QUERY_BY_TILE_ID, tile.identifier.id) !== null
     }
 
     private isPlannedOccupied(tile: Tile): boolean {
         return this.commandDb.queryMany(CommandDatabase.QUERY_BY_TYPE, CommandType.CITY_CREATE)
             .some(cmd => (cmd as CreateCityCommand).tile.id === tile.identifier.id);
-    }
-
-
-    private getCityPositions(): TileIdentifier[] {
-        return []; // todo
     }
 
     private availableSettlers(country: Country): number | null {

@@ -4,6 +4,7 @@ import {Query} from "../shared/db/query/query";
 import {Route} from "../models/route";
 import {DatabaseStorage, DatabaseStorageConfig} from "../shared/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../shared/db/storage/supporting/arraySupportingStorage";
+import {MapMultikeySupportingStorage} from "../shared/db/storage/supporting/mapMultikeySupportingStorage";
 
 function provideId(e: Route): string {
     return e.routeId;
@@ -12,7 +13,8 @@ function provideId(e: Route): string {
 interface RouteStorageConfig extends DatabaseStorageConfig<Route, string> {
     primary: MapPrimaryStorage<Route, string>,
     supporting: {
-        array: ArraySupportingStorage<Route>
+        array: ArraySupportingStorage<Route>,
+        byCityId: MapMultikeySupportingStorage<Route, string>
     }
 }
 
@@ -21,7 +23,8 @@ class RouteStorage extends DatabaseStorage<RouteStorageConfig, Route, string> {
         super({
             primary: new MapPrimaryStorage<Route, string>(provideId),
             supporting: {
-                array: new ArraySupportingStorage<Route>()
+                array: new ArraySupportingStorage<Route>(),
+                byCityId: new MapMultikeySupportingStorage<Route, string>(e => [e.cityA.id, e.cityB.id])
             }
         });
     }
@@ -46,7 +49,7 @@ export namespace RouteDatabase {
 
     export const QUERY_BY_CITY_ID: RouteQuery<string> = {
         run(storage: RouteStorage, args: string): Route[] {
-            return storage.config.supporting.array.getAll().filter(r => r.cityA.id === args || r.cityB.id === args);
+            return storage.config.supporting.byCityId.getByKey(args)
         },
     };
 
