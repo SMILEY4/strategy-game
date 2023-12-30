@@ -2,6 +2,7 @@ import {GameSessionClient} from "./gameSessionClient";
 import {handleResponseError} from "../../shared/httpClient";
 import {UnauthorizedError} from "../../models/UnauthorizedError";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
+import {GameSessionMeta} from "../../models/gameSessionMeta";
 
 export class GameSessionService {
 
@@ -14,15 +15,15 @@ export class GameSessionService {
     }
 
 
-    public listSessions(): Promise<string[]> {
+    public listSessions(): Promise<GameSessionMeta[]> {
         return this.client.list()
             .catch(error => handleResponseError(error, 401, () => {
                 throw new UnauthorizedError();
             }));
     }
 
-    public createSession(seed: string | null): Promise<string> {
-        return this.client.create(seed)
+    public createSession(name: string, seed: string | null): Promise<string> {
+        return this.client.create(name, seed)
             .catch(error => handleResponseError(error, 401, () => {
                 throw new UnauthorizedError();
             }));

@@ -36,6 +36,10 @@ object RouteCreate {
     fun Route.routeCreate(createGame: CreateGame, joinGame: JoinGame) = post("create", {
         description = "Create and join a new game. Other players can join this game via the returned game-id"
         request {
+            queryParameter<String>("name") {
+                description = "the name of the game"
+                required = true
+            }
             queryParameter<String>("seed") {
                 description = "the seed for the random-world-generation"
                 required = false
@@ -55,8 +59,9 @@ object RouteCreate {
     }) {
         val userId = call.getUserIdOrThrow()
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
+            val name: String = call.request.queryParameters["name"]!!
             val seed: String? = call.request.queryParameters["seed"]
-            val gameId = createGame.perform(WorldSettings.default(seed?.hashCode()))
+            val gameId = createGame.perform(name, WorldSettings.default(seed?.hashCode()))
             when (val joinResult = joinGame.perform(userId, gameId)) {
                 is Either.Right -> call.respond(HttpStatusCode.OK, gameId)
                 is Either.Left -> when (joinResult.value) {
