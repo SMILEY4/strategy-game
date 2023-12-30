@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.getOrHandle
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
@@ -20,6 +19,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.mode
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.TileEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 
@@ -87,17 +87,17 @@ object TestUtils {
             .players.toList()
     }
 
-    suspend fun getMarkersAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<Pair<Tile, MarkerTileContent>> {
+    suspend fun getMarkersAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<Pair<Tile, MarkerTileObject>> {
         return getMarkers(database, gameId)
             .filter { it.first.position.q == q && it.first.position.r == r }
     }
 
-    suspend fun getMarkers(database: ArangoDatabase, gameId: String): List<Pair<Tile, MarkerTileContent>> {
+    suspend fun getMarkers(database: ArangoDatabase, gameId: String): List<Pair<Tile, MarkerTileObject>> {
         return getTiles(database, gameId)
-            .filter { it.content.isNotEmpty() }
-            .flatMap { tile -> tile.content.map { tile to it } }
-            .filter { it.second is MarkerTileContent }
-            .map { it.first to (it.second as MarkerTileContent) }
+            .filter { it.objects.isNotEmpty() }
+            .flatMap { tile -> tile.objects.map { tile to it } }
+            .filter { it.second is MarkerTileObject }
+            .map { it.first to (it.second as MarkerTileObject) }
     }
 
     suspend fun getCitiesAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<City> {

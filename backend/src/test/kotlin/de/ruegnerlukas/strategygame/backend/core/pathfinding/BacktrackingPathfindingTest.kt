@@ -232,7 +232,7 @@ class BacktrackingPathfindingTest : StringSpec({
                             influences = mutableListOf(),
                             owner = null,
                             discoveredByCountries = mutableListOf(),
-                            content = mutableListOf(),
+                            objects = mutableListOf(),
                         )
                     )
                 }

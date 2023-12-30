@@ -1,11 +1,15 @@
 import {
     BuildingDTO,
     CityDTO,
+    CityTileObjectDTO,
     DetailLogEntryDTO,
     GameStateDTO,
+    MarkerTileObjectDTO,
     ProductionQueueEntryDTO,
     ResourceLedgerDTO,
+    ScoutTileObjectDTO,
     TileDTO,
+    TileObjectDTO,
 } from "./models/gameStateDTO";
 import {Tile} from "../../models/tile";
 import {mapRecord, orDefault, orNull} from "../../shared/utils";
@@ -37,6 +41,7 @@ import {RouteDatabase} from "../../state/routeDatabase";
 import {TileDatabase} from "../../state/tileDatabase";
 import {Transaction} from "../../shared/db/database/transaction";
 import {MonitoringRepository} from "../../state/monitoringRepository";
+import {CityTileObject, MarkerTileObject, ScoutTileObject, TileObject} from "../../models/tileObject";
 
 export class NextTurnService {
 
@@ -81,11 +86,11 @@ export class NextTurnService {
         //  move old game state to pool instead of gc -> allocate new state from pool
 
         Transaction.run([this.countryDb, this.provinceDb, this.cityDb, this.tileDb, this.routeDb, this.gameSessionDb], () => {
-            this.countryDb.deleteAll()
-            this.provinceDb.deleteAll()
-            this.cityDb.deleteAll()
-            this.tileDb.deleteAll()
-            this.routeDb.deleteAll()
+            this.countryDb.deleteAll();
+            this.provinceDb.deleteAll();
+            this.cityDb.deleteAll();
+            this.tileDb.deleteAll();
+            this.routeDb.deleteAll();
 
             this.countryDb.insertMany(this.buildCountries(game));
             this.provinceDb.insertMany(this.buildProvinces(game));
@@ -262,14 +267,37 @@ export class NextTurnService {
                         amount: influenceDTO.amount,
                     };
                 }) : []),
-                content: orDefault(tileDTO.dataTier2?.content, [])
-                    // todo: currently only handles scouts -> improved/generalized entity handling ?
-                    .filter(contentDTO => contentDTO.type === "scout")
-                    .map(scoutDTO => ({
-                        country: this.findCountry(game, scoutDTO.countryId!!),
-                    })),
+                objects: orDefault(tileDTO.dataTier2?.objects, [])
+                    .map(dto => this.buildTileObjects(dto, game)),
             };
         });
+    }
+
+    private buildTileObjects(dto: TileObjectDTO, game: GameStateDTO): TileObject {
+        if (dto.type === "marker") {
+            const objDTO = dto as MarkerTileObjectDTO;
+            return {
+                type: "marker",
+                country: this.findCountry(game, objDTO.countryId),
+            } as MarkerTileObject;
+        }
+        if (dto.type === "scout") {
+            const objDTO = dto as ScoutTileObjectDTO;
+            return {
+                type: "scout",
+                country: this.findCountry(game, objDTO.countryId),
+                creationTurn: objDTO.creationTurn,
+            } as ScoutTileObject;
+        }
+        if (dto.type === "city") {
+            const objDTO = dto as CityTileObjectDTO;
+            return {
+                type: "city",
+                country: this.findCountry(game, objDTO.countryId),
+                city: this.findCity(game, objDTO.cityId),
+            } as CityTileObject;
+        }
+        throw new Error("Unknown tile-object dto: " + dto.type);
     }
 
     private buildRoutes(game: GameStateDTO): Route[] {

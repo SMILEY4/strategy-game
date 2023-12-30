@@ -2,7 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileObject
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileContainer
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTOVisibility
@@ -14,7 +14,7 @@ class TileVisibilityCalculator(private val gameConfig: GameConfig, private val c
             val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
                 .asSequence()
                 .mapNotNull { pos -> tiles.get(pos) }
-                .mapNotNull { t -> t.content.find { it is ScoutTileContent }?.let { it as ScoutTileContent } }
+                .mapNotNull { t -> t.objects.find { it is ScoutTileObject }?.let { it as ScoutTileObject } }
                 .any { it.countryId == countryId }
             if (scoutNearby) {
                 return TileDTOVisibility.VISIBLE

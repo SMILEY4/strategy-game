@@ -1,9 +1,7 @@
 import {CityIdentifier} from "../../../../../models/city";
 import React, {ReactElement} from "react";
-import {DecoratedWindow, DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header1} from "../../../../components/header/Header";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
@@ -47,7 +45,11 @@ export function CityProductionQueueWindow(props: CityProductionQueueWindowProps)
 }
 
 
-function QueueEntry(props: { data: UseCityProductionQueueWindow.Data, entry: ProductionQueueEntryView, position: number }): ReactElement {
+function QueueEntry(props: {
+    data: UseCityProductionQueueWindow.Data,
+    entry: ProductionQueueEntryView,
+    position: number
+}): ReactElement {
     return (
         <DecoratedPanel
             className={joinClassNames(["queue-entry", props.entry.command === null ? null : "queue-entry--command"])}
@@ -61,7 +63,8 @@ function QueueEntry(props: { data: UseCityProductionQueueWindow.Data, entry: Pro
         >
             <HBox centerVertical spaceBetween gap_s>
                 <Text className="queue-entry__name">{props.position + ". " + props.entry.entry.displayName}</Text>
-                {props.position === 1 && (<ProgressBar progress={props.entry.entry.progress} className="production_queue__progress"/>)}
+                {props.position === 1 && (
+                    <ProgressBar progress={props.entry.entry.progress} className="production_queue__progress"/>)}
                 <ButtonPrimary
                     square round small
                     onClick={() => props.data.cancelEntry(props.entry)}

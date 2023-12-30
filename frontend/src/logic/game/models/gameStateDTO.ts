@@ -140,12 +140,27 @@ export interface TileDTO {
             cityId: string,
             amount: number
         })[],
-        content: ({
-            type: "marker" | "scout",
-            countryId: string | null,
-            turn: number | null,
-        })[]
+        objects: TileObjectDTO[]
     }
+}
+
+export interface TileObjectDTO {
+    type: "marker" | "scout" | "city",
+    countryId: string
+}
+
+export interface MarkerTileObjectDTO extends TileObjectDTO{
+    type: "marker"
+}
+
+export interface ScoutTileObjectDTO extends TileObjectDTO{
+    type: "scout"
+    creationTurn: number
+}
+
+export interface CityTileObjectDTO extends TileObjectDTO{
+    type: "city",
+    cityId: string
 }
 
 export interface RouteDTO {
