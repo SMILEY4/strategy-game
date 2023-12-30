@@ -6,7 +6,10 @@ import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 import {Else, If, Then, When} from "react-if";
-import {DefaultDecoratedWindow, DefaultDecoratedWindowWithBanner} from "../../../../components/windows/decorated/DecoratedWindow";
+import {
+    DefaultDecoratedWindow,
+    DefaultDecoratedWindowWithBanner,
+} from "../../../../components/windows/decorated/DecoratedWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
@@ -45,6 +48,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
                     <PlaceScoutButton {...data!}/>
                     <CreateColonyButton {...data!}/>
                     <CreateSettlementButton {...data!}/>
+                    <MarkerButton {...data!}/>
                 </DefaultDecoratedWindowWithBanner>
 
             </Else>
@@ -146,4 +150,27 @@ function CreateSettlementButton(props: UseTileWindow.Data): ReactElement {
             </Tooltip.Content>
         </Tooltip>
     );
+}
+
+function MarkerButton(props: UseTileWindow.Data): ReactElement {
+    if (props.marker.canDelete) {
+        return (
+            <ButtonPrimary
+                blue
+                onClick={props.marker.delete}
+            >
+                Delete Marker
+            </ButtonPrimary>
+        );
+    } else {
+        return (
+            <ButtonPrimary
+                blue
+                disabled={!props.marker.canPlace}
+                onClick={props.openWindow.placeMarker}
+            >
+                Place Marker
+            </ButtonPrimary>
+        );
+    }
 }

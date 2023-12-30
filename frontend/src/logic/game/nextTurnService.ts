@@ -279,6 +279,7 @@ export class NextTurnService {
             return {
                 type: "marker",
                 country: this.findCountry(game, objDTO.countryId),
+                label: objDTO.label
             } as MarkerTileObject;
         }
         if (dto.type === "scout") {

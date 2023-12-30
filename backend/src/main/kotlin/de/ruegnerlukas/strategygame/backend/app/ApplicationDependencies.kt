@@ -50,6 +50,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.core.TurnSubmitActionImp
 import de.ruegnerlukas.strategygame.backend.gameengine.core.DiscoverMapAreaImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.InitializePlayerImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.common.RouteGenerator
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENDeleteMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.core.preview.PreviewCityCreationImpl
@@ -194,6 +195,7 @@ val applicationDependencies = module {
     single<GENValidateCreateCity> { GENValidateCreateCity(get(), get()) } withOptions { createdAtStart() }
     single<GENValidatePlaceMarker> { GENValidatePlaceMarker(get()) } withOptions { createdAtStart() }
     single<GENPlaceMarker> { GENPlaceMarker(get()) } withOptions { createdAtStart() }
+    single<GENDeleteMarker> { GENDeleteMarker(get()) } withOptions { createdAtStart() }
     single<GENValidatePlaceScout> { GENValidatePlaceScout(get(), get()) } withOptions { createdAtStart() }
     single<GENPlaceScout> { GENPlaceScout(get(), get()) } withOptions { createdAtStart() }
     single<GENValidateAddProductionQueueEntry> { GENValidateAddProductionQueueEntry(get()) } withOptions { createdAtStart() }

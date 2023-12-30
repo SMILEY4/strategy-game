@@ -8,6 +8,7 @@ export interface TileObject {
 
 export interface MarkerTileObject extends TileObject {
     type: "marker";
+    label: string;
 }
 
 export interface ScoutTileObject extends TileObject {

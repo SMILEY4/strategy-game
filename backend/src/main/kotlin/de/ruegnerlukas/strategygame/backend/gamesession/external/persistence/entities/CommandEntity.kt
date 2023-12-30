@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DbEntity
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.DeleteMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
@@ -46,6 +47,11 @@ class CommandEntity<T : CommandEntityData>(
                     cityId = serviceModel.cityId,
                 )
                 is PlaceMarkerCommandData -> PlaceMarkerCommandEntityData(
+                    q = serviceModel.q,
+                    r = serviceModel.r,
+                    label = serviceModel.label
+                )
+                is DeleteMarkerCommandData -> DeleteMarkerCommandEntityData(
                     q = serviceModel.q,
                     r = serviceModel.r,
                 )
@@ -89,6 +95,11 @@ class CommandEntity<T : CommandEntityData>(
                 cityId = entity.cityId
             )
             is PlaceMarkerCommandEntityData -> PlaceMarkerCommandData(
+                q = entity.q,
+                r = entity.r,
+                label = entity.label
+            )
+            is DeleteMarkerCommandEntityData -> DeleteMarkerCommandData(
                 q = entity.q,
                 r = entity.r,
             )
@@ -158,10 +169,21 @@ class UpgradeSettlementTierCommandEntityData(
 @JsonTypeName(PlaceMarkerCommandEntityData.TYPE)
 class PlaceMarkerCommandEntityData(
     val q: Int,
-    val r: Int
+    val r: Int,
+    val label: String,
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "place-marker"
+    }
+}
+
+@JsonTypeName(DeleteMarkerCommandEntityData.TYPE)
+class DeleteMarkerCommandEntityData(
+    val q: Int,
+    val r: Int
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "delete-marker"
     }
 }
 

@@ -5,6 +5,7 @@ import {Query} from "../query/query";
 import {UID} from "../../uid";
 import {Database} from "./database";
 import {IdProvider} from "../idProvider";
+import toIds = IdProvider.toIds;
 
 /**
  * Base implementation of a database
@@ -107,35 +108,38 @@ export class AbstractDatabase<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>
         return subscriberId;
     }
 
-    public subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): string {
+    public subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): [string, ENTITY | null] {
         const subscriberId = this.genSubscriberId();
+        const entity = this.getStorage().get(entityId)
         this.subscribers.entity.set(subscriberId, {
             entityId: entityId,
             callback: callback,
         });
-        return subscriberId;
+        return [subscriberId, entity];
     }
 
-    public subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): string {
+    public subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): [string, ENTITY[]] {
         const subscriberId = this.genSubscriberId();
+        const queryResult = this.queryMany(query, args)
         this.subscribers.query.set(subscriberId, {
             query: query,
             args: args,
             callback: callback,
-            lastIds: [],
+            lastIds: IdProvider.toIds(this.idProvider, queryResult),
         });
-        return subscriberId;
+        return [subscriberId, queryResult];
     }
 
-    public subscribeOnQuerySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entity: ENTITY | null) => void): string {
+    public subscribeOnQuerySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entity: ENTITY | null) => void): [string, ENTITY | null] {
         const subscriberId = this.genSubscriberId();
+        const queryResult = this.querySingle(query, args)
         this.subscribers.query.set(subscriberId, {
             query: query,
             args: args,
             callback: entities => entities.length > 0 ? callback(entities[0]) : callback(null),
-            lastIds: [],
+            lastIds: queryResult === null ? [] : IdProvider.toIds(this.idProvider, [queryResult]),
         });
-        return subscriberId;
+        return [subscriberId, queryResult];
     }
 
     public unsubscribe(subscriberId: string): void {
@@ -192,7 +196,7 @@ export class AbstractDatabase<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>
         const result: ENTITY[] = this.queryMany(subscriber.query, subscriber.args);
         const resultIds = result.map(this.idProvider).sort();
         if (!this.arrEquals(subscriber.lastIds, resultIds)) {
-            subscriber.lastIds = resultIds;
+            subscriber.lastIds = [...resultIds];
             subscriber.callback(result);
         }
     }

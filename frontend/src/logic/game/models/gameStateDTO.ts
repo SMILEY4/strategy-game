@@ -150,7 +150,8 @@ export interface TileObjectDTO {
 }
 
 export interface MarkerTileObjectDTO extends TileObjectDTO{
-    type: "marker"
+    type: "marker",
+    label: string
 }
 
 export interface ScoutTileObjectDTO extends TileObjectDTO{

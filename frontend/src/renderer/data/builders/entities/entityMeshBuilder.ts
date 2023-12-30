@@ -1,4 +1,8 @@
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../../shared/webgl/mixedArrayBuffer";
+import {
+    MixedArrayBuffer,
+    MixedArrayBufferCursor,
+    MixedArrayBufferType,
+} from "../../../../shared/webgl/mixedArrayBuffer";
 import {RenderEntity} from "./renderEntity";
 import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 
@@ -34,8 +38,15 @@ export namespace EntityMeshBuilder {
     function appendEntities(cursor: MixedArrayBufferCursor, entities: RenderEntity[]) {
         for (let i = 0, n = entities.length; i < n; i++) {
             const entity = entities[i];
-            appendEntity(cursor, entity, entity.type === "city" ? 0 : 1);
+            appendEntity(cursor, entity, getTilesetIndex(entity.type));
         }
+    }
+
+    function getTilesetIndex(entityType: "city" | "scout" | "marker"): number {
+        if (entityType === "city") return 0;
+        if (entityType === "scout") return 1;
+        if (entityType === "marker") return 1; // todo: sprite + own index
+        return 2;
     }
 
     function appendEntity(cursor: MixedArrayBufferCursor, entity: RenderEntity, tilesetIndex: number) {
@@ -48,36 +59,36 @@ export namespace EntityMeshBuilder {
         const u1 = tilesetIndex === 0 ? 0.5 : 1;
 
         // triangle a, corner 1
-        cursor.append(center[0] - halfWidth)
-        cursor.append(center[1] - halfHeight)
-        cursor.append(u0)
-        cursor.append(0)
+        cursor.append(center[0] - halfWidth);
+        cursor.append(center[1] - halfHeight);
+        cursor.append(u0);
+        cursor.append(0);
         // triangle a, corner 2
-        cursor.append(center[0] + halfWidth)
-        cursor.append(center[1] - halfHeight)
-        cursor.append(u1)
-        cursor.append(0)
+        cursor.append(center[0] + halfWidth);
+        cursor.append(center[1] - halfHeight);
+        cursor.append(u1);
+        cursor.append(0);
         // triangle a, corner 3
-        cursor.append(center[0] + halfWidth)
-        cursor.append(center[1] + halfHeight)
-        cursor.append(u1)
-        cursor.append(1)
+        cursor.append(center[0] + halfWidth);
+        cursor.append(center[1] + halfHeight);
+        cursor.append(u1);
+        cursor.append(1);
 
         // triangle b, corner 1
-        cursor.append(center[0] - halfWidth)
-        cursor.append(center[1] - halfHeight)
-        cursor.append(u0)
-        cursor.append(0)
+        cursor.append(center[0] - halfWidth);
+        cursor.append(center[1] - halfHeight);
+        cursor.append(u0);
+        cursor.append(0);
         // triangle b, corner 2
-        cursor.append(center[0] + halfWidth)
-        cursor.append(center[1] + halfHeight)
-        cursor.append(u1)
-        cursor.append(1)
+        cursor.append(center[0] + halfWidth);
+        cursor.append(center[1] + halfHeight);
+        cursor.append(u1);
+        cursor.append(1);
         // triangle b, corner 3
-        cursor.append(center[0] - halfWidth)
-        cursor.append(center[1] + halfHeight)
-        cursor.append(u0)
-        cursor.append(1)
+        cursor.append(center[0] - halfWidth);
+        cursor.append(center[1] + halfHeight);
+        cursor.append(u0);
+        cursor.append(1);
     }
 
 

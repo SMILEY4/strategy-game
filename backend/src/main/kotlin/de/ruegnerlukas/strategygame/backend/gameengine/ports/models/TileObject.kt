@@ -6,6 +6,7 @@ sealed interface TileObject {
 
 class MarkerTileObject(
     override val countryId: String,
+    val label: String
 ) : TileObject
 
 class ScoutTileObject(

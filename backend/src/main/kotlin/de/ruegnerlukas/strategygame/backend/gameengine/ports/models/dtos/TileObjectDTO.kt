@@ -24,6 +24,7 @@ sealed class TileObjectDTO(
 @JsonTypeName(MarkerTileObjectDTO.TYPE)
 class MarkerTileObjectDTO(
     countryId: String,
+    val label: String
 ) : TileObjectDTO(TYPE, countryId) {
     companion object {
         internal const val TYPE = "marker"

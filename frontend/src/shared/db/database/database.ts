@@ -30,27 +30,27 @@ export interface Database<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, EN
      * Subscribe to changes to a specific entity
      * @param entityId the id of the entity
      * @param callback the event callback
-     * @return the id of the subscriber
+     * @return ["the id of the subscriber", "the initial entity or null"]
      */
-    subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): string;
+    subscribeOnEntity(entityId: ID, callback: (entity: ENTITY, operation: DatabaseOperation) => void): [string, ENTITY | null];
 
     /**
      * Subscribe to changes of a given query
      * @param query the query to perform and check for changes
      * @param args the dynamic query arguments
      * @param callback the event callback
-     * @return the id of the subscriber
+     * @return ["the id of the subscriber", "the initial result of the query"]
      */
-    subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): string;
+    subscribeOnQuery<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entities: ENTITY[]) => void): [string, ENTITY[]];
 
     /**
      * Subscribe to changes of single entity of a given query
      * @param query the query to perform and check for changes
      * @param args the dynamic query arguments
      * @param callback the event callback
-     * @return the id of the subscriber
+     * @return ["the id of the subscriber", "the initial result of the query"]
      */
-    subscribeOnQuerySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entity: ENTITY | null) => void): string;
+    subscribeOnQuerySingle<ARGS>(query: Query<STORAGE, ENTITY, ID, ARGS>, args: ARGS, callback: (entity: ENTITY | null) => void): [string, ENTITY | null];
 
     /**
      * Remove the subscriber with the given id

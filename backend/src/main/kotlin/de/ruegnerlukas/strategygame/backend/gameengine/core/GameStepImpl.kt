@@ -8,6 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.CreateCityOperationData
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.DeleteMarkerOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.PlaceMarkerOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.PlaceScoutOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.RemoveProductionQueueEntryOperationData
@@ -15,6 +16,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.SettlerProd
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerGlobalUpdate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveCreateCity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveDeleteMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
@@ -31,6 +33,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtend
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.DeleteMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
@@ -116,6 +119,18 @@ class GameStepImpl(
                     eventSystem.publish(
                         TriggerResolvePlaceMarker,
                         PlaceMarkerOperationData(
+                            game = game,
+                            country = game.findCountryByUser(typedCommand.userId),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
+                            label = typedCommand.data.label
+                        )
+                    )
+                }
+                is DeleteMarkerCommandData -> {
+                    val typedCommand = command as Command<DeleteMarkerCommandData>
+                    eventSystem.publish(
+                        TriggerResolveDeleteMarker,
+                        DeleteMarkerOperationData(
                             game = game,
                             country = game.findCountryByUser(typedCommand.userId),
                             targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),

@@ -9,6 +9,7 @@ import {UseSettlementCreationWindow} from "../cityCreation/useSettlementCreation
 import {CommandDatabase} from "../../../../../state/commandDatabase";
 import {TileDatabase} from "../../../../../state/tileDatabase";
 import {GameSessionDatabase} from "../../../../../state/gameSessionDatabase";
+import {UsePlaceMarkerWindow} from "../placeMarker/usePlaceMarker";
 
 export namespace UseTileWindow {
 
@@ -48,6 +49,7 @@ export namespace UseTileWindow {
             city: () => void,
             createSettlement: () => void;
             createColony: () => void;
+            placeMarker: () => void;
         },
         scout: {
             place: () => void
@@ -59,6 +61,11 @@ export namespace UseTileWindow {
         createColony: {
             valid: boolean,
             reasonsInvalid: string[]
+        },
+        marker: {
+            canPlace: boolean,
+            canDelete: boolean,
+            delete: () => void,
         }
     }
 
@@ -72,6 +79,7 @@ export namespace UseTileWindow {
         const openCity = UseCityWindow.useOpen();
         const openCountry = UseCountryWindow.useOpen();
         const openSettlementCreation = UseSettlementCreationWindow.useOpen();
+        const openPlaceMarker = UsePlaceMarkerWindow.useOpen()
 
         const [validCreateSettlement, reasonsValidationsSettlement] = useValidateCreateSettlement(tile, "placeholder", false);
         const [validCreateColony, reasonsValidationsColony] = useValidateCreateSettlement(tile, "placeholder", true);
@@ -84,6 +92,7 @@ export namespace UseTileWindow {
                     city: () => tile?.owner?.city && openCity(tile.owner.city.id, true),
                     createSettlement: () => openSettlementCreation(tileView.identifier, false),
                     createColony: () => openSettlementCreation(tileView.identifier, true),
+                    placeMarker: () => openPlaceMarker(tileView.identifier)
                 },
                 scout: {
                     place: () => AppCtx.CommandService().placeScout(tileView.identifier),
@@ -96,6 +105,11 @@ export namespace UseTileWindow {
                     valid: validCreateColony,
                     reasonsInvalid: reasonsValidationsColony,
                 },
+                marker: {
+                    canPlace: AppCtx.MarkerService().validatePlaceMarker(tileView.identifier),
+                    canDelete: AppCtx.MarkerService().validateDeleteMarker(tileView.identifier),
+                    delete: () => AppCtx.MarkerService().deleteMarker(tileView.identifier),
+                }
             };
         } else {
             return null;

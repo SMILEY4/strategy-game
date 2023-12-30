@@ -10,7 +10,6 @@ class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {
 
     object Definition : EventNodeDefinition<PlaceMarkerOperationData, PlaceMarkerOperationData, OperationInvalidData, Unit>()
 
-
     init {
         eventSystem.createNode(Definition) {
             trigger(TriggerResolvePlaceMarker)
