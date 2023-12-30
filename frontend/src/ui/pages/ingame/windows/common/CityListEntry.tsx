@@ -10,7 +10,7 @@ import "./cityListEntry.less";
 export function CityListEntry(props: { data: CityReduced, onOpen: () => void }) {
     return (
         <DecoratedPanel
-            paddingSmall blue simpleBorder
+            paddingSmall blue simpleBorder pattern
             className={joinClassNames([
                 "city-list-entry",
                 props.data.isPlanned ? "city-list-entry--planned" : null,

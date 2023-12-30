@@ -11,6 +11,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerConta
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert
 import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
+import java.time.Instant
 
 class CreateGameImpl(
     private val gameInsert: GameInsert,
@@ -19,10 +20,10 @@ class CreateGameImpl(
 
     private val metricId = MetricId.action(CreateGame::class)
 
-    override suspend fun perform(worldSettings: WorldSettings): String {
+    override suspend fun perform(name: String, worldSettings: WorldSettings): String {
         return time(metricId) {
             log().info("Creating new game with seed ${worldSettings.seed}")
-            val gameId = createGame()
+            val gameId = createGame(name)
             initializeWorld(gameId, worldSettings)
             log().info("Created new game with id $gameId")
             gameId
@@ -33,10 +34,12 @@ class CreateGameImpl(
     /**
      * Build and persist the game
      */
-    private suspend fun createGame(): String {
+    private suspend fun createGame(name: String): String {
         return gameInsert.execute(
             Game(
                 gameId = DbId.PLACEHOLDER,
+                name = name,
+                creationTimestamp = Instant.now().toEpochMilli(),
                 turn = 0,
                 players = PlayerContainer()
             )

@@ -11,6 +11,8 @@ import {TextField} from "../../components/textfield/TextField";
 import {Spacer} from "../../components/spacer/Spacer";
 import "./pageSessions.less";
 import {AudioType} from "../../../logic/audio/audioService";
+import {Text} from "../../components/text/Text";
+import {GameSessionMeta} from "../../../models/gameSessionMeta";
 
 
 export function PageSessions(): ReactElement {
@@ -27,6 +29,8 @@ export function PageSessions(): ReactElement {
         showCreateSession,
         seed,
         setSeed,
+        name,
+        setName,
     } = useCreateSession(loadSessions);
 
     const {
@@ -58,12 +62,12 @@ export function PageSessions(): ReactElement {
 
                     <InsetPanel noPadding fillParent className="page-sessions__list__container">
                         <VBox padding_s gap_s fillParent top stretch className="page-sessions__list__content">
-                            {sessions.map(sessionId => (
+                            {sessions.map(session => (
                                 <GameSessionEntry
-                                    key={sessionId}
-                                    name={sessionId}
-                                    onConnect={() => connectSession(sessionId)}
-                                    onDelete={() => deleteSession(sessionId)}
+                                    key={session.id}
+                                    session={session}
+                                    onConnect={() => connectSession(session.id)}
+                                    onDelete={() => deleteSession(session.id)}
                                 />
                             ))}
                         </VBox>
@@ -95,6 +99,8 @@ export function PageSessions(): ReactElement {
 
             {showCreateSession && (
                 <ModalCreateGame
+                    name={name}
+                    setName={setName}
                     seed={seed}
                     onSeed={setSeed}
                     onCancel={cancelCreateSession}
@@ -106,11 +112,31 @@ export function PageSessions(): ReactElement {
     );
 }
 
-function GameSessionEntry(props: { name: string, onConnect: () => void, onDelete: () => void }): ReactElement {
+function GameSessionEntry(props: {
+    session: GameSessionMeta,
+    onConnect: () => void,
+    onDelete: () => void
+}): ReactElement {
     return (
-        <DecoratedPanel blue simpleBorder className="game-session-entry">
-            <HBox gap_s centerVertical right>
-                <Header3>{props.name}</Header3>
+        <DecoratedPanel blue simpleBorder className="game-session-entry" pattern>
+            <HBox gap_s centerVertical left>
+                <VBox fillParentWidth gap_xs>
+                    <Header3>{props.session.name}</Header3>
+                    <HBox gap_xs wrap>
+                        <Text style={{marginRight: "16px"}} type="secondary">
+                            {"Created: " + new Date(props.session.creationTimestamp).toLocaleDateString(undefined, {})}
+                        </Text>
+                        <Text style={{marginRight: "16px"}} type="secondary">
+                            {"Id: " + props.session.id}
+                        </Text>
+                        <Text style={{marginRight: "16px"}} type="secondary">
+                            {"Players: " + props.session.players}
+                        </Text>
+                        <Text style={{marginRight: "16px"}} type="secondary">
+                            {"Turn: " + props.session.currentTurn}
+                        </Text>
+                    </HBox>
+                </VBox>
                 <ButtonPrimary blue onClick={props.onConnect}>Connect</ButtonPrimary>
                 <ButtonPrimary red onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</ButtonPrimary>
             </HBox>
@@ -160,6 +186,8 @@ function ModalJoinGame(props: {
 }
 
 function ModalCreateGame(props: {
+    name: string,
+    setName: (name: string) => void,
     seed: string,
     onSeed: (seed: string) => void,
     onCancel: () => void,
@@ -168,11 +196,18 @@ function ModalCreateGame(props: {
     return (
         <div className="game-session__modal-surface">
             <DecoratedPanel red className="game-session__modal-create">
-                <VBox centerVertical stretch>
+                <VBox centerVertical stretch gap_s>
 
                     <Header1>Create</Header1>
 
                     <Spacer size="m"/>
+
+                    <TextField
+                        value={props.name}
+                        placeholder={"Name"}
+                        type="text"
+                        onChange={props.setName}
+                    />
 
                     <TextField
                         value={props.seed}
@@ -201,14 +236,13 @@ function ModalCreateGame(props: {
 
 
 function useSessionData() {
-    const [sessions, setSessions] = useState<string[]>([]);
+    const [sessions, setSessions] = useState<GameSessionMeta[]>([]);
     const loadGameSessions = gameSession.useLoadGameSessions();
 
     return {
         sessions: sessions,
         loadSessions: () => {
-            loadGameSessions()
-                .then((list: string[]) => setSessions(list));
+            loadGameSessions().then((list: GameSessionMeta[]) => setSessions(list));
         },
     };
 }
@@ -217,6 +251,7 @@ function useCreateSession(reloadSessions: () => void) {
     const createGameSession = gameSession.useCreateGameSession();
     const [show, setShow] = useState(false);
     const [seed, setSeed] = useState("");
+    const [name, setName] = useState("New Game");
 
     function getCleanSeed(seed: string) {
         let cleanSeed = seed.trim();
@@ -239,13 +274,15 @@ function useCreateSession(reloadSessions: () => void) {
         acceptCreateSession: () => {
             setSeed("");
             setShow(false);
-            createGameSession(getCleanSeed(seed))
+            createGameSession(name, getCleanSeed(seed))
                 .then(() => reloadSessions())
                 .catch(console.error);
         },
         showCreateSession: show,
         seed: seed,
         setSeed: setSeed,
+        name: name,
+        setName: setName
     };
 
 }

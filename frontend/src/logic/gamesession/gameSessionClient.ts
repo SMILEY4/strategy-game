@@ -3,6 +3,7 @@ import {HttpClient} from "../../shared/httpClient";
 import {WebsocketClient} from "../../shared/websocketClient";
 import {WebsocketMessageHandler} from "../../shared/websocketMessageHandler";
 import {GameConfig} from "../../models/gameConfig";
+import {GameSessionMeta} from "../../models/gameSessionMeta";
 
 export class GameSessionClient {
 
@@ -18,17 +19,17 @@ export class GameSessionClient {
         this.messageHandler = messageHandler;
     }
 
-    public list(): Promise<string[]> {
-        return this.httpClient.get<string[]>({
+    public list(): Promise<GameSessionMeta[]> {
+        return this.httpClient.get<GameSessionMeta[]>({
             url: "/api/session/list",
             requireAuth: true,
             token: this.authProvider.getToken(),
         });
     }
 
-    public create(seed: string | null): Promise<string> {
+    public create(name: string, seed: string | null): Promise<string> {
         return this.httpClient.post<string>({
-            url: "/api/session/create" + (seed ? ("?seed=" + seed) : ""),
+            url: "/api/session/create?name=" + name + (seed ? ("&seed=" + seed) : ""),
             requireAuth: true,
             token: this.authProvider.getToken(),
             responseType: "text",

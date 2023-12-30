@@ -11,6 +11,7 @@ export interface DecoratedPanelProps {
     paper?: boolean,
     color?: DecoratedPanelColor;
     simpleBorder?: boolean,
+    pattern?: boolean,
     floating?: boolean,
     fillParent?: boolean,
     noPadding?: boolean,
@@ -39,6 +40,7 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
             ref={props.elementRef}
         >
             <div className="background"/>
+            {props.pattern && (<div className="background-pattern"/>)}
             {props.background}
             <div className="content">
                 {props.children}

@@ -1,9 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.models
 
-data class Game(
-    val gameId: String,
+
+data class GameSessionData(
+    val id: String,
     val name: String,
     val creationTimestamp: Long,
-    var turn: Int,
-    val players: PlayerContainer
+    val players: Int,
+    val currentTurn: Int
 )

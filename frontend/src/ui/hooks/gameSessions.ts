@@ -18,8 +18,8 @@ export function useLoadGameSessions() {
 export function useCreateGameSession() {
     const gameSessionService = AppCtx.GameSessionService()
     const handleUnauthorized = useHandleUnauthorized();
-    return (seed: string | null) => {
-        return gameSessionService.createSession(seed)
+    return (name: string, seed: string | null) => {
+        return gameSessionService.createSession(name, seed)
             .catch(error => UnauthorizedError.handle(error, () => {
                 handleUnauthorized();
             }));

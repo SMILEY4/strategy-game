@@ -10,6 +10,6 @@ interface CreateGame {
 	/**
 	 * @return the id of the game
 	 */
-	suspend fun perform(worldSettings: WorldSettings): String
+	suspend fun perform(name: String, worldSettings: WorldSettings): String
 
 }
