@@ -12,6 +12,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.common.RouteGenerato
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateCity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENDeleteMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENPlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENPlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENRemoveProductionQueueEntry
@@ -121,6 +122,7 @@ data class TestActions(
                 GENValidateCreateCity(GameConfig.default(), eventSystem)
                 GENValidatePlaceMarker(eventSystem)
                 GENPlaceMarker(eventSystem)
+                GENDeleteMarker(eventSystem)
                 GENValidatePlaceScout(GameConfig.default(), eventSystem)
                 GENPlaceScout(GameConfig.default(), eventSystem)
                 GENValidateAddProductionQueueEntry(eventSystem)

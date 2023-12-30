@@ -3,7 +3,7 @@ import {
     AddProductionQueueCommand,
     CancelProductionQueueCommand,
     Command,
-    CreateCityCommand,
+    CreateCityCommand, DeleteMarkerCommand, PlaceMarkerCommand,
     PlaceScoutCommand,
     UpgradeCityCommand,
 } from "../../models/command";
@@ -81,7 +81,24 @@ export class EndTurnService {
                 r: cmd.tile.r,
             };
         }
-        throw new Error("Unknown command type: " + command.type + " (" + command.id + ")");
+        if (command.type === CommandType.MARKER_PLACE) {
+            const cmd = command as PlaceMarkerCommand;
+            return {
+                type: "place-marker",
+                q: cmd.tile.q,
+                r: cmd.tile.r,
+                label: cmd.label
+            };
+        }
+        if (command.type === CommandType.MARKER_DELETE) {
+            const cmd = command as DeleteMarkerCommand;
+            return {
+                type: "delete-marker",
+                q: cmd.tile.q,
+                r: cmd.tile.r,
+            };
+        }
+        throw new Error("Unknown command type: " + command.type.id + " (" + command.id + ")");
     }
 
 }

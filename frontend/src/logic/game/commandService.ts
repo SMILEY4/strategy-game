@@ -4,7 +4,7 @@ import {SettlementTier} from "../../models/settlementTier";
 import {
     AddProductionQueueCommand,
     CancelProductionQueueCommand,
-    CreateCityCommand,
+    CreateCityCommand, DeleteMarkerCommand, PlaceMarkerCommand,
     PlaceScoutCommand,
     UpgradeCityCommand,
 } from "../../models/command";
@@ -66,4 +66,19 @@ export class CommandService {
         this.commandDb.insert(command);
     }
 
+    public placeMarker(tile: TileIdentifier, label: string) {
+        const command = new PlaceMarkerCommand({
+            tile: tile,
+            label: label
+        });
+        this.commandDb.insert(command);
+    }
+
+
+    public deleteMarker(tile: TileIdentifier) {
+        const command = new DeleteMarkerCommand({
+            tile: tile,
+        });
+        this.commandDb.insert(command);
+    }
 }

@@ -36,6 +36,7 @@ sealed class TileObjectEntity(
                 )
                 is MarkerTileObject -> MarkerTileObjectEntity(
                     countryId = serviceModel.countryId,
+                    label = serviceModel.label
                 )
             }
         }
@@ -53,6 +54,7 @@ sealed class TileObjectEntity(
             )
             is MarkerTileObjectEntity -> MarkerTileObject(
                 countryId = this.countryId,
+                label = this.label
             )
         }
     }
@@ -63,6 +65,7 @@ sealed class TileObjectEntity(
 @JsonTypeName(MarkerTileObjectEntity.TYPE)
 class MarkerTileObjectEntity(
     countryId: String,
+    val label: String
 ) : TileObjectEntity(TYPE, countryId) {
     companion object {
         internal const val TYPE = "marker"

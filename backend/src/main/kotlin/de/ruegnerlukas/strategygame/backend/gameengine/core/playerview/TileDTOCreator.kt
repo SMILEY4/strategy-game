@@ -73,6 +73,7 @@ class TileDTOCreator(private val gameConfig: GameConfig, private val countryId: 
                         )
                         is MarkerTileObject -> MarkerTileObjectDTO(
                             countryId = it.countryId,
+                            label = it.label
                         )
                     }
                 }

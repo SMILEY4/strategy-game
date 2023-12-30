@@ -1,6 +1,6 @@
 import {RenderEntity} from "./renderEntity";
 import {Tile} from "../../../../models/tile";
-import {Command, CreateCityCommand, PlaceScoutCommand} from "../../../../models/command";
+import {Command, CreateCityCommand, PlaceMarkerCommand, PlaceScoutCommand} from "../../../../models/command";
 import {CommandType} from "../../../../models/commandType";
 import {CountryIdentifier} from "../../../../models/country";
 import {Color} from "../../../../models/color";
@@ -27,6 +27,10 @@ export class RenderEntityCollector {
 
     private collectEntities(tiles: Tile[], commands: Command[]): RenderEntity[] {
 
+        const deleteMarkersAt = commands
+            .filter(cmd => cmd.type === CommandType.MARKER_DELETE)
+            .map(cmd => (cmd as PlaceMarkerCommand).tile.id)
+        
         const entities: RenderEntity[] = [];
 
         for (let i = 0, n = tiles.length; i < n; i++) {
@@ -34,13 +38,13 @@ export class RenderEntityCollector {
             if (tile.objects) {
                 for (let j = 0; j < tile.objects.length; j++) {
                     const objType = tile.objects[j].type
-                    if(objType === "marker") {
+                    if(objType === "marker" && deleteMarkersAt.indexOf(tile.identifier.id) === -1) {
                         const obj = tile.objects[j] as MarkerTileObject
                         entities.push({
                             type: "marker",
                             tile: tile.identifier,
                             country: obj.country,
-                            label: null,
+                            label: obj.label,
                         });
                     }
                     if(objType === "scout") {
@@ -82,6 +86,14 @@ export class RenderEntityCollector {
                     tile: (command as CreateCityCommand).tile,
                     country: this.placeholderCountry(),
                     label: (command as CreateCityCommand).name,
+                });
+            }
+            if (command.type === CommandType.MARKER_PLACE) {
+                entities.push({
+                    type: "marker",
+                    tile: (command as PlaceMarkerCommand).tile,
+                    country: this.placeholderCountry(),
+                    label: (command as PlaceMarkerCommand).label,
                 });
             }
         }

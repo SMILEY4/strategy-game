@@ -90,3 +90,30 @@ export class PlaceScoutCommand extends Command {
     }
 
 }
+
+
+
+
+export class PlaceMarkerCommand extends Command {
+
+    readonly tile: TileIdentifier;
+    readonly label: string
+
+    constructor(data: { tile: TileIdentifier, label: string }) {
+        super(CommandType.MARKER_PLACE);
+        this.tile = data.tile;
+        this.label = data.label
+    }
+
+}
+
+export class DeleteMarkerCommand extends Command {
+
+    readonly tile: TileIdentifier;
+
+    constructor(data: { tile: TileIdentifier }) {
+        super(CommandType.MARKER_DELETE);
+        this.tile = data.tile;
+    }
+
+}

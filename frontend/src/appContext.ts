@@ -32,6 +32,7 @@ import {RouteDatabase} from "./state/routeDatabase";
 import {TileDatabase} from "./state/tileDatabase";
 import {MonitoringRepository} from "./state/monitoringRepository";
 import {UserRepository} from "./state/userRepository";
+import {MarkerService} from "./logic/game/markerService";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -55,6 +56,7 @@ interface AppCtxDef {
     NextTurnService: () => NextTurnService,
     EndTurnService: () => EndTurnService,
     CommandService: () => CommandService,
+    MarkerService: () => MarkerService,
     CityCreationService: () => CityCreationService,
     CityUpgradeService: () => CityUpgradeService,
     GameLoopService: () => GameLoopService,
@@ -154,6 +156,14 @@ export const AppCtx: AppCtxDef = {
     CommandService: diContext.register(
         "CommandService",
         () => new CommandService(AppCtx.CommandDatabase()),
+    ),
+    MarkerService: diContext.register(
+        "MarkerService",
+        () => new MarkerService(
+            AppCtx.CommandDatabase(),
+            AppCtx.TileDatabase(),
+            AppCtx.CommandService(),
+        ),
     ),
     CityCreationService: diContext.register(
         "CityCreationService",

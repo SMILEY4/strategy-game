@@ -7,7 +7,7 @@ import {
     AddProductionQueueCommand,
     CancelProductionQueueCommand,
     Command,
-    CreateCityCommand,
+    CreateCityCommand, DeleteMarkerCommand, PlaceMarkerCommand,
     PlaceScoutCommand,
     UpgradeCityCommand,
 } from "../../../../../models/command";
@@ -108,6 +108,27 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: Com
             return (
                 <>
                     <Header4 onLight>Place Scout</Header4>
+                    <Spacer size="s"/>
+                    <Text onLight>{"at " + cmd.tile.q + ", " + cmd.tile.r}</Text>
+                </>
+            );
+        }
+        if (command.type === CommandType.MARKER_PLACE) {
+            const cmd = command as PlaceMarkerCommand;
+            return (
+                <>
+                    <Header4 onLight>Place Marker</Header4>
+                    <Spacer size="s"/>
+                    <Text onLight>{"at " + cmd.tile.q + ", " + cmd.tile.r}</Text>
+                    <Text onLight>{"with label '" + cmd.label + "'"}</Text>
+                </>
+            );
+        }
+        if (command.type === CommandType.MARKER_DELETE) {
+            const cmd = command as DeleteMarkerCommand;
+            return (
+                <>
+                    <Header4 onLight>Delete Marker</Header4>
                     <Spacer size="s"/>
                     <Text onLight>{"at " + cmd.tile.q + ", " + cmd.tile.r}</Text>
                 </>

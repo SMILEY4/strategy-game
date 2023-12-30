@@ -4,9 +4,8 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 
-data class PlaceMarkerOperationData(
+data class DeleteMarkerOperationData(
     val game: GameExtended,
     val country: Country,
     val targetTile: Tile,
-    val label: String
 )

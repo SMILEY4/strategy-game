@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.DeleteMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
@@ -20,6 +21,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.UpgradeSett
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = PlaceMarkerCommandMsg::class),
+    JsonSubTypes.Type(value = DeleteMarkerCommandMsg::class),
     JsonSubTypes.Type(value = CreateCityCommandMsg::class),
     JsonSubTypes.Type(value = UpgradeSettlementTierCommandMsg::class),
     JsonSubTypes.Type(value = PlaceScoutCommandMsg::class),
@@ -36,6 +38,7 @@ sealed class PlayerCommandMsg(val type: String) {
 class PlaceMarkerCommandMsg(
     val q: Int,
     val r: Int,
+    val label: String
 ) : PlayerCommandMsg(TYPE) {
     companion object {
         internal const val TYPE = "place-marker"
@@ -43,10 +46,26 @@ class PlaceMarkerCommandMsg(
 
     override fun asCommandData() = PlaceMarkerCommandData(
         q = this.q,
-        r = this.r
+        r = this.r,
+        label = this.label
     )
 }
 
+
+@JsonTypeName(DeleteMarkerCommandMsg.TYPE)
+class DeleteMarkerCommandMsg(
+    val q: Int,
+    val r: Int,
+) : PlayerCommandMsg(TYPE) {
+    companion object {
+        internal const val TYPE = "delete-marker"
+    }
+
+    override fun asCommandData() = DeleteMarkerCommandData(
+        q = this.q,
+        r = this.r
+    )
+}
 
 @JsonTypeName(CreateCityCommandMsg.TYPE)
 class CreateCityCommandMsg(
