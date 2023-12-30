@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulation
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityTileObject
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
@@ -83,7 +84,15 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
                 size = 1,
                 growthProgress = 0f,
             ),
-        ).also { game.cities.add(it) }
+        ).also {
+            game.cities.add(it)
+            tile.objects.add(
+                CityTileObject(
+                    countryId = countryId,
+                    cityId = it.cityId,
+                )
+            )
+        }
     }
 
     private fun addToExistingProvince(game: GameExtended, city: City, targetTile: Tile): Province {

@@ -54,7 +54,7 @@ class InitializeWorldImpl(
                     terrainType = it.type,
                     resourceType = it.resource
                 ),
-                content = trackingListOf(),
+                objects = trackingListOf(),
                 influences = mutableListOf(),
                 owner = null,
                 discoveredByCountries = mutableListOf()

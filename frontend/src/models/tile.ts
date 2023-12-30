@@ -5,6 +5,7 @@ import {TerrainType} from "./terrainType";
 import {Visibility} from "./visibility";
 import {ResourceType} from "./resourceType";
 import {TerrainResourceType, TerrainResourceTypeString} from "./terrainResourceType";
+import {TileObject} from "./tileObject";
 
 export interface TileIdentifier {
     id: string,
@@ -23,7 +24,7 @@ export interface Tile {
         city: CityIdentifier | null
     } | null,
     influences: TileInfluence[],
-    content: ScoutTileContent[]
+    objects: TileObject[]
 }
 
 export interface TileInfluence {
@@ -31,11 +32,6 @@ export interface TileInfluence {
     province: ProvinceIdentifier,
     city: CityIdentifier,
     amount: number
-}
-
-
-export interface ScoutTileContent {
-    country: CountryIdentifier
 }
 
 
@@ -50,5 +46,5 @@ export interface TileView {
         city: CityIdentifier | null
     } | null,
     influences: TileInfluence[],
-    content: ScoutTileContent[]
+    objects: TileObject[]
 }

@@ -207,7 +207,6 @@ export const AppCtx: AppCtxDef = {
         "RenderEntityCollector",
         () => new RenderEntityCollector(
             AppCtx.TileDatabase(),
-            AppCtx.CityDatabase(),
             AppCtx.CommandDatabase(),
         ),
     ),

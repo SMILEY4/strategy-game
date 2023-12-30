@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {DefaultDecoratedWindow, DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";

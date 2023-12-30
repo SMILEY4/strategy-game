@@ -101,11 +101,21 @@ All messages follow the following format
                           "amount": "Double - the total amount of influence of the  country on the tile",
                       }
                   ],
-                  "content": [
+                  "objects": [
                       {
                           "type": "marker",
                           "countryId": "String - the id of the owner country"
-                      }
+                      },
+                      {
+                          "type": "scout",
+                          "countryId": "String - the id of the owner country",
+                          "creationTurn": "Int - the turn in which the scout was placed"
+                      },
+                      {
+                          "type": "city",
+                          "countryId": "String - the id of the owner country",
+                          "cityId": "String - the id of the city"
+                      },
                   ]
               }
           }

@@ -4,8 +4,10 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ref
 
 /**
  * Adds the marker at the given location
@@ -26,7 +28,11 @@ class GENPlaceMarker(eventSystem: EventSystem) : Logging {
     }
 
     private fun addMarker(tile: Tile, country: Country) {
-        tile.content.add(MarkerTileContent(country.countryId))
+        tile.objects.add(
+            MarkerTileObject(
+                countryId = country.countryId
+            )
+        )
     }
 
 }

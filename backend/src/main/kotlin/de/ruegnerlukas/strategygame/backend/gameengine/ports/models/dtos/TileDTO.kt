@@ -31,5 +31,5 @@ data class TileDTODataTier1(
  */
 data class TileDTODataTier2(
     val influences: List<TileDTOInfluence>,
-    val content: List<TileDTOContent>
+    val objects: List<TileObjectDTO>
 )

@@ -1,12 +1,14 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileContent
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityTileObject
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileObject
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileObject
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileContainer
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.MarkerTileDTOContent
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.ScoutTileDTOContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.CityTileObjectDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.MarkerTileObjectDTO
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.ScoutTileObjectDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTODataTier0
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.TileDTODataTier1
@@ -57,14 +59,26 @@ class TileDTOCreator(private val gameConfig: GameConfig, private val countryId: 
     private fun buildTileDataTier2(countryId: String, tile: Tile, knownCountries: Set<String>): TileDTODataTier2 {
         return TileDTODataTier2(
             influences = buildTileInfluences(countryId, tile, knownCountries),
-            content = tile.content.map {
-                when (it) {
-                    is MarkerTileContent -> MarkerTileDTOContent(it.countryId)
-                    is ScoutTileContent -> ScoutTileDTOContent(it.countryId, it.turn)
+            objects = tile.objects
+                .filter { if (it is MarkerTileObject) it.countryId == countryId else true }
+                .map {
+                    when (it) {
+                        is CityTileObject -> CityTileObjectDTO(
+                            countryId = it.countryId,
+                            cityId = it.cityId,
+                        )
+                        is ScoutTileObject -> ScoutTileObjectDTO(
+                            countryId = it.countryId,
+                            creationTurn = it.creationTurn
+                        )
+                        is MarkerTileObject -> MarkerTileObjectDTO(
+                            countryId = it.countryId,
+                        )
+                    }
                 }
-            }
         )
     }
+
     private fun buildTileInfluences(countryId: String, tile: Tile, knownCountries: Set<String>): List<TileDTOInfluence> {
         val influences = mutableListOf<TileDTOInfluence>()
         influences.addAll( // player country

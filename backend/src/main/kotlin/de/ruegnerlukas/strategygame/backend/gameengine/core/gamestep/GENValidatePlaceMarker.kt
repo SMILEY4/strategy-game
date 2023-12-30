@@ -3,8 +3,8 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileContent
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileObject
 
 class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {
 
@@ -17,7 +17,7 @@ class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {
             action { data ->
                 val result = validations {
                     mustBeTrue("MARKER.TILE_SPACE") {
-                        data.targetTile.content.none { it is MarkerTileContent }
+                        data.targetTile.objects.none { it is MarkerTileObject && it.countryId == data.country.countryId }
                     }
                 }
                 if (result.isInvalid()) {
