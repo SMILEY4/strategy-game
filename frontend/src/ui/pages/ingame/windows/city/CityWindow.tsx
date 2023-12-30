@@ -156,13 +156,13 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
             case "NOT_ENOUGH_FOOD":
                 return (
                     <EnrichedText>
-                        not enough food available: <ETNumber>{-entry.data["amount"]}</ETNumber>
+                        not enough food available: <ETNumber>{entry.data["amount"]}</ETNumber>
                     </EnrichedText>
                 );
             case "STARVING":
                 return (
                     <EnrichedText>
-                        no food available: <ETNumber>{-entry.data["amount"]}</ETNumber>
+                        no food available: <ETNumber>{entry.data["amount"]}</ETNumber>
                     </EnrichedText>
                 );
             case "PROVINCE_CAPITAL":
