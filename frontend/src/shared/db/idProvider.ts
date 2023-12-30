@@ -11,4 +11,12 @@ export namespace IdProvider {
         return ids
     }
 
+    export function toId<ENTITY, ID>(idProvider: IdProvider<ENTITY, ID>, entity: ENTITY | null): ID | null {
+        if(entity === null) {
+            return null
+        } else {
+            return idProvider(entity)
+        }
+    }
+
 }

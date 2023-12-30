@@ -63,7 +63,7 @@ export function useEntity<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>, EN
 ): ENTITY | null {
     const [entity, setEntity] = useForceRepaintState<ENTITY | null>(db.queryById(id));
     useEffect(() => {
-        const subscriberId = db.subscribeOnEntity(id, (entity, op) => {
+        const [subscriberId, _] = db.subscribeOnEntity(id, (entity, op) => {
             if (op === DatabaseOperation.DELETE) {
                 setEntity(null);
             } else {
@@ -89,7 +89,7 @@ export function useQuerySingle<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID
 ): ENTITY | null {
     const [entity, setEntity] = useForceRepaintState<ENTITY | null>(db.querySingle(query, args));
     useEffect(() => {
-        const subscriberId = db.subscribeOnQuerySingle(query, args, result => setEntity(result));
+        const [subscriberId, _] = db.subscribeOnQuerySingle(query, args, result => setEntity(result));
         return () => db.unsubscribe(subscriberId);
     }, []);
     return entity;
@@ -130,7 +130,7 @@ export function useQueryMultiple<STORAGE extends PrimaryDatabaseStorage<ENTITY, 
 ): ENTITY[] {
     const [entities, setEntities] = useForceRepaintState<ENTITY[]>(db.queryMany(query, args));
     useEffect(() => {
-        const subscriberId = db.subscribeOnQuery(query, args, result => setEntities(result));
+        const [subscriberId, _] = db.subscribeOnQuery(query, args, result => setEntities(result));
         return () => db.unsubscribe(subscriberId);
     }, []);
     return entities;

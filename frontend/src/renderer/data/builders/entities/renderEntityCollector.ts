@@ -30,7 +30,7 @@ export class RenderEntityCollector {
         const deleteMarkersAt = commands
             .filter(cmd => cmd.type === CommandType.MARKER_DELETE)
             .map(cmd => (cmd as PlaceMarkerCommand).tile.id)
-        
+
         const entities: RenderEntity[] = [];
 
         for (let i = 0, n = tiles.length; i < n; i++) {
