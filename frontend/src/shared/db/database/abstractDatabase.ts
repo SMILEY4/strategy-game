@@ -76,7 +76,7 @@ export class AbstractDatabase<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>
         try {
             if (this.transactionContext !== null && this.transactionContext.changed) {
                 this.updateRevId();
-                this.checkSubscribersQuery();
+                this.checkSubscribersQuery(true);
                 this.checkSubscribersEntity(this.transactionContext.deletedEntities, this.transactionContext.deletedIds, DatabaseOperation.DELETE);
                 this.checkSubscribersEntity(this.transactionContext.modifiedEntities, this.transactionContext.modifiedIds, DatabaseOperation.MODIFY);
                 this.checkSubscribersEntity(this.transactionContext.insertedEntities, this.transactionContext.insertedIds, DatabaseOperation.INSERT);
@@ -176,7 +176,7 @@ export class AbstractDatabase<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>
                 }
             }
         } else {
-            this.checkSubscribersQuery();
+            this.checkSubscribersQuery(operation === DatabaseOperation.MODIFY);
             this.checkSubscribersEntity(entities, ids, operation);
             this.checkSubscribersDb(entities, operation);
             if (ids.length > 0) {
@@ -186,16 +186,16 @@ export class AbstractDatabase<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID>
     }
 
 
-    private checkSubscribersQuery() {
+    private checkSubscribersQuery(force: boolean) {
         for (let [_, subscriber] of this.subscribers.query) {
-            this.checkSubscriberQuery(subscriber);
+            this.checkSubscriberQuery(subscriber, force);
         }
     }
 
-    private checkSubscriberQuery(subscriber: QuerySubscriber<STORAGE, ENTITY, ID>) {
+    private checkSubscriberQuery(subscriber: QuerySubscriber<STORAGE, ENTITY, ID>, force: boolean) {
         const result: ENTITY[] = this.queryMany(subscriber.query, subscriber.args);
         const resultIds = result.map(this.idProvider).sort();
-        if (!this.arrEquals(subscriber.lastIds, resultIds)) {
+        if (force || !this.arrEquals(subscriber.lastIds, resultIds)) {
             subscriber.lastIds = [...resultIds];
             subscriber.callback(result);
         }
