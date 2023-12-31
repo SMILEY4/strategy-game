@@ -89,6 +89,9 @@ dependencies {
         exclude("org.jetbrains.kotlin", "kotlin-test-junit")
     }
 
+    val versionKoson: String by project
+    implementation("com.lectra:koson:$versionKoson")
+
     val versionKotest: String by project
     val versionKotestExtensionKtor: String by project
     val versionKotestExtensionTestContainers: String by project
