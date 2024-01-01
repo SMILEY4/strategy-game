@@ -33,7 +33,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.POVBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
@@ -67,7 +67,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.Game
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializeWorld
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.POVBuilder
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
@@ -182,7 +182,7 @@ val applicationDependencies = module {
     single<RouteGenerator> { RouteGenerator(get()) }
     single<PreviewCityCreation> { PreviewCityCreationImpl(get(), get(), get()) }
     single<EconomyPopFoodConsumptionProvider> { PopFoodConsumption() }
-    single<PlayerViewCreator> { PlayerViewCreatorImpl(get(), get()) }
+    single<POVBuilder> { POVBuilderImpl(get(), get()) }
     single<InitializePlayer> { InitializePlayerImpl(get(), get(), get(), get(), get()) }
     single<InitializeWorld> { InitializeWorldImpl(get(), get(), get()) }
     single<EventSystem> { EventSystem() }

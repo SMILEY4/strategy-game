@@ -8,7 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.POVBuilder
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage.Companion.GameStatePayload
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.websocket.MessageProducer
@@ -23,7 +23,7 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdat
 class ConnectToGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
-    private val playerViewCreator: PlayerViewCreator,
+    private val playerViewCreator: POVBuilder,
     private val producer: MessageProducer
 ) : ConnectToGame, Logging {
 
@@ -69,7 +69,7 @@ class ConnectToGameImpl(
      * Send the initial game-state to the connected player
      * */
     private suspend fun sendInitialGameStateMessage(gameId: String, userId: String, connectionId: Long) {
-        val view: Any = playerViewCreator.build(userId, gameId).getOrThrow()
+        val view = playerViewCreator.build(userId, gameId).getOrThrow()
         producer.sendToSingle(connectionId, GameStateMessage(GameStatePayload(view)))
     }
 

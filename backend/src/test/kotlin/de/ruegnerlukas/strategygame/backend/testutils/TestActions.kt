@@ -33,7 +33,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
-import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.POVBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.preview.PreviewCityCreationImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExistsQueryImpl
@@ -173,7 +173,7 @@ data class TestActions(
             ConnectToGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                PlayerViewCreatorImpl(
+                POVBuilderImpl(
                     GameExtendedQueryImpl(database),
                     GameConfig.default()
                 ),
@@ -190,7 +190,7 @@ data class TestActions(
                         GameExtendedQueryImpl(database),
                         GameExtendedUpdateImpl(database),
                         eventSystem,
-                        PlayerViewCreatorImpl(
+                        POVBuilderImpl(
                             GameExtendedQueryImpl(database),
                             GameConfig.default()
                         ),
@@ -221,7 +221,7 @@ data class TestActions(
                     GameExtendedQueryImpl(database),
                     GameExtendedUpdateImpl(database),
                     eventSystem,
-                    PlayerViewCreatorImpl(
+                    POVBuilderImpl(
                         GameExtendedQueryImpl(database),
                         GameConfig.default()
                     ),
