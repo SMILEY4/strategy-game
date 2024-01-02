@@ -45,11 +45,13 @@ class CityPOVBuilder(
                     city.infrastructure.productionQueue.map { queueEntry ->
                         when (queueEntry) {
                             is BuildingProductionQueueEntry -> obj {
+                                "type" to "building"
                                 "entryId" to queueEntry.entryId
                                 "progress" to calculateProductionQueueEntryProgress(queueEntry)
                                 "buildingType" to queueEntry.buildingType.name
                             }
                             is SettlerProductionQueueEntry -> obj {
+                                "type" to "settler"
                                 "entryId" to queueEntry.entryId
                                 "progress" to calculateProductionQueueEntryProgress(queueEntry)
                             }

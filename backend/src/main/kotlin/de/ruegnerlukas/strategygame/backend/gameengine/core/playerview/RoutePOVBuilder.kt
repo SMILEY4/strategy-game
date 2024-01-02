@@ -15,7 +15,7 @@ class RoutePOVBuilder(
             return null
         }
         return obj {
-            "routeId" to route.routeId
+            "id" to route.routeId
             "cityA" to objHidden(route.cityIdA.containedIn(povCache.knownCities())) {
                 route.cityIdA
             }
@@ -26,7 +26,7 @@ class RoutePOVBuilder(
                 .filter { povCache.tileVisibility(it.tileId) !== TileVisibilityDTO.UNKNOWN }
                 .map { tile ->
                     obj {
-                        "tileId" to tile.tileId
+                        "id" to tile.tileId
                         "q" to tile.q
                         "r" to tile.r
                     }

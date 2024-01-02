@@ -31,9 +31,21 @@ class GameExtendedPOVBuilder(private val gameConfig: GameConfig) {
                     "turn" to game.meta.turn
                 }
                 "identifiers" to obj {
-                    "countries" to povCache.knownCountries().map { povCache.countryIdentifier(it) }
-                    "provinces" to povCache.knownProvinces().map { povCache.provinceIdentifier(it) }
-                    "cities" to povCache.knownCities().map { povCache.cityIdentifier(it) }
+                    "countries" to obj {
+                        povCache.knownCountries().forEach { id ->
+                            id to povCache.countryIdentifier(id)
+                        }
+                    }
+                    "provinces" to obj {
+                        povCache.knownProvinces().forEach { id ->
+                            id to povCache.provinceIdentifier(id)
+                        }
+                    }
+                    "cities" to obj {
+                        povCache.knownCities().forEach { id ->
+                            id to povCache.cityIdentifier(id)
+                        }
+                    }
                 }
                 "tiles" to game.tiles.mapNotNull { tileBuilder.build(it) }
                 "countries" to game.countries.mapNotNull { countryBuilder.build(it) }

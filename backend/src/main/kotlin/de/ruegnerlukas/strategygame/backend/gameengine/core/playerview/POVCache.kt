@@ -92,17 +92,12 @@ class POVCache(
         game.cities.forEach { city ->
             citiesReduced[city.cityId] = obj {
                 "id" to city.cityId
-                "name" to city.meta.name
-                "color" to city.meta.color
-                "isCountryCapitol" to false
                 "isProvinceCapitol" to city.meta.isProvinceCapital
             }
         }
         game.provinces.forEach { province ->
             provincesReduced[province.provinceId] = obj {
                 "id" to province.provinceId
-                "name" to province.provinceId // todo
-                "color" to province.color
                 "cities" to province.cityIds.map { citiesReduced[it] }
             }
         }

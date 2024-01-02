@@ -20,46 +20,47 @@ class DetailLogPOVBuilder {
     fun build(detail: DetailLogEntry<*>): JsonType {
         return obj {
             "id" to detail.id
-            detail.data.forEach { (key, value) ->
-                key to obj {
-                    when (value) {
-                        is BooleanDetailLogValue -> {
-                            "type" to "boolean"
-                            "value" to value.value
-                        }
-                        is FloatDetailLogValue -> {
-                            "type" to "float"
-                            "value" to value.value
-                        }
-                        is IntDetailLogValue -> {
-                            "type" to "int"
-                            "value" to value.value
-                        }
-                        is TileRefDetailLogValue -> {
-                            "type" to "tile"
-                            "value" to obj {
-                                "id" to value.value.tileId
-                                "q" to value.value.q
-                                "r" to value.value.r
+            "data" to obj {
+                detail.data.forEach { (key, value) ->
+                    key to obj {
+                        when (value) {
+                            is BooleanDetailLogValue -> {
+                                "type" to "boolean"
+                                "value" to value.value
                             }
-                        }
-                        is ResourcesDetailLogValue -> {
-                            "type" to "resources"
-                            "value" to value.value.toStacks().map { stack ->
-                                obj {
-                                    "type" to stack.type.name
-                                    "amount" to stack.amount
+                            is FloatDetailLogValue -> {
+                                "type" to "float"
+                                "value" to value.value
+                            }
+                            is IntDetailLogValue -> {
+                                "type" to "int"
+                                "value" to value.value
+                            }
+                            is TileRefDetailLogValue -> {
+                                "type" to "tile"
+                                "value" to obj {
+                                    "id" to value.value.tileId
+                                    "q" to value.value.q
+                                    "r" to value.value.r
                                 }
                             }
-                        }
-                        is BuildingTypeDetailLogValue -> {
-                            "type" to "building"
-                            "value" to value.value.name
+                            is ResourcesDetailLogValue -> {
+                                "type" to "resources"
+                                "value" to value.value.toStacks().map { stack ->
+                                    obj {
+                                        "type" to stack.type.name
+                                        "amount" to stack.amount
+                                    }
+                                }
+                            }
+                            is BuildingTypeDetailLogValue -> {
+                                "type" to "building"
+                                "value" to value.value.name
+                            }
                         }
                     }
                 }
             }
         }
     }
-
 }

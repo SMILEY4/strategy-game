@@ -17,7 +17,7 @@ export interface CityIdentifier {
 
 export interface CityReduced {
     identifier: CityIdentifier;
-    isCountryCapitol: boolean;
+    isCountryCapitol: boolean; // todo: remove
     isProvinceCapitol: boolean;
     isPlanned?: boolean,
     createCommand?: CreateCityCommand
@@ -28,7 +28,7 @@ export interface City {
     country: CountryIdentifier;
     province: ProvinceIdentifier;
     tile: TileIdentifier,
-    isCountryCapital: boolean;
+    isCountryCapital: boolean; // todo
     isProvinceCapital: boolean;
     tier: SettlementTier,
     population: {
