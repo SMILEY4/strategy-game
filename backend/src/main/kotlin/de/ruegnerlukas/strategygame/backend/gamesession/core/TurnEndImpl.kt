@@ -2,10 +2,10 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
-import de.ruegnerlukas.strategygame.backend.common.utils.JsonDocument
 import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
@@ -55,7 +55,7 @@ class TurnEndImpl(
     /**
      * update the game and world
      */
-    private suspend fun stepGame(game: Game): Map<String, JsonDocument> {
+    private suspend fun stepGame(game: Game): Map<String, JsonType> {
         val commands = commandsByGameQuery.execute(game.gameId, game.turn)
         return gameStepAction.perform(game.gameId, commands, getConnectedUsers(game)).getOrThrow()
     }
@@ -93,7 +93,7 @@ class TurnEndImpl(
     /**
      * Send the new game-state to the connected players
      */
-    private suspend fun sendGameStateMessages(game: Game, playerViews: Map<String, JsonDocument>) {
+    private suspend fun sendGameStateMessages(game: Game, playerViews: Map<String, JsonType>) {
         playerViews.forEach { (userId, view) ->
             val connectionId = getConnectionId(game, userId)
             producer.sendToSingle(connectionId, GameStateMessage(GameStatePayload(view)))

@@ -30,6 +30,9 @@ data class RGBColor(
     )
 
     companion object {
+
+        val BLACK = RGBColor(0,0,0)
+
         fun random() = HSLColor.random().toRgb()
     }
 }

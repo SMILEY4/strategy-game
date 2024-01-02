@@ -1,8 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
-import com.lectra.koson.ArrayType
-import com.lectra.koson.ObjectType
-import com.lectra.koson.obj
 import de.ruegnerlukas.strategygame.backend.common.detaillog.BooleanDetailLogValue
 import de.ruegnerlukas.strategygame.backend.common.detaillog.BuildingTypeDetailLogValue
 import de.ruegnerlukas.strategygame.backend.common.detaillog.DetailLog
@@ -11,15 +8,16 @@ import de.ruegnerlukas.strategygame.backend.common.detaillog.FloatDetailLogValue
 import de.ruegnerlukas.strategygame.backend.common.detaillog.IntDetailLogValue
 import de.ruegnerlukas.strategygame.backend.common.detaillog.ResourcesDetailLogValue
 import de.ruegnerlukas.strategygame.backend.common.detaillog.TileRefDetailLogValue
-import de.ruegnerlukas.strategygame.backend.common.utils.arrMap
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.obj
 
 class DetailLogPOVBuilder {
 
-    fun build(detailLog: DetailLog<*>): ArrayType {
-        return arrMap[detailLog.getDetails(), { detail -> build(detail) }]
+    fun build(detailLog: DetailLog<*>): List<JsonType> {
+        return detailLog.getDetails().map { detail -> build(detail) }
     }
 
-    fun build(detail: DetailLogEntry<*>): ObjectType {
+    fun build(detail: DetailLogEntry<*>): JsonType {
         return obj {
             "id" to detail.id
             detail.data.forEach { (key, value) ->
@@ -47,12 +45,12 @@ class DetailLogPOVBuilder {
                         }
                         is ResourcesDetailLogValue -> {
                             "type" to "resources"
-                            "value" to arrMap[value.value.toStacks(), { stack ->
+                            "value" to value.value.toStacks().map { stack ->
                                 obj {
                                     "type" to stack.type.name
                                     "amount" to stack.amount
                                 }
-                            }]
+                            }
                         }
                         is BuildingTypeDetailLogValue -> {
                             "type" to "building"

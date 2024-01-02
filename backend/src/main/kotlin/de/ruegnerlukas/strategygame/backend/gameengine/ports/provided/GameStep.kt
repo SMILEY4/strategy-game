@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided
 
 import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.common.utils.JsonDocument
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 
 interface GameStep {
@@ -16,5 +16,5 @@ interface GameStep {
         gameId: String,
         commands: Collection<Command<*>>,
         userIds: Collection<String>
-    ): Either<GameStepError, Map<String, JsonDocument>>
+    ): Either<GameStepError, Map<String, JsonType>>
 }

@@ -1,9 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
-import com.lectra.koson.ObjectType
-import com.lectra.koson.obj
-import de.ruegnerlukas.strategygame.backend.common.utils.arrMap
-import de.ruegnerlukas.strategygame.backend.common.utils.objMap
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.obj
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.objOptional
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityTileObject
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileObject
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileObject
@@ -12,70 +11,72 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileInfluenc
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileObject
 
 class TilePOVBuilder(
-    private val dtoCache: POVCache,
+    private val povCache: POVCache,
     private val countryId: String,
-    private val knownCountries: Set<String>,
 ) {
 
-    fun build(tile: Tile): ObjectType {
+    fun build(tile: Tile): JsonType {
         val visibility = getVisibility(tile)
         val influences = getInfluences(tile.influences)
         val objects = getObjects(tile.objects)
         return obj {
-            "dataTier0" to obj {
-                "tileId" to tile.tileId
-                "q" to tile.position.q
-                "r" to tile.position.r
-                "visibility" to visibility.name
-            }
-            if (visibility.isAtLeast(VisibilityDTO.DISCOVERED)) {
-                "dataTier1" to obj {
-                    "terrainType" to tile.data.terrainType.name
-                    "resourceType" to tile.data.resourceType.name
-                    "owner" to objMap(tile.owner) { owner ->
-                        "country" to dtoCache.countryIdentifier(owner.countryId)
-                        "province" to dtoCache.provinceIdentifier(owner.provinceId)
-                        "city" to dtoCache.cityIdentifierOrNull(owner.cityId)
+            "identifier" to povCache.tileIdentifier(tile.tileId)
+            "visibility" to visibility
+            if (visibility != TileVisibilityDTO.UNKNOWN) {
+                "base" to obj {
+                    "terrainType" to objHidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
+                        tile.data.terrainType
+                    }
+                    "resourceType" to objHidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
+                        tile.data.resourceType
                     }
                 }
-            }
-            if (visibility.isAtLeast(VisibilityDTO.VISIBLE)) {
-                "dataTier2" to obj {
-                    "influences" to arrMap[influences, { influence ->
-                        obj {
-                            "amount" to influence.amount
-                            "country" to dtoCache.countryIdentifier(influence.countryId)
-                            "province" to dtoCache.provinceIdentifier(influence.provinceId)
-                            "city" to dtoCache.cityIdentifier(influence.cityId)
+                "political" to obj {
+                    "owner" to objHidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
+                        objOptional(tile.owner) { owner ->
+                            "country" to owner.countryId
+                            "province" to owner.provinceId
+                            "city" to owner.cityId
                         }
-                    }]
-                    "objects" to arrMap[objects, { obj ->
+                    }
+                    "influences" to objHidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
+                        influences.map { influence ->
+                            obj {
+                                "amount" to influence.amount
+                                "country" to influence.countryId
+                                "province" to influence.provinceId
+                                "city" to influence.cityId
+                            }
+                        }
+                    }
+                }
+                "objects" to objHidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
+                    objects.map { obj ->
                         when (obj) {
                             is MarkerTileObject -> obj {
                                 "type" to "marker"
-                                "country" to dtoCache.countryIdentifier(obj.countryId)
+                                "country" to obj.countryId
                                 "label" to obj.label
                             }
                             is ScoutTileObject -> obj {
-                                "type" to "marker"
-                                "country" to dtoCache.countryIdentifier(obj.countryId)
+                                "type" to "scout"
+                                "country" to obj.countryId
                                 "creationTurn" to obj.creationTurn
                             }
                             is CityTileObject -> obj {
-                                "type" to "marker"
-                                "country" to dtoCache.countryIdentifier(obj.countryId)
-                                "city" to dtoCache.cityIdentifier(obj.cityId)
+                                "type" to "city"
+                                "country" to obj.countryId
+                                "city" to obj.cityId
                             }
                         }
-                    }]
+                    }
                 }
             }
-
         }
     }
 
-    private fun getVisibility(tile: Tile): VisibilityDTO {
-        return dtoCache.tileVisibility(tile.tileId)
+    private fun getVisibility(tile: Tile): TileVisibilityDTO {
+        return povCache.tileVisibility(tile.tileId)
     }
 
     private fun getObjects(objects: List<TileObject>): List<TileObject> {
@@ -88,7 +89,7 @@ class TilePOVBuilder(
         return buildList {
             var unknownAmount = 0.0
             influences.forEach {
-                if (knownCountries.contains(it.countryId)) {
+                if (povCache.knownCountries().contains(it.countryId)) {
                     add(it)
                 } else {
                     unknownAmount += it.amount

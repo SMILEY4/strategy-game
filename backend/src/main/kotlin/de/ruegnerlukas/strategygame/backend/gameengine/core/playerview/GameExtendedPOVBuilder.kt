@@ -1,12 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
-import com.lectra.koson.arr
-import com.lectra.koson.obj
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.obj
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
-import de.ruegnerlukas.strategygame.backend.common.utils.JsonDocument
-import de.ruegnerlukas.strategygame.backend.common.utils.buildJson
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 
 
@@ -14,31 +12,34 @@ class GameExtendedPOVBuilder(private val gameConfig: GameConfig) {
 
     private val metricId = MetricId.action(GameExtendedPOVBuilder::class)
 
-    fun create(userId: String, game: GameExtended): JsonDocument {
+    fun create(userId: String, game: GameExtended): JsonType {
         return time(metricId) {
 
             val playerCountry = game.findCountryByUser(userId)
 
-            val dtoCache = POVCache(game, gameConfig, playerCountry.countryId)
+            val povCache = POVCache(game, gameConfig, playerCountry.countryId)
             val detailLogBuilder = DetailLogPOVBuilder()
 
-            val knownCountryIds = KnownCountriesCalculator(dtoCache, playerCountry.countryId).getKnownCountries(game.tiles)
+            val tileBuilder = TilePOVBuilder(povCache, playerCountry.countryId)
+            val countryBuilder = CountryPOVBuilder(povCache, playerCountry.countryId, game)
+            val provinceBuilder = ProvincePOVBuilder(povCache, detailLogBuilder, playerCountry.countryId)
+            val cityBuilder = CityPOVBuilder(povCache, detailLogBuilder, playerCountry.countryId, game.provinces)
+            val routeBuilder = RoutePOVBuilder(povCache)
 
-            val tileBuilder = TilePOVBuilder(dtoCache, playerCountry.countryId, knownCountryIds)
-            val countryBuilder = CountryPOVBuilder(dtoCache, playerCountry.countryId, knownCountryIds, game.provinces)
-            val cityBuilder = CityPOVBuilder(dtoCache, detailLogBuilder, playerCountry.countryId, game.provinces)
-            val provinceBuilder = ProvincePOVBuilder(dtoCache, detailLogBuilder, playerCountry.countryId, game.cities)
-            val routeBuilder = RoutePOVBuilder(dtoCache, game.cities)
-
-            buildJson(true) {
-                obj {
+            obj {
+                "meta" to obj {
                     "turn" to game.meta.turn
-                    "tiles" to arr[game.tiles.map { tileBuilder.build(it) }]
-                    "countries" to arr[game.countries.mapNotNull { countryBuilder.build(it) }]
-                    "cities" to arr[game.cities.mapNotNull { cityBuilder.build(it) }]
-                    "provinces" to arr[game.provinces.mapNotNull { provinceBuilder.build(it) }]
-                    "routes" to arr[game.routes.mapNotNull { routeBuilder.build(it) }]
                 }
+                "identifiers" to obj {
+                    "countries" to povCache.knownCountries().map { povCache.countryIdentifier(it) }
+                    "provinces" to povCache.knownProvinces().map { povCache.provinceIdentifier(it) }
+                    "cities" to povCache.knownCities().map { povCache.cityIdentifier(it) }
+                }
+                "tiles" to game.tiles.mapNotNull { tileBuilder.build(it) }
+                "countries" to game.countries.mapNotNull { countryBuilder.build(it) }
+                "provinces" to game.provinces.mapNotNull { provinceBuilder.build(it) }
+                "cities" to game.cities.mapNotNull { cityBuilder.build(it) }
+                "routes" to game.routes.mapNotNull { routeBuilder.build(it) }
             }
         }
     }

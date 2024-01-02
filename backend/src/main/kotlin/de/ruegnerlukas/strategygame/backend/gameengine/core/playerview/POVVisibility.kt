@@ -1,15 +1,15 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
-enum class VisibilityDTO {
+enum class TileVisibilityDTO {
     UNKNOWN,
     DISCOVERED,
     VISIBLE
 }
 
-fun VisibilityDTO.isAtLeast(visibility: VisibilityDTO): Boolean {
+fun TileVisibilityDTO.isAtLeast(visibility: TileVisibilityDTO): Boolean {
     return when (visibility) {
-        VisibilityDTO.UNKNOWN -> true
-        VisibilityDTO.DISCOVERED -> this == VisibilityDTO.DISCOVERED || this == VisibilityDTO.VISIBLE
-        VisibilityDTO.VISIBLE -> this == VisibilityDTO.VISIBLE
+        TileVisibilityDTO.UNKNOWN -> true
+        TileVisibilityDTO.DISCOVERED -> this == TileVisibilityDTO.DISCOVERED || this == TileVisibilityDTO.VISIBLE
+        TileVisibilityDTO.VISIBLE -> this == TileVisibilityDTO.VISIBLE
     }
 }

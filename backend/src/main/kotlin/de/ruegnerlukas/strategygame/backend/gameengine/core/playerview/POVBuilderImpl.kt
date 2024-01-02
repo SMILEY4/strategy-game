@@ -1,9 +1,9 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
 import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
 import de.ruegnerlukas.strategygame.backend.common.utils.Err
-import de.ruegnerlukas.strategygame.backend.common.utils.JsonDocument
 import de.ruegnerlukas.strategygame.backend.common.utils.Ok
 import de.ruegnerlukas.strategygame.backend.common.utils.err
 import de.ruegnerlukas.strategygame.backend.common.utils.ok
@@ -19,14 +19,14 @@ class POVBuilderImpl(
     private val gameConfig: GameConfig
 ) : POVBuilder {
 
-    override suspend fun build(userId: String, gameId: String): Either<PlayerViewCreatorError, JsonDocument> {
+    override suspend fun build(userId: String, gameId: String): Either<PlayerViewCreatorError, JsonType> {
         return when (val result = getGameState(gameId)) {
             is Ok -> build(userId, result.value).ok()
             is Err -> result.value.err()
         }
     }
 
-    override fun build(userId: String, game: GameExtended): JsonDocument {
+    override fun build(userId: String, game: GameExtended): JsonType {
         return GameExtendedPOVBuilder(gameConfig).create(userId, game)
     }
 

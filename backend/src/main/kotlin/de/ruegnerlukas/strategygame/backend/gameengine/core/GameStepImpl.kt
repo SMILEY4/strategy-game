@@ -3,9 +3,9 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
-import de.ruegnerlukas.strategygame.backend.common.utils.JsonDocument
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.CreateCityOperationData
@@ -54,7 +54,7 @@ class GameStepImpl(
         gameId: String,
         commands: Collection<Command<*>>,
         userIds: Collection<String>
-    ): Either<GameStepError, Map<String, JsonDocument>> {
+    ): Either<GameStepError, Map<String, JsonType>> {
         return time(metricId) {
             either {
                 val game = getGameState(gameId).bind()

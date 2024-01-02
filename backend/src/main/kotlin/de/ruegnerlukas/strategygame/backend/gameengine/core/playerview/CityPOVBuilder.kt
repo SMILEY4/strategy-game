@@ -1,9 +1,8 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
-import com.lectra.koson.ObjectType
-import com.lectra.koson.obj
-import de.ruegnerlukas.strategygame.backend.common.utils.arrMap
-import de.ruegnerlukas.strategygame.backend.common.utils.objMap
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.obj
+import de.ruegnerlukas.strategygame.backend.common.utils.notContainedIn
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
@@ -11,75 +10,66 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlerProductionQueueEntry
 
 class CityPOVBuilder(
-    private val dtoCache: POVCache,
+    private val povCache: POVCache,
     private val detailLogDTOBuilder: DetailLogPOVBuilder,
-    private val countryId: String,
+    private val povCountryId: String,
     private val provinces: List<Province>
 ) {
 
-    fun build(city: City): ObjectType? {
-        if (!shouldInclude(city)) {
+    fun build(city: City): JsonType? {
+        if (city.cityId.notContainedIn(povCache.knownCities())) {
             return null
         }
+        val isPlayerOwned = city.countryId == povCountryId
         val province = provinces.find { it.cityIds.contains(city.cityId) }!!
         return obj {
-            "dataTier1" to obj {
-                "id" to city.cityId
-                "name" to city.meta.name
-                "color" to obj {
-                    "red" to city.meta.color.red
-                    "green" to city.meta.color.green
-                    "blue" to city.meta.color.blue
-                }
-                "tile" to obj {
-                    "id" to city.tile.tileId
-                    "q" to city.tile.q
-                    "r" to city.tile.r
-                }
-                "country" to dtoCache.countryIdentifier(city.countryId)
-                "province" to dtoCache.provinceIdentifier(province.provinceId)
-                "isCountryCapital" to false
-                "isProvinceCapital" to city.meta.isProvinceCapital
-                "tier" to city.tier.name
-            }
-            if (city.countryId == countryId) {
-                "dataTier3" to obj {
-                    "population" to obj {
-                        "size" to city.population.size
-                        "growthProgress" to city.population.growthProgress
-                        "growthDetails" to detailLogDTOBuilder.build(city.population.growthDetailLog)
-                    }
-                    "buildings" to arrMap[city.infrastructure.buildings, { building ->
+            "id" to city.cityId
+            "country" to city.countryId
+            "province" to province.provinceId
+            "tile" to povCache.tileIdentifier(city.tile.tileId)
+            "isPlayerOwned" to isPlayerOwned
+            "isProvinceCapital" to city.meta.isProvinceCapital
+            "tier" to city.tier.name
+            "infrastructure" to obj {
+                "buildings" to objHidden(isPlayerOwned) {
+                    city.infrastructure.buildings.map { building ->
                         obj {
                             "type" to building.type.name
                             "active" to building.active
-                            "tile" to objMap(building.tile) { tile ->
-                                "id" to tile.tileId
-                                "q" to tile.q
-                                "r" to tile.r
-                            }
+                            "tile" to povCache.tileIdentifierOrNull(building.tile?.tileId)
                             "details" to detailLogDTOBuilder.build(building.details)
                         }
-                    }]
-                    "productionQueue" to arrMap[city.infrastructure.productionQueue, { queueEntry ->
-                        obj {
-                            "id" to queueEntry.entryId
-                            "progress" to calculateProductionQueueEntryProgress(queueEntry)
-                            when (queueEntry) {
-                                is BuildingProductionQueueEntry -> {
-                                    "buildingType" to queueEntry.buildingType.name
-                                }
-                                is SettlerProductionQueueEntry -> Unit
+                    }
+                }
+                "productionQueue" to objHidden(isPlayerOwned) {
+                    city.infrastructure.productionQueue.map { queueEntry ->
+                        when (queueEntry) {
+                            is BuildingProductionQueueEntry -> obj {
+                                "entryId" to queueEntry.entryId
+                                "progress" to calculateProductionQueueEntryProgress(queueEntry)
+                                "buildingType" to queueEntry.buildingType.name
+                            }
+                            is SettlerProductionQueueEntry -> obj {
+                                "entryId" to queueEntry.entryId
+                                "progress" to calculateProductionQueueEntryProgress(queueEntry)
                             }
                         }
-                    }]
+                    }
+                }
+            }
+            "population" to obj {
+                "size" to objHidden(isPlayerOwned) {
+                    city.population.size
+                }
+                "growth" to objHidden(isPlayerOwned) {
+                    obj {
+                        "progress" to city.population.growthProgress
+                        "details" to detailLogDTOBuilder.build(city.population.growthDetailLog)
+                    }
                 }
             }
         }
-    }
 
-    private fun shouldInclude(city: City): Boolean {
-        return dtoCache.tileVisibility(city.tile.tileId) != VisibilityDTO.UNKNOWN
     }
 
     private fun calculateProductionQueueEntryProgress(entry: ProductionQueueEntry): Float {
