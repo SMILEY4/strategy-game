@@ -37,6 +37,7 @@ export namespace InstanceOverlayDataBuilder {
 
     function appendTiles(cursor: MixedArrayBufferCursor, tileDb: TileDatabase, mapMode: MapMode) {
         const tiles = tileDb.queryMany(TileDatabase.QUERY_ALL, null);
+        const mapModeContext = mapMode.renderData.context(tiles)
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
 
@@ -46,10 +47,10 @@ export namespace InstanceOverlayDataBuilder {
             cursor.append(borderPacked);
 
             // border color
-            cursor.append(mapMode.renderData.borderColor(tile))
+            cursor.append(mapMode.renderData.borderColor(tile, mapModeContext))
 
             // fill color
-            cursor.append(mapMode.renderData.fillColor(tile))
+            cursor.append(mapMode.renderData.fillColor(tile, mapModeContext))
         }
     }
 
