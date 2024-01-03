@@ -5,6 +5,9 @@ import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CameraDatabase} from "../../state/cameraDatabase";
+import {getHiddenOrDefault} from "../../models/hiddenType";
+import {CityTileObject} from "../../models/tileObject";
+import {UseCityWindow} from "../../ui/pages/ingame/windows/city/useCityWindow";
 
 export class GameLoopService {
 
@@ -55,8 +58,14 @@ export class GameLoopService {
         if (this.gameSessionDb.getSelectedTile()?.id !== tile?.identifier) {
             this.gameSessionDb.setSelectedTile(tile?.identifier ?? null);
             if (tile) {
-                AudioType.CLICK_PRIMARY.play(this.audioService);
-                UseTileWindow.open(tile.identifier);
+                const city = getHiddenOrDefault(tile.objects, []).find(obj => obj.type === "city");
+                if (city) {
+                    AudioType.CLICK_PRIMARY.play(this.audioService);
+                    UseCityWindow.open((city as CityTileObject).city)
+                } else {
+                    AudioType.CLICK_PRIMARY.play(this.audioService);
+                    UseTileWindow.open(tile.identifier);
+                }
             }
         }
     }
@@ -71,7 +80,7 @@ export class GameLoopService {
                 zoom: camera.zoom,
             });
         } else {
-            this.updateHoverTile(x, y)
+            this.updateHoverTile(x, y);
         }
     }
 
@@ -84,7 +93,7 @@ export class GameLoopService {
             y: camera.y,
             zoom: zoom,
         });
-        this.updateHoverTile(x, y)
+        this.updateHoverTile(x, y);
     }
 
     private updateHoverTile(x: number, y: number) {
