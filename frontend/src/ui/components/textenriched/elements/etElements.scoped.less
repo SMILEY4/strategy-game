@@ -1,3 +1,6 @@
+@import "./../../common.less";
+
+
 .et-elements {
 }
 
@@ -42,11 +45,51 @@
 
 
 .et-link {
-  cursor:          pointer;
-  text-decoration: underline;
+  cursor:                    pointer;
+  text-decoration:           underline;
   text-decoration-thickness: 1px;
 
   /deep/ * {
     text-decoration: underline;
   }
+}
+
+.et-color-box {
+  height:        0.7rem;
+  width:         0.7rem;
+  display:       inline-block;
+  border-radius: 2px;
+  margin-right:  @spacing-xs;
+  margin-left:   @spacing-xs;
+  box-shadow:    @shadow-object;
+}
+
+.et-spacer {
+
+  height: 0;
+
+  &.et-spacer--none {
+    margin-right: 0
+  }
+
+  &.et-spacer--xs {
+    margin-right: @spacing-xs
+  }
+
+  &.et-spacer--s {
+    margin-right: @spacing-s
+  }
+
+  &.et-spacer--m {
+    margin-right: @spacing-m
+  }
+
+  &.et-spacer--l {
+    margin-right: @spacing-l
+  }
+
+  &.et-spacer--fill {
+    margin: auto
+  }
+
 }

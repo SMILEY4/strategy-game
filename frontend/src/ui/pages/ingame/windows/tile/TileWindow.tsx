@@ -5,7 +5,7 @@ import {UseTileWindow} from "./useTileWindow";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETLink} from "../../../../components/textenriched/elements/ETLink";
-import {Else, If, Then, When} from "react-if";
+import {When} from "react-if";
 import {
     DefaultDecoratedWindow,
     DefaultDecoratedWindowWithBanner,
@@ -15,7 +15,10 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {WindowSection} from "../../../../components/section/ContentSection";
 import {Tooltip} from "../../../../components/tooltip/Tooltip";
-import {getHiddenOrNull} from "../../../../../models/hiddenType";
+import {getHiddenOrDefault, getHiddenOrNull} from "../../../../../models/hiddenType";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {ProportionBar, ProportionBarEntry} from "../../../../components/proportionbar/ProportionBar";
+import {Color} from "../../../../../models/color";
 
 export interface TileWindowProps {
     windowId: string;
@@ -26,14 +29,14 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 
     const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
 
-    if(data === null) {
+    if (data === null) {
         return (
             <DefaultDecoratedWindow windowId={props.windowId}>
                 <VBox fillParent center>
                     <Text>No tile selected</Text>
                 </VBox>
             </DefaultDecoratedWindow>
-        )
+        );
     } else {
         return (
             <DefaultDecoratedWindowWithBanner
@@ -43,19 +46,21 @@ export function TileWindow(props: TileWindowProps): ReactElement {
             >
                 <BaseDataSection {...data}/>
                 <Spacer size="s"/>
+                <InfluenceSection {...data}/>
+                <Spacer size="s"/>
                 <PlaceScoutButton {...data}/>
                 <CreateColonyButton {...data}/>
                 <CreateSettlementButton {...data}/>
                 <MarkerButton {...data}/>
             </DefaultDecoratedWindowWithBanner>
-        )
+        );
     }
 
 }
 
 
 function BaseDataSection(props: UseTileWindow.Data): ReactElement {
-    const owner = getHiddenOrNull(props.tile.political.owner)
+    const owner = getHiddenOrNull(props.tile.political.owner);
     return (
         <WindowSection>
             <InsetKeyValueGrid>
@@ -97,6 +102,35 @@ function BaseDataSection(props: UseTileWindow.Data): ReactElement {
     );
 }
 
+
+function InfluenceSection(props: UseTileWindow.Data): ReactElement {
+    const emptyTooltip = props.tile.political.influences.visible ? "No influences" : "Unknown";
+    let totalValue = 0;
+    const entries: ProportionBarEntry[] = [];
+
+    getHiddenOrDefault(props.tile.political.influences, []).forEach(influence => {
+        const amount = Math.round(influence.amount * 100) / 100
+        totalValue += amount
+        entries.push({
+            value: amount,
+            name: influence.country.name,
+            color: Color.toCss(influence.country.color),
+        });
+    });
+
+    return (
+        <WindowSection title="Influences">
+            <InsetPanel>
+
+                <ProportionBar
+                    entries={entries}
+                    totalValue={totalValue}
+                    emptyTooltip={emptyTooltip}
+                />
+            </InsetPanel>
+        </WindowSection>
+    );
+}
 
 function PlaceScoutButton(props: UseTileWindow.Data): ReactElement {
     return (
