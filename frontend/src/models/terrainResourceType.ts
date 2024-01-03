@@ -1,6 +1,7 @@
 import {Color} from "./color";
 
 export type TerrainResourceTypeString =
+    "NONE"
     | "PLAINS"
     | "FOREST"
     | "FISH"
@@ -9,6 +10,7 @@ export type TerrainResourceTypeString =
 
 export class TerrainResourceType {
 
+    public static readonly NONE = new TerrainResourceType("NONE", "None", "", {red: 0, green: 0, blue: 0});
     public static readonly PLAINS = new TerrainResourceType("PLAINS", "Plains", "/icons/resources/food.png", {red: 153, green: 227, blue: 136});
     public static readonly FOREST = new TerrainResourceType("FOREST", "Forest", "/icons/resources/wood.png", {red: 37, green: 128, blue: 51});
     public static readonly FISH = new TerrainResourceType("FISH", "Fish", "/icons/resources/fish.png", {red: 46, green: 178, blue: 255});
@@ -29,6 +31,8 @@ export class TerrainResourceType {
 
     public static fromString(value: TerrainResourceTypeString): TerrainResourceType {
         switch (value) {
+            case "NONE":
+                return TerrainResourceType.NONE;
             case "PLAINS":
                 return TerrainResourceType.PLAINS;
             case "FOREST":
@@ -39,7 +43,6 @@ export class TerrainResourceType {
                 return TerrainResourceType.STONE;
             case "METAL":
                 return TerrainResourceType.METAL;
-
         }
     }
 

@@ -23,7 +23,7 @@ class GameExtendedPOVBuilder(private val gameConfig: GameConfig) {
             val tileBuilder = TilePOVBuilder(povCache, playerCountry.countryId)
             val countryBuilder = CountryPOVBuilder(povCache, playerCountry.countryId, game)
             val provinceBuilder = ProvincePOVBuilder(povCache, detailLogBuilder, playerCountry.countryId)
-            val cityBuilder = CityPOVBuilder(povCache, detailLogBuilder, playerCountry.countryId, game.provinces)
+            val cityBuilder = CityPOVBuilder(povCache, detailLogBuilder, playerCountry.countryId, game.provinces, game.routes)
             val routeBuilder = RoutePOVBuilder(povCache)
 
             obj {

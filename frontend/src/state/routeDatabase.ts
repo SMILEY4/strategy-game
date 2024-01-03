@@ -10,6 +10,17 @@ function provideId(e: Route): string {
     return e.routeId;
 }
 
+function provideCityKeys(route: Route): string[] {
+    const keys: string[] = []
+    if(route.cityA.visible) {
+        keys.push(route.cityA.value.id)
+    }
+    if(route.cityB.visible) {
+        keys.push(route.cityB.value.id)
+    }
+    return keys
+}
+
 interface RouteStorageConfig extends DatabaseStorageConfig<Route, string> {
     primary: MapPrimaryStorage<Route, string>,
     supporting: {
@@ -24,7 +35,7 @@ class RouteStorage extends DatabaseStorage<RouteStorageConfig, Route, string> {
             primary: new MapPrimaryStorage<Route, string>(provideId),
             supporting: {
                 array: new ArraySupportingStorage<Route>(),
-                byCityId: new MapMultikeySupportingStorage<Route, string>(e => [e.cityA.id, e.cityB.id])
+                byCityId: new MapMultikeySupportingStorage<Route, string>(provideCityKeys)
             }
         });
     }

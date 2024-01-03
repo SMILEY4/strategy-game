@@ -1,9 +1,10 @@
 import {CityIdentifier} from "./city";
 import {TileIdentifier} from "./tile";
+import {HiddenType} from "./hiddenType";
 
 export interface Route {
     routeId: string,
-    cityA: CityIdentifier | null,
-    cityB: CityIdentifier | null,
+    cityA: HiddenType<CityIdentifier>,
+    cityB: HiddenType<CityIdentifier>,
     path: TileIdentifier[]
 }

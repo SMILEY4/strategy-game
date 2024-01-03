@@ -45,8 +45,8 @@ export function CityWindow(props: CityWindowProps): ReactElement {
     return (
         <DefaultDecoratedWindowWithBanner
             windowId={props.windowId}
-            title={data.city.identifier.name}
-            subtitle={data.city.tier.value.displayString}
+            title={data.city.base.identifier.name}
+            subtitle={data.city.base.tier.displayString}
         >
             <BaseDataSection {...data}/>
             <UpgradeTierButton {...data}/>
@@ -62,20 +62,23 @@ export function CityWindow(props: CityWindowProps): ReactElement {
 
 function UpgradeTierButton(props: UseCityWindow.Data) {
     return (
-        <Tooltip>
-            <Tooltip.Trigger>
-                <ButtonPrimary blue disabled={!props.upgradeCityTier.valid} onClick={() => props.upgradeCityTier.upgrade()}>
-                    {props.city.tier.value.nextTier === null
-                        ? "Upgrade Tier"
-                        : "Upgrade Tier to " + props.city.tier.value.nextTier.displayString}
-                </ButtonPrimary>
-            </Tooltip.Trigger>
-            <Tooltip.Content>
-                {props.upgradeCityTier.reasonsInvalid.map((reason, index) => (
-                    <EnrichedText key={index}>{reason}</EnrichedText>
-                ))}
-            </Tooltip.Content>
-        </Tooltip>
+        <When condition={props.city.base.isPlayerOwned}>
+            <Tooltip>
+                <Tooltip.Trigger>
+                    <ButtonPrimary blue disabled={!props.upgradeCityTier.valid}
+                                   onClick={() => props.upgradeCityTier.upgrade()}>
+                        {props.city.base.tier.nextTier === null
+                            ? "Upgrade Tier"
+                            : "Upgrade Tier to " + props.city.base.tier.nextTier.displayString}
+                    </ButtonPrimary>
+                </Tooltip.Trigger>
+                <Tooltip.Content>
+                    {props.upgradeCityTier.reasonsInvalid.map((reason, index) => (
+                        <EnrichedText key={index}>{reason}</EnrichedText>
+                    ))}
+                </Tooltip.Content>
+            </Tooltip>
+        </When>
     );
 }
 
@@ -85,19 +88,23 @@ function BaseDataSection(props: UseCityWindow.Data): ReactElement {
             <InsetKeyValueGrid>
 
                 <EnrichedText>Id:</EnrichedText>
-                <EnrichedText>{props.city.identifier.id}</EnrichedText>
+                <EnrichedText>{props.city.base.identifier.id}</EnrichedText>
 
                 <EnrichedText>Tier:</EnrichedText>
-                <ChangeInfoText prevValue={props.city.tier.value.displayString} nextValue={props.city.tier.modifiedValue?.displayString}/>
+                <ChangeInfoText prevValue={props.city.base.tier.displayString}
+                                nextValue={props.city.modified.tier?.displayString}/>
 
                 <EnrichedText>Country:</EnrichedText>
-                <EnrichedText><ETLink onClick={props.openWindow.country}>{props.city.country.name}</ETLink></EnrichedText>
+                <EnrichedText><ETLink
+                    onClick={props.openWindow.country}>{props.city.base.country.name}</ETLink></EnrichedText>
 
                 <EnrichedText>Province:</EnrichedText>
-                <EnrichedText><ETLink onClick={props.openWindow.province}>{props.city.province.name}</ETLink></EnrichedText>
+                <EnrichedText><ETLink
+                    onClick={props.openWindow.province}>{props.city.base.province.name}</ETLink></EnrichedText>
 
                 <EnrichedText>Tile:</EnrichedText>
-                <EnrichedText><ETLink onClick={props.openWindow.tile}>{props.city.tile.q + ", " + props.city.tile.r}</ETLink></EnrichedText>
+                <EnrichedText><ETLink
+                    onClick={props.openWindow.tile}>{props.city.base.tile.q + ", " + props.city.base.tile.r}</ETLink></EnrichedText>
 
             </InsetKeyValueGrid>
         </WindowSection>
@@ -109,37 +116,38 @@ function PopulationSection(props: UseCityWindow.Data): ReactElement {
     return (
         <WindowSection title="Population">
             <InsetKeyValueGrid>
-                <If condition={props.city.population.visibility === InfoVisibility.KNOWN}>
+
+                <If condition={props.city.base.population.size.visible}>
                     <Then>
-
                         <EnrichedText>Size</EnrichedText>
-                        <EnrichedText>{props.city.population.size}</EnrichedText>
-
-                        <EnrichedText>Growth Progress</EnrichedText>
-                        <EnrichedText>
-                            <ETTooltip>
-                                <Tooltip.Trigger>
-                                    <EnrichedText><ETNumber typeNone>{props.city.population.progress * 100}</ETNumber>%</EnrichedText>
-                                </Tooltip.Trigger>
-                                <Tooltip.Content>
-                                    <Header4>Population Growth</Header4>
-                                    <SimpleDivider/>
-                                    {props.city.population.growthDetails.map(detail => buildGrowthDetail(detail))}
-                                </Tooltip.Content>
-                            </ETTooltip>
-                        </EnrichedText>
-
+                        <EnrichedText>{props.city.base.population.size.value}</EnrichedText>
                     </Then>
                     <Else>
-
                         <EnrichedText>Size</EnrichedText>
                         <EnrichedText>?</EnrichedText>
-
-                        <EnrichedText>Growth Progress</EnrichedText>
-                        <EnrichedText>?</EnrichedText>
-
                     </Else>
                 </If>
+
+                <If condition={props.city.base.population.growth.visible}>
+                    <Then>
+                        <EnrichedText>Growth Progress</EnrichedText>
+                        <ETTooltip>
+                            <Tooltip.Trigger>
+                                <EnrichedText><ETNumber typeNone>{props.city.base.population.growth.value.progress * 100}</ETNumber>%</EnrichedText>
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>
+                                <Header4>Population Growth</Header4>
+                                <SimpleDivider/>
+                                {props.city.base.population.growth.value.details.map(detail => buildGrowthDetail(detail))}
+                            </Tooltip.Content>
+                        </ETTooltip>
+                    </Then>
+                    <Else>
+                        <EnrichedText>Growth Progress</EnrichedText>
+                        <EnrichedText>?</EnrichedText>
+                    </Else>
+                </If>
+
             </InsetKeyValueGrid>
         </WindowSection>
 
@@ -185,15 +193,15 @@ function RouteSectionSection(props: UseCityWindow.Data): ReactElement {
     return (
         <WindowSection title="Connected Cities">
             <InsetPanel>
-                {props.city.connectedCities.map(entry => (
-                    <HBox left centerVertical gap_s key={entry.routeId}>
+                {props.city.base.connectedCities.map(entry => (
+                    <HBox left centerVertical gap_s key={entry.route}>
                         <BsArrowRight/>
                         <LinkButton align="left" onClick={() => props.openWindow.connectedCity(entry)}>
                             {entry.city.name}
                         </LinkButton>
                         <Spacer size={"xs"}/>
                         <Text>
-                            {"(" + entry.routeLength + ")"}
+                            {"(" + entry.distance + ")"}
                         </Text>
                     </HBox>
                 ))}
@@ -204,8 +212,9 @@ function RouteSectionSection(props: UseCityWindow.Data): ReactElement {
 
 function ContentSection(props: UseCityWindow.Data): ReactElement {
     return (
-        <WindowSection title={props.city.buildings.visibility === InfoVisibility.KNOWN ? "Buildings" : "Known Buildings"}>
-            <When condition={props.city.isPlayerOwned}>
+        <WindowSection
+            title={"Buildings"}>
+            <When condition={props.city.base.isPlayerOwned}>
                 <ProductionQueue {...props}/>
                 <Spacer size={"xs"}/>
             </When>
@@ -216,7 +225,7 @@ function ContentSection(props: UseCityWindow.Data): ReactElement {
 
 
 function ProductionQueue(props: UseCityWindow.Data): ReactElement {
-    const currentEntry = props.city.productionQueue.items.length === 0 ? null : props.city.productionQueue.items[0];
+    const currentEntry = props.city.modified.productionQueue.length === 0 ? null : props.city.modified.productionQueue[0];
     return (
         <HBox centerVertical left gap_s>
             <ProductionQueueAddButton {...props}/>
@@ -235,7 +244,10 @@ function ProductionQueueAddButton(props: UseCityWindow.Data): ReactElement {
     );
 }
 
-function ProductionQueueProgressBar(props: { data: UseCityWindow.Data, currentEntry: ProductionQueueEntryView | null }): ReactElement {
+function ProductionQueueProgressBar(props: {
+    data: UseCityWindow.Data,
+    currentEntry: ProductionQueueEntryView | null
+}): ReactElement {
     const playOpenSound = UIAudio.usePlayAudio(AudioType.CLICK_PRIMARY.id);
     return (
         <ProgressBar
@@ -253,7 +265,10 @@ function ProductionQueueProgressBar(props: { data: UseCityWindow.Data, currentEn
     );
 }
 
-function ProductionQueueCancelButton(props: { data: UseCityWindow.Data, currentEntry: ProductionQueueEntryView | null }): ReactElement {
+function ProductionQueueCancelButton(props: {
+    data: UseCityWindow.Data,
+    currentEntry: ProductionQueueEntryView | null
+}): ReactElement {
     return (
         <ButtonPrimary
             square round small
@@ -270,10 +285,10 @@ function BuildingList(props: CityView): ReactElement {
     return (
         <>
             <HBox gap_s centerVertical left>
-                <Text>{"Available Building-Slots: " + props.buildings.remainingSlots + "/" + props.tier.value.buildingSlots}</Text>
+                <Text>{"Building-Slots: " + props.base.buildings.value.length + "/" + props.base.tier.buildingSlots}</Text>
             </HBox>
             <HBox gap_s top left wrap>
-                {props.buildings.items.map((building, index) => (
+                {props.base.buildings.value.map((building, index) => (
                     <BuildingEntry key={index} building={building}/>
                 ))}
             </HBox>

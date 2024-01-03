@@ -21,6 +21,7 @@ class ProvincePOVBuilder(
             "cities" to province.cityIds
                 .filter { povCache.knownCities().contains(it) }
                 .map { povCache.cityReduced(it) }
+            "isPlayerOwned" to (province.countryId == povCountryId)
             "resources" to objHidden(province.countryId == povCountryId) {
                 province.resourceLedger.getEntries().map { entry ->
                     obj {

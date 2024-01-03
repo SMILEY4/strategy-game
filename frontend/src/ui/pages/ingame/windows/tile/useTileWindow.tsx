@@ -1,15 +1,15 @@
 import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
-import {Tile, TileIdentifier, TileView} from "../../../../../models/tile";
+import {Tile, TileIdentifier} from "../../../../../models/tile";
 import React from "react";
 import {TileWindow} from "./TileWindow";
 import {UseCityWindow} from "../city/useCityWindow";
 import {UseCountryWindow} from "../country/useCountryWindow";
 import {AppCtx} from "../../../../../appContext";
 import {UseSettlementCreationWindow} from "../cityCreation/useSettlementCreationWindow";
-import {CommandDatabase} from "../../../../../state/commandDatabase";
 import {TileDatabase} from "../../../../../state/tileDatabase";
 import {GameSessionDatabase} from "../../../../../state/gameSessionDatabase";
 import {UsePlaceMarkerWindow} from "../placeMarker/usePlaceMarker";
+import {getHiddenOrNull} from "../../../../../models/hiddenType";
 
 export namespace UseTileWindow {
 
@@ -43,7 +43,7 @@ export namespace UseTileWindow {
     }
 
     export interface Data {
-        tile: TileView;
+        tile: Tile;
         openWindow: {
             country: () => void,
             city: () => void,
@@ -71,10 +71,9 @@ export namespace UseTileWindow {
 
     export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
 
-        const commands = CommandDatabase.useCommands();
         const selectedTileIdentifier = GameSessionDatabase.useSelectedTile();
         const tile = TileDatabase.useTileById(overwriteTile ?? selectedTileIdentifier);
-        const tileView = tile ? AppCtx.DataViewService().getTileView(tile, commands) : null;
+        const owner = tile ? getHiddenOrNull(tile?.political.owner) : null
 
         const openCity = UseCityWindow.useOpen();
         const openCountry = UseCountryWindow.useOpen();
@@ -84,18 +83,18 @@ export namespace UseTileWindow {
         const [validCreateSettlement, reasonsValidationsSettlement] = useValidateCreateSettlement(tile, "placeholder", false);
         const [validCreateColony, reasonsValidationsColony] = useValidateCreateSettlement(tile, "placeholder", true);
 
-        if (tileView) {
+        if (tile) {
             return {
-                tile: tileView,
+                tile: tile,
                 openWindow: {
-                    country: () => tile?.owner?.country && openCountry(tile.owner.country.id, true),
-                    city: () => tile?.owner?.city && openCity(tile.owner.city.id, true),
-                    createSettlement: () => openSettlementCreation(tileView.identifier, false),
-                    createColony: () => openSettlementCreation(tileView.identifier, true),
-                    placeMarker: () => openPlaceMarker(tileView.identifier)
+                    country: () => owner?.country && openCountry(owner.country.id, true),
+                    city: () => owner?.city && openCity(owner.city.id, true),
+                    createSettlement: () => openSettlementCreation(tile.identifier, false),
+                    createColony: () => openSettlementCreation(tile.identifier, true),
+                    placeMarker: () => openPlaceMarker(tile.identifier)
                 },
                 scout: {
-                    place: () => AppCtx.CommandService().placeScout(tileView.identifier),
+                    place: () => AppCtx.CommandService().placeScout(tile.identifier),
                 },
                 createSettlement: {
                     valid: validCreateSettlement,
@@ -106,9 +105,9 @@ export namespace UseTileWindow {
                     reasonsInvalid: reasonsValidationsColony,
                 },
                 marker: {
-                    canPlace: AppCtx.MarkerService().validatePlaceMarker(tileView.identifier),
-                    canDelete: AppCtx.MarkerService().validateDeleteMarker(tileView.identifier),
-                    delete: () => AppCtx.MarkerService().deleteMarker(tileView.identifier),
+                    canPlace: AppCtx.MarkerService().validatePlaceMarker(tile.identifier),
+                    canDelete: AppCtx.MarkerService().validateDeleteMarker(tile.identifier),
+                    delete: () => AppCtx.MarkerService().deleteMarker(tile.identifier),
                 }
             };
         } else {
@@ -125,6 +124,5 @@ export namespace UseTileWindow {
             return [false, ["No tile selected"]];
         }
     }
-
 
 }

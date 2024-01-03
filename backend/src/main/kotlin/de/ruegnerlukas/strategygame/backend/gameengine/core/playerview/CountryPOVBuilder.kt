@@ -18,6 +18,7 @@ class CountryPOVBuilder(
         }
         return obj {
             "id" to country.countryId
+            "isPlayerOwned" to (country.countryId == povCountryId)
             "player" to obj {
                 "userId" to country.userId
                 "name" to country.userId // todo

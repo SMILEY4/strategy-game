@@ -11,6 +11,7 @@ import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {CountryDatabase} from "../../state/countryDatabase";
 import {CityDatabase} from "../../state/cityDatabase";
+import {getHiddenOrDefault, getHiddenOrNull} from "../../models/hiddenType";
 
 export class CityCreationService {
 
@@ -44,7 +45,7 @@ export class CityCreationService {
         if (name !== null && !name) {
             failureReasons.push("Invalid name");
         }
-        if (tile.terrainType !== TerrainType.LAND) {
+        if (getHiddenOrNull(tile.basic.terrainType) !== TerrainType.LAND) {
             failureReasons.push("Invalid terrain type");
         }
         if (this.isOccupied(tile)) {
@@ -55,7 +56,8 @@ export class CityCreationService {
         }
         if (asColony) {
             // must:  (tile not owned OR owned by country) AND tile not owned by any city
-            if ((tile.owner !== null && (tile.owner?.country.id !== country.identifier.id || tile.owner?.city !== null))) {
+            const owner = getHiddenOrNull(tile.political.owner)
+            if ((owner !== null && (owner?.country.id !== country.identifier.id || owner?.city !== null))) {
                 failureReasons.push("Invalid tile owner");
             }
             if (!this.validInfluence(tile, country)) {
@@ -63,7 +65,8 @@ export class CityCreationService {
             }
         } else {
             // must: country owns tile AND tile not owned by any city
-            if (tile.owner?.country.id !== country.identifier.id || tile.owner.city !== null) {
+            const owner = getHiddenOrNull(tile.political.owner)
+            if (owner?.country.id !== country.identifier.id || owner.city !== null) {
                 failureReasons.push("Invalid tile owner");
             }
         }
@@ -92,15 +95,17 @@ export class CityCreationService {
     }
 
     private availableSettlers(country: Country): number | null {
-        return country.settlers;
+        return getHiddenOrNull(country.settlers);
     }
 
     private validInfluence(tile: Tile, country: Country): boolean {
-        if (tile.owner?.country.id === country.identifier.id) {
+        const owner = getHiddenOrNull(tile.political.owner)
+        const influences = getHiddenOrDefault(tile.political.influences, [])
+        if (owner?.country.id === country.identifier.id) {
             return true;
         }
         const maxForeignInfluence = getMaxOrDefault(
-            tile.influences
+            influences
                 .filter(i => i.country.id !== country.identifier.id)
                 .map(i => i.amount),
             e => e,
@@ -111,7 +116,7 @@ export class CityCreationService {
             return true;
         }
         const maxOwnInfluence = getMaxOrDefault(
-            tile.influences
+            influences
                 .filter(i => i.country.id === country.identifier.id)
                 .map(i => i.amount),
             e => e,

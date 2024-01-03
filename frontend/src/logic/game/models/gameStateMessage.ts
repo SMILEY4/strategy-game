@@ -1,6 +1,6 @@
 import {SettlementTierString} from "../../../models/settlementTier";
 import {BuildingTypeString} from "../../../models/buildingType";
-import {ResourceTypeString} from "../../../models/resourceType";
+import {ResourceType, ResourceTypeString} from "../../../models/resourceType";
 import {TerrainTypeString} from "../../../models/terrainType";
 import {VisibilityString} from "../../../models/visibility";
 import {BuildingDetailType} from "../../../models/building";
@@ -8,8 +8,9 @@ import {CityIdentifier, PopulationGrowthDetailType} from "../../../models/city";
 import {CountryIdentifier} from "../../../models/country";
 import {ProvinceIdentifier} from "../../../models/province";
 import {HiddenType} from "../../../models/hiddenType";
-import {TileIdentifier, TileInfluence} from "../../../models/tile";
+import {TileIdentifier} from "../../../models/tile";
 import {TerrainResourceTypeString} from "../../../models/terrainResourceType";
+import {DetailLogEntry} from "../../../models/detailLogEntry";
 
 
 export interface GameStateMessage {
@@ -54,7 +55,7 @@ export interface TileMessage {
 
 export interface TileObjectMessage {
     type: "marker" | "scout" | "city",
-    countryId: string
+    country: string
 }
 
 export interface MarkerTileObjectMessage extends TileObjectMessage {
@@ -69,12 +70,13 @@ export interface ScoutTileObjectMessage extends TileObjectMessage {
 
 export interface CityTileObjectMessage extends TileObjectMessage {
     type: "city",
-    cityId: string
+    city: string
 }
 
 
 export interface CountryMessage {
     id: string,
+    isPlayerOwned: boolean,
     player: {
         userId: string,
         name: string
@@ -86,13 +88,9 @@ export interface CountryMessage {
 export interface ProvinceMessage {
     id: string,
     country: string,
+    isPlayerOwned: boolean,
     cities: CityReducesMsg[],
-    resources: HiddenType<({
-        type: ResourceTypeString,
-        amount: number,
-        missing: number,
-        details: DetailLogEntryMessage<ResourceLedgerDetailTypeMessage>[]
-    })[]>
+    resources: HiddenType<ResourceLedgerEntryMessage[]>
 }
 
 export interface ProvinceReducedMsg {
@@ -128,7 +126,12 @@ export interface CityMessage {
             progress: number,
             details: DetailLogEntryMessage<PopulationGrowthDetailType>[]
         }>
-    }
+    },
+    connectedCities: ({
+        city: string,
+        route: string,
+        distance: number
+    })[]
 }
 
 export interface CityReducesMsg {
@@ -143,6 +146,14 @@ export interface RouteMessage {
     path: TileIdentifier[]
 }
 
+
+export interface ResourceLedgerEntryMessage {
+    type: ResourceTypeString,
+    amount: number,
+    missing: number,
+    details: DetailLogEntry<ResourceLedgerDetailTypeMessage>[]
+}
+
 export interface DetailLogEntryMessage<T> {
     id: T,
     data: Record<string, DetailValueMessage>
@@ -152,7 +163,6 @@ export interface DetailValueMessage {
     type: string,
     value: any
 }
-
 
 export type  ResourceLedgerDetailTypeMessage =
     "UNKNOWN_CONSUMPTION"

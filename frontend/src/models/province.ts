@@ -4,6 +4,7 @@ import {Color} from "./color";
 import {ResourceType} from "./resourceType";
 import {InfoVisibility} from "./infoVisibility";
 import {ResourceLedger} from "./resourceLedger";
+import {HiddenType} from "./hiddenType";
 
 export interface ProvinceIdentifier {
     id: string,
@@ -20,21 +21,15 @@ export interface ProvinceReduced {
 export interface Province {
     identifier: ProvinceIdentifier;
     country: CountryIdentifier;
+    isPlayerOwned: boolean;
     cities: CityReduced[];
-    resourceLedger: ResourceLedger | null;
+    resourceLedger: HiddenType<ResourceLedger>;
 }
 
 
 export interface ProvinceView {
-    isPlayerOwned: boolean,
-    identifier: ProvinceIdentifier;
-    country: CountryIdentifier;
-    cities: {
-        visibility: InfoVisibility,
-        items: CityReduced[]
-    };
-    resourceLedger: {
-        visibility: InfoVisibility,
-        ledger: ResourceLedger
+    base: Province,
+    modified: {
+        createdCities: CityReduced[]
     }
 }

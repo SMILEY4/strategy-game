@@ -3,9 +3,9 @@ import {CityIdentifier} from "./city";
 import {CountryIdentifier} from "./country";
 import {TerrainType} from "./terrainType";
 import {Visibility} from "./visibility";
-import {ResourceType} from "./resourceType";
-import {TerrainResourceType, TerrainResourceTypeString} from "./terrainResourceType";
+import {TerrainResourceType} from "./terrainResourceType";
 import {TileObject} from "./tileObject";
+import {HiddenType} from "./hiddenType";
 
 export interface TileIdentifier {
     id: string,
@@ -15,16 +15,22 @@ export interface TileIdentifier {
 
 export interface Tile {
     identifier: TileIdentifier,
-    terrainType: TerrainType | null,
-    resourceType: TerrainResourceType | null
     visibility: Visibility
-    owner: {
-        country: CountryIdentifier,
-        province: ProvinceIdentifier,
-        city: CityIdentifier | null
-    } | null,
-    influences: TileInfluence[],
-    objects: TileObject[]
+    basic: {
+        terrainType: HiddenType<TerrainType>,
+        resourceType: HiddenType<TerrainResourceType>
+    },
+    political: {
+        owner: HiddenType<TileOwner | null>,
+        influences: HiddenType<TileInfluence[]>,
+    }
+    objects: HiddenType<TileObject[]>
+}
+
+export interface TileOwner {
+    country: CountryIdentifier,
+    province: ProvinceIdentifier,
+    city: CityIdentifier | null
 }
 
 export interface TileInfluence {
@@ -32,19 +38,4 @@ export interface TileInfluence {
     province: ProvinceIdentifier,
     city: CityIdentifier,
     amount: number
-}
-
-
-export interface TileView {
-    identifier: TileIdentifier,
-    terrainType: TerrainType | null,
-    resourceType: TerrainResourceType | null,
-    visibility: Visibility
-    owner: {
-        country: CountryIdentifier,
-        province: ProvinceIdentifier,
-        city: CityIdentifier | null
-    } | null,
-    influences: TileInfluence[],
-    objects: TileObject[]
 }

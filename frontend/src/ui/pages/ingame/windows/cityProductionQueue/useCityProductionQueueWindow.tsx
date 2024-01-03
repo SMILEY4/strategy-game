@@ -14,6 +14,7 @@ import {
 import {BuildingConstructionEntry, SettlerConstructionEntry} from "../../../../../models/constructionEntry";
 import {CommandDatabase} from "../../../../../state/commandDatabase";
 import {CityDatabase} from "../../../../../state/cityDatabase";
+import {getHiddenOrDefault} from "../../../../../models/hiddenType";
 
 export namespace UseCityProductionQueueWindow {
 
@@ -63,7 +64,7 @@ export namespace UseCityProductionQueueWindow {
             .filter(cmd => cmd.city.id === city.identifier.id);
 
         return [
-            ...city.productionQueue
+            ...getHiddenOrDefault(city.productionQueue, [])
                 .filter(e => cancelledEntries.indexOf(e.id) === -1)
                 .map(e => ({
                     entry: e,

@@ -7,13 +7,15 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProd
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Route
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.SettlerProductionQueueEntry
 
 class CityPOVBuilder(
     private val povCache: POVCache,
     private val detailLogDTOBuilder: DetailLogPOVBuilder,
     private val povCountryId: String,
-    private val provinces: List<Province>
+    private val provinces: List<Province>,
+    private val routes: List<Route>
 ) {
 
     fun build(city: City): JsonType? {
@@ -70,6 +72,16 @@ class CityPOVBuilder(
                     }
                 }
             }
+            "connectedCities" to routes
+                .filter { it.cityIdA == city.cityId || it.cityIdB == city.cityId }
+                .filter { it.cityIdA.notContainedIn(povCache.knownCities()) && it.cityIdB.notContainedIn(povCache.knownCities()) }
+                .map { route ->
+                    obj {
+                        "city" to if (route.cityIdA == city.cityId) route.cityIdB else route.cityIdA
+                        "route" to route.routeId
+                        "distance" to route.path.size
+                    }
+                }
         }
 
     }
