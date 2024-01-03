@@ -14,7 +14,6 @@ import {BuildingInfoTooltip} from "../common/BuildingInfoTooltip";
 import {CityView, PopulationGrowthDetailType} from "../../../../../models/city";
 import {AudioType} from "../../../../../logic/audio/audioService";
 import {UIAudio} from "../../../../components/audio";
-import {InfoVisibility} from "../../../../../models/infoVisibility";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {UseCityWindow} from "./useCityWindow";
 import {ProductionQueueEntryView} from "../../../../../models/productionQueueEntry";

@@ -2,7 +2,7 @@ import {SettlementTierString} from "../../../models/settlementTier";
 import {BuildingTypeString} from "../../../models/buildingType";
 import {ResourceType, ResourceTypeString} from "../../../models/resourceType";
 import {TerrainTypeString} from "../../../models/terrainType";
-import {VisibilityString} from "../../../models/visibility";
+import {TileVisibilityString} from "../../../models/tileVisibility";
 import {BuildingDetailType} from "../../../models/building";
 import {CityIdentifier, PopulationGrowthDetailType} from "../../../models/city";
 import {CountryIdentifier} from "../../../models/country";
@@ -32,7 +32,7 @@ export interface GameStateMessage {
 
 export interface TileMessage {
     identifier: TileIdentifier,
-    visibility: VisibilityString,
+    visibility: TileVisibilityString,
     base: {
         terrainType: HiddenType<TerrainTypeString>
         resourceType: HiddenType<TerrainResourceTypeString>

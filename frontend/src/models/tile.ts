@@ -2,7 +2,7 @@ import {ProvinceIdentifier} from "./province";
 import {CityIdentifier} from "./city";
 import {CountryIdentifier} from "./country";
 import {TerrainType} from "./terrainType";
-import {Visibility} from "./visibility";
+import {TileVisibility} from "./tileVisibility";
 import {TerrainResourceType} from "./terrainResourceType";
 import {TileObject} from "./tileObject";
 import {HiddenType} from "./hiddenType";
@@ -15,7 +15,7 @@ export interface TileIdentifier {
 
 export interface Tile {
     identifier: TileIdentifier,
-    visibility: Visibility
+    visibility: TileVisibility
     basic: {
         terrainType: HiddenType<TerrainType>,
         resourceType: HiddenType<TerrainResourceType>

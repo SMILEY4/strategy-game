@@ -29,7 +29,7 @@ import {mapRecord} from "../../shared/utils";
 import {Tile} from "../../models/tile";
 import {TerrainType} from "../../models/terrainType";
 import {TerrainResourceType} from "../../models/terrainResourceType";
-import {Visibility} from "../../models/visibility";
+import {TileVisibility} from "../../models/tileVisibility";
 import {Route} from "../../models/route";
 import {ResourceLedger} from "../../models/resourceLedger";
 
@@ -114,7 +114,7 @@ export class NextTurnService {
     private buildUnknownTile(tileMsg: TileMessage): Tile {
         return {
             identifier: tileMsg.identifier,
-            visibility: Visibility.fromString(tileMsg.visibility),
+            visibility: TileVisibility.fromString(tileMsg.visibility),
             basic: {
                 terrainType: HiddenType.hidden(),
                 resourceType: HiddenType.hidden(),
@@ -130,7 +130,7 @@ export class NextTurnService {
     private buildKnownTile(tileMsg: TileMessage, game: GameStateMessage): Tile {
         return {
             identifier: tileMsg.identifier,
-            visibility: Visibility.fromString(tileMsg.visibility),
+            visibility: TileVisibility.fromString(tileMsg.visibility),
             basic: {
                 terrainType: mapHidden(tileMsg.base.terrainType, type => TerrainType.fromString(type)),
                 resourceType: mapHidden(tileMsg.base.resourceType, type => TerrainResourceType.fromString(type)),

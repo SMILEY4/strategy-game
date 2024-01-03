@@ -1,7 +1,6 @@
-import {ProvinceIdentifier, ProvinceReduced} from "./province";
+import {ProvinceReduced} from "./province";
 import {PlayerIdentifier} from "./player";
 import {Color} from "./color";
-import {InfoVisibility} from "./infoVisibility";
 import {HiddenType} from "./hiddenType";
 import {CityReduced} from "./city";
 
@@ -26,17 +25,4 @@ export interface CountryView {
         createdProvinces: ProvinceReduced[]
         createdCities: CityReduced[]
     }
-
-    // isPlayerOwned: boolean,
-    // identifier: CountryIdentifier;
-    // player: PlayerIdentifier,
-    // settlers: {
-    //     visibility: InfoVisibility,
-    //     value: number,
-    //     modifiedValue: number | null
-    // }
-    // provinces: {
-    //     visibility: InfoVisibility,
-    //     items: ProvinceReduced[]
-    // };
 }

@@ -1,8 +1,6 @@
 import {CountryIdentifier} from "./country";
 import {CityReduced} from "./city";
 import {Color} from "./color";
-import {ResourceType} from "./resourceType";
-import {InfoVisibility} from "./infoVisibility";
 import {ResourceLedger} from "./resourceLedger";
 import {HiddenType} from "./hiddenType";
 
