@@ -25,37 +25,33 @@ export interface TileWindowProps {
 export function TileWindow(props: TileWindowProps): ReactElement {
 
     const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
+    console.log("DATA", data)
 
-    return (
-        <If condition={data === null}>
-            <Then>
+    if(data === null) {
+        return (
+            <DefaultDecoratedWindow windowId={props.windowId}>
+                <VBox fillParent center>
+                    <Text>No tile selected</Text>
+                </VBox>
+            </DefaultDecoratedWindow>
+        )
+    } else {
+        return (
+            <DefaultDecoratedWindowWithBanner
+                windowId={props.windowId}
+                title={getHiddenOrNull(data.tile.basic.terrainType)?.displayString || "Unknown"}
+                subtitle={"Tile"}
+            >
+                <BaseDataSection {...data}/>
+                <Spacer size="s"/>
+                <PlaceScoutButton {...data}/>
+                <CreateColonyButton {...data}/>
+                <CreateSettlementButton {...data}/>
+                <MarkerButton {...data}/>
+            </DefaultDecoratedWindowWithBanner>
+        )
+    }
 
-                <DefaultDecoratedWindow windowId={props.windowId}>
-                    <VBox fillParent center>
-                        <Text>No tile selected</Text>
-                    </VBox>
-                </DefaultDecoratedWindow>
-
-            </Then>
-            <Else>
-
-                <DefaultDecoratedWindowWithBanner
-                    windowId={props.windowId}
-                    title={getHiddenOrNull(data!.tile.basic.terrainType)?.displayString || "Unknown"}
-                    subtitle={"Tile"}
-                >
-                    <BaseDataSection {...data!}/>
-                    <Spacer size="s"/>
-                    <PlaceScoutButton {...data!}/>
-                    <CreateColonyButton {...data!}/>
-                    <CreateSettlementButton {...data!}/>
-                    <MarkerButton {...data!}/>
-                </DefaultDecoratedWindowWithBanner>
-
-            </Else>
-        </If>
-
-    );
 }
 
 
