@@ -25,7 +25,6 @@ export interface TileWindowProps {
 export function TileWindow(props: TileWindowProps): ReactElement {
 
     const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
-    console.log("DATA", data)
 
     if(data === null) {
         return (

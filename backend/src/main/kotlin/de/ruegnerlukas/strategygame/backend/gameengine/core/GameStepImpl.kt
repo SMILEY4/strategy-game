@@ -60,6 +60,7 @@ class GameStepImpl(
                 val game = getGameState(gameId).bind()
                 handleCommands(game, commands)
                 handleGlobalUpdate(game)
+                prepareNextTurn(game)
                 saveGameState(game)
                 userIds.associateWith { userId ->
                     playerViewCreator.build(userId, game)
@@ -76,6 +77,10 @@ class GameStepImpl(
         return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
+
+    private fun prepareNextTurn(game: GameExtended) {
+        game.meta.turn += 1
+    }
 
     /**
      * Update the game state in the database

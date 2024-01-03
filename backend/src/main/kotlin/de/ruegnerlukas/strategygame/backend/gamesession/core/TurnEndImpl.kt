@@ -34,11 +34,11 @@ class TurnEndImpl(
         return time(metricId) {
             log().info("End turn of game $gameId")
             either {
-                val game = findGame(gameId).bind()
-                updateGameInfo(game)
-                saveGame(game)
-                val playerViews = stepGame(game)
-                sendGameStateMessages(game, playerViews)
+                val gamePre = findGame(gameId).bind()
+                val playerViews = stepGame(gamePre)
+                val gamePost = findGame(gameId).bind()
+                updateGameInfo(gamePost)
+                sendGameStateMessages(gamePost, playerViews)
             }
         }
     }
@@ -74,18 +74,10 @@ class TurnEndImpl(
     /**
      * Update the state of the game to prepare it for the next turn
      */
-    private fun updateGameInfo(game: Game) {
-        game.turn = game.turn + 1
+    private suspend fun updateGameInfo(game: Game) {
         game.players.forEach { player ->
             player.state = PlayerState.PLAYING
         }
-    }
-
-
-    /**
-     * Persists the given game
-     */
-    private suspend fun saveGame(game: Game) {
         updateGame.execute(game)
     }
 
