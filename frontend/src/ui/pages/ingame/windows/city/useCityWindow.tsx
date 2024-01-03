@@ -1,6 +1,6 @@
 import {AppCtx} from "../../../../../appContext";
 import {City, CityIdentifier, CityView, ConnectedCity} from "../../../../../models/city";
-import {useOpenWindow} from "../../../../components/headless/useWindowData";
+import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {CityWindow} from "./CityWindow";
 import {UseCityConstructionWindow} from "../cityConstruction/useCityConstructionWindow";
@@ -11,6 +11,8 @@ import {UseProvinceWindow} from "../province/useProvinceWindow";
 import {UseTileWindow} from "../tile/useTileWindow";
 import {CommandDatabase} from "../../../../../state/commandDatabase";
 import {CityDatabase} from "../../../../../state/cityDatabase";
+import {TileIdentifier} from "../../../../../models/tile";
+import {TileWindow} from "../tile/TileWindow";
 
 export namespace UseCityWindow {
 
@@ -31,6 +33,19 @@ export namespace UseCityWindow {
                 keepPosition,
             );
         };
+    }
+
+    export function open(identifier: CityIdentifier) {
+        const WINDOW_ID = "menubar-window";
+        openWindow({
+            id: WINDOW_ID,
+            className: "city-window",
+            left: 25,
+            top: 60,
+            bottom: 25,
+            width: 360,
+            content: <CityWindow windowId={WINDOW_ID} cityId={identifier.id}/>,
+        });
     }
 
     export interface Data {
