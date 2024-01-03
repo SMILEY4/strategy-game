@@ -24,6 +24,7 @@ export function MenuBar(): ReactElement {
     const openCountryMenu = UseCountryWindow.useOpen();
     const openCommandLogMenu = UseCommandLogWindow.useOpen();
     const openTileMenu = UseTileWindow.useOpen();
+    const currentTurn = GameSessionDatabase.useTurn()
     const [endTurnDisabled, endTurn] = useEndTurn();
 
     return (
@@ -53,7 +54,9 @@ export function MenuBar(): ReactElement {
 
                     <Spacer size="fill"/>
 
-                    <ButtonPrimary green disabled={endTurnDisabled} onClick={endTurn}>End Turn</ButtonPrimary>
+                    <ButtonPrimary green disabled={endTurnDisabled} onClick={endTurn}>
+                        {"End Turn " + currentTurn}
+                    </ButtonPrimary>
                 </HBox>
             </div>
         </div>

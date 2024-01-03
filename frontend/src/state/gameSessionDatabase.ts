@@ -44,10 +44,6 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
         }));
     }
 
-    public getTurn(): number {
-        return this.get().turn;
-    }
-
     public setConfig(config: GameConfig | null) {
         this.update(() => ({
             config: config,
@@ -97,6 +93,10 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
 }
 
 export namespace GameSessionDatabase {
+
+    export function useTurn(): number {
+        return usePartialSingletonEntity(AppCtx.GameSessionDatabase(), e => e.turn);
+    }
 
     export function useGameSessionState(): GameSessionState {
         return usePartialSingletonEntity(AppCtx.GameSessionDatabase(), e => e.state);

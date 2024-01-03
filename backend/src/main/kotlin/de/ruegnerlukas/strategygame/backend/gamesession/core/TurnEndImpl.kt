@@ -35,9 +35,9 @@ class TurnEndImpl(
             log().info("End turn of game $gameId")
             either {
                 val game = findGame(gameId).bind()
-                val playerViews = stepGame(game)
                 updateGameInfo(game)
                 saveGame(game)
+                val playerViews = stepGame(game)
                 sendGameStateMessages(game, playerViews)
             }
         }
