@@ -1,0 +1,67 @@
+@import "./../common.less";
+
+.proportion-bar {
+  position:      relative;
+  height:        @height-1;
+  background:    @gradient-border-primary;
+  box-shadow:    @shadow-object;
+  border-radius: @border-radius-primary;
+  border:        1px solid transparent;
+  box-sizing:    border-box;
+
+  .proportion-bar__inner {
+    position:      relative;
+    width:         100%;
+    height:        100%;
+    box-sizing:    border-box;
+    border-radius: @border-radius-primary;
+    display:       flex;
+    overflow:      hidden;
+
+    .entry {
+      height:    100%;
+      flex-grow: 1;
+    }
+
+    .entry:hover {
+      box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 20%),
+                  inset 0 0 3px rgba(255, 255, 255, 30%),
+                  inset 0 0 5px rgba(255, 255, 255, 60%),
+                  inset 0 0 7px rgba(255, 255, 255, 70%);
+    }
+
+  }
+
+  .proportion-bar__inner::after {
+    pointer-events: none;
+    content:        "";
+    position:       absolute;
+    top:            0;
+    bottom:         0;
+    left:           0;
+    right:          0;
+    box-shadow:     inset 0 0 2px 1px rgba(0, 0, 0, 30%),
+                    inset 0 0 3px rgba(0, 0, 0, 40%),
+                    inset 0 0 5px rgba(0, 0, 0, 70%),
+                    inset 0 0 7px rgba(0, 0, 0, 80%);;
+  }
+
+  &.proportion-bar--red > .proportion-bar__inner {
+    background:    @gradient-red-secondary;
+  }
+
+  &.proportion-bar--green > .proportion-bar__inner {
+    background:    @gradient-green-secondary;
+  }
+
+  &.proportion-bar--blue > .proportion-bar__inner {
+    background:    @gradient-blue-secondary;
+  }
+
+  &.proportion-bar--paper > .proportion-bar__inner {
+    background:    @gradient-paper-secondary;
+  }
+
+}
+
+

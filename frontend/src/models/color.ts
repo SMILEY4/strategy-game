@@ -27,4 +27,8 @@ export namespace Color {
         return color.red + color.green * 256 + color.blue * 256 * 256;
     }
 
+    export function toCss(color: Color): string {
+        return "rgb(" + color.red + "," + color.green + "," + color.blue + ")"
+    }
+
 }
