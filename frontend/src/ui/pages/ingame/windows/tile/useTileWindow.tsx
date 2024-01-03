@@ -72,7 +72,7 @@ export namespace UseTileWindow {
     export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
 
         const selectedTileIdentifier = GameSessionDatabase.useSelectedTile();
-        const tile = TileDatabase.useTileById(overwriteTile ?? selectedTileIdentifier);
+        const tile = AppCtx.TileDatabase().querySingle(TileDatabase.QUERY_BY_ID, (overwriteTile ?? selectedTileIdentifier)?.id ?? null);
         const owner = tile ? getHiddenOrNull(tile?.political.owner) : null
 
         const openCity = UseCityWindow.useOpen();
