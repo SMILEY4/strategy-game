@@ -4,6 +4,7 @@ import React, {useState} from "react";
 import {SettlementCreationWindow} from "./SettlementCreationWindow";
 import {AppCtx} from "../../../../../appContext";
 import {TileDatabase} from "../../../../../state/tileDatabase";
+import {getHiddenOrNull} from "../../../../../models/hiddenType";
 
 export namespace UseSettlementCreationWindow {
 
@@ -68,7 +69,8 @@ export namespace UseSettlementCreationWindow {
         const [possible, reasons] = useValidateCreateSettlement(tile, name, asColony);
 
         function perform() {
-            creationService.create(tile, name!, asColony ? null : (tile.owner?.province ? tile.owner.province : null));
+            const tileOwner = getHiddenOrNull(tile.political.owner)
+            creationService.create(tile, name!, asColony ? null : (tileOwner?.province ? tileOwner.province : null));
         }
 
         return [possible, reasons, perform];

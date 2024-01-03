@@ -33,7 +33,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
-import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.POVBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.ReservationInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.ReservationInsert
@@ -53,7 +53,6 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.common.RouteGenerato
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENDeleteMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
-import de.ruegnerlukas.strategygame.backend.gameengine.core.preview.PreviewCityCreationImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.handler.MessageHandler
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducer
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer.GameMessageProducerImpl
@@ -67,7 +66,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.Game
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializeWorld
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.POVBuilder
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameInsertImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameUpdateImpl
@@ -88,7 +87,6 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnSubmit
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.InitializePlayer
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PreviewCityCreation
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsInsert
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.CountryInsert
@@ -180,9 +178,8 @@ val applicationDependencies = module {
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }
 
     single<RouteGenerator> { RouteGenerator(get()) }
-    single<PreviewCityCreation> { PreviewCityCreationImpl(get(), get(), get()) }
     single<EconomyPopFoodConsumptionProvider> { PopFoodConsumption() }
-    single<PlayerViewCreator> { PlayerViewCreatorImpl(get(), get()) }
+    single<POVBuilder> { POVBuilderImpl(get(), get()) }
     single<InitializePlayer> { InitializePlayerImpl(get(), get(), get(), get(), get()) }
     single<InitializeWorld> { InitializeWorldImpl(get(), get(), get()) }
     single<EventSystem> { EventSystem() }

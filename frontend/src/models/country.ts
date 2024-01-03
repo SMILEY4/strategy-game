@@ -1,7 +1,8 @@
 import {ProvinceReduced} from "./province";
 import {PlayerIdentifier} from "./player";
 import {Color} from "./color";
-import {InfoVisibility} from "./infoVisibility";
+import {HiddenType} from "./hiddenType";
+import {CityReduced} from "./city";
 
 export interface CountryIdentifier {
     id: string,
@@ -12,21 +13,16 @@ export interface CountryIdentifier {
 export interface Country {
     identifier: CountryIdentifier;
     player: PlayerIdentifier,
-    settlers: number | null,
+    isPlayerOwned: boolean,
+    settlers: HiddenType<number>,
     provinces: ProvinceReduced[];
 }
 
 export interface CountryView {
-    isPlayerOwned: boolean,
-    identifier: CountryIdentifier;
-    player: PlayerIdentifier,
-    settlers: {
-        visibility: InfoVisibility,
-        value: number,
-        modifiedValue: number | null
+    base: Country
+    modified: {
+        settlers: number | null,
+        createdProvinces: ProvinceReduced[]
+        createdCities: CityReduced[]
     }
-    provinces: {
-        visibility: InfoVisibility,
-        items: ProvinceReduced[]
-    };
 }

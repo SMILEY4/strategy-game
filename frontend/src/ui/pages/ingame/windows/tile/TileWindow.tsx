@@ -15,6 +15,7 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {WindowSection} from "../../../../components/section/ContentSection";
 import {Tooltip} from "../../../../components/tooltip/Tooltip";
+import {getHiddenOrNull} from "../../../../../models/hiddenType";
 
 export interface TileWindowProps {
     windowId: string;
@@ -25,40 +26,36 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 
     const data: UseTileWindow.Data | null = UseTileWindow.useData(props.identifier);
 
-    return (
-        <If condition={data === null}>
-            <Then>
+    if(data === null) {
+        return (
+            <DefaultDecoratedWindow windowId={props.windowId}>
+                <VBox fillParent center>
+                    <Text>No tile selected</Text>
+                </VBox>
+            </DefaultDecoratedWindow>
+        )
+    } else {
+        return (
+            <DefaultDecoratedWindowWithBanner
+                windowId={props.windowId}
+                title={getHiddenOrNull(data.tile.basic.terrainType)?.displayString || "Unknown"}
+                subtitle={"Tile"}
+            >
+                <BaseDataSection {...data}/>
+                <Spacer size="s"/>
+                <PlaceScoutButton {...data}/>
+                <CreateColonyButton {...data}/>
+                <CreateSettlementButton {...data}/>
+                <MarkerButton {...data}/>
+            </DefaultDecoratedWindowWithBanner>
+        )
+    }
 
-                <DefaultDecoratedWindow windowId={props.windowId}>
-                    <VBox fillParent center>
-                        <Text>No tile selected</Text>
-                    </VBox>
-                </DefaultDecoratedWindow>
-
-            </Then>
-            <Else>
-
-                <DefaultDecoratedWindowWithBanner
-                    windowId={props.windowId}
-                    title={data?.tile.terrainType?.displayString || "Unknown"}
-                    subtitle={"Tile"}
-                >
-                    <BaseDataSection {...data!}/>
-                    <Spacer size="s"/>
-                    <PlaceScoutButton {...data!}/>
-                    <CreateColonyButton {...data!}/>
-                    <CreateSettlementButton {...data!}/>
-                    <MarkerButton {...data!}/>
-                </DefaultDecoratedWindowWithBanner>
-
-            </Else>
-        </If>
-
-    );
 }
 
 
 function BaseDataSection(props: UseTileWindow.Data): ReactElement {
+    const owner = getHiddenOrNull(props.tile.political.owner)
     return (
         <WindowSection>
             <InsetKeyValueGrid>
@@ -70,23 +67,28 @@ function BaseDataSection(props: UseTileWindow.Data): ReactElement {
                 <EnrichedText>{props.tile.identifier.q + ", " + props.tile.identifier.r}</EnrichedText>
 
                 <EnrichedText>Terrain</EnrichedText>
-                <EnrichedText>{props.tile.terrainType?.displayString || "None"}</EnrichedText>
+                <EnrichedText>{getHiddenOrNull(props.tile.basic.terrainType)?.displayString ?? "?"}</EnrichedText>
 
                 <EnrichedText>Resource</EnrichedText>
-                <EnrichedText>{props.tile.resourceType?.displayString || "None"}</EnrichedText>
+                <EnrichedText>{getHiddenOrNull(props.tile.basic.resourceType)?.displayString ?? "?"}</EnrichedText>
 
-                <When condition={props.tile.owner !== null && props.tile.owner.city === null}>
+                <When condition={!props.tile.political.owner.visible}>
+                    <EnrichedText>Owned By:</EnrichedText>
+                    <EnrichedText>?</EnrichedText>
+                </When>
+
+                <When condition={owner !== null && owner.city === null}>
                     <EnrichedText>Owned By:</EnrichedText>
                     <EnrichedText>
-                        <ETLink onClick={props.openWindow.country}>{props.tile.owner?.country.name}</ETLink>
+                        <ETLink onClick={props.openWindow.country}>{owner?.country.name}</ETLink>
                     </EnrichedText>
                 </When>
 
-                <When condition={props.tile.owner !== null && props.tile.owner.city !== null}>
+                <When condition={owner !== null && owner.city !== null}>
                     <EnrichedText>Owned By:</EnrichedText>
                     <EnrichedText>
-                        <ETLink onClick={props.openWindow.country}>{props.tile.owner?.country.name}</ETLink> / <ETLink
-                        onClick={props.openWindow.city}>{props.tile.owner?.city?.name}</ETLink>
+                        <ETLink onClick={props.openWindow.country}>{owner?.country.name}</ETLink> / <ETLink
+                        onClick={props.openWindow.city}>{owner?.city?.name}</ETLink>
                     </EnrichedText>
                 </When>
 

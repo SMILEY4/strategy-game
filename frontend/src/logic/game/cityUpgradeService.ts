@@ -9,6 +9,7 @@ import {CommandDatabase} from "../../state/commandDatabase";
 import {CityDatabase} from "../../state/cityDatabase";
 import {CountryDatabase} from "../../state/countryDatabase";
 import {ProvinceDatabase} from "../../state/provinceDatabase";
+import {getHiddenOrDefault} from "../../models/hiddenType";
 
 export class CityUpgradeService {
 
@@ -48,9 +49,9 @@ export class CityUpgradeService {
         if (city.tier.nextTier === null) {
             failureReasons.push("City is already at max tier");
         }
-        if (city.population.size !== null) {
+        if (city.population.size.visible) {
             const minRequiredSize = city.tier.nextTier === null ? 0 : city.tier.nextTier.minRequiredSize;
-            if (city.population.size < minRequiredSize) {
+            if (getHiddenOrDefault(city.population.size, 0) < minRequiredSize) {
                 failureReasons.push("City is not large enough (required " + minRequiredSize + ")");
             }
         }

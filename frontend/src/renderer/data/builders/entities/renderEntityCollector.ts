@@ -7,6 +7,7 @@ import {Color} from "../../../../models/color";
 import {CommandDatabase} from "../../../../state/commandDatabase";
 import {TileDatabase} from "../../../../state/tileDatabase";
 import {CityTileObject, MarkerTileObject, ScoutTileObject} from "../../../../models/tileObject";
+import {getHiddenOrDefault} from "../../../../models/hiddenType";
 
 export class RenderEntityCollector {
 
@@ -29,17 +30,18 @@ export class RenderEntityCollector {
 
         const deleteMarkersAt = commands
             .filter(cmd => cmd.type === CommandType.MARKER_DELETE)
-            .map(cmd => (cmd as PlaceMarkerCommand).tile.id)
+            .map(cmd => (cmd as PlaceMarkerCommand).tile.id);
 
         const entities: RenderEntity[] = [];
 
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
+            const tileObjects = getHiddenOrDefault(tile.objects, []);
             if (tile.objects) {
-                for (let j = 0; j < tile.objects.length; j++) {
-                    const objType = tile.objects[j].type
-                    if(objType === "marker" && deleteMarkersAt.indexOf(tile.identifier.id) === -1) {
-                        const obj = tile.objects[j] as MarkerTileObject
+                for (let j = 0; j < tileObjects.length; j++) {
+                    const objType = tileObjects[j].type;
+                    if (objType === "marker" && deleteMarkersAt.indexOf(tile.identifier.id) === -1) {
+                        const obj = tileObjects[j] as MarkerTileObject;
                         entities.push({
                             type: "marker",
                             tile: tile.identifier,
@@ -47,8 +49,8 @@ export class RenderEntityCollector {
                             label: obj.label,
                         });
                     }
-                    if(objType === "scout") {
-                        const obj = tile.objects[j] as ScoutTileObject
+                    if (objType === "scout") {
+                        const obj = tileObjects[j] as ScoutTileObject;
                         entities.push({
                             type: "scout",
                             tile: tile.identifier,
@@ -56,8 +58,8 @@ export class RenderEntityCollector {
                             label: null,
                         });
                     }
-                    if(objType === "city") {
-                        const obj = tile.objects[j] as CityTileObject
+                    if (objType === "city") {
+                        const obj = tileObjects[j] as CityTileObject;
                         entities.push({
                             type: "city",
                             tile: tile.identifier,

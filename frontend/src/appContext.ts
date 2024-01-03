@@ -134,7 +134,7 @@ export const AppCtx: AppCtxDef = {
 
     DataViewService: diContext.register(
         "ModifiedAccessService",
-        () => new DataViewService(AppCtx.UserService(), AppCtx.CountryDatabase(), AppCtx.RouteDatabase()),
+        () => new DataViewService(),
     ),
     NextTurnService: diContext.register(
         "NextTurnService",

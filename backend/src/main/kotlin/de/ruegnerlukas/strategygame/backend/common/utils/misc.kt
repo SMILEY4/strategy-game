@@ -22,3 +22,7 @@ inline fun <E> buildMutableList(builderAction: MutableList<E>.() -> Unit): Mutab
 inline fun <T, R> Iterable<T>.mapMutable(transform: (T) -> R): MutableList<R> {
     return this.map(transform).toMutableList()
 }
+
+fun <T> T.containedIn(collection: Collection<T>) = collection.contains(this)
+
+fun <T> T.notContainedIn(collection: Collection<T>) = !collection.contains(this)

@@ -1,13 +1,17 @@
 import React, {ReactElement} from "react";
 import "./etElements.scoped.less";
+import {UIAudio} from "../../audio";
+import {AudioType} from "../../../../logic/audio/audioService";
+import {useButton, UseButtonProps} from "../../headless/useButton";
 
-export interface ETLinkProps {
-    onClick?: () => void
+export interface ETLinkProps extends UseButtonProps{
     children?: any;
 }
 
 export function ETLink(props: ETLinkProps): ReactElement {
+    const {elementProps, isDisabled} = useButton(props)
+
     return (
-        <span className={"et-link"} onClick={props.onClick}>{props.children}</span>
+        <span {...elementProps} className={"et-link"}>{props.children}</span>
     );
 }

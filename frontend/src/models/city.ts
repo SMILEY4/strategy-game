@@ -3,11 +3,11 @@ import {ProvinceIdentifier} from "./province";
 import {TileIdentifier} from "./tile";
 import {Color} from "./color";
 import {SettlementTier} from "./settlementTier";
-import {InfoVisibility} from "./infoVisibility";
 import {ProductionQueueEntry, ProductionQueueEntryView} from "./productionQueueEntry";
 import {CreateCityCommand} from "./command";
 import {Building} from "./building";
 import {DetailLogEntry} from "./detailLogEntry";
+import {HiddenType} from "./hiddenType";
 
 export interface CityIdentifier {
     id: string,
@@ -17,7 +17,7 @@ export interface CityIdentifier {
 
 export interface CityReduced {
     identifier: CityIdentifier;
-    isCountryCapitol: boolean;
+    isCountryCapitol: boolean; // todo: remove
     isProvinceCapitol: boolean;
     isPlanned?: boolean,
     createCommand?: CreateCityCommand
@@ -28,16 +28,26 @@ export interface City {
     country: CountryIdentifier;
     province: ProvinceIdentifier;
     tile: TileIdentifier,
-    isCountryCapital: boolean;
+    isPlayerOwned: boolean,
+    isCountryCapital: boolean; // todo remove
     isProvinceCapital: boolean;
     tier: SettlementTier,
     population: {
-        size: number | null,
-        progress: number | null,
-        growthDetails: DetailLogEntry<PopulationGrowthDetailType>[]
+        size: HiddenType<number>,
+        growth: HiddenType<{
+            progress: number,
+            details: DetailLogEntry<PopulationGrowthDetailType>[]
+        }>
     }
-    buildings: Building[]
-    productionQueue: ProductionQueueEntry[],
+    buildings: HiddenType<Building[]>
+    productionQueue: HiddenType<ProductionQueueEntry[]>,
+    connectedCities: ConnectedCity[]
+}
+
+export interface ConnectedCity {
+    city: CityIdentifier,
+    route: string,
+    distance: number
 }
 
 export type PopulationGrowthDetailType =
@@ -48,37 +58,9 @@ export type PopulationGrowthDetailType =
     | "MAX_SIZE_REACHED"
 
 export interface CityView {
-    isPlayerOwned: boolean,
-    identifier: CityIdentifier;
-    country: CountryIdentifier;
-    province: ProvinceIdentifier;
-    tile: TileIdentifier,
-    isCountryCapital: boolean;
-    isProvinceCapital: boolean;
-    tier: {
-        value: SettlementTier,
-        modifiedValue: SettlementTier | null
-    },
-    population: {
-        visibility: InfoVisibility,
-        size: number,
-        progress: number
-        growthDetails: DetailLogEntry<PopulationGrowthDetailType>[]
-    },
-    buildings: {
-        visibility: InfoVisibility,
-        remainingSlots: number,
-        items: Building[]
-    },
-    productionQueue: {
-        visibility: InfoVisibility,
-        items: ProductionQueueEntryView[]
-    },
-    connectedCities: ConnectedCityView[]
-}
-
-export interface ConnectedCityView {
-    routeId: string,
-    city: CityIdentifier,
-    routeLength: number
+    base: City,
+    modified: {
+        tier: SettlementTier | null,
+        productionQueue: ProductionQueueEntryView[]
+    }
 }

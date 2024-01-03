@@ -17,7 +17,9 @@ sealed class Message<T>(
 	val type: String,
 	val payload: T,
 	@JsonIgnore var meta: MessageMetadata? = null
-)
+) {
+	abstract fun encode(): String
+}
 
 data class MessageMetadata(
 	val connectionId: Long,

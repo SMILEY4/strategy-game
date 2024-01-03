@@ -4,6 +4,7 @@ import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {packBorder} from "./packBorder";
 import {TerrainType} from "../../../../models/terrainType";
 import {TileDatabase} from "../../../../state/tileDatabase";
+import {getHiddenOrNull} from "../../../../models/hiddenType";
 
 export namespace InstanceBaseDataBuilder {
 
@@ -42,26 +43,29 @@ export namespace InstanceBaseDataBuilder {
         const tiles = tileDb.queryMany(TileDatabase.QUERY_ALL, null);
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
+            const q = tile.identifier.q
+            const r = tile.identifier.r
+            const terrainType = getHiddenOrNull(tile.basic.terrainType)
 
             // tile position
-            cursor.append(tile.identifier.q);
-            cursor.append(tile.identifier.r);
+            cursor.append(q);
+            cursor.append(r);
 
             // world position
-            const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.identifier.q, tile.identifier.r);
+            const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
             cursor.append(center[0]);
             cursor.append(center[1]);
 
             // tileset index
-            cursor.append(tile.terrainType ? tile.terrainType.renderId : 3);
+            cursor.append(terrainType?.renderId ?? 3)
 
             // visibility
             cursor.append(tile.visibility.renderId);
 
             // water border mask
             const border = BorderBuilder.build(tile, tileDb, false, (ta, tb) => {
-                const a = ta.terrainType;
-                const b = tb.terrainType;
+                const a = getHiddenOrNull(ta.basic.terrainType);
+                const b = getHiddenOrNull(tb.basic.terrainType);
                 return (!a && !b) ? false : a === TerrainType.WATER && b !== null && a !== b;
             });
             const borderPacked = packBorder(border);

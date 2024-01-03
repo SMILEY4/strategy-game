@@ -4,6 +4,7 @@ import {TileDatabase} from "../../state/tileDatabase";
 import {CommandService} from "./commandService";
 import {CommandType} from "../../models/commandType";
 import {PlaceMarkerCommand} from "../../models/command";
+import {getHiddenOrDefault} from "../../models/hiddenType";
 
 export class MarkerService {
 
@@ -38,7 +39,7 @@ export class MarkerService {
     }
 
     private existsMarker(tile: TileIdentifier): boolean {
-        return this.tileDb.querySingleOrThrow(TileDatabase.QUERY_BY_ID, tile.id).objects
+        return getHiddenOrDefault(this.tileDb.querySingleOrThrow(TileDatabase.QUERY_BY_ID, tile.id).objects, [])
             .some(obj => obj.type === "marker");
     }
 

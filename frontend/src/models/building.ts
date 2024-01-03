@@ -9,8 +9,8 @@ export interface Building {
     details: DetailLogEntry<BuildingDetailType>[]
 }
 
-export type  BuildingDetailType
-    = "WORKED_TILE"
+export type  BuildingDetailType =
+    "WORKED_TILE"
     | "ACTIVITY"
     | "CONSUMED"
     | "PRODUCED"

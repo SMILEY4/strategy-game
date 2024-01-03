@@ -1,6 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.message.producer
 
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
+
 
 interface GameMessageProducer {
 
@@ -9,6 +10,6 @@ interface GameMessageProducer {
      * @param connectionId the id of the websocket connection
      * @param game the game-state to send
      */
-    suspend fun sendGamedState(connectionId: Long, game: GameExtendedDTO)
+    suspend fun sendGamedState(connectionId: Long, game: JsonType)
 
 }

@@ -6,6 +6,7 @@ import {TileIdentifier} from "../../../../models/tile";
 import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 import {mat3} from "../../../../shared/webgl/mat3";
 import {TileDatabase} from "../../../../state/tileDatabase";
+import {TerrainResourceType} from "../../../../models/terrainResourceType";
 
 export namespace StampBuilder {
 
@@ -38,12 +39,12 @@ export namespace StampBuilder {
         if (mapMode === MapMode.RESOURCES && camera.getZoom() > 2) {
             for (let i = 0, n = tiles.length; i < n; i++) {
                 const tile = tiles[i];
-                if (tile.resourceType !== null) {
+                if (tile.basic.resourceType.visible && tile.basic.resourceType.value !== TerrainResourceType.NONE) {
                     const pos = getAbsolutePosition(tile.identifier, camera, canvasSize, ICON_OFFSET);
                     if (isVisible(pos, canvasSize)) {
                         stamps.push({
                             type: "icon",
-                            content: tile.resourceType.icon,
+                            content: tile.basic.resourceType.value.icon,
                             screenX: pos[0],
                             screenY: pos[1],
                         });
