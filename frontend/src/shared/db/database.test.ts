@@ -389,7 +389,7 @@ describe("database", () => {
         test("subscribe on entity", () => {
             const db = new TestDatabase();
             const callback = jest.fn();
-            const subscriberId = db.subscribeOnEntity("2", callback);
+            const [subscriberId, _] = db.subscribeOnEntity("2", callback);
 
             db.insert({id: "1", size: 1, nested: {value: "a"}});
             db.insert({id: "2", size: 2, nested: {value: "b"}}); // 1 insert
@@ -434,7 +434,7 @@ describe("database", () => {
         test("subscribe query", () => {
             const db = new TestDatabase();
             const callback = jest.fn();
-            const subscriberId = db.subscribeOnQuery(QUERY_SIZE_GREATER_OR_EQUAL, 2, callback);
+            const [subscriberId, _] = db.subscribeOnQuery(QUERY_SIZE_GREATER_OR_EQUAL, 2, callback);
 
             db.insert({id: "1", size: 1, nested: {value: "a"}});
             db.insert({id: "2", size: 2, nested: {value: "b"}}); // trigger ["2"]
