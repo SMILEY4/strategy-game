@@ -30,9 +30,9 @@ import {MonitoringRepository} from "./state/monitoringRepository";
 import {UserRepository} from "./state/userRepository";
 import {MarkerService} from "./logic/game/markerService";
 import {GameRendererV2} from "./rendererV2/gameRendererV2";
-import {RenderEntityCollector} from "./rendererV2/data/builders/entities/renderEntityCollector";
 import {RenderDataUpdater} from "./rendererV2/data/renderDataUpdater";
 import {RenderDataManager} from "./rendererV2/data/renderDataManager";
+import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;

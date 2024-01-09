@@ -46,6 +46,8 @@ class POVCache(
                 tile.owner?.cityId?.also { knownCities.add(it) }
             }
         }
+        knownCountries.add(povCountryId)
+
         game.countries.forEach { country ->
             countryIdentifiers[country.countryId] = obj {
                 "id" to country.countryId

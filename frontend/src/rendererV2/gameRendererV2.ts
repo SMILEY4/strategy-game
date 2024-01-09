@@ -7,6 +7,8 @@ import {RenderDataManager} from "./data/renderDataManager";
 import {WebGLMonitor} from "../shared/webgl/monitor/webGLMonitor";
 import {CameraDatabase} from "../state/cameraDatabase";
 import {MonitoringRepository} from "../state/monitoringRepository";
+import {WaterRenderer} from "./water/waterRenderer";
+import {GLFramebuffer} from "../shared/webgl/glFramebuffer";
 
 export class GameRendererV2 {
 
@@ -17,7 +19,6 @@ export class GameRendererV2 {
     private readonly renderDataManager: RenderDataManager;
     private readonly modules: RenderModule[];
     private renderer: BaseRenderer | null = null;
-
 
     constructor(
         canvasHandle: CanvasHandle,
@@ -32,6 +33,7 @@ export class GameRendererV2 {
         this.cameraDb = cameraDb;
         this.renderDataManager = renderDataManager;
         this.modules = [
+            new WaterRenderer(canvasHandle),
             new GroundRenderer(canvasHandle),
         ];
     }
@@ -39,7 +41,6 @@ export class GameRendererV2 {
 
     public initialize(): void {
         this.monitor.attach(this.canvasHandle.getGL());
-
         this.renderDataManager.initialize();
         this.renderer = new BaseRenderer(this.canvasHandle.getGL());
         this.modules.forEach(m => m.initialize());
@@ -47,11 +48,15 @@ export class GameRendererV2 {
 
     public render() {
         this.monitor.beginFrame();
+
         const camera = this.getRenderCamera();
+
         this.renderDataManager.updateData(camera);
         const data = this.renderDataManager.getData();
+
         this.renderer?.prepareFrame(camera);
         this.modules.forEach(m => m.render(camera, data));
+
         this.monitor.endFrame();
         this.monitoringRepository.setWebGLMonitorData(this.monitor.getData());
     }

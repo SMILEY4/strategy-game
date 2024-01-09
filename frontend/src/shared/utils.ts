@@ -80,7 +80,7 @@ export function mapRecord<K extends keyof any, I, O>(record: Record<K, I>, trans
 }
 
 export function chooseRandom<T>(array: T[]): T {
-    return array[Math.floor(Math.random() * array.length)]
+    return array[Math.floor(Math.random() * array.length)];
 }
 
 export function shuffleArray<T>(array: T[]) {

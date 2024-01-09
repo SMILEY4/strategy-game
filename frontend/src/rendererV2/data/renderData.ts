@@ -27,4 +27,16 @@ export interface RenderData {
         },
         vertexArray: GLVertexArray
     },
+    water: {
+        program: GLProgram,
+        mesh: {
+            vertexCount: number,
+            vertexBuffer: GLVertexBuffer
+        },
+        instances: {
+            instanceCount: number,
+            instanceBuffer: GLVertexBuffer,
+        },
+        vertexArray: GLVertexArray
+    }
 }
