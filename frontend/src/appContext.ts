@@ -17,11 +17,7 @@ import {UserClient} from "./logic/user/userClient";
 import {TilePicker} from "./logic/game/tilePicker";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
-import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
-import {RenderDataManager} from "./renderer/data/renderDataManager";
-import {GameRenderer} from "./renderer/gameRenderer";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
-import {RenderDataUpdater} from "./renderer/data/renderDataUpdater";
 import {CameraDatabase} from "./state/cameraDatabase";
 import {CityDatabase} from "./state/cityDatabase";
 import {CommandDatabase} from "./state/commandDatabase";
@@ -33,6 +29,10 @@ import {TileDatabase} from "./state/tileDatabase";
 import {MonitoringRepository} from "./state/monitoringRepository";
 import {UserRepository} from "./state/userRepository";
 import {MarkerService} from "./logic/game/markerService";
+import {GameRendererV2} from "./rendererV2/gameRendererV2";
+import {RenderEntityCollector} from "./rendererV2/data/builders/entities/renderEntityCollector";
+import {RenderDataUpdater} from "./rendererV2/data/renderDataUpdater";
+import {RenderDataManager} from "./rendererV2/data/renderDataManager";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -62,7 +62,7 @@ interface AppCtxDef {
     GameLoopService: () => GameLoopService,
 
     WebGLMonitor: () => WebGLMonitor,
-    GameRenderer: () => GameRenderer,
+    GameRenderer: () => GameRendererV2,
     RenderEntityCollector: () => RenderEntityCollector,
     RenderDataUpdater: () => RenderDataUpdater,
     RenderDataManager: () => RenderDataManager,
@@ -205,7 +205,7 @@ export const AppCtx: AppCtxDef = {
     ),
     GameRenderer: diContext.register(
         "GameRenderer",
-        () => new GameRenderer(
+        () => new GameRendererV2(
             AppCtx.CanvasHandle(),
             AppCtx.WebGLMonitor(),
             AppCtx.MonitoringRepository(),
