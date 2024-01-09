@@ -22,8 +22,11 @@ export class WaterRenderer implements RenderModule {
 
     public render(camera: Camera, data: RenderData) {
 
+        data.water.textures.noise.bind(0)
+
         data.water.program.use();
         data.water.program.setUniform("u_viewProjection", GLUniformType.MAT3, camera.getViewProjectionMatrixOrThrow());
+        data.water.program.setUniform("u_noise", GLUniformType.SAMPLER_2D, data.water.textures.noise);
 
         data.water.vertexArray.bind();
         this.renderer.drawInstanced(data.water.mesh.vertexCount, data.water.instances.instanceCount);

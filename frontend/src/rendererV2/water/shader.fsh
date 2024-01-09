@@ -1,7 +1,10 @@
 #version 300 es
 precision mediump float;
 
+uniform sampler2D u_noise;
+
 in vec3 v_cornerData;
+in vec2 v_worldPosition;
 flat in int v_edgeDirection;
 flat in int v_borderMask;
 
@@ -107,13 +110,18 @@ void main() {
     vec3 colorWave = vec3(0.91, 0.984, 0.976);
     float waveScale = 20.0;
     float waveSize = 0.2;
+    float waveDistortion = 0.25;
 
-    float depth = borderGradient(v_cornerData, v_edgeDirection, v_borderMask);
-    float waves = step((1.0 - waveSize), sin(depth * waveScale)) * depth;
+    float noiseLarge = texture(u_noise, v_worldPosition/200.0).r * 0.4 + 0.6;
+    float noiseSmall = texture(u_noise, v_worldPosition/30.0).r * waveDistortion + (1.0-waveDistortion);
 
-    vec3 color = mix(colorDeep, colorShallow, depth);
+    float depth = 1.0-borderGradient(v_cornerData, v_edgeDirection, v_borderMask);
+
+    float waves = step((1.0 - waveSize), sin((depth*noiseSmall) * waveScale)) * (1.0-depth);
+
+    vec3 color = mix(colorShallow, colorDeep, 1.0-(noiseLarge*depth));
     color = mix(color, colorWave, waves);
 
-        outColor = vec4(color, 1.0);
+    outColor = vec4(color, 1.0);
 
 }

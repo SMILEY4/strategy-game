@@ -29,6 +29,9 @@ export interface RenderData {
     },
     water: {
         program: GLProgram,
+        textures: {
+            noise: GLTexture,
+        }
         mesh: {
             vertexCount: number,
             vertexBuffer: GLVertexBuffer

@@ -108,6 +108,9 @@ export class RenderDataManager {
             },
             water: {
                 program: waterProgram,
+                textures: {
+                    noise: GLTexture.createFromPath(gl, "/textures/noise_contrast.png"),
+                },
                 mesh: {
                     vertexCount: waterMesh[0],
                     vertexBuffer: waterMeshBuffer,

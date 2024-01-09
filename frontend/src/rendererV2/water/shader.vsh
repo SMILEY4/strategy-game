@@ -9,6 +9,7 @@ in int in_edgeDirection;
 in int in_borderMask;
 
 out vec3 v_cornerData;
+out vec2 v_worldPosition;
 flat out int v_edgeDirection;
 flat out int v_borderMask;
 
@@ -16,5 +17,6 @@ void main() {
     v_cornerData = in_cornerData;
     v_edgeDirection = in_edgeDirection;
     v_borderMask = in_borderMask;
+    v_worldPosition = in_worldPosition + in_vertexPosition;
     gl_Position = vec4((u_viewProjection * vec3(in_vertexPosition + in_worldPosition, 1.0)).xy, 0.0, 1.0);
 }
