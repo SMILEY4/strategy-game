@@ -9,6 +9,8 @@ import {CameraDatabase} from "../state/cameraDatabase";
 import {MonitoringRepository} from "../state/monitoringRepository";
 import {WaterRenderer} from "./water/waterRenderer";
 import {GLFramebuffer} from "../shared/webgl/glFramebuffer";
+import {DetailRenderer} from "./detail/detailRenderer";
+import {OverlayRenderer} from "./overlay/overlayRenderer";
 
 export class GameRendererV2 {
 
@@ -35,6 +37,8 @@ export class GameRendererV2 {
         this.modules = [
             new WaterRenderer(canvasHandle),
             new GroundRenderer(canvasHandle),
+            new DetailRenderer(canvasHandle),
+            new OverlayRenderer(canvasHandle)
         ];
     }
 

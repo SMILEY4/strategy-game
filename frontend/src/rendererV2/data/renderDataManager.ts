@@ -5,6 +5,10 @@ import SHADER_GROUND_VERT from "../ground/shader.vsh?raw";
 import SHADER_GROUND_FRAG from "../ground/shader.fsh?raw";
 import SHADER_WATER_VERT from "../water/shader.vsh?raw";
 import SHADER_WATER_FRAG from "../water/shader.fsh?raw";
+import SHADER_DETAIL_VERT from "../detail/shader.vsh?raw";
+import SHADER_DETAIL_FRAG from "../detail/shader.fsh?raw";
+import SHADER_OVERLAY_VERT from "../overlay/shader.vsh?raw";
+import SHADER_OVERLAY_FRAG from "../overlay/shader.fsh?raw";
 import {MapMode} from "../../models/mapMode";
 import {RenderDataUpdater} from "./renderDataUpdater";
 import {Camera} from "../../shared/webgl/camera";
@@ -14,6 +18,7 @@ import {GLVertexBuffer} from "../../shared/webgl/glVertexBuffer";
 import {GLVertexArray} from "../../shared/webgl/glVertexArray";
 import {GLAttributeType} from "../../shared/webgl/glTypes";
 import {WaterBaseMeshBuilder} from "./builders/water/waterBaseMeshBuilder";
+import {OverlayBaseMeshBuilder} from "./builders/overlay/overlayBaseMeshBuilder";
 
 
 export class RenderDataManager {
@@ -49,6 +54,14 @@ export class RenderDataManager {
         const waterMesh = WaterBaseMeshBuilder.build();
         const waterMeshBuffer = GLVertexBuffer.create(gl, waterMesh[1]);
         const waterInstancesBuffer = GLVertexBuffer.createEmpty(gl);
+
+        const detailProgram = GLProgram.create(gl, SHADER_DETAIL_VERT, SHADER_DETAIL_FRAG);
+        const detailVertexBuffer = GLVertexBuffer.createEmpty(gl);
+
+        const overlayProgram = GLProgram.create(gl, SHADER_OVERLAY_VERT, SHADER_OVERLAY_FRAG);
+        const overlayMesh = OverlayBaseMeshBuilder.build();
+        const overlayMeshBuffer = GLVertexBuffer.create(gl, overlayMesh[1]);
+        const overlayInstancesBuffer = GLVertexBuffer.createEmpty(gl);
 
         this.renderData = {
             meta: {
@@ -160,6 +173,82 @@ export class RenderDataManager {
                     undefined,
                 ),
             },
+            details: {
+                program: detailProgram,
+                textures: {
+                    tileset: GLTexture.createFromPath(gl, "/tilesetNew.png"),
+                },
+                vertexCount: 0,
+                vertexBuffer: detailVertexBuffer,
+                vertexArray: GLVertexArray.create(
+                    gl,
+                    [
+                        {
+                            buffer: detailVertexBuffer,
+                            location: detailProgram.getInformation().attributes.find(a => a.name === "in_worldPosition")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            buffer: detailVertexBuffer,
+                            location: detailProgram.getInformation().attributes.find(a => a.name === "in_textureCoordinates")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                    ],
+                ),
+            },
+            overlay: {
+                program: overlayProgram,
+                mesh: {
+                    vertexCount: overlayMesh[0],
+                    vertexBuffer: overlayMeshBuffer,
+                },
+                instances: {
+                    instanceCount: 0,
+                    instanceBuffer: overlayInstancesBuffer,
+                },
+                vertexArray: GLVertexArray.create(
+                    gl,
+                    [
+                        //==== tile mesh ====//
+                        {
+                            buffer: overlayMeshBuffer,
+                            location: overlayProgram.getInformation().attributes.find(a => a.name === "in_vertexPosition")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            buffer: overlayMeshBuffer,
+                            location: overlayProgram.getInformation().attributes.find(a => a.name === "in_cornerData")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 3,
+                        },
+                        {
+                            buffer: overlayMeshBuffer,
+                            location: overlayProgram.getInformation().attributes.find(a => a.name === "in_directionData")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                        },
+                        //==== instance data ====//
+                        {
+                            buffer: overlayInstancesBuffer,
+                            location: overlayProgram.getInformation().attributes.find(a => a.name === "in_worldPosition")!.location,
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
+                        {
+                            buffer: overlayInstancesBuffer,
+                            location: overlayProgram.getInformation().attributes.find(a => a.name === "in_tilePosition")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
+                    ],
+                    undefined,
+                ),
+            },
         };
     }
 
@@ -176,6 +265,15 @@ export class RenderDataManager {
             this.renderData.water.mesh.vertexBuffer.dispose();
             this.renderData.water.instances.instanceBuffer.dispose();
             this.renderData.water.vertexArray.dispose();
+
+            this.renderData.details.program.dispose();
+            this.renderData.details.vertexBuffer.dispose();
+            this.renderData.details.vertexArray.dispose();
+
+            this.renderData.overlay.program.dispose();
+            this.renderData.overlay.mesh.vertexBuffer.dispose();
+            this.renderData.overlay.instances.instanceBuffer.dispose();
+            this.renderData.overlay.vertexArray.dispose();
 
             this.renderData = null;
         }

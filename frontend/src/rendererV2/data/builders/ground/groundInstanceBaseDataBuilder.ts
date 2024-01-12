@@ -39,7 +39,7 @@ export namespace GroundInstanceBaseDataBuilder {
         return [array, cursor];
     }
 
-    export function appendTiles(cursor: MixedArrayBufferCursor, tileDb: TileDatabase) {
+    function appendTiles(cursor: MixedArrayBufferCursor, tileDb: TileDatabase) {
         const tiles = tileDb.queryMany(TileDatabase.QUERY_ALL, null);
 
         let indices: number[] = [];

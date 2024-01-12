@@ -8,6 +8,8 @@ import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {RenderEntityCollector} from "../../renderer/data/builders/entities/renderEntityCollector";
 import {GroundInstanceBaseDataBuilder} from "./builders/ground/groundInstanceBaseDataBuilder";
 import {WaterInstanceBaseDataBuilder} from "./builders/water/waterInstanceBaseDataBuilder";
+import {DetailMeshDataBuilder} from "./builders/detail/detailInstanceBaseDataBuilder";
+import {OverlayInstanceBaseDataBuilder} from "./builders/overlay/overlayInstanceBaseDataBuilder";
 
 interface Changes {
     currentTurnChanged: boolean,
@@ -81,6 +83,16 @@ export class RenderDataUpdater {
             const [count, baseDataArray] = WaterInstanceBaseDataBuilder.build(this.tileDb);
             renderData.water.instances.instanceCount = count;
             renderData.water.instances.instanceBuffer.setData(baseDataArray, true);
+        }
+        if (changes.currentTurnChanged) {
+            const [count, baseDataArray] = DetailMeshDataBuilder.build(this.tileDb)
+            renderData.details.vertexCount = count
+            renderData.details.vertexBuffer.setData(baseDataArray, true)
+        }
+        if (changes.currentTurnChanged) {
+            const [count, baseDataArray] = OverlayInstanceBaseDataBuilder.build(this.tileDb);
+            renderData.overlay.instances.instanceCount = count;
+            renderData.overlay.instances.instanceBuffer.setData(baseDataArray, true);
         }
     }
 

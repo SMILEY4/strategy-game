@@ -41,5 +41,26 @@ export interface RenderData {
             instanceBuffer: GLVertexBuffer,
         },
         vertexArray: GLVertexArray
+    },
+    details: {
+        program: GLProgram,
+        textures: {
+            tileset: GLTexture,
+        }
+        vertexCount: number,
+        vertexBuffer: GLVertexBuffer,
+        vertexArray: GLVertexArray
+    },
+    overlay: {
+        program: GLProgram,
+        mesh: {
+            vertexCount: number,
+            vertexBuffer: GLVertexBuffer
+        },
+        instances: {
+            instanceCount: number,
+            instanceBuffer: GLVertexBuffer,
+        },
+        vertexArray: GLVertexArray
     }
 }
