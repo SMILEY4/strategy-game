@@ -9,6 +9,7 @@ import {TerrainType} from "../../../../models/terrainType";
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {getHiddenOrNull} from "../../../../models/hiddenType";
 import {packBorder} from "../../../../renderer/data/builders/tilemap/packBorder";
+import {TileVisibility} from "../../../../models/tileVisibility";
 
 export namespace WaterInstanceBaseDataBuilder {
 
@@ -16,6 +17,8 @@ export namespace WaterInstanceBaseDataBuilder {
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
         // packed water border mask
+        MixedArrayBufferType.INT,
+        // visibility
         MixedArrayBufferType.INT,
     ];
 
@@ -61,6 +64,15 @@ export namespace WaterInstanceBaseDataBuilder {
             });
             const borderPacked = packBorder(border);
             cursor.append(borderPacked);
+
+            // visibility
+            if (tile.visibility === TileVisibility.VISIBLE) {
+                cursor.append(2);
+            } else if (tile.visibility === TileVisibility.DISCOVERED) {
+                cursor.append(1);
+            } else {
+                cursor.append(0);
+            }
         }
     }
 

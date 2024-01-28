@@ -225,9 +225,8 @@ export const AppCtx: AppCtxDef = {
         () => new RenderDataUpdater(
             AppCtx.GameSessionDatabase(),
             AppCtx.TileDatabase(),
-            AppCtx.RouteDatabase(),
+            AppCtx.CityDatabase(),
             AppCtx.CommandDatabase(),
-            AppCtx.RenderEntityCollector(),
         ),
     ),
     RenderDataManager: diContext.register(

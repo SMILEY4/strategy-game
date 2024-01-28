@@ -11,6 +11,8 @@ import {WaterRenderer} from "./water/waterRenderer";
 import {GLFramebuffer} from "../shared/webgl/glFramebuffer";
 import {DetailRenderer} from "./detail/detailRenderer";
 import {OverlayRenderer} from "./overlay/overlayRenderer";
+import {WorldStartRenderer} from "./world/worldStartRenderer";
+import {WorldStopRenderer} from "./world/worldStopRenderer";
 
 export class GameRendererV2 {
 
@@ -35,9 +37,11 @@ export class GameRendererV2 {
         this.cameraDb = cameraDb;
         this.renderDataManager = renderDataManager;
         this.modules = [
+            new WorldStartRenderer(canvasHandle),
             new WaterRenderer(canvasHandle),
             new GroundRenderer(canvasHandle),
             new DetailRenderer(canvasHandle),
+            new WorldStopRenderer(canvasHandle),
             new OverlayRenderer(canvasHandle)
         ];
     }

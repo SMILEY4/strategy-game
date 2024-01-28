@@ -7,6 +7,7 @@ in vec3 v_cornerData;
 in vec2 v_worldPosition;
 flat in int v_edgeDirection;
 flat in int v_borderMask;
+flat in int v_visibility;
 
 out vec4 outColor;
 
@@ -105,6 +106,7 @@ float borderGradient(vec3 cornerData, int edgeDirection, int mask) {
 
 void main() {
 
+
     vec3 colorDeep = vec3(0.71, 0.784, 0.776);
     vec3 colorShallow = vec3(0.504, 0.614, 0.653);
     vec3 colorWave = vec3(0.91, 0.984, 0.976);
@@ -122,6 +124,18 @@ void main() {
     vec3 color = mix(colorShallow, colorDeep, 1.0-(noiseLarge*depth));
     color = mix(color, colorWave, waves);
 
-    outColor = vec4(color, 1.0);
+    float saturation = 1.0;
+    if(v_visibility == 0) saturation = 0.0;
+    if(v_visibility == 1) saturation = 0.5;
+    if(v_visibility == 2) saturation = 1.0;
+
+    float brightness = 1.0;
+    if(v_visibility == 0) brightness = 1.0;
+    if(v_visibility == 1) brightness = 0.6;
+    if(v_visibility == 2) brightness = 1.0;
+
+    vec3 grayscale = vec3((color.r+color.g+color.b)/3.0);
+
+    outColor = vec4(mix(grayscale, color, saturation) * brightness, 1.0);
 
 }

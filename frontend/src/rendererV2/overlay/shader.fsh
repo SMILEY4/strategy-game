@@ -3,8 +3,15 @@ precision mediump float;
 
 uniform ivec2 u_selectedTile;
 uniform ivec2 u_hoverTile;
+uniform vec2 u_screenSize;
+
+uniform sampler2D u_world;
+uniform sampler2D u_paper;
+uniform sampler2D u_noise;
+uniform sampler2D u_noisePainted;
 
 in vec3 v_cornerData;
+in vec2 v_worldPosition;
 flat in int v_directionData;
 flat in ivec2 v_tilePosition;
 
@@ -129,6 +136,31 @@ float borderGradient(vec3 cornerData, int edgeDirection, int mask) {
 //                MAIN               //
 // ==================================//
 
+vec3 colorWorld() {
+    return texture(u_world, gl_FragCoord.xy / u_screenSize).rgb;
+}
+
+vec4 worldTexture(sampler2D sampler, float scale) {
+    return texture(sampler, v_worldPosition / scale);
+}
+
+float baseTexturePaper() {
+    float strength = 1.0;// => values in [1.0-"strength", 1.0]
+    float value = worldTexture(u_paper, 90.0).x;
+    value = value * strength + (1.0-strength);
+    return value;
+}
+
+float baseTextureNoise() {
+    float paintStrength = 1.0;
+    float strength = 0.2;
+    float valueNoise = worldTexture(u_noise, 90.0).x;
+    float valueNoisePainted = worldTexture(u_noisePainted, 90.0).x;
+    float value = mix(valueNoise, valueNoisePainted, paintStrength);
+    value = value * strength + (1.0-strength);
+    return value;
+}
+
 vec4 colorSelectionBorder(float thickness, vec4 color) {
     if (v_tilePosition.x == u_selectedTile.x && v_tilePosition.y == u_selectedTile.y) {
         float value = step(v_cornerData.x, thickness);
@@ -149,13 +181,24 @@ vec4 colorMouseOverBorder(float thickness, vec4 color) {
 
 void main() {
 
+    vec3 colorParchmentLight = vec3(235.0, 213.0, 179.0) / vec3(255.0);
+    vec3 colorParchmentDark = vec3(207.0, 175.0, 124.0) / vec3(255.0) * 0.75;
+    float texturePaper = baseTexturePaper();
+    float textureNoise = baseTextureNoise();
+    vec3 parchment = mix(colorParchmentLight, colorParchmentDark, textureNoise*texturePaper);
+
     vec4 effectSelectionBorder = colorSelectionBorder(0.15, vec4(189.0/255.0, 23.0/255.0, 64.0/255.0, 1.0));
     vec4 effectMouseOverBorder = colorMouseOverBorder(0.08, vec4(186.0/255.0, 47.0/255.0, 107.0/255.0, 1.0));
 
-    vec4 color = vec4(0.0);
+    vec4 color = vec4(colorWorld(), 1.0);
     color = mix(color, effectSelectionBorder, effectSelectionBorder.a);
     color = mix(color, effectMouseOverBorder, effectMouseOverBorder.a);
 
+    color = mix(color, vec4(parchment, 1.0), 0.2);
+    color = vec4(color.rgb * vec3(mix(textureNoise*(1.0-texturePaper), 1.0, 0.8)), color.a);
+
+    vec3 colorLight = mix(color.rgb, colorParchmentLight, 0.2);
+    color = vec4(mix(colorLight, color.rgb, (texturePaper*texturePaper*textureNoise)+0.6), color.a);
 
     outColor = color;
 

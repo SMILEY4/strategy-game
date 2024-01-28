@@ -3,6 +3,7 @@ import {GLVertexArray} from "../../shared/webgl/glVertexArray";
 import {GLProgram} from "../../shared/webgl/glProgram";
 import {GLTexture} from "../../shared/webgl/glTexture";
 import {MapMode} from "../../models/mapMode";
+import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 
 export interface RenderData {
     meta: {
@@ -11,6 +12,9 @@ export interface RenderData {
         tileSelected: number[] | null
         grayscale: boolean,
         mapMode: MapMode,
+    }
+    world: {
+        framebuffer: GLFramebuffer
     }
     ground: {
         program: GLProgram,
@@ -53,6 +57,11 @@ export interface RenderData {
     },
     overlay: {
         program: GLProgram,
+        textures: {
+            paper: GLTexture,
+            noise: GLTexture,
+            noisePainted: GLTexture,
+        }
         mesh: {
             vertexCount: number,
             vertexBuffer: GLVertexBuffer

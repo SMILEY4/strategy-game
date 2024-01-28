@@ -19,6 +19,7 @@ import {GLVertexArray} from "../../shared/webgl/glVertexArray";
 import {GLAttributeType} from "../../shared/webgl/glTypes";
 import {WaterBaseMeshBuilder} from "./builders/water/waterBaseMeshBuilder";
 import {OverlayBaseMeshBuilder} from "./builders/overlay/overlayBaseMeshBuilder";
+import {GLFramebuffer} from "../../shared/webgl/glFramebuffer";
 
 
 export class RenderDataManager {
@@ -71,6 +72,9 @@ export class RenderDataManager {
                 tileMouseOver: null,
                 mapMode: MapMode.DEFAULT,
             },
+            world: {
+                framebuffer: GLFramebuffer.create(gl, 1, 1),
+            },
             ground: {
                 program: groundProgram,
                 textures: {
@@ -113,6 +117,13 @@ export class RenderDataManager {
                             location: groundProgram.getInformation().attributes.find(a => a.name === "in_color")!.location,
                             type: GLAttributeType.FLOAT,
                             amountComponents: 4,
+                            divisor: 1,
+                        },
+                        {
+                            buffer: groundInstancesBuffer,
+                            location: groundProgram.getInformation().attributes.find(a => a.name === "in_visibility")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
                             divisor: 1,
                         },
                     ],
@@ -169,6 +180,13 @@ export class RenderDataManager {
                             amountComponents: 1,
                             divisor: 1,
                         },
+                        {
+                            buffer: waterInstancesBuffer,
+                            location: waterProgram.getInformation().attributes.find(a => a.name === "in_visibility")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                            divisor: 1,
+                        },
                     ],
                     undefined,
                 ),
@@ -195,11 +213,22 @@ export class RenderDataManager {
                             type: GLAttributeType.FLOAT,
                             amountComponents: 2,
                         },
+                        {
+                            buffer: detailVertexBuffer,
+                            location: detailProgram.getInformation().attributes.find(a => a.name === "in_visibility")!.location,
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                        },
                     ],
                 ),
             },
             overlay: {
                 program: overlayProgram,
+                textures: {
+                    paper: GLTexture.createFromPath(gl, "/textures/plain_white_paper_prepared_contrast.jpg"),
+                    noise: GLTexture.createFromPath(gl, "/textures/noise_contrast.png"),
+                    noisePainted: GLTexture.createFromPath(gl, "/textures/noise_watercolor.png"),
+                },
                 mesh: {
                     vertexCount: overlayMesh[0],
                     vertexBuffer: overlayMeshBuffer,

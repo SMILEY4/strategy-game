@@ -8,6 +8,7 @@ import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 import {TerrainType} from "../../../../models/terrainType";
 import {shuffleArray} from "../../../../shared/utils";
 import {TilePosition} from "../../../../models/tilePosition";
+import {TileVisibility} from "../../../../models/tileVisibility";
 
 export namespace GroundInstanceBaseDataBuilder {
 
@@ -16,6 +17,8 @@ export namespace GroundInstanceBaseDataBuilder {
         ...MixedArrayBufferType.VEC2,
         // color (r,g,b,a)
         ...MixedArrayBufferType.VEC4,
+        // visibility
+        MixedArrayBufferType.INT,
     ];
 
     let cachedIndices: number[] = [];
@@ -23,7 +26,7 @@ export namespace GroundInstanceBaseDataBuilder {
     const voidTiles = buildVoidTiles(20);
 
     export function build(tileDb: TileDatabase): [number, ArrayBuffer] {
-        const tileCount = tileDb.count()*2 + voidTiles.length;
+        const tileCount = tileDb.count() * 2 + voidTiles.length;
         const [buffer, cursor] = createMixedArray(tileCount);
         appendTiles(cursor, tileDb);
         return [tileCount, buffer.getRawBuffer()!];
@@ -72,11 +75,19 @@ export namespace GroundInstanceBaseDataBuilder {
                     color = [...mix(COLOR_LAND_LIGHT, COLOR_LAND_DARK, Math.random()), 1];
                 }
             }
-
             cursor.append(color[0]);
             cursor.append(color[1]);
             cursor.append(color[2]);
             cursor.append(color[3]);
+
+            // visibility
+            if (tile.visibility === TileVisibility.VISIBLE) {
+                cursor.append(2);
+            } else if (tile.visibility === TileVisibility.DISCOVERED) {
+                cursor.append(1);
+            } else {
+                cursor.append(0);
+            }
 
         }
 
@@ -95,6 +106,10 @@ export namespace GroundInstanceBaseDataBuilder {
             cursor.append(0);
             cursor.append(0);
             cursor.append(1);
+
+            // visibility
+            cursor.append(0);
+
         }
 
     }
@@ -103,18 +118,18 @@ export namespace GroundInstanceBaseDataBuilder {
         const tiles: TilePosition[] = [];
 
         // top edge
-        for(let i=0; i<=worldSize+1; i++) {
+        for (let i = 0; i <= worldSize + 1; i++) {
             tiles.push({
                 q: -i,
-                r: worldSize+1,
+                r: worldSize + 1,
             });
         }
 
         // bottom edge
-        for(let i=0; i<=worldSize+1; i++) {
+        for (let i = 0; i <= worldSize + 1; i++) {
             tiles.push({
                 q: i,
-                r: -(worldSize+1),
+                r: -(worldSize + 1),
             });
         }
 
@@ -136,19 +151,19 @@ export namespace GroundInstanceBaseDataBuilder {
 
         // bottom-left edge
         for (let i = 0; i <= worldSize; i++) {
-            const s =  worldSize+1
+            const s = worldSize + 1;
             tiles.push({
                 q: -i,
-                r: -(s-i),
+                r: -(s - i),
             });
         }
 
         // top-right edge
         for (let i = 0; i <= worldSize; i++) {
-            const s =  worldSize+1
+            const s = worldSize + 1;
             tiles.push({
                 q: i,
-                r: (s-i),
+                r: (s - i),
             });
         }
 

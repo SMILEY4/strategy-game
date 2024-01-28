@@ -10,6 +10,7 @@ import {GroundInstanceBaseDataBuilder} from "./builders/ground/groundInstanceBas
 import {WaterInstanceBaseDataBuilder} from "./builders/water/waterInstanceBaseDataBuilder";
 import {DetailMeshDataBuilder} from "./builders/detail/detailInstanceBaseDataBuilder";
 import {OverlayInstanceBaseDataBuilder} from "./builders/overlay/overlayInstanceBaseDataBuilder";
+import {CityDatabase} from "../../state/cityDatabase";
 
 interface Changes {
     currentTurnChanged: boolean,
@@ -23,6 +24,7 @@ export class RenderDataUpdater {
 
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly tileDb: TileDatabase;
+    private readonly cityDb: CityDatabase
     private readonly commandDb: CommandDatabase;
 
 
@@ -36,12 +38,12 @@ export class RenderDataUpdater {
     constructor(
         gameSessionDb: GameSessionDatabase,
         tileDb: TileDatabase,
-        routeDb: RouteDatabase,
+        cityDb: CityDatabase,
         commandDb: CommandDatabase,
-        entityCollector: RenderEntityCollector,
     ) {
         this.gameSessionDb = gameSessionDb;
         this.tileDb = tileDb;
+        this.cityDb = cityDb;
         this.commandDb = commandDb;
     }
 
@@ -85,7 +87,7 @@ export class RenderDataUpdater {
             renderData.water.instances.instanceBuffer.setData(baseDataArray, true);
         }
         if (changes.currentTurnChanged) {
-            const [count, baseDataArray] = DetailMeshDataBuilder.build(this.tileDb)
+            const [count, baseDataArray] = DetailMeshDataBuilder.build(this.tileDb, this.cityDb)
             renderData.details.vertexCount = count
             renderData.details.vertexBuffer.setData(baseDataArray, true)
         }
