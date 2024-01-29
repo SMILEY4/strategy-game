@@ -86,8 +86,8 @@ export class RenderDataUpdater {
             renderData.water.instances.instanceCount = count;
             renderData.water.instances.instanceBuffer.setData(baseDataArray, true);
         }
-        if (changes.currentTurnChanged) {
-            const [count, baseDataArray] = DetailMeshDataBuilder.build(this.tileDb, this.cityDb)
+        if (changes.currentTurnChanged || changes.commands) {
+            const [count, baseDataArray] = DetailMeshDataBuilder.build(this.tileDb, this.cityDb, this.commandDb)
             renderData.details.vertexCount = count
             renderData.details.vertexBuffer.setData(baseDataArray, true)
         }

@@ -194,10 +194,10 @@ void main() {
     color = mix(color, effectSelectionBorder, effectSelectionBorder.a);
     color = mix(color, effectMouseOverBorder, effectMouseOverBorder.a);
 
-    color = mix(color, vec4(parchment, 1.0), 0.2);
+    color = mix(color, vec4(parchment, 1.0), 0.15);
     color = vec4(color.rgb * vec3(mix(textureNoise*(1.0-texturePaper), 1.0, 0.8)), color.a);
 
-    vec3 colorLight = mix(color.rgb, colorParchmentLight, 0.2);
+    vec3 colorLight = mix(color.rgb, colorParchmentLight, 0.15);
     color = vec4(mix(colorLight, color.rgb, (texturePaper*texturePaper*textureNoise)+0.6), color.a);
 
     outColor = color;
