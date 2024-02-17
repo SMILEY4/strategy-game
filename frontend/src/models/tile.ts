@@ -6,6 +6,7 @@ import {TileVisibility} from "./tileVisibility";
 import {TerrainResourceType} from "./terrainResourceType";
 import {TileObject} from "./tileObject";
 import {HiddenType} from "./hiddenType";
+import {RenderObjectData} from "../renderer/core/renderObjectData";
 
 export interface TileIdentifier {
     id: string,
@@ -24,7 +25,8 @@ export interface Tile {
         owner: HiddenType<TileOwner | null>,
         influences: HiddenType<TileInfluence[]>,
     }
-    objects: HiddenType<TileObject[]>
+    objects: HiddenType<TileObject[]>,
+    renderData: RenderObjectData | null
 }
 
 export interface TileOwner {

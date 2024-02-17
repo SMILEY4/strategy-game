@@ -4,7 +4,8 @@ import {
     GameStateMessage,
     MarkerTileObjectMessage,
     ResourceLedgerEntryMessage,
-    ScoutTileObjectMessage, TileMessage,
+    ScoutTileObjectMessage,
+    TileMessage,
 } from "./models/gameStateMessage";
 import {GameLoopService} from "./gameLoopService";
 import {ValueHistory} from "../../shared/valueHistory";
@@ -32,10 +33,13 @@ import {TerrainResourceType} from "../../models/terrainResourceType";
 import {TileVisibility} from "../../models/tileVisibility";
 import {Route} from "../../models/route";
 import {ResourceLedger} from "../../models/resourceLedger";
+import {GameRenderDataBuilder} from "../../renderer/game/gameRenderDataBuilder";
 
 export class NextTurnService {
 
     private readonly gameLoopService: GameLoopService;
+    private readonly renderDataBuilder: GameRenderDataBuilder;
+
     private readonly monitoringRepository: MonitoringRepository;
 
     private readonly gameSessionDb: GameSessionDatabase;
@@ -49,6 +53,7 @@ export class NextTurnService {
 
     constructor(
         gameLoopService: GameLoopService,
+        renderDataBuilder: GameRenderDataBuilder,
         gameSessionDb: GameSessionDatabase,
         monitoringRepository: MonitoringRepository,
         cityDb: CityDatabase,
@@ -58,6 +63,7 @@ export class NextTurnService {
         tileDb: TileDatabase,
     ) {
         this.gameLoopService = gameLoopService;
+        this.renderDataBuilder = renderDataBuilder;
         this.gameSessionDb = gameSessionDb;
         this.monitoringRepository = monitoringRepository;
         this.cityDb = cityDb;
@@ -102,17 +108,17 @@ export class NextTurnService {
 
     private buildTiles(game: GameStateMessage): Tile[] {
         return game.tiles.map(tileMsg => {
-            if(tileMsg.visibility === "UNKNOWN") {
-                return this.buildUnknownTile(tileMsg)
+            if (tileMsg.visibility === "UNKNOWN") {
+                return this.buildUnknownTile(tileMsg);
             } else {
-                return this.buildKnownTile(tileMsg, game)
+                return this.buildKnownTile(tileMsg, game);
             }
         });
     }
 
 
     private buildUnknownTile(tileMsg: TileMessage): Tile {
-        return {
+        const tile: Tile = {
             identifier: tileMsg.identifier,
             visibility: TileVisibility.fromString(tileMsg.visibility),
             basic: {
@@ -123,12 +129,15 @@ export class NextTurnService {
                 owner: HiddenType.hidden(),
                 influences: HiddenType.hidden(),
             },
-            objects: HiddenType.hidden()
-        }
+            objects: HiddenType.hidden(),
+            renderData: null,
+        };
+        tile.renderData = this.renderDataBuilder.tile(tile);
+        return tile;
     }
 
     private buildKnownTile(tileMsg: TileMessage, game: GameStateMessage): Tile {
-        return {
+        const tile: Tile = {
             identifier: tileMsg.identifier,
             visibility: TileVisibility.fromString(tileMsg.visibility),
             basic: {
@@ -186,7 +195,10 @@ export class NextTurnService {
                     }
                 });
             }),
-        }
+            renderData: null,
+        };
+        tile.renderData = this.renderDataBuilder.tile(tile);
+        return tile;
     }
 
     private buildCountries(game: GameStateMessage): Country[] {
@@ -270,8 +282,8 @@ export class NextTurnService {
             connectedCities: cityMsg.connectedCities.map(connectedMsg => ({
                 city: game.identifiers.cities[connectedMsg.city],
                 route: connectedMsg.route,
-                distance: connectedMsg.distance
-            }))
+                distance: connectedMsg.distance,
+            })),
         }));
     }
 
