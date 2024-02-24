@@ -1,93 +1,54 @@
-import {AbstractRenderNode, RenderNodeResourceEntry} from "../nodes/abstractRenderNode";
-import {RenderGraphCompiler} from "../compiler/renderGraphCompiler";
-import {RenderCommand} from "../compiler/renderCommand";
-import {RenderContext} from "../context/renderContext";
-import {ResourceManager} from "../compiler/resourceManager";
-import {VertexDataConfig} from "../resources/vertexDataRenderResource";
-import {RenderTargetConfig} from "../resources/renderTargetRenderResource";
-import {TextureConfig} from "../resources/textureRenderResource";
-import {ShaderConfig} from "../resources/shaderRenderResource";
+import {AbstractRenderNode} from "./abstractRenderNode";
+import {RenderGraphSorter} from "./renderGraphSorter";
+import {RenderGraphCompiler} from "./renderGraphCompiler";
+import {ResourceManager} from "./resourceManager";
+import {RenderCommand} from "./renderCommand";
 
+export class RenderGraph<TContext> {
 
-export abstract class RenderGraph {
-
+    private readonly sorter: RenderGraphSorter;
+    private readonly resourceManager: ResourceManager;
+    private readonly compiler: RenderGraphCompiler<any>;
     private readonly nodes: AbstractRenderNode[];
-    private commands: RenderCommand<RenderContext>[] | null = null;
-    private resourceManager: ResourceManager | null = null;
+    private commands: RenderCommand<any, any>[] = [];
+    private context: TContext | null = null;
 
-    protected constructor(nodes: AbstractRenderNode[]) {
-        this.nodes = nodes;
+    constructor(props: {
+        sorter: RenderGraphSorter,
+        resourceManager: ResourceManager,
+        compiler: RenderGraphCompiler<any>,
+        nodes: AbstractRenderNode[]
+    }) {
+        this.sorter = props.sorter;
+        this.resourceManager = props.resourceManager;
+        this.compiler = props.compiler;
+        this.nodes = props.nodes;
     }
 
-    public compile(compiler: RenderGraphCompiler<RenderContext>, resourceManager: ResourceManager) {
-        this.resourceManager = resourceManager;
-        this.commands = compiler.compile(this.nodes);
-    }
-
-    public initialize() {
-        if (this.resourceManager !== null) {
-            this.resourceManager.initialize(this.collectDeclaredResources(this.nodes));
-        } else {
-            throw new Error("Cannot initialize graph. Graph has not been compiled yet.");
-        }
+    public initialize(context: TContext) {
+        this.context = context;
+        const sortedNodes = this.sorter.sort(this.nodes);
+        this.resourceManager.initialize(sortedNodes);
+        this.commands = this.compiler.compile(sortedNodes);
     }
 
     public execute() {
-        if (this.commands !== null && this.resourceManager !== null) {
-            for (let i = 0; i < this.commands.length; i++) {
-                const command = this.commands[i];
-                command.execute(this.resourceManager);
-            }
-        } else {
-            throw new Error("Cannot execute graph. Graph has not been compiled yet.");
+        if(this.context === null) {
+            throw new Error("Render graph not initialized.")
+        }
+        const commands = this.commands;
+        const context = this.context;
+        const resourceManager = this.resourceManager;
+        for (let i = 0, n = commands.length; i < n; i++) {
+            const command = commands[i];
+            command.execute(resourceManager, context);
         }
     }
 
     public dispose() {
-        if (this.resourceManager !== null) {
-            this.resourceManager.dispose();
-        } else {
-            throw new Error("Cannot dispose graph. Graph has not been compiled yet.");
-        }
-    }
-
-    private collectDeclaredResources(nodes: AbstractRenderNode[]): RenderNodeResourceEntry[] {
-        const entries: RenderNodeResourceEntry[] = [];
-        for (let node of nodes) {
-            for (let input of node.getConfig().inputs) {
-                switch (input.type) {
-                    case "vertexdata": {
-                        const config = input as VertexDataConfig;
-                        if (!entries.some(e => e.type === "vertexdata" && e.name === config.name)) {
-                            entries.push(config);
-                        }
-                        break;
-                    }
-                    case "render-target": {
-                        const config = input as RenderTargetConfig;
-                        if (!entries.some(e => e.type === "render-target" && e.name === config.name)) {
-                            entries.push(config);
-                        }
-                        break;
-                    }
-                    case "texture": {
-                        const config = input as TextureConfig;
-                        if (!entries.some(e => e.type === "texture" && e.path === config.path)) {
-                            entries.push(config);
-                        }
-                        break;
-                    }
-                    case "shader": {
-                        const config = input as ShaderConfig;
-                        if (!entries.some(e => e.type === "shader" && e.vertex === config.vertex && e.fragment === config.fragment)) {
-                            entries.push(config);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        return entries;
+        this.resourceManager.dispose();
+        this.commands = [];
+        this.context = null;
     }
 
 }

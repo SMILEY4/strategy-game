@@ -47,6 +47,12 @@ export class TextureBindingHandler {
      * @return number the assigned texture unit
      */
     public requestUnit(name: string, lockedNames: string[]): number {
+        // find unit already used for name
+        for (let unitInfo of this.units) {
+            if (unitInfo.used && unitInfo.boundName === name) {
+                return unitInfo.unit;
+            }
+        }
         // find unused unit
         for (let unitInfo of this.units) {
             if (!unitInfo.used) {

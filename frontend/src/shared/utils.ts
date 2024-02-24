@@ -91,3 +91,13 @@ export function shuffleArray<T>(array: T[]) {
         array[j] = temp;
     }
 }
+
+export type BuildMapContent<V> = Record<string, V>
+
+export function buildMap<K, V>(content: BuildMapContent<V>) {
+    const map = new Map<string, V>();
+    for (const [key, value] of Object.entries(content)) {
+        map.set(key, value);
+    }
+    return map;
+}
