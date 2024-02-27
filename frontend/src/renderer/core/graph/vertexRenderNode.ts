@@ -15,7 +15,7 @@ export abstract class VertexRenderNode extends AbstractRenderNode {
     }
 
     /**
-     * Update vertex data
+     * Update vertex data each frame
      * @return updated only the updated vertex buffers. Return an empty map to not modify any data.
      * The keys must be defined in the config of this node
      */

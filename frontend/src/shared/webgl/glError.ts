@@ -39,7 +39,7 @@ export namespace GLError {
                 return "CONTEXT_LOST_WEBGL";
             }
             default: {
-                return "UNKNOWN_ERROR(" + code + ")";
+                return "UNKNOWN_ERROR_" + code;
             }
         }
     }

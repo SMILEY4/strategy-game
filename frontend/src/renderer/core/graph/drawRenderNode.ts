@@ -24,7 +24,6 @@ export interface DrawRenderNodeConfig {
 
 export namespace DrawRenderNodeInput {
 
-
     export type Type = VertexData | Shader | Texture | RenderTarget | Property
 
     export class VertexData {
@@ -89,7 +88,7 @@ export namespace DrawRenderNodeInput {
 
 export namespace DrawRenderNodeOutput {
 
-    export type Type = RenderTarget
+    export type Type = RenderTarget | Screen
 
     export class RenderTarget {
         readonly renderTargetId: string;
@@ -97,6 +96,9 @@ export namespace DrawRenderNodeOutput {
         constructor(props: { renderTargetId: string }) {
             this.renderTargetId = props.renderTargetId;
         }
+    }
+
+    export class Screen {
     }
 
 }

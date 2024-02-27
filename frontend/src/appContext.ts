@@ -29,10 +29,7 @@ import {TileDatabase} from "./state/tileDatabase";
 import {MonitoringRepository} from "./state/monitoringRepository";
 import {UserRepository} from "./state/userRepository";
 import {MarkerService} from "./logic/game/markerService";
-import {GameRendererV2} from "./rendererV2/gameRendererV2";
-import {RenderDataUpdater} from "./rendererV2/data/renderDataUpdater";
-import {RenderDataManager} from "./rendererV2/data/renderDataManager";
-import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
+import {GameRenderer} from "./renderer/game/gameRenderer";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -62,10 +59,7 @@ interface AppCtxDef {
     GameLoopService: () => GameLoopService,
 
     WebGLMonitor: () => WebGLMonitor,
-    GameRenderer: () => GameRendererV2,
-    RenderEntityCollector: () => RenderEntityCollector,
-    RenderDataUpdater: () => RenderDataUpdater,
-    RenderDataManager: () => RenderDataManager,
+    GameRenderer: () => GameRenderer,
 
     CanvasHandle: () => CanvasHandle,
 
@@ -205,38 +199,12 @@ export const AppCtx: AppCtxDef = {
     ),
     GameRenderer: diContext.register(
         "GameRenderer",
-        () => new GameRendererV2(
+        () => new GameRenderer(
             AppCtx.CanvasHandle(),
-            AppCtx.WebGLMonitor(),
-            AppCtx.MonitoringRepository(),
             AppCtx.CameraDatabase(),
-            AppCtx.RenderDataManager(),
-        ),
-    ),
-    RenderEntityCollector: diContext.register(
-        "RenderEntityCollector",
-        () => new RenderEntityCollector(
             AppCtx.TileDatabase(),
-            AppCtx.CommandDatabase(),
         ),
     ),
-    RenderDataUpdater: diContext.register(
-        "RenderDataUpdater",
-        () => new RenderDataUpdater(
-            AppCtx.GameSessionDatabase(),
-            AppCtx.TileDatabase(),
-            AppCtx.CityDatabase(),
-            AppCtx.CommandDatabase(),
-        ),
-    ),
-    RenderDataManager: diContext.register(
-        "RenderDataManager",
-        () => new RenderDataManager(
-            AppCtx.CanvasHandle(),
-            AppCtx.RenderDataUpdater(),
-        ),
-    ),
-
 
     CanvasHandle: diContext.register(
         "CanvasHandle",

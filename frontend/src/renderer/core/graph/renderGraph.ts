@@ -26,6 +26,7 @@ export class RenderGraph<TContext> {
     }
 
     public initialize(context: TContext) {
+        console.log("Initialize render graph");
         this.context = context;
         const sortedNodes = this.sorter.sort(this.nodes);
         this.resourceManager.initialize(sortedNodes);
@@ -33,8 +34,8 @@ export class RenderGraph<TContext> {
     }
 
     public execute() {
-        if(this.context === null) {
-            throw new Error("Render graph not initialized.")
+        if (this.context === null) {
+            throw new Error("Render graph not initialized.");
         }
         const commands = this.commands;
         const context = this.context;
@@ -46,9 +47,16 @@ export class RenderGraph<TContext> {
     }
 
     public dispose() {
+        console.log("Dispose render graph");
         this.resourceManager.dispose();
         this.commands = [];
         this.context = null;
+    }
+
+    public updateContext(action: (context: TContext) => TContext) {
+        if (this.context) {
+            this.context = action(this.context);
+        }
     }
 
 }

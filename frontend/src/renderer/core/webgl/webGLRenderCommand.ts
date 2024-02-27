@@ -2,14 +2,16 @@ import {RenderCommand} from "../graph/renderCommand";
 import {WebGLResourceManager} from "./webGLResourceManager";
 import {GLFramebuffer} from "../../../shared/webgl/glFramebuffer";
 import {ProgramUniformEntry} from "./programUniformEntry";
-import {VertexDataResource} from "../graph/vertexRenderNode";
+import {VertexDataResource, VertexRenderNode} from "../graph/vertexRenderNode";
 import {BaseRenderer} from "../../../shared/webgl/baseRenderer";
+import {Camera} from "../../../shared/webgl/camera";
 
 export namespace WebGLRenderCommand {
 
     export interface Context {
         gl: WebGL2RenderingContext,
-        renderer: BaseRenderer
+        renderer: BaseRenderer,
+        camera: Camera
     }
 
     /**
@@ -23,19 +25,18 @@ export namespace WebGLRenderCommand {
      * Update data of a vertex buffer
      */
     export class UpdateVertexBufferData implements Base {
-        private readonly action: () => VertexDataResource;
+        private readonly node: VertexRenderNode;
 
-        constructor(action: () => VertexDataResource) {
-            this.action = action;
+        constructor(node: VertexRenderNode) {
+            this.node = node;
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            const modified = this.action();
+            const modified = this.node.execute();
             if (modified.buffers.size > 0) {
                 for (let [modifiedId, modifiedData] of modified.buffers) {
                     const buffer = resourceManager.getVertexBuffer(modifiedId).buffer;
-                    buffer.bind();
-                    buffer.setData(modifiedData.data);
+                    buffer.setData(modifiedData.data, true);
                 }
             }
             if (modified.outputs.size > 0) {
@@ -61,7 +62,9 @@ export namespace WebGLRenderCommand {
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            resourceManager.getFramebuffer(this.name).framebuffer.bind();
+            const framebuffer = resourceManager.getFramebuffer(this.name).framebuffer
+            framebuffer.bind();
+            framebuffer.resize(context.camera.getWidth(), context.camera.getHeight())
         }
     }
 
@@ -128,7 +131,7 @@ export namespace WebGLRenderCommand {
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             const programId = resourceManager.getProgramId(this.vertex, this.fragment);
-            resourceManager.getVertexData(this.name).vertexArrays.get(programId)?.bind();
+            resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.bind();
         }
     }
 
@@ -149,7 +152,7 @@ export namespace WebGLRenderCommand {
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             const programId = resourceManager.getProgramId(this.vertex, this.fragment);
-            resourceManager.getVertexData(this.name).vertexArrays.get(programId)?.unbind();
+            resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.unbind();
 
         }
     }
@@ -215,6 +218,7 @@ export namespace WebGLRenderCommand {
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
+            context.renderer.prepareFrame(context.camera)
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
                 case "basic": {

@@ -8,8 +8,8 @@ import {TilemapUtils} from "../../../../logic/game/tilemapUtils";
 import {TerrainType} from "../../../../models/terrainType";
 import {BorderBuilder} from "../../../../logic/game/borderBuilder";
 import {getHiddenOrNull} from "../../../../models/hiddenType";
-import {packBorder} from "../../../../renderer/data/builders/tilemap/packBorder";
 import {TileVisibility} from "../../../../models/tileVisibility";
+import {packBorder} from "../../../../rendererV1/data/builders/tilemap/packBorder";
 
 export namespace WaterInstanceBaseDataBuilder {
 

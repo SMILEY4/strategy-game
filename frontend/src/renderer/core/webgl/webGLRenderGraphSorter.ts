@@ -94,7 +94,6 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
      */
     private getOutputRenderTargetIds(renderNode: AbstractRenderNode): string[] {
         if (renderNode instanceof DrawRenderNode) {
-            // noinspection SuspiciousTypeOfGuard
             return renderNode.config.output
                 .filter(e => e instanceof DrawRenderNodeOutput.RenderTarget)
                 .map(e => (e as DrawRenderNodeOutput.RenderTarget).renderTargetId);

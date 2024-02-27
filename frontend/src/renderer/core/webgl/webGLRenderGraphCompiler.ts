@@ -41,9 +41,12 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
                 if (shaderInputCount !== 1) {
                     return [false, "draw-render-node " + node.id + " has amount of shader-inputs =/= 1 "];
                 }
-                // noinspection SuspiciousTypeOfGuard
+                const screenOutputCount = node.config.output.count(it => it instanceof DrawRenderNodeOutput.Screen);
+                if (screenOutputCount > 1) {
+                    return [false, "draw-render-node " + node.id + " has amount of screen outputs > 1 "];
+                }
                 const renderTargetOutputCount = node.config.output.count(it => it instanceof DrawRenderNodeOutput.RenderTarget);
-                if (renderTargetOutputCount !== 1) {
+                if (screenOutputCount === 0 && renderTargetOutputCount !== 1) {
                     return [false, "draw-render-node " + node.id + " has amount of render-target outputs =/= 1 "];
                 }
             }
@@ -54,6 +57,8 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
     public compile(nodes: AbstractRenderNode[]): WebGLRenderCommand.Base[] {
         const commands: WebGLRenderCommand.Base[] = [];
         const textureBindingHandler = new TextureBindingHandler(8);
+
+        this.compileSetup(commands)
 
         for (let node of nodes) {
             if (node instanceof VertexRenderNode) {
@@ -67,9 +72,12 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         return commands;
     }
 
+    private compileSetup(outCommands: WebGLRenderCommand.Base[]) {
+        // todo: resize framebuffers
+    }
 
     private compileVertex(node: VertexRenderNode, outCommands: WebGLRenderCommand.Base[]) {
-        outCommands.push(new WebGLRenderCommand.UpdateVertexBufferData(node.execute));
+        outCommands.push(new WebGLRenderCommand.UpdateVertexBufferData(node));
     }
 
     private compileDraw(node: DrawRenderNode, textureBindingHandler: TextureBindingHandler, outCommands: WebGLRenderCommand.Base[]) {
@@ -93,7 +101,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
         // bind framebuffer
         for (let output of node.config.output) {
-            // noinspection SuspiciousTypeOfGuard
             if (output instanceof DrawRenderNodeOutput.RenderTarget) {
                 outCommands.push(new WebGLRenderCommand.BindFramebuffer(output.renderTargetId));
             }
@@ -114,7 +121,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         }
 
         // use shader
-        outCommands.push(new WebGLRenderCommand.UseShader(inputShader.vertexId, inputShader.vertexId));
+        outCommands.push(new WebGLRenderCommand.UseShader(inputShader.vertexId, inputShader.fragmentId));
 
         // set uniforms
         const uniforms: ProgramUniformEntry[] = [];
@@ -124,7 +131,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
                     valueConstant: input.valueConstant,
                     valueProvider: input.valueProvider,
                     binding: input.binding,
-                    type: GLUniformType.INT,
+                    type: input.type,
                 }));
             }
             if (input instanceof DrawRenderNodeInput.Texture) {
@@ -146,7 +153,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
                 }));
             }
         }
-        if (uniforms) {
+        if (uniforms.length > 0) {
             outCommands.push(new WebGLRenderCommand.SetUniforms(uniforms, inputShader.vertexId, inputShader.fragmentId));
         }
 
@@ -161,7 +168,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
         // unbind framebuffer
         for (let output of node.config.output) {
-            // noinspection SuspiciousTypeOfGuard
             if (output instanceof DrawRenderNodeOutput.RenderTarget) {
                 outCommands.push(new WebGLRenderCommand.UnbindFramebuffer());
             }

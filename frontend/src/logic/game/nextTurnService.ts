@@ -33,12 +33,10 @@ import {TerrainResourceType} from "../../models/terrainResourceType";
 import {TileVisibility} from "../../models/tileVisibility";
 import {Route} from "../../models/route";
 import {ResourceLedger} from "../../models/resourceLedger";
-import {GameRenderDataBuilder} from "../../renderer/game/gameRenderDataBuilder";
 
 export class NextTurnService {
 
     private readonly gameLoopService: GameLoopService;
-    private readonly renderDataBuilder: GameRenderDataBuilder;
 
     private readonly monitoringRepository: MonitoringRepository;
 
@@ -53,7 +51,6 @@ export class NextTurnService {
 
     constructor(
         gameLoopService: GameLoopService,
-        renderDataBuilder: GameRenderDataBuilder,
         gameSessionDb: GameSessionDatabase,
         monitoringRepository: MonitoringRepository,
         cityDb: CityDatabase,
@@ -63,7 +60,6 @@ export class NextTurnService {
         tileDb: TileDatabase,
     ) {
         this.gameLoopService = gameLoopService;
-        this.renderDataBuilder = renderDataBuilder;
         this.gameSessionDb = gameSessionDb;
         this.monitoringRepository = monitoringRepository;
         this.cityDb = cityDb;
@@ -132,7 +128,6 @@ export class NextTurnService {
             objects: HiddenType.hidden(),
             renderData: null,
         };
-        tile.renderData = this.renderDataBuilder.tile(tile);
         return tile;
     }
 
@@ -197,7 +192,6 @@ export class NextTurnService {
             }),
             renderData: null,
         };
-        tile.renderData = this.renderDataBuilder.tile(tile);
         return tile;
     }
 

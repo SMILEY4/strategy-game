@@ -7,7 +7,7 @@ import {CameraDatabase} from "../../state/cameraDatabase";
 import {getHiddenOrDefault} from "../../models/hiddenType";
 import {CityTileObject} from "../../models/tileObject";
 import {UseCityWindow} from "../../ui/pages/ingame/windows/city/useCityWindow";
-import {GameRendererV2} from "../../rendererV2/gameRendererV2";
+import {GameRenderer} from "../../renderer/game/gameRenderer";
 
 export class GameLoopService {
 
@@ -15,7 +15,7 @@ export class GameLoopService {
     private readonly cameraDb: CameraDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly tilePicker: TilePicker;
-    private readonly gameRenderer: GameRendererV2;
+    private readonly gameRenderer: GameRenderer;
     private readonly audioService: AudioService;
 
 
@@ -24,7 +24,7 @@ export class GameLoopService {
         tilePicker: TilePicker,
         cameraDb: CameraDatabase,
         gameSessionDb: GameSessionDatabase,
-        gameRenderer: GameRendererV2,
+        gameRenderer: GameRenderer,
         audioService: AudioService,
     ) {
         this.canvasHandle = canvasHandle;

@@ -123,6 +123,7 @@ export class WebGLResourceManager implements ResourceManager {
             vertexArrays: vertexArrays,
         };
         this.vertexData.set(managedVertexData.id, managedVertexData);
+        console.log("Loaded vertex-data with id", managedVertexData.id)
         return managedVertexData;
     }
 
@@ -134,7 +135,8 @@ export class WebGLResourceManager implements ResourceManager {
             id: id,
             buffer: GLVertexBuffer.createEmpty(this.gl),
         };
-        this.vertexBuffers.set(id, managedBuffer);
+        this.vertexBuffers.set(managedBuffer.id, managedBuffer);
+        console.log("Loaded vertex-buffer with id", managedBuffer.id)
         return managedBuffer;
     }
 
@@ -152,6 +154,7 @@ export class WebGLResourceManager implements ResourceManager {
             program: GLProgram.create(this.gl, srcVertex, srcFragment),
         };
         this.shaders.set(managedProgram.id, managedProgram);
+        console.log("Loaded shader program with id", managedProgram.id)
         return managedProgram;
     }
 
@@ -165,6 +168,7 @@ export class WebGLResourceManager implements ResourceManager {
             texture: GLTexture.createFromPath(this.gl, path),
         };
         this.textures.set(managedTexture.id, managedTexture);
+        console.log("Loaded texture with id", managedTexture.id)
         return managedTexture;
     }
 
@@ -178,6 +182,7 @@ export class WebGLResourceManager implements ResourceManager {
             framebuffer: GLFramebuffer.create(this.gl, 1, 1),
         };
         this.framebuffers.set(managedFramebuffer.id, managedFramebuffer);
+        console.log("Loaded framebuffer with id", managedFramebuffer.id)
         return managedFramebuffer;
     }
 
@@ -273,7 +278,7 @@ export namespace WebGLResourceManager {
         vertexCount: number,
         instanceCount: number,
         buffers: Map<string, ManagedVertexBuffer>,
-        vertexArrays: Map<string, GLVertexArray> // map from program-id program to va
+        vertexArrays: Map<string, GLVertexArray>
     }
 
     export interface ManagedProgram {
