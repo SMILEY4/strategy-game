@@ -29,12 +29,16 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
             resourceManager: new WebGLResourceManager(gl, new GameShaderSourceManager()),
             compiler: new WebGLRenderGraphCompiler(),
             nodes: [
+                // common
+                new VertexFullQuadNode(),
                 // game
                 new VertexTilesNode(tileDb),
                 new DrawTilesWaterNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawTilesLandNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawTilesFogNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawCombineLayersNode(),
                 // debug
-                new VertexFullQuadNode(),
-                new DrawRenderTargetToScreenNode("rendertarget.tileswater")
+                // new DrawRenderTargetToScreenNode("rendertarget.tilesfog")
             ],
         });
         this.gl = gl;

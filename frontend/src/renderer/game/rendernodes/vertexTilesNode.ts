@@ -17,9 +17,6 @@ import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
 
 export class VertexTilesNode extends VertexRenderNode {
 
-    private static readonly COLOR_LAND_LIGHT: [number, number, number] = [0.561, 0.557, 0.345];
-    private static readonly COLOR_LAND_DARK: [number, number, number] = [0.447, 0.459, 0.341];
-
     private static readonly COLOR_FOW_LIGHT: [number, number, number] = [0.1, 0.1, 0.1];
     private static readonly COLOR_FOW_DARK: [number, number, number] = [0.09, 0.09, 0.09];
 
@@ -67,14 +64,7 @@ export class VertexTilesNode extends VertexRenderNode {
             type: GLAttributeType.FLOAT,
             amountComponents: 2,
             divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.tileland",
-            name: "in_color",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 4,
-            divisor: 1,
-        },
+        }
     ];
 
     //===== WATER INSTANCES =========================================
@@ -108,8 +98,6 @@ export class VertexTilesNode extends VertexRenderNode {
     private static readonly FOG_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
-        // color (r,g,b,a)
-        ...MixedArrayBufferType.VEC4,
     ];
 
     private static readonly FOG_ATTRIBUTES: VertexDataAttributeConfig[] = [
@@ -118,13 +106,6 @@ export class VertexTilesNode extends VertexRenderNode {
             name: "in_worldPosition",
             type: GLAttributeType.FLOAT,
             amountComponents: 2,
-            divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.tilefog",
-            name: "in_color",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 4,
             divisor: 1,
         },
     ];
@@ -278,13 +259,6 @@ export class VertexTilesNode extends VertexRenderNode {
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         cursor.append(center[0]);
         cursor.append(center[1]);
-
-        // ground color
-        let color = [...this.mix(VertexTilesNode.COLOR_FOW_LIGHT, VertexTilesNode.COLOR_FOW_DARK, Math.random()), 1];
-        cursor.append(color[0]);
-        cursor.append(color[1]);
-        cursor.append(color[2]);
-        cursor.append(color[3]);
     }
 
     //===== WATER INSTANCES =========================================
@@ -326,13 +300,6 @@ export class VertexTilesNode extends VertexRenderNode {
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         cursor.append(center[0]);
         cursor.append(center[1]);
-
-        // ground color
-        let color = [...this.mix(VertexTilesNode.COLOR_LAND_LIGHT, VertexTilesNode.COLOR_LAND_DARK, Math.random()), 1];
-        cursor.append(color[0]);
-        cursor.append(color[1]);
-        cursor.append(color[2]);
-        cursor.append(color[3]);
     }
 
 

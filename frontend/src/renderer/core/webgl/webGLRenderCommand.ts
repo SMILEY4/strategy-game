@@ -218,7 +218,7 @@ export namespace WebGLRenderCommand {
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            context.renderer.prepareFrame(context.camera)
+            context.renderer.prepareFrame(context.camera, [0, 0, 0, 0])
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
                 case "basic": {

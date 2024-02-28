@@ -29,7 +29,6 @@ export class DrawTilesWaterNode extends DrawRenderNode {
                 new DrawRenderNodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.tileswater",
                 }),
-                // new DrawRenderNodeOutput.Screen()
             ],
         });
     }
