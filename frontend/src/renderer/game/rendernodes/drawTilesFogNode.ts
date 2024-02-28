@@ -7,6 +7,9 @@ export class DrawTilesFogNode extends DrawRenderNode {
         super({
             id: "drawnode.tilesfog",
             input: [
+                new DrawRenderNodeInput.ClearColor({
+                    clearColor: [0, 0, 0, 0],
+                }),
                 new DrawRenderNodeInput.Texture({
                     path: "/groundSplotches.png",
                     binding: "u_texture",

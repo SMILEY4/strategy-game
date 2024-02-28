@@ -10,6 +10,7 @@ in vec2 v_textureCoordinates;
 out vec4 outColor;
 
 vec4 framebuffer(sampler2D fb, vec2 coords) {
+    // reverse pre-multiplied alpha
     vec4 color = texture(fb, coords);
     return vec4(color.a > 0.0 ? color.rgb / color.a : vec3(0.0), color.a);
 }

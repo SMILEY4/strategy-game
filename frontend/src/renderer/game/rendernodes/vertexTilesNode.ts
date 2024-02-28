@@ -17,10 +17,6 @@ import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
 
 export class VertexTilesNode extends VertexRenderNode {
 
-    private static readonly COLOR_FOW_LIGHT: [number, number, number] = [0.1, 0.1, 0.1];
-    private static readonly COLOR_FOW_DARK: [number, number, number] = [0.09, 0.09, 0.09];
-
-
     //==== BASE MESH ================================================
 
     private static readonly MESH_VERTEX_COUNT = 6 * 3;

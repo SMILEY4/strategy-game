@@ -9,7 +9,7 @@ export class BaseRenderer {
         this.gl = gl;
     }
 
-    public prepareFrame(camera: Camera, clearColor?: [number, number, number, number]) {
+    public prepareFrame(camera: Camera, clearColor?: [number, number, number, number], renderToTexture?: boolean) {
         this.gl.viewport(0, 0, camera.getWidth(), camera.getHeight());
         if (clearColor) {
             this.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
@@ -18,9 +18,12 @@ export class BaseRenderer {
         }
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        this.gl.blendEquation(this.gl.FUNC_ADD)
-        this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+        this.gl.blendEquation(this.gl.FUNC_ADD);
+        if (renderToTexture) {
+            this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE);
+        } else {
+            this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+        }
         GLError.check(this.gl, "[gl-setup]", "preparing current frame");
     }
 

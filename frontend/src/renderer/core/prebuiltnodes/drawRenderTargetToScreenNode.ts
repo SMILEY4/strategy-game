@@ -10,6 +10,10 @@ export class DrawRenderTargetToScreenNode extends DrawRenderNode {
         super({
             id: "drawnode.rendertarget2screen",
             input: [
+                new DrawRenderNodeInput.ClearColor({
+                    clearColor: [0, 0, 0, 1],
+                    blendMode: "separate"
+                }),
                 new DrawRenderNodeInput.Shader({
                     vertexId: DrawRenderTargetToScreenNode.SHADER_ID_VERTEX,
                     fragmentId: DrawRenderTargetToScreenNode.SHADER_ID_FRAGMENT,

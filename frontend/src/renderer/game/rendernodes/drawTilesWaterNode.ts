@@ -7,6 +7,9 @@ export class DrawTilesWaterNode extends DrawRenderNode {
         super({
             id: "drawnode.tileswater",
             input: [
+                new DrawRenderNodeInput.ClearColor({
+                    clearColor: [0, 0, 0, 0],
+                }),
                 new DrawRenderNodeInput.Texture({
                     path: "/groundSplotches.png",
                     binding: "u_texture",

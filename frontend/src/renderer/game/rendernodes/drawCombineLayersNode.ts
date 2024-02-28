@@ -7,6 +7,9 @@ export class DrawCombineLayersNode extends DrawRenderNode {
         super({
             id: "drawnode.combinelayers",
             input: [
+                new DrawRenderNodeInput.ClearColor({
+                    clearColor: [0, 0, 0, 1],
+                }),
                 new DrawRenderNodeInput.Shader({
                     vertexId: "combine.vert",
                     fragmentId: "combine.frag",

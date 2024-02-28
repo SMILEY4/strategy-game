@@ -24,7 +24,7 @@ export interface DrawRenderNodeConfig {
 
 export namespace DrawRenderNodeInput {
 
-    export type Type = VertexData | Shader | Texture | RenderTarget | Property
+    export type Type = VertexData | Shader | Texture | RenderTarget | Property | ClearColor
 
     export class VertexData {
         readonly vertexDataId: string;
@@ -81,6 +81,14 @@ export namespace DrawRenderNodeInput {
             this.valueProvider = props.valueProvider;
             this.type = props.type;
             this.binding = props.binding;
+        }
+    }
+
+    export class ClearColor {
+        readonly clearColor: [number, number, number, number]
+
+        constructor(props: {clearColor: [number, number, number, number]}) {
+            this.clearColor = props.clearColor;
         }
     }
 

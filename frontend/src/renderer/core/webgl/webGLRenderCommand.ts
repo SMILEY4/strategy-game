@@ -211,14 +211,17 @@ export namespace WebGLRenderCommand {
     export class Draw implements Base {
 
         private readonly vertexDataId: string;
+        private readonly renderToTexture: boolean
+        private readonly clearColor: [number, number, number, number]
 
-
-        constructor(vertexDataId: string) {
+        constructor(vertexDataId: string, clearColor: [number, number, number, number], renderToTexture: boolean) {
             this.vertexDataId = vertexDataId;
+            this.clearColor = clearColor;
+            this.renderToTexture= renderToTexture;
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            context.renderer.prepareFrame(context.camera, [0, 0, 0, 0])
+            context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture)
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
                 case "basic": {

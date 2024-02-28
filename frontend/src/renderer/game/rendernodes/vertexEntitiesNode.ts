@@ -1,6 +1,5 @@
 import {
     VertexBufferResource,
-    VertexDataAttributeConfig,
     VertexDataResource,
     VertexRenderNode,
 } from "../../core/graph/vertexRenderNode";

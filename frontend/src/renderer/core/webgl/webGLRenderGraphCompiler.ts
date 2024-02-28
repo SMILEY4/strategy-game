@@ -58,8 +58,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         const commands: WebGLRenderCommand.Base[] = [];
         const textureBindingHandler = new TextureBindingHandler(8);
 
-        this.compileSetup(commands)
-
         for (let node of nodes) {
             if (node instanceof VertexRenderNode) {
                 this.compileVertex(node, commands);
@@ -70,10 +68,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         }
 
         return commands;
-    }
-
-    private compileSetup(outCommands: WebGLRenderCommand.Base[]) {
-        // todo: resize framebuffers
     }
 
     private compileVertex(node: VertexRenderNode, outCommands: WebGLRenderCommand.Base[]) {
@@ -100,9 +94,11 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         const inputVertexData = node.config.input.find(e => e instanceof DrawRenderNodeInput.VertexData)! as DrawRenderNodeInput.VertexData;
 
         // bind framebuffer
+        let renderToTexture = false;
         for (let output of node.config.output) {
             if (output instanceof DrawRenderNodeOutput.RenderTarget) {
                 outCommands.push(new WebGLRenderCommand.BindFramebuffer(output.renderTargetId));
+                renderToTexture = true;
             }
         }
 
@@ -161,7 +157,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         outCommands.push(new WebGLRenderCommand.BindVertexArray(inputVertexData.vertexDataId, inputShader.vertexId, inputShader.fragmentId));
 
         // draw call
-        outCommands.push(new WebGLRenderCommand.Draw(inputVertexData.vertexDataId));
+        outCommands.push(new WebGLRenderCommand.Draw(inputVertexData.vertexDataId, this.getClearColor(node), renderToTexture));
 
         // unbind vertex arrays
         outCommands.push(new WebGLRenderCommand.UnbindVertexArray(inputVertexData.vertexDataId, inputShader.vertexId, inputShader.fragmentId));
@@ -171,6 +167,15 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
             if (output instanceof DrawRenderNodeOutput.RenderTarget) {
                 outCommands.push(new WebGLRenderCommand.UnbindFramebuffer());
             }
+        }
+    }
+
+    private getClearColor(node: DrawRenderNode): [number, number, number, number] {
+        const config = node.config.input.find(e => e instanceof DrawRenderNodeInput.ClearColor)
+        if(config) {
+            return (config as DrawRenderNodeInput.ClearColor).clearColor
+        } else {
+            return [0,0,0,1]
         }
     }
 
