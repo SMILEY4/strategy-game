@@ -26,6 +26,10 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                     renderTargetId: "rendertarget.tilesfog",
                     binding: "u_fog"
                 }),
+                new DrawRenderNodeInput.RenderTarget({
+                    renderTargetId: "rendertarget.entities",
+                    binding: "u_entities"
+                }),
                 new DrawRenderNodeInput.VertexData({
                     id: VertexFullQuadNode.DATA_ID,
                 }),

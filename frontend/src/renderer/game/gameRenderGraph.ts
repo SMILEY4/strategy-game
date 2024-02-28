@@ -14,6 +14,8 @@ import {DrawCombineLayersNode} from "./rendernodes/drawCombineLayersNode";
 import {GameShaderSourceManager} from "./shaders/gameShaderSourceManager";
 import {VertexFullQuadNode} from "../core/prebuiltnodes/vertexFullquadNode";
 import {DrawRenderTargetToScreenNode} from "../core/prebuiltnodes/drawRenderTargetToScreenNode";
+import {VertexEntitiesNode} from "./rendernodes/vertexEntitiesNode";
+import {DrawEntitiesNode} from "./rendernodes/drawEntitiesNode";
 
 
 export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
@@ -33,12 +35,14 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 new VertexFullQuadNode(),
                 // game
                 new VertexTilesNode(tileDb),
+                new VertexEntitiesNode(tileDb),
                 new DrawTilesWaterNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesLandNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesFogNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawEntitiesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawCombineLayersNode(),
                 // debug
-                // new DrawRenderTargetToScreenNode("rendertarget.tilesfog")
+                // new DrawRenderTargetToScreenNode("rendertarget.entities")
             ],
         });
         this.gl = gl;

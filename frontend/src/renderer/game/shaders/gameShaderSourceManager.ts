@@ -9,6 +9,8 @@ import SHADER_FOG_VERT from "./fog.vsh?raw";
 import SHADER_FOG_FRAG from "./fog.fsh?raw";
 import SHADER_COMBINE_VERT from "./combine.vsh?raw";
 import SHADER_COMBINE_FRAG from "./combine.fsh?raw";
+import SHADER_ENTITIES_VERT from "./entities.vsh?raw";
+import SHADER_ENTITIES_FRAG from "./entities.fsh?raw";
 import SHADER_RT2SCREEN_VERT from "../../core/prebuiltnodes/rendertarget2screen.vsh?raw";
 import SHADER_RT2SCREEN_FRAG from "../../core/prebuiltnodes/rendertarget2screen.fsh?raw";
 
@@ -26,6 +28,10 @@ export class GameShaderSourceManager extends WebGLShaderSourceManager {
 
         this.register("fog.vert", SHADER_FOG_VERT)
         this.register("fog.frag", SHADER_FOG_FRAG)
+
+        this.register("entities.vert", SHADER_ENTITIES_VERT)
+        this.register("entities.frag", SHADER_ENTITIES_FRAG)
+
 
         this.register("combine.vert", SHADER_COMBINE_VERT)
         this.register("combine.frag", SHADER_COMBINE_FRAG)
