@@ -30,6 +30,14 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                     renderTargetId: "rendertarget.entities",
                     binding: "u_entities"
                 }),
+                new DrawRenderNodeInput.RenderTarget({
+                    renderTargetId: "rendertarget.routes",
+                    binding: "u_routes"
+                }),
+                new DrawRenderNodeInput.RenderTarget({
+                    renderTargetId: "rendertarget.overlay",
+                    binding: "u_overlay"
+                }),
                 new DrawRenderNodeInput.VertexData({
                     id: VertexFullQuadNode.DATA_ID,
                 }),

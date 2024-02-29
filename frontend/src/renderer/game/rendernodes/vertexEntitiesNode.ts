@@ -10,6 +10,7 @@ import {Tile} from "../../../models/tile";
 import {TerrainType} from "../../../models/terrainType";
 import {TerrainResourceType} from "../../../models/terrainResourceType";
 import {TilemapUtils} from "../../../logic/game/tilemapUtils";
+import {buildMap} from "../../../shared/utils";
 
 interface RenderEntity {
     q: number,
@@ -60,9 +61,6 @@ export class VertexEntitiesNode extends VertexRenderNode {
 
     public execute(): VertexDataResource {
 
-        const buffers = new Map<string, VertexBufferResource>();
-        const outputs = new Map<string, { vertexCount: number; instanceCount: number }>();
-
         const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
         const renderEntities = this.collectEntities(tiles)
 
@@ -71,12 +69,17 @@ export class VertexEntitiesNode extends VertexRenderNode {
             this.appendEntity(renderEntities[i], cursor)
         }
 
-        buffers.set("vertexbuffer.entities", new VertexBufferResource(arrayBuffer.getRawBuffer()))
-        outputs.set("vertexdata.entities", { vertexCount: renderEntities.length * 6, instanceCount: 0})
 
         return new VertexDataResource({
-            buffers: buffers,
-            outputs: outputs,
+            buffers: buildMap({
+                "vertexbuffer.entities": new VertexBufferResource(arrayBuffer.getRawBuffer()),
+            }),
+            outputs: buildMap({
+                "vertexdata.entities": {
+                    vertexCount: renderEntities.length * 6,
+                    instanceCount: 0,
+                },
+            }),
         });
     }
 

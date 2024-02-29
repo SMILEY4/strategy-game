@@ -16,6 +16,12 @@ import {VertexFullQuadNode} from "../core/prebuiltnodes/vertexFullquadNode";
 import {DrawRenderTargetToScreenNode} from "../core/prebuiltnodes/drawRenderTargetToScreenNode";
 import {VertexEntitiesNode} from "./rendernodes/vertexEntitiesNode";
 import {DrawEntitiesNode} from "./rendernodes/drawEntitiesNode";
+import {DrawRoutesNode} from "./rendernodes/drawRoutesNode";
+import {VertexRoutesNode} from "./rendernodes/vertexRoutesNode";
+import {RouteDatabase} from "../../state/routeDatabase";
+import {DrawTilesOverlayNode} from "./rendernodes/drawTilesOverlayNode";
+import {VertexOverlayNode} from "./rendernodes/vertexOverlayNode";
+import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 
 
 export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
@@ -25,7 +31,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
 
     private camera: Camera = new Camera();
 
-    constructor(gl: WebGL2RenderingContext, tileDb: TileDatabase) {
+    constructor(gl: WebGL2RenderingContext, tileDb: TileDatabase, routeDb: RouteDatabase, gameSessionDb: GameSessionDatabase) {
         super({
             sorter: new WebGLRenderGraphSorter(),
             resourceManager: new WebGLResourceManager(gl, new GameShaderSourceManager()),
@@ -35,11 +41,15 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 new VertexFullQuadNode(),
                 // game
                 new VertexTilesNode(tileDb),
+                new VertexOverlayNode(tileDb, gameSessionDb),
                 new VertexEntitiesNode(tileDb),
+                new VertexRoutesNode(routeDb),
                 new DrawTilesWaterNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesLandNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesFogNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawTilesOverlayNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawEntitiesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawRoutesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawCombineLayersNode(),
                 // debug
                 // new DrawRenderTargetToScreenNode("rendertarget.entities")

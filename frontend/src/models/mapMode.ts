@@ -5,25 +5,19 @@ import {getHiddenOrDefault, getHiddenOrNull, mapHiddenOrDefault} from "./hiddenT
 export interface MapModeRenderData {
     grayscale: boolean,
     context: (tiles: Tile[]) => any
-    fillColor: (tile: Tile, context: any) => number[],
-    borderColor: (tile: Tile, context: any) => number[],
+    fillColor: (tile: Tile, context: any) => [number, number, number, number],
+    borderColor: (tile: Tile, context: any) => [number, number, number, number],
     borderDefault: boolean,
     borderCheck: (a: Tile, b: Tile) => boolean
 }
 
 export class MapMode {
 
-    private static readonly NO_COLOR = Color.colorToRgbArray(Color.BLACK);
+    private static readonly NO_COLOR: [number, number, number, number] = Color.colorToRgbaArray(Color.BLACK, 0);
 
-    private static toColor(color: Color | null | undefined, alpha?: number) {
+    private static toColor(color: Color | null | undefined, alpha?: number): [number, number, number, number] {
         if (color) {
-            const rgb = Color.colorToRgbArray(color);
-            if (alpha !== undefined && alpha !== null) {
-                rgb[0] *= alpha;
-                rgb[1] *= alpha;
-                rgb[2] *= alpha;
-            }
-            return rgb;
+            return Color.colorToRgbaArray(color, alpha ?? 1.0);
         } else {
             return MapMode.NO_COLOR;
         }

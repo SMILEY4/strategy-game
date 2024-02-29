@@ -14,11 +14,11 @@ export namespace Color {
 
     export const BLACK_PACKED = packRGB(BLACK);
 
-    export function colorToRgbArray(color: Color): number[] {
+    export function colorToRgbArray(color: Color): [number, number, number] {
         return [color.red / 255, color.green / 255, color.blue / 255];
     }
 
-    export function colorToRgbaArray(color: Color, alpha: number): number[] {
+    export function colorToRgbaArray(color: Color, alpha: number): [number, number, number, number] {
         return [color.red / 255, color.green / 255, color.blue / 255, alpha];
     }
 

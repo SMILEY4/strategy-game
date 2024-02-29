@@ -342,12 +342,4 @@ export class VertexTilesNode extends VertexRenderNode {
         }
     }
 
-    private mix(x: [number, number, number], y: [number, number, number], a: number): [number, number, number] {
-        return [
-            x[0] * (1 - a) + y[0] * a,
-            x[1] * (1 - a) + y[1] * a,
-            x[2] * (1 - a) + y[2] * a,
-        ];
-    }
-
 }

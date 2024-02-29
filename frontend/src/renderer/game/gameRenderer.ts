@@ -3,23 +3,29 @@ import {GameRenderGraph} from "./gameRenderGraph";
 import {TileDatabase} from "../../state/tileDatabase";
 import {CameraDatabase} from "../../state/cameraDatabase";
 import {Camera} from "../../shared/webgl/camera";
+import {RouteDatabase} from "../../state/routeDatabase";
+import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 
 export class GameRenderer {
 
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraDb: CameraDatabase;
     private readonly tileDb: TileDatabase;
+    private readonly routeDb: RouteDatabase;
+    private readonly gameSessionDb: GameSessionDatabase;
 
     private renderGraph: GameRenderGraph | null = null;
 
-    constructor(canvasHandle: CanvasHandle, cameraDb: CameraDatabase, tileDb: TileDatabase) {
+    constructor(canvasHandle: CanvasHandle, cameraDb: CameraDatabase, tileDb: TileDatabase, routeDb: RouteDatabase, gameSessionDb: GameSessionDatabase) {
         this.canvasHandle = canvasHandle;
         this.cameraDb = cameraDb;
         this.tileDb = tileDb;
+        this.routeDb = routeDb;
+        this.gameSessionDb= gameSessionDb;
     }
 
     public initialize(): void {
-        this.renderGraph = new GameRenderGraph(this.canvasHandle.getGL(), this.tileDb);
+        this.renderGraph = new GameRenderGraph(this.canvasHandle.getGL(), this.tileDb, this.routeDb, this.gameSessionDb);
         this.renderGraph.initialize();
     }
 
