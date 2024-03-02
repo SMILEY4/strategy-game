@@ -11,6 +11,8 @@ import SHADER_COMBINE_VERT from "./combine.vsh?raw";
 import SHADER_COMBINE_FRAG from "./combine.fsh?raw";
 import SHADER_ENTITIES_VERT from "./entities.vsh?raw";
 import SHADER_ENTITIES_FRAG from "./entities.fsh?raw";
+import SHADER_DETAILS_VERT from "./entities.vsh?raw";
+import SHADER_DETAILS_FRAG from "./entities.fsh?raw";
 import SHADER_ROUTES_VERT from "./routes.vsh?raw";
 import SHADER_ROUTES_FRAG from "./routes.fsh?raw";
 import SHADER_OVERLAY_VERT from "./overlay.vsh?raw";
@@ -35,6 +37,9 @@ export class GameShaderSourceManager extends WebGLShaderSourceManager {
 
         this.register("entities.vert", SHADER_ENTITIES_VERT)
         this.register("entities.frag", SHADER_ENTITIES_FRAG)
+
+        this.register("details.vert", SHADER_DETAILS_VERT)
+        this.register("details.frag", SHADER_DETAILS_FRAG)
 
         this.register("routes.vert", SHADER_ROUTES_VERT)
         this.register("routes.frag", SHADER_ROUTES_FRAG)

@@ -204,7 +204,8 @@ export const AppCtx: AppCtxDef = {
             AppCtx.CameraDatabase(),
             AppCtx.TileDatabase(),
             AppCtx.RouteDatabase(),
-            AppCtx.GameSessionDatabase()
+            AppCtx.GameSessionDatabase(),
+            AppCtx.CommandDatabase()
         ),
     ),
 

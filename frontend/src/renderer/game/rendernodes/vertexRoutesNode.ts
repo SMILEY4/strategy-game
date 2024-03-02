@@ -17,7 +17,7 @@ import {buildMap} from "../../../shared/utils";
 
 export class VertexRoutesNode extends VertexRenderNode {
 
-    private static readonly THICKNESS = 1.6;
+    private static readonly THICKNESS = 1.0;
 
     private static readonly PATTERN = [
         // vertex position

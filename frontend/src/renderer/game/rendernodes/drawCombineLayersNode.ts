@@ -31,6 +31,10 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                     binding: "u_entities"
                 }),
                 new DrawRenderNodeInput.RenderTarget({
+                    renderTargetId: "rendertarget.details",
+                    binding: "u_details"
+                }),
+                new DrawRenderNodeInput.RenderTarget({
                     renderTargetId: "rendertarget.routes",
                     binding: "u_routes"
                 }),

@@ -13,7 +13,6 @@ import {DrawTilesFogNode} from "./rendernodes/drawTilesFogNode";
 import {DrawCombineLayersNode} from "./rendernodes/drawCombineLayersNode";
 import {GameShaderSourceManager} from "./shaders/gameShaderSourceManager";
 import {VertexFullQuadNode} from "../core/prebuiltnodes/vertexFullquadNode";
-import {DrawRenderTargetToScreenNode} from "../core/prebuiltnodes/drawRenderTargetToScreenNode";
 import {VertexEntitiesNode} from "./rendernodes/vertexEntitiesNode";
 import {DrawEntitiesNode} from "./rendernodes/drawEntitiesNode";
 import {DrawRoutesNode} from "./rendernodes/drawRoutesNode";
@@ -22,6 +21,9 @@ import {RouteDatabase} from "../../state/routeDatabase";
 import {DrawTilesOverlayNode} from "./rendernodes/drawTilesOverlayNode";
 import {VertexOverlayNode} from "./rendernodes/vertexOverlayNode";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
+import {VertexDetailsNode} from "./rendernodes/vertexDetailsNode";
+import {DrawDetailsNode} from "./rendernodes/drawDetailsNode";
+import {CommandDatabase} from "../../state/commandDatabase";
 
 
 export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
@@ -31,7 +33,13 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
 
     private camera: Camera = new Camera();
 
-    constructor(gl: WebGL2RenderingContext, tileDb: TileDatabase, routeDb: RouteDatabase, gameSessionDb: GameSessionDatabase) {
+    constructor(
+        gl: WebGL2RenderingContext,
+        tileDb: TileDatabase,
+        routeDb: RouteDatabase,
+        gameSessionDb: GameSessionDatabase,
+        commandDb: CommandDatabase,
+    ) {
         super({
             sorter: new WebGLRenderGraphSorter(),
             resourceManager: new WebGLResourceManager(gl, new GameShaderSourceManager()),
@@ -42,13 +50,15 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 // game
                 new VertexTilesNode(tileDb),
                 new VertexOverlayNode(tileDb, gameSessionDb),
-                new VertexEntitiesNode(tileDb),
+                new VertexEntitiesNode(tileDb, commandDb),
+                new VertexDetailsNode(tileDb),
                 new VertexRoutesNode(routeDb),
                 new DrawTilesWaterNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesLandNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesFogNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesOverlayNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawEntitiesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawDetailsNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawRoutesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawCombineLayersNode(),
                 // debug
@@ -63,7 +73,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
         super.initialize({
             gl: this.gl,
             renderer: this.renderer,
-            camera: this.camera
+            camera: this.camera,
         });
     }
 
@@ -71,8 +81,8 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
         this.camera = camera;
         this.updateContext(ctx => ({
             ...ctx,
-            camera: this.camera
-        }))
+            camera: this.camera,
+        }));
     }
 
     public execute() {
