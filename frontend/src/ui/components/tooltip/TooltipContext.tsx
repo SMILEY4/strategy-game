@@ -1,6 +1,7 @@
 import {useTooltip} from "../headless/useTooltip";
 import React from "react";
 import {FloatingPortal} from "@floating-ui/react";
+import {createRoutesFromChildren} from "react-router-dom";
 
 export interface TooltipContextProps {
     delay?: number;
@@ -21,12 +22,12 @@ export function TooltipContext(props: TooltipContextProps) {
 
     let trigger = null;
     let content = null;
-    for (let child in props.children) {
-        if (props.children[child].type.name === "TooltipTrigger") {
-            trigger = props.children[child];
+    for (let child of props.children) {
+        if (child.type.name === "TooltipTrigger") {
+            trigger = child;
         }
-        if (props.children[child].type.name === "TooltipContent") {
-            content = props.children[child];
+        if (child.type.name === "TooltipContent") {
+            content = child;
         }
     }
 
