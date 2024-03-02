@@ -1,8 +1,4 @@
-import {
-    VertexBufferResource,
-    VertexDataResource,
-    VertexRenderNode,
-} from "../../core/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../logic/game/tilemapUtils";
@@ -14,9 +10,10 @@ import {getHiddenOrNull} from "../../../models/hiddenType";
 import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
 import seedrandom from "seedrandom";
 import {NodeOutput} from "../../core/graph/nodeOutput";
+import {GameRenderConfig} from "../gameRenderConfig";
+import {ChangeProvider} from "../changeProvider";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
-import {GameRenderConfig} from "../gameRenderConfig";
 
 export class VertexTilesNode extends VertexRenderNode {
 
@@ -50,11 +47,11 @@ export class VertexTilesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
+    private readonly changeProvider: ChangeProvider;
     private readonly tileDb: TileDatabase;
     private readonly renderConfig: () => GameRenderConfig;
-    private initializedBaseMesh: boolean = false;
 
-    constructor(renderConfig: () => GameRenderConfig, tileDb: TileDatabase) {
+    constructor(changeProvider: ChangeProvider, renderConfig: () => GameRenderConfig, tileDb: TileDatabase) {
         super({
             id: "vertexnode.tiles",
             input: [],
@@ -130,72 +127,81 @@ export class VertexTilesNode extends VertexRenderNode {
                     type: "instanced",
                     buffers: [
                         "vertexbuffer.mesh.tile",
-                        "vertexbuffer.instance.tilewater"
-                    ]
+                        "vertexbuffer.instance.tilewater",
+                    ],
                 }),
                 new VertexDescriptor({
                     name: "vertexdata.land",
                     type: "instanced",
                     buffers: [
                         "vertexbuffer.mesh.tile",
-                        "vertexbuffer.instance.tileland"
-                    ]
+                        "vertexbuffer.instance.tileland",
+                    ],
                 }),
                 new VertexDescriptor({
                     name: "vertexdata.fog",
                     type: "instanced",
                     buffers: [
                         "vertexbuffer.mesh.tile",
-                        "vertexbuffer.instance.tilefog"
-                    ]
-                })
+                        "vertexbuffer.instance.tilefog",
+                    ],
+                }),
             ],
         });
+        this.changeProvider = changeProvider;
         this.tileDb = tileDb;
         this.renderConfig = renderConfig;
     }
 
     public execute(): VertexDataResource {
-
         const buffers = new Map<string, VertexBufferResource>();
         const outputs = new Map<string, { vertexCount: number; instanceCount: number }>();
 
         // base mesh
-        if (!this.initializedBaseMesh) {
+        if (this.changeProvider.hasChange("basemesh")) {
             const [_, baseMeshData] = this.buildBaseMesh();
             buffers.set("vertexbuffer.mesh.tile", new VertexBufferResource(baseMeshData));
-            this.initializedBaseMesh = true;
         }
 
         // tile instances
-        const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
-        const tileCounts = this.countTileTypes(tiles);
+        if (this.changeProvider.hasChange(this.id + ".instances")) {
 
-        const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, VertexTilesNode.WATER_PATTERN);
-        const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, VertexTilesNode.LAND_PATTERN);
-        const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, VertexTilesNode.FOG_PATTERN);
+            const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
+            const tileCounts = this.countTileTypes(tiles);
 
-        for (let i = 0, n = tiles.length; i < n; i++) {
-            const tile = tiles[i];
-            if (this.isFog(tile)) {
-                this.appendFogInstance(tile, cursorFog);
-            } else if (this.isLand(tile)) {
-                this.appendLandInstance(tile, cursorLand);
-            } else if (this.isWater(tile)) {
-                this.appendWaterInstance(tile, cursorWater);
+            const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, VertexTilesNode.WATER_PATTERN);
+            const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, VertexTilesNode.LAND_PATTERN);
+            const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, VertexTilesNode.FOG_PATTERN);
+
+            for (let i = 0, n = tiles.length; i < n; i++) {
+                const tile = tiles[i];
+                if (this.isFog(tile)) {
+                    this.appendFogInstance(tile, cursorFog);
+                } else if (this.isLand(tile)) {
+                    this.appendLandInstance(tile, cursorLand);
+                } else if (this.isWater(tile)) {
+                    this.appendWaterInstance(tile, cursorWater);
+                }
             }
+
+            buffers.set("vertexbuffer.instance.tilewater", new VertexBufferResource(arrayBufferWater.getRawBuffer()));
+            buffers.set("vertexbuffer.instance.tileland", new VertexBufferResource(arrayBufferLand.getRawBuffer()));
+            buffers.set("vertexbuffer.instance.tilefog", new VertexBufferResource(arrayBufferFog.getRawBuffer()));
+
+            outputs.set("vertexdata.water", {
+                vertexCount: VertexTilesNode.MESH_VERTEX_COUNT,
+                instanceCount: tileCounts.water,
+            });
+            outputs.set("vertexdata.land", {
+                vertexCount: VertexTilesNode.MESH_VERTEX_COUNT,
+                instanceCount: tileCounts.land,
+            });
+            outputs.set("vertexdata.fog", {
+                vertexCount: VertexTilesNode.MESH_VERTEX_COUNT,
+                instanceCount: tileCounts.fog,
+            });
+
         }
-
-        buffers.set("vertexbuffer.instance.tilewater", new VertexBufferResource(arrayBufferWater.getRawBuffer()));
-        buffers.set("vertexbuffer.instance.tileland", new VertexBufferResource(arrayBufferLand.getRawBuffer()));
-        buffers.set("vertexbuffer.instance.tilefog", new VertexBufferResource(arrayBufferFog.getRawBuffer()));
-
-        outputs.set("vertexdata.water", {
-            vertexCount: VertexTilesNode.MESH_VERTEX_COUNT,
-            instanceCount: tileCounts.water,
-        });
-        outputs.set("vertexdata.land", {vertexCount: VertexTilesNode.MESH_VERTEX_COUNT, instanceCount: tileCounts.land});
-        outputs.set("vertexdata.fog", {vertexCount: VertexTilesNode.MESH_VERTEX_COUNT, instanceCount: tileCounts.fog});
 
         return new VertexDataResource({
             buffers: buffers,

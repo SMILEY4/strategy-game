@@ -26,6 +26,7 @@ import {DrawDetailsNode} from "./rendernodes/drawDetailsNode";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {DrawRenderTargetToScreenNode} from "../core/prebuiltnodes/drawRenderTargetToScreenNode";
 import {GameRenderConfig} from "./gameRenderConfig";
+import {ChangeProvider} from "./changeProvider";
 
 
 export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
@@ -36,6 +37,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
     private camera: Camera = new Camera();
 
     constructor(
+        changeProvider: ChangeProvider,
         gl: WebGL2RenderingContext,
         renderConfig: () => GameRenderConfig,
         tileDb: TileDatabase,
@@ -51,11 +53,11 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 // common
                 new VertexFullQuadNode(),
                 // game
-                new VertexTilesNode(renderConfig, tileDb),
-                new VertexOverlayNode(tileDb, gameSessionDb),
-                new VertexEntitiesNode(tileDb, commandDb),
-                new VertexDetailsNode(tileDb),
-                new VertexRoutesNode(routeDb),
+                new VertexTilesNode(changeProvider, renderConfig, tileDb),
+                new VertexOverlayNode(changeProvider, tileDb, gameSessionDb),
+                new VertexEntitiesNode(changeProvider, tileDb, commandDb),
+                new VertexDetailsNode(changeProvider, tileDb),
+                new VertexRoutesNode(changeProvider, routeDb),
                 new DrawTilesWaterNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesLandNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesFogNode(() => this.camera.getViewProjectionMatrixOrThrow()),

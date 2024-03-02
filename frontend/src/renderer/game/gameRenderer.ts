@@ -7,9 +7,12 @@ import {RouteDatabase} from "../../state/routeDatabase";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {GameRenderConfig} from "./gameRenderConfig";
+import {ChangeProvider} from "./changeProvider";
+import {CityDatabase} from "../../state/cityDatabase";
 
 export class GameRenderer {
 
+    private readonly changeProvider;
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraDb: CameraDatabase;
     private readonly tileDb: TileDatabase;
@@ -34,17 +37,24 @@ export class GameRenderer {
         this.routeDb = routeDb;
         this.gameSessionDb = gameSessionDb;
         this.commandDb = commandDb;
+        this.changeProvider = new ChangeProvider(
+            gameSessionDb,
+            tileDb,
+            commandDb,
+        )
     }
 
     public initialize(): void {
         GameRenderConfig.initialize();
-        this.renderGraph = new GameRenderGraph(this.canvasHandle.getGL(), () => this.renderConfig!, this.tileDb, this.routeDb, this.gameSessionDb, this.commandDb);
+        this.renderGraph = new GameRenderGraph(this.changeProvider, this.canvasHandle.getGL(), () => this.renderConfig!, this.tileDb, this.routeDb, this.gameSessionDb, this.commandDb);
         this.renderGraph.initialize();
     }
 
     public render() {
+        const camera = this.getRenderCamera();
+        this.changeProvider.prepareFrame(camera)
         this.renderConfig = GameRenderConfig.load()
-        this.renderGraph?.updateCamera(this.getRenderCamera());
+        this.renderGraph?.updateCamera(camera);
         this.renderGraph?.execute();
     }
 

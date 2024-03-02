@@ -1,4 +1,9 @@
-import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
+import {
+    EMPTY_VERTEX_DATA_RESOURCE,
+    VertexBufferResource,
+    VertexDataResource,
+    VertexRenderNode,
+} from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {TileDatabase} from "../../../state/tileDatabase";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
@@ -11,6 +16,7 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import seedrandom from "seedrandom";
+import {ChangeProvider} from "../changeProvider";
 
 interface RenderDetail {
     tileId: string,
@@ -29,8 +35,9 @@ export class VertexDetailsNode extends VertexRenderNode {
     ];
 
     private readonly tileDb: TileDatabase;
+    private readonly changeProvider: ChangeProvider;
 
-    constructor(tileDb: TileDatabase) {
+    constructor(changeProvider: ChangeProvider, tileDb: TileDatabase) {
         super({
             id: "vertexnode.details",
             input: [],
@@ -57,10 +64,14 @@ export class VertexDetailsNode extends VertexRenderNode {
                 }),
             ],
         });
+        this.changeProvider = changeProvider;
         this.tileDb = tileDb;
     }
 
     public execute(): VertexDataResource {
+        if(!this.changeProvider.hasChange(this.id)) {
+            return EMPTY_VERTEX_DATA_RESOURCE;
+        }
 
         const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
         const renderDetails = this.collectDetails(tiles);
@@ -69,7 +80,6 @@ export class VertexDetailsNode extends VertexRenderNode {
         for (let i = 0; i < renderDetails.length; i++) {
             this.appendDetail(renderDetails[i], cursor);
         }
-
 
         return new VertexDataResource({
             buffers: buildMap({

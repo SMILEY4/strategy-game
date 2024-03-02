@@ -1,4 +1,5 @@
 import {
+    EMPTY_VERTEX_DATA_RESOURCE,
     VertexBufferResource,
     VertexDataResource,
     VertexRenderNode,
@@ -15,6 +16,7 @@ import {CommandType} from "../../../models/commandType";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {ChangeProvider} from "../changeProvider";
 
 interface RenderEntity {
     q: number,
@@ -31,10 +33,11 @@ export class VertexEntitiesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
+    private readonly changeProvider: ChangeProvider;
     private readonly tileDb: TileDatabase;
     private readonly commandDb: CommandDatabase;
 
-    constructor(tileDb: TileDatabase, commandDb: CommandDatabase) {
+    constructor(changeProvider: ChangeProvider, tileDb: TileDatabase, commandDb: CommandDatabase) {
         super({
             id: "vertexnode.entities",
             input: [],
@@ -61,11 +64,15 @@ export class VertexEntitiesNode extends VertexRenderNode {
                 })
             ]
         });
+        this.changeProvider = changeProvider;
         this.tileDb = tileDb;
         this.commandDb = commandDb;
     }
 
     public execute(): VertexDataResource {
+        if(!this.changeProvider.hasChange(this.id)) {
+            return EMPTY_VERTEX_DATA_RESOURCE;
+        }
 
         const commands = this.commandDb.queryMany(CommandDatabase.QUERY_ALL, null);
         const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);

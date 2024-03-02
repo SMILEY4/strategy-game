@@ -1,4 +1,9 @@
-import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
+import {
+    EMPTY_VERTEX_DATA_RESOURCE,
+    VertexBufferResource,
+    VertexDataResource,
+    VertexRenderNode,
+} from "../../core/graph/vertexRenderNode";
 import {MixedArrayBuffer, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {RouteDatabase} from "../../../state/routeDatabase";
@@ -12,6 +17,7 @@ import {buildMap} from "../../../shared/utils";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {ChangeProvider} from "../changeProvider";
 
 export class VertexRoutesNode extends VertexRenderNode {
 
@@ -26,9 +32,10 @@ export class VertexRoutesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
+    private readonly changeProvider: ChangeProvider;
     private readonly routeDb: RouteDatabase;
 
-    constructor(routeDb: RouteDatabase) {
+    constructor(changeProvider: ChangeProvider, routeDb: RouteDatabase) {
         super({
             id: "vertexnode.routes",
             input: [],
@@ -60,10 +67,14 @@ export class VertexRoutesNode extends VertexRenderNode {
                 }),
             ],
         });
+        this.changeProvider = changeProvider;
         this.routeDb = routeDb;
     }
 
     public execute(): VertexDataResource {
+        if(!this.changeProvider.hasChange(this.id)) {
+            return EMPTY_VERTEX_DATA_RESOURCE;
+        }
 
         const lines = this.toLines(this.routeDb.queryMany(RouteDatabase.QUERY_ALL, null));
         const [triangleCount, _, lineMeshes] = this.buildLineMeshes(lines);

@@ -8,7 +8,7 @@ export abstract class VertexRenderNode extends AbstractRenderNode {
 
     public readonly config: VertexRenderNodeConfig;
 
-    constructor(config: VertexRenderNodeConfig) {
+    protected constructor(config: VertexRenderNodeConfig) {
         super(config.id);
         this.config = config;
     }
@@ -46,6 +46,11 @@ export class VertexDataResource {
         this.outputs = params.outputs;
     }
 }
+
+export const EMPTY_VERTEX_DATA_RESOURCE = new VertexDataResource({
+    buffers: new Map<string, VertexBufferResource>,
+    outputs: new Map<string, { vertexCount: number; instanceCount: number }>
+});
 
 /**
  * raw vertex buffer

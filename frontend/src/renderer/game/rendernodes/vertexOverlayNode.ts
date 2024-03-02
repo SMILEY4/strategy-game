@@ -1,8 +1,4 @@
-import {
-    VertexBufferResource,
-    VertexDataResource,
-    VertexRenderNode,
-} from "../../core/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../logic/game/tilemapUtils";
@@ -13,6 +9,7 @@ import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
 import {MapMode} from "../../../models/mapMode";
 import {GameSessionDatabase} from "../../../state/gameSessionDatabase";
 import {NodeOutput} from "../../core/graph/nodeOutput";
+import {ChangeProvider} from "../changeProvider";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 
@@ -42,11 +39,11 @@ export class VertexOverlayNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC4,
     ];
 
+    private readonly changeProvider: ChangeProvider;
     private readonly tileDb: TileDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
-    private initializedBaseMesh: boolean = false;
 
-    constructor(tileDb: TileDatabase, gameSessionDb: GameSessionDatabase) {
+    constructor(changeProvider: ChangeProvider, tileDb: TileDatabase, gameSessionDb: GameSessionDatabase) {
         super({
             id: "vertexnode.overlay",
             input: [],
@@ -74,7 +71,7 @@ export class VertexOverlayNode extends VertexRenderNode {
                             type: GLAttributeType.INT,
                             amountComponents: 1,
                         },
-                    ]
+                    ],
                 }),
                 new VertexBuffer({
                     name: "vertexbuffer.instance.overlay",
@@ -103,18 +100,19 @@ export class VertexOverlayNode extends VertexRenderNode {
                             amountComponents: 4,
                             divisor: 1,
                         },
-                    ]
+                    ],
                 }),
                 new VertexDescriptor({
                     name: "vertexdata.overlay",
                     type: "instanced",
                     buffers: [
                         "vertexbuffer.mesh.overlay",
-                        "vertexbuffer.instance.overlay"
-                    ]
-                })
-            ]
+                        "vertexbuffer.instance.overlay",
+                    ],
+                }),
+            ],
         });
+        this.changeProvider = changeProvider;
         this.tileDb = tileDb;
         this.gameSessionDb = gameSessionDb;
     }
@@ -125,30 +123,36 @@ export class VertexOverlayNode extends VertexRenderNode {
         const outputs = new Map<string, { vertexCount: number; instanceCount: number }>();
 
         // base mesh
-        if (!this.initializedBaseMesh) {
+        if (this.changeProvider.hasChange("basemesh")) {
             const [_, baseMeshData] = this.buildBaseMesh();
             buffers.set("vertexbuffer.mesh.overlay", new VertexBufferResource(baseMeshData));
-            this.initializedBaseMesh = true;
         }
 
-        // tile instances
-        const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
-        const tileCounts = this.countTiles(tiles);
+        if (this.changeProvider.hasChange(this.id + ".instances")) {
 
-        const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, VertexOverlayNode.INSTANCE_PATTERN);
+            // tile instances
+            const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
+            const tileCounts = this.countTiles(tiles);
 
-        const mapMode = this.gameSessionDb.getMapMode();
-        const mapModeContext = mapMode.renderData.context(tiles)
+            const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, VertexOverlayNode.INSTANCE_PATTERN);
 
-        for (let i = 0, n = tiles.length; i < n; i++) {
-            const tile = tiles[i];
-            if (tile.basic.terrainType.visible) {
-                this.appendOverlayInstance(tile, mapMode, mapModeContext, cursorOverlay);
+            const mapMode = this.gameSessionDb.getMapMode();
+            const mapModeContext = mapMode.renderData.context(tiles);
+
+            for (let i = 0, n = tiles.length; i < n; i++) {
+                const tile = tiles[i];
+                if (tile.basic.terrainType.visible) {
+                    this.appendOverlayInstance(tile, mapMode, mapModeContext, cursorOverlay);
+                }
             }
-        }
 
-        buffers.set("vertexbuffer.instance.overlay", new VertexBufferResource(arrayBufferOverlay.getRawBuffer()));
-        outputs.set("vertexdata.overlay", {vertexCount: VertexOverlayNode.MESH_VERTEX_COUNT, instanceCount: tileCounts});
+            buffers.set("vertexbuffer.instance.overlay", new VertexBufferResource(arrayBufferOverlay.getRawBuffer()));
+            outputs.set("vertexdata.overlay", {
+                vertexCount: VertexOverlayNode.MESH_VERTEX_COUNT,
+                instanceCount: tileCounts,
+            });
+
+        }
 
         return new VertexDataResource({
             buffers: buffers,
@@ -174,20 +178,20 @@ export class VertexOverlayNode extends VertexRenderNode {
         cursor.append(0);
         cursor.append(0);
         cursor.append(this.hexTextureCoordinates(-1));
-        cursor.append([1, 0, 0])
-        cursor.append(cornerIndexA)
+        cursor.append([1, 0, 0]);
+        cursor.append(cornerIndexA);
         // corner a
         cursor.append(this.hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
         cursor.append(this.hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
         cursor.append(this.hexTextureCoordinates(cornerIndexA));
-        cursor.append([0, 1, 0])
-        cursor.append(cornerIndexA)
+        cursor.append([0, 1, 0]);
+        cursor.append(cornerIndexA);
         // corner b
         cursor.append(this.hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
         cursor.append(this.hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, 1));
         cursor.append(this.hexTextureCoordinates(cornerIndexB));
-        cursor.append([0, 0, 1])
-        cursor.append(cornerIndexA)
+        cursor.append([0, 0, 1]);
+        cursor.append(cornerIndexA);
     }
 
     //===== INSTANCES ===============================================
@@ -218,10 +222,10 @@ export class VertexOverlayNode extends VertexRenderNode {
         cursor.append(borderPacked);
 
         // border color
-        cursor.append(mapMode.renderData.borderColor(tile, mapModeContext))
+        cursor.append(mapMode.renderData.borderColor(tile, mapModeContext));
 
         // fill color
-        cursor.append(mapMode.renderData.fillColor(tile, mapModeContext))
+        cursor.append(mapMode.renderData.fillColor(tile, mapModeContext));
     }
 
 
