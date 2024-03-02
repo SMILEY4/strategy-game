@@ -12,8 +12,9 @@ import {Tile} from "../../../models/tile";
 import {TerrainType} from "../../../models/terrainType";
 import {BorderBuilder} from "../../../logic/game/borderBuilder";
 import {getHiddenOrNull} from "../../../models/hiddenType";
-import {TileVisibility} from "../../../models/tileVisibility";
 import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
+import random, {Random} from "random";
+import seedrandom from 'seedrandom'
 
 export class VertexTilesNode extends VertexRenderNode {
 
@@ -43,6 +44,45 @@ export class VertexTilesNode extends VertexRenderNode {
         },
     ];
 
+    //===== WATER INSTANCES =========================================
+
+    private static readonly WATER_COLOR: ([number, number, number])[] = [
+        /*light*/ [0.682,0.761,0.753], // #aec2c0
+        /*dark */ [0.502,0.576,0.616] // #80939d
+    ]
+
+    private static readonly WATER_PATTERN = [
+        // world position (x,y)
+        ...MixedArrayBufferType.VEC2,
+        // color
+        ...MixedArrayBufferType.VEC3,
+        // packed water border mask
+        MixedArrayBufferType.INT,
+    ];
+
+    private static readonly WATER_ATTRIBUTES: VertexDataAttributeConfig[] = [
+        {
+            origin: "vertexbuffer.instance.tilewater",
+            name: "in_worldPosition",
+            type: GLAttributeType.FLOAT,
+            amountComponents: 2,
+            divisor: 1,
+        },
+        {
+            origin: "vertexbuffer.instance.tilewater",
+            name: "in_color",
+            type: GLAttributeType.FLOAT,
+            amountComponents: 3,
+            divisor: 1,
+        },
+        {
+            origin: "vertexbuffer.instance.tilewater",
+            name: "in_borderMask",
+            type: GLAttributeType.INT,
+            amountComponents: 1,
+            divisor: 1,
+        },
+    ];
 
     //===== LAND INSTANCES ==========================================
 
@@ -63,31 +103,6 @@ export class VertexTilesNode extends VertexRenderNode {
         }
     ];
 
-    //===== WATER INSTANCES =========================================
-
-    private static readonly WATER_PATTERN = [
-        // world position (x,y)
-        ...MixedArrayBufferType.VEC2,
-        // packed water border mask
-        MixedArrayBufferType.INT,
-    ];
-
-    private static readonly WATER_ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.instance.tilewater",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-            divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.tilewater",
-            name: "in_borderMask",
-            type: GLAttributeType.INT,
-            amountComponents: 1,
-            divisor: 1,
-        },
-    ];
 
     //===== FOG INSTANCES ===========================================
 
@@ -189,7 +204,6 @@ export class VertexTilesNode extends VertexRenderNode {
 
     //===== BASE MESH ===============================================
 
-
     private buildBaseMesh(): [number, ArrayBuffer] {
         const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(VertexTilesNode.MESH_VERTEX_COUNT, VertexTilesNode.MESH_PATTERN);
         this.appendBaseMeshTriangle(cursor, 0, 1);
@@ -272,6 +286,11 @@ export class VertexTilesNode extends VertexRenderNode {
         cursor.append(center[0]);
         cursor.append(center[1]);
 
+        // color
+        const rng = seedrandom(tile.identifier.id).quick()
+        const color = this.mix(VertexTilesNode.WATER_COLOR[0], VertexTilesNode.WATER_COLOR[1], rng);
+        cursor.append(color)
+
         // water border mask
         const border = BorderBuilder.build(tile, this.tileDb, false, (ta, tb) => {
             const a = getHiddenOrNull(ta.basic.terrainType);
@@ -340,6 +359,14 @@ export class VertexTilesNode extends VertexRenderNode {
             default:
                 return [0, 0];
         }
+    }
+
+    private mix(x: [number, number, number], y: [number, number, number], a: number): [number, number, number] {
+        return [
+            x[0] * (1 - a) + y[0] * a,
+            x[1] * (1 - a) + y[1] * a,
+            x[2] * (1 - a) + y[2] * a,
+        ];
     }
 
 }
