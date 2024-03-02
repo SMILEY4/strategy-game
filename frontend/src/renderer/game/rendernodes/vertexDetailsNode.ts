@@ -1,9 +1,4 @@
-import {
-    VertexBufferResource,
-    VertexDataAttributeConfig,
-    VertexDataResource,
-    VertexRenderNode,
-} from "../../core/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {TileDatabase} from "../../../state/tileDatabase";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
@@ -12,6 +7,9 @@ import {TerrainType} from "../../../models/terrainType";
 import {TerrainResourceType} from "../../../models/terrainResourceType";
 import {TilemapUtils} from "../../../logic/game/tilemapUtils";
 import {buildMap} from "../../../shared/utils";
+import {NodeOutput} from "../../core/graph/nodeOutput";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
 
 interface RenderDetail {
     q: number,
@@ -28,32 +26,33 @@ export class VertexDetailsNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
-    private static readonly ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.details",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-        {
-            origin: "vertexbuffer.details",
-            name: "in_textureCoordinates",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-    ];
-
     private readonly tileDb: TileDatabase;
 
     constructor(tileDb: TileDatabase) {
         super({
             id: "vertexnode.details",
-            outputData: [
-                {
-                    id: "vertexdata.details",
-                    type: "basic",
-                    attributes: VertexDetailsNode.ATTRIBUTES,
-                },
+            input: [],
+            output: [
+                new VertexBuffer({
+                    name: "vertexbuffer.details",
+                    attributes: [
+                        {
+                            name: "in_worldPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            name: "in_textureCoordinates",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                    ],
+                }),
+                new VertexDescriptor({
+                    name: "vertexdata.details",
+                    type: "standart",
+                    buffers: ["vertexbuffer.details"],
+                }),
             ],
         });
         this.tileDb = tileDb;

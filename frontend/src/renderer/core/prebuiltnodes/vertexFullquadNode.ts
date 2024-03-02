@@ -2,10 +2,13 @@ import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../gra
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {buildMap} from "../../../shared/utils";
+import {NodeOutput} from "../graph/nodeOutput";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
 
 export class VertexFullQuadNode extends VertexRenderNode {
 
-    public static readonly DATA_ID = "vertexdata.fullquad"
+    public static readonly DATA_ID = "vertexdata.fullquad";
 
     private initialized: boolean = false;
 
@@ -22,19 +25,23 @@ export class VertexFullQuadNode extends VertexRenderNode {
     constructor() {
         super({
             id: "vertexnode.fullquad",
-            outputData: [
-                {
-                    id: VertexFullQuadNode.DATA_ID,
-                    type: "basic",
+            input: [],
+            output: [
+                new VertexBuffer({
+                    name: "vertexbuffer.fullquad",
                     attributes: [
                         {
-                            origin: "vertexbuffer.fullquad",
                             name: "in_position",
                             type: GLAttributeType.FLOAT,
                             amountComponents: 2,
                         },
                     ],
-                },
+                }),
+                new VertexDescriptor({
+                    name: VertexFullQuadNode.DATA_ID,
+                    type: "standart",
+                    buffers: ["vertexbuffer.fullquad"],
+                }),
             ],
         });
     }

@@ -1,7 +1,9 @@
 import {RenderGraphSorter} from "../graph/renderGraphSorter";
 import {AbstractRenderNode} from "../graph/abstractRenderNode";
-import {DrawRenderNode, DrawRenderNodeInput, DrawRenderNodeOutput} from "../graph/drawRenderNode";
+import {DrawRenderNode} from "../graph/drawRenderNode";
 import {VertexRenderNode} from "../graph/vertexRenderNode";
+import {NodeInput} from "../graph/nodeInput";
+import {NodeOutput} from "../graph/nodeOutput";
 
 interface WebglSortableNodeNode {
     id: string,
@@ -53,16 +55,13 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
         });
 
         // vertex-data dependencies
-        const outputVertexData = this.getOutputVertexData(renderNode);
+        const outputVertexData = this.getOutputVertexDescriptors(renderNode);
         renderNodes.forEach(other => {
-            const inputVertexData = this.getInputVertexData(other);
+            const inputVertexData = this.getInputVertexDescriptors(other);
             if (outputVertexData.some(e => inputVertexData.indexOf(e) !== -1)) {
                 outgoing.push(other.id);
             }
         });
-
-        // manual dependencies
-        // ...
 
         return outgoing;
     }
@@ -82,8 +81,8 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
     private getInputRenderTargetIds(renderNode: AbstractRenderNode): string[] {
         if (renderNode instanceof DrawRenderNode) {
             return renderNode.config.input
-                .filter(e => e instanceof DrawRenderNodeInput.RenderTarget)
-                .map(e => (e as DrawRenderNodeInput.RenderTarget).renderTargetId);
+                .filter(e => e instanceof NodeInput.RenderTarget)
+                .map(e => (e as NodeInput.RenderTarget).renderTargetId);
         } else {
             return [];
         }
@@ -95,8 +94,8 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
     private getOutputRenderTargetIds(renderNode: AbstractRenderNode): string[] {
         if (renderNode instanceof DrawRenderNode) {
             return renderNode.config.output
-                .filter(e => e instanceof DrawRenderNodeOutput.RenderTarget)
-                .map(e => (e as DrawRenderNodeOutput.RenderTarget).renderTargetId);
+                .filter(e => e instanceof NodeOutput.RenderTarget)
+                .map(e => (e as NodeOutput.RenderTarget).renderTargetId);
         } else {
             return [];
         }
@@ -105,11 +104,11 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
     /**
      * Returns the ids of all input vertex data of the given node
      */
-    private getInputVertexData(renderNode: AbstractRenderNode): string[] {
+    private getInputVertexDescriptors(renderNode: AbstractRenderNode): string[] {
         if (renderNode instanceof DrawRenderNode) {
             return renderNode.config.input
-                .filter(e => e instanceof DrawRenderNodeInput.VertexData)
-                .map(e => (e as DrawRenderNodeInput.VertexData).vertexDataId);
+                .filter(e => e instanceof NodeInput.VertexDescriptor)
+                .map(e => (e as NodeInput.VertexDescriptor).vertexDataId);
         } else {
             return [];
         }
@@ -118,10 +117,11 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
     /**
      * Returns the ids of all output vertex data of the given node
      */
-    private getOutputVertexData(renderNode: AbstractRenderNode): string[] {
+    private getOutputVertexDescriptors(renderNode: AbstractRenderNode): string[] {
         if (renderNode instanceof VertexRenderNode) {
-            return renderNode.config.outputData
-                .map(e => e.id);
+            return renderNode.config.output
+                .filter(e => e instanceof NodeOutput.VertexDescriptor)
+                .map(e => (e as NodeOutput.VertexDescriptor).name);
         } else {
             return [];
         }
@@ -134,11 +134,11 @@ export class WebGLRenderGraphSorter implements RenderGraphSorter {
         if (renderNode instanceof DrawRenderNode) {
             return [
                 ...renderNode.config.input
-                    .filter(e => e instanceof DrawRenderNodeInput.RenderTarget)
-                    .map(e => "rendertarget:" + (e as DrawRenderNodeInput.RenderTarget).renderTargetId),
+                    .filter(e => e instanceof NodeInput.RenderTarget)
+                    .map(e => "rendertarget:" + (e as NodeInput.RenderTarget).renderTargetId),
                 ...renderNode.config.input
-                    .filter(e => e instanceof DrawRenderNodeInput.Texture)
-                    .map(e => "texture:" + (e as DrawRenderNodeInput.Texture).path),
+                    .filter(e => e instanceof NodeInput.Texture)
+                    .map(e => "texture:" + (e as NodeInput.Texture).path),
             ];
         } else {
             return [];

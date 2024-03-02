@@ -1,9 +1,4 @@
-import {
-    VertexBufferResource,
-    VertexDataAttributeConfig,
-    VertexDataResource,
-    VertexRenderNode,
-} from "../../core/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
 import {MixedArrayBuffer, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {RouteDatabase} from "../../../state/routeDatabase";
@@ -14,6 +9,9 @@ import {LineMeshCreator} from "../../../shared/webgl/lines/lineMeshCreator";
 import {LineCapsButt} from "../../../shared/webgl/lines/lineCapsButt";
 import {LineJoinMiter} from "../../../shared/webgl/lines/lineJoinMitter";
 import {buildMap} from "../../../shared/utils";
+import {NodeOutput} from "../../core/graph/nodeOutput";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
 
 export class VertexRoutesNode extends VertexRenderNode {
 
@@ -28,38 +26,38 @@ export class VertexRoutesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
-    private static readonly ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.routes",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-        {
-            origin: "vertexbuffer.routes",
-            name: "in_textureCoordinates",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-        {
-            origin: "vertexbuffer.routes",
-            name: "in_lineCoordinates",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-    ];
-
     private readonly routeDb: RouteDatabase;
 
     constructor(routeDb: RouteDatabase) {
         super({
             id: "vertexnode.routes",
-            outputData: [
-                {
-                    id: "vertexdata.routes",
-                    type: "basic",
-                    attributes: VertexRoutesNode.ATTRIBUTES,
-                },
+            input: [],
+            output: [
+                new VertexBuffer({
+                    name: "vertexbuffer.routes",
+                    attributes: [
+                        {
+                            name: "in_worldPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            name: "in_textureCoordinates",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            name: "in_lineCoordinates",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                    ],
+                }),
+                new VertexDescriptor({
+                    name: "vertexdata.routes",
+                    type: "standart",
+                    buffers: ["vertexbuffer.routes"],
+                }),
             ],
         });
         this.routeDb = routeDb;

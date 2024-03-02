@@ -1,5 +1,7 @@
-import {DrawRenderNode, DrawRenderNodeInput, DrawRenderNodeOutput} from "../../core/graph/drawRenderNode";
+import {DrawRenderNode} from "../../core/graph/drawRenderNode";
 import {VertexFullQuadNode} from "../../core/prebuiltnodes/vertexFullquadNode";
+import {NodeOutput} from "../../core/graph/nodeOutput";
+import {NodeInput} from "../../core/graph/nodeInput";
 
 export class DrawCombineLayersNode extends DrawRenderNode {
 
@@ -7,47 +9,47 @@ export class DrawCombineLayersNode extends DrawRenderNode {
         super({
             id: "drawnode.combinelayers",
             input: [
-                new DrawRenderNodeInput.ClearColor({
+                new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 1],
                 }),
-                new DrawRenderNodeInput.Shader({
+                new NodeInput.Shader({
                     vertexId: "combine.vert",
                     fragmentId: "combine.frag",
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: "rendertarget.tileswater",
-                    binding: "u_water"
+                    binding: "u_water",
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: "rendertarget.tilesland",
-                    binding: "u_land"
+                    binding: "u_land",
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: "rendertarget.tilesfog",
-                    binding: "u_fog"
+                    binding: "u_fog",
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: "rendertarget.entities",
-                    binding: "u_entities"
+                    binding: "u_entities",
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: "rendertarget.details",
-                    binding: "u_details"
+                    binding: "u_details",
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: "rendertarget.routes",
-                    binding: "u_routes"
+                    binding: "u_routes",
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: "rendertarget.overlay",
-                    binding: "u_overlay"
+                    binding: "u_overlay",
                 }),
-                new DrawRenderNodeInput.VertexData({
+                new NodeInput.VertexDescriptor({
                     id: VertexFullQuadNode.DATA_ID,
                 }),
             ],
             output: [
-                new DrawRenderNodeOutput.Screen(),
+                new NodeOutput.Screen(),
             ],
         });
     }

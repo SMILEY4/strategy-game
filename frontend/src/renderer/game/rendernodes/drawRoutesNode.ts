@@ -1,5 +1,7 @@
-import {DrawRenderNode, DrawRenderNodeInput, DrawRenderNodeOutput} from "../../core/graph/drawRenderNode";
+import {DrawRenderNode} from "../../core/graph/drawRenderNode";
 import {GLUniformType} from "../../../shared/webgl/glTypes";
+import {NodeInput} from "../../core/graph/nodeInput";
+import {NodeOutput} from "../../core/graph/nodeOutput";
 
 export class DrawRoutesNode extends DrawRenderNode {
 
@@ -7,17 +9,17 @@ export class DrawRoutesNode extends DrawRenderNode {
         super({
             id: "drawnode.routes",
             input: [
-                new DrawRenderNodeInput.ClearColor({
+                new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],
                 }),
-                new DrawRenderNodeInput.Shader({
+                new NodeInput.Shader({
                     vertexId: "routes.vert",
                     fragmentId: "routes.frag",
                 }),
-                new DrawRenderNodeInput.VertexData({
+                new NodeInput.VertexDescriptor({
                     id: "vertexdata.routes",
                 }),
-                new DrawRenderNodeInput.Property({
+                new NodeInput.Property({
                     binding: "u_viewProjection",
                     type: GLUniformType.MAT3,
                     valueConstant: null,
@@ -25,7 +27,7 @@ export class DrawRoutesNode extends DrawRenderNode {
                 }),
             ],
             output: [
-                new DrawRenderNodeOutput.RenderTarget({
+                new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.routes",
                 }),
             ],

@@ -1,18 +1,22 @@
 import {ResourceManager} from "../graph/resourceManager";
 import {AbstractRenderNode} from "../graph/abstractRenderNode";
-import {VertexDataOutputConfig, VertexDataType, VertexRenderNode} from "../graph/vertexRenderNode";
-import {DrawRenderNode, DrawRenderNodeInput, DrawRenderNodeOutput} from "../graph/drawRenderNode";
+import {VertexRenderNode} from "../graph/vertexRenderNode";
+import {DrawRenderNode} from "../graph/drawRenderNode";
 import {GLVertexBuffer} from "../../../shared/webgl/glVertexBuffer";
 import {GLVertexArray} from "../../../shared/webgl/glVertexArray";
 import {GLProgram} from "../../../shared/webgl/glProgram";
 import {WebGLShaderSourceManager} from "./webGLShaderSourceManager";
 import {GLTexture} from "../../../shared/webgl/glTexture";
 import {GLFramebuffer} from "../../../shared/webgl/glFramebuffer";
+import {NodeInput} from "../graph/nodeInput";
+import {NodeOutput} from "../graph/nodeOutput";
 import ManagedProgram = WebGLResourceManager.ManagedProgram;
 import ManagedTexture = WebGLResourceManager.ManagedTexture;
 import ManagedFramebuffer = WebGLResourceManager.ManagedFramebuffer;
 import ManagedVertexBuffer = WebGLResourceManager.ManagedVertexBuffer;
 import ManagedVertexData = WebGLResourceManager.ManagedVertexData;
+import VertexAttribute = NodeOutput.VertexAttribute;
+import VertexBuffer = NodeOutput.VertexBuffer;
 
 export class WebGLResourceManager implements ResourceManager {
 
@@ -35,22 +39,27 @@ export class WebGLResourceManager implements ResourceManager {
     public initialize(nodes: AbstractRenderNode[]): void {
         nodes.forEach(node => {
             if (node instanceof VertexRenderNode) {
-                node.config.outputData.forEach(vertexDataConfig => {
-                    this.initializeVertexData(vertexDataConfig, nodes);
-                });
+                for (let output of node.config.output) {
+                    if (output instanceof NodeOutput.VertexDescriptor) {
+                        this.initializeVertexDescriptor(output.name, output.type, output.buffers, node, nodes)
+                    }
+                    if (output instanceof NodeOutput.VertexBuffer) {
+                        this.initializeVertexBuffer(output.name, node);
+                    }
+                }
             }
             if (node instanceof DrawRenderNode) {
                 for (let input of node.config.input) {
-                    if (input instanceof DrawRenderNodeInput.Shader) {
+                    if (input instanceof NodeInput.Shader) {
                         this.initializeShaderProgram(input.vertexId, input.fragmentId);
                     }
-                    if (input instanceof DrawRenderNodeInput.Texture) {
+                    if (input instanceof NodeInput.Texture) {
                         this.initializeTexture(input.path);
                     }
                 }
                 for (let output of node.config.output) {
                     // noinspection SuspiciousTypeOfGuard
-                    if (output instanceof DrawRenderNodeOutput.RenderTarget) {
+                    if (output instanceof NodeOutput.RenderTarget) {
                         this.initializeFramebuffer(output.renderTargetId);
                     }
                 }
@@ -58,19 +67,34 @@ export class WebGLResourceManager implements ResourceManager {
         });
     }
 
-    private initializeVertexData(config: VertexDataOutputConfig, nodes: AbstractRenderNode[]): ManagedVertexData {
+    private initializeVertexBuffer(id: string, node: VertexRenderNode): ManagedVertexBuffer {
+        if (this.vertexBuffers.has(id)) {
+            return this.vertexBuffers.get(id)!;
+        }
+
+        const buffer = node.config.output.find(e => e instanceof VertexBuffer && e.name === id)! as VertexBuffer;
+
+        const managedBuffer: ManagedVertexBuffer = {
+            id: id,
+            attributes: buffer.attributes,
+            buffer: GLVertexBuffer.createEmpty(this.gl),
+        };
+        this.vertexBuffers.set(managedBuffer.id, managedBuffer);
+        console.log("Loaded vertex-buffer with id", managedBuffer.id);
+        return managedBuffer;
+    }
+
+    private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode, nodes: AbstractRenderNode[]): ManagedVertexData{
         // already initialized
-        if (this.vertexData.has(config.id)) {
-            return this.vertexData.get(config.id)!!;
+        if (this.vertexData.has(id)) {
+            return this.vertexData.get(id)!!;
         }
 
         // create & initialize vertex-buffers
         const buffers = new Map<string, ManagedVertexBuffer>();
-        config.attributes
-            .map(att => att.origin)
-            .distinct()
-            .map(att => this.initializeVertexBuffer(att))
-            .forEach(buffer => buffers.set(buffer.id, buffer));
+        bufferIds
+            .map(bufferId => this.initializeVertexBuffer(bufferId, node))
+            .forEach(buffer => buffers.set(buffer.id, buffer))
 
         // find/create & initialize programs using this vertex-data
         const programs: ManagedProgram[] = [];
@@ -78,15 +102,15 @@ export class WebGLResourceManager implements ResourceManager {
             if (node instanceof DrawRenderNode) {
                 let usesData = false;
                 for (let input of node.config.input) {
-                    if (input instanceof DrawRenderNodeInput.VertexData) {
-                        if (input.vertexDataId === config.id) {
+                    if (input instanceof NodeInput.VertexDescriptor) {
+                        if (input.vertexDataId === id) {
                             usesData = true;
                         }
                     }
                 }
                 if (usesData) {
                     for (let input of node.config.input) {
-                        if (input instanceof DrawRenderNodeInput.Shader) {
+                        if (input instanceof NodeInput.Shader) {
                             programs.push(this.initializeShaderProgram(input.vertexId, input.fragmentId));
                         }
                     }
@@ -94,20 +118,29 @@ export class WebGLResourceManager implements ResourceManager {
             }
         }
 
+        // merge vertex attributes and gl-buffers
+        const vertexAttributes: ({bufferId: string, attribute: VertexAttribute})[] = []
+        bufferIds.forEach(bufferId => {
+            const buffer = buffers.get(bufferId)!;
+            buffer.attributes.forEach(attribute => {
+            vertexAttributes.push({bufferId: buffer.id, attribute: attribute})
+            })
+        })
+
         // create vertex-arrays
         const vertexArrays = new Map<string, GLVertexArray>();
         for (const program of programs) {
             const vertexArray = GLVertexArray.create(
                 this.gl,
-                config.attributes.map(attribute => ({
-                    buffer: buffers.get(attribute.origin)!!.buffer,
-                    location: program.program.getInformation().attributes.find(a => a.name === attribute.name)!.location,
-                    type: attribute.type,
-                    amountComponents: attribute.amountComponents,
-                    normalized: attribute.normalized,
-                    stride: attribute.stride,
-                    offset: attribute.offset,
-                    divisor: attribute.divisor,
+                vertexAttributes.map(attribute => ({
+                    buffer: buffers.get(attribute.bufferId)!!.buffer,
+                    location: program.program.getInformation().attributes.find(a => a.name === attribute.attribute.name)!.location,
+                    type: attribute.attribute.type,
+                    amountComponents: attribute.attribute.amountComponents,
+                    normalized: attribute.attribute.normalized,
+                    stride: attribute.attribute.stride,
+                    offset: attribute.attribute.offset,
+                    divisor: attribute.attribute.divisor,
                 })),
             );
             vertexArrays.set(program.id, vertexArray);
@@ -115,29 +148,17 @@ export class WebGLResourceManager implements ResourceManager {
 
         // register managed resource
         const managedVertexData: ManagedVertexData = {
-            id: config.id,
-            type: config.type,
+            id: id,
+            type: type,
             vertexCount: 0,
             instanceCount: 0,
             buffers: buffers,
             vertexArrays: vertexArrays,
         };
         this.vertexData.set(managedVertexData.id, managedVertexData);
-        console.log("Loaded vertex-data with id", managedVertexData.id)
+        console.log("Loaded vertex-data with id", managedVertexData.id);
         return managedVertexData;
-    }
 
-    private initializeVertexBuffer(id: string): ManagedVertexBuffer {
-        if (this.vertexBuffers.has(id)) {
-            return this.vertexBuffers.get(id)!;
-        }
-        const managedBuffer: ManagedVertexBuffer = {
-            id: id,
-            buffer: GLVertexBuffer.createEmpty(this.gl),
-        };
-        this.vertexBuffers.set(managedBuffer.id, managedBuffer);
-        console.log("Loaded vertex-buffer with id", managedBuffer.id)
-        return managedBuffer;
     }
 
     private initializeShaderProgram(vertex: string, fragment: string): ManagedProgram {
@@ -154,7 +175,7 @@ export class WebGLResourceManager implements ResourceManager {
             program: GLProgram.create(this.gl, srcVertex, srcFragment),
         };
         this.shaders.set(managedProgram.id, managedProgram);
-        console.log("Loaded shader program with id", managedProgram.id)
+        console.log("Loaded shader program with id", managedProgram.id);
         return managedProgram;
     }
 
@@ -168,7 +189,7 @@ export class WebGLResourceManager implements ResourceManager {
             texture: GLTexture.createFromPath(this.gl, path),
         };
         this.textures.set(managedTexture.id, managedTexture);
-        console.log("Loaded texture with id", managedTexture.id)
+        console.log("Loaded texture with id", managedTexture.id);
         return managedTexture;
     }
 
@@ -182,7 +203,7 @@ export class WebGLResourceManager implements ResourceManager {
             framebuffer: GLFramebuffer.create(this.gl, 1, 1),
         };
         this.framebuffers.set(managedFramebuffer.id, managedFramebuffer);
-        console.log("Loaded framebuffer with id", managedFramebuffer.id)
+        console.log("Loaded framebuffer with id", managedFramebuffer.id);
         return managedFramebuffer;
     }
 
@@ -269,12 +290,13 @@ export namespace WebGLResourceManager {
 
     export interface ManagedVertexBuffer {
         id: string,
+        attributes: VertexAttribute[],
         buffer: GLVertexBuffer,
     }
 
     export interface ManagedVertexData {
         id: string,
-        type: VertexDataType,
+        type: "standart" | "instanced",
         vertexCount: number,
         instanceCount: number,
         buffers: Map<string, ManagedVertexBuffer>,

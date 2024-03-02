@@ -1,6 +1,5 @@
 import {
     VertexBufferResource,
-    VertexDataAttributeConfig,
     VertexDataResource,
     VertexRenderNode,
 } from "../../core/graph/vertexRenderNode";
@@ -13,10 +12,11 @@ import {BorderBuilder} from "../../../logic/game/borderBuilder";
 import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
 import {MapMode} from "../../../models/mapMode";
 import {GameSessionDatabase} from "../../../state/gameSessionDatabase";
+import {NodeOutput} from "../../core/graph/nodeOutput";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
 
 export class VertexOverlayNode extends VertexRenderNode {
-
-    //==== BASE MESH ================================================
 
     private static readonly MESH_VERTEX_COUNT = 6 * 3;
 
@@ -31,35 +31,6 @@ export class VertexOverlayNode extends VertexRenderNode {
         MixedArrayBufferType.INT,
     ];
 
-    private static readonly MESH_ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.mesh.overlay",
-            name: "in_vertexPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-        {
-            origin: "vertexbuffer.mesh.overlay",
-            name: "in_textureCoordinates",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-        {
-            origin: "vertexbuffer.mesh.overlay",
-            name: "in_cornerData",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 3,
-        },
-        {
-            origin: "vertexbuffer.mesh.overlay",
-            name: "in_directionData",
-            type: GLAttributeType.INT,
-            amountComponents: 1,
-        },
-    ];
-
-    //===== INSTANCES ==========================================
-
     private static readonly INSTANCE_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
@@ -71,37 +42,6 @@ export class VertexOverlayNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC4,
     ];
 
-    private static readonly INSTANCE_ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.instance.overlay",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-            divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.overlay",
-            name: "in_borderMask",
-            type: GLAttributeType.INT,
-            amountComponents: 1,
-            divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.overlay",
-            name: "in_borderColor",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 4,
-            divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.overlay",
-            name: "in_fillColor",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 4,
-            divisor: 1,
-        },
-    ];
-
     private readonly tileDb: TileDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
     private initializedBaseMesh: boolean = false;
@@ -109,16 +49,71 @@ export class VertexOverlayNode extends VertexRenderNode {
     constructor(tileDb: TileDatabase, gameSessionDb: GameSessionDatabase) {
         super({
             id: "vertexnode.overlay",
-            outputData: [
-                {
-                    id: "vertexdata.overlay",
-                    type: "instanced",
+            input: [],
+            output: [
+                new VertexBuffer({
+                    name: "vertexbuffer.mesh.overlay",
                     attributes: [
-                        ...VertexOverlayNode.MESH_ATTRIBUTES,
-                        ...VertexOverlayNode.INSTANCE_ATTRIBUTES,
-                    ],
-                },
-            ],
+                        {
+                            name: "in_vertexPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            name: "in_textureCoordinates",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            name: "in_cornerData",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 3,
+                        },
+                        {
+                            name: "in_directionData",
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                        },
+                    ]
+                }),
+                new VertexBuffer({
+                    name: "vertexbuffer.instance.overlay",
+                    attributes: [
+                        {
+                            name: "in_worldPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
+                        {
+                            name: "in_borderMask",
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                            divisor: 1,
+                        },
+                        {
+                            name: "in_borderColor",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 4,
+                            divisor: 1,
+                        },
+                        {
+                            name: "in_fillColor",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 4,
+                            divisor: 1,
+                        },
+                    ]
+                }),
+                new VertexDescriptor({
+                    name: "vertexdata.overlay",
+                    type: "instanced",
+                    buffers: [
+                        "vertexbuffer.mesh.overlay",
+                        "vertexbuffer.instance.overlay"
+                    ]
+                })
+            ]
         });
         this.tileDb = tileDb;
         this.gameSessionDb = gameSessionDb;

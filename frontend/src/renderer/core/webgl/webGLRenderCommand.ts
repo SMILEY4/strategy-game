@@ -224,7 +224,7 @@ export namespace WebGLRenderCommand {
             context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture)
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
-                case "basic": {
+                case "standart": {
                     context.renderer.draw(data.vertexCount);
                     break;
                 }

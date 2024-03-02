@@ -1,5 +1,7 @@
-import {DrawRenderNode, DrawRenderNodeInput, DrawRenderNodeOutput} from "../graph/drawRenderNode";
+import {DrawRenderNode, } from "../graph/drawRenderNode";
 import {VertexFullQuadNode} from "./vertexFullquadNode";
+import {NodeInput} from "../graph/nodeInput";
+import {NodeOutput} from "../graph/nodeOutput";
 
 export class DrawRenderTargetToScreenNode extends DrawRenderNode {
 
@@ -10,24 +12,23 @@ export class DrawRenderTargetToScreenNode extends DrawRenderNode {
         super({
             id: "drawnode.rendertarget2screen",
             input: [
-                new DrawRenderNodeInput.ClearColor({
+                new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 1],
-                    blendMode: "separate"
                 }),
-                new DrawRenderNodeInput.Shader({
+                new NodeInput.Shader({
                     vertexId: DrawRenderTargetToScreenNode.SHADER_ID_VERTEX,
                     fragmentId: DrawRenderTargetToScreenNode.SHADER_ID_FRAGMENT,
                 }),
-                new DrawRenderNodeInput.VertexData({
+                new NodeInput.VertexDescriptor({
                     id: VertexFullQuadNode.DATA_ID,
                 }),
-                new DrawRenderNodeInput.RenderTarget({
+                new NodeInput.RenderTarget({
                     renderTargetId: renderTargetId,
                     binding: "u_renderTarget",
                 }),
             ],
             output: [
-                new DrawRenderNodeOutput.Screen(),
+                new NodeOutput.Screen(),
             ],
         });
     }

@@ -24,6 +24,7 @@ import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {VertexDetailsNode} from "./rendernodes/vertexDetailsNode";
 import {DrawDetailsNode} from "./rendernodes/drawDetailsNode";
 import {CommandDatabase} from "../../state/commandDatabase";
+import {DrawRenderTargetToScreenNode} from "../core/prebuiltnodes/drawRenderTargetToScreenNode";
 
 
 export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
@@ -62,7 +63,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 new DrawRoutesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawCombineLayersNode(),
                 // debug
-                // new DrawRenderTargetToScreenNode("rendertarget.entities")
+                // new DrawRenderTargetToScreenNode("rendertarget.tilesland")
             ],
         });
         this.gl = gl;

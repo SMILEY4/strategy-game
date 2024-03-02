@@ -1,5 +1,7 @@
-import {DrawRenderNode, DrawRenderNodeInput, DrawRenderNodeOutput} from "../../core/graph/drawRenderNode";
+import {DrawRenderNode} from "../../core/graph/drawRenderNode";
 import {GLUniformType} from "../../../shared/webgl/glTypes";
+import {NodeOutput} from "../../core/graph/nodeOutput";
+import {NodeInput} from "../../core/graph/nodeInput";
 
 export class DrawEntitiesNode extends DrawRenderNode {
 
@@ -7,29 +9,29 @@ export class DrawEntitiesNode extends DrawRenderNode {
         super({
             id: "drawnode.entities",
             input: [
-                new DrawRenderNodeInput.ClearColor({
+                new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],
                 }),
-                new DrawRenderNodeInput.Texture({
+                new NodeInput.Texture({
                     path: "/tilesetNew.png",
                     binding: "u_texture",
                 }),
-                new DrawRenderNodeInput.Shader({
+                new NodeInput.Shader({
                     vertexId: "entities.vert",
                     fragmentId: "entities.frag",
                 }),
-                new DrawRenderNodeInput.VertexData({
+                new NodeInput.VertexDescriptor({
                     id: "vertexdata.entities",
                 }),
-                new DrawRenderNodeInput.Property({
+                new NodeInput.Property({
                     binding: "u_viewProjection",
                     type: GLUniformType.MAT3,
                     valueConstant: null,
                     valueProvider: vpMatrixProvider,
-                })
+                }),
             ],
             output: [
-                new DrawRenderNodeOutput.RenderTarget({
+                new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.entities",
                 }),
             ],

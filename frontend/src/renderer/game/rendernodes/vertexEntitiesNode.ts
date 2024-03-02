@@ -1,6 +1,5 @@
 import {
     VertexBufferResource,
-    VertexDataAttributeConfig,
     VertexDataResource,
     VertexRenderNode,
 } from "../../core/graph/vertexRenderNode";
@@ -13,6 +12,9 @@ import {buildMap} from "../../../shared/utils";
 import {CommandDatabase} from "../../../state/commandDatabase";
 import {Command, DeleteMarkerCommand, PlaceMarkerCommand} from "../../../models/command";
 import {CommandType} from "../../../models/commandType";
+import {NodeOutput} from "../../core/graph/nodeOutput";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
 
 interface RenderEntity {
     q: number,
@@ -29,34 +31,35 @@ export class VertexEntitiesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
-    private static readonly ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.entities",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-        {
-            origin: "vertexbuffer.entities",
-            name: "in_textureCoordinates",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-    ];
-
     private readonly tileDb: TileDatabase;
     private readonly commandDb: CommandDatabase;
 
     constructor(tileDb: TileDatabase, commandDb: CommandDatabase) {
         super({
             id: "vertexnode.entities",
-            outputData: [
-                {
-                    id: "vertexdata.entities",
-                    type: "basic",
-                    attributes: VertexEntitiesNode.ATTRIBUTES,
-                },
-            ],
+            input: [],
+            output: [
+                new VertexBuffer({
+                    name: "vertexbuffer.entities",
+                    attributes: [
+                        {
+                            name: "in_worldPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            name: "in_textureCoordinates",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                    ]
+                }),
+                new VertexDescriptor({
+                    name: "vertexdata.entities",
+                    type: "standart",
+                    buffers: ["vertexbuffer.entities"]
+                })
+            ]
         });
         this.tileDb = tileDb;
         this.commandDb = commandDb;

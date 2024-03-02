@@ -1,6 +1,5 @@
 import {
     VertexBufferResource,
-    VertexDataAttributeConfig,
     VertexDataResource,
     VertexRenderNode,
 } from "../../core/graph/vertexRenderNode";
@@ -13,12 +12,17 @@ import {TerrainType} from "../../../models/terrainType";
 import {BorderBuilder} from "../../../logic/game/borderBuilder";
 import {getHiddenOrNull} from "../../../models/hiddenType";
 import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
-import random, {Random} from "random";
-import seedrandom from 'seedrandom'
+import seedrandom from "seedrandom";
+import {NodeOutput} from "../../core/graph/nodeOutput";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
 
 export class VertexTilesNode extends VertexRenderNode {
 
-    //==== BASE MESH ================================================
+    private static readonly WATER_COLOR: ([number, number, number])[] = [
+        /*light*/ [0.682, 0.761, 0.753], // #aec2c0
+        /*dark */ [0.502, 0.576, 0.616], // #80939d
+    ];
 
     private static readonly MESH_VERTEX_COUNT = 6 * 3;
 
@@ -29,28 +33,6 @@ export class VertexTilesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
-    private static readonly MESH_ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.mesh.tile",
-            name: "in_vertexPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-        {
-            origin: "vertexbuffer.mesh.tile",
-            name: "in_textureCoordinates",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-        },
-    ];
-
-    //===== WATER INSTANCES =========================================
-
-    private static readonly WATER_COLOR: ([number, number, number])[] = [
-        /*light*/ [0.682,0.761,0.753], // #aec2c0
-        /*dark */ [0.502,0.576,0.616] // #80939d
-    ]
-
     private static readonly WATER_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
@@ -60,32 +42,6 @@ export class VertexTilesNode extends VertexRenderNode {
         MixedArrayBufferType.INT,
     ];
 
-    private static readonly WATER_ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.instance.tilewater",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-            divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.tilewater",
-            name: "in_color",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 3,
-            divisor: 1,
-        },
-        {
-            origin: "vertexbuffer.instance.tilewater",
-            name: "in_borderMask",
-            type: GLAttributeType.INT,
-            amountComponents: 1,
-            divisor: 1,
-        },
-    ];
-
-    //===== LAND INSTANCES ==========================================
-
     private static readonly LAND_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
@@ -93,32 +49,9 @@ export class VertexTilesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC4,
     ];
 
-    private static readonly LAND_ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.instance.tileland",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-            divisor: 1,
-        }
-    ];
-
-
-    //===== FOG INSTANCES ===========================================
-
     private static readonly FOG_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
-    ];
-
-    private static readonly FOG_ATTRIBUTES: VertexDataAttributeConfig[] = [
-        {
-            origin: "vertexbuffer.instance.tilefog",
-            name: "in_worldPosition",
-            type: GLAttributeType.FLOAT,
-            amountComponents: 2,
-            divisor: 1,
-        },
     ];
 
     private readonly tileDb: TileDatabase;
@@ -127,31 +60,92 @@ export class VertexTilesNode extends VertexRenderNode {
     constructor(tileDb: TileDatabase) {
         super({
             id: "vertexnode.tiles",
-            outputData: [
-                {
-                    id: "vertexdata.water",
-                    type: "instanced",
+            input: [],
+            output: [
+                new VertexBuffer({
+                    name: "vertexbuffer.mesh.tile",
                     attributes: [
-                        ...VertexTilesNode.MESH_ATTRIBUTES,
-                        ...VertexTilesNode.WATER_ATTRIBUTES,
+                        {
+                            name: "in_vertexPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
+                        {
+                            name: "in_textureCoordinates",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                        },
                     ],
-                },
-                {
-                    id: "vertexdata.land",
-                    type: "instanced",
+                }),
+                new VertexBuffer({
+                    name: "vertexbuffer.instance.tilewater",
                     attributes: [
-                        ...VertexTilesNode.MESH_ATTRIBUTES,
-                        ...VertexTilesNode.LAND_ATTRIBUTES,
+                        {
+                            name: "in_worldPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
+                        {
+                            name: "in_color",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 3,
+                            divisor: 1,
+                        },
+                        {
+                            name: "in_borderMask",
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                            divisor: 1,
+                        },
                     ],
-                },
-                {
-                    id: "vertexdata.fog",
-                    type: "instanced",
+                }),
+                new VertexBuffer({
+                    name: "vertexbuffer.instance.tileland",
                     attributes: [
-                        ...VertexTilesNode.MESH_ATTRIBUTES,
-                        ...VertexTilesNode.FOG_ATTRIBUTES,
+                        {
+                            name: "in_worldPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
                     ],
-                },
+                }),
+                new VertexBuffer({
+                    name: "vertexbuffer.instance.tilefog",
+                    attributes: [
+                        {
+                            name: "in_worldPosition",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
+                    ],
+                }),
+                new VertexDescriptor({
+                    name: "vertexdata.water",
+                    type: "instanced",
+                    buffers: [
+                        "vertexbuffer.mesh.tile",
+                        "vertexbuffer.instance.tilewater"
+                    ]
+                }),
+                new VertexDescriptor({
+                    name: "vertexdata.land",
+                    type: "instanced",
+                    buffers: [
+                        "vertexbuffer.mesh.tile",
+                        "vertexbuffer.instance.tileland"
+                    ]
+                }),
+                new VertexDescriptor({
+                    name: "vertexdata.fog",
+                    type: "instanced",
+                    buffers: [
+                        "vertexbuffer.mesh.tile",
+                        "vertexbuffer.instance.tilefog"
+                    ]
+                })
             ],
         });
         this.tileDb = tileDb;
@@ -180,21 +174,24 @@ export class VertexTilesNode extends VertexRenderNode {
         for (let i = 0, n = tiles.length; i < n; i++) {
             const tile = tiles[i];
             if (this.isFog(tile)) {
-                this.appendFogInstance(tile, cursorFog)
+                this.appendFogInstance(tile, cursorFog);
             } else if (this.isLand(tile)) {
-                this.appendLandInstance(tile, cursorLand)
+                this.appendLandInstance(tile, cursorLand);
             } else if (this.isWater(tile)) {
-                this.appendWaterInstance(tile, cursorWater)
+                this.appendWaterInstance(tile, cursorWater);
             }
         }
 
-        buffers.set("vertexbuffer.instance.tilewater", new VertexBufferResource(arrayBufferWater.getRawBuffer()))
-        buffers.set("vertexbuffer.instance.tileland", new VertexBufferResource(arrayBufferLand.getRawBuffer()))
-        buffers.set("vertexbuffer.instance.tilefog", new VertexBufferResource(arrayBufferFog.getRawBuffer()))
+        buffers.set("vertexbuffer.instance.tilewater", new VertexBufferResource(arrayBufferWater.getRawBuffer()));
+        buffers.set("vertexbuffer.instance.tileland", new VertexBufferResource(arrayBufferLand.getRawBuffer()));
+        buffers.set("vertexbuffer.instance.tilefog", new VertexBufferResource(arrayBufferFog.getRawBuffer()));
 
-        outputs.set("vertexdata.water", { vertexCount: VertexTilesNode.MESH_VERTEX_COUNT, instanceCount: tileCounts.water})
-        outputs.set("vertexdata.land", { vertexCount: VertexTilesNode.MESH_VERTEX_COUNT, instanceCount: tileCounts.land})
-        outputs.set("vertexdata.fog", { vertexCount: VertexTilesNode.MESH_VERTEX_COUNT, instanceCount: tileCounts.fog})
+        outputs.set("vertexdata.water", {
+            vertexCount: VertexTilesNode.MESH_VERTEX_COUNT,
+            instanceCount: tileCounts.water,
+        });
+        outputs.set("vertexdata.land", {vertexCount: VertexTilesNode.MESH_VERTEX_COUNT, instanceCount: tileCounts.land});
+        outputs.set("vertexdata.fog", {vertexCount: VertexTilesNode.MESH_VERTEX_COUNT, instanceCount: tileCounts.fog});
 
         return new VertexDataResource({
             buffers: buffers,
@@ -287,9 +284,9 @@ export class VertexTilesNode extends VertexRenderNode {
         cursor.append(center[1]);
 
         // color
-        const rng = seedrandom(tile.identifier.id).quick()
+        const rng = seedrandom(tile.identifier.id).quick();
         const color = this.mix(VertexTilesNode.WATER_COLOR[0], VertexTilesNode.WATER_COLOR[1], rng);
-        cursor.append(color)
+        cursor.append(color);
 
         // water border mask
         const border = BorderBuilder.build(tile, this.tileDb, false, (ta, tb) => {

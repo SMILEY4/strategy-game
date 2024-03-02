@@ -1,11 +1,13 @@
 import {RenderGraphCompiler} from "../graph/renderGraphCompiler";
 import {WebGLRenderCommand} from "./webGLRenderCommand";
 import {AbstractRenderNode} from "../graph/abstractRenderNode";
-import {DrawRenderNode, DrawRenderNodeInput, DrawRenderNodeOutput} from "../graph/drawRenderNode";
+import {DrawRenderNode} from "../graph/drawRenderNode";
 import {VertexRenderNode} from "../graph/vertexRenderNode";
 import {TextureBindingHandler} from "./textureBindingHandler";
 import {ProgramUniformEntry} from "./programUniformEntry";
 import {GLUniformType} from "../../../shared/webgl/glTypes";
+import {NodeInput} from "../graph/nodeInput";
+import {NodeOutput} from "../graph/nodeOutput";
 
 export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRenderCommand.Base> {
 
@@ -24,28 +26,22 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         }
         for (let node of nodes) {
             if (node instanceof VertexRenderNode) {
-                if (node.config.outputData.length === 0) {
-                    return [false, "vertex-render-node " + node.id + " has no output defined"];
-                }
-                const distinctOutIds = node.config.outputData.map(it => it.id).distinct();
-                if (node.config.outputData.length !== distinctOutIds.length) {
-                    return [false, "vertex-render-node " + node.id + " has outputs with duplicate ids"];
-                }
+                // todo
             }
             if (node instanceof DrawRenderNode) {
-                const vertexInputCount = node.config.input.count(it => it instanceof DrawRenderNodeInput.VertexData);
+                const vertexInputCount = node.config.input.count(it => it instanceof NodeInput.VertexDescriptor);
                 if (vertexInputCount !== 1) {
                     return [false, "draw-render-node " + node.id + " has amount of vertex-data-inputs =/= 1 "];
                 }
-                const shaderInputCount = node.config.input.count(it => it instanceof DrawRenderNodeInput.Shader);
+                const shaderInputCount = node.config.input.count(it => it instanceof NodeInput.Shader);
                 if (shaderInputCount !== 1) {
                     return [false, "draw-render-node " + node.id + " has amount of shader-inputs =/= 1 "];
                 }
-                const screenOutputCount = node.config.output.count(it => it instanceof DrawRenderNodeOutput.Screen);
+                const screenOutputCount = node.config.output.count(it => it instanceof NodeOutput.Screen);
                 if (screenOutputCount > 1) {
                     return [false, "draw-render-node " + node.id + " has amount of screen outputs > 1 "];
                 }
-                const renderTargetOutputCount = node.config.output.count(it => it instanceof DrawRenderNodeOutput.RenderTarget);
+                const renderTargetOutputCount = node.config.output.count(it => it instanceof NodeOutput.RenderTarget);
                 if (screenOutputCount === 0 && renderTargetOutputCount !== 1) {
                     return [false, "draw-render-node " + node.id + " has amount of render-target outputs =/= 1 "];
                 }
@@ -76,13 +72,13 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
     private compileDraw(node: DrawRenderNode, textureBindingHandler: TextureBindingHandler, outCommands: WebGLRenderCommand.Base[]) {
 
-        // todo optimize
+        // todo optimize commands
 
         const inputTextureIds: string[] = node.config.input
             .map(e => {
-                if (e instanceof DrawRenderNodeInput.Texture) {
+                if (e instanceof NodeInput.Texture) {
                     return e.path;
-                } else if (e instanceof DrawRenderNodeInput.RenderTarget) {
+                } else if (e instanceof NodeInput.RenderTarget) {
                     return e.renderTargetId;
                 } else {
                     return null;
@@ -90,13 +86,13 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
             })
             .filterDefined();
 
-        const inputShader = node.config.input.find(e => e instanceof DrawRenderNodeInput.Shader)! as DrawRenderNodeInput.Shader;
-        const inputVertexData = node.config.input.find(e => e instanceof DrawRenderNodeInput.VertexData)! as DrawRenderNodeInput.VertexData;
+        const inputShader = node.config.input.find(e => e instanceof NodeInput.Shader)! as NodeInput.Shader;
+        const inputVertexData = node.config.input.find(e => e instanceof NodeInput.VertexDescriptor)! as NodeInput.VertexDescriptor;
 
         // bind framebuffer
         let renderToTexture = false;
         for (let output of node.config.output) {
-            if (output instanceof DrawRenderNodeOutput.RenderTarget) {
+            if (output instanceof NodeOutput.RenderTarget) {
                 outCommands.push(new WebGLRenderCommand.BindFramebuffer(output.renderTargetId));
                 renderToTexture = true;
             }
@@ -104,12 +100,12 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
         // bind textures
         for (let input of node.config.input) {
-            if (input instanceof DrawRenderNodeInput.Texture) {
+            if (input instanceof NodeInput.Texture) {
                 const textureId = input.path;
                 const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
                 outCommands.push(new WebGLRenderCommand.BindTexture(textureId, textureUnit));
             }
-            if (input instanceof DrawRenderNodeInput.RenderTarget) {
+            if (input instanceof NodeInput.RenderTarget) {
                 const textureId = input.renderTargetId;
                 const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
                 outCommands.push(new WebGLRenderCommand.BindFramebufferTexture(textureId, textureUnit));
@@ -122,7 +118,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         // set uniforms
         const uniforms: ProgramUniformEntry[] = [];
         for (let input of node.config.input) {
-            if (input instanceof DrawRenderNodeInput.Property) {
+            if (input instanceof NodeInput.Property) {
                 uniforms.push(new ProgramUniformEntry({
                     valueConstant: input.valueConstant,
                     valueProvider: input.valueProvider,
@@ -130,7 +126,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
                     type: input.type,
                 }));
             }
-            if (input instanceof DrawRenderNodeInput.Texture) {
+            if (input instanceof NodeInput.Texture) {
                 const textureId = input.path;
                 uniforms.push(new ProgramUniformEntry({
                     valueConstant: null,
@@ -139,7 +135,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
                     type: GLUniformType.SAMPLER_CUBE,
                 }));
             }
-            if (input instanceof DrawRenderNodeInput.RenderTarget) {
+            if (input instanceof NodeInput.RenderTarget) {
                 const textureId = input.renderTargetId;
                 uniforms.push(new ProgramUniformEntry({
                     valueConstant: null,
@@ -164,16 +160,16 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
         // unbind framebuffer
         for (let output of node.config.output) {
-            if (output instanceof DrawRenderNodeOutput.RenderTarget) {
+            if (output instanceof NodeOutput.RenderTarget) {
                 outCommands.push(new WebGLRenderCommand.UnbindFramebuffer());
             }
         }
     }
 
     private getClearColor(node: DrawRenderNode): [number, number, number, number] {
-        const config = node.config.input.find(e => e instanceof DrawRenderNodeInput.ClearColor)
+        const config = node.config.input.find(e => e instanceof NodeInput.ClearColor)
         if(config) {
-            return (config as DrawRenderNodeInput.ClearColor).clearColor
+            return (config as NodeInput.ClearColor).clearColor
         } else {
             return [0,0,0,1]
         }
