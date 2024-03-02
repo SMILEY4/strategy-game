@@ -25,6 +25,7 @@ import {VertexDetailsNode} from "./rendernodes/vertexDetailsNode";
 import {DrawDetailsNode} from "./rendernodes/drawDetailsNode";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {DrawRenderTargetToScreenNode} from "../core/prebuiltnodes/drawRenderTargetToScreenNode";
+import {GameRenderConfig} from "./gameRenderConfig";
 
 
 export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
@@ -36,6 +37,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
 
     constructor(
         gl: WebGL2RenderingContext,
+        renderConfig: () => GameRenderConfig,
         tileDb: TileDatabase,
         routeDb: RouteDatabase,
         gameSessionDb: GameSessionDatabase,
@@ -49,7 +51,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 // common
                 new VertexFullQuadNode(),
                 // game
-                new VertexTilesNode(tileDb),
+                new VertexTilesNode(renderConfig, tileDb),
                 new VertexOverlayNode(tileDb, gameSessionDb),
                 new VertexEntitiesNode(tileDb, commandDb),
                 new VertexDetailsNode(tileDb),

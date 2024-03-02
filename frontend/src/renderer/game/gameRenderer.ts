@@ -6,6 +6,7 @@ import {Camera} from "../../shared/webgl/camera";
 import {RouteDatabase} from "../../state/routeDatabase";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CommandDatabase} from "../../state/commandDatabase";
+import {GameRenderConfig} from "./gameRenderConfig";
 
 export class GameRenderer {
 
@@ -16,6 +17,7 @@ export class GameRenderer {
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly commandDb: CommandDatabase;
 
+    private renderConfig: GameRenderConfig | null = null
     private renderGraph: GameRenderGraph | null = null;
 
     constructor(
@@ -35,11 +37,13 @@ export class GameRenderer {
     }
 
     public initialize(): void {
-        this.renderGraph = new GameRenderGraph(this.canvasHandle.getGL(), this.tileDb, this.routeDb, this.gameSessionDb, this.commandDb);
+        GameRenderConfig.initialize();
+        this.renderGraph = new GameRenderGraph(this.canvasHandle.getGL(), () => this.renderConfig!, this.tileDb, this.routeDb, this.gameSessionDb, this.commandDb);
         this.renderGraph.initialize();
     }
 
     public render() {
+        this.renderConfig = GameRenderConfig.load()
         this.renderGraph?.updateCamera(this.getRenderCamera());
         this.renderGraph?.execute();
     }

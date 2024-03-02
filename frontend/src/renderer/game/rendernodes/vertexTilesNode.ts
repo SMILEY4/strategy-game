@@ -16,13 +16,9 @@ import seedrandom from "seedrandom";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {GameRenderConfig} from "../gameRenderConfig";
 
 export class VertexTilesNode extends VertexRenderNode {
-
-    private static readonly WATER_COLOR: ([number, number, number])[] = [
-        /*light*/ [0.682, 0.761, 0.753], // #aec2c0
-        /*dark */ [0.502, 0.576, 0.616], // #80939d
-    ];
 
     private static readonly MESH_VERTEX_COUNT = 6 * 3;
 
@@ -55,9 +51,10 @@ export class VertexTilesNode extends VertexRenderNode {
     ];
 
     private readonly tileDb: TileDatabase;
+    private readonly renderConfig: () => GameRenderConfig;
     private initializedBaseMesh: boolean = false;
 
-    constructor(tileDb: TileDatabase) {
+    constructor(renderConfig: () => GameRenderConfig, tileDb: TileDatabase) {
         super({
             id: "vertexnode.tiles",
             input: [],
@@ -109,6 +106,12 @@ export class VertexTilesNode extends VertexRenderNode {
                             amountComponents: 2,
                             divisor: 1,
                         },
+                        {
+                            name: "in_color",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 3,
+                            divisor: 1,
+                        },
                     ],
                 }),
                 new VertexBuffer({
@@ -149,6 +152,7 @@ export class VertexTilesNode extends VertexRenderNode {
             ],
         });
         this.tileDb = tileDb;
+        this.renderConfig = renderConfig;
     }
 
     public execute(): VertexDataResource {
@@ -285,7 +289,7 @@ export class VertexTilesNode extends VertexRenderNode {
 
         // color
         const rng = seedrandom(tile.identifier.id).quick();
-        const color = this.mix(VertexTilesNode.WATER_COLOR[0], VertexTilesNode.WATER_COLOR[1], rng);
+        const color = this.mix(this.renderConfig().water.colorLight, this.renderConfig().water.colorDark, rng);
         cursor.append(color);
 
         // water border mask
@@ -308,10 +312,16 @@ export class VertexTilesNode extends VertexRenderNode {
         const q = tile.identifier.q;
         const r = tile.identifier.r;
 
+        const rng = seedrandom(tile.identifier.id);
+
         // world position
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         cursor.append(center[0]);
         cursor.append(center[1]);
+
+        // color
+        const color = this.mix(this.renderConfig().land.colorLight, this.renderConfig().land.colorDark, rng.quick());
+        cursor.append(color);
     }
 
 

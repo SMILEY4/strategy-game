@@ -10,8 +10,10 @@ import {buildMap} from "../../../shared/utils";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import seedrandom from "seedrandom";
 
 interface RenderDetail {
+    tileId: string,
     q: number,
     r: number,
     type: "mountain" | "forest"
@@ -89,6 +91,7 @@ export class VertexDetailsNode extends VertexRenderNode {
             const tile = tiles[i];
             if (tile.basic.terrainType.visible && tile.basic.terrainType.value === TerrainType.MOUNTAIN) {
                 details.push({
+                    tileId: tile.identifier.id,
                     q: tile.identifier.q,
                     r: tile.identifier.r,
                     type: "mountain",
@@ -96,6 +99,7 @@ export class VertexDetailsNode extends VertexRenderNode {
             }
             if (tile.basic.resourceType.visible && tile.basic.resourceType.value === TerrainResourceType.FOREST) {
                 details.push({
+                    tileId: tile.identifier.id,
                     q: tile.identifier.q,
                     r: tile.identifier.r,
                     type: "forest",
@@ -111,16 +115,19 @@ export class VertexDetailsNode extends VertexRenderNode {
         const halfSize = TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] * 1.15;
         const texU = this.texU(entity);
 
+        const rng = seedrandom(entity.tileId);
+        const cx = center[0] + (rng.quick() * 2 - 1) * TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] * 0.2;
+        const cy = center[1] + (rng.quick() * 2 - 1) * TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * 0.2;
 
         // triangle a
-        this.appendVertex(center[0] - halfSize, center[1] - halfSize, texU[0], 0, cursor);
-        this.appendVertex(center[0] + halfSize, center[1] - halfSize, texU[1], 0, cursor);
-        this.appendVertex(center[0] + halfSize, center[1] + halfSize, texU[1], 1, cursor);
+        this.appendVertex(cx - halfSize, cy - halfSize, texU[0], 0, cursor);
+        this.appendVertex(cx + halfSize, cy - halfSize, texU[1], 0, cursor);
+        this.appendVertex(cx + halfSize, cy + halfSize, texU[1], 1, cursor);
 
         // triangle b
-        this.appendVertex(center[0] - halfSize, center[1] - halfSize, texU[0], 0, cursor);
-        this.appendVertex(center[0] - halfSize, center[1] + halfSize, texU[0], 1, cursor);
-        this.appendVertex(center[0] + halfSize, center[1] + halfSize, texU[1], 1, cursor);
+        this.appendVertex(cx - halfSize, cy - halfSize, texU[0], 0, cursor);
+        this.appendVertex(cx - halfSize, cy + halfSize, texU[0], 1, cursor);
+        this.appendVertex(cx + halfSize, cy + halfSize, texU[1], 1, cursor);
     }
 
     private appendVertex(x: number, y: number, u: number, v: number, cursor: MixedArrayBufferCursor) {
