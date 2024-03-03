@@ -25,6 +25,25 @@ vec4 framebuffer(sampler2D fb, vec2 coords) {
     vec4 color = texture(fb, coords);
     return vec4(color.a > 0.0 ? color.rgb / color.a : vec3(0.0), color.a);
 }
+vec4 convertFog(vec4 fogIn) {
+    vec4 colorUnknown = vec4(0.15, 0.15, 0.15, 1.0);
+    vec4 colorDiscovered = vec4(0.15, 0.15, 0.15, 0.6);
+    vec4 color = mix(colorUnknown, colorDiscovered, fogIn.g);
+    color.a = color.a * fogIn.a;
+    return color;
+}
+
+vec4 processLand(vec4 landIn, vec4 waterIn) {
+    float outlineWidth = 0.3;
+    float outlinePosition = 0.5;
+    if ((outlinePosition - outlineWidth/2.0) < landIn.a && landIn.a < (outlinePosition + outlineWidth/2.0)) {
+        return vec4(landIn.rgb * 0.5, 1.0);
+    } else if ((outlinePosition - outlineWidth) < landIn.a && landIn.a < (outlinePosition - outlineWidth/2.0)) {
+        return vec4(waterIn.rgb * 2.0, 1.0);
+    } else {
+        return vec4(landIn.rgb, landIn.a >= outlinePosition ? 1.0 : 0.0);
+    }
+}
 
 vec2 getMapPosition(mat3 invViewProjection, vec2 screen) {
     return (invViewProjection * vec3(screen * 2.0 - 1.0, 1.0)).xy;
@@ -56,13 +75,14 @@ vec3 czm_saturation(vec3 rgb, float adjustment)
 
 void main() {
     vec4 water = framebuffer(u_water, v_textureCoordinates);
-    vec4 land = framebuffer(u_land, v_textureCoordinates);
-    vec4 fog = framebuffer(u_fog, v_textureCoordinates);
+    vec4 land = processLand(framebuffer(u_land, v_textureCoordinates), water);
+    vec4 fog = convertFog(framebuffer(u_fog, v_textureCoordinates));
     vec4 entities = framebuffer(u_entities, v_textureCoordinates);
     vec4 details = framebuffer(u_details, v_textureCoordinates);
     vec4 routes = framebuffer(u_routes, v_textureCoordinates);
     vec4 overlay = framebuffer(u_overlay, v_textureCoordinates);
 
+    // combine layers
     vec4 color = vec4(0.0);
     color = mix(color, water, water.a);
     color = mix(color, land, land.a);
@@ -72,20 +92,13 @@ void main() {
     color = mix(color, entities, entities.a);
     color = mix(color, fog, fog.a);
 
-    
-    if (v_textureCoordinates.x > 0.0) {
-        vec3 paper = getPaperTexture();
-        color = vec4(color.rgb * paper, color.a);
-        color = vec4(
-            pow(color.r, 0.75),
-            pow(color.g, 0.75),
-            pow(color.b, 0.75),
-            color.a
-        );
-        color.rgb = czm_saturation(color.rgb, 1.2);
-        outColor = color; //vec4(paper, 1.0);
-    } else {
-        outColor = color;
-    }
+    // apply paper effect
+    vec3 paper = getPaperTexture();
+    color = vec4(color.rgb * paper, color.a);
 
+    // color correct
+    color = vec4(pow(color.r, 0.75), pow(color.g, 0.75), pow(color.b, 0.75), color.a);
+    color.rgb = czm_saturation(color.rgb, 1.2);
+
+    outColor = color;
 }

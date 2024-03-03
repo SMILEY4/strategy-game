@@ -15,6 +15,7 @@ import {ChangeProvider} from "../changeProvider";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {shuffleArray} from "../../../shared/utils";
+import {TileVisibility} from "../../../models/tileVisibility";
 
 export class VertexTilesNode extends VertexRenderNode {
 
@@ -46,6 +47,8 @@ export class VertexTilesNode extends VertexRenderNode {
     private static readonly FOG_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
+        // visibility
+        MixedArrayBufferType.INT
     ];
 
     private readonly changeProvider: ChangeProvider;
@@ -124,6 +127,12 @@ export class VertexTilesNode extends VertexRenderNode {
                             amountComponents: 2,
                             divisor: 1,
                         },
+                        {
+                            name: "in_visibility",
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                            divisor: 1,
+                        },
                     ],
                 }),
                 new VertexDescriptor({
@@ -187,9 +196,11 @@ export class VertexTilesNode extends VertexRenderNode {
                 const tile = tiles[index];
                 if (this.isFog(tile)) {
                     this.appendFogInstance(tile, cursorFog);
-                } else if (this.isLand(tile)) {
+                }
+                if (this.isLand(tile)) {
                     this.appendLandInstance(tile, cursorLand);
-                } else if (this.isWater(tile)) {
+                }
+                if (this.isWater(tile)) {
                     this.appendWaterInstance(tile, cursorWater);
                 }
             }
@@ -264,9 +275,11 @@ export class VertexTilesNode extends VertexRenderNode {
             const tile = tiles[i];
             if (this.isFog(tile)) {
                 countFog++;
-            } else if (this.isLand(tile)) {
+            }
+            if (this.isLand(tile)) {
                 countLand++;
-            } else if (this.isWater(tile)) {
+            }
+            if (this.isWater(tile)) {
                 countWater++;
             }
         }
@@ -281,7 +294,7 @@ export class VertexTilesNode extends VertexRenderNode {
     //===== FOG INSTANCES ===========================================
 
     private isFog(tile: Tile): boolean {
-        return !tile.basic.terrainType.visible;
+        return tile.visibility === TileVisibility.UNKNOWN || tile.visibility === TileVisibility.DISCOVERED;
     }
 
     private appendFogInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
@@ -292,6 +305,10 @@ export class VertexTilesNode extends VertexRenderNode {
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         cursor.append(center[0]);
         cursor.append(center[1]);
+
+        // visibility
+        cursor.append(tile.visibility.renderId)
+
     }
 
     //===== WATER INSTANCES =========================================
