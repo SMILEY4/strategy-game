@@ -52,7 +52,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
     public compile(nodes: AbstractRenderNode[]): WebGLRenderCommand.Base[] {
         const commands: WebGLRenderCommand.Base[] = [];
-        const textureBindingHandler = new TextureBindingHandler(8);
+        const textureBindingHandler = new TextureBindingHandler(16);
 
         for (let node of nodes) {
             if (node instanceof VertexRenderNode) {

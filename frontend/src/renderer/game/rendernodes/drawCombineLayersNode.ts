@@ -2,10 +2,15 @@ import {DrawRenderNode} from "../../core/graph/drawRenderNode";
 import {VertexFullQuadNode} from "../../core/prebuiltnodes/vertexFullquadNode";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import {NodeInput} from "../../core/graph/nodeInput";
+import {GLUniformType} from "../../../shared/webgl/glTypes";
+import {Camera} from "../../../shared/webgl/camera";
+import {mat3} from "../../../shared/webgl/mat3";
 
 export class DrawCombineLayersNode extends DrawRenderNode {
 
-    constructor() {
+    private readonly camera: () => Camera;
+
+    constructor(camera: () => Camera) {
         super({
             id: "drawnode.combinelayers",
             input: [
@@ -47,10 +52,33 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                 new NodeInput.VertexDescriptor({
                     id: VertexFullQuadNode.DATA_ID,
                 }),
+                new NodeInput.Texture({
+                    binding: "u_parchment",
+                    path: "/textures/seamless_parchment_texture_by_fantasystock_dyu8dx-pre_grayscale_upscaled.jpg",
+                }),
+                new NodeInput.Texture({
+                    binding: "u_paper",
+                    path: "/textures/wildtextures-just-paper-seamless-texture.jpg",
+                }),
+                new NodeInput.Texture({
+                    binding: "u_paperLarge",
+                    path: "/textures/non_uniform_concret_wall_prepared.jpg",
+                }),
+                new NodeInput.Texture({
+                    binding: "u_noise",
+                    path: "/textures/noise_watercolor.png",
+                }),
+                new NodeInput.Property({
+                    binding: "u_invViewProjection",
+                    type: GLUniformType.MAT3,
+                    valueConstant: null,
+                    valueProvider: () => mat3.inverse(this.camera().getViewProjectionMatrixOrThrow()),
+                }),
             ],
             output: [
                 new NodeOutput.Screen(),
             ],
         });
+        this.camera = camera;
     }
 }
