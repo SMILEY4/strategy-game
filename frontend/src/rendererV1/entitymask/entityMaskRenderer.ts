@@ -33,7 +33,7 @@ export class EntityMaskRenderer implements RenderModule {
 
 
         data.entityMask.vertexArray.bind();
-        this.renderer.prepareFrame(camera, [1, 1, 1, 1], false, 1)
+        this.renderer.prepareFrame(camera, [1, 1, 1, 1], false, 1, false)
         this.renderer.draw(data.entities.vertexCount);
         data.entityMask.vertexArray.unbind();
 

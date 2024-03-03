@@ -116,6 +116,9 @@ export class VertexDetailsNode extends VertexRenderNode {
                 });
             }
         }
+
+        details.sort((a, b) => b.r - a.r)
+
         return details;
     }
 
@@ -129,18 +132,20 @@ export class VertexDetailsNode extends VertexRenderNode {
         const cx = center[0] + (rng.quick() * 2 - 1) * TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] * 0.2;
         const cy = center[1] + (rng.quick() * 2 - 1) * TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * 0.2;
 
+        const z = entity.r;
+
         // triangle a
-        this.appendVertex(cx - halfSize, cy - halfSize, texU[0], 0, cursor);
-        this.appendVertex(cx + halfSize, cy - halfSize, texU[1], 0, cursor);
-        this.appendVertex(cx + halfSize, cy + halfSize, texU[1], 1, cursor);
+        this.appendVertex(cx - halfSize, cy - halfSize, z, texU[0], 0, cursor);
+        this.appendVertex(cx + halfSize, cy - halfSize, z, texU[1], 0, cursor);
+        this.appendVertex(cx + halfSize, cy + halfSize, z, texU[1], 1, cursor);
 
         // triangle b
-        this.appendVertex(cx - halfSize, cy - halfSize, texU[0], 0, cursor);
-        this.appendVertex(cx - halfSize, cy + halfSize, texU[0], 1, cursor);
-        this.appendVertex(cx + halfSize, cy + halfSize, texU[1], 1, cursor);
+        this.appendVertex(cx - halfSize, cy - halfSize, z, texU[0], 0, cursor);
+        this.appendVertex(cx - halfSize, cy + halfSize, z, texU[0], 1, cursor);
+        this.appendVertex(cx + halfSize, cy + halfSize, z, texU[1], 1, cursor);
     }
 
-    private appendVertex(x: number, y: number, u: number, v: number, cursor: MixedArrayBufferCursor) {
+    private appendVertex(x: number, y: number, z: number, u: number, v: number, cursor: MixedArrayBufferCursor) {
 
         // world position
         cursor.append(x);

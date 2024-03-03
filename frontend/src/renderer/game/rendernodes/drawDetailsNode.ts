@@ -33,7 +33,7 @@ export class DrawDetailsNode extends DrawRenderNode {
             output: [
                 new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.details",
-                    depth: true,
+                    depth: false,
                     scale: 2
                 }),
             ],

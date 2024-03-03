@@ -217,16 +217,18 @@ export namespace WebGLRenderCommand {
         private readonly clearColor: [number, number, number, number];
         private readonly renderToTexture: boolean;
         private readonly renderScale: number;
+        private readonly depth: boolean;
 
-        constructor(vertexDataId: string, clearColor: [number, number, number, number], renderToTexture: boolean, renderScale: number) {
+        constructor(vertexDataId: string, clearColor: [number, number, number, number], renderToTexture: boolean, renderScale: number, depth: boolean) {
             this.vertexDataId = vertexDataId;
             this.clearColor = clearColor;
             this.renderToTexture = renderToTexture;
             this.renderScale = renderScale;
+            this.depth = depth;
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture, this.renderScale);
+            context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture, this.renderScale, this.depth);
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
                 case "standart": {

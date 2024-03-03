@@ -160,6 +160,8 @@ export class VertexEntitiesNode extends VertexRenderNode {
             }
         }
 
+        entities.sort((a,b) => b.r - a.r)
+
         return entities;
     }
 
