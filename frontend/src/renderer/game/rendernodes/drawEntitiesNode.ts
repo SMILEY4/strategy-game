@@ -33,6 +33,8 @@ export class DrawEntitiesNode extends DrawRenderNode {
             output: [
                 new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.entities",
+                    depth: false,
+                    scale: 2
                 }),
             ],
         });

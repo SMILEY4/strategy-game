@@ -29,6 +29,8 @@ export class DrawTilesOverlayNode extends DrawRenderNode {
             output: [
                 new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.overlay",
+                    depth: false,
+                    scale: 1
                 }),
             ],
         });

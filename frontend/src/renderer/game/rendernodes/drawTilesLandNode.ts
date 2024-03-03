@@ -33,6 +33,8 @@ export class DrawTilesLandNode extends DrawRenderNode {
             output: [
                 new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.tilesland",
+                    depth: false,
+                    scale: 1
                 }),
             ],
         });

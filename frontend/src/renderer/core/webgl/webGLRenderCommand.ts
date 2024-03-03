@@ -2,11 +2,13 @@ import {RenderCommand} from "../graph/renderCommand";
 import {WebGLResourceManager} from "./webGLResourceManager";
 import {GLFramebuffer} from "../../../shared/webgl/glFramebuffer";
 import {ProgramUniformEntry} from "./programUniformEntry";
-import {VertexDataResource, VertexRenderNode} from "../graph/vertexRenderNode";
+import {VertexRenderNode} from "../graph/vertexRenderNode";
 import {BaseRenderer} from "../../../shared/webgl/baseRenderer";
 import {Camera} from "../../../shared/webgl/camera";
 
 export namespace WebGLRenderCommand {
+
+    import ManagedFramebuffer = WebGLResourceManager.ManagedFramebuffer;
 
     export interface Context {
         gl: WebGL2RenderingContext,
@@ -62,9 +64,10 @@ export namespace WebGLRenderCommand {
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            const framebuffer = resourceManager.getFramebuffer(this.name).framebuffer
+            const data = resourceManager.getFramebuffer(this.name);
+            const framebuffer = data.framebuffer
             framebuffer.bind();
-            framebuffer.resize(context.camera.getWidth(), context.camera.getHeight())
+            framebuffer.resize(context.camera.getWidth() * data.scale, context.camera.getHeight() * data.scale);
         }
     }
 
@@ -211,17 +214,19 @@ export namespace WebGLRenderCommand {
     export class Draw implements Base {
 
         private readonly vertexDataId: string;
-        private readonly renderToTexture: boolean
-        private readonly clearColor: [number, number, number, number]
+        private readonly clearColor: [number, number, number, number];
+        private readonly renderToTexture: boolean;
+        private readonly renderScale: number;
 
-        constructor(vertexDataId: string, clearColor: [number, number, number, number], renderToTexture: boolean) {
+        constructor(vertexDataId: string, clearColor: [number, number, number, number], renderToTexture: boolean, renderScale: number) {
             this.vertexDataId = vertexDataId;
             this.clearColor = clearColor;
-            this.renderToTexture= renderToTexture;
+            this.renderToTexture = renderToTexture;
+            this.renderScale = renderScale;
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture)
+            context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture, this.renderScale);
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
                 case "standart": {

@@ -33,6 +33,8 @@ export class DrawTilesFogNode extends DrawRenderNode {
             output: [
                 new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.tilesfog",
+                    depth: false,
+                    scale: 1
                 }),
             ],
         });

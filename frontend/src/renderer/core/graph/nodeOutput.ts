@@ -4,9 +4,13 @@ export namespace NodeOutput {
 
     export class RenderTarget {
         readonly renderTargetId: string;
+        readonly depth: boolean
+        readonly scale: number;
 
-        constructor(props: { renderTargetId: string }) {
+        constructor(props: { renderTargetId: string, scale: number, depth: boolean }) {
             this.renderTargetId = props.renderTargetId;
+            this.depth = props.depth;
+            this.scale = props.scale;
         }
     }
 

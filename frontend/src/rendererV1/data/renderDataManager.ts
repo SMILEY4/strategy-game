@@ -198,7 +198,7 @@ export class RenderDataManager {
                 ),
             },
             entityMask: {
-                framebuffer: GLFramebuffer.create(gl, 1, 1),
+                framebuffer: GLFramebuffer.create(gl, 1, 1, false),
                 program: programEntityMask,
                 textures: {
                     mask: GLTexture.createFromPath(gl, "/entities_mask.png", {filterMin: GLTextureMinFilter.NEAREST}),
@@ -223,7 +223,7 @@ export class RenderDataManager {
                 ),
             },
             routes: {
-                framebuffer: GLFramebuffer.create(gl, 1, 1),
+                framebuffer: GLFramebuffer.create(gl, 1, 1, false),
                 texture: GLTexture.createFromPath(gl, "/route3.png", {filterMin: GLTextureMinFilter.NEAREST}),
                 program: programRoutes,
                 vertexCount: 0,

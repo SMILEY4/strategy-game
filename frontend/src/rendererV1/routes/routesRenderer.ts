@@ -32,7 +32,7 @@ export class RoutesRenderer implements RenderModule {
         data.routes.framebuffer.resize(camera.getWidth(), camera.getHeight())
 
         data.routes.vertexArray.bind();
-        this.renderer.prepareFrame(camera, [0, 0, 0, 0])
+        this.renderer.prepareFrame(camera, [0, 0, 0, 0], false, 1)
         this.renderer.draw(data.routes.vertexCount);
         data.routes.vertexArray.unbind();
 

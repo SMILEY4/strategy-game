@@ -9,13 +9,9 @@ export class BaseRenderer {
         this.gl = gl;
     }
 
-    public prepareFrame(camera: Camera, clearColor?: [number, number, number, number], renderToTexture?: boolean) {
-        this.gl.viewport(0, 0, camera.getWidth(), camera.getHeight());
-        if (clearColor) {
-            this.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-        } else {
-            this.gl.clearColor(0, 0, 0, 1);
-        }
+    public prepareFrame(camera: Camera, clearColor: [number, number, number, number], renderToTexture: boolean, scaling: number) {
+        this.gl.viewport(0, 0, camera.getWidth()*scaling, camera.getHeight()*scaling);
+        this.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendEquation(this.gl.FUNC_ADD);

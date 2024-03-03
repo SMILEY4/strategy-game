@@ -29,6 +29,8 @@ export class DrawRoutesNode extends DrawRenderNode {
             output: [
                 new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.routes",
+                    depth: false,
+                    scale: 2
                 }),
             ],
         });

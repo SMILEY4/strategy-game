@@ -73,7 +73,7 @@ export class RenderDataManager {
                 mapMode: MapMode.DEFAULT,
             },
             world: {
-                framebuffer: GLFramebuffer.create(gl, 1, 1),
+                framebuffer: GLFramebuffer.create(gl, 1, 1, false),
             },
             ground: {
                 program: groundProgram,

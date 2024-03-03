@@ -61,7 +61,7 @@ export class GameRendererV2 {
         this.renderDataManager.updateData(camera);
         const data = this.renderDataManager.getData();
 
-        this.renderer?.prepareFrame(camera);
+        this.renderer?.prepareFrame(camera, [0,0,0,0], false, 1);
         this.modules.forEach(m => m.render(camera, data));
 
         this.monitor.endFrame();

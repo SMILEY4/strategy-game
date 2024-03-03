@@ -81,7 +81,7 @@ export namespace GLFramebuffer {
         GLError.check(gl, "bindFramebuffer", "unbinding framebuffer");
     }
 
-    export function create(gl: WebGL2RenderingContext, width: number, height: number) {
+    export function create(gl: WebGL2RenderingContext, width: number, height: number, depth: boolean) {
         const texture = createTargetTexture(gl, width, height);
 
         const fb = gl.createFramebuffer();

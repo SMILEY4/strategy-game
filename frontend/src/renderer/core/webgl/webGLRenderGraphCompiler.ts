@@ -91,10 +91,12 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
         // bind framebuffer
         let renderToTexture = false;
+        let renderScale = 1
         for (let output of node.config.output) {
             if (output instanceof NodeOutput.RenderTarget) {
                 outCommands.push(new WebGLRenderCommand.BindFramebuffer(output.renderTargetId));
                 renderToTexture = true;
+                renderScale = output.scale;
             }
         }
 
@@ -153,7 +155,12 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         outCommands.push(new WebGLRenderCommand.BindVertexArray(inputVertexData.vertexDataId, inputShader.vertexId, inputShader.fragmentId));
 
         // draw call
-        outCommands.push(new WebGLRenderCommand.Draw(inputVertexData.vertexDataId, this.getClearColor(node), renderToTexture));
+        outCommands.push(new WebGLRenderCommand.Draw(
+            inputVertexData.vertexDataId,
+            this.getClearColor(node),
+            renderToTexture,
+            renderScale
+        ));
 
         // unbind vertex arrays
         outCommands.push(new WebGLRenderCommand.UnbindVertexArray(inputVertexData.vertexDataId, inputShader.vertexId, inputShader.fragmentId));

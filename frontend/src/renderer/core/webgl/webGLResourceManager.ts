@@ -60,7 +60,7 @@ export class WebGLResourceManager implements ResourceManager {
                 for (let output of node.config.output) {
                     // noinspection SuspiciousTypeOfGuard
                     if (output instanceof NodeOutput.RenderTarget) {
-                        this.initializeFramebuffer(output.renderTargetId);
+                        this.initializeFramebuffer(output.renderTargetId, output.depth, output.scale);
                     }
                 }
             }
@@ -193,14 +193,15 @@ export class WebGLResourceManager implements ResourceManager {
         return managedTexture;
     }
 
-    private initializeFramebuffer(renderTargetId: string) {
+    private initializeFramebuffer(renderTargetId: string, depth: boolean, scale: number) {
         if (this.framebuffers.has(renderTargetId)) {
             return this.framebuffers.get(renderTargetId)!;
         }
         const managedFramebuffer: ManagedFramebuffer = {
             id: renderTargetId,
             renderTargetId: renderTargetId,
-            framebuffer: GLFramebuffer.create(this.gl, 1, 1),
+            scale: scale,
+            framebuffer: GLFramebuffer.create(this.gl, 1, 1, depth),
         };
         this.framebuffers.set(managedFramebuffer.id, managedFramebuffer);
         console.log("Loaded framebuffer with id", managedFramebuffer.id);
@@ -319,6 +320,7 @@ export namespace WebGLResourceManager {
     export interface ManagedFramebuffer {
         id: string,
         renderTargetId: string,
+        scale: number,
         framebuffer: GLFramebuffer
     }
 

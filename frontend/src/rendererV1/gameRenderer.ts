@@ -58,7 +58,7 @@ export class GameRenderer {
         const camera = this.getRenderCamera();
         this.renderDataManager.updateData(camera);
         const data = this.renderDataManager.getData();
-        this.renderer?.prepareFrame(camera);
+        this.renderer?.prepareFrame(camera, [0,0,0,0], false, 0);
         this.modules.forEach(m => m.render(camera, data));
         this.monitor.endFrame();
         this.monitoringRepository.setWebGLMonitorData(this.monitor.getData());
