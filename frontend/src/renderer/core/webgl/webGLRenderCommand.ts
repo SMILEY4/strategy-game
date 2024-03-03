@@ -229,6 +229,14 @@ export namespace WebGLRenderCommand {
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture, this.renderScale, this.depth);
+            if(this.vertexDataId === "vertexdata.water") {
+                context.gl.blendFuncSeparate(
+                    context.gl.SRC_ALPHA,
+                    context.gl.ONE_MINUS_SRC_ALPHA,
+                    context.gl.ONE,
+                    context.gl.ONE_MINUS_SRC_ALPHA);
+            }
+
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
                 case "standart": {

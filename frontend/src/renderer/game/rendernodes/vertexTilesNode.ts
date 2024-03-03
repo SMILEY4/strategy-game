@@ -26,13 +26,17 @@ export class VertexTilesNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
         // texture coords
         ...MixedArrayBufferType.VEC2,
+        // corner data
+        ...MixedArrayBufferType.VEC3,
+        // direction data
+        MixedArrayBufferType.INT,
     ];
 
     private static readonly WATER_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
-        // color
-        ...MixedArrayBufferType.VEC3,
+        // depth
+        MixedArrayBufferType.FLOAT,
         // packed water border mask
         MixedArrayBufferType.INT,
     ];
@@ -76,6 +80,16 @@ export class VertexTilesNode extends VertexRenderNode {
                             type: GLAttributeType.FLOAT,
                             amountComponents: 2,
                         },
+                        {
+                            name: "in_cornerData",
+                            type: GLAttributeType.FLOAT,
+                            amountComponents: 3,
+                        },
+                        {
+                            name: "in_directionData",
+                            type: GLAttributeType.INT,
+                            amountComponents: 1,
+                        },
                     ],
                 }),
                 new VertexBuffer({
@@ -88,9 +102,9 @@ export class VertexTilesNode extends VertexRenderNode {
                             divisor: 1,
                         },
                         {
-                            name: "in_color",
+                            name: "in_depth",
                             type: GLAttributeType.FLOAT,
-                            amountComponents: 3,
+                            amountComponents: 1,
                             divisor: 1,
                         },
                         {
@@ -255,14 +269,20 @@ export class VertexTilesNode extends VertexRenderNode {
         cursor.append(0);
         cursor.append(0);
         cursor.append(this.hexTextureCoordinates(-1));
+        cursor.append([1, 0, 0]);
+        cursor.append(cornerIndexA);
         // corner a
         cursor.append(this.hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
         cursor.append(this.hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
         cursor.append(this.hexTextureCoordinates(cornerIndexA));
+        cursor.append([0, 1, 0]);
+        cursor.append(cornerIndexA);
         // corner b
         cursor.append(this.hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
         cursor.append(this.hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
         cursor.append(this.hexTextureCoordinates(cornerIndexB));
+        cursor.append([0, 0, 1]);
+        cursor.append(cornerIndexA);
     }
 
     //===== INSTANCES ===============================================
@@ -328,8 +348,7 @@ export class VertexTilesNode extends VertexRenderNode {
 
         // color
         const rng = seedrandom(tile.identifier.id).quick();
-        const color = this.mix(this.renderConfig().water.colorLight, this.renderConfig().water.colorDark, rng);
-        cursor.append(color);
+        cursor.append(rng);
 
         // water border mask
         const border = BorderBuilder.build(tile, this.tileDb, false, (ta, tb) => {
