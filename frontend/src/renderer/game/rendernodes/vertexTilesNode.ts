@@ -14,6 +14,7 @@ import {GameRenderConfig} from "../gameRenderConfig";
 import {ChangeProvider} from "../changeProvider";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {shuffleArray} from "../../../shared/utils";
 
 export class VertexTilesNode extends VertexRenderNode {
 
@@ -50,6 +51,9 @@ export class VertexTilesNode extends VertexRenderNode {
     private readonly changeProvider: ChangeProvider;
     private readonly tileDb: TileDatabase;
     private readonly renderConfig: () => GameRenderConfig;
+
+    private tileIndices: number[] = [];
+
 
     constructor(changeProvider: ChangeProvider, renderConfig: () => GameRenderConfig, tileDb: TileDatabase) {
         super({
@@ -153,11 +157,12 @@ export class VertexTilesNode extends VertexRenderNode {
         this.renderConfig = renderConfig;
     }
 
+
     public execute(): VertexDataResource {
         const buffers = new Map<string, VertexBufferResource>();
         const outputs = new Map<string, { vertexCount: number; instanceCount: number }>();
 
-        // base mesh
+        // base mesh + tile indices
         if (this.changeProvider.hasChange("basemesh")) {
             const [_, baseMeshData] = this.buildBaseMesh();
             buffers.set("vertexbuffer.mesh.tile", new VertexBufferResource(baseMeshData));
@@ -169,12 +174,17 @@ export class VertexTilesNode extends VertexRenderNode {
             const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
             const tileCounts = this.countTileTypes(tiles);
 
+            if (this.tileIndices.length !== tiles.length) {
+                this.tileIndices = this.buildTileIndices(tiles.length);
+            }
+
             const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, VertexTilesNode.WATER_PATTERN);
             const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, VertexTilesNode.LAND_PATTERN);
             const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, VertexTilesNode.FOG_PATTERN);
 
-            for (let i = 0, n = tiles.length; i < n; i++) {
-                const tile = tiles[i];
+            for (let i = 0, n = this.tileIndices.length; i < n; i++) {
+                const index = this.tileIndices[i];
+                const tile = tiles[index];
                 if (this.isFog(tile)) {
                     this.appendFogInstance(tile, cursorFog);
                 } else if (this.isLand(tile)) {
@@ -207,6 +217,12 @@ export class VertexTilesNode extends VertexRenderNode {
             buffers: buffers,
             outputs: outputs,
         });
+    }
+
+    private buildTileIndices(tileCount: number): number[] {
+        const indices = [...Array(tileCount).keys()];
+        shuffleArray(indices)
+        return indices;
     }
 
     //===== BASE MESH ===============================================
