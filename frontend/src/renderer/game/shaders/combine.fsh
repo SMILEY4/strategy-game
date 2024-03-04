@@ -32,8 +32,9 @@ vec2 getMapPosition(mat3 invViewProjection, vec2 screen) {
 }
 
 vec4 convertFog(vec4 fogIn) {
-    vec4 colorUnknown = vec4(0.15, 0.15, 0.15, 1.0);
-    vec4 colorDiscovered = vec4(0.15, 0.15, 0.15, 0.6);
+    vec3 fogColor = vec3(38.0, 31.0, 21.0) / 255.0;
+    vec4 colorUnknown = vec4(fogColor, 1.0);
+    vec4 colorDiscovered = vec4(fogColor, 0.6);
     vec4 color = mix(colorUnknown, colorDiscovered, fogIn.g);
     color.a = color.a * fogIn.a;
     return color;
@@ -51,7 +52,7 @@ vec4 processWater(vec4 waterIn) {
     float depth = clamp(waterIn.g / 0.8, 0.0, 1.0);
     float noise = texture(u_noise, mapPosition*vec2(0.05)).r  * waveDistortion + (1.0-waveDistortion);;
     float waves = sin(depth*40.0*noise) * pow(depth, 1.5);
-    waves = smoothstep(0.0, 0.4, waves);
+    waves = clamp(waves, 0.0, 0.8);
 
     vec3 colorLight = vec3(0.647, 0.753, 0.773);
     vec3 colorDark = vec3(0.475, 0.584, 0.682);
@@ -101,17 +102,18 @@ float isOutlineLand(float size) {
     outline += isLand(v_textureCoordinates + vec2(size, size));
     outline += isLand(v_textureCoordinates + vec2(-size, -size));
     outline += isLand(v_textureCoordinates + vec2(size, -size));
-    outline = min(outline, 1.0);
+    outline = min(outline/2.0, 1.0);
 
-    return step(0.5, outline) - isLand(v_textureCoordinates);
+    return clamp(outline - isLand(v_textureCoordinates), 0.0, 1.0);
 }
 
 vec4 getOutlineLand() {
-    vec4 inner = mix(vec4(0.0), vec4(vec3(2.0), 1.0), isOutlineLand(0.003));
-    vec4 outer = mix(vec4(0.0), vec4(vec3(0.0), 1.0), isOutlineLand(0.002));
+    vec3 landColor = framebuffer(u_land, v_textureCoordinates).rgb;
+    vec4 light = mix(vec4(0.0), vec4(vec3(1.5), 1.0), isOutlineLand(0.003));
+    vec4 dark = mix(vec4(0.0), vec4(landColor*0.3, 1.0), isOutlineLand(0.002));
     vec4 color = vec4(0.0);
-    color = mix(color, inner, inner.a);
-    color = mix(color, outer, outer.a);
+    color = mix(color, light, light.a);
+    color = mix(color, dark, dark.a);
     return color;
 }
 
