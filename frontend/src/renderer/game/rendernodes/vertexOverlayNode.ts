@@ -31,6 +31,8 @@ export class VertexOverlayNode extends VertexRenderNode {
     private static readonly INSTANCE_PATTERN = [
         // world position (x,y)
         ...MixedArrayBufferType.VEC2,
+        // tile position (q,r)
+        ...MixedArrayBufferType.INT_VEC2,
         // border mask
         MixedArrayBufferType.INT,
         // border color
@@ -79,6 +81,12 @@ export class VertexOverlayNode extends VertexRenderNode {
                         {
                             name: "in_worldPosition",
                             type: GLAttributeType.FLOAT,
+                            amountComponents: 2,
+                            divisor: 1,
+                        },
+                        {
+                            name: "in_tilePosition",
+                            type: GLAttributeType.INT,
                             amountComponents: 2,
                             divisor: 1,
                         },
@@ -215,6 +223,10 @@ export class VertexOverlayNode extends VertexRenderNode {
         const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
         cursor.append(center[0]);
         cursor.append(center[1]);
+
+        // tile position
+        cursor.append(q);
+        cursor.append(r);
 
         // border mask
         const borderData = BorderBuilder.build(tile, this.tileDb, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);

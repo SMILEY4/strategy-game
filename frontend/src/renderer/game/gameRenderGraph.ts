@@ -24,7 +24,6 @@ import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {VertexDetailsNode} from "./rendernodes/vertexDetailsNode";
 import {DrawDetailsNode} from "./rendernodes/drawDetailsNode";
 import {CommandDatabase} from "../../state/commandDatabase";
-import {DrawRenderTargetToScreenNode} from "../core/prebuiltnodes/drawRenderTargetToScreenNode";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
 
@@ -61,7 +60,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 new DrawTilesWaterNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesLandNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawTilesFogNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawTilesOverlayNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DrawTilesOverlayNode(gameSessionDb, () => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawEntitiesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawDetailsNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawRoutesNode(() => this.camera.getViewProjectionMatrixOrThrow()),

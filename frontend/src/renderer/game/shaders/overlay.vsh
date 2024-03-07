@@ -10,8 +10,10 @@ in vec2 in_worldPosition;
 in int in_borderMask;
 in vec4 in_borderColor;
 in vec4 in_fillColor;
+in ivec2 in_tilePosition;
 
 out vec2 v_textureCoordinates;
+flat out ivec2 v_tilePosition;
 out vec3 v_cornerData;
 flat out int v_directionData;
 flat out int v_borderMask;
@@ -25,5 +27,6 @@ void main() {
     v_borderMask = in_borderMask;
     v_borderColor = in_borderColor;
     v_fillColor = in_fillColor;
+    v_tilePosition = in_tilePosition;
     gl_Position = vec4((u_viewProjection * vec3(in_vertexPosition + in_worldPosition, 1.0)).xy, 0.0, 1.0);
 }

@@ -1,7 +1,11 @@
 #version 300 es
 precision mediump float;
 
+uniform ivec2 u_tileMouseOver;
+uniform ivec2 u_tileSelected;
+
 in vec2 v_textureCoordinates;
+flat in ivec2 v_tilePosition;
 in vec3 v_cornerData;
 flat in int v_directionData;
 flat in int v_borderMask;
@@ -113,14 +117,37 @@ vec4 getBorder(vec4 color, vec3 cornerData, int edgeDirection, int mask) {
     return mix(vec4(0.0), color, border);
 }
 
+vec4 getMouseOver(float thickness, vec4 color) {
+    if (v_tilePosition.x == u_tileMouseOver.x && v_tilePosition.y == u_tileMouseOver.y) {
+        float value = step(v_cornerData.x, thickness);
+        return vec4(color.rgb, value * color.a);
+    } else {
+        return vec4(0.0);
+    }
+}
+
+
+vec4 getSelection(float thickness, vec4 color) {
+    if (v_tilePosition.x == u_tileSelected.x && v_tilePosition.y == u_tileSelected.y) {
+        float value = step(v_cornerData.x, thickness);
+        return vec4(color.rgb, value * color.a);
+    } else {
+        return vec4(0.0);
+    }
+}
+
 void main() {
 
     vec4 colorFill = getFill(v_fillColor);
     vec4 colorBorder = getBorder(v_borderColor, v_cornerData, v_directionData, v_borderMask);
+    vec4 colorMouseOver = getMouseOver(0.08, vec4(186.0/255.0, 47.0/255.0, 107.0/255.0, 1.0));
+    vec4 colorSelection = getSelection(0.15, vec4(189.0/255.0, 23.0/255.0, 64.0/255.0, 1.0));
 
     vec4 color = vec4(0.0);
     color = mix(color, colorFill, colorFill.a);
     color = mix(color, colorBorder, colorBorder.a);
+    color = mix(color, colorSelection, colorSelection.a);
+    color = mix(color, colorMouseOver, colorMouseOver.a);
 
     outColor = color;
 }
