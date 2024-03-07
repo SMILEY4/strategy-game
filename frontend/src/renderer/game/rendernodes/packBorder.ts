@@ -1,4 +1,4 @@
-import {bitSet} from "../../../../shared/utils";
+import {bitSet} from "../../../shared/utils";
 
 export function packBorder(data: boolean[]): number {
     let packed = 0;

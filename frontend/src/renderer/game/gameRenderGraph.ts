@@ -49,9 +49,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
             resourceManager: new WebGLResourceManager(gl, new GameShaderSourceManager()),
             compiler: new WebGLRenderGraphCompiler(),
             nodes: [
-                // common
                 new VertexFullQuadNode(),
-                // game
                 new VertexTilesNode(changeProvider, renderConfig, tileDb),
                 new VertexOverlayNode(changeProvider, tileDb, gameSessionDb),
                 new VertexEntitiesNode(changeProvider, tileDb, commandDb),
@@ -65,8 +63,6 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 new DrawDetailsNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawRoutesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawCombineLayersNode(() => this.camera),
-                // debug
-                // new DrawRenderTargetToScreenNode("rendertarget.tilesland")
             ],
         });
         this.gl = gl;

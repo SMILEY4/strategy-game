@@ -7,7 +7,7 @@ import {Tile} from "../../../models/tile";
 import {TerrainType} from "../../../models/terrainType";
 import {BorderBuilder} from "../../../logic/game/borderBuilder";
 import {getHiddenOrNull} from "../../../models/hiddenType";
-import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
+import {packBorder} from "./packBorder";
 import seedrandom from "seedrandom";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import {GameRenderConfig} from "../gameRenderConfig";

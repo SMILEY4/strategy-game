@@ -5,7 +5,7 @@ import {TilemapUtils} from "../../../logic/game/tilemapUtils";
 import {TileDatabase} from "../../../state/tileDatabase";
 import {Tile} from "../../../models/tile";
 import {BorderBuilder} from "../../../logic/game/borderBuilder";
-import {packBorder} from "../../../rendererV1/data/builders/tilemap/packBorder";
+import {packBorder} from "./packBorder";
 import {MapMode} from "../../../models/mapMode";
 import {GameSessionDatabase} from "../../../state/gameSessionDatabase";
 import {NodeOutput} from "../../core/graph/nodeOutput";
