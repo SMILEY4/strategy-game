@@ -41,6 +41,14 @@ export namespace NodeInput {
         }
     }
 
+    export class ClearColor {
+        readonly clearColor: [number, number, number, number];
+
+        constructor(props: { clearColor: [number, number, number, number] }) {
+            this.clearColor = props.clearColor;
+        }
+    }
+
     export class Property {
         readonly valueConstant: GLUniformValueType | null;
         readonly valueProvider: (() => GLUniformValueType) | null;
@@ -57,14 +65,6 @@ export namespace NodeInput {
             this.valueProvider = props.valueProvider;
             this.type = props.type;
             this.binding = props.binding;
-        }
-    }
-
-    export class ClearColor {
-        readonly clearColor: [number, number, number, number];
-
-        constructor(props: { clearColor: [number, number, number, number] }) {
-            this.clearColor = props.clearColor;
         }
     }
 

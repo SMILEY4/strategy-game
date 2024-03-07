@@ -74,6 +74,12 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                     valueConstant: null,
                     valueProvider: () => mat3.inverse(this.camera().getViewProjectionMatrixOrThrow()),
                 }),
+                new NodeInput.Property({
+                    binding: "u_timestamp",
+                    type: GLUniformType.FLOAT,
+                    valueConstant: null,
+                    valueProvider: () => (Date.now() / 1000) % 10000
+                }),
             ],
             output: [
                 new NodeOutput.Screen(),

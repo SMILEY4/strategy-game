@@ -15,6 +15,7 @@ uniform sampler2D u_noise;
 uniform sampler2D u_paperLarge;
 
 uniform mat3 u_invViewProjection;
+uniform float u_timestamp;
 
 in vec2 v_textureCoordinates;
 
@@ -51,7 +52,7 @@ vec4 processWater(vec4 waterIn) {
     float waveDistortion = 0.225;
     float depth = clamp(waterIn.g / 0.8, 0.0, 1.0);
     float noise = texture(u_noise, mapPosition*vec2(0.05)).r  * waveDistortion + (1.0-waveDistortion);;
-    float waves = sin(depth*40.0*noise) * pow(depth, 1.5);
+    float waves = sin(depth*40.0*noise - u_timestamp*1.15) * pow(depth, 1.5);
     waves = clamp(waves, 0.0, 0.8);
 
     vec3 colorLight = vec3(0.647, 0.753, 0.773);
