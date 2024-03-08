@@ -62,7 +62,7 @@ export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
                 new DrawEntitiesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawDetailsNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DrawRoutesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawCombineLayersNode(() => this.camera),
+                new DrawCombineLayersNode(() => this.camera, () => gameSessionDb.getMapMode()),
             ],
         });
         this.gl = gl;

@@ -5,12 +5,14 @@ import {NodeInput} from "../../core/graph/nodeInput";
 import {GLUniformType} from "../../../shared/webgl/glTypes";
 import {Camera} from "../../../shared/webgl/camera";
 import {mat3} from "../../../shared/webgl/mat3";
+import {MapMode} from "../../../models/mapMode";
 
 export class DrawCombineLayersNode extends DrawRenderNode {
 
     private readonly camera: () => Camera;
+    private readonly mapMode: () => MapMode;
 
-    constructor(camera: () => Camera) {
+    constructor(camera: () => Camera, mapMode: () => MapMode) {
         super({
             id: "drawnode.combinelayers",
             input: [
@@ -80,11 +82,18 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                     valueConstant: null,
                     valueProvider: () => (Date.now() / 1000) % 10000
                 }),
+                new NodeInput.Property({
+                    binding: "u_grayscale",
+                    type: GLUniformType.INT,
+                    valueConstant: null,
+                    valueProvider: () => this.mapMode().renderData.grayscale ? 1 : 0
+                }),
             ],
             output: [
                 new NodeOutput.Screen(),
             ],
         });
         this.camera = camera;
+        this.mapMode = mapMode;
     }
 }

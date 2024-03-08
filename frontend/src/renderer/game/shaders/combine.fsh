@@ -16,6 +16,7 @@ uniform sampler2D u_paperLarge;
 
 uniform mat3 u_invViewProjection;
 uniform float u_timestamp;
+uniform int u_grayscale;
 
 in vec2 v_textureCoordinates;
 
@@ -118,6 +119,13 @@ vec4 getOutlineLand() {
     return color;
 }
 
+vec4 convertGrayscale(vec4 color) {
+    vec3 parchmentLight = (vec3(252.0, 245.0, 229.0) / vec3(255.0));
+    vec3 parchmentDark = (vec3(77.0, 55.0, 24.0) / vec3(255.0)) * 0.3;
+    float gray = (color.r + color.g + color.b) * 0.3;
+    vec3 grayColor = mix(parchmentLight, parchmentDark, 1.0-gray);
+    return vec4(grayColor, color.a);
+}
 
 void main() {
     vec4 water = processWater(framebuffer(u_water, v_textureCoordinates));
@@ -128,6 +136,14 @@ void main() {
     vec4 routes = framebuffer(u_routes, v_textureCoordinates);
     vec4 overlay = framebuffer(u_overlay, v_textureCoordinates);
     vec4 landOutline = getOutlineLand();
+
+    // grascale
+    if(u_grayscale > 0) {
+        water = convertGrayscale(water);
+        land = convertGrayscale(land);
+        details = convertGrayscale(details);
+        landOutline = convertGrayscale(landOutline);
+    }
 
     // combine layers
     vec4 color = vec4(0.0);

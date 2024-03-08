@@ -34,7 +34,7 @@ export namespace RenderGraphPreloader {
             new DrawEntitiesNode(null as any),
             new DrawDetailsNode(null as any),
             new DrawRoutesNode(null as any),
-            new DrawCombineLayersNode(null as any),
+            new DrawCombineLayersNode(null as any, null as any),
         ])
     }
 
