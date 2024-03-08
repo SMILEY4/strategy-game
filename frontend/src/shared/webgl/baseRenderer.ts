@@ -9,17 +9,32 @@ export class BaseRenderer {
         this.gl = gl;
     }
 
-    public prepareFrame(camera: Camera, clearColor?: [number, number, number, number]) {
-        this.gl.viewport(0, 0, camera.getWidth(), camera.getHeight());
-        if (clearColor) {
-            this.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-        } else {
-            this.gl.clearColor(0, 0, 0, 1);
+    public prepareFrame(camera: Camera, clearColor: [number, number, number, number], renderToTexture: boolean, scaling: number, depth: boolean) {
+        // viewport
+        this.gl.viewport(0, 0, camera.getWidth()*scaling, camera.getHeight()*scaling);
+
+        // clear buffers
+        this.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+        // depth testing
+        if(depth) {
+            this.gl.depthRange(0, 30)
+            this.gl.depthMask(true)
+            this.gl.enable(this.gl.DEPTH_TEST)
+            this.gl.depthFunc(this.gl.LESS)
         }
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+
+        // blending
         this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        this.gl.blendEquation(this.gl.FUNC_ADD)
+        this.gl.blendEquation(this.gl.FUNC_ADD);
+        if (renderToTexture) {
+            this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+        } else {
+            this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+        }
+
+        // check errors
         GLError.check(this.gl, "[gl-setup]", "preparing current frame");
     }
 

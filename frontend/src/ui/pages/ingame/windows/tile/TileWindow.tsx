@@ -61,6 +61,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 
 function BaseDataSection(props: UseTileWindow.Data): ReactElement {
     const owner = getHiddenOrNull(props.tile.political.owner);
+    const posS = - props.tile.identifier.q - props.tile.identifier.r
     return (
         <WindowSection>
             <InsetKeyValueGrid>
@@ -69,7 +70,7 @@ function BaseDataSection(props: UseTileWindow.Data): ReactElement {
                 <EnrichedText>{props.tile.identifier.id}</EnrichedText>
 
                 <EnrichedText>Position</EnrichedText>
-                <EnrichedText>{props.tile.identifier.q + ", " + props.tile.identifier.r}</EnrichedText>
+                <EnrichedText>{props.tile.identifier.q + ", " + props.tile.identifier.r + " (" + posS + ")"}</EnrichedText>
 
                 <EnrichedText>Terrain</EnrichedText>
                 <EnrichedText>{getHiddenOrNull(props.tile.basic.terrainType)?.displayString ?? "?"}</EnrichedText>

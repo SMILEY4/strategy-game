@@ -7,7 +7,7 @@ export class CanvasHandle {
     public set(canvas: HTMLCanvasElement | null): void {
         this.canvas = canvas;
         if (canvas) {
-            const gl = canvas.getContext("webgl2", {alpha: false});
+            const gl = canvas.getContext("webgl2", {alpha: false, premultipliedAlpha: true});
             if (!gl) {
                 throw new Error("webgl2 not supported");
             }

@@ -4,6 +4,7 @@ import {UnauthorizedError} from "../../models/UnauthorizedError";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {GameSessionMeta} from "../../models/gameSessionMeta";
 import {Preloader} from "../../shared/preloader";
+import {RenderGraphPreloader} from "../../renderer/core/graph/renderGraphPreloader";
 
 export class GameSessionService {
 
@@ -49,14 +50,7 @@ export class GameSessionService {
             .then(() => this.gameSessionDb.setState("loading"))
             .then(() => this.client.config())
             .then(config => this.gameSessionDb.setConfig(config))
-            .then(() => Preloader.loadImages([
-                "/tiles.png",
-                "/textures/plain_white_paper_blendable.jpg",
-                "/textures/noise.png",
-                "/entities2.png",
-                "/entities_mask.png",
-                "/route3.png"
-            ]))
+            .then(() => RenderGraphPreloader.tempLoad())
             .then(() => this.client.connect(gameId))
             .catch(() => this.gameSessionDb.setState("error"));
     }

@@ -205,3 +205,13 @@ export class MixedArrayBufferCursor {
     }
 
 }
+
+export namespace MixedArrayBuffer {
+
+    export function createWithCursor(amountRepetitions: number, pattern: MixedArrayBufferType[]): [MixedArrayBuffer, MixedArrayBufferCursor] {
+        const array = new MixedArrayBuffer(MixedArrayBuffer.getTotalRequiredBytes(amountRepetitions, pattern), pattern);
+        const cursor = new MixedArrayBufferCursor(array);
+        return [array, cursor];
+    }
+
+}

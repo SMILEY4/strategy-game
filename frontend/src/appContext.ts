@@ -17,11 +17,7 @@ import {UserClient} from "./logic/user/userClient";
 import {TilePicker} from "./logic/game/tilePicker";
 import {AudioService} from "./logic/audio/audioService";
 import {DataViewService} from "./logic/game/dataViewService";
-import {RenderEntityCollector} from "./renderer/data/builders/entities/renderEntityCollector";
-import {RenderDataManager} from "./renderer/data/renderDataManager";
-import {GameRenderer} from "./renderer/gameRenderer";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
-import {RenderDataUpdater} from "./renderer/data/renderDataUpdater";
 import {CameraDatabase} from "./state/cameraDatabase";
 import {CityDatabase} from "./state/cityDatabase";
 import {CommandDatabase} from "./state/commandDatabase";
@@ -33,6 +29,7 @@ import {TileDatabase} from "./state/tileDatabase";
 import {MonitoringRepository} from "./state/monitoringRepository";
 import {UserRepository} from "./state/userRepository";
 import {MarkerService} from "./logic/game/markerService";
+import {GameRenderer} from "./renderer/game/gameRenderer";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -63,9 +60,6 @@ interface AppCtxDef {
 
     WebGLMonitor: () => WebGLMonitor,
     GameRenderer: () => GameRenderer,
-    RenderEntityCollector: () => RenderEntityCollector,
-    RenderDataUpdater: () => RenderDataUpdater,
-    RenderDataManager: () => RenderDataManager,
 
     CanvasHandle: () => CanvasHandle,
 
@@ -207,37 +201,13 @@ export const AppCtx: AppCtxDef = {
         "GameRenderer",
         () => new GameRenderer(
             AppCtx.CanvasHandle(),
-            AppCtx.WebGLMonitor(),
-            AppCtx.MonitoringRepository(),
             AppCtx.CameraDatabase(),
-            AppCtx.RenderDataManager(),
-        ),
-    ),
-    RenderEntityCollector: diContext.register(
-        "RenderEntityCollector",
-        () => new RenderEntityCollector(
-            AppCtx.TileDatabase(),
-            AppCtx.CommandDatabase(),
-        ),
-    ),
-    RenderDataUpdater: diContext.register(
-        "RenderDataUpdater",
-        () => new RenderDataUpdater(
-            AppCtx.GameSessionDatabase(),
             AppCtx.TileDatabase(),
             AppCtx.RouteDatabase(),
-            AppCtx.CommandDatabase(),
-            AppCtx.RenderEntityCollector(),
+            AppCtx.GameSessionDatabase(),
+            AppCtx.CommandDatabase()
         ),
     ),
-    RenderDataManager: diContext.register(
-        "RenderDataManager",
-        () => new RenderDataManager(
-            AppCtx.CanvasHandle(),
-            AppCtx.RenderDataUpdater(),
-        ),
-    ),
-
 
     CanvasHandle: diContext.register(
         "CanvasHandle",

@@ -1,13 +1,13 @@
 import {TilePicker} from "./tilePicker";
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
 import {UseTileWindow} from "../../ui/pages/ingame/windows/tile/useTileWindow";
-import {GameRenderer} from "../../renderer/gameRenderer";
 import {AudioService, AudioType} from "../audio/audioService";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CameraDatabase} from "../../state/cameraDatabase";
 import {getHiddenOrDefault} from "../../models/hiddenType";
 import {CityTileObject} from "../../models/tileObject";
 import {UseCityWindow} from "../../ui/pages/ingame/windows/city/useCityWindow";
+import {GameRenderer} from "../../renderer/game/gameRenderer";
 
 export class GameLoopService {
 

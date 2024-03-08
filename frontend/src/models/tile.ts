@@ -24,7 +24,7 @@ export interface Tile {
         owner: HiddenType<TileOwner | null>,
         influences: HiddenType<TileInfluence[]>,
     }
-    objects: HiddenType<TileObject[]>
+    objects: HiddenType<TileObject[]>,
 }
 
 export interface TileOwner {

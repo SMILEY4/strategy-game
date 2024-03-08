@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core.playerview
 
 import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.common.jsondsl.obj
+import de.ruegnerlukas.strategygame.backend.common.utils.containedIn
 import de.ruegnerlukas.strategygame.backend.common.utils.notContainedIn
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
@@ -74,7 +75,7 @@ class CityPOVBuilder(
             }
             "connectedCities" to routes
                 .filter { it.cityIdA == city.cityId || it.cityIdB == city.cityId }
-                .filter { it.cityIdA.notContainedIn(povCache.knownCities()) && it.cityIdB.notContainedIn(povCache.knownCities()) }
+                .filter { it.cityIdA.containedIn(povCache.knownCities()) && it.cityIdB.containedIn(povCache.knownCities()) }
                 .map { route ->
                     obj {
                         "city" to if (route.cityIdA == city.cityId) route.cityIdB else route.cityIdA

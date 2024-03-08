@@ -80,7 +80,7 @@ export function mapRecord<K extends keyof any, I, O>(record: Record<K, I>, trans
 }
 
 export function chooseRandom<T>(array: T[]): T {
-    return array[Math.floor(Math.random() * array.length)]
+    return array[Math.floor(Math.random() * array.length)];
 }
 
 export function shuffleArray<T>(array: T[]) {
@@ -90,4 +90,14 @@ export function shuffleArray<T>(array: T[]) {
         array[i] = array[j];
         array[j] = temp;
     }
+}
+
+export type BuildMapContent<V> = Record<string, V>
+
+export function buildMap<K, V>(content: BuildMapContent<V>) {
+    const map = new Map<string, V>();
+    for (const [key, value] of Object.entries(content)) {
+        map.set(key, value);
+    }
+    return map;
 }
