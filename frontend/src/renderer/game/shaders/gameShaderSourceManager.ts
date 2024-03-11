@@ -1,6 +1,10 @@
 import {WebGLShaderSourceManager} from "../../core/webgl/webGLShaderSourceManager";
 import {DrawRenderTargetToScreenNode} from "../../core/prebuiltnodes/drawRenderTargetToScreenNode";
 
+import SHADER_COMMON_COLOR from "./common/color.glsl?raw";
+import SHADER_COMMON_MAP from "./common/map.glsl?raw";
+import SHADER_COMMON_BORDER from "./common/border.glsl?raw";
+
 import SHADER_WATER_VERT from "./water.vsh?raw";
 import SHADER_WATER_FRAG from "./water.fsh?raw";
 import SHADER_LAND_VERT from "./land.vsh?raw";
@@ -25,6 +29,10 @@ export class GameShaderSourceManager extends WebGLShaderSourceManager {
 
     constructor() {
         super();
+
+        this.register("color", SHADER_COMMON_COLOR)
+        this.register("map", SHADER_COMMON_MAP)
+        this.register("border", SHADER_COMMON_BORDER)
 
         this.register("water.vert", SHADER_WATER_VERT)
         this.register("water.frag", SHADER_WATER_FRAG)
@@ -53,5 +61,7 @@ export class GameShaderSourceManager extends WebGLShaderSourceManager {
 
         this.register(DrawRenderTargetToScreenNode.SHADER_ID_VERTEX, SHADER_RT2SCREEN_VERT)
         this.register(DrawRenderTargetToScreenNode.SHADER_ID_FRAGMENT, SHADER_RT2SCREEN_FRAG)
+
+        this.process()
     }
 }

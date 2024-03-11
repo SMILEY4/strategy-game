@@ -8,7 +8,6 @@ import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {CityDatabase} from "../../state/cityDatabase";
 
 export class GameRenderer {
 

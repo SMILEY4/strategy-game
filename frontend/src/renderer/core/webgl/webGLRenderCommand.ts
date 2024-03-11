@@ -8,8 +8,6 @@ import {Camera} from "../../../shared/webgl/camera";
 
 export namespace WebGLRenderCommand {
 
-    import ManagedFramebuffer = WebGLResourceManager.ManagedFramebuffer;
-
     export interface Context {
         gl: WebGL2RenderingContext,
         renderer: BaseRenderer,
