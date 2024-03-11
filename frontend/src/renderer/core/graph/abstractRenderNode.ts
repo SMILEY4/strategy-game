@@ -1,3 +1,6 @@
+/**
+ * Base node in a render-graph
+ */
 export abstract class AbstractRenderNode {
     public readonly id: string;
 

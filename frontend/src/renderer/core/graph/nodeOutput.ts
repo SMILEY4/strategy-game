@@ -1,7 +1,13 @@
 import {GLAttributeComponentAmount, GLAttributeType} from "../../../shared/webgl/glTypes";
 
+/**
+ * Outputs of render nodes
+ **/
 export namespace NodeOutput {
 
+    /**
+     * Draw to the given render target
+     */
     export class RenderTarget {
         readonly renderTargetId: string;
         readonly depth: boolean
@@ -14,10 +20,16 @@ export namespace NodeOutput {
         }
     }
 
+    /**
+     * Draw to the screen
+     */
     export class Screen {
     }
 
 
+    /**
+     * Writes to a vertex-buffer
+     */
     export class VertexBuffer {
         readonly name: string;
         readonly attributes: VertexAttribute[]
@@ -29,7 +41,9 @@ export namespace NodeOutput {
         }
     }
 
-
+    /**
+     * Combines vertex buffers and information about data layout
+     */
     export class VertexDescriptor {
         readonly name: string;
         readonly type: "standart" | "instanced";

@@ -31,8 +31,25 @@ export class DrawTilesOverlayNode extends DrawRenderNode {
                     valueConstant: null,
                     valueProvider: vpMatrixProvider,
                 }),
+                //==== OVERLAY =======================================
                 new NodeInput.Property({
-                    binding: "u_tileMouseOver",
+                    binding: "u_overlay.borderThickness",
+                    type: GLUniformType.FLOAT,
+                    valueConstant: 0.15
+                }),
+                new NodeInput.Property({
+                    binding: "u_overlay.borderOpacity",
+                    type: GLUniformType.FLOAT,
+                    valueConstant: 1.0
+                }),
+                new NodeInput.Property({
+                    binding: "u_overlay.fillOpacity",
+                    type: GLUniformType.FLOAT,
+                    valueConstant: 0.7
+                }),
+                //==== MOUSE OVER ====================================
+                new NodeInput.Property({
+                    binding: "u_tileMouseOver.position",
                     type: GLUniformType.INT_VEC2,
                     valueConstant: null,
                     valueProvider: () => {
@@ -45,7 +62,18 @@ export class DrawTilesOverlayNode extends DrawRenderNode {
                     },
                 }),
                 new NodeInput.Property({
-                    binding: "u_tileSelected",
+                    binding: "u_tileMouseOver.thickness",
+                    type: GLUniformType.FLOAT,
+                    valueConstant: 0.08
+                }),
+                new NodeInput.Property({
+                    binding: "u_tileMouseOver.color",
+                    type: GLUniformType.VEC4,
+                    valueConstant: [0.729, 0.184, 0.420, 1.0]
+                }),
+                //==== TILE SELECTION ================================
+                new NodeInput.Property({
+                    binding: "u_tileSelection.position",
                     type: GLUniformType.INT_VEC2,
                     valueConstant: null,
                     valueProvider: () => {
@@ -56,7 +84,17 @@ export class DrawTilesOverlayNode extends DrawRenderNode {
                             return [99999,99999]
                         }
                     },
-                })
+                }),
+                new NodeInput.Property({
+                    binding: "u_tileSelection.thickness",
+                    type: GLUniformType.FLOAT,
+                    valueConstant: 0.15
+                }),
+                new NodeInput.Property({
+                    binding: "u_tileSelection.color",
+                    type: GLUniformType.VEC4,
+                    valueConstant: [0.741, 0.090, 0.251]
+                }),
             ],
             output: [
                 new NodeOutput.RenderTarget({

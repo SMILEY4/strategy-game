@@ -1,7 +1,13 @@
 import {GLUniformType, GLUniformValueType} from "../../../shared/webgl/glTypes";
 
+/**
+ * Inputs of render nodes
+ */
 export namespace NodeInput {
 
+    /**
+     * Vertex data
+     */
     export class VertexDescriptor {
         readonly vertexDataId: string;
 
@@ -10,6 +16,9 @@ export namespace NodeInput {
         }
     }
 
+    /**
+     * Shader program
+     */
     export class Shader {
         readonly vertexId: string;
         readonly fragmentId: string;
@@ -20,6 +29,9 @@ export namespace NodeInput {
         }
     }
 
+    /**
+     * Texture
+     */
     export class Texture {
         readonly path: string;
         readonly binding: string;
@@ -30,7 +42,9 @@ export namespace NodeInput {
         }
     }
 
-
+    /**
+     * Render target (treated as texture)
+     */
     export class RenderTarget {
         readonly renderTargetId: string;
         readonly binding: string;
@@ -41,6 +55,9 @@ export namespace NodeInput {
         }
     }
 
+    /**
+     * the color to clear the screen/rendertarget with
+     */
     export class ClearColor {
         readonly clearColor: [number, number, number, number];
 
@@ -49,6 +66,9 @@ export namespace NodeInput {
         }
     }
 
+    /**
+     * Property, usually accessible in the shader
+     */
     export class Property {
         readonly valueConstant: GLUniformValueType | null;
         readonly valueProvider: (() => GLUniformValueType) | null;
@@ -56,13 +76,13 @@ export namespace NodeInput {
         readonly binding: string;
 
         constructor(props: {
-            valueConstant: GLUniformValueType | null,
-            valueProvider: (() => GLUniformValueType) | null,
+            valueConstant?: GLUniformValueType | null,
+            valueProvider?: (() => GLUniformValueType) | null,
             type: GLUniformType,
             binding: string
         }) {
-            this.valueConstant = props.valueConstant;
-            this.valueProvider = props.valueProvider;
+            this.valueConstant = props.valueConstant !== undefined ? props.valueConstant : null;
+            this.valueProvider = props.valueProvider !== undefined ? props.valueProvider : null;
             this.type = props.type;
             this.binding = props.binding;
         }

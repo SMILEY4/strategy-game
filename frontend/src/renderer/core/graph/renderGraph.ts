@@ -4,6 +4,9 @@ import {RenderGraphCompiler} from "./renderGraphCompiler";
 import {ResourceManager} from "./resourceManager";
 import {RenderCommand} from "./renderCommand";
 
+/**
+ * A graph of render-nodes; edges defined by dependencies of node inputs and outputs.
+ */
 export class RenderGraph<TContext> {
 
     private readonly sorter: RenderGraphSorter;

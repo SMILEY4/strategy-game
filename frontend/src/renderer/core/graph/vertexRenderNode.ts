@@ -2,7 +2,9 @@ import {AbstractRenderNode} from "./abstractRenderNode";
 import {NodeOutput} from "./nodeOutput";
 
 /**
- * A node in the render graph that takes no input and produces/updates vertex-data
+ * Node in a render node that writes/updates vertex-data
+ * Requires as output
+ * - n vertex-descriptors and all their associated buffers
  */
 export abstract class VertexRenderNode extends AbstractRenderNode {
 
