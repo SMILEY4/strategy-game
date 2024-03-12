@@ -9,6 +9,7 @@ import {CommandDatabase} from "../../state/commandDatabase";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
 import {GameHtmlRenderGraph} from "./gameHtmlRenderGraph";
+import {CityDatabase} from "../../state/cityDatabase";
 
 export class GameRenderer {
 
@@ -16,6 +17,7 @@ export class GameRenderer {
     private readonly canvasHandle: CanvasHandle;
     private readonly cameraDb: CameraDatabase;
     private readonly tileDb: TileDatabase;
+    private readonly cityDb: CityDatabase;
     private readonly routeDb: RouteDatabase;
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly commandDb: CommandDatabase;
@@ -28,6 +30,7 @@ export class GameRenderer {
         canvasHandle: CanvasHandle,
         cameraDb: CameraDatabase,
         tileDb: TileDatabase,
+        cityDb: CityDatabase,
         routeDb: RouteDatabase,
         gameSessionDb: GameSessionDatabase,
         commandDb: CommandDatabase,
@@ -35,6 +38,7 @@ export class GameRenderer {
         this.canvasHandle = canvasHandle;
         this.cameraDb = cameraDb;
         this.tileDb = tileDb;
+        this.cityDb = cityDb;
         this.routeDb = routeDb;
         this.gameSessionDb = gameSessionDb;
         this.commandDb = commandDb;
@@ -49,7 +53,7 @@ export class GameRenderer {
         GameRenderConfig.initialize();
         this.webGlRenderGraph = new GameWebGlRenderGraph(this.changeProvider, this.canvasHandle.getGL(), () => this.renderConfig!, this.tileDb, this.routeDb, this.gameSessionDb, this.commandDb);
         this.webGlRenderGraph.initialize();
-        this.htmlRenderGraph = new GameHtmlRenderGraph(this.changeProvider, this.tileDb, this.gameSessionDb);
+        this.htmlRenderGraph = new GameHtmlRenderGraph(this.changeProvider, this.tileDb, this.cityDb, this.gameSessionDb);
         this.htmlRenderGraph.initialize();
     }
 

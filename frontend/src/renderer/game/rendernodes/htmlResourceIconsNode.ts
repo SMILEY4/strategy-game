@@ -43,21 +43,24 @@ export class HtmlResourceIconsNode extends HtmlRenderNode {
     }
 
     public execute(): HtmlDataResource {
+        console.log(this.camera().getZoom());
         if (!this.changeProvider.hasChange("htmlnode.resourceicons")) {
             return EMPTY_HTML_DATA_RESOURCE;
         }
 
         const elements: ResourceIconElement[] = [];
 
-        if (this.gameSessionDb.getMapMode() === MapMode.RESOURCES) {
-            const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
-            for (let i = 0, n = tiles.length; i < n; i++) {
-                const tile = tiles[i];
-                if (tile.basic.resourceType.visible && tile.basic.resourceType.value !== TerrainResourceType.NONE && this.isVisible(tile, 0)) {
-                    elements.push({
-                        tile: tile.identifier,
-                        type: tile.basic.resourceType.value,
-                    });
+        if (this.camera().getZoom() > 3) {
+            if (this.gameSessionDb.getMapMode() === MapMode.RESOURCES) {
+                const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
+                for (let i = 0, n = tiles.length; i < n; i++) {
+                    const tile = tiles[i];
+                    if (tile.basic.resourceType.visible && tile.basic.resourceType.value !== TerrainResourceType.NONE && this.isVisible(tile, 0)) {
+                        elements.push({
+                            tile: tile.identifier,
+                            type: tile.basic.resourceType.value,
+                        });
+                    }
                 }
             }
         }
@@ -87,7 +90,7 @@ interface ResourceIconElement {
 
 function render(camera: Camera, element: ResourceIconElement, html: HTMLElement): void {
     const pos = Projections.hexToScreen(camera, element.tile.q, element.tile.r);
-    pos.y = camera.getClientHeight() - pos.y
+    pos.y = camera.getClientHeight() - pos.y;
     html.className = "world-ui__icon";
     html.style.left = pos.x + "px";
     html.style.top = pos.y + "px";

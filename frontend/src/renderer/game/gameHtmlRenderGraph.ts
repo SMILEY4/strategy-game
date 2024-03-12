@@ -8,6 +8,8 @@ import {HtmlRenderContext} from "../core/html/htmlRenderCommand";
 import {NoOpRenderGraphSorter} from "../core/prebuilt/NoOpRenderGraphSorter";
 import {HtmlResourceManager} from "../core/html/htmlResourceManager";
 import {HtmlRenderGraphCompiler} from "../core/html/htmlRenderGraphCompiler";
+import {HtmlCityLabelsNode} from "./rendernodes/htmlCityLabelsNode";
+import {CityDatabase} from "../../state/cityDatabase";
 
 
 export class GameHtmlRenderGraph extends RenderGraph<HtmlRenderContext> {
@@ -17,6 +19,7 @@ export class GameHtmlRenderGraph extends RenderGraph<HtmlRenderContext> {
     constructor(
         changeProvider: ChangeProvider,
         tileDb: TileDatabase,
+        cityDb: CityDatabase,
         gameSessionDb: GameSessionDatabase,
     ) {
         super({
@@ -25,6 +28,7 @@ export class GameHtmlRenderGraph extends RenderGraph<HtmlRenderContext> {
             compiler: new HtmlRenderGraphCompiler(),
             nodes: [
                 new HtmlResourceIconsNode(changeProvider, tileDb, gameSessionDb, () => this.camera),
+                new HtmlCityLabelsNode(changeProvider, cityDb, () => this.camera)
             ],
         });
     }

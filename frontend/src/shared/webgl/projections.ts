@@ -74,8 +74,12 @@ export namespace Projections {
         return worldToHex(worldPos.x, worldPos.y);
     }
 
-    export function hexToScreen(camera: Camera, q: number, r: number): Point {
+    export function hexToScreen(camera: Camera, q: number, r: number, worldOffset?: [number, number]): Point {
         const worldPos = hexToWorld(q, r);
+        if(worldOffset) {
+            worldPos.x += worldOffset[0];
+            worldPos.y += worldOffset[1];
+        }
         const clipPos = worldToClip(camera, worldPos.x, worldPos.y);
         return clipToScreen(camera, clipPos.x, clipPos.y)
     }
