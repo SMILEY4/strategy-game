@@ -37,7 +37,6 @@ export class HtmlCityLabelsNode extends HtmlRenderNode {
     }
 
     public execute(): HtmlDataResource {
-        console.log(this.camera().getZoom());
         if (!this.changeProvider.hasChange("htmlnode.citylabels")) {
             return EMPTY_HTML_DATA_RESOURCE;
         }

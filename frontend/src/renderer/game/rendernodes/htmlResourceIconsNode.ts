@@ -43,7 +43,6 @@ export class HtmlResourceIconsNode extends HtmlRenderNode {
     }
 
     public execute(): HtmlDataResource {
-        console.log(this.camera().getZoom());
         if (!this.changeProvider.hasChange("htmlnode.resourceicons")) {
             return EMPTY_HTML_DATA_RESOURCE;
         }
