@@ -1,5 +1,5 @@
 import {DrawRenderNode} from "../../core/graph/drawRenderNode";
-import {VertexFullQuadNode} from "../../core/prebuiltnodes/vertexFullquadNode";
+import {VertexFullQuadNode} from "../../core/prebuilt/vertexFullquadNode";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import {NodeInput} from "../../core/graph/nodeInput";
 import {GLUniformType} from "../../../shared/webgl/glTypes";

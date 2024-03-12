@@ -10,7 +10,7 @@ export namespace NodeOutput {
      */
     export class RenderTarget {
         readonly renderTargetId: string;
-        readonly depth: boolean
+        readonly depth: boolean;
         readonly scale: number;
 
         constructor(props: { renderTargetId: string, scale: number, depth: boolean }) {
@@ -26,16 +26,38 @@ export namespace NodeOutput {
     export class Screen {
     }
 
+    /**
+     * Draw/Add elements to a html element
+     */
+    export class HtmlContainer {
+        readonly id: string;
+
+        constructor(props: { id: string }) {
+            this.id = props.id;
+        }
+    }
+
+
+    export class HtmlData {
+        readonly name: string;
+        readonly renderFunction: (element: any, html: HTMLElement) => void;
+
+        constructor(props: { name: string, renderFunction: (element: any, html: HTMLElement) => void }) {
+            this.name = props.name;
+            this.renderFunction = props.renderFunction;
+        }
+    }
+
 
     /**
      * Writes to a vertex-buffer
      */
     export class VertexBuffer {
         readonly name: string;
-        readonly attributes: VertexAttribute[]
+        readonly attributes: VertexAttribute[];
 
 
-        constructor(props: {name: string, attributes: VertexAttribute[]}) {
+        constructor(props: { name: string, attributes: VertexAttribute[] }) {
             this.name = props.name;
             this.attributes = props.attributes;
         }
@@ -47,9 +69,9 @@ export namespace NodeOutput {
     export class VertexDescriptor {
         readonly name: string;
         readonly type: "standart" | "instanced";
-        readonly buffers: string[]
+        readonly buffers: string[];
 
-        constructor(props: {name: string, type: "standart" | "instanced", buffers: string[]}) {
+        constructor(props: { name: string, type: "standart" | "instanced", buffers: string[] }) {
             this.name = props.name;
             this.type = props.type;
             this.buffers = props.buffers;

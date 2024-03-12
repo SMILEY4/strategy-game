@@ -75,6 +75,9 @@ export class ChangeProvider {
         if(name === "vertexnode.tiles") {
             return this.changes.turn
         }
+        if(name === "htmlnode.resourceicons") {
+            return this.changes.turn || this.changes.mapMode || this.changes.camera
+        }
         return true;
     }
 

@@ -12,7 +12,7 @@ import {DrawTilesLandNode} from "./rendernodes/drawTilesLandNode";
 import {DrawTilesFogNode} from "./rendernodes/drawTilesFogNode";
 import {DrawCombineLayersNode} from "./rendernodes/drawCombineLayersNode";
 import {GameShaderSourceManager} from "./shaders/gameShaderSourceManager";
-import {VertexFullQuadNode} from "../core/prebuiltnodes/vertexFullquadNode";
+import {VertexFullQuadNode} from "../core/prebuilt/vertexFullquadNode";
 import {VertexEntitiesNode} from "./rendernodes/vertexEntitiesNode";
 import {DrawEntitiesNode} from "./rendernodes/drawEntitiesNode";
 import {DrawRoutesNode} from "./rendernodes/drawRoutesNode";
@@ -26,9 +26,10 @@ import {DrawDetailsNode} from "./rendernodes/drawDetailsNode";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
+import {HtmlResourceIconsNode} from "./rendernodes/htmlResourceIconsNode";
 
 
-export class GameRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
+export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
 
     private readonly gl: WebGL2RenderingContext;
     private readonly renderer: BaseRenderer;

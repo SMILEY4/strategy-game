@@ -25,9 +25,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
             return [false, "graph is empty"];
         }
         for (let node of nodes) {
-            if (node instanceof VertexRenderNode) {
-                // todo
-            }
             if (node instanceof DrawRenderNode) {
                 const vertexInputCount = node.config.input.count(it => it instanceof NodeInput.VertexDescriptor);
                 if (vertexInputCount !== 1) {

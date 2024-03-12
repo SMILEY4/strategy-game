@@ -1,5 +1,5 @@
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
-import {GameRenderGraph} from "./gameRenderGraph";
+import {GameWebGlRenderGraph} from "./gameWebGlRenderGraph";
 import {TileDatabase} from "../../state/tileDatabase";
 import {CameraDatabase} from "../../state/cameraDatabase";
 import {Camera} from "../../shared/webgl/camera";
@@ -8,6 +8,7 @@ import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {CommandDatabase} from "../../state/commandDatabase";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
+import {GameHtmlRenderGraph} from "./gameHtmlRenderGraph";
 
 export class GameRenderer {
 
@@ -19,8 +20,9 @@ export class GameRenderer {
     private readonly gameSessionDb: GameSessionDatabase;
     private readonly commandDb: CommandDatabase;
 
-    private renderConfig: GameRenderConfig | null = null
-    private renderGraph: GameRenderGraph | null = null;
+    private renderConfig: GameRenderConfig | null = null;
+    private webGlRenderGraph: GameWebGlRenderGraph | null = null;
+    private htmlRenderGraph: GameHtmlRenderGraph | null = null;
 
     constructor(
         canvasHandle: CanvasHandle,
@@ -40,26 +42,32 @@ export class GameRenderer {
             gameSessionDb,
             tileDb,
             commandDb,
-        )
+        );
     }
 
     public initialize(): void {
         GameRenderConfig.initialize();
-        this.renderGraph = new GameRenderGraph(this.changeProvider, this.canvasHandle.getGL(), () => this.renderConfig!, this.tileDb, this.routeDb, this.gameSessionDb, this.commandDb);
-        this.renderGraph.initialize();
+        this.webGlRenderGraph = new GameWebGlRenderGraph(this.changeProvider, this.canvasHandle.getGL(), () => this.renderConfig!, this.tileDb, this.routeDb, this.gameSessionDb, this.commandDb);
+        this.webGlRenderGraph.initialize();
+        this.htmlRenderGraph = new GameHtmlRenderGraph(this.changeProvider, this.tileDb, this.gameSessionDb);
+        this.htmlRenderGraph.initialize();
     }
 
     public render() {
         const camera = this.getRenderCamera();
-        this.changeProvider.prepareFrame(camera)
-        this.renderConfig = GameRenderConfig.load()
-        this.renderGraph?.updateCamera(camera);
-        this.renderGraph?.execute();
+        this.changeProvider.prepareFrame(camera);
+        this.renderConfig = GameRenderConfig.load();
+        this.webGlRenderGraph?.updateCamera(camera);
+        this.webGlRenderGraph?.execute();
+        this.htmlRenderGraph?.updateCamera(camera)
+        this.htmlRenderGraph?.execute()
     }
 
     public dispose() {
-        this.renderGraph?.dispose();
-        this.renderGraph = null;
+        this.webGlRenderGraph?.dispose();
+        this.webGlRenderGraph = null;
+        this.htmlRenderGraph?.dispose();
+        this.htmlRenderGraph = null;
     }
 
     private getRenderCamera(): Camera {
