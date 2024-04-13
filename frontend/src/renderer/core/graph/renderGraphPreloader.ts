@@ -1,6 +1,6 @@
 import {AbstractRenderNode} from "./abstractRenderNode";
 import {Preloader} from "../../../shared/preloader";
-import {VertexFullQuadNode} from "../prebuiltnodes/vertexFullquadNode";
+import {VertexFullQuadNode} from "../prebuilt/vertexFullquadNode";
 import {VertexTilesNode} from "../../game/rendernodes/vertexTilesNode";
 import {VertexOverlayNode} from "../../game/rendernodes/vertexOverlayNode";
 import {VertexEntitiesNode} from "../../game/rendernodes/vertexEntitiesNode";

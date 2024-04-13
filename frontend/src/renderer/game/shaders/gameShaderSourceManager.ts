@@ -1,5 +1,5 @@
 import {WebGLShaderSourceManager} from "../../core/webgl/webGLShaderSourceManager";
-import {DrawRenderTargetToScreenNode} from "../../core/prebuiltnodes/drawRenderTargetToScreenNode";
+import {DrawRenderTargetToScreenNode} from "../../core/prebuilt/drawRenderTargetToScreenNode";
 
 import SHADER_COMMON_COLOR from "./common/color.glsl?raw";
 import SHADER_COMMON_MAP from "./common/map.glsl?raw";
@@ -21,8 +21,8 @@ import SHADER_ROUTES_VERT from "./routes.vsh?raw";
 import SHADER_ROUTES_FRAG from "./routes.fsh?raw";
 import SHADER_OVERLAY_VERT from "./overlay.vsh?raw";
 import SHADER_OVERLAY_FRAG from "./overlay.fsh?raw";
-import SHADER_RT2SCREEN_VERT from "../../core/prebuiltnodes/rendertarget2screen.vsh?raw";
-import SHADER_RT2SCREEN_FRAG from "../../core/prebuiltnodes/rendertarget2screen.fsh?raw";
+import SHADER_RT2SCREEN_VERT from "../../core/prebuilt/rendertarget2screen.vsh?raw";
+import SHADER_RT2SCREEN_FRAG from "../../core/prebuilt/rendertarget2screen.fsh?raw";
 
 export class GameShaderSourceManager extends WebGLShaderSourceManager {
 
