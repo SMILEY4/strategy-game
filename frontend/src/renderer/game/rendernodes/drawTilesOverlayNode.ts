@@ -93,7 +93,7 @@ export class DrawTilesOverlayNode extends DrawRenderNode {
                 new NodeInput.Property({
                     binding: "u_tileSelection.color",
                     type: GLUniformType.VEC4,
-                    valueConstant: [0.741, 0.090, 0.251]
+                    valueConstant: [0.741, 0.090, 0.251, 1.0]
                 }),
             ],
             output: [
