@@ -142,7 +142,7 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                 //==== PAPER =========================================
                 new NodeInput.Texture({
                     binding: "u_paper.large.texture",
-                    path: "/textures/seamless_parchment_texture_by_fantasystock_dyu8dx-pre_grayscale_upscaled.jpg",
+                    path: "/textures/seamless_parchment_texture.jpg",
                 }),
                 new NodeInput.Property({
                     binding: "u_paper.large.scale",
@@ -161,7 +161,7 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                 }),
                 new NodeInput.Texture({
                     binding: "u_paper.medium.texture",
-                    path: "/textures/non_uniform_concret_wall_prepared.jpg",
+                    path: "/textures/non_uniform_concret_wall.jpg",
                 }),
 
                 new NodeInput.Property({
@@ -181,7 +181,7 @@ export class DrawCombineLayersNode extends DrawRenderNode {
                 }),
                 new NodeInput.Texture({
                     binding: "u_paper.small.texture",
-                    path: "/textures/wildtextures-just-paper-seamless-texture.jpg",
+                    path: "/textures/seamless_paper_texture.jpg",
                 }),
 
                 new NodeInput.Property({
