@@ -14,7 +14,7 @@ export class DrawTilesWaterNode extends DrawRenderNode {
                     clearColor: [0, 0, 0, 0],
                 }),
                 new NodeInput.Texture({
-                    path: "/groundSplotches.png",
+                    path: "/textures/groundSplotches.png",
                     binding: "u_texture",
                 }),
                 new NodeInput.Shader({

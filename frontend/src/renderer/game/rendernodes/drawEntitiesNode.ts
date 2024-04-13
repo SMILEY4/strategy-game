@@ -13,7 +13,7 @@ export class DrawEntitiesNode extends DrawRenderNode {
                     clearColor: [0, 0, 0, 0],
                 }),
                 new NodeInput.Texture({
-                    path: "/tilesetNew.png",
+                    path: "/icons/tileset.png",
                     binding: "u_texture",
                 }),
                 new NodeInput.Shader({
