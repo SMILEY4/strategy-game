@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "de.ruegnerlukas"
-version = "0.6.0"
+version = "0.7.0"
 
 application {
     mainClass.set("de.ruegnerlukas.strategygame.backend.ApplicationKt")
