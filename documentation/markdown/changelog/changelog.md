@@ -2,6 +2,23 @@
 title: Changelog
 ---
 
+# Version 0.6.0 - 13.04.2024
+
+<img src="0_6_0-game.png" alt="0_6_0-game" style="max-width: 70%;" />
+
+<img src="0_6_0-gamesessions.png" alt="0_6_0-gamesessions" style="max-width: 70%;" />
+
+- reworked UX and  UI
+  - proper login, join-game, and ingame-pages
+  - complete rework of ingame ui-structure and design
+  - introduce common design language and layout with reusable ui components
+  - improved world rendering
+- improved handling of authentication tokens
+- improved client-side data storage
+- re-built renderer
+- upgrade to vite 5
+- other technical improvements and refactorings
+
 
 
 # Version 0.5.0 - 01.08.2023
