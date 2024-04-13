@@ -1,0 +1,17 @@
+@import "./../common.less";
+
+
+.key-value-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: @spacing-s;
+
+  /deep/ *:nth-of-type(even) {
+    justify-self: start;
+  }
+
+  /deep/ *:nth-of-type(odd) {
+    justify-self: end;
+  }
+
+}

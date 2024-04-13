@@ -31,9 +31,14 @@ class UpgradeSettlementTierCommandData(
 
 class PlaceMarkerCommandData(
     val q: Int,
-    val r: Int
+    val r: Int,
+    val label: String
 ) : CommandData()
 
+class DeleteMarkerCommandData(
+    val q: Int,
+    val r: Int
+) : CommandData()
 
 class PlaceScoutCommandData(
     val q: Int,

@@ -8,8 +8,12 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 
 
-fun Route.routeWebsocketTicket() = route("/wsticket") {
-    webSocketTicket {
-        mapOf(USER_ID to it.principal<JWTPrincipal>()?.subject!!)
+object RouteWebsocketTicket {
+
+    fun Route.routeWebsocketTicket() = route("/wsticket") {
+        webSocketTicket {
+            mapOf(USER_ID to it.principal<JWTPrincipal>()?.subject!!)
+        }
     }
+
 }

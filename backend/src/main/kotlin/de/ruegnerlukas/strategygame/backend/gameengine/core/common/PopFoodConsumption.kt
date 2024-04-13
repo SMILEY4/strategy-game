@@ -1,7 +1,7 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.common
 
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
-import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import kotlin.math.ceil
 
 class PopFoodConsumption: EconomyPopFoodConsumptionProvider {

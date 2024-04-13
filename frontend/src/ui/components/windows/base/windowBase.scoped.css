@@ -1,0 +1,8 @@
+.window {
+    position: absolute;
+}
+
+.window > * {
+    width: 100%;
+    height: 100%;
+}

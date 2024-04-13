@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "de.ruegnerlukas"
-version = "0.5.0"
+version = "0.6.0"
 
 application {
     mainClass.set("de.ruegnerlukas.strategygame.backend.ApplicationKt")
@@ -51,6 +51,7 @@ dependencies {
 
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
+    implementation("org.hdrhistogram:HdrHistogram:2.1.12")
 
     val versionAwsSdk: String by project
     implementation("com.amazonaws:aws-java-sdk:$versionAwsSdk")
@@ -87,6 +88,9 @@ dependencies {
     testImplementation("io.insert-koin:koin-test-junit5:$versionKoin") {
         exclude("org.jetbrains.kotlin", "kotlin-test-junit")
     }
+
+    val versionKoson: String by project
+    implementation("com.lectra:koson:$versionKoson")
 
     val versionKotest: String by project
     val versionKotestExtensionKtor: String by project

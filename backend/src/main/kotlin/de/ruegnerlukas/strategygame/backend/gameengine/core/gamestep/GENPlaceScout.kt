@@ -4,10 +4,11 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileObject
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
 
 /**
  * Adds the scout at the given location and discovers the surrounding tiles
@@ -30,7 +31,12 @@ class GENPlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem
 
 
     private fun addScout(tile: Tile, countryId: String, turn: Int) {
-        tile.content.add(ScoutTileContent(countryId, turn))
+        tile.objects.add(
+            ScoutTileObject(
+                countryId = countryId,
+                creationTurn = turn,
+            )
+        )
     }
 
     private fun discoverTiles(game: GameExtended, scoutTile: Tile, countryId: String) {

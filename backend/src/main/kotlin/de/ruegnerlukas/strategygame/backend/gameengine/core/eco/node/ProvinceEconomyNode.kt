@@ -1,9 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node
 
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.economy.core.data.BasicEconomyNode
-import de.ruegnerlukas.strategygame.backend.economy.core.data.EconomyNodeStorageImpl
-import de.ruegnerlukas.strategygame.backend.economy.ports.required.EconomyPopFoodConsumptionProvider
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyEntity
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNode
+import de.ruegnerlukas.strategygame.backend.economy.data.EconomyNodeStorage
+import de.ruegnerlukas.strategygame.backend.economy.prebuilt.EconomyNodeStorageImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.EconomyPopFoodConsumptionProvider
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.BuildingEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationBaseEconomyEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.PopulationGrowthEconomyEntity
@@ -11,32 +13,35 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.entity.Productio
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
 
+
 class ProvinceEconomyNode(
     val province: Province,
     game: GameExtended,
     config: GameConfig,
     popFoodConsumption: EconomyPopFoodConsumptionProvider
-) : BasicEconomyNode(
-    storage = EconomyNodeStorageImpl(province.resourcesProducedPrevTurn),
-    nodeFactory = { _, _ -> },
-    entityFactory = { entities, owner ->
-        province.findCities(game).forEach { city ->
-            entities.add(PopulationBaseEconomyEntity(owner, city, popFoodConsumption))
-            if (enablePopGrowthEntity) {
-                entities.add(PopulationGrowthEconomyEntity(owner, city, config))
-            }
-            city.infrastructure.buildings.forEach { building ->
-                entities.add(BuildingEconomyEntity(owner, city, building))
-            }
-            city.infrastructure.productionQueue.firstOrNull()?.also { queueEntry ->
-                entities.add(ProductionQueueEconomyEntity(owner, queueEntry))
-            }
-        }
-    }
-) {
+) : EconomyNode {
 
     companion object {
         var enablePopGrowthEntity = true
+    }
+
+    override val storage: EconomyNodeStorage = EconomyNodeStorageImpl(province.resourceLedger.getProduced())
+
+    override val children: Collection<EconomyNode> = emptyList()
+
+    override val entities: Collection<EconomyEntity> = mutableListOf<EconomyEntity>().also { entities ->
+        province.findCities(game).forEach { city ->
+            entities.add(PopulationBaseEconomyEntity(this, city, popFoodConsumption))
+            if (enablePopGrowthEntity) {
+                entities.add(PopulationGrowthEconomyEntity(this, city, config))
+            }
+            city.infrastructure.buildings.forEach { building ->
+                entities.add(BuildingEconomyEntity(this, city, building))
+            }
+            city.infrastructure.productionQueue.firstOrNull()?.also { queueEntry ->
+                entities.add(ProductionQueueEconomyEntity(this, queueEntry))
+            }
+        }
     }
 
 }

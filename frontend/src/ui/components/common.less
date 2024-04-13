@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+SC:ital,wght@0,400;0,500;0,700;0,800;0,900;1,400;1,500;1,700;1,800;1,900&family=Alegreya:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@color-decorative-gold:                hsla(35, 44%, 72%, 40%); //hsla(35, 20%, 70%, 40%);
+@color-decorative-white:               hsla(35, 0%, 72%, 30%); //hsla(35, 20%, 70%, 40%);
+
+@color-scrollbar-track:                rgba(0, 0, 0, 20%);
+@color-scrollbar-handle:               @color-decorative-white;
+
+@color-border-light:                   hsl(25, 10%, 90%);
+@color-border-dark:                    hsl(25, 30%, 60%);
+
+@color-border-light-focus:             hsl(25, 10%, 100%);
+@color-border-dark-focus:              hsl(41, 50%, 70%);
+
+@color-border-light-disabled:          hsl(25, 10%, 80%);
+@color-border-dark-disabled:           hsl(25, 10%, 55%);
+
+@gradient-border-primary:              linear-gradient(90deg, @color-border-dark, @color-border-light, @color-border-dark);
+@gradient-border-primary-focus:        linear-gradient(90deg, @color-border-dark-focus, @color-border-light-focus, @color-border-dark-focus);
+@gradient-border-primary-disabled:     linear-gradient(90deg, @color-border-dark-disabled, @color-border-light-disabled, @color-border-dark-disabled);
+
+
+@color-red-primary-content:            hsl(20, 20%, 85%);
+@color-red-primary-light:              hsl(0, 40%, 35%);
+@color-red-primary-dark:               hsl(0, 30%, 25%);
+
+@color-red-primary-content-hover:      hsl(20, 20%, 85%);
+@color-red-primary-light-hover:        hsl(0, 40%, 40%);
+@color-red-primary-dark-hover:         hsl(0, 30%, 30%);
+
+@color-red-primary-content-active:     hsl(20, 20%, 85%);
+@color-red-primary-light-active:       hsl(0, 40%, 30%);
+@color-red-primary-dark-active:        hsl(0, 30%, 20%);
+
+@color-red-primary-content-disabled:   hsl(20, 10%, 70%);
+@color-red-primary-light-disabled:     hsl(0, 15%, 30%);
+@color-red-primary-dark-disabled:      hsl(0, 10%, 20%);
+
+@color-red-secondary-content:          hsl(20, 20%, 85%);
+@color-red-secondary-light:            hsl(0, 40%, 26%);
+@color-red-secondary-dark:             hsl(329, 25%, 22%);
+@color-red-secondary-shadow:           hsl(0, 10%, 15%);
+
+@color-green-primary-content:          hsl(135, 15%, 85%);
+@color-green-primary-light:            hsl(115, 37%, 33%);
+@color-green-primary-dark:             hsl(115, 30%, 25%);
+
+@color-green-primary-content-hover:    hsl(135, 15%, 85%);
+@color-green-primary-light-hover:      hsl(115, 37%, 38%);
+@color-green-primary-dark-hover:       hsl(115, 30%, 30%);
+
+@color-green-primary-content-active:   hsl(135, 15%, 85%);
+@color-green-primary-light-active:     hsl(115, 37%, 28%);
+@color-green-primary-dark-active:      hsl(115, 30%, 20%);
+
+@color-green-primary-content-disabled: hsl(135, 5%, 70%);
+@color-green-primary-light-disabled:   hsl(115, 10%, 33%);
+@color-green-primary-dark-disabled:    hsl(115, 10%, 20%);
+
+@color-green-secondary-content:        hsl(135, 15%, 85%);
+@color-green-secondary-light:          hsl(115, 32%, 28%);
+@color-green-secondary-dark:           hsl(148, 15%, 25%);
+@color-green-secondary-shadow:         hsl(115, 10%, 13%);
+
+@color-blue-primary-content:           hsl(225, 15%, 85%);
+@color-blue-primary-light:             hsl(215, 40%, 35%);
+@color-blue-primary-dark:              hsl(215, 30%, 25%);
+
+@color-blue-primary-content-hover:     hsl(225, 15%, 85%);
+@color-blue-primary-light-hover:       hsl(215, 40%, 40%);
+@color-blue-primary-dark-hover:        hsl(215, 30%, 30%);
+
+@color-blue-primary-content-active:    hsl(225, 15%, 85%);
+@color-blue-primary-light-active:      hsl(215, 40%, 30%);
+@color-blue-primary-dark-active:       hsl(215, 30%, 20%);
+
+@color-blue-primary-content-disabled:  hsl(225, 5%, 70%);
+@color-blue-primary-light-disabled:    hsl(215, 15%, 30%);
+@color-blue-primary-dark-disabled:     hsl(215, 10%, 20%);
+
+@color-blue-secondary-content:         hsl(225, 15%, 85%);
+@color-blue-secondary-light:           hsl(215, 35%, 30%);
+@color-blue-secondary-dark:            hsl(212, 15%, 25%);
+@color-blue-secondary-shadow:          hsl(215, 10%, 15%);
+
+
+@color-paper-secondary-content:        hsl(36, 15%, 10%);
+@color-paper-secondary-light:          hsl(36, 35%, 70%);
+@color-paper-secondary-dark:           hsl(30, 30%, 54%);
+@color-paper-secondary-shadow:         hsl(0, 15%, 20%);
+
+
+@gradient-red-primary:                 radial-gradient(ellipse at bottom, @color-red-primary-light 20%, transparent 60%),
+                                       linear-gradient(@color-red-primary-dark 50%, @color-red-primary-light);
+
+@gradient-red-primary-hover:           radial-gradient(ellipse at bottom, @color-red-primary-light-hover 20%, transparent 60%),
+                                       linear-gradient(@color-red-primary-dark-hover 50%, @color-red-primary-light-hover);
+
+@gradient-red-primary-active:          radial-gradient(ellipse at bottom, @color-red-primary-light-active 20%, transparent 60%),
+                                       linear-gradient(@color-red-primary-dark-active 50%, @color-red-primary-light-active);
+
+@gradient-red-primary-disabled:        radial-gradient(ellipse at bottom, @color-red-primary-light-disabled 20%, transparent 60%),
+                                       linear-gradient(@color-red-primary-dark-disabled 50%, @color-red-primary-light-disabled);
+
+@gradient-red-secondary:               radial-gradient(ellipse, @color-red-secondary-light 0%, @color-red-secondary-dark 100%);
+
+@gradient-green-primary:               radial-gradient(ellipse at bottom, @color-green-primary-light 20%, transparent 60%),
+                                       linear-gradient(@color-green-primary-dark 50%, @color-green-primary-light);
+
+@gradient-green-primary-hover:         radial-gradient(ellipse at bottom, @color-green-primary-light-hover 20%, transparent 60%),
+                                       linear-gradient(@color-green-primary-dark-hover 50%, @color-green-primary-light-hover);
+
+@gradient-green-primary-active:        radial-gradient(ellipse at bottom, @color-green-primary-light-active 20%, transparent 60%),
+                                       linear-gradient(@color-green-primary-dark-active 50%, @color-green-primary-light-active);
+
+@gradient-green-primary-disabled:      radial-gradient(ellipse at bottom, @color-green-primary-light-disabled 20%, transparent 60%),
+                                       linear-gradient(@color-green-primary-dark-disabled 50%, @color-green-primary-light-disabled);
+
+@gradient-green-secondary:             radial-gradient(ellipse, @color-green-secondary-light 0%, @color-green-secondary-dark 100%);
+
+@gradient-blue-primary:                radial-gradient(ellipse at bottom, @color-blue-primary-light 20%, transparent 60%),
+                                       linear-gradient(@color-blue-primary-dark 50%, @color-blue-primary-light);
+
+@gradient-blue-primary-hover:          radial-gradient(ellipse at bottom, @color-blue-primary-light-hover 20%, transparent 60%),
+                                       linear-gradient(@color-blue-primary-dark-hover 50%, @color-blue-primary-light-hover);
+
+@gradient-blue-primary-active:         radial-gradient(ellipse at bottom, @color-blue-primary-light-active 20%, transparent 60%),
+                                       linear-gradient(@color-blue-primary-dark-active 50%, @color-blue-primary-light-active);
+
+@gradient-blue-primary-disabled:       radial-gradient(ellipse at bottom, @color-blue-primary-light-disabled 20%, transparent 60%),
+                                       linear-gradient(@color-blue-primary-dark-disabled 50%, @color-blue-primary-light-disabled);
+
+@gradient-blue-secondary:              radial-gradient(ellipse, @color-blue-secondary-light 0%, @color-blue-secondary-dark 100%);
+
+@gradient-paper-secondary:             radial-gradient(ellipse, @color-paper-secondary-light 0%, @color-paper-secondary-dark 100%);
+
+@gradient-tooltip:                     radial-gradient(ellipse, hsl(0, 30%, 15%) 0%, hsl(329, 15%, 13%) 100%);
+
+@border-radius-primary:                4px;
+@border-radius-secondary:              4px;
+
+@spacing-xs:                           4px;
+@spacing-s:                            8px;
+@spacing-m:                            16px;
+@spacing-l:                            32px;
+@spacing-xl:                           48px;
+@spacing-xxl:                          64px;
+
+@height-0:                             34px;
+@height-1:                             24px;
+
+@font-size-s:                          14px;
+@font-size-m:                          16px;
+@font-size-l:                          18px;
+@font-size-xl:                         22px;
+@font-size-xxl:                        42px;
+
+@font-weight-2:                        600;
+@font-weight-1:                        500;
+
+@font-type-primary:                    "Alegreya", sans-serif;
+@font-type-primary-special:            "Alegreya SC", sans-serif;
+
+// how to calculate crop
+// 1. add border to text element
+// 2. modify values until
+//      - top edge of border aligns with top edge of normal capital letter
+//      - bottom edge of border aligns with baseline
+@font-crop-special-top-xxl:            -15px;
+@font-crop-special-bottom-xxl:         -14px;
+@font-crop-special-top-xl:             -8px;
+@font-crop-special-bottom-xl:          -7px;
+@font-crop-special-top-l:              -7px;
+@font-crop-special-bottom-l:           -6px;
+@font-crop-special-top-s:              -5px;
+@font-crop-special-bottom-s:           -5px;
+@font-crop-primary-top-l:              -7px;
+@font-crop-primary-bottom-l:           -6px;
+
+@border-image-primary:                 url("/borders/border_primary.png") 120 round stretch;
+@border-image-secondary:               url("/borders/border_secondary.png") 345 round stretch;
+
+@image-divider-arm:                    url("/borders/divider_arm.png");
+@image-divider-center:                 url("/borders/divider_center.png");
+
+@background-texture-paper:             url("/textures/plain_white_paper.jpg");
+@background-texture-stone:             url("/textures/non_uniform_concret_wall.jpg");
+@background-pattern:                   url("/textures/ornament_pattern.jpg");
+
+
+@shadow-object:                        0 0 3px rgba(0, 0, 0, 70%),
+                                       0 0 10px rgba(0, 0, 0, 50%);
+
+@shadow-content:                       1px 1px 2px rgba(0, 0, 0, 60%);
+@shadow-content-light:                 1px 1px 2px rgba(255, 255, 255, 30%);
+
+@shadow-inset-back:                    inset 0 0 60px rgba(0, 0, 0, 20%);
+
+@shadow-inset-front:                   inset 0 0 30px rgba(0, 0, 0, 25%),
+                                       inset 0 0 4px rgba(0, 0, 0, 10%);
+
+@border-inset:                         1px solid rgba(0, 0, 0, 30%);

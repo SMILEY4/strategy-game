@@ -1,10 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.core.systems
 
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
-import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
-import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
+import de.ruegnerlukas.strategygame.backend.common.models.resources.ResourceType
 import de.ruegnerlukas.strategygame.backend.common.models.resources.amount
+import de.ruegnerlukas.strategygame.backend.common.models.terrain.TerrainResourceType
 import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.node.ProvinceEconomyNode
 import de.ruegnerlukas.strategygame.backend.testdsl.accessors.getCountryId
 import de.ruegnerlukas.strategygame.backend.testdsl.actions.createGame
@@ -78,15 +78,11 @@ class ResourceSharingTest : StringSpec({
             repeat(10) {
                 runEconomyUpdate()
                 expectProvinceResources("Test City Food") {
-                    producedLastTurn = listOf(
-                        ResourceType.FOOD.amount(6f),
-                        ResourceType.TOOLS.amount(3f),
-                    )
-                    consumedThisTurn = listOf(
+                    consumed = listOf(
                         ResourceType.FOOD.amount(2f),
                         ResourceType.WOOD.amount(3f),
                     )
-                    producedThisTurn = listOf(
+                    produced = listOf(
                         ResourceType.FOOD.amount(6f),
                         ResourceType.TOOLS.amount(3f),
                     )
@@ -96,16 +92,11 @@ class ResourceSharingTest : StringSpec({
                     )
                 }
                 expectProvinceResources("Test City Wood") {
-                    producedLastTurn = listOf(
-                        ResourceType.WOOD.amount(6f),
-                        ResourceType.TOOLS.amount(1f),
-                        ResourceType.HORSE.amount(2f),
-                    )
-                    consumedThisTurn = listOf(
+                    consumed = listOf(
                         ResourceType.FOOD.amount(4f),
                         ResourceType.WOOD.amount(1f),
                     )
-                    producedThisTurn = listOf(
+                    produced = listOf(
                         ResourceType.WOOD.amount(6f),
                         ResourceType.TOOLS.amount(1f),
                         ResourceType.HORSE.amount(2f),
@@ -113,8 +104,7 @@ class ResourceSharingTest : StringSpec({
                     missing = listOf(
                         ResourceType.FOOD.amount(0f),
                         ResourceType.WOOD.amount(0f),
-
-                        )
+                    )
                 }
             }
         }
@@ -188,17 +178,12 @@ class ResourceSharingTest : StringSpec({
             repeat(10) {
                 runEconomyUpdate()
                 expectProvinceResources("Test City Food") {
-                    producedLastTurn = listOf(
-                        ResourceType.FOOD.amount(3f),
-                        ResourceType.WOOD.amount(0f),
-                        ResourceType.TOOLS.amount(1f),
-                    )
-                    consumedThisTurn = listOf(
+                    consumed = listOf(
                         ResourceType.FOOD.amount(2f),
                         ResourceType.WOOD.amount(1f),
                         ResourceType.TOOLS.amount(0f),
                     )
-                    producedThisTurn = listOf(
+                    produced = listOf(
                         ResourceType.FOOD.amount(3f),
                         ResourceType.WOOD.amount(0f),
                         ResourceType.TOOLS.amount(1f),
@@ -210,15 +195,11 @@ class ResourceSharingTest : StringSpec({
                     )
                 }
                 expectProvinceResources("Test City Wood") {
-                    producedLastTurn = listOf(
-                        ResourceType.FOOD.amount(0f),
-                        ResourceType.WOOD.amount(1f),
-                    )
-                    consumedThisTurn = listOf(
+                    consumed = listOf(
                         ResourceType.FOOD.amount(1f),
                         ResourceType.WOOD.amount(0f),
                     )
-                    producedThisTurn = listOf(
+                    produced = listOf(
                         ResourceType.FOOD.amount(0f),
                         ResourceType.WOOD.amount(1f),
                     )

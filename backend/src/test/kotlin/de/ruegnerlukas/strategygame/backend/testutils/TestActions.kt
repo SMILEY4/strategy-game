@@ -12,6 +12,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.common.RouteGenerato
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateBuilding
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENCreateCity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENDeleteMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENPlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENPlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENRemoveProductionQueueEntry
@@ -32,7 +33,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidatePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
-import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.PlayerViewCreatorImpl
+import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.POVBuilderImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.core.preview.PreviewCityCreationImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExistsQueryImpl
@@ -121,6 +122,7 @@ data class TestActions(
                 GENValidateCreateCity(GameConfig.default(), eventSystem)
                 GENValidatePlaceMarker(eventSystem)
                 GENPlaceMarker(eventSystem)
+                GENDeleteMarker(eventSystem)
                 GENValidatePlaceScout(GameConfig.default(), eventSystem)
                 GENPlaceScout(GameConfig.default(), eventSystem)
                 GENValidateAddProductionQueueEntry(eventSystem)
@@ -171,7 +173,7 @@ data class TestActions(
             ConnectToGameImpl(
                 GameQueryImpl(database),
                 GameUpdateImpl(database),
-                PlayerViewCreatorImpl(
+                POVBuilderImpl(
                     GameExtendedQueryImpl(database),
                     GameConfig.default()
                 ),
@@ -188,7 +190,7 @@ data class TestActions(
                         GameExtendedQueryImpl(database),
                         GameExtendedUpdateImpl(database),
                         eventSystem,
-                        PlayerViewCreatorImpl(
+                        POVBuilderImpl(
                             GameExtendedQueryImpl(database),
                             GameConfig.default()
                         ),
@@ -219,7 +221,7 @@ data class TestActions(
                     GameExtendedQueryImpl(database),
                     GameExtendedUpdateImpl(database),
                     eventSystem,
-                    PlayerViewCreatorImpl(
+                    POVBuilderImpl(
                         GameExtendedQueryImpl(database),
                         GameConfig.default()
                     ),

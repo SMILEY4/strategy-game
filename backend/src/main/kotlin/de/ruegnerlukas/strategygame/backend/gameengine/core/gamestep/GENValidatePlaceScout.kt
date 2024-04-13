@@ -4,7 +4,7 @@ import de.ruegnerlukas.strategygame.backend.common.events.EventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.GameConfig
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileContent
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.ScoutTileObject
 import de.ruegnerlukas.strategygame.backend.common.utils.validations
 
 class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {
@@ -20,14 +20,14 @@ class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: Eve
                         data.targetTile.discoveredByCountries.contains(data.country.countryId)
                     }
                     mustBeTrue("SCOUT.TILE_SPACE") {
-                        data.targetTile.content
-                            .filterIsInstance<ScoutTileContent>()
+                        data.targetTile.objects
+                            .filterIsInstance<ScoutTileObject>()
                             .none { it.countryId == data.country.countryId }
                     }
                     mustBeTrue("SCOUT.AMOUNT") {
                         data.game.tiles
                             .asSequence()
-                            .mapNotNull { tile -> tile.content.find { it is ScoutTileContent }?.let { it as ScoutTileContent } }
+                            .mapNotNull { tile -> tile.objects.find { it is ScoutTileObject }?.let { it as ScoutTileObject } }
                             .filter { scout -> scout.countryId == data.country.countryId }
                             .count() < gameConfig.scoutsMaxAmount
                     }

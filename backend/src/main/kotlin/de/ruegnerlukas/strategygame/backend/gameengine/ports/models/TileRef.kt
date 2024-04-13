@@ -7,3 +7,5 @@ data class TileRef(
 ) {
     constructor(tile: Tile) : this(tile.tileId, tile.position.q, tile.position.r)
 }
+
+fun Tile.ref() = TileRef(this.tileId, this.position.q, this.position.r)

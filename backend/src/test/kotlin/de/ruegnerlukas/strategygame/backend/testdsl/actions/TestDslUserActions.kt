@@ -30,7 +30,7 @@ suspend fun GameTestContext.createGame() {
 
 suspend fun GameTestContext.createGame(block: CreateGameUserActionDsl.() -> Unit) {
     val dslConfig = CreateGameUserActionDsl().apply(block)
-    val gameId = getActions().gameCreate.perform(dslConfig.worldSettings)
+    val gameId = getActions().gameCreate.perform("test-game", dslConfig.worldSettings)
     dslConfig.users.forEachIndexed { index, userId ->
         getActions().gameJoin.perform(userId, gameId)
         getActions().gameConnect.perform(userId, gameId, index.toLong())
@@ -179,6 +179,7 @@ class SubmitTurnUserActionDsl(val userId: String) {
                 PlaceMarkerCommandData(
                     q = it.q!!,
                     r = it.r!!,
+                    label = "test-marker"
                 )
             )
         }

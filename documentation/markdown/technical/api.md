@@ -101,11 +101,21 @@ All messages follow the following format
                           "amount": "Double - the total amount of influence of the  country on the tile",
                       }
                   ],
-                  "content": [
+                  "objects": [
                       {
                           "type": "marker",
                           "countryId": "String - the id of the owner country"
-                      }
+                      },
+                      {
+                          "type": "scout",
+                          "countryId": "String - the id of the owner country",
+                          "creationTurn": "Int - the turn in which the scout was placed"
+                      },
+                      {
+                          "type": "city",
+                          "countryId": "String - the id of the owner country",
+                          "cityId": "String - the id of the city"
+                      },
                   ]
               }
           }
@@ -113,8 +123,10 @@ All messages follow the following format
       "countries": [
           {
               "dataTier1": {
-                  "countryId": "String - the id of the country",
-                  "userId": "String - the id of the owner",
+                  "id": "String - the id of the country",
+                  "name": "String - the name of the country",
+                  "userId": "String - the id of the owner player",
+                  "userName": "String - the name of the owner player",
                   "color": {
                       "red": "Int [0,255]",
                       "green": "Int [0,255]",
@@ -169,12 +181,25 @@ All messages follow the following format
       ],
       "provinces": [
           {
-              "provinceId" : "String - the id of the province",
-              "countryId" : "String - the id of the owner country",
-              "cityIds": [
-                  "String - the ids of cities in this province (incl. capital)"
-              ],
-              "provinceCapitalCityId": "String - the id of the province capital city"
+              "dataTier1": {
+                  "id": "String - the id of the province",
+                  "name": "String - the name of the province",
+                  "countryId": "String - the id of the owner country",
+                  "color": {
+                      "red": "Int [0,255]",
+                      "green": "Int [0,255]",
+                      "blue": "Int [0,255]",
+                  },
+                  "cityIds": [
+                      "String - the ids of cities in this province (incl. capital)"
+                  ],
+                  "provinceCapitalCityId": "String - the id of the province capital city"
+              },
+              "dataTier3?": {
+                  "resourceBalance": {
+                      "<ResourceType>": "Float - balance of the given type"
+                  }
+              }
           }
       ],
       "routes": [

@@ -1,0 +1,44 @@
+@import "./../../components/common.less";
+
+.page-sessions {
+
+  &.background-image-panel > .decorated-panel {
+    width:  min(70%, 700px);
+    height: min(80%, 600px);
+  }
+
+  .page-sessions__list__container {
+    overflow: hidden;
+  }
+
+  .page-sessions__list__content {
+    box-sizing:      border-box;
+    overflow:        auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
+
+    .game-session-entry {
+      flex-shrink: 0;
+
+      .hbox > .header {
+        flex-grow: 1;
+      }
+
+    }
+
+  }
+
+  .game-session__modal-surface {
+    position:         absolute;
+    top:              0;
+    bottom:           0;
+    left:             0;
+    right:            0;
+    display:          flex;
+    justify-content:  center;
+    align-items:      center;
+    background-color: rgba(0, 0, 0, 60%);
+  }
+
+}

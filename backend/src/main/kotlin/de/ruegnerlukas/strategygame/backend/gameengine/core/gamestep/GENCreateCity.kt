@@ -4,10 +4,12 @@ import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefiniti
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.gameengine.core.eco.ledger.ResourceLedger
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityInfrastructure
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityMetadata
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityPopulation
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.CityTileObject
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
@@ -80,9 +82,17 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
             ),
             population = CityPopulation(
                 size = 1,
-                growthProgress = 0f
+                growthProgress = 0f,
             ),
-        ).also { game.cities.add(it) }
+        ).also {
+            game.cities.add(it)
+            tile.objects.add(
+                CityTileObject(
+                    countryId = countryId,
+                    cityId = it.cityId,
+                )
+            )
+        }
     }
 
     private fun addToExistingProvince(game: GameExtended, city: City, targetTile: Tile): Province {
@@ -97,6 +107,8 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
             countryId = country.countryId,
             cityIds = mutableListOf(city.cityId),
             provinceCapitalCityId = city.cityId,
+            color = RGBColor.random(),
+            resourceLedger = ResourceLedger()
         ).also { game.provinces.add(it) }
     }
 

@@ -1,0 +1,1 @@
+export type GameSessionState = "none" | "loading" | "error" | "playing"

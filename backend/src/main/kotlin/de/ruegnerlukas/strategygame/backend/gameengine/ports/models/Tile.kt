@@ -9,11 +9,11 @@ data class Tile(
     val influences: MutableList<TileInfluence>,
     var owner: TileOwner?,
     val discoveredByCountries: MutableList<String>,
-    val content: MutableList<TileContent>
+    val objects: MutableList<TileObject>
 ) {
 
-    inline fun <reified T : TileContent> findContent(): List<T> = content.filterIsInstance<T>()
+    inline fun <reified T : TileObject> findObjects(): List<T> = objects.filterIsInstance<T>()
 
-    inline fun <reified T : TileContent> findOneContent(): T? = findContent<T>().firstOrNull()
+    inline fun <reified T : TileObject> findOneObject(): T? = findObjects<T>().firstOrNull()
 
 }

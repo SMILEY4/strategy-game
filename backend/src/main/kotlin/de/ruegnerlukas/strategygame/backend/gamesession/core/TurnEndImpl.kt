@@ -2,6 +2,7 @@ package de.ruegnerlukas.strategygame.backend.gamesession.core
 
 import arrow.core.Either
 import arrow.core.continuations.either
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
@@ -33,11 +34,11 @@ class TurnEndImpl(
         return time(metricId) {
             log().info("End turn of game $gameId")
             either {
-                val game = findGame(gameId).bind()
-                val playerViews = stepGame(game)
-                updateGameInfo(game)
-                saveGame(game)
-                sendGameStateMessages(game, playerViews)
+                val gamePre = findGame(gameId).bind()
+                val playerViews = stepGame(gamePre)
+                val gamePost = findGame(gameId).bind()
+                updateGameInfo(gamePost)
+                sendGameStateMessages(gamePost, playerViews)
             }
         }
     }
@@ -54,7 +55,7 @@ class TurnEndImpl(
     /**
      * update the game and world
      */
-    private suspend fun stepGame(game: Game): Map<String, Any> {
+    private suspend fun stepGame(game: Game): Map<String, JsonType> {
         val commands = commandsByGameQuery.execute(game.gameId, game.turn)
         return gameStepAction.perform(game.gameId, commands, getConnectedUsers(game)).getOrThrow()
     }
@@ -73,18 +74,10 @@ class TurnEndImpl(
     /**
      * Update the state of the game to prepare it for the next turn
      */
-    private fun updateGameInfo(game: Game) {
-        game.turn = game.turn + 1
+    private suspend fun updateGameInfo(game: Game) {
         game.players.forEach { player ->
             player.state = PlayerState.PLAYING
         }
-    }
-
-
-    /**
-     * Persists the given game
-     */
-    private suspend fun saveGame(game: Game) {
         updateGame.execute(game)
     }
 
@@ -92,7 +85,7 @@ class TurnEndImpl(
     /**
      * Send the new game-state to the connected players
      */
-    private suspend fun sendGameStateMessages(game: Game, playerViews: Map<String, Any>) {
+    private suspend fun sendGameStateMessages(game: Game, playerViews: Map<String, JsonType>) {
         playerViews.forEach { (userId, view) ->
             val connectionId = getConnectionId(game, userId)
             producer.sendToSingle(connectionId, GameStateMessage(GameStatePayload(view)))

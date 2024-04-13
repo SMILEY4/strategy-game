@@ -3,11 +3,13 @@ package de.ruegnerlukas.strategygame.backend.gameengine.core
 import arrow.core.Either
 import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
+import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.AddProductionQueueEntryOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.BuildingProductionQueueEntryData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.CreateCityOperationData
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.DeleteMarkerOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.PlaceMarkerOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.PlaceScoutOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.RemoveProductionQueueEntryOperationData
@@ -15,22 +17,23 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.SettlerProd
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerGlobalUpdate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveAddProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveCreateCity
+import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveDeleteMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceMarker
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolvePlaceScout
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.TriggerResolveUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.UpgradeSettlementTierOperationData
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.dtos.GameExtendedDTO
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.nextTier
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep.GameStepError
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PlayerViewCreator
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.POVBuilder
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedQuery
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExtendedUpdate
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.CreateCityCommandData
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.DeleteMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceMarkerCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlaceScoutCommandData
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.ProductionQueueAddBuildingEntryCommandData
@@ -42,7 +45,7 @@ class GameStepImpl(
     private val gameExtendedQuery: GameExtendedQuery,
     private val gameExtendedUpdate: GameExtendedUpdate,
     private val eventSystem: EventSystem,
-    private val playerViewCreator: PlayerViewCreator
+    private val playerViewCreator: POVBuilder
 ) : GameStep {
 
     private val metricId = MetricId.action(GameStep::class)
@@ -51,12 +54,13 @@ class GameStepImpl(
         gameId: String,
         commands: Collection<Command<*>>,
         userIds: Collection<String>
-    ): Either<GameStepError, Map<String, GameExtendedDTO>> {
+    ): Either<GameStepError, Map<String, JsonType>> {
         return time(metricId) {
             either {
                 val game = getGameState(gameId).bind()
                 handleCommands(game, commands)
                 handleGlobalUpdate(game)
+                prepareNextTurn(game)
                 saveGameState(game)
                 userIds.associateWith { userId ->
                     playerViewCreator.build(userId, game)
@@ -73,6 +77,10 @@ class GameStepImpl(
         return gameExtendedQuery.execute(gameId).mapLeft { GameNotFoundError }
     }
 
+
+    private fun prepareNextTurn(game: GameExtended) {
+        game.meta.turn += 1
+    }
 
     /**
      * Update the game state in the database
@@ -116,6 +124,18 @@ class GameStepImpl(
                     eventSystem.publish(
                         TriggerResolvePlaceMarker,
                         PlaceMarkerOperationData(
+                            game = game,
+                            country = game.findCountryByUser(typedCommand.userId),
+                            targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),
+                            label = typedCommand.data.label
+                        )
+                    )
+                }
+                is DeleteMarkerCommandData -> {
+                    val typedCommand = command as Command<DeleteMarkerCommandData>
+                    eventSystem.publish(
+                        TriggerResolveDeleteMarker,
+                        DeleteMarkerOperationData(
                             game = game,
                             country = game.findCountryByUser(typedCommand.userId),
                             targetTile = game.findTile(typedCommand.data.q, typedCommand.data.r),

@@ -1360,3 +1360,73 @@ Process:
 1. if resources left-over, transfer resources (up to max amount) to target province
 
 => resources can then be consumed next turn; if not consumed by target city, resources get automatically added to shared resource pool and gets further "traded internally"
+
+
+
+
+
+# City Growth
+
+- cities have
+  - tier: hamlet -> village -> town -> city
+  - pop-count: number of inhabitants
+  - growth-factor:   how much the city grows/shrinks
+- new settlements starts with x pop
+- multiple factors determine growth-factor
+  - food-availability
+    - general bonus
+    - if more food => farm-villages shrink, cities grow
+    - if less food => farm-villages grow, cities shrink
+  - availability of resources
+    - free farmland, mines
+    - more buildings -> more work -> more growth 
+    - some buildings only give bonus at certain tiers, e.g.:
+      - farm,mine,fisher only at hamlet,village
+      - jewellery only at town,city
+      - ...
+      - player decides buildings -> buildings influence/determine size/tier
+  - terrain/climate/...
+  - security
+  - trade/connectivity
+  - wealth
+  - ...
+- growth factor can be influences via player-decisions "limit-growth" and "promote growth" to get/keep desired size
+- growth factor determines pop-count of next turn
+- if pop-count reaches required pop-count of next tier -> settlement "levels-up" automatically
+
+
+
+
+
+# Tile "Resources"
+
+- a tile can have any number of different resources
+- for each resource on that tile
+  - amount available = how much is present on that tile
+  - replenishment rate = how much is added each turn (only if resource is already "present")
+  - max amount = how much can be present at most
+  - => stats may be different for each tile
+- examples
+  - wood (forest)
+    - max = 10
+    - replenishment = +10/turn
+    - woodcutter lvl 1 collects 8/turn
+    - woodcutter lvl 2 collects 10/turn
+    - => never runs out, but no point upgrading past lvl 2 
+  - gold mine
+    - max 100
+    - replenishment +3/turn
+    - mine collects 10/turn
+    - => gold deposit can eventually run out
+  - dead soldiers
+    - max = infinite
+    - battle occurs with 200 dead => adds 200 to tile
+    - replenishment = -5/turn
+    - => necromancers can "harvest" undead after larger battles, but corpses decay over time
+  - deathfog
+    - max = infinite
+    - replenishment = +1/turn
+    - can randomly spawn on any tile
+    - can spread to nearby tiles if hits threshold
+    - can be reduced by mages
+    - if too much fog on tile => reduced positive effects or even deadly to population and units

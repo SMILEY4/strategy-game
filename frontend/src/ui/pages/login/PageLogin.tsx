@@ -1,46 +1,66 @@
-import React, {ReactElement, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {AppConfig} from "../../../main";
-import "./pageLogin.css";
+import React, {ReactElement} from "react";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1} from "../../components/header/Header";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {TextField} from "../../components/textfield/TextField";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {HBox} from "../../components/layout/hbox/HBox";
+import {Spacer} from "../../components/spacer/Spacer";
+import {useLogin} from "../../hooks/login";
+import {useGotoSignup} from "../../hooks/navigate";
+
 
 export function PageLogin(): ReactElement {
 
-    const actionLogIn = AppConfig.di.get(AppConfig.DIQ.UserLoginAction);
-    const [loginEmail, setLoginEmail] = useState("");
-    const [loginPassword, setLoginPassword] = useState("");
-    const [loginStatus, setLoginStatus] = useState("");
-    const navigate = useNavigate();
+    const {
+        email,
+        setEmail,
+        password,
+        setPassword,
+        login,
+        error,
+    } = useLogin();
+
+    const gotoSignup = useGotoSignup();
 
     return (
-        <div className="page-login">
+        <BackgroundImagePanel fillParent centerContent image="/images/image_1.png">
+            <DecoratedPanel red floating>
+                <VBox gap_s centerVertical stretch>
 
-            <div>
-                <h3>Login</h3>
-                <div>Email</div>
-                <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value + "")}/>
-                <div>Password</div>
-                <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value + "")}/>
-                <div/>
-                <button onClick={onLogin}>Login</button>
-                <div>{loginStatus}</div>
-                <p/>
-                <button onClick={onSignUp}>Sign-Up</button>
-            </div>
+                    <Header1>Login</Header1>
 
-        </div>
+                    <Spacer size="s"/>
+
+                    <TextField
+                        value={email}
+                        placeholder={"Email"}
+                        type="email"
+                        onChange={setEmail}
+                    />
+
+                    <TextField
+                        value={password}
+                        placeholder={"Password"}
+                        type="password"
+                        onChange={setPassword}
+                    />
+
+                    <Spacer size="s"/>
+
+                    <HBox gap_s centerVertical right>
+                        <ButtonPrimary blue onClick={gotoSignup}>
+                            Sign-Up
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={login}>
+                            Login
+                        </ButtonPrimary>
+                    </HBox>
+
+
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
     );
-
-    function onLogin() {
-        actionLogIn.perform(loginEmail, loginPassword)
-            .then(() => navigate("/home"))
-            .catch(e => {
-                console.error("Error during login", e);
-                setLoginStatus("Login failed");
-            });
-    }
-
-    function onSignUp() {
-        navigate("/signup");
-    }
-
 }

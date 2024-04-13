@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
+import de.ruegnerlukas.strategygame.backend.common.models.ErrorResponse
+import de.ruegnerlukas.strategygame.backend.common.models.bodyErrorResponse
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MicrometerMonitoringService
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MonitoringService
 import de.ruegnerlukas.strategygame.backend.common.utils.toDisplayString
@@ -17,6 +19,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
+import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.UserIdPrincipal
@@ -34,6 +37,8 @@ import io.ktor.server.request.userAgent
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.RoutingApplicationCall
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
@@ -123,7 +128,14 @@ fun Application.module() {
     }
     val userIdentityService by inject<UserIdentityService>()
     install(Authentication) {
-        jwt("user") { userIdentityService.configureAuthentication(this) }
+        jwt("user") {
+            userIdentityService.configureAuthentication(this)
+            challenge { _, _ ->
+                ErrorResponse.unauthorized().also { response ->
+                    call.respond(HttpStatusCode.fromValue(response.status), response)
+                }
+            }
+        }
         basic("auth-technical-user") {
             realm = "strategy-game"
             validate { credentials ->
@@ -140,7 +152,9 @@ fun Application.module() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             KotlinLogging.logger { }.error("Controller received error", cause)
-            call.respond(HttpStatusCode.InternalServerError, cause::class.qualifiedName ?: "unknown")
+            ErrorResponse.from(cause).also { response ->
+                call.respond(HttpStatusCode.fromValue(response.status), response)
+            }
         }
     }
     install(SwaggerUI) {
@@ -167,12 +181,7 @@ fun Application.module() {
         pathFilter = { _, url -> !(url.lastOrNull()?.let { it.endsWith(".js") || it.endsWith(".css") } ?: false) }
         defaultSecuritySchemeName = "Auth"
         defaultUnauthorizedResponse {
-            description = "Authentication failed"
-            body(ApiResponse::class) {
-                example("Unauthorized", ApiResponse.authenticationFailed()) {
-                    description = "The provided token is invalid."
-                }
-            }
+            bodyErrorResponse(ErrorResponse.unauthorized())
         }
     }
     val monitoring by inject<MonitoringService>()

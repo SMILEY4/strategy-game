@@ -302,8 +302,8 @@ class CityGrowthTest : StringSpec({
                 population = CityPopulation(
                     size = size,
                     growthProgress = 0f,
-                    popConsumedFood = 0f,
-                    popGrowthConsumedFood = false,
+                    consumedFood = 0f,
+                    growthConsumedFood = false,
                 ),
             )
 

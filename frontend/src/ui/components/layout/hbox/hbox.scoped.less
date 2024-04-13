@@ -1,0 +1,134 @@
+@import "./../../common.less";
+
+
+.hbox {
+  position:       relative;
+  display:        flex;
+  flex-direction: row;
+  box-sizing: border-box;
+
+
+  &.hbox--fill {
+    width:  100%;
+    height: 100%;
+  }
+
+  &.hbox--fill-width {
+    width:  100%;
+  }
+
+  &.hbox--fill-height {
+    height: 100%;
+  }
+
+
+  &.hbox--scrollable {
+    overflow:        auto;
+    scrollbar-width: thin;
+    scrollbar-color: @color-scrollbar-handle @color-scrollbar-track;
+  }
+
+  &.hbox--stable-scrollbar {
+    scrollbar-gutter: stable both-edges;
+  }
+
+  &.hbox--wrap {
+    flex-wrap: wrap;
+  }
+
+  &.hbox-vert-center {
+    align-items: center;
+  }
+
+  &.hbox-vert-top {
+    align-items: flex-start;
+  }
+
+  &.hbox-vert-bottom {
+    align-items: flex-end;
+  }
+
+  &.hbox-vert-stretch {
+    align-items: stretch;
+  }
+
+  &.hbox-hor-center {
+    justify-content: center;
+  }
+
+  &.hbox-hor-left {
+    justify-content: flex-start;
+  }
+
+  &.hbox-hor-right {
+    justify-content: flex-end;
+  }
+
+  &.hbox-hor-space-between {
+    justify-content: space-between;
+  }
+
+  &.hbox-hor-space-evenly {
+    justify-content: space-evenly;
+  }
+
+  &.hbox-hor-space-around {
+    justify-content: space-around;
+  }
+
+
+  &.hbox--gap-none {
+    gap: 0;
+  }
+
+  &.hbox--gap-xs {
+    gap: @spacing-xs;
+  }
+
+  &.hbox--gap-s {
+    gap: @spacing-s;
+  }
+
+  &.hbox--gap-m {
+    gap: @spacing-m;
+  }
+
+  &.hbox--gap-l {
+    gap: @spacing-l;
+  }
+
+  &.hbox--gap-xl {
+    gap: @spacing-xl;
+  }
+  &.hbox--gap-xxl {
+    gap: @spacing-xxl;
+  }
+
+
+  &.hbox--padding-none {
+    padding: 0;
+  }
+
+  &.hbox--padding-xs {
+    padding: @spacing-xs;
+  }
+
+  &.hbox--padding-s {
+    padding: @spacing-s;
+  }
+
+  &.hbox--padding-m {
+    padding: @spacing-m;
+  }
+
+  &.hbox--padding-l {
+    padding: @spacing-l;
+  }
+
+  &.hbox--padding-xl {
+    padding: @spacing-xl;
+  }
+  &.hbox--padding-xxl {
+    padding: @spacing-xxl;
+  }
+}

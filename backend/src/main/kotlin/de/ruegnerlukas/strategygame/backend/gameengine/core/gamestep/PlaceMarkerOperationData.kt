@@ -8,4 +8,5 @@ data class PlaceMarkerOperationData(
     val game: GameExtended,
     val country: Country,
     val targetTile: Tile,
+    val label: String
 )

@@ -1,42 +1,73 @@
-import React, {ReactElement, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {AppConfig} from "../../../main";
-import "./pageSignUp.css";
+import React, {ReactElement} from "react";
+import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
+import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
+import {VBox} from "../../components/layout/vbox/VBox";
+import {Header1} from "../../components/header/Header";
+import {TextField} from "../../components/textfield/TextField";
+import {HBox} from "../../components/layout/hbox/HBox";
+import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {Spacer} from "../../components/spacer/Spacer";
+import {useSignup} from "../../hooks/signup";
+import {useGotoLogin} from "../../hooks/navigate";
+
 
 export function PageSignUp(): ReactElement {
 
-    const actionSignUp = AppConfig.di.get(AppConfig.DIQ.UserSignUpAction);
-    const [signUpEmail, setSignUpEmail] = useState("");
-    const [signUpPassword, setSignUpPassword] = useState("");
-    const [signUpUsername, setSignUpUsername] = useState("");
-    const [signUpStatus, setSignUpStatus] = useState("");
-    const navigate = useNavigate();
+    const {
+        username,
+        setUsername,
+        email,
+        setEmail,
+        password,
+        setPassword,
+        signUp,
+        error,
+    } = useSignup();
+    const gotoLogin = useGotoLogin();
 
     return (
-        <div className="page-signup">
-            <div>
-                <h3>Sign-Up</h3>
-                <div>Email</div>
-                <input type="email" value={signUpEmail} onChange={(e) => setSignUpEmail(e.target.value + "")}/>
-                <div>Username</div>
-                <input type="text" value={signUpUsername} onChange={(e) => setSignUpUsername(e.target.value + "")}/>
-                <div>Password</div>
-                <input type="password" value={signUpPassword} onChange={(e) => setSignUpPassword(e.target.value + "")}/>
-                <div/>
-                <button onClick={onSignUp}>SignUp</button>
-                <div>{signUpStatus}</div>
-            </div>
-        </div>
+        <BackgroundImagePanel fillParent centerContent image="/images/image_3.bmp">
+            <DecoratedPanel red floating>
+                <VBox gap_s centerVertical stretch>
+
+                    <Header1>Sign-Up</Header1>
+
+                    <Spacer size="s"/>
+
+                    <TextField
+                        value={username}
+                        placeholder={"Username"}
+                        type="text"
+                        onChange={setUsername}
+                    />
+
+                    <TextField
+                        value={email}
+                        placeholder={"Email"}
+                        type="email"
+                        onChange={setEmail}
+                    />
+
+                    <TextField
+                        value={password}
+                        placeholder={"Password"}
+                        type="password"
+                        onChange={setPassword}
+                    />
+
+                    <Spacer size="s"/>
+
+                    <HBox gap_s centerVertical right>
+                        <ButtonPrimary blue onClick={gotoLogin}>
+                            Login
+                        </ButtonPrimary>
+                        <ButtonPrimary green onClick={signUp}>
+                            Sign-Up
+                        </ButtonPrimary>
+                    </HBox>
+
+                </VBox>
+            </DecoratedPanel>
+        </BackgroundImagePanel>
     );
-
-    function onSignUp() {
-        actionSignUp.perform(signUpEmail, signUpPassword, signUpUsername)
-            .then(() => setSignUpStatus("Confirmation code sent"))
-            .then(() => navigate("/login"))
-            .catch(e => {
-                console.error(e);
-                setSignUpStatus("Sign-Up failed");
-            });
-    }
-
 }

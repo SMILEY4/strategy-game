@@ -1,16 +1,19 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep
 
+import de.ruegnerlukas.strategygame.backend.common.detaillog.DetailLog
+import de.ruegnerlukas.strategygame.backend.common.detaillog.TileRefDetailLogValue
 import de.ruegnerlukas.strategygame.backend.common.events.BasicEventNodeDefinition
 import de.ruegnerlukas.strategygame.backend.common.events.EventSystem
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Building
 import de.ruegnerlukas.strategygame.backend.common.models.BuildingType
+import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
+import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Building
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.BuildingDetailType
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
-import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.TileRef
-import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 
 /**
  * Adds the given building to the city
@@ -32,15 +35,24 @@ class GENCreateBuilding(eventSystem: EventSystem) : Logging {
 
     private fun addBuilding(game: GameExtended, city: City, buildingType: BuildingType) {
         decideTargetTile(game, city, buildingType)
-            .let { Building(type = buildingType, tile = it, active = false) }
+            .let {
+                Building(
+                    type = buildingType,
+                    tile = it,
+                    active = false,
+                    details = DetailLog<BuildingDetailType>().also { log ->
+                        it?.also { log.addDetail(BuildingDetailType.WORKED_TILE, mutableMapOf("tile" to TileRefDetailLogValue(it))) }
+                    }
+                )
+            }
             .also { city.infrastructure.buildings.add(it) }
     }
 
     private fun decideTargetTile(game: GameExtended, city: City, buildingType: BuildingType): TileRef? {
-        if (buildingType.templateData.requiredTileResource == null) {
-            return null
+        return if (buildingType.templateData.requiredTileResource == null) {
+            null
         } else {
-            return positionsCircle(city.tile, 1)
+            positionsCircle(city.tile, 1)
                 .asSequence()
                 .filter { !isSameTile(city, it) }
                 .mapNotNull { game.findTileOrNull(it) }

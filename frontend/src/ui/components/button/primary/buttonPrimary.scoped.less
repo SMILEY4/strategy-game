@@ -1,0 +1,161 @@
+@import "./../../common.less";
+
+.button-primary {
+
+  position:      relative;
+
+  height:        @height-0;
+
+  background:    @gradient-border-primary;
+  box-shadow:    @shadow-object;
+  border-radius: @border-radius-primary;
+  border:        1px solid transparent;
+  box-sizing:    border-box;
+
+  font-size:     @font-size-m;
+  font-family:   @font-type-primary-special;
+  font-weight:   @font-weight-1;
+
+  cursor:        pointer;
+  user-select:   none;
+
+  @inset-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 30%),
+                 inset 0 0 3px rgba(0, 0, 0, 40%),
+                 inset 0 0 5px rgba(0, 0, 0, 70%),
+                 inset 0 0 7px rgba(0, 0, 0, 80%);
+
+
+  .button-primary__inner {
+    position:        relative;
+    width:           100%;
+    height:          100%;
+    box-sizing:      border-box;
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
+    text-shadow:     @shadow-content;
+    white-space:     nowrap;
+  }
+
+  &.button--small {
+    height: @height-1;
+  }
+
+  .button-primary__inner /deep/ svg {
+    filter: drop-shadow(@shadow-content);
+  }
+
+  .button-primary__inner {
+    border-radius: @border-radius-primary;
+    padding:       @spacing-s @spacing-m;
+  }
+
+  &.button--round .button-primary__inner {
+    border-radius: 9999px;
+    padding:       @spacing-xs;
+  }
+
+  &.button--round {
+    border-radius: 9999px;
+    border:        2px solid transparent;
+
+    .button-primary__inner {
+      aspect-ratio:    1/1;
+      display:         flex;
+      justify-content: center;
+      align-items:     center;
+    }
+
+  }
+
+  &.button--square {
+    aspect-ratio:    1/1;
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
+  }
+
+  &.button--square .button-primary__inner {
+    padding: @spacing-xs;
+  }
+
+
+  &.button--disabled {
+    background: @gradient-border-primary-disabled;
+    cursor:     default;
+  }
+
+  &.button--red {
+
+    &:not(.button--disabled) .button-primary__inner {
+      background: @gradient-red-primary;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light;
+      color:      @color-red-primary-content;
+
+      &:hover {
+        background: @gradient-red-primary-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-hover;
+      }
+
+      &:active {
+        background: @gradient-red-primary-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-active;
+      }
+    }
+
+    &.button--disabled .button-primary__inner {
+      background: @gradient-red-primary-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-disabled;
+      color:      @color-red-primary-content-disabled;
+    }
+  }
+
+  &.button--green {
+    &:not(.button--disabled) .button-primary__inner {
+      background: @gradient-green-primary;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light;
+      color:      @color-green-primary-content;
+
+      &:hover {
+        background: @gradient-green-primary-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-hover;
+      }
+
+      &:active {
+        background: @gradient-green-primary-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-active;
+      }
+    }
+
+    &.button--disabled .button-primary__inner {
+      background: @gradient-green-primary-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-disabled;
+      color:      @color-green-primary-content-disabled;
+    }
+  }
+
+  &.button--blue {
+    &:not(.button--disabled) .button-primary__inner {
+      background: @gradient-blue-primary;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light;
+      color:      @color-blue-primary-content;
+
+      &:hover {
+        background: @gradient-blue-primary-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-hover;
+      }
+
+      &:active {
+        background: @gradient-blue-primary-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-active;
+      }
+    }
+
+    &.button--disabled .button-primary__inner {
+      background: @gradient-blue-primary-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-disabled;
+      color:      @color-blue-primary-content-disabled;
+    }
+  }
+
+}
