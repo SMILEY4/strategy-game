@@ -10,13 +10,16 @@ export class HtmlResourceManager implements ResourceManager {
 
     public initialize(nodes: AbstractRenderNode[]): void {
         for (let node of nodes) {
-            if(node instanceof HtmlRenderNode) {
+            if (node instanceof HtmlRenderNode) {
                 for (let output of node.config.output) {
-                    if(output instanceof NodeOutput.HtmlData) {
-                        this.elementCache.set(output.name, [])
+                    if (output instanceof NodeOutput.HtmlData) {
+                        this.elementCache.set(output.name, []);
                     }
-                    if(output instanceof NodeOutput.HtmlContainer) {
-                        // todo: optionally init container cache
+                    if (output instanceof NodeOutput.HtmlContainer) {
+                        const container = document.getElementById(output.id);
+                        if (container) {
+                            this.containerCache.set(output.id, container);
+                        }
                     }
                 }
             }
@@ -30,24 +33,24 @@ export class HtmlResourceManager implements ResourceManager {
 
     public getElements(id: string): any[] {
         const elements = this.elementCache.get(id);
-        if(elements === undefined || elements === null) {
-            throw new Error("No elements with id " + id)
+        if (elements === undefined || elements === null) {
+            throw new Error("No elements with id " + id);
         } else {
             return elements;
         }
     }
 
     public setElements(id: string, elements: any[]) {
-        this.elementCache.set(id, elements)
+        this.elementCache.set(id, elements);
     }
 
     public getContainer(containerName: string): HTMLElement {
         let container = this.containerCache.get(containerName);
-        if(!container) {
+        if (!container) {
             container = document.getElementById(containerName)!;
-            this.containerCache.set(containerName, container)
+            this.containerCache.set(containerName, container);
         }
-        if(!container) {
+        if (!container) {
             throw new Error("No container with name " + containerName);
         }
         return container;

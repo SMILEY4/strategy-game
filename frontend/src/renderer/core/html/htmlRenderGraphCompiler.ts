@@ -8,7 +8,19 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
 
 
     public validate(nodes: AbstractRenderNode[]): [boolean, string] {
-        return [true, ""]; // todo
+        if (nodes.length === 0) {
+            return [false, "graph is empty"];
+        }
+        for (let node of nodes) {
+            if (node instanceof HtmlRenderNode) {
+                const containerCount = node.config.output.count(it => it instanceof NodeOutput.HtmlContainer);
+                if (containerCount !== 1) {
+                    return [false, "html-render-node " + node.id + " has amount of target containers =/= 1 "];
+                }
+            }
+        }
+        return [true, ""];
+
     }
 
     public compile(nodes: AbstractRenderNode[]): HtmlRenderCommand.Base[] {
@@ -47,9 +59,9 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
 
     private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlRenderNode[] {
         const filtered: HtmlRenderNode[] = [];
-        for(let node of nodes) {
-            if(node instanceof HtmlRenderNode && this.getContainerId(node) === containerId) {
-                filtered.push(node)
+        for (let node of nodes) {
+            if (node instanceof HtmlRenderNode && this.getContainerId(node) === containerId) {
+                filtered.push(node);
             }
         }
         return filtered;
