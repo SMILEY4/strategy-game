@@ -1,24 +1,35 @@
 package de.ruegnerlukas.strategygame.backend.user.ports.provided
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
 
 interface RefreshUserToken {
 
-    sealed class RefreshTokenError
+    sealed class RefreshTokenError : Exception()
 
-    object NotAuthorizedError : RefreshTokenError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
 
-    object UserNotConfirmedError : RefreshTokenError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The given credentials are not valid, i.e. the user is not authorized
+     */
+    class NotAuthorizedError : RefreshTokenError()
 
-    object UserNotFoundError : RefreshTokenError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
 
-    fun perform(refreshToken: String): Either<RefreshTokenError, AuthData>
+    /**
+     * The user has not confirmed the account yet
+     */
+    class UserNotConfirmedError : RefreshTokenError()
+
+
+    /**
+     * No user with the given data exists
+     */
+    class UserNotFoundError : RefreshTokenError()
+
+
+    /**
+     * Provides a new authentication token using the given refresh token
+     * @return the new valid token
+     * @throws RefreshTokenError
+     */
+    fun perform(refreshToken: String): AuthData
 
 }

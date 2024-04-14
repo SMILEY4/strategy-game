@@ -63,12 +63,14 @@ object RouteLogin {
     }) {
         withLoggingContextAsync(mdcTraceId()) {
             call.receive<LoginData>().let { requestData ->
-                when (val result = userLogin.perform(requestData.email, requestData.password)) {
-                    is Ok -> call.respond(HttpStatusCode.OK, AuthData(result.value))
-                    is Err -> when (result.value) {
-                        LoginUser.NotAuthorizedError -> call.respond(UnauthorizedResponse)
-                        LoginUser.UserNotConfirmedError -> call.respond(UserNotConfirmedResponse)
-                        LoginUser.UserNotFoundError -> call.respond(UserNotFoundResponse)
+                try {
+                    val auth = userLogin.perform(requestData.email, requestData.password)
+                    call.respond(HttpStatusCode.OK, AuthData(auth))
+                } catch (e: LoginUser.LoginUserError) {
+                    when(e) {
+                        is LoginUser.NotAuthorizedError -> call.respond(UnauthorizedResponse)
+                        is LoginUser.UserNotConfirmedError -> call.respond(UserNotConfirmedResponse)
+                        is LoginUser.UserNotFoundError -> call.respond(UserNotFoundResponse)
                     }
                 }
             }

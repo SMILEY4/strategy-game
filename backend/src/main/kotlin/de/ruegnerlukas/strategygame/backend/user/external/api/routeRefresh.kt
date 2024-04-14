@@ -61,12 +61,14 @@ object RouteRefresh {
     }) {
         withLoggingContextAsync(mdcTraceId()) {
             call.receive<String>().let { requestData ->
-                when (val result = userRefresh.perform(requestData)) {
-                    is Ok -> call.respond(HttpStatusCode.OK, result.value)
-                    is Err -> when (result.value) {
-                        RefreshUserToken.NotAuthorizedError -> call.respond(UnauthorizedResponse)
-                        RefreshUserToken.UserNotConfirmedError -> call.respond(UserNotConfirmedResponse)
-                        RefreshUserToken.UserNotFoundError -> call.respond(UserNotFoundResponse)
+                try {
+                    val auth = userRefresh.perform(requestData)
+                    call.respond(HttpStatusCode.OK, auth)
+                } catch (e: RefreshUserToken.RefreshTokenError) {
+                    when(e) {
+                        is RefreshUserToken.NotAuthorizedError -> call.respond(UnauthorizedResponse)
+                        is RefreshUserToken.UserNotConfirmedError -> call.respond(UserNotConfirmedResponse)
+                        is RefreshUserToken.UserNotFoundError -> call.respond(UserNotFoundResponse)
                     }
                 }
             }

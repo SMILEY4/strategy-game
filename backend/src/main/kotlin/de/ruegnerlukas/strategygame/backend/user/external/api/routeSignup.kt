@@ -52,12 +52,14 @@ object RouteSignup {
     }) {
         withLoggingContextAsync(mdcTraceId()) {
             call.receive<CreateUserData>().let { requestData ->
-                when (val result = userCreate.perform(requestData.email, requestData.password, requestData.username)) {
-                    is Ok -> call.respond(HttpStatusCode.OK, Unit)
-                    is Err -> when (result.value) {
-                        CreateUser.CodeDeliveryError -> call.respond(CodeDeliveryFailedResponse)
-                        CreateUser.InvalidEmailOrPasswordError -> call.respond(InvalidEmailOrPasswordResponse)
-                        CreateUser.UserAlreadyExistsError -> call.respond(UserAlreadyExistsResponse)
+                try {
+                    userCreate.perform(requestData.email, requestData.password, requestData.username)
+                    call.respond(HttpStatusCode.OK, Unit)
+                } catch (e: CreateUser.CreateUserError) {
+                    when(e) {
+                        is CreateUser.CodeDeliveryError -> call.respond(CodeDeliveryFailedResponse)
+                        is CreateUser.InvalidEmailOrPasswordError -> call.respond(InvalidEmailOrPasswordResponse)
+                        is CreateUser.UserAlreadyExistsError -> call.respond(UserAlreadyExistsResponse)
                     }
                 }
             }

@@ -1,7 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.user.ports.required
 
-import arrow.core.Either
-import arrow.core.Either.*
 import de.ruegnerlukas.strategygame.backend.app.Config
 import de.ruegnerlukas.strategygame.backend.app.ConfigData
 import de.ruegnerlukas.strategygame.backend.user.external.client.AwsCognitoService
@@ -12,67 +10,37 @@ import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 interface UserIdentityService {
 
-    /**
-     * Error when creating a new user
-     */
-    sealed interface CreateUserError
-
-    /**
-     * Error when deleting a user
-     */
-    sealed interface DeleteUserError
-
-    /**
-     * Error when authenticating a user
-     */
-    sealed interface AuthUserError
-
-    /**
-     * Error when refreshing a token
-     */
-    sealed interface RefreshAuthError
+    sealed class UserIdentityError : Exception()
 
     /**
      * The user already exists
      */
-    object UserAlreadyExistsError : CreateUserError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class UserAlreadyExistsError : UserIdentityError()
 
     /**
      * The email or password is not valid
      */
-    object InvalidEmailOrPasswordError : CreateUserError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class InvalidEmailOrPasswordError : UserIdentityError()
 
     /**
      * the confirmation code could not be delivered (e.g. via email)
      */
-    object CodeDeliveryError : CreateUserError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class CodeDeliveryError : UserIdentityError()
 
     /**
      * The given credentials are not valid, i.e. the user is not authorized
      */
-    object NotAuthorizedError : AuthUserError, RefreshAuthError, DeleteUserError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class NotAuthorizedError : UserIdentityError()
 
     /**
      * The user has not confirmed the account yet
      */
-    object UserNotConfirmedError : AuthUserError, RefreshAuthError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class UserNotConfirmedError :UserIdentityError()
 
     /**
      * No user with the given data exists
      */
-    object UserNotFoundError : AuthUserError, RefreshAuthError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class UserNotFoundError : UserIdentityError()
 
 
     companion object {
@@ -118,26 +86,38 @@ interface UserIdentityService {
 
     /**
      * Create a new user identified by the given email and password
+     * @throws UserAlreadyExistsError
+     * @throws InvalidEmailOrPasswordError
+     * @throws InvalidEmailOrPasswordError
+     * @throws CodeDeliveryError
      */
-    fun createUser(email: String, password: String, username: String): Either<CreateUserError, Unit>
+    fun createUser(email: String, password: String, username: String)
 
 
     /**
      * Authenticate the given user.
+     * @throws NotAuthorizedError
+     * @throws UserNotConfirmedError
+     * @throws UserNotFoundError
      */
-    fun authenticate(email: String, password: String): Either<AuthUserError, AuthDataExtended>
+    fun authenticate(email: String, password: String): AuthDataExtended
 
 
     /**
      * Refresh the authentication for a given user
+     * @throws NotAuthorizedError
+     * @throws UserNotConfirmedError
+     * @throws UserNotFoundError
      */
-    fun refreshAuthentication(refreshToken: String): Either<RefreshAuthError, AuthData>
+    fun refreshAuthentication(refreshToken: String): AuthData
 
 
     /**
      * Delete the user with the given email and password
-     * @return whether the user has been deleted successfully
+     * @throws NotAuthorizedError
+     * @throws UserNotConfirmedError
+     * @throws UserNotFoundError
      */
-    suspend fun deleteUser(email: String, password: String): Either<DeleteUserError, Unit>
+    suspend fun deleteUser(email: String, password: String)
 
 }

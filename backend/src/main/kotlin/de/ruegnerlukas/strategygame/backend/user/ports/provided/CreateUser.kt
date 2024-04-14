@@ -1,23 +1,28 @@
 package de.ruegnerlukas.strategygame.backend.user.ports.provided
 
-import arrow.core.Either
-
 interface CreateUser {
 
-    sealed class CreateUserError
+    sealed class CreateUserError : Exception()
 
-    object UserAlreadyExistsError : CreateUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The user already exists
+     */
+    class UserAlreadyExistsError : CreateUserError()
 
-    object InvalidEmailOrPasswordError : CreateUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The email or password is not valid
+     */
+    class InvalidEmailOrPasswordError : CreateUserError()
 
-    object CodeDeliveryError : CreateUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * the confirmation code could not be delivered (e.g. via email)
+     */
+    class CodeDeliveryError : CreateUserError()
 
-    fun perform(email: String, password: String, username: String): Either<CreateUserError, Unit>
+    /**
+     * Create a new user with the given email, username and password
+     * @throws CreateUserError
+     */
+    fun perform(email: String, password: String, username: String)
 
 }

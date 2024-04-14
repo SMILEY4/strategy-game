@@ -1398,7 +1398,7 @@ Process:
 
 
 
-# Tile "Resources"
+# Tile "Resources" ❤
 
 - a tile can have any number of different resources
 - for each resource on that tile
@@ -1430,3 +1430,6 @@ Process:
     - can spread to nearby tiles if hits threshold
     - can be reduced by mages
     - if too much fog on tile => reduced positive effects or even deadly to population and units
+
+
+

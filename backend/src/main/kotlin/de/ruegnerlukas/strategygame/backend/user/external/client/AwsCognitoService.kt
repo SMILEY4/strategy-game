@@ -134,7 +134,7 @@ class AwsCognitoService(
 	}
 
 
-	override fun createUser(email: String, password: String, username: String): Either<CreateUserError, Unit> {
+	override fun createUser(email: String, password: String, username: String) {
 		try {
 			provider.signUp(
 				SignUpRequest()
@@ -148,21 +148,20 @@ class AwsCognitoService(
 					)
 			)
 			log().info("Successfully created user $email")
-			return Unit.ok()
 		} catch (e: Exception) {
 			log().info("Failed to create user $email: ${e.message}", e)
-			return when (e) {
-				is UsernameExistsException -> UserAlreadyExistsError.err()
-				is InvalidParameterException -> InvalidEmailOrPasswordError.err()
-				is InvalidPasswordException -> InvalidEmailOrPasswordError.err()
-				is CodeDeliveryFailureException -> CodeDeliveryError.err()
-				else -> throw Exception("Could not create user. Cause: $e")
+			when (e) {
+				is UsernameExistsException -> throw UserAlreadyExistsError()
+				is InvalidParameterException -> throw InvalidEmailOrPasswordError()
+				is InvalidPasswordException -> throw InvalidEmailOrPasswordError()
+				is CodeDeliveryFailureException -> throw CodeDeliveryError()
+				else -> throw Exception("Could not create user.", e)
 			}
 		}
 	}
 
 
-	override fun authenticate(email: String, password: String): Either<AuthUserError, AuthDataExtended> {
+	override fun authenticate(email: String, password: String): AuthDataExtended {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -181,20 +180,20 @@ class AwsCognitoService(
 				idToken = result.authenticationResult.idToken,
 				refreshToken = result.authenticationResult.refreshToken,
 				accessToken = result.authenticationResult.accessToken
-			).ok()
+			)
 		} catch (e: Exception) {
 			log().info("Failed to authenticate user $email: ${e.message}", e)
-			return when (e) {
-				is NotAuthorizedException -> NotAuthorizedError.err()
-				is UserNotConfirmedException -> UserNotConfirmedError.err()
-				is UserNotFoundException -> UserNotFoundError.err()
-				else -> throw Exception("Could not authenticate user. Cause: $e")
+			when (e) {
+				is NotAuthorizedException -> throw NotAuthorizedError()
+				is UserNotConfirmedException -> throw UserNotConfirmedError()
+				is UserNotFoundException -> throw UserNotFoundError()
+				else -> throw Exception("Could not authenticate user.", e)
 			}
 		}
 	}
 
 
-	override fun refreshAuthentication(refreshToken: String): Either<RefreshAuthError, AuthData> {
+	override fun refreshAuthentication(refreshToken: String): AuthData {
 		try {
 			val result = provider.adminInitiateAuth(
 				AdminInitiateAuthRequest()
@@ -207,32 +206,27 @@ class AwsCognitoService(
 			return AuthData(
 				idToken = result.authenticationResult.idToken,
 				refreshToken = result.authenticationResult.refreshToken,
-			).ok()
+			)
 		} catch (e: Exception) {
 			log().info("Failed to refresh user-authentication: ${e.message}", e)
-			return when (e) {
-				is NotAuthorizedException -> NotAuthorizedError.err()
-				is UserNotConfirmedException -> UserNotConfirmedError.err()
-				is UserNotFoundException -> UserNotFoundError.err()
-				else -> throw Exception("Could not refresh auth-token. Cause: $e")
+			when (e) {
+				is NotAuthorizedException -> throw NotAuthorizedError()
+				is UserNotConfirmedException -> throw UserNotConfirmedError()
+				is UserNotFoundException -> throw UserNotFoundError()
+				else -> throw Exception("Could not refresh auth-token.", e)
 			}
 		}
 	}
 
 
-	override suspend fun deleteUser(email: String, password: String): Either<DeleteUserError, Unit> {
+	override suspend fun deleteUser(email: String, password: String) {
 		try {
-			return when(val auth = authenticate(email, password)) {
-				is Err -> NotAuthorizedError.err()
-				is Ok -> {
-					provider.deleteUser(DeleteUserRequest().withAccessToken(auth.value.accessToken))
-					log().info("Successfully deleted user $email")
-					Unit.ok()
-				}
-			}
+			val auth = authenticate(email, password)
+			provider.deleteUser(DeleteUserRequest().withAccessToken(auth.accessToken))
+			log().info("Successfully deleted user $email")
 		} catch (e: Exception) {
 			log().info("Failed to delete user $email: ${e.message}", e)
-			throw Exception("Could not delete user. Cause: $e")
+			throw Exception("Could not delete user.", e)
 		}
 	}
 
