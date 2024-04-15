@@ -1,14 +1,19 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
-import arrow.core.Either
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.POVBuilder.PlayerViewCreatorError
 
 interface ConnectToGame {
 
-	sealed class GameConnectActionError
-	object GameNotFoundError : GameConnectActionError()
-	object InvalidPlayerState : GameConnectActionError()
-	object SendStateFailed : GameConnectActionError()
+    sealed class GameConnectActionError : Exception()
+    class GameNotFoundError : GameConnectActionError()
+    class InvalidPlayerState : GameConnectActionError()
 
-	suspend fun perform(userId: String, gameId: String, connectionId: Long): Either<GameConnectActionError, Unit>
+
+    /**
+     * Connect the given user to the given game
+     * @throws GameConnectActionError
+     * @throws PlayerViewCreatorError
+     */
+    suspend fun perform(userId: String, gameId: String, connectionId: Long)
 
 }

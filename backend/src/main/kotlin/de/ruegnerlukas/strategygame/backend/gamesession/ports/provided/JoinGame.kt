@@ -1,22 +1,21 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
-import arrow.core.Either
-
 /**
  * Join an existing game
  */
 interface JoinGame {
 
-    sealed class GameJoinActionErrors
+    sealed class GameJoinActionErrors : Exception()
 
-    object UserAlreadyJoinedError : GameJoinActionErrors() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class UserAlreadyJoinedError : GameJoinActionErrors()
 
-    object GameNotFoundError : GameJoinActionErrors() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class GameNotFoundError : GameJoinActionErrors()
 
-    suspend fun perform(userId: String, gameId: String): Either<GameJoinActionErrors, Unit>
+
+    /**
+     * Adds the given user as a new player to the game
+     * @throws GameJoinActionErrors
+     */
+    suspend fun perform(userId: String, gameId: String)
 
 }

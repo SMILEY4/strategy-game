@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcConnectionId
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcGameId
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcTraceId
@@ -55,14 +54,13 @@ object RouteWebsocket {
             val userId = data[USER_ID]!! as String
             val gameId = call.parameters[GAME_ID]!!.also { data[GAME_ID] = it }
             withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
-                when (val result = requestConnection.perform(userId, gameId)) {
-                    is Either.Right -> {
-                        /*do nothing*/
-                    }
-                    is Either.Left -> when (result.value) {
-                        RequestConnectionToGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
-                        RequestConnectionToGame.NotParticipantError -> call.respond(NotParticipantResponse)
-                        RequestConnectionToGame.AlreadyConnectedError -> call.respond(AlreadyConnectedResponse)
+                try {
+                    requestConnection.perform(userId, gameId)
+                } catch (e: RequestConnectionToGame.GameRequestConnectionActionError) {
+                    when (e) {
+                        is RequestConnectionToGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
+                        is RequestConnectionToGame.NotParticipantError -> call.respond(NotParticipantResponse)
+                        is RequestConnectionToGame.AlreadyConnectedError -> call.respond(AlreadyConnectedResponse)
                     }
                 }
             }

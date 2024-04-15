@@ -1,14 +1,17 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
-import arrow.core.Either
-
 interface RequestConnectionToGame {
 
-	sealed class GameRequestConnectionActionError
-	object GameNotFoundError : GameRequestConnectionActionError()
-	object NotParticipantError : GameRequestConnectionActionError()
-	object AlreadyConnectedError : GameRequestConnectionActionError()
+    sealed class GameRequestConnectionActionError : Exception()
+    class GameNotFoundError : GameRequestConnectionActionError()
+    class NotParticipantError : GameRequestConnectionActionError()
+    class AlreadyConnectedError : GameRequestConnectionActionError()
 
-	suspend fun perform(userId: String, gameId: String): Either<GameRequestConnectionActionError, Unit>
+
+    /**
+     * Checks if the given user is allowed to connect to the game
+     * @throws GameRequestConnectionActionError
+     */
+    suspend fun perform(userId: String, gameId: String)
 
 }

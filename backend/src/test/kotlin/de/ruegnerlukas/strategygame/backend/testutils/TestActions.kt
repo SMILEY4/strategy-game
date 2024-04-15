@@ -34,7 +34,6 @@ import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidate
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateRemoveProductionQueueEntry
 import de.ruegnerlukas.strategygame.backend.gameengine.core.gamestep.GENValidateUpgradeSettlementTier
 import de.ruegnerlukas.strategygame.backend.gameengine.core.playerview.POVBuilderImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.core.preview.PreviewCityCreationImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.CountryInsertImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExistsQueryImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
@@ -44,7 +43,6 @@ import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.Tile
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameAndPositionImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesQueryByGameImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.TilesUpdateImpl
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.PreviewCityCreation
 import de.ruegnerlukas.strategygame.backend.gamesession.core.ConnectToGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.CreateGameImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.core.JoinGameImpl
@@ -72,7 +70,6 @@ data class TestActions(
     val turnSubmit: TurnSubmitActionImpl,
     val turnEnd: TurnEndImpl,
     val gameEventSystem: EventSystem,
-    val previewCityCreation: PreviewCityCreation
 ) {
 
     companion object {
@@ -91,7 +88,6 @@ data class TestActions(
             val eventSystem = gameEventSystem(context, database, popFoodConsumption(fixedPopFoodConsumption))
             val turnSubmit = turnSubmitAction(database, eventSystem)
             val turnEnd = turnEndAction(database, eventSystem)
-            val previewCityCreation = previewCityCreation(database)
             return TestActions(
                 context = context,
                 gameCreate = gameCreate,
@@ -102,7 +98,6 @@ data class TestActions(
                 turnSubmit = turnSubmit,
                 turnEnd = turnEnd,
                 gameEventSystem = eventSystem,
-                previewCityCreation = previewCityCreation
             )
         }
 
@@ -237,14 +232,6 @@ data class TestActions(
                     every { it.getRequiredFood(any()) } returns fixed.toFloat()
                 }
             }
-        }
-
-        private fun previewCityCreation(database: ArangoDatabase): PreviewCityCreation {
-            return PreviewCityCreationImpl(
-                GameExtendedQueryImpl(database),
-                RouteGenerator(GameConfig.default()),
-                GameConfig.default()
-            )
         }
 
     }

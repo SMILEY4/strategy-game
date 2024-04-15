@@ -9,6 +9,7 @@ import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.Initialize
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerContainer
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.CreateGame.*
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameInsert
 import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 import java.time.Instant
@@ -51,7 +52,11 @@ class CreateGameImpl(
      * Initialize and populate the world
      */
     private suspend fun initializeWorld(gameId: String, worldSettings: WorldSettings) {
-        initializeWorld.perform(gameId, worldSettings).getOrThrow()
+        try {
+        initializeWorld.perform(gameId, worldSettings)
+        } catch (e: Exception) {
+            throw WorldInitError()
+        }
     }
 
 }

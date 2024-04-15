@@ -1,13 +1,16 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.ports.provided
 
-import arrow.core.Either
-
-
 interface TurnEnd {
 
-	sealed class TurnEndError
-	object GameNotFoundError : TurnEndError()
+	sealed class TurnEndError : Exception()
+	class GameNotFoundError : TurnEndError()
 
-	suspend fun perform(gameId: String): Either<TurnEndError, Unit>
+
+	/**
+	 * Ends the current turn of the given game
+	 * @throws TurnEndError
+	 * @throws GameStepError
+	 */
+	suspend fun perform(gameId: String)
 
 }

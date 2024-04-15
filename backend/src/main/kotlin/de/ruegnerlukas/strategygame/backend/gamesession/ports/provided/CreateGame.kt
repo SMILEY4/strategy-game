@@ -7,8 +7,14 @@ import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
  */
 interface CreateGame {
 
+	sealed class CreateGameError : Exception()
+	class GameNotFoundError : CreateGameError()
+	class WorldInitError : CreateGameError()
+
+
 	/**
 	 * @return the id of the game
+	 * @throws CreateGameError
 	 */
 	suspend fun perform(name: String, worldSettings: WorldSettings): String
 

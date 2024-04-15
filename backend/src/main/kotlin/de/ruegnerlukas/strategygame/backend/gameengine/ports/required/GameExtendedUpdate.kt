@@ -1,9 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.required
 
-import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 
 interface GameExtendedUpdate {
-	suspend fun execute(game: GameExtended): Either<EntityNotFoundError, Unit>
+    /**
+     * @throws EntityNotFoundError
+     */
+    suspend fun execute(game: GameExtended)
 }

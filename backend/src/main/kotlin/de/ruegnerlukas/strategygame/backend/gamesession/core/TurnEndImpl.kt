@@ -1,12 +1,10 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.core
 
-import arrow.core.Either
-import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.jsondsl.JsonType
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
-import de.ruegnerlukas.strategygame.backend.common.utils.getOrThrow
+import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.GameStep
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage
 import de.ruegnerlukas.strategygame.backend.gamesession.external.message.models.GameStateMessage.Companion.GameStatePayload
@@ -15,7 +13,6 @@ import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.PlayerState
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.GameNotFoundError
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.TurnEnd.TurnEndError
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.CommandsByGameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameQuery
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.required.GameUpdate
@@ -30,16 +27,14 @@ class TurnEndImpl(
 
     private val metricId = MetricId.action(TurnEnd::class)
 
-    override suspend fun perform(gameId: String): Either<TurnEndError, Unit> {
+    override suspend fun perform(gameId: String) {
         return time(metricId) {
             log().info("End turn of game $gameId")
-            either {
-                val gamePre = findGame(gameId).bind()
-                val playerViews = stepGame(gamePre)
-                val gamePost = findGame(gameId).bind()
-                updateGameInfo(gamePost)
-                sendGameStateMessages(gamePost, playerViews)
-            }
+            val gamePre = findGame(gameId)
+            val playerViews = stepGame(gamePre)
+            val gamePost = findGame(gameId)
+            updateGameInfo(gamePost)
+            sendGameStateMessages(gamePost, playerViews)
         }
     }
 
@@ -47,8 +42,12 @@ class TurnEndImpl(
     /**
      * Find and return the [Game] or [GameNotFoundError] if the game does not exist
      */
-    private suspend fun findGame(gameId: String): Either<GameNotFoundError, Game> {
-        return queryGame.execute(gameId).mapLeft { GameNotFoundError }
+    private suspend fun findGame(gameId: String): Game {
+        try {
+            return queryGame.execute(gameId)
+        } catch (e: EntityNotFoundError) {
+            throw GameNotFoundError()
+        }
     }
 
 
@@ -57,7 +56,7 @@ class TurnEndImpl(
      */
     private suspend fun stepGame(game: Game): Map<String, JsonType> {
         val commands = commandsByGameQuery.execute(game.gameId, game.turn)
-        return gameStepAction.perform(game.gameId, commands, getConnectedUsers(game)).getOrThrow()
+        return gameStepAction.perform(game.gameId, commands, getConnectedUsers(game))
     }
 
 

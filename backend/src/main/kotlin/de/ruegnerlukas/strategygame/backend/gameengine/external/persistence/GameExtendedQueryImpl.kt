@@ -1,7 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
 
-import arrow.core.Either
-import arrow.core.continuations.either
 import arrow.fx.coroutines.parZip
 import de.ruegnerlukas.strategygame.backend.common.models.tracking
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
@@ -9,6 +7,7 @@ import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DocumentNotFoundError
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CountryEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
@@ -29,36 +28,37 @@ class GameExtendedQueryImpl(private val database: ArangoDatabase) : GameExtended
 
     private val metricId = MetricId.query(GameExtendedQuery::class)
 
-    override suspend fun execute(gameId: String): Either<EntityNotFoundError, GameExtended> {
+    override suspend fun execute(gameId: String): GameExtended {
         return time(metricId) {
-            either {
-                val game = fetchGame(gameId).bind()
-                parZip(
-                    { fetchCountries(gameId) },
-                    { fetchTiles(gameId) },
-                    { fetchCities(gameId) },
-                    { fetchProvinces(gameId) },
-                    { fetchRoutes(gameId) }
-                ) { countries, tiles, cities, provinces, routes ->
-                    GameExtended(
-                        meta = GameMeta(
-                            gameId = gameId,
-                            turn = game.turn
-                        ),
-                        countries = countries,
-                        tiles = TileContainer(tiles),
-                        cities = cities.tracking(),
-                        provinces = provinces.tracking(),
-                        routes = routes.tracking()
-                    )
-                }
+            val game = fetchGame(gameId)
+            parZip(
+                { fetchCountries(gameId) },
+                { fetchTiles(gameId) },
+                { fetchCities(gameId) },
+                { fetchProvinces(gameId) },
+                { fetchRoutes(gameId) }
+            ) { countries, tiles, cities, provinces, routes ->
+                GameExtended(
+                    meta = GameMeta(
+                        gameId = gameId,
+                        turn = game.turn
+                    ),
+                    countries = countries,
+                    tiles = TileContainer(tiles),
+                    cities = cities.tracking(),
+                    provinces = provinces.tracking(),
+                    routes = routes.tracking()
+                )
             }
         }
     }
 
-    private suspend fun fetchGame(gameId: String): Either<EntityNotFoundError, GameEntity> {
-        return database.getDocument(Collections.GAMES, gameId, GameEntity::class.java)
-            .mapLeft { EntityNotFoundError }
+    private suspend fun fetchGame(gameId: String): GameEntity {
+        try {
+            return database.getDocument(Collections.GAMES, gameId, GameEntity::class.java)
+        } catch (e: DocumentNotFoundError) {
+            throw EntityNotFoundError()
+        }
     }
 
     private suspend fun fetchCountries(gameId: String): List<Country> {

@@ -1,15 +1,11 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.persistence
 
-import arrow.core.Either
-import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
 import de.ruegnerlukas.strategygame.backend.common.persistence.EntityNotFoundError
 import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
-import de.ruegnerlukas.strategygame.backend.common.utils.Err
-import de.ruegnerlukas.strategygame.backend.common.utils.Ok
-import de.ruegnerlukas.strategygame.backend.common.utils.err
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.DocumentNotFoundError
 import de.ruegnerlukas.strategygame.backend.common.utils.parallelIO
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CountryEntity
@@ -30,34 +26,30 @@ class GameExtendedUpdateImpl(private val database: ArangoDatabase) : GameExtende
 
     private val metricId = MetricId.query(GameExtendedUpdate::class)
 
-    override suspend fun execute(game: GameExtended): Either<EntityNotFoundError, Unit> {
+    override suspend fun execute(game: GameExtended) {
         return time(metricId) {
-            either {
-                val gameId = game.meta.gameId
-                updateGame(game.meta).bind()
-                parallelIO(
-                    { updateCountries(game.countries, gameId) },
-                    { updateTiles(game.tiles, gameId) },
-                    { updateCities(game.cities, gameId) },
-                    { deleteCities(game.cities.getRemovedElements(), gameId) },
-                    { updateProvinces(game.provinces, gameId) },
-                    { deleteProvinces(game.provinces.getRemovedElements(), gameId) },
-                    { updateRoutes(game.routes, gameId) },
-                    { deleteRoutes(game.routes.getRemovedElements(), gameId) }
-                )
-            }
+            val gameId = game.meta.gameId
+            updateGame(game.meta)
+            parallelIO(
+                { updateCountries(game.countries, gameId) },
+                { updateTiles(game.tiles, gameId) },
+                { updateCities(game.cities, gameId) },
+                { deleteCities(game.cities.getRemovedElements(), gameId) },
+                { updateProvinces(game.provinces, gameId) },
+                { deleteProvinces(game.provinces.getRemovedElements(), gameId) },
+                { updateRoutes(game.routes, gameId) },
+                { deleteRoutes(game.routes.getRemovedElements(), gameId) }
+            )
         }
     }
 
-    private suspend fun updateGame(gameMeta: GameMeta): Either<EntityNotFoundError, Unit> {
-        return when (val game = database.getDocument(Collections.GAMES, gameMeta.gameId, GameEntity::class.java)) {
-            is Ok -> {
-                val entity = GameEntity.of(gameMeta, game.value)
-                return database.updateDocument(Collections.GAMES, entity.getKeyOrThrow(), entity)
-                    .mapLeft { EntityNotFoundError }
-                    .void()
-            }
-            is Err -> EntityNotFoundError.err()
+    private suspend fun updateGame(gameMeta: GameMeta) {
+        try {
+            val game = database.getDocument(Collections.GAMES, gameMeta.gameId, GameEntity::class.java)
+            val entity = GameEntity.of(gameMeta, game)
+            database.updateDocument(Collections.GAMES, entity.getKeyOrThrow(), entity)
+        } catch (e: DocumentNotFoundError) {
+            throw EntityNotFoundError()
         }
     }
 

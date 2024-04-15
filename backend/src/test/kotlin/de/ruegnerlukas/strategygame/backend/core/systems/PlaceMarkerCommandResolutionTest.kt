@@ -64,7 +64,7 @@ class PlaceMarkerCommandResolutionTest : StringSpec({
         }
     }
 
-    "place marker outside of map, expect correct error" {
+    "place marker outside of map, expect no marker" {
         gameTest {
             createGame {
                 worldSettings = WorldSettings.landOnly()

@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.user.external.client
 
-import arrow.core.Either
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider

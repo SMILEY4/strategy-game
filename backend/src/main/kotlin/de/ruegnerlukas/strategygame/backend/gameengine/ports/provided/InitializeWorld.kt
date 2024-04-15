@@ -1,15 +1,20 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.worldcreation.WorldSettings
 
 interface InitializeWorld {
 
-    sealed interface InitializeWorldError
+    sealed class InitializeWorldError : Exception()
 
-    object GameNotFoundError : InitializeWorldError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The requested game could not be found
+     */
+    class GameNotFoundError : InitializeWorldError()
 
-    suspend fun perform(gameId: String, worldSettings: WorldSettings): Either<InitializeWorldError, Unit>
+
+    /**
+     * Initializes the game world
+     * @throws InitializeWorldError
+     */
+    suspend fun perform(gameId: String, worldSettings: WorldSettings)
 }

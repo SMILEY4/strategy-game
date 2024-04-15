@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.external.api
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.app.getUserIdOrThrow
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcGameId
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcTraceId
@@ -9,6 +8,7 @@ import de.ruegnerlukas.strategygame.backend.common.logging.withLoggingContextAsy
 import de.ruegnerlukas.strategygame.backend.common.models.ErrorResponse
 import de.ruegnerlukas.strategygame.backend.common.utils.GZip.compressToBase64
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.POVBuilder
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.POVBuilder.PlayerViewCreatorError
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -49,16 +49,16 @@ object RouteGameState {
         val userId = call.getUserIdOrThrow()
         val compression = call.parameters["compression"]
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
-            when (val result = povBuilder.build(userId, gameId)) {
-                is Either.Right -> {
-                    if (compression == "gzip") {
-                        call.respond(HttpStatusCode.OK, compressToBase64(result.value.toPrettyJsonString()))
-                    } else {
-                        call.respond(HttpStatusCode.OK, result.value.toPrettyJsonString())
-                    }
+            try {
+                val states = povBuilder.build(userId, gameId)
+                if (compression == "gzip") {
+                    call.respond(HttpStatusCode.OK, compressToBase64(states.toPrettyJsonString()))
+                } else {
+                    call.respond(HttpStatusCode.OK, states.toPrettyJsonString())
                 }
-                is Either.Left -> when (result.value) {
-                    POVBuilder.GameNotFoundError -> call.respond(GameNotFoundResponse)
+            } catch (e: PlayerViewCreatorError) {
+                when (e) {
+                    is POVBuilder.GameNotFoundError -> call.respond(GameNotFoundResponse)
                 }
             }
         }

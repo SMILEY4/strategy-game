@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.app.getUserIdOrThrow
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcTraceId
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcUserId
@@ -24,6 +23,13 @@ object RouteCreate {
         title = "Game not found",
         errorCode = "GAME_NOT_FOUND",
         detail = "Game could not be found when trying to join it.",
+    )
+
+    private object WorldInitErrorResponse : ErrorResponse(
+        status = 500,
+        title = "Failed to initialize world",
+        errorCode = "WORLD_INIT_ERROR",
+        detail = "Failed to initialize game world."
     )
 
     private object UserAlreadyPlayerResponse : ErrorResponse(
@@ -61,12 +67,19 @@ object RouteCreate {
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
             val name: String = call.request.queryParameters["name"]!!
             val seed: String? = call.request.queryParameters["seed"]
-            val gameId = createGame.perform(name, WorldSettings.default(seed?.hashCode()))
-            when (val joinResult = joinGame.perform(userId, gameId)) {
-                is Either.Right -> call.respond(HttpStatusCode.OK, gameId)
-                is Either.Left -> when (joinResult.value) {
-                    JoinGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
-                    JoinGame.UserAlreadyJoinedError -> call.respond(UserAlreadyPlayerResponse)
+            try {
+                val gameId = createGame.perform(name, WorldSettings.default(seed?.hashCode()))
+                joinGame.perform(userId, gameId)
+                call.respond(HttpStatusCode.OK, gameId)
+            } catch (e: CreateGame.CreateGameError) {
+                when (e) {
+                    is CreateGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
+                    is CreateGame.WorldInitError -> call.respond(WorldInitErrorResponse)
+                }
+            } catch (e: JoinGame.GameJoinActionErrors) {
+                when (e) {
+                    is JoinGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
+                    is JoinGame.UserAlreadyJoinedError -> call.respond(UserAlreadyPlayerResponse)
                 }
             }
         }

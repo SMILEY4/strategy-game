@@ -1,17 +1,12 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.core
 
-import arrow.core.Either
-import arrow.core.continuations.either
 import de.ruegnerlukas.strategygame.backend.common.logging.Logging
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.monitoring.MetricId
 import de.ruegnerlukas.strategygame.backend.common.monitoring.Monitoring.time
-import de.ruegnerlukas.strategygame.backend.common.utils.err
-import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.common.utils.positionsCircle
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea.DiscoverMapAreaError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea.GameNotFoundError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea.NoTilesError
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.required.GameExistsQuery
@@ -26,13 +21,11 @@ class DiscoverMapAreaImpl(
 
     private val metricId = MetricId.action(DiscoverMapArea::class)
 
-    override suspend fun perform(countryId: String, gameId: String, center: TilePosition, radius: Int): Either<DiscoverMapAreaError, Unit> {
+    override suspend fun perform(countryId: String, gameId: String, center: TilePosition, radius: Int) {
         return time(metricId) {
-            either {
-                validateGame(gameId).bind()
-                val tiles = findTiles(gameId, positionsCircle(center, radius)).bind()
-                uncoverTiles(tiles, countryId, gameId)
-            }
+            validateGame(gameId)
+            val tiles = findTiles(gameId, positionsCircle(center, radius))
+            uncoverTiles(tiles, countryId, gameId)
         }
     }
 
@@ -40,11 +33,9 @@ class DiscoverMapAreaImpl(
     /**
      * Check if the game with the given id exists
      */
-    private suspend fun validateGame(gameId: String): Either<GameNotFoundError, Unit> {
-        return if (gameExistsQuery.perform(gameId)) {
-            Unit.ok()
-        } else {
-            GameNotFoundError.err()
+    private suspend fun validateGame(gameId: String) {
+        if (!gameExistsQuery.perform(gameId)) {
+            throw GameNotFoundError()
         }
     }
 
@@ -52,12 +43,12 @@ class DiscoverMapAreaImpl(
     /**
      * Find all tiles with the given positions
      */
-    private suspend fun findTiles(gameId: String, positions: Collection<TilePosition>): Either<NoTilesError, List<Tile>> {
+    private suspend fun findTiles(gameId: String, positions: Collection<TilePosition>): List<Tile> {
         val tiles = tilesByPosition.execute(gameId, positions)
-        return if (tiles.isEmpty()) {
-            NoTilesError.err()
+        if (tiles.isNotEmpty()) {
+            return tiles
         } else {
-            tiles.ok()
+            throw NoTilesError()
         }
     }
 
