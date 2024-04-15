@@ -20,7 +20,7 @@ class GameInsertImpl(private val database: ArangoDatabase) : GameInsert {
     }
 
     private suspend fun insertGame(game: Game): String {
-        return database.insertDocument(Collections.GAMES, GameEntity.of(game)).getOrThrow().key
+        return database.insertDocument(Collections.GAMES, GameEntity.of(game)).key
     }
 
 }

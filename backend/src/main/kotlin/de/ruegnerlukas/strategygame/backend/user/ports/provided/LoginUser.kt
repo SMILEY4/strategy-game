@@ -1,24 +1,31 @@
 package de.ruegnerlukas.strategygame.backend.user.ports.provided
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthDataExtended
 
 interface LoginUser {
 
-    sealed class LoginUserError
+    sealed class LoginUserError : Exception()
 
-    object NotAuthorizedError : LoginUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The given credentials are not valid, i.e. the user is not authorized
+     */
+    class NotAuthorizedError : LoginUserError()
 
-    object UserNotConfirmedError : LoginUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The user has not confirmed the account yet
+     */
+    class UserNotConfirmedError : LoginUserError()
 
-    object UserNotFoundError : LoginUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * No user with the given data exists
+     */
+    class UserNotFoundError : LoginUserError()
 
-    fun perform(email: String, password: String): Either<LoginUserError, AuthDataExtended>
+
+    /**
+     * Authenticate the given user
+     * @throws LoginUserError
+     */
+    fun perform(email: String, password: String): AuthDataExtended
 
 }

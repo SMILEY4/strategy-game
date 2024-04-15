@@ -1,27 +1,21 @@
 package de.ruegnerlukas.strategygame.backend.user.core
 
-import arrow.core.Either
-import de.ruegnerlukas.strategygame.backend.common.utils.Err
-import de.ruegnerlukas.strategygame.backend.common.utils.Ok
-import de.ruegnerlukas.strategygame.backend.common.utils.err
-import de.ruegnerlukas.strategygame.backend.common.utils.ok
 import de.ruegnerlukas.strategygame.backend.user.ports.models.AuthData
 import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken
-import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken.NotAuthorizedError
-import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken.RefreshTokenError
-import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken.UserNotConfirmedError
-import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken.UserNotFoundError
+import de.ruegnerlukas.strategygame.backend.user.ports.provided.RefreshUserToken.*
 import de.ruegnerlukas.strategygame.backend.user.ports.required.UserIdentityService
 
 class RefreshUserTokenImpl(private val userIdentity: UserIdentityService) : RefreshUserToken {
 
-    override fun perform(refreshToken: String): Either<RefreshTokenError, AuthData> {
-        return when (val result = userIdentity.refreshAuthentication(refreshToken)) {
-            is Ok -> result.value.ok()
-            is Err -> when (result.value) {
-                UserIdentityService.NotAuthorizedError -> NotAuthorizedError.err()
-                UserIdentityService.UserNotConfirmedError -> UserNotConfirmedError.err()
-                UserIdentityService.UserNotFoundError -> UserNotFoundError.err()
+    override fun perform(refreshToken: String): AuthData {
+        try {
+            return userIdentity.refreshAuthentication(refreshToken)
+        } catch (e: UserIdentityService.UserIdentityError) {
+            when (e) {
+                is UserIdentityService.NotAuthorizedError -> throw NotAuthorizedError()
+                is UserIdentityService.UserNotConfirmedError -> throw UserNotConfirmedError()
+                is UserIdentityService.UserNotFoundError -> throw UserNotFoundError()
+                else -> throw Exception("Token could not be refreshed", e)
             }
         }
     }

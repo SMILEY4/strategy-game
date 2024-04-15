@@ -1,23 +1,29 @@
 package de.ruegnerlukas.strategygame.backend.user.ports.provided
 
-import arrow.core.Either
-
 interface DeleteUser {
 
-    sealed class DeleteUserError
+    sealed class DeleteUserError : Exception()
 
-    object NotAuthorizedError : DeleteUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The given credentials are not valid, i.e. the user is not authorized
+     */
+    class NotAuthorizedError : DeleteUserError()
 
-    object UserNotConfirmedError : DeleteUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * The user has not confirmed the account yet
+     */
+    class UserNotConfirmedError : DeleteUserError()
 
-    object UserNotFoundError : DeleteUserError() {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    /**
+     * No user with the given data exists
+     */
+    class UserNotFoundError : DeleteUserError()
 
-    suspend fun perform(email: String, password: String): Either<DeleteUserError, Unit>
+
+    /**
+     * Deletes the user with the given email and password
+     * @throws DeleteUserError
+     */
+    suspend fun perform(email: String, password: String)
 
 }

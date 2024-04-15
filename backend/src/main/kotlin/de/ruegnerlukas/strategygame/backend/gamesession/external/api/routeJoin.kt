@@ -1,6 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.gamesession.external.api
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.app.getUserIdOrThrow
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcGameId
 import de.ruegnerlukas.strategygame.backend.common.logging.mdcTraceId
@@ -8,14 +7,15 @@ import de.ruegnerlukas.strategygame.backend.common.logging.mdcUserId
 import de.ruegnerlukas.strategygame.backend.common.logging.withLoggingContextAsync
 import de.ruegnerlukas.strategygame.backend.common.models.ErrorResponse
 import de.ruegnerlukas.strategygame.backend.common.models.bodyErrorResponse
+import de.ruegnerlukas.strategygame.backend.common.models.respond
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.provided.JoinGame
 import io.github.smiley4.ktorswaggerui.dsl.post
-import io.ktor.http.*
-import io.ktor.server.application.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
 import io.ktor.server.response.respond
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
 
-object RouteJoin  {
+object RouteJoin {
 
     private object GameNotFoundResponse : ErrorResponse(
         status = 404,
@@ -51,11 +51,13 @@ object RouteJoin  {
         val gameId = call.parameters["gameId"]!!
         val userId = call.getUserIdOrThrow()
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
-            when (val result = joinGame.perform(userId, gameId)) {
-                is Either.Right -> call.respond(HttpStatusCode.OK, Unit)
-                is Either.Left -> when (result.value) {
-                    JoinGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
-                    JoinGame.UserAlreadyJoinedError -> call.respond(UserAlreadyPlayerResponse)
+            try {
+                joinGame.perform(userId, gameId)
+                call.respond(HttpStatusCode.OK, Unit)
+            } catch (e: JoinGame.GameJoinActionErrors) {
+                when (e) {
+                    is JoinGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
+                    is JoinGame.UserAlreadyJoinedError -> call.respond(UserAlreadyPlayerResponse)
                 }
             }
         }

@@ -1,15 +1,19 @@
 package de.ruegnerlukas.strategygame.backend.gameengine.ports.provided
 
-import arrow.core.Either
 import de.ruegnerlukas.strategygame.backend.common.utils.RGBColor
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.provided.DiscoverMapArea.DiscoverMapAreaError
 
 interface InitializePlayer {
 
-    sealed interface InitializePlayerError
+    sealed class InitializePlayerError : Exception()
 
-    object GameNotFoundError : InitializePlayerError {
-        override fun toString(): String = this.javaClass.simpleName
-    }
+    class GameNotFoundError : InitializePlayerError()
 
-    suspend fun perform(gameId: String, userId: String, color: RGBColor): Either<InitializePlayerError, Unit>
+
+    /**
+     * Initializes the player
+     * @throws InitializePlayerError
+     * @throws DiscoverMapAreaError
+     */
+    suspend fun perform(gameId: String, userId: String, color: RGBColor)
 }

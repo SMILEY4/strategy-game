@@ -21,7 +21,7 @@ class TestContainers : AbstractProjectConfig() {
 
 internal object ArangoDbContainer {
 
-    fun start() {
+    fun start(): GenericContainer<*> {
         val container = GenericContainer(DockerImageName.parse("arangodb:3.10.0"))
             .withEnv("ARANGO_NO_AUTH", "1")
             .withExposedPorts(8529)
@@ -31,6 +31,7 @@ internal object ArangoDbContainer {
         val port = container.getMappedPort(8529)
         TestUtilsFactory.arangoDbDockerPort = port
         DatabaseProvider.portOverwrite = port
+        return container
     }
 
 }

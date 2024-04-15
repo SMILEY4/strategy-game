@@ -1,8 +1,5 @@
 package de.ruegnerlukas.strategygame.backend.common.persistence.arango
 
-import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
 import com.arangodb.ArangoDBException
 import com.arangodb.DbName
 import com.arangodb.async.ArangoCollectionAsync
@@ -93,18 +90,18 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
     /**
      * Insert the given document into the given collection.
-     * @return the [DocumentHandle] or an [UniqueConstraintViolationError], if a document with the same key already exists
+     * @return the [DocumentHandle]
+     * @throws UniqueConstraintViolationError if a document with the same key already exists
      */
-    suspend fun <T> insertDocument(collection: String, value: T): Either<UniqueConstraintViolationError, DocumentHandle> {
+    suspend fun <T> insertDocument(collection: String, value: T): DocumentHandle {
         try {
             return getCollection(collection)
                 .insertDocument(value, INSERT_OPTIONS)
                 .await()
                 .let { DocumentHandle(id = it.id, key = it.key, rev = it.rev) }
-                .right()
         } catch (e: ArangoDBException) {
-            return when (e.errorNum) {
-                1210 -> UniqueConstraintViolationError.left()
+            when (e.errorNum) {
+                1210 -> throw UniqueConstraintViolationError()
                 else -> throw e
             }
         }
@@ -154,14 +151,14 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
         }
     }
 
+
     /**
      * Get the document with the given key from the given collection as the given type.
-     * @return the document or [DocumentNotFoundError] if the document does not exist
+     * @return the document
+     * @throws [DocumentNotFoundError] if the document does not exist
      */
-    suspend fun <T> getDocument(collection: String, key: String, type: Class<T>): Either<DocumentNotFoundError, T> {
-        return getCollection(collection).getDocument(key, type).await()
-            ?.right()
-            ?: DocumentNotFoundError.left()
+    suspend fun <T> getDocument(collection: String, key: String, type: Class<T>): T {
+        return getCollection(collection).getDocument(key, type).await() ?: throw DocumentNotFoundError()
     }
 
 
@@ -186,16 +183,17 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
     /**
      * Replace the document with the given key with the new given document
-     * @return the [DocumentHandle] or [DocumentNotFoundError], if no document with the given key was found
+     * @return the [DocumentHandle]
+     * @throws [DocumentNotFoundError], if no document with the given key was found
      */
-    suspend fun <T> replaceDocument(collection: String, key: String, value: T): Either<DocumentNotFoundError, DocumentHandle> {
+    suspend fun <T> replaceDocument(collection: String, key: String, value: T): DocumentHandle {
         try {
-            return getCollection(collection).replaceDocument(key, value).await().let {
-                DocumentHandle(id = it.id, key = it.key, rev = it.rev).right()
-            }
+            return getCollection(collection)
+                .replaceDocument(key, value).await()
+                .let { DocumentHandle(id = it.id, key = it.key, rev = it.rev) }
         } catch (e: ArangoDBException) {
-            return when (e.errorNum) {
-                1202 -> DocumentNotFoundError.left()
+            when (e.errorNum) {
+                1202 -> throw DocumentNotFoundError()
                 else -> throw e
             }
         }
@@ -207,23 +205,26 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * @return the [DocumentHandle] of the successfully replaced documents
      */
     suspend fun <T> replaceDocuments(collection: String, values: List<T>): List<DocumentHandle> {
-        return getCollection(collection).replaceDocuments(values).await().documents
+        return getCollection(collection)
+            .replaceDocuments(values).await().documents
             .map { DocumentHandle(key = it.key, id = it.id, rev = it.rev) }
     }
 
 
     /**
      * Update the document with the given key with the new given  value
-     * @return the [DocumentHandle] or [DocumentNotFoundError] if the document with the given key was not found
+     * @return the [DocumentHandle]
+     * @throws [DocumentNotFoundError] if the document with the given key was not found
      */
-    suspend fun <T> updateDocument(collection: String, key: String, value: T): Either<DocumentNotFoundError, DocumentHandle> {
+    suspend fun <T> updateDocument(collection: String, key: String, value: T): DocumentHandle {
         try {
-            return getCollection(collection).updateDocument(key, value).await().let {
-                DocumentHandle(id = it.id, key = it.key, rev = it.rev).right()
-            }
+            return getCollection(collection)
+                .updateDocument(key, value)
+                .await()
+                .let { DocumentHandle(id = it.id, key = it.key, rev = it.rev) }
         } catch (e: ArangoDBException) {
-            return when (e.errorNum) {
-                1202 -> DocumentNotFoundError.left()
+            when (e.errorNum) {
+                1202 -> throw DocumentNotFoundError()
                 else -> throw e
             }
         }
@@ -242,16 +243,17 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
     /**
      * Delete the document with the given key
-     * @return the [DocumentHandle] or [DocumentNotFoundError] if the document with the given key was not found
+     * @return the [DocumentHandle]
+     * @throws [DocumentNotFoundError] if the document with the given key was not found
      */
-    suspend fun deleteDocument(collection: String, key: String): Either<DocumentNotFoundError, DocumentHandle> {
+    suspend fun deleteDocument(collection: String, key: String): DocumentHandle {
         try {
             return getCollection(collection).deleteDocument(key).await().let {
-                DocumentHandle(id = it.id, key = it.key, rev = it.rev).right()
+                DocumentHandle(id = it.id, key = it.key, rev = it.rev)
             }
         } catch (e: ArangoDBException) {
-            return when (e.errorNum) {
-                1202 -> DocumentNotFoundError.left()
+            when (e.errorNum) {
+                1202 -> throw DocumentNotFoundError()
                 else -> throw e
             }
         }
@@ -304,41 +306,45 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
 
     /**
      * Execute the given query.
-     * @return the result, if exactly one was found, [DocumentNotFoundError] otherwise
+     * @return the result, if exactly one was found
+     * @throws DocumentNotFoundError otherwise
      */
-    suspend fun <T> querySingle(query: String, type: Class<T>): Either<DocumentNotFoundError, T> {
+    suspend fun <T> querySingle(query: String, type: Class<T>): T {
         val results = query(query, type)
-        return if (results.size == 1) results[0].right() else DocumentNotFoundError.left()
+        return if (results.size == 1) results[0] else throw DocumentNotFoundError()
     }
 
 
     /**
      * Execute the given query with the given bind-vars.
-     * @return the result, if exactly one was found, [DocumentNotFoundError] otherwise
+     * @return the result, if exactly one was found
+     * @throws [DocumentNotFoundError] otherwise
      */
-    suspend fun <T> querySingle(query: String, bindVars: Map<String, Any>, type: Class<T>): Either<DocumentNotFoundError, T> {
+    suspend fun <T> querySingle(query: String, bindVars: Map<String, Any>, type: Class<T>): T {
         val results = query(query, bindVars, type)
-        return if (results.size == 1) results[0].right() else DocumentNotFoundError.left()
+        return if (results.size == 1) results[0] else throw DocumentNotFoundError()
     }
 
 
     /**
      * Execute the given query.
-     * @return the first result, or [DocumentNotFoundError] if none where found
+     * @return the first result
+     * @throws [DocumentNotFoundError] if none where found
      */
-    suspend fun <T> queryFirst(query: String, type: Class<T>): Either<DocumentNotFoundError, T> {
+    suspend fun <T> queryFirst(query: String, type: Class<T>): T {
         val results = query(query, type)
-        return if (results.isNotEmpty()) results[0].right() else DocumentNotFoundError.left()
+        return if (results.isNotEmpty()) results[0] else throw DocumentNotFoundError()
     }
 
 
     /**
      * Execute the given query with the given bind-vars.
-     * @return the first result, or [DocumentNotFoundError] if none where found
+     * @return the first result
+     * @throws [DocumentNotFoundError] if none where found
      */
-    suspend fun <T> queryFirst(query: String, bindVars: Map<String, Any>, type: Class<T>): Either<DocumentNotFoundError, T> {
+    suspend fun <T> queryFirst(query: String, bindVars: Map<String, Any>, type: Class<T>): T {
         val results = query(query, bindVars, type)
-        return if (results.isNotEmpty()) results[0].right() else DocumentNotFoundError.left()
+        return if (results.isNotEmpty()) results[0] else throw DocumentNotFoundError()
     }
 
 

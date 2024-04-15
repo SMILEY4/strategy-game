@@ -51,7 +51,7 @@ class GameJoinTest : StringSpec({
             joinGame("user-1")
             joinGame("user-2")
             joinGame("user-1") {
-                expectedError = JoinGame.UserAlreadyJoinedError
+                expectedError = JoinGame.UserAlreadyJoinedError()
             }
             expectPlayers {
                 player {
@@ -73,7 +73,7 @@ class GameJoinTest : StringSpec({
             createGame { }
             joinGame("user") {
                 gameId = "unknown-game-id"
-                expectedError = JoinGame.GameNotFoundError
+                expectedError = JoinGame.GameNotFoundError()
             }
         }
     }

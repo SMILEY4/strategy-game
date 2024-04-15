@@ -20,13 +20,12 @@ class DbEntityTest : StringSpec({
 	"insert and fetch from database" {
 		val database = TestUtilsFactory.createTestDatabase()
 
-		val key = database.insertDocument("testEntities", TestEntity("myName", 42)).getOrThrow().key
+		val key = database.insertDocument("testEntities", TestEntity("myName", 42)).key
 
-		database.getDocument("testEntities", key, TestEntity::class.java).getOrThrow().let { result ->
+		database.getDocument("testEntities", key, TestEntity::class.java).let { result ->
 			result.shouldNotBeNull()
 			result.name shouldBe "myName"
 			result.counter shouldBe 42
-			result.key.shouldNotBeNull()
 			result.key shouldBe key
 		}
 	}

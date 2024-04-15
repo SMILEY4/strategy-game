@@ -1,27 +1,25 @@
 package de.ruegnerlukas.strategygame.backend.testutils
 
-import arrow.core.Either
-import arrow.core.getOrHandle
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
-import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
 import de.ruegnerlukas.strategygame.backend.common.models.TilePosition
 import de.ruegnerlukas.strategygame.backend.common.persistence.Collections
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedQueryImpl
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.GameExtendedUpdateImpl
-import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
-import de.ruegnerlukas.strategygame.backend.common.persistence.arango.ArangoDatabase
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CityEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.CountryEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.ProvinceEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.external.persistence.models.TileEntity
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.City
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Country
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.GameExtended
 import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.MarkerTileObject
-import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Province
+import de.ruegnerlukas.strategygame.backend.gameengine.ports.models.Tile
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.CommandsByGameQueryImpl
+import de.ruegnerlukas.strategygame.backend.gamesession.external.persistence.GameQueryImpl
 import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Command
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Game
+import de.ruegnerlukas.strategygame.backend.gamesession.ports.models.Player
 
 object TestUtils {
 
@@ -50,14 +48,11 @@ object TestUtils {
     }
 
     suspend fun getCountry(database: ArangoDatabase, countryId: String): Country {
-        return database.getDocument(Collections.COUNTRIES, countryId, CountryEntity::class.java)
-            .map { it.asServiceModel() }
-            .getOrHandle { throw Exception("country with id=$countryId not found") }
+        return database.getDocument(Collections.COUNTRIES, countryId, CountryEntity::class.java).asServiceModel()
     }
 
     suspend fun getCountry(database: ArangoDatabase, gameId: String, userId: String): Country {
         return CountryByGameAndUserQueryImpl(database).execute(gameId, userId)
-            .getOrHandle { throw Exception("country with gameId=$gameId and userId=$userId not found") }
     }
 
     suspend fun updateCountry(database: ArangoDatabase, gameId: String, country: Country) {
@@ -66,11 +61,11 @@ object TestUtils {
     }
 
     suspend fun getGame(database: ArangoDatabase, gameId: String): Game {
-        return GameQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
+        return GameQueryImpl(database).execute(gameId)
     }
 
     suspend fun getGameExtended(database: ArangoDatabase, gameId: String): GameExtended {
-        return GameExtendedQueryImpl(database).execute(gameId).getOrHandle { throw Exception(it.toString()) }
+        return GameExtendedQueryImpl(database).execute(gameId)
     }
 
     suspend fun saveGameExtended(database: ArangoDatabase, game: GameExtended) {
@@ -82,9 +77,7 @@ object TestUtils {
     }
 
     suspend fun getPlayers(database: ArangoDatabase, gameId: String): List<Player> {
-        return GameQueryImpl(database).execute(gameId)
-            .getOrHandle { throw Exception("Game $gameId not found") }
-            .players.toList()
+        return GameQueryImpl(database).execute(gameId).players.toList()
     }
 
     suspend fun getMarkersAt(database: ArangoDatabase, gameId: String, q: Int, r: Int): List<Pair<Tile, MarkerTileObject>> {
@@ -130,20 +123,17 @@ object TestUtils {
     }
 
     suspend fun getProvinceByCityId(database: ArangoDatabase, cityId: String): Province {
-        return database.querySingle(
-            """
-				FOR province IN ${Collections.PROVINCES}
-					FILTER @cityId IN province.cityIds
-					RETURN province
-			""".trimIndent(),
-            mapOf("cityId" to cityId),
-            ProvinceEntity::class.java
-        ).let { result ->
-            when (result) {
-                is Either.Left -> throw Exception("Province not found")
-                is Either.Right -> result.value.asServiceModel()
-            }
-        }
+        return database
+            .querySingle(
+                """
+                    FOR province IN ${Collections.PROVINCES}
+                        FILTER @cityId IN province.cityIds
+                        RETURN province
+			    """.trimIndent(),
+                mapOf("cityId" to cityId),
+                ProvinceEntity::class.java
+            )
+            .asServiceModel()
     }
 
     suspend fun <R> withGameExtended(database: ArangoDatabase, gameId: String, block: suspend (game: GameExtended) -> R): R {

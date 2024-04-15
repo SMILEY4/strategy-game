@@ -1,3 +1,3 @@
 package de.ruegnerlukas.strategygame.backend.common.persistence
 
-object EntityNotFoundError
+class EntityNotFoundError : Exception()

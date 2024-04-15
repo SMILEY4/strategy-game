@@ -60,12 +60,14 @@ object RouteDelete {
     }) {
         withLoggingContextAsync(mdcTraceId()) {
             call.receive<LoginData>().let { requestData ->
-                when (val result = userDelete.perform(requestData.email, requestData.password)) {
-                    is Ok -> call.respond(HttpStatusCode.OK, Unit)
-                    is Err -> when (result.value) {
-                        DeleteUser.NotAuthorizedError -> call.respond(UnauthorizedResponse)
-                        DeleteUser.UserNotConfirmedError -> call.respond(UserNotConfirmedResponse)
-                        DeleteUser.UserNotFoundError -> call.respond(UserNotFoundResponse)
+                try {
+                    userDelete.perform(requestData.email, requestData.password)
+                    call.respond(HttpStatusCode.OK, Unit)
+                } catch (e: DeleteUser.DeleteUserError) {
+                    when(e) {
+                        is DeleteUser.NotAuthorizedError -> call.respond(UnauthorizedResponse)
+                        is DeleteUser.UserNotConfirmedError -> call.respond(UserNotConfirmedResponse)
+                        is DeleteUser.UserNotFoundError -> call.respond(UserNotFoundResponse)
                     }
                 }
             }
