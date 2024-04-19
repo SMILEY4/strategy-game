@@ -1433,3 +1433,8 @@ Process:
 
 
 
+# Random Names
+
+- https://www.behindthename.com/
+- https://gillesleblanc.wordpress.com/2012/10/01/algorithm-to-generate-random-names/
+- https://gillesleblanc.wordpress.com/2013/01/02/541/
