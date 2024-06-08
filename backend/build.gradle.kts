@@ -26,6 +26,12 @@ repositories {
 
 dependencies {
 
+    implementation(project(":strategy-game-users"))
+    implementation(project(":strategy-game-worldgen"))
+    implementation(project(":strategy-game-common"))
+    implementation(project(":strategy-game-pathfinding"))
+    implementation(project(":strategy-game-ecosim"))
+
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
     implementation("io.ktor:ktor-server-netty-jvm:$versionKtor")
