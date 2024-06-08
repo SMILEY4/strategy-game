@@ -1438,3 +1438,118 @@ Process:
 - https://www.behindthename.com/
 - https://gillesleblanc.wordpress.com/2012/10/01/algorithm-to-generate-random-names/
 - https://gillesleblanc.wordpress.com/2013/01/02/541/
+
+
+
+# Combat on a hex-map and simultanious turns
+
+
+**Problems of "naive" implementation**
+- High probabability of misses
+  - who moves "first"
+  - 6 direction a unit can leave a tile, multiplied by number of tiles moved in a turn
+  - no way to relibaly chase a unit down
+  - probabilty to accidentally run into enemy unit
+
+
+**Possible Solution**
+
+
+1. Focus on Sieges and controlling land than on beating armies
+  - focus more on strategic positions than on land-battles
+  - you either defend an important position or attack it, chasing down armies is not neccessary
+
+
+2. Area of Controls (AoC)
+  - each army has an AoC-range based on its movement speed (and depending on surrounding tiles?)
+  - faster armies have greater AoC range
+  - a unit that enters an enemy AoC (that wants to fight) can not leave without combat
+
+
+  Example:
+  - Both players plan movement route and set army behaviour
+  - armies resolve movement one tile at a time, armies with higher initiative go first
+  - if two armies meet, i.e. one enters Aoc of other army, remaining movement is cancelled and armies wait for next command
+  - player can choose to either disengage and move, attack enemy army or hold and defend position
+
+
+    | A(>) B(V) |           disengage           |            attack             |                defend                |
+    |-----------|-------------------------------|-------------------------------|--------------------------------------|
+    | disengage | A&B continue movement         | A attempts attack, B suprised | A holds position, B moves            |
+    | attack    | B attempts attack, A suprised | A&B fight                     | A&B fight, A defend bonus            |
+    | defend    | B holds position, A moves     | A&B fight, B defend bonus     | both armies hold position, no battle |
+
+
+  - if one army attempts to disengage and one army to attack, the disengaging army has a chance to evade attack (based on movement speed difference, ...)
+  - if both armies move -> immune to AoC for x tiles -> avoid moving 1 tile and immediatly cancelling movement again
+  - armies can sneak past other armies, even if inside AoC (if in stealth mode and not detected by other army). Sneaking armies do not have own AoC
+
+
+
+
+# Fantasy Army Modifying
+
+see Total War: Warhammer III
+
+1. Training/Drilling
+
+- armies can be trained/drilling to gain skill without direct combat
+- trained/drilled armies are more effective
+- more effective drilling, army tradition, generals, ... results in more effective training and armies
+
+
+2. Ressurecting
+
+- fallen soldiers of past battles can be ressurected using necromancy
+- effectiveness of the resurected units depend on their effectiveness before death and the power level of the necromant / magic
+- higher effectiveness before death results in higher base stats (i.e. same base stats than before death)
+- weak necromancy results in negative modifier to ressurected units, stronger necromancy removes debuff or can even add positive modifiers
+- ressurected units usually cant be trained further and are bound to their necromant
+- necromancy also has effect on optionion of different parties / population depending on viewpoint
+
+3. generic modification
+
+- with "science", units can be modified with different traits of different power levels
+- the more units are modified, the more they become "monsters"
+- small modifications result only in minor improvements without much disadvantages
+- larger modifications result in larger (and more specific bonuses), but with some additional effects
+  - units may become more unstable and cant be trained/drilled
+  - negative effects
+- generic modification also has effect on optionion of different parties / population depending on viewpoint
+
+
+
+
+# Great People (GP)
+
+- Great People can randomly spawn in your country (when some prerequisites are fullfilled) and can change the path of a nation drastically (and into the fantastical)
+- come with some (optional) questlines to press a country in a certain direction
+- can serve as generals, advisors, special workers in buildings, ...
+- multiple great people of the same type can spawn if preconditions are fulfilled, chances can be increased with different decisions
+- different great people can have different primary goals/needs, e.g. one wizard more happy when researching,  another one more happy when leading army as warcaster, ...
+
+Example
+  1. (precondition) a magic resource was discovered
+  2. (event) a great wizard spawns, unlocks building "magic academy"
+  3. (questline) wants you to build a "magic academy" to research strange magic -> questline with decisions on how to integrate magic into nation, who is allowed, rules, legal system, ... with increasing impact and unlocks.
+  4. great wizard can be put into a city with academy to research magic (academy requires wizard)
+  5. (precondition) magic was discovered started to being researched
+  6. (event) a great necromant spawns
+  7. (questline) leads to appearance of necromancy, can make it illegal of allow it (to some degree)
+  8. necromant can be used to raise armies from the dead
+  9. ... 
+
+
+- GP can also be more "normal", e.g. Leaders of Great Houses, Representatives of Guilds, that are present at game start or spawn randomly
+- they can be used as advisors, generals, leaders of cities/provinces (vasalls), ...
+- play a (the) role in internal politics, represent different opinions, groups and movements in country
+- can interact with GP of other countries, to influence or manipulate them
+- can trade or capture foreign GPs, ...
+
+
+# Generating Mountain Ranges
+
+- pick random starting locations, probability influenced by base terrain/biome
+- random walk for a random distance (distance also influenced by base terrain/biome)
+- if next step would connect to a nother impassable terrain (ocean, mountain, ...), the probability to move that direction is lower to avoid to many dead ends
+- alt: probability to move into a specific direction lower, the more and closer other impassable tiles are
