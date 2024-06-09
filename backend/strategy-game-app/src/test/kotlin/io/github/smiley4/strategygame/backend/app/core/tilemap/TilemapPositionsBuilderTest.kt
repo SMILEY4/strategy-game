@@ -1,14 +1,14 @@
 package io.github.smiley4.strategygame.backend.app.core.tilemap
 
 import io.github.smiley4.strategygame.backend.common.models.TilePosition
-import io.github.smiley4.strategygame.backend.worldgen.TilemapPositionsBuilder
+import io.github.smiley4.strategygame.backend.worldgen.core.TilemapPositionsProvider
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 
 class TilemapPositionsBuilderTest : StringSpec({
 
     "builds correct tilemap of shape 'parallelogram'" {
-        TilemapPositionsBuilder().createParallelogram(-1, 3, 1, 3).let {
+        TilemapPositionsProvider().createParallelogram(-1, 3, 1, 3).let {
             it shouldContainExactlyInAnyOrder listOf(
                 TilePosition(-1, 1),
                 TilePosition(-1, 2),
@@ -31,7 +31,7 @@ class TilemapPositionsBuilderTest : StringSpec({
 
 
     "builds correct tilemap of shape 'triangle type-A'" {
-        TilemapPositionsBuilder().createTriangleTypeA(4).let {
+        TilemapPositionsProvider().createTriangleTypeA(4).let {
             it shouldContainExactlyInAnyOrder listOf(
                 TilePosition(0, 0),
                 TilePosition(0, 1),
@@ -49,7 +49,7 @@ class TilemapPositionsBuilderTest : StringSpec({
 
 
     "builds correct tilemap of shape 'triangle type-B'" {
-        TilemapPositionsBuilder().createTriangleTypeB(4).let {
+        TilemapPositionsProvider().createTriangleTypeB(4).let {
             it shouldContainExactlyInAnyOrder listOf(
                 TilePosition(0, 4),
                 TilePosition(1, 3),
@@ -67,7 +67,7 @@ class TilemapPositionsBuilderTest : StringSpec({
 
 
     "builds correct tilemap of shape 'hexagon'" {
-        TilemapPositionsBuilder().createHexagon(4).let {
+        TilemapPositionsProvider().createHexagon(4).let {
             it shouldContainExactlyInAnyOrder listOf(
                 TilePosition(-4, 0),
                 TilePosition(-4, 1),
@@ -136,7 +136,7 @@ class TilemapPositionsBuilderTest : StringSpec({
 
 
     "builds correct tilemap of shape 'rectangle' for tiles with pointy top" {
-        TilemapPositionsBuilder().createRectanglePointyTop(-1, 3, 1, 3).let {
+        TilemapPositionsProvider().createRectanglePointyTop(-1, 3, 1, 3).let {
             println(it)
             it shouldContainExactlyInAnyOrder listOf(
                 TilePosition(2, -1),
@@ -160,7 +160,7 @@ class TilemapPositionsBuilderTest : StringSpec({
 
 
     "builds correct tilemap of shape 'rectangle' for tiles with flat top" {
-        TilemapPositionsBuilder().createRectangleFlatTop(-1, 3, 1, 3).let {
+        TilemapPositionsProvider().createRectangleFlatTop(-1, 3, 1, 3).let {
             it shouldContainExactlyInAnyOrder listOf(
                 TilePosition(1, -1),
                 TilePosition(2, -2),

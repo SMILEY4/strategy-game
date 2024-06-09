@@ -10,14 +10,14 @@ import io.github.smiley4.strategygame.backend.app.testdsl.actions.submitTurn
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectCommandResolutionErrors
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
 import io.github.smiley4.strategygame.backend.app.testdsl.modifiers.addSettlers
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 
 class CreateTownCommandResolutionTest : StringSpec({
 
     "create towns" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addSettlers(getCountryId("user"), 10)
@@ -68,7 +68,7 @@ class CreateTownCommandResolutionTest : StringSpec({
     "create town with invalid name, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addSettlers(getCountryId("user"), 10)
@@ -104,7 +104,7 @@ class CreateTownCommandResolutionTest : StringSpec({
     "create town on already occupied tile, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addSettlers(getCountryId("user"), 10)
@@ -140,7 +140,7 @@ class CreateTownCommandResolutionTest : StringSpec({
     "create town outside of city border, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addSettlers(getCountryId("user"), 10)

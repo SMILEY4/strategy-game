@@ -23,14 +23,14 @@ import io.github.smiley4.strategygame.backend.engine.ports.models.CityInfrastruc
 import io.github.smiley4.strategygame.backend.engine.ports.models.CityMetadata
 import io.github.smiley4.strategygame.backend.engine.ports.models.CityPopulation
 import io.github.smiley4.strategygame.backend.engine.ports.models.SettlementTier
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 
 class CityGrowthTest : StringSpec({
 
     "city with more than enough available food " {
         gameTest(fixedPopFoodConsumption = 2) {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(0, 0) {
@@ -81,7 +81,7 @@ class CityGrowthTest : StringSpec({
     "city with just enough base food available" {
         gameTest(fixedPopFoodConsumption = 2) {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(0, 0) {
@@ -116,7 +116,7 @@ class CityGrowthTest : StringSpec({
     "city with some but not enough food available" {
         gameTest(fixedPopFoodConsumption = 2) {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(0, 0) {
@@ -150,7 +150,7 @@ class CityGrowthTest : StringSpec({
     "city with no food available" {
         gameTest(fixedPopFoodConsumption = 2) {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(0, 0) {
@@ -211,7 +211,7 @@ class CityGrowthTest : StringSpec({
     "village cannot grow larger than max size" {
         gameTest(fixedPopFoodConsumption = 2) {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(0, 0) {

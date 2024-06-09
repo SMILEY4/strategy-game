@@ -8,14 +8,14 @@ import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectComma
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectMarkers
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectNoMarkers
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 
 class PlaceMarkerCommandResolutionTest : StringSpec({
 
     "place marker" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             submitTurn("user") {
@@ -37,7 +37,7 @@ class PlaceMarkerCommandResolutionTest : StringSpec({
     "place multiple markers on same tile, reject all but the first one" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             submitTurn("user") {
@@ -67,7 +67,7 @@ class PlaceMarkerCommandResolutionTest : StringSpec({
     "place marker outside of map, expect no marker" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             submitTurn("user") {

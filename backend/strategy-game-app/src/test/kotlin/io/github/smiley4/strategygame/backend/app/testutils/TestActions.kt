@@ -43,7 +43,7 @@ import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesI
 import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesQueryByGameAndPositionImpl
 import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesQueryByGameImpl
 import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesUpdateImpl
-import io.github.smiley4.strategygame.backend.worldgen.WorldBuilderImpl
+import io.github.smiley4.strategygame.backend.worldgen.core.WorldGeneratorImpl
 import io.github.smiley4.strategygame.backend.worlds.core.ConnectToGameImpl
 import io.github.smiley4.strategygame.backend.worlds.core.CreateGameImpl
 import io.github.smiley4.strategygame.backend.worlds.core.JoinGameImpl
@@ -141,7 +141,7 @@ data class TestActions(
             CreateGameImpl(
                 GameInsertImpl(database),
                 InitializeWorldImpl(
-                    WorldBuilderImpl(),
+                    WorldGeneratorImpl(),
                     TilesInsertImpl(database),
                     GameExistsQueryImpl(database)
                 )

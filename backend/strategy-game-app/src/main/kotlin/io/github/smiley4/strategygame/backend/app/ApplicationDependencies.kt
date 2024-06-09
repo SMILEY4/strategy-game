@@ -69,16 +69,13 @@ import io.github.smiley4.strategygame.backend.users.core.CreateUserImpl
 import io.github.smiley4.strategygame.backend.users.core.DeleteUserImpl
 import io.github.smiley4.strategygame.backend.users.core.LoginUserImpl
 import io.github.smiley4.strategygame.backend.users.core.RefreshUserTokenImpl
-import io.github.smiley4.strategygame.backend.users.ports.models.AwsCognitoConfig
-import io.github.smiley4.strategygame.backend.users.ports.models.UserIdentityProvider
-import io.github.smiley4.strategygame.backend.users.ports.models.UserIdentityServiceConfig
 import io.github.smiley4.strategygame.backend.users.ports.provided.CreateUser
 import io.github.smiley4.strategygame.backend.users.ports.provided.DeleteUser
 import io.github.smiley4.strategygame.backend.users.ports.provided.LoginUser
 import io.github.smiley4.strategygame.backend.users.ports.provided.RefreshUserToken
 import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
-import io.github.smiley4.strategygame.backend.worldgen.WorldBuilder
-import io.github.smiley4.strategygame.backend.worldgen.WorldBuilderImpl
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenerator
+import io.github.smiley4.strategygame.backend.worldgen.core.WorldGeneratorImpl
 import io.github.smiley4.strategygame.backend.worlds.core.ConnectToGameImpl
 import io.github.smiley4.strategygame.backend.worlds.core.CreateGameImpl
 import io.github.smiley4.strategygame.backend.worlds.core.DeleteGameImpl
@@ -175,7 +172,7 @@ val applicationDependencies = module {
 
     single<PopFoodConsumption> { PopFoodConsumption() }
 
-    single<WorldBuilder> { WorldBuilderImpl() }
+    single<WorldGenerator> { WorldGeneratorImpl() }
 
     single<ListGames> { ListGamesImpl(get()) }
     single<DeleteGame> { DeleteGameImpl(get()) }

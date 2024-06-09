@@ -13,7 +13,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.modifiers.addTown
 import io.github.smiley4.strategygame.backend.common.models.TilePosition
 import io.github.smiley4.strategygame.backend.engine.ports.models.SettlementTier
 import io.github.smiley4.strategygame.backend.engine.ports.models.nextTier
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class UpgradeSettlementTierCommandResolutionTest : StringSpec({
@@ -21,7 +21,7 @@ class UpgradeSettlementTierCommandResolutionTest : StringSpec({
     "upgrade settlement" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addCity {
@@ -49,7 +49,7 @@ class UpgradeSettlementTierCommandResolutionTest : StringSpec({
     "upgrade max tier settlement is rejected" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addCity {
@@ -81,7 +81,7 @@ class UpgradeSettlementTierCommandResolutionTest : StringSpec({
     "upgrade settlement without min required population size is rejected" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addCity {
@@ -113,7 +113,7 @@ class UpgradeSettlementTierCommandResolutionTest : StringSpec({
     "upgrade to second city in province is rejected" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addCity {

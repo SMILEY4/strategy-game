@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.GameTestContext
 import io.github.smiley4.strategygame.backend.app.testutils.shouldMatchError
 import io.github.smiley4.strategygame.backend.common.models.BuildingType
 import io.github.smiley4.strategygame.backend.common.utils.coApply
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 import io.github.smiley4.strategygame.backend.common.models.CommandData
 import io.github.smiley4.strategygame.backend.common.models.CreateCityCommandData
 import io.github.smiley4.strategygame.backend.common.models.PlaceMarkerCommandData
@@ -39,7 +39,7 @@ suspend fun GameTestContext.createGame(block: CreateGameUserActionDsl.() -> Unit
 
 
 class CreateGameUserActionDsl {
-    var worldSettings = WorldSettings.default()
+    var worldSettings = WorldGenSettings.default()
     val users = mutableSetOf<String>()
     fun user(userId: String) {
         users.add(userId)

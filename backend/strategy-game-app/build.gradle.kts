@@ -4,9 +4,8 @@ group = "de.ruegnerlukas"
 version = "0.7.0"
 
 plugins {
-    val versionKotlin = "1.7.21"
-    kotlin("jvm") version versionKotlin
-    kotlin("plugin.serialization").version(versionKotlin)
+    kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 
 repositories {

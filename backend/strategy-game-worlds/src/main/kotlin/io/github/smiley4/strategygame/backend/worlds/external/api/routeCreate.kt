@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextA
 import io.github.smiley4.strategygame.backend.common.models.ErrorResponse
 import io.github.smiley4.strategygame.backend.common.models.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.common.utils.getUserIdOrThrow
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worlds.ports.provided.CreateGame
 import io.github.smiley4.strategygame.backend.worlds.ports.provided.JoinGame
 import io.ktor.http.HttpStatusCode
@@ -67,7 +67,7 @@ object RouteCreate {
             val name: String = call.request.queryParameters["name"]!!
             val seed: String? = call.request.queryParameters["seed"]
             try {
-                val gameId = createGame.perform(name, WorldSettings.default(seed?.hashCode()))
+                val gameId = createGame.perform(name, WorldGenSettings.default(seed?.hashCode()))
                 joinGame.perform(userId, gameId)
                 call.respond(HttpStatusCode.OK, gameId)
             } catch (e: CreateGame.CreateGameError) {

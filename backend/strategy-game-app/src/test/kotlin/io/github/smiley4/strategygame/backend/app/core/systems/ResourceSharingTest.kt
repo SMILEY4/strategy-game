@@ -15,7 +15,7 @@ import io.github.smiley4.strategygame.backend.common.models.resources.ResourceTy
 import io.github.smiley4.strategygame.backend.common.models.resources.amount
 import io.github.smiley4.strategygame.backend.common.models.terrain.TerrainResourceType
 import io.github.smiley4.strategygame.backend.engine.core.eco.node.ProvinceEconomyNode
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class ResourceSharingTest : StringSpec({
@@ -34,7 +34,7 @@ class ResourceSharingTest : StringSpec({
         gameTest(fixedPopFoodConsumption = 2) {
             ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(-5, 0) {
@@ -127,7 +127,7 @@ class ResourceSharingTest : StringSpec({
         gameTest(fixedPopFoodConsumption = 2) {
             ProvinceEconomyNode.enablePopGrowthEntity = false
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(-5, 0) {

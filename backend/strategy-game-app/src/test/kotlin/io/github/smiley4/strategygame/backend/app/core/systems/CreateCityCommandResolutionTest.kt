@@ -10,14 +10,14 @@ import io.github.smiley4.strategygame.backend.app.testdsl.actions.submitTurn
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectCommandResolutionErrors
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
 import io.github.smiley4.strategygame.backend.app.testdsl.modifiers.addSettlers
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 
 class CreateCityCommandResolutionTest : StringSpec({
 
     "create city" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             submitTurn("user") {
@@ -39,7 +39,7 @@ class CreateCityCommandResolutionTest : StringSpec({
     "create city with already existing city" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addSettlers(getCountryId("user"), 2)
@@ -83,7 +83,7 @@ class CreateCityCommandResolutionTest : StringSpec({
     "create two cities next to each other in the same turn, expect only created one" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user-1")
                 user("user-2")
             }
@@ -115,7 +115,7 @@ class CreateCityCommandResolutionTest : StringSpec({
     "create city with invalid name, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             submitTurn("user") {
@@ -136,7 +136,7 @@ class CreateCityCommandResolutionTest : StringSpec({
     "create city on water, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.waterOnly()
+                worldSettings = WorldGenSettings.waterOnly()
                 user("user")
             }
             submitTurn("user") {
@@ -157,7 +157,7 @@ class CreateCityCommandResolutionTest : StringSpec({
     "create city on already occupied tile, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addSettlers(getCountryId("user"), 2)
@@ -193,7 +193,7 @@ class CreateCityCommandResolutionTest : StringSpec({
     "create city on foreign tile, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user-1")
                 user("user-2")
             }
@@ -231,7 +231,7 @@ class CreateCityCommandResolutionTest : StringSpec({
     "create city without enough influence on tile, reject" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user-1")
                 user("user-2")
             }

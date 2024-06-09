@@ -10,18 +10,18 @@ import io.github.smiley4.strategygame.backend.common.persistence.DbId
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
 import io.github.smiley4.strategygame.backend.engine.ports.required.GameExistsQuery
 import io.github.smiley4.strategygame.backend.engine.ports.required.TilesInsert
-import io.github.smiley4.strategygame.backend.worldgen.WorldBuilder
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenerator
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 
 class InitializeWorldImpl(
-    private val worldBuilder: WorldBuilder,
+    private val worldBuilder: WorldGenerator,
     private val tileInsert: TilesInsert,
     private val gameExistsQuery: GameExistsQuery
 ) : InitializeWorld {
 
     private val metricId = MetricId.action(InitializeWorld::class)
 
-    override suspend fun perform(gameId: String, worldSettings: WorldSettings) {
+    override suspend fun perform(gameId: String, worldSettings: WorldGenSettings) {
         return time(metricId) {
             validateGame(gameId)
             val tiles = buildTiles(worldSettings)
@@ -35,7 +35,7 @@ class InitializeWorldImpl(
         }
     }
 
-    private fun buildTiles(worldSettings: WorldSettings): List<Tile> {
+    private fun buildTiles(worldSettings: WorldGenSettings): List<Tile> {
         return worldBuilder.buildTiles(worldSettings).map {
             Tile(
                 tileId = DbId.PLACEHOLDER,

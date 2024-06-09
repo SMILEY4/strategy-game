@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.worlds.ports.provided
 
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 
 /**
  * Create a new game
@@ -16,6 +16,6 @@ interface CreateGame {
 	 * @return the id of the game
 	 * @throws CreateGameError
 	 */
-	suspend fun perform(name: String, worldSettings: WorldSettings): String
+	suspend fun perform(name: String, worldSettings: WorldGenSettings): String
 
 }

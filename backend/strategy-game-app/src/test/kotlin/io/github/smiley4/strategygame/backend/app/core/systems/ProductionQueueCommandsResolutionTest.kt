@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.actions.submitTurn
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectProductionQueue
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
 import io.github.smiley4.strategygame.backend.common.models.BuildingType
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueCommandsResolutionTest : StringSpec({
@@ -14,7 +14,7 @@ class ProductionQueueCommandsResolutionTest : StringSpec({
     "add entries to production queue" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             submitTurn("user") {

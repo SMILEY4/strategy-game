@@ -14,7 +14,7 @@ import io.github.smiley4.strategygame.backend.common.models.TilePosition
 import io.github.smiley4.strategygame.backend.common.models.resources.ResourceType
 import io.github.smiley4.strategygame.backend.common.models.resources.amount
 import io.github.smiley4.strategygame.backend.common.models.terrain.TerrainResourceType
-import io.github.smiley4.strategygame.backend.worldgen.WorldSettings
+import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueConsumptionTest : StringSpec({
@@ -22,7 +22,7 @@ class ProductionQueueConsumptionTest : StringSpec({
     "test basic production queue consumption" {
         gameTest {
             createGame {
-                worldSettings = WorldSettings.landOnly()
+                worldSettings = WorldGenSettings.landOnly()
                 user("user")
             }
             addTileResources(0, 0) {
