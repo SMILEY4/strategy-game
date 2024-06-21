@@ -52,7 +52,7 @@ sealed class ProductionQueueAddEntryCommandData(
 
 class ProductionQueueAddBuildingEntryCommandData(
     cityId: String,
-    val buildingType: BuildingType
+    val buildingType: io.github.smiley4.strategygame.backend.common.data.BuildingType
 ) : ProductionQueueAddEntryCommandData(cityId)
 
 

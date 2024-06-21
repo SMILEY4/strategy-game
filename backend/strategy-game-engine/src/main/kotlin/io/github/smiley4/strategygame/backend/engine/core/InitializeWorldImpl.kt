@@ -10,8 +10,8 @@ import io.github.smiley4.strategygame.backend.common.persistence.DbId
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
 import io.github.smiley4.strategygame.backend.engine.ports.required.GameExistsQuery
 import io.github.smiley4.strategygame.backend.engine.ports.required.TilesInsert
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenerator
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenerator
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 
 class InitializeWorldImpl(
     private val worldBuilder: WorldGenerator,

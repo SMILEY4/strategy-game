@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.actions.joinGame
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectPlayers
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
 import io.github.smiley4.strategygame.backend.common.models.PlayerState
-import io.github.smiley4.strategygame.backend.worlds.ports.provided.JoinGame
+import io.github.smiley4.strategygame.backend.worlds.module.core.provided.JoinGame
 import io.kotest.core.spec.style.StringSpec
 
 class GameJoinTest : StringSpec({

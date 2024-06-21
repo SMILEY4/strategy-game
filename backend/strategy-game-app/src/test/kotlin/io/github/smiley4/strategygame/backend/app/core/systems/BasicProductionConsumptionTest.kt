@@ -14,7 +14,7 @@ import io.github.smiley4.strategygame.backend.common.models.resources.ResourceTy
 import io.github.smiley4.strategygame.backend.common.models.resources.amount
 import io.github.smiley4.strategygame.backend.common.models.terrain.TerrainResourceType
 import io.github.smiley4.strategygame.backend.engine.core.eco.node.ProvinceEconomyNode
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class BasicProductionConsumptionTest : StringSpec({

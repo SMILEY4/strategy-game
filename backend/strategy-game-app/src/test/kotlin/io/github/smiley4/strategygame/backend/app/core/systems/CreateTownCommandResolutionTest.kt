@@ -10,7 +10,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.actions.submitTurn
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectCommandResolutionErrors
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
 import io.github.smiley4.strategygame.backend.app.testdsl.modifiers.addSettlers
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 
 class CreateTownCommandResolutionTest : StringSpec({
 

@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.app.core.tilemap
 
 import io.github.smiley4.strategygame.backend.common.models.TilePosition
-import io.github.smiley4.strategygame.backend.worldgen.core.TilemapPositionsProvider
+import io.github.smiley4.strategygame.backend.worldgen.module.TilemapPositionsProvider
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 

@@ -13,7 +13,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.modifiers.addTown
 import io.github.smiley4.strategygame.backend.common.models.TilePosition
 import io.github.smiley4.strategygame.backend.engine.ports.models.SettlementTier
 import io.github.smiley4.strategygame.backend.engine.ports.models.nextTier
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class UpgradeSettlementTierCommandResolutionTest : StringSpec({

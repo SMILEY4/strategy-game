@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.actions.submitTurn
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectProductionQueue
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
 import io.github.smiley4.strategygame.backend.common.models.BuildingType
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class ProductionQueueCommandsResolutionTest : StringSpec({

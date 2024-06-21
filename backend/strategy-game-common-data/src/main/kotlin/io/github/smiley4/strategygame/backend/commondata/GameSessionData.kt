@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.backend.commondata
 
 
+// todo: naming?  -> GameWorldData ?
 data class GameSessionData(
     val id: String,
     val name: String,

@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.GameTestContext
 import io.github.smiley4.strategygame.backend.app.testutils.shouldMatchError
 import io.github.smiley4.strategygame.backend.common.models.BuildingType
 import io.github.smiley4.strategygame.backend.common.utils.coApply
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.github.smiley4.strategygame.backend.common.models.CommandData
 import io.github.smiley4.strategygame.backend.common.models.CreateCityCommandData
 import io.github.smiley4.strategygame.backend.common.models.PlaceMarkerCommandData
@@ -14,9 +14,9 @@ import io.github.smiley4.strategygame.backend.common.models.ProductionQueueAddSe
 import io.github.smiley4.strategygame.backend.common.models.ProductionQueueRemoveEntryCommandData
 import io.github.smiley4.strategygame.backend.common.models.UpgradeSettlementTierCommandData
 import io.github.smiley4.strategygame.backend.worlds.ports.provided.ConnectToGame
-import io.github.smiley4.strategygame.backend.worlds.ports.provided.JoinGame
-import io.github.smiley4.strategygame.backend.worlds.ports.provided.RequestConnectionToGame
-import io.github.smiley4.strategygame.backend.worlds.ports.provided.TurnSubmit
+import io.github.smiley4.strategygame.backend.worlds.module.core.provided.JoinGame
+import io.github.smiley4.strategygame.backend.worlds.module.core.provided.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.worlds.module.core.provided.TurnSubmit
 
 
 //=======================//

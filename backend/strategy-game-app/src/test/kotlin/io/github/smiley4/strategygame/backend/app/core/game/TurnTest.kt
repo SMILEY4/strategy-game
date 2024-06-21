@@ -9,7 +9,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectCity
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectMarkers
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectTurn
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.kotest.core.spec.style.StringSpec
 
 class TurnTest : StringSpec({

@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.backend.app
 
+import io.github.smiley4.strategygame.backend.common.Config
 import io.ktor.server.application.ApplicationEnvironment
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.config.HoconApplicationConfig

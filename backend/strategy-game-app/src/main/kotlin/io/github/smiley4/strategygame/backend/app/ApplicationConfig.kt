@@ -7,6 +7,7 @@ import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
 import io.github.smiley4.ktorswaggerui.dsl.AuthType
 import io.github.smiley4.ktorwebsocketsextended.WebsocketsExtended
+import io.github.smiley4.strategygame.backend.common.Config
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.models.ErrorResponse
 import io.github.smiley4.strategygame.backend.common.models.bodyErrorResponse

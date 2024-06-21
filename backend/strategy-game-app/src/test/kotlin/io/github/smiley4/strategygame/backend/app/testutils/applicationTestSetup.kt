@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
-import io.github.smiley4.strategygame.backend.app.Config
+import io.github.smiley4.strategygame.backend.common.Config
 import io.github.smiley4.strategygame.backend.common.utils.Json
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

@@ -1,11 +1,5 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-import io.github.smiley4.strategygame.backend.commondata.resources.ResourceCollection
-import io.github.smiley4.strategygame.backend.commondata.resources.ResourceType
-import io.github.smiley4.strategygame.backend.commondata.resources.amount
-import io.github.smiley4.strategygame.backend.commondata.terrain.TerrainResourceType
-
-
 enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) {
     FARM(10, BuildingTemplateDataFarm()),
     FISHERS_HUT(10, BuildingTemplateDataFishersHut()),

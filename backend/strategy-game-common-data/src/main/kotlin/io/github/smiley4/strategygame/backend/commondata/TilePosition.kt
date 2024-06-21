@@ -6,7 +6,5 @@ data class TilePosition(
     var r: Int
 ) {
     constructor(pos: TilePosition) : this(pos.q, pos.r)
-
     constructor(ref: TileRef) : this(ref.q, ref.r)
-
 }

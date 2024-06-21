@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectComma
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectMarkers
 import io.github.smiley4.strategygame.backend.app.testdsl.assertions.expectNoMarkers
 import io.github.smiley4.strategygame.backend.app.testdsl.gameTest
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 
 class PlaceMarkerCommandResolutionTest : StringSpec({
 

@@ -23,7 +23,7 @@ import io.github.smiley4.strategygame.backend.engine.ports.models.CityInfrastruc
 import io.github.smiley4.strategygame.backend.engine.ports.models.CityMetadata
 import io.github.smiley4.strategygame.backend.engine.ports.models.CityPopulation
 import io.github.smiley4.strategygame.backend.engine.ports.models.SettlementTier
-import io.github.smiley4.strategygame.backend.worldgen.provided.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 
 class CityGrowthTest : StringSpec({
 
