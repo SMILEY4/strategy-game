@@ -13,11 +13,12 @@ repositories {
 
 dependencies {
 
-//    implementation(project(":strategy-game-common"))
 //    implementation(project(":strategy-game-engine"))
+    implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-worldgen"))
     implementation(project(":strategy-game-common-data"))
     implementation(project(":strategy-game-common-arangodb"))
+    implementation(project(":strategy-game-playerpov"))
 
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
@@ -27,16 +28,14 @@ dependencies {
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
+    val versionJacksonModuleKotlin: String by project
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$versionJacksonModuleKotlin")
+
     val versionKtorWebsocketsExtended: String by project
     implementation("io.github.smiley4:ktor-websockets-extended:$versionKtorWebsocketsExtended")
 
     val versionKotlinLogging: String by project
     implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
-
-    val versionArangoDb: String by project
-    val versionJacksonDataformatVelocypack: String by project
-    implementation("com.arangodb:arangodb-java-driver:$versionArangoDb")
-    implementation("com.arangodb:jackson-dataformat-velocypack:$versionJacksonDataformatVelocypack")
 
     val versionKoin: String by project
     implementation("io.insert-koin:koin-core:$versionKoin")

@@ -10,6 +10,8 @@ include("strategy-game-pathfinding")
 include("strategy-game-users")
 include("strategy-game-worldgen")
 include("strategy-game-worlds")
+include("strategy-game-gateway")
+include("strategy-game-playerpov")
 
 pluginManagement {
     repositories {

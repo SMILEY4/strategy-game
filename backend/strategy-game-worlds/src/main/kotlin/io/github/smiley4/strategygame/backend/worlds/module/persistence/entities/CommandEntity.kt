@@ -17,7 +17,7 @@ import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddSettl
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueRemoveEntryCommandData
 import io.github.smiley4.strategygame.backend.commondata.UpgradeSettlementTierCommandData
 
-class CommandEntity<T : CommandEntityData>(
+internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
     val gameId: String,
     val turn: Int,
@@ -138,13 +138,13 @@ class CommandEntity<T : CommandEntityData>(
     JsonSubTypes.Type(value = ProductionQueueAddSettlerEntryCommandEntityData::class),
     JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandEntityData::class),
 )
-sealed class CommandEntityData(
+internal sealed class CommandEntityData(
     val type: String
 )
 
 
 @JsonTypeName(CreateCityCommandEntityData.TYPE)
-class CreateCityCommandEntityData(
+internal class CreateCityCommandEntityData(
     val q: Int,
     val r: Int,
     val name: String,
@@ -157,7 +157,7 @@ class CreateCityCommandEntityData(
 
 
 @JsonTypeName(UpgradeSettlementTierCommandEntityData.TYPE)
-class UpgradeSettlementTierCommandEntityData(
+internal class UpgradeSettlementTierCommandEntityData(
     val cityId: String,
 ) : CommandEntityData(TYPE) {
     companion object {
@@ -167,7 +167,7 @@ class UpgradeSettlementTierCommandEntityData(
 
 
 @JsonTypeName(PlaceMarkerCommandEntityData.TYPE)
-class PlaceMarkerCommandEntityData(
+internal class PlaceMarkerCommandEntityData(
     val q: Int,
     val r: Int,
     val label: String,
@@ -178,7 +178,7 @@ class PlaceMarkerCommandEntityData(
 }
 
 @JsonTypeName(DeleteMarkerCommandEntityData.TYPE)
-class DeleteMarkerCommandEntityData(
+internal class DeleteMarkerCommandEntityData(
     val q: Int,
     val r: Int
 ) : CommandEntityData(TYPE) {
@@ -189,7 +189,7 @@ class DeleteMarkerCommandEntityData(
 
 
 @JsonTypeName(PlaceScoutCommandEntityData.TYPE)
-class PlaceScoutCommandEntityData(
+internal class PlaceScoutCommandEntityData(
     val q: Int,
     val r: Int
 ) : CommandEntityData(TYPE) {
@@ -200,7 +200,7 @@ class PlaceScoutCommandEntityData(
 
 
 @JsonTypeName(ProductionQueueAddBuildingEntryCommandEntityData.TYPE)
-class ProductionQueueAddBuildingEntryCommandEntityData(
+internal class ProductionQueueAddBuildingEntryCommandEntityData(
     val cityId: String,
     val buildingType: BuildingType
 ) : CommandEntityData(TYPE) {
@@ -211,7 +211,7 @@ class ProductionQueueAddBuildingEntryCommandEntityData(
 
 
 @JsonTypeName(ProductionQueueAddSettlerEntryCommandEntityData.TYPE)
-class ProductionQueueAddSettlerEntryCommandEntityData(
+internal class ProductionQueueAddSettlerEntryCommandEntityData(
     val cityId: String,
 ) : CommandEntityData(TYPE) {
     companion object {
@@ -221,7 +221,7 @@ class ProductionQueueAddSettlerEntryCommandEntityData(
 
 
 @JsonTypeName(ProductionQueueRemoveEntryCommandEntityData.TYPE)
-class ProductionQueueRemoveEntryCommandEntityData(
+internal class ProductionQueueRemoveEntryCommandEntityData(
     val cityId: String,
     val queueEntryId: String
 ) : CommandEntityData(TYPE) {

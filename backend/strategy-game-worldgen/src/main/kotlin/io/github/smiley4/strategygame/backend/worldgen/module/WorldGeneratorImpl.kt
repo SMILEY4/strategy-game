@@ -6,10 +6,10 @@ import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenerator
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
-import io.github.smiley4.strategygame.backend.worldgen.edge.WorldTile
+import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenTile
 import kotlin.random.Random
 
-class WorldGeneratorImpl : WorldGenerator {
+internal class WorldGeneratorImpl : WorldGenerator {
 
     private val noise = FastNoiseLite().apply {
         this.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2)
@@ -41,17 +41,17 @@ class WorldGeneratorImpl : WorldGenerator {
 
     private var random = Random(0)
 
-    override fun buildTiles(settings: WorldGenSettings): List<WorldTile> {
+    override fun buildTiles(settings: WorldGenSettings): List<WorldGenTile> {
         noise.SetSeed(settings.seed)
         random = Random(settings.seed)
         val tilePositions = TilemapPositionsProvider().createHexagon(settings.size)
         return tilePositions.map { buildTileAt(it, settings) }
     }
 
-    private fun buildTileAt(position: TilePosition, settings: WorldGenSettings): WorldTile {
+    private fun buildTileAt(position: TilePosition, settings: WorldGenSettings): WorldGenTile {
         val height = noise.GetNoise(position.q.toFloat(), position.r.toFloat())
         val terrainType = settings.singleTileType ?: tileTypeAt(height)
-        return WorldTile(
+        return WorldGenTile(
             q = position.q,
             r = position.r,
             type = terrainType,

@@ -2,12 +2,12 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.DisconnectAllPlayers
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.DisconnectFromGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.UsersConnectedToGamesQuery
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectAllPlayers
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectFromGame
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.UsersConnectedToGamesQuery
 
 
-class DisconnectAllPlayersImpl(
+internal class DisconnectAllPlayersImpl(
     private val queryConnectedUsers: UsersConnectedToGamesQuery,
     private val disconnect: DisconnectFromGame
 ) : DisconnectAllPlayers {

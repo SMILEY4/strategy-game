@@ -3,13 +3,13 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.persistence.EntityNotFoundError
-import io.github.smiley4.strategygame.backend.common.models.Game
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.RequestConnectionToGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameQuery
+import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.worlds.edge.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameQuery
 
 
-class RequestConnectionToGameImpl(
+internal class RequestConnectionToGameImpl(
     private val gameQuery: GameQuery,
 ) : RequestConnectionToGame, Logging {
 

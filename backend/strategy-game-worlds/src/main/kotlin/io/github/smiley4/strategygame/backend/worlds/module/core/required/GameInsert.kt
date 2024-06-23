@@ -1,8 +1,0 @@
-package io.github.smiley4.strategygame.backend.worlds.module.core.required
-
-import io.github.smiley4.strategygame.backend.commondata.Game
-
-
-interface GameInsert {
-	suspend fun execute(game: Game): String
-}

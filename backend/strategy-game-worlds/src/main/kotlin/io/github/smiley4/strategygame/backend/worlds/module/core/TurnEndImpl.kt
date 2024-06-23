@@ -4,23 +4,22 @@ import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.persistence.EntityNotFoundError
-import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
-import io.github.smiley4.strategygame.backend.worlds.external.message.models.GameStateMessage
-import io.github.smiley4.strategygame.backend.worlds.external.message.websocket.MessageProducer
-import io.github.smiley4.strategygame.backend.common.models.Game
-import io.github.smiley4.strategygame.backend.common.models.PlayerState
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.TurnEnd
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.CommandsByGameQuery
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameQuery
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameUpdate
+import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.worlds.edge.TurnEnd
+import io.github.smiley4.strategygame.backend.worlds.edge.GameMessageProducer
+import io.github.smiley4.strategygame.backend.worlds.module.client.GameStep
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.CommandsByGameQuery
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameQuery
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
 
-class TurnEndImpl(
+internal class TurnEndImpl(
     private val commandsByGameQuery: CommandsByGameQuery,
     private val queryGame: GameQuery,
     private val updateGame: GameUpdate,
     private val gameStepAction: GameStep,
-    private val producer: MessageProducer
+    private val producer: GameMessageProducer
 ) : TurnEnd, Logging {
 
     private val metricId = MetricId.action(TurnEnd::class)
@@ -85,7 +84,7 @@ class TurnEndImpl(
     private suspend fun sendGameStateMessages(game: Game, playerViews: Map<String, JsonType>) {
         playerViews.forEach { (userId, view) ->
             val connectionId = getConnectionId(game, userId)
-            producer.sendToSingle(connectionId, GameStateMessage(GameStateMessage.Companion.GameStatePayload(view)))
+            producer.sendGameState(connectionId, view)
         }
     }
 

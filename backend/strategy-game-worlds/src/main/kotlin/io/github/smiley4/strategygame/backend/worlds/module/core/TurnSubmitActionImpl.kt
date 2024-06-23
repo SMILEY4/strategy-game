@@ -3,20 +3,20 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.persistence.DbId
-import io.github.smiley4.strategygame.backend.common.persistence.EntityNotFoundError
-import io.github.smiley4.strategygame.backend.common.models.Command
-import io.github.smiley4.strategygame.backend.common.models.CommandData
-import io.github.smiley4.strategygame.backend.common.models.Game
-import io.github.smiley4.strategygame.backend.common.models.PlayerState
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.TurnEnd
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.TurnSubmit
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.CommandsInsert
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameQuery
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameUpdate
+import io.github.smiley4.strategygame.backend.commonarangodb.DbId
+import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
+import io.github.smiley4.strategygame.backend.commondata.Command
+import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.worlds.edge.TurnEnd
+import io.github.smiley4.strategygame.backend.worlds.edge.TurnSubmit
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.CommandsInsert
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameQuery
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
 
 
-class TurnSubmitActionImpl(
+internal class TurnSubmitActionImpl(
     private val actionEndTurn: TurnEnd,
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,

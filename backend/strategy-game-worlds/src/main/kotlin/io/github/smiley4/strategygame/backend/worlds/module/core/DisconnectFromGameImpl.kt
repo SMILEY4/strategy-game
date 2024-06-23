@@ -4,13 +4,13 @@ import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandl
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.models.Game
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.DisconnectFromGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameUpdate
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GamesByUserQuery
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectFromGame
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GamesByUserQuery
 import io.ktor.websocket.*
 
-class DisconnectFromGameImpl(
+internal class DisconnectFromGameImpl(
     private val gamesByUserQuery: GamesByUserQuery,
     private val gameUpdate: GameUpdate,
     private val websocketConnectionHandler: WebSocketConnectionHandler

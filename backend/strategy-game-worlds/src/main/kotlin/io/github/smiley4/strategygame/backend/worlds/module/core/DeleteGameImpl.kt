@@ -3,11 +3,11 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.DeleteGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameDelete
+import io.github.smiley4.strategygame.backend.worlds.edge.DeleteGame
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameDelete
 
 
-class DeleteGameImpl(private val gameDelete: GameDelete) : DeleteGame, Logging {
+internal class DeleteGameImpl(private val gameDelete: GameDelete) : DeleteGame, Logging {
 
     private val metricId = MetricId.action(DeleteGame::class)
 

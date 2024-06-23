@@ -14,7 +14,9 @@ import io.github.smiley4.strategygame.backend.common.models.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.common.monitoring.MicrometerMonitoringService
 import io.github.smiley4.strategygame.backend.common.monitoring.MonitoringService
 import io.github.smiley4.strategygame.backend.common.utils.toDisplayString
+import io.github.smiley4.strategygame.backend.gateway.routingGateway
 import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.routingUsers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -204,6 +206,6 @@ fun Application.module() {
     }
 
     routing {
-        routingApi()
+        routingGateway()
     }
 }

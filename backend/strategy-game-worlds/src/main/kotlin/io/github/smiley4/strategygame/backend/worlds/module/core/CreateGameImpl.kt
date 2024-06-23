@@ -3,27 +3,27 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.persistence.DbId
-import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
+import io.github.smiley4.strategygame.backend.commonarangodb.DbId
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
-import io.github.smiley4.strategygame.backend.common.models.Game
-import io.github.smiley4.strategygame.backend.common.models.PlayerContainer
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.CreateGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameInsert
+import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
+import io.github.smiley4.strategygame.backend.worlds.module.client.InitializeWorld
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameInsert
 import java.time.Instant
 
-class CreateGameImpl(
+internal class CreateGameImpl(
     private val gameInsert: GameInsert,
     private val initializeWorld: InitializeWorld
 ) : CreateGame, Logging {
 
     private val metricId = MetricId.action(CreateGame::class)
 
-    override suspend fun perform(name: String, worldSettings: WorldGenSettings): String {
+    override suspend fun perform(name: String, seed: Int?): String {
         return time(metricId) {
-            log().info("Creating new game with seed ${worldSettings.seed}")
+            log().info("Creating new game with seed $seed")
             val gameId = createGame(name)
-            initializeWorld(gameId, worldSettings)
+            initializeWorld(gameId, WorldGenSettings.default(seed))
             log().info("Created new game with id $gameId")
             gameId
         }
@@ -51,7 +51,7 @@ class CreateGameImpl(
      */
     private suspend fun initializeWorld(gameId: String, worldSettings: WorldGenSettings) {
         try {
-        initializeWorld.perform(gameId, worldSettings)
+            initializeWorld.perform(gameId, worldSettings)
         } catch (e: Exception) {
             throw CreateGame.WorldInitError()
         }

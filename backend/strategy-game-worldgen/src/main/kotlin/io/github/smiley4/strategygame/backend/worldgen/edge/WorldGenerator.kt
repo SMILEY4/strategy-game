@@ -8,5 +8,5 @@ interface WorldGenerator {
     /**
      * Build the list of tiles for a new world based on the given [WorldGenSettings]
      */
-    fun buildTiles(settings: WorldGenSettings): List<WorldTile>
+    fun buildTiles(settings: WorldGenSettings): List<WorldGenTile>
 }

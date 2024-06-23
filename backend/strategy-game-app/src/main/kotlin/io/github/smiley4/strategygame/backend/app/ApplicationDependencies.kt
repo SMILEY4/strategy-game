@@ -66,6 +66,7 @@ import io.github.smiley4.strategygame.backend.engine.ports.required.TilesInsert
 import io.github.smiley4.strategygame.backend.engine.ports.required.TilesQueryByGame
 import io.github.smiley4.strategygame.backend.engine.ports.required.TilesQueryByGameAndPosition
 import io.github.smiley4.strategygame.backend.engine.ports.required.TilesUpdate
+import io.github.smiley4.strategygame.backend.gateway.dependenciesGateway
 import io.github.smiley4.strategygame.backend.users.core.CreateUserImpl
 import io.github.smiley4.strategygame.backend.users.core.DeleteUserImpl
 import io.github.smiley4.strategygame.backend.users.core.LoginUserImpl
@@ -103,15 +104,15 @@ import io.github.smiley4.strategygame.backend.worlds.external.persistence.GameUp
 import io.github.smiley4.strategygame.backend.worlds.external.persistence.GamesByUserQueryImpl
 import io.github.smiley4.strategygame.backend.worlds.external.persistence.UsersConnectedToGamesQueryImpl
 import io.github.smiley4.strategygame.backend.worlds.ports.provided.ConnectToGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.CreateGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.DeleteGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.DisconnectAllPlayers
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.DisconnectFromGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.JoinGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.ListGames
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.RequestConnectionToGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.TurnEnd
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.TurnSubmit
+import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
+import io.github.smiley4.strategygame.backend.worlds.edge.DeleteGame
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectAllPlayers
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectFromGame
+import io.github.smiley4.strategygame.backend.worlds.edge.JoinGame
+import io.github.smiley4.strategygame.backend.worlds.edge.ListGames
+import io.github.smiley4.strategygame.backend.worlds.edge.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.worlds.edge.TurnEnd
+import io.github.smiley4.strategygame.backend.worlds.edge.TurnSubmit
 import io.github.smiley4.strategygame.backend.worlds.module.core.required.CommandsByGameQuery
 import io.github.smiley4.strategygame.backend.worlds.module.core.required.CommandsInsert
 import io.github.smiley4.strategygame.backend.worlds.module.core.required.GameDelete
@@ -130,6 +131,7 @@ import kotlin.time.Duration.Companion.seconds
 
 val applicationDependencies = module {
 
+    dependenciesGateway()
     dependenciesUsers()
     dependenciesWorldGen()
 

@@ -2,11 +2,11 @@ package io.github.smiley4.strategygame.backend.users.module.iam
 
 import io.github.smiley4.strategygame.backend.common.UserIdentityProvider
 import io.github.smiley4.strategygame.backend.common.UserIdentityServiceConfig
-import io.github.smiley4.strategygame.backend.users.module.core.AuthData
-import io.github.smiley4.strategygame.backend.users.module.core.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
+import io.github.smiley4.strategygame.backend.users.edge.models.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
-interface UserIdentityService {
+internal interface UserIdentityService {
 
     sealed class UserIdentityError : Exception()
 
@@ -117,6 +117,6 @@ interface UserIdentityService {
      * @throws UserNotConfirmedError
      * @throws UserNotFoundError
      */
-    suspend fun deleteUser(email: String, password: String)
+    fun deleteUser(email: String, password: String)
 
 }

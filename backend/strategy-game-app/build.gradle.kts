@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
 
+    implementation(project(":strategy-game-gateway"))
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-users"))
     implementation(project(":strategy-game-worlds"))

@@ -24,8 +24,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.users.module.core.AuthData
-import io.github.smiley4.strategygame.backend.users.module.core.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
+import io.github.smiley4.strategygame.backend.users.edge.models.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -33,7 +33,7 @@ import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.util.concurrent.TimeUnit
 
-class AwsCognitoService(
+internal class AwsCognitoService(
     private val provider: AWSCognitoIdentityProvider,
     private val clientId: String,
     private val poolId: String,
@@ -209,7 +209,7 @@ class AwsCognitoService(
     }
 
 
-    override suspend fun deleteUser(email: String, password: String) {
+    override fun deleteUser(email: String, password: String) {
         try {
             val auth = authenticate(email, password)
             provider.deleteUser(DeleteUserRequest().withAccessToken(auth.accessToken))

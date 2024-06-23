@@ -14,9 +14,9 @@ import io.github.smiley4.strategygame.backend.common.models.ProductionQueueAddSe
 import io.github.smiley4.strategygame.backend.common.models.ProductionQueueRemoveEntryCommandData
 import io.github.smiley4.strategygame.backend.common.models.UpgradeSettlementTierCommandData
 import io.github.smiley4.strategygame.backend.worlds.ports.provided.ConnectToGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.JoinGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.RequestConnectionToGame
-import io.github.smiley4.strategygame.backend.worlds.module.core.provided.TurnSubmit
+import io.github.smiley4.strategygame.backend.worlds.edge.JoinGame
+import io.github.smiley4.strategygame.backend.worlds.edge.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.worlds.edge.TurnSubmit
 
 
 //=======================//

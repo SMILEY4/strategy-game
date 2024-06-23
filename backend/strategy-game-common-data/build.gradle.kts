@@ -1,19 +1,14 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-group = "de.ruegnerlukas"
-version = "0.7.0"
+val projectGroupId: String by project
+val projectVersion: String by project
+group = projectGroupId
+version = projectVersion
 
 plugins {
     kotlin("jvm")
-    kotlin("plugin.serialization")
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven {
-        url = uri("https://jitpack.io")
-    }
 }
 
 dependencies {
@@ -28,15 +23,6 @@ dependencies {
 
 }
 
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+kotlin {
+    jvmToolchain(17)
 }
