@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
-import io.github.smiley4.strategygame.backend.commonarangodb.DbId
+import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
 import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
@@ -22,14 +22,10 @@ internal class GameEntity(
                 name = serviceModel.name,
                 creationTimestamp = serviceModel.creationTimestamp,
                 turn = serviceModel.turn,
-                players = serviceModel.players.map { PlayerEntity.of(it) }
-                    .toList(),
+                players = serviceModel.players.map { PlayerEntity.of(it) }.toList(),
             )
 
-        fun of(
-            serviceModel: GameMeta,
-            game: GameEntity
-        ) =
+        fun of(serviceModel: GameMeta, game: GameEntity) =
             GameEntity(
                 key = DbId.asDbId(serviceModel.gameId),
                 turn = serviceModel.turn,

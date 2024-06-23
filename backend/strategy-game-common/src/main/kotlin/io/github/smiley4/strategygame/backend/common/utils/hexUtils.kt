@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.common.utils
 
-import io.github.smiley4.strategygame.backend.common.models.TilePosition
-import io.github.smiley4.strategygame.backend.common.models.TileRef
+import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.TileRef
 import kotlin.math.abs
 
 /**

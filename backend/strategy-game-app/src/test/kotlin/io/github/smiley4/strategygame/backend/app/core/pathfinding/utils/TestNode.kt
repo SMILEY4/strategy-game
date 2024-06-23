@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.app.core.pathfinding.utils
 
 import io.github.smiley4.strategygame.backend.common.models.Tile
-import io.github.smiley4.strategygame.backend.pathfinding.Node
+import io.github.smiley4.strategygame.backend.pathfinding.module.Node
 
 
 class TestNode(

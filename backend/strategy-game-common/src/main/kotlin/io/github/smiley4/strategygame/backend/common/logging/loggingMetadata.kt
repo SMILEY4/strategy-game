@@ -1,9 +1,9 @@
 package io.github.smiley4.strategygame.backend.common.logging
 
-import io.github.smiley4.strategygame.backend.common.utils.UUID
+import io.github.smiley4.strategygame.backend.common.utils.Id
 
 
-fun mdcTraceId() = "traceId" to UUID.gen(12)
+fun mdcTraceId() = "traceId" to Id.gen(12)
 
 fun mdcGameId(gameId: String?) = "gameId" to (gameId ?: "?")
 

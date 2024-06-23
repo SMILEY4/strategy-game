@@ -13,12 +13,11 @@ repositories {
 
 dependencies {
 
-//    implementation(project(":strategy-game-engine"))
+    implementation(project(":strategy-game-engine"))
+    implementation(project(":strategy-game-playerpov"))
     implementation(project(":strategy-game-common"))
-    implementation(project(":strategy-game-worldgen"))
     implementation(project(":strategy-game-common-data"))
     implementation(project(":strategy-game-common-arangodb"))
-    implementation(project(":strategy-game-playerpov"))
 
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
@@ -40,6 +39,11 @@ dependencies {
     val versionKoin: String by project
     implementation("io.insert-koin:koin-core:$versionKoin")
     implementation("io.insert-koin:koin-ktor:$versionKoin")
+
+    val versionArrow: String by project
+    implementation("io.arrow-kt:arrow-core:$versionArrow")
+    implementation("io.arrow-kt:arrow-fx-coroutines:$versionArrow")
+    implementation("io.arrow-kt:arrow-fx-stm:$versionArrow")
 }
 
 kotlin {

@@ -13,7 +13,7 @@ import io.ktor.websocket.*
 internal class DisconnectFromGameImpl(
     private val gamesByUserQuery: GamesByUserQuery,
     private val gameUpdate: GameUpdate,
-    private val websocketConnectionHandler: WebSocketConnectionHandler
+    private val websocketConnectionHandler: WebSocketConnectionHandler // todo: remove dependency on websocket
 ) : DisconnectFromGame, Logging {
 
     private val metricId = MetricId.action(DisconnectFromGame::class)

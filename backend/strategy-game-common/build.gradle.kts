@@ -12,6 +12,9 @@ repositories {
 }
 
 dependencies {
+
+    implementation(project(":strategy-game-common-data"))
+
     val versionKtorWebsocketsExtended: String by project
     implementation("io.github.smiley4:ktor-websockets-extended:$versionKtorWebsocketsExtended")
 

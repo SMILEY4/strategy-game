@@ -10,7 +10,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring
 import io.github.smiley4.strategygame.backend.common.monitoring.MonitoringService
 import io.github.smiley4.strategygame.backend.common.persistence.DatabaseProvider
 import io.github.smiley4.strategygame.backend.common.persistence.arango.ArangoDatabase
-import io.github.smiley4.strategygame.backend.engine.core.DiscoverMapAreaImpl
+import io.github.smiley4.strategygame.backend.engine.module.core.DiscoverMapArea
 import io.github.smiley4.strategygame.backend.engine.core.GameStepImpl
 import io.github.smiley4.strategygame.backend.engine.core.InitializePlayerImpl
 import io.github.smiley4.strategygame.backend.engine.core.InitializeWorldImpl
@@ -52,7 +52,6 @@ import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesI
 import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesQueryByGameAndPositionImpl
 import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesQueryByGameImpl
 import io.github.smiley4.strategygame.backend.engine.external.persistence.TilesUpdateImpl
-import io.github.smiley4.strategygame.backend.engine.ports.provided.DiscoverMapArea
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
@@ -187,7 +186,7 @@ val applicationDependencies = module {
     single<ConnectToGame> { ConnectToGameImpl(get(), get(), get(), get()) }
     single<CreateGame> { CreateGameImpl(get(), get()) }
     single<DisconnectFromGame> { DisconnectFromGameImpl(get(), get(), get()) }
-    single<DiscoverMapArea> { DiscoverMapAreaImpl(get(), get(), get()) }
+    single<DiscoverMapArea> { io.github.smiley4.strategygame.backend.engine.module.core.DiscoverMapArea(get(), get(), get()) }
     single<JoinGame> { JoinGameImpl(get(), get(), get()) }
     single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }

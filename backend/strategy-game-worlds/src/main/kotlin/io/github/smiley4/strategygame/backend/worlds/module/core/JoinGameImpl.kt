@@ -6,10 +6,13 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.COUNTRY_COLORS
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Player
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer
 import io.github.smiley4.strategygame.backend.worlds.edge.JoinGame
-import io.github.smiley4.strategygame.backend.worlds.module.client.InitializePlayer
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameExtendedQuery
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameExtendedUpdate
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameQuery
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
 
@@ -17,6 +20,8 @@ import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpda
 internal class JoinGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
+    private val gameExtendedQuery: GameExtendedQuery,
+    private val gameExtendedUpdate: GameExtendedUpdate,
     private val initializePlayer: InitializePlayer
 ) : JoinGame, Logging {
 
@@ -29,25 +34,14 @@ internal class JoinGameImpl(
             val game = findGame(gameId)
             validate(game, userId)
             createPlayer(game, userId)
-            initializePlayer(game, userId)
+            val gameExtended = findGameExtended(gameId)
+            initializePlayer(game, gameExtended, userId)
         }
     }
 
 
     /**
-     * Find and return the game with the given id or an [GameNotFoundError] if the game does not exist
-     */
-    private suspend fun findGame(gameId: String): Game {
-        try {
-            return gameQuery.execute(gameId)
-        } catch (e: EntityNotFoundError) {
-            throw JoinGame.GameNotFoundError()
-        }
-    }
-
-
-    /**
-     * Validate whether the given user can join the given game. Return nothing or an [UserAlreadyJoinedError]
+     * Validate whether the given user can join the given game. Return nothing or an [JoinGame.UserAlreadyJoinedError]
      */
     private fun validate(game: Game, userId: String) {
         if (game.players.existsByUserId(userId)) {
@@ -75,8 +69,32 @@ internal class JoinGameImpl(
     /**
      * Create the necessary data in the game-world
      */
-    private suspend fun initializePlayer(game: Game, userId: String) {
-        initializePlayer.perform(game.gameId, userId, COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size])
+    private suspend fun initializePlayer(game: Game, gameExtended: GameExtended, userId: String) {
+        initializePlayer.perform(gameExtended, userId, COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size])
+        gameExtendedUpdate.execute(gameExtended)
+    }
+
+
+    /**
+     * Find and return the game with the given id or an [JoinGame.GameNotFoundError] if the game does not exist
+     */
+    private suspend fun findGame(gameId: String): Game {
+        try {
+            return gameQuery.execute(gameId)
+        } catch (e: EntityNotFoundError) {
+            throw JoinGame.GameNotFoundError()
+        }
+    }
+
+    /**
+     * Find and return the complete game with the given id or an [JoinGame.GameNotFoundError] if the game does not exist
+     */
+    private suspend fun findGameExtended(gameId: String): GameExtended {
+        try {
+            return gameExtendedQuery.execute(gameId)
+        } catch (e: EntityNotFoundError) {
+            throw JoinGame.GameNotFoundError()
+        }
     }
 
 }

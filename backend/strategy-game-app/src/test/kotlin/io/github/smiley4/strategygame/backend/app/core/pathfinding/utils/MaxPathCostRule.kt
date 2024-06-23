@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.app.core.pathfinding.utils
 
-import io.github.smiley4.strategygame.backend.pathfinding.ScoreCalculator
+import io.github.smiley4.strategygame.backend.pathfinding.module.ScoreCalculator
 
 
 /**

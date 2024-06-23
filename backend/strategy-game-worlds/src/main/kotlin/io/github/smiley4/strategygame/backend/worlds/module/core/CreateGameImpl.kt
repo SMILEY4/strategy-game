@@ -3,18 +3,20 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.commonarangodb.DbId
+import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
-import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
+import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
 import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
-import io.github.smiley4.strategygame.backend.worlds.module.client.InitializeWorld
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameExtendedUpdate
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameInsert
 import java.time.Instant
 
 internal class CreateGameImpl(
     private val gameInsert: GameInsert,
-    private val initializeWorld: InitializeWorld
+    private val initializeWorld: InitializeWorld,
+    private val gameExtendedUpdate: GameExtendedUpdate,
 ) : CreateGame, Logging {
 
     private val metricId = MetricId.action(CreateGame::class)
@@ -22,39 +24,46 @@ internal class CreateGameImpl(
     override suspend fun perform(name: String, seed: Int?): String {
         return time(metricId) {
             log().info("Creating new game with seed $seed")
-            val gameId = createGame(name)
-            initializeWorld(gameId, WorldGenSettings.default(seed))
-            log().info("Created new game with id $gameId")
-            gameId
+            val game = createEmptyGame(name)
+            val gameExtended = initialize(game, seed)
+            saveGameExtended(gameExtended)
+            log().info("Created new game with id ${game.gameId}")
+            game.gameId
         }
     }
 
-
     /**
-     * Build and persist the game
+     * Build and persist an empty game
      */
-    private suspend fun createGame(name: String): String {
-        return gameInsert.execute(
-            Game(
-                gameId = DbId.PLACEHOLDER,
-                name = name,
-                creationTimestamp = Instant.now().toEpochMilli(),
-                turn = 0,
-                players = PlayerContainer()
-            )
-        )
+    private suspend fun createEmptyGame(name: String): Game {
+        return Game(
+            gameId = DbId.PLACEHOLDER,
+            name = name,
+            creationTimestamp = Instant.now().toEpochMilli(),
+            turn = 0,
+            players = PlayerContainer()
+        ).let {
+            val gameId = gameInsert.execute(it)
+            it.copy(gameId = gameId)
+        }
     }
-
 
     /**
      * Initialize and populate the world
      */
-    private suspend fun initializeWorld(gameId: String, worldSettings: WorldGenSettings) {
+    private suspend fun initialize(game: Game, worldSeed: Int?): GameExtended {
         try {
-            initializeWorld.perform(gameId, worldSettings)
+            return initializeWorld.perform(game, worldSeed)
         } catch (e: Exception) {
             throw CreateGame.WorldInitError()
         }
+    }
+
+    /**
+     * Save the given game and all related data
+     */
+    private suspend fun saveGameExtended(game: GameExtended) {
+        gameExtendedUpdate.execute(game)
     }
 
 }

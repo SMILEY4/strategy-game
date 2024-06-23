@@ -3,7 +3,6 @@ package io.github.smiley4.strategygame.backend.app.testutils
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.models.GameConfig
 import io.github.smiley4.strategygame.backend.common.persistence.arango.ArangoDatabase
-import io.github.smiley4.strategygame.backend.engine.core.DiscoverMapAreaImpl
 import io.github.smiley4.strategygame.backend.engine.core.GameStepImpl
 import io.github.smiley4.strategygame.backend.engine.core.InitializePlayerImpl
 import io.github.smiley4.strategygame.backend.engine.core.InitializeWorldImpl
@@ -155,7 +154,7 @@ data class TestActions(
                     GameConfig.default(),
                     CountryInsertImpl(database),
                     TilesQueryByGameImpl(database),
-                    DiscoverMapAreaImpl(
+                    io.github.smiley4.strategygame.backend.engine.module.core.DiscoverMapArea(
                         TilesQueryByGameAndPositionImpl(database),
                         TilesUpdateImpl(database),
                         GameExistsQueryImpl(database)

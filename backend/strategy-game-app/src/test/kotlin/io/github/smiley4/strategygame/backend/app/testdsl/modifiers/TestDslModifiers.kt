@@ -15,7 +15,7 @@ import io.github.smiley4.strategygame.backend.common.models.terrain.TerrainResou
 import io.github.smiley4.strategygame.backend.common.persistence.Collections
 import io.github.smiley4.strategygame.backend.common.persistence.arango.ArangoDatabase
 import io.github.smiley4.strategygame.backend.common.utils.RGBColor
-import io.github.smiley4.strategygame.backend.common.utils.UUID
+import io.github.smiley4.strategygame.backend.common.utils.Id
 import io.github.smiley4.strategygame.backend.common.utils.coApply
 import io.github.smiley4.strategygame.backend.engine.core.eco.ledger.ResourceLedger
 import io.github.smiley4.strategygame.backend.engine.external.persistence.models.CityEntity
@@ -97,7 +97,7 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
     val dslConfig = AddCityDirectActionDsl().coApply(block)
     val tiles = TestUtils.getTiles(getDb(), getActiveGame())
     val city = City(
-        cityId = UUID.gen(),
+        cityId = Id.gen(),
         countryId = dslConfig.countryId!!,
         tile = TileRef(tiles.find { it.position == dslConfig.tile }!!),
         tier = dslConfig.tier ?: SettlementTier.CITY,
@@ -117,7 +117,7 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
             }.toMutableList(),
             productionQueue = dslConfig.queue.map { buildingType ->
                 BuildingProductionQueueEntry(
-                    entryId = UUID.gen(),
+                    entryId = Id.gen(),
                     buildingType = buildingType,
                     collectedResources = ResourceCollection.basic()
                 )
@@ -132,7 +132,7 @@ suspend fun GameTestContext.addCity(block: suspend AddCityDirectActionDsl.() -> 
         getDb().insertDocument(Collections.CITIES, entity)
     }
     val province = Province(
-        provinceId = UUID.gen(),
+        provinceId = Id.gen(),
         countryId = city.countryId,
         cityIds = mutableListOf(city.cityId),
         provinceCapitalCityId = city.cityId,
@@ -148,7 +148,7 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
     val dslConfig = AddCityDirectActionDsl().coApply(block)
     val tiles = TestUtils.getTiles(getDb(), getActiveGame())
     val city = City(
-        cityId = UUID.gen(),
+        cityId = Id.gen(),
         countryId = dslConfig.countryId!!,
         tile = TileRef(tiles.find { it.position == dslConfig.tile }!!),
         tier = dslConfig.tier ?: SettlementTier.TOWN,
@@ -168,7 +168,7 @@ suspend fun GameTestContext.addTown(parentCity: String, block: suspend AddCityDi
             }.toMutableList(),
             productionQueue = dslConfig.queue.map { buildingType ->
                 BuildingProductionQueueEntry(
-                    entryId = UUID.gen(),
+                    entryId = Id.gen(),
                     buildingType = buildingType,
                     collectedResources = ResourceCollection.basic()
                 )
@@ -214,7 +214,7 @@ suspend fun GameTestContext.addRoute(nameCityA: String, nameCityB: String) {
     val cityIdA = getGameExtended().cities.find { it.meta.name == nameCityA }!!.cityId
     val cityIdB = getGameExtended().cities.find { it.meta.name == nameCityB }!!.cityId
     val route = Route(
-        routeId = UUID.gen(),
+        routeId = Id.gen(),
         cityIdA = cityIdA,
         cityIdB = cityIdB,
         path = listOf()

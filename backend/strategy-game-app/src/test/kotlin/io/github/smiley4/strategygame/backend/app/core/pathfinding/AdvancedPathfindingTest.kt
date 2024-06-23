@@ -17,9 +17,9 @@ import io.github.smiley4.strategygame.backend.common.models.terrain.TerrainType
 import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
 import io.github.smiley4.strategygame.backend.engine.ports.models.TileContainer
-import io.github.smiley4.strategygame.backend.pathfinding.NeighbourProvider
-import io.github.smiley4.strategygame.backend.pathfinding.ScoreCalculator
-import io.github.smiley4.strategygame.backend.pathfinding.algorithms.backtracking.BacktrackingPathfinder
+import io.github.smiley4.strategygame.backend.pathfinding.module.NeighbourProvider
+import io.github.smiley4.strategygame.backend.pathfinding.module.ScoreCalculator
+import io.github.smiley4.strategygame.backend.pathfinding.module.algorithms.backtracking.BacktrackingPathfinder
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly

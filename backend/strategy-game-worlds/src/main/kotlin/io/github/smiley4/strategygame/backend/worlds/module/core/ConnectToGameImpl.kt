@@ -5,9 +5,11 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.playerpov.edge.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.worlds.edge.ConnectToGame
 import io.github.smiley4.strategygame.backend.worlds.edge.GameMessageProducer
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameExtendedQuery
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameQuery
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
 
@@ -15,6 +17,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpda
 internal class ConnectToGameImpl(
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
+    private val gameExtendedQuery: GameExtendedQuery,
     private val playerViewCreator: PlayerViewCreator,
     private val producer: GameMessageProducer
 ) : ConnectToGame, Logging {
@@ -62,8 +65,20 @@ internal class ConnectToGameImpl(
      * Send the initial game-state to the connected player
      * */
     private suspend fun sendInitialGameStateMessage(gameId: String, userId: String, connectionId: Long) {
-        val view = playerViewCreator.build(userId, gameId)
+        val game = findGameExtended(gameId)
+        val view = playerViewCreator.build(userId, game)
         producer.sendGameState(connectionId, view)
+    }
+
+    /**
+     * Find and return the complete game or throw if the game does not exist
+     */
+    private suspend fun findGameExtended(gameId: String): GameExtended {
+        try {
+            return gameExtendedQuery.execute(gameId)
+        } catch (e: EntityNotFoundError) {
+            throw ConnectToGame.GameNotFoundError()
+        }
     }
 
 }
