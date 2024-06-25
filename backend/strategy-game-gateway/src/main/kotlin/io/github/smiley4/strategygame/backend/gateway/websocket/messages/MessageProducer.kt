@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds.websocket
+package io.github.smiley4.strategygame.backend.gateway.websocket.messages
 
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 

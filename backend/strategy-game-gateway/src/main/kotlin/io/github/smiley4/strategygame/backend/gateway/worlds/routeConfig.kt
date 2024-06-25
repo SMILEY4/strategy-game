@@ -11,7 +11,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
-object RouteConfig {
+internal object RouteConfig {
 
     fun Route.routeConfig(gameConfig: GameConfig) = get("config", {
         description = "Fetch the configuration and values for games."

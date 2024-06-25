@@ -30,9 +30,6 @@ dependencies {
     val versionJacksonModuleKotlin: String by project
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$versionJacksonModuleKotlin")
 
-    val versionKtorWebsocketsExtended: String by project
-    implementation("io.github.smiley4:ktor-websockets-extended:$versionKtorWebsocketsExtended")
-
     val versionKotlinLogging: String by project
     implementation("io.github.microutils:kotlin-logging-jvm:$versionKotlinLogging")
 

@@ -18,16 +18,16 @@ internal class RequestConnectionToGameImpl(
     override suspend fun perform(userId: String, gameId: String) {
         return time(metricId) {
             log().info("Requesting to connect to game $gameId as user $userId")
-            val game = findGame(gameId)
+            val game = getGame(gameId)
             validate(game, userId)
         }
     }
 
 
     /**
-     * Find and return the game or an [GameNotFoundError] if the game does not exist
+     * Get the game by the given id or throw
      */
-    private suspend fun findGame(gameId: String): Game {
+    private suspend fun getGame(gameId: String): Game {
         try {
             return gameQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
@@ -37,7 +37,7 @@ internal class RequestConnectionToGameImpl(
 
 
     /**
-     * Validate whether the given user can connect to the given game. Return nothing or an [GameRequestConnectionActionError]
+     * Validate whether the given user can connect to the given game. Throw if validation failed.
      */
     private fun validate(game: Game, userId: String) {
         val player = game.players.findByUserId(userId)

@@ -12,7 +12,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
-object RouteList {
+internal object RouteList {
 
     fun Route.routeList(listGames: ListGames) = get("list", {
         description = "List all games with the user as a participant."

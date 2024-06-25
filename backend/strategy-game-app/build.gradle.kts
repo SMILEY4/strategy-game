@@ -46,9 +46,6 @@ dependencies {
     val versionKtorSwaggerUi: String by project
     implementation("io.github.smiley4:ktor-swagger-ui:$versionKtorSwaggerUi")
 
-    val versionKtorWebsocketsExtended: String by project
-    implementation("io.github.smiley4:ktor-websockets-extended:$versionKtorWebsocketsExtended")
-
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
     implementation("org.hdrhistogram:HdrHistogram:2.1.12")

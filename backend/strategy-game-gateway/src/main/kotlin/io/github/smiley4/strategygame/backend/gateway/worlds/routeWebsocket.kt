@@ -1,7 +1,5 @@
 package io.github.smiley4.strategygame.backend.gateway.worlds
 
-import io.github.smiley4.ktorwebsocketsextended.routing.webSocketExt
-import io.github.smiley4.ktorwebsocketsextended.routingconfig.WebsocketExtendedRouteConfig
 import io.github.smiley4.strategygame.backend.common.logging.mdcConnectionId
 import io.github.smiley4.strategygame.backend.common.logging.mdcGameId
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
@@ -9,6 +7,9 @@ import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
 import io.github.smiley4.strategygame.backend.common.utils.Json
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
+import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
+import io.github.smiley4.strategygame.backend.gateway.websocket.routing.webSocketExt
+import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.MessageMetadata
 import io.github.smiley4.strategygame.backend.worlds.edge.ConnectToGame
@@ -18,7 +19,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import kotlin.collections.set
 
-object RouteWebsocket {
+internal object RouteWebsocket {
 
     private object GameNotFoundResponse : ErrorResponse(
         status = 404,
@@ -42,13 +43,18 @@ object RouteWebsocket {
     )
 
     fun Route.routeWebsocket(
+        ticketManager: WebsocketTicketAuthManager,
+        connectionHandler: WebSocketConnectionHandler,
         messageHandler: GatewayGameMessageHandler,
         disconnectAction: DisconnectFromGame,
         requestConnection: RequestConnectionToGame,
         connectAction: ConnectToGame
-    ) = webSocketExt("{${WebsocketConstants.GAME_ID}}", authenticate = true) {
+    ) = webSocketExt("{${WebsocketConstants.GAME_ID}}", connectionHandler, ticketManager, authenticate = true) {
+
+        // read the ticket from the incoming connection
         provideTicket { it.parameters["ticket"]!! }
 
+        // handle incoming connection, return non 2xx to not accept the connection
         onConnect { call, data ->
             val userId = data[WebsocketConstants.USER_ID]!! as String
             val gameId = call.parameters[WebsocketConstants.GAME_ID]!!.also { data[WebsocketConstants.GAME_ID] = it }
@@ -65,6 +71,7 @@ object RouteWebsocket {
             }
         }
 
+        // handle established connection
         onOpen { connection ->
             val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
             val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
@@ -73,21 +80,18 @@ object RouteWebsocket {
             }
         }
 
-        onMessage { connection, strMessage ->
+        // handle each incoming websocket message
+        onEachText { connection, strMessage ->
             val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
             val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
             withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
-                buildMessage<Message<*>>(
-                    connection.getId(),
-                    userId,
-                    gameId,
-                    strMessage
-                ).let {
+                buildMessage<Message<*>>(connection.getId(), userId, gameId, strMessage).let {
                     messageHandler.onMessage(it)
                 }
             }
         }
 
+        // handle a closed connection
         onClose { connection ->
             val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
             val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
@@ -100,12 +104,6 @@ object RouteWebsocket {
     private fun <T> buildMessage(connectionId: Long, userId: String, gameId: String, content: String): Message<T> {
         return Json.fromString<Message<T>>(content).apply {
             meta = MessageMetadata(connectionId, userId, gameId)
-        }
-    }
-
-    private fun WebsocketExtendedRouteConfig.onMessage(handler: suspend (io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnection, String) -> Unit) {
-        text {
-            onEach(handler)
         }
     }
 

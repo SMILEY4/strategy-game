@@ -15,9 +15,6 @@ dependencies {
 
     implementation(project(":strategy-game-common-data"))
 
-    val versionKtorWebsocketsExtended: String by project
-    implementation("io.github.smiley4:ktor-websockets-extended:$versionKtorWebsocketsExtended")
-
     val versionMicrometerPrometheus: String by project
     implementation("io.micrometer:micrometer-registry-prometheus:$versionMicrometerPrometheus")
     implementation("org.hdrhistogram:HdrHistogram:2.1.12")

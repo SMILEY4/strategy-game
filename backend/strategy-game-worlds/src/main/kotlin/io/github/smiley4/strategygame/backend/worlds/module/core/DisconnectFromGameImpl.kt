@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.backend.worlds.module.core
 
-import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
@@ -13,7 +12,6 @@ import io.ktor.websocket.*
 internal class DisconnectFromGameImpl(
     private val gamesByUserQuery: GamesByUserQuery,
     private val gameUpdate: GameUpdate,
-    private val websocketConnectionHandler: WebSocketConnectionHandler // todo: remove dependency on websocket
 ) : DisconnectFromGame, Logging {
 
     private val metricId = MetricId.action(DisconnectFromGame::class)
@@ -42,20 +40,10 @@ internal class DisconnectFromGameImpl(
     private suspend fun clearConnections(userId: String, games: Collection<Game>) {
         games.forEach { game ->
             game.players.findByUserId(userId)?.also { player ->
-                player.connectionId?.also { closeConnection(it) }
                 player.connectionId = null
             }
             gameUpdate.execute(game)
         }
-    }
-
-
-    /**
-     * Closes the websocket connection
-     */
-    private suspend fun closeConnection(connectionId: Long) {
-        val connection = websocketConnectionHandler.getConnection(connectionId)
-        connection?.getSession()?.close()
     }
 
 }

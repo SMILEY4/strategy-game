@@ -12,7 +12,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
-object RouteDelete {
+internal object RouteDelete {
 
     fun Route.routeDelete(deleteGame: DeleteGame) = delete("delete/{gameId}", {
         description = "Delete the given game and all associated data."

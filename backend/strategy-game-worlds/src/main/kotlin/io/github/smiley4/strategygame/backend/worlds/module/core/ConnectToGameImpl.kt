@@ -28,29 +28,22 @@ internal class ConnectToGameImpl(
     override suspend fun perform(userId: String, gameId: String, connectionId: Long) {
         return time(metricId) {
             log().info("Connect user $userId ($connectionId) to game $gameId")
-            val game = findGame(gameId)
-            updateConnection(game, userId, connectionId)
+            updateConnectionStatus(gameId, userId, connectionId)
             sendInitialGameStateMessage(gameId, userId, connectionId)
         }
     }
 
 
+
     /**
-     * Find and return the game or throw if the game does not exist
+     * Persist the (new) connection state of the player.
      */
-    private suspend fun findGame(gameId: String): Game {
-        try {
-            return gameQuery.execute(gameId)
+    private suspend fun updateConnectionStatus(gameId: String, userId: String, connectionId: Long) {
+        val game = try {
+            gameQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
             throw ConnectToGame.GameNotFoundError()
         }
-    }
-
-
-    /**
-     * Persist the (new) connection of the player.
-     */
-    private suspend fun updateConnection(game: Game, userId: String, connectionId: Long) {
         val player = game.players.findByUserId(userId)
         if (player != null && player.connectionId == null) {
             player.connectionId = connectionId
@@ -65,20 +58,13 @@ internal class ConnectToGameImpl(
      * Send the initial game-state to the connected player
      * */
     private suspend fun sendInitialGameStateMessage(gameId: String, userId: String, connectionId: Long) {
-        val game = findGameExtended(gameId)
-        val view = playerViewCreator.build(userId, game)
-        producer.sendGameState(connectionId, view)
-    }
-
-    /**
-     * Find and return the complete game or throw if the game does not exist
-     */
-    private suspend fun findGameExtended(gameId: String): GameExtended {
-        try {
-            return gameExtendedQuery.execute(gameId)
+        val game = try {
+            gameExtendedQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
             throw ConnectToGame.GameNotFoundError()
         }
+        val view = playerViewCreator.build(userId, game)
+        producer.sendGameState(connectionId, view)
     }
 
 }

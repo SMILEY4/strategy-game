@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.app.application
 
 import io.github.smiley4.ktorwebsocketsextended.WSExtended
-import io.github.smiley4.ktorwebsocketsextended.auth.WebsocketTicketAuthManager
+import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.ktorwebsocketsextended.session.WebSocketConnectionHandler
 import io.mockk.mockk
 import org.koin.test.KoinTest

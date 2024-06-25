@@ -7,7 +7,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
-object RouteDisconnectAll {
+internal object RouteDisconnectAll {
 
     fun Route.routeDisconnectAll(disconnectAll: DisconnectAllPlayers) = post("disconnect/all", {
         description = "Disconnects all connected users from all games  ."

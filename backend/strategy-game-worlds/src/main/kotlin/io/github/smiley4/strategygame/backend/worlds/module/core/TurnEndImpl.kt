@@ -54,6 +54,7 @@ internal class TurnEndImpl(
     private suspend fun stepGame(game: Game): Map<String, JsonType> {
         val commands = commandsByGameQuery.execute(game.gameId, game.turn)
         return gameStepAction.perform(game.gameId, commands, getConnectedUsers(game))
+        // todo: persist result ?
     }
 
 
