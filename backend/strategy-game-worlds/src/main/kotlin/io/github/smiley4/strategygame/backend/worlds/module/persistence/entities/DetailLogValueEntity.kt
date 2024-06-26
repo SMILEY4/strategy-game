@@ -25,7 +25,7 @@ import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
     JsonSubTypes.Type(value = ResourcesDetailLogValueEntity::class),
     JsonSubTypes.Type(value = TileRefDetailLogValueEntity::class),
 )
-sealed interface DetailLogValueEntity {
+internal sealed interface DetailLogValueEntity {
     companion object {
 
         fun of(serviceModel: DetailLogValue) = when (serviceModel) {
@@ -50,14 +50,14 @@ sealed interface DetailLogValueEntity {
 
 }
 
-class BooleanDetailLogValueEntity(var value: Boolean) : DetailLogValueEntity
+internal class BooleanDetailLogValueEntity(var value: Boolean) : DetailLogValueEntity
 
-class FloatDetailLogValueEntity(var value: Float) : DetailLogValueEntity
+internal class FloatDetailLogValueEntity(var value: Float) : DetailLogValueEntity
 
-class IntDetailLogValueEntity(var value: Int) : DetailLogValueEntity
+internal class IntDetailLogValueEntity(var value: Int) : DetailLogValueEntity
 
-class BuildingTypeDetailLogValueEntity(var value: BuildingType) : DetailLogValueEntity
+internal class BuildingTypeDetailLogValueEntity(var value: BuildingType) : DetailLogValueEntity
 
-class ResourcesDetailLogValueEntity(var value: List<ResourceStackEntity>) : DetailLogValueEntity
+internal class ResourcesDetailLogValueEntity(var value: List<ResourceStackEntity>) : DetailLogValueEntity
 
-class TileRefDetailLogValueEntity(var value: TileRefEntity) : DetailLogValueEntity
+internal class TileRefDetailLogValueEntity(var value: TileRefEntity) : DetailLogValueEntity

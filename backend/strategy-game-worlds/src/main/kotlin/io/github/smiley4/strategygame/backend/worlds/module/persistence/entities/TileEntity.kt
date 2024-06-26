@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Tile
 
 
-class TileEntity(
+internal class TileEntity(
     val gameId: String,
     val position: TilePositionEntity,
     val data: TileDataEntity,

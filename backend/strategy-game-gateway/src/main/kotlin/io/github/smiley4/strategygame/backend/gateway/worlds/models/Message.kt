@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 	JsonSubTypes.Type(value = SubmitTurnMessage::class),
 	JsonSubTypes.Type(value = GameStateMessage::class),
 )
-sealed class Message<T>(
+internal sealed class Message<T>(
 	val type: String,
 	val payload: T,
 	@JsonIgnore var meta: MessageMetadata? = null
@@ -21,7 +21,7 @@ sealed class Message<T>(
 	abstract fun encode(): String
 }
 
-data class MessageMetadata(
+internal data class MessageMetadata(
 	val connectionId: Long,
 	val userId: String,
 	val gameId: String,

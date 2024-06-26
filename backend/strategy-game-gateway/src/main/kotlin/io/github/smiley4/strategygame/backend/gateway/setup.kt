@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.backend.gateway.users.RouteLogin.routeLogi
 import io.github.smiley4.strategygame.backend.gateway.users.RouteRefresh.routeRefresh
 import io.github.smiley4.strategygame.backend.gateway.users.RouteSignup.routeSignup
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
+import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManagerImpl
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.GatewayGameMessageHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.GatewayGameMessageProducer
@@ -37,10 +38,11 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import org.koin.core.module.Module
 import org.koin.ktor.ext.inject
+import kotlin.time.Duration.Companion.hours
 
 fun Module.dependenciesGateway() {
-    single<WebsocketTicketAuthManager> { TODO() }
-    single<WebSocketConnectionHandler> { TODO() }
+    single<WebsocketTicketAuthManager> { WebsocketTicketAuthManagerImpl(12.hours) }
+    single<WebSocketConnectionHandler> { WebSocketConnectionHandler() }
     single<MessageProducer> { WebSocketMessageProducer(get()) }
     single<GameMessageProducer> { GatewayGameMessageProducer(get()) }
     single<GatewayGameMessageHandler> { GatewayGameMessageHandler(get()) }

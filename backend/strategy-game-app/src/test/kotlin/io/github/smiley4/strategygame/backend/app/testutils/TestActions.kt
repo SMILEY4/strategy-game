@@ -49,7 +49,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.core.JoinGameImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.ListGamesImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.RequestConnectionToGameImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.TurnEndImpl
-import io.github.smiley4.strategygame.backend.worlds.module.core.TurnSubmitActionImpl
+import io.github.smiley4.strategygame.backend.worlds.module.core.TurnSubmitImpl
 import io.github.smiley4.strategygame.backend.worlds.external.persistence.CommandsByGameQueryImpl
 import io.github.smiley4.strategygame.backend.worlds.external.persistence.CommandsInsertImpl
 import io.github.smiley4.strategygame.backend.worlds.external.persistence.GameInsertImpl
@@ -66,7 +66,7 @@ data class TestActions(
     val gameRequestConnect: RequestConnectionToGameImpl,
     val gameConnect: ConnectToGameImpl,
     val gamesList: ListGamesImpl,
-    val turnSubmit: TurnSubmitActionImpl,
+    val turnSubmit: TurnSubmitImpl,
     val turnEnd: TurnEndImpl,
     val gameEventSystem: EventSystem,
 ) {
@@ -175,7 +175,7 @@ data class TestActions(
             )
 
         private fun turnSubmitAction(database: ArangoDatabase, eventSystem: EventSystem) =
-            TurnSubmitActionImpl(
+            TurnSubmitImpl(
                 TurnEndImpl(
                     CommandsByGameQueryImpl(database),
                     GameQueryImpl(database),

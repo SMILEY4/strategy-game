@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 
-class GameExtendedPOVBuilder(private val gameConfig: GameConfig) {
+internal class  GameExtendedPOVBuilder(private val gameConfig: GameConfig) {
 
     private val metricId = MetricId.action(GameExtendedPOVBuilder::class)
 

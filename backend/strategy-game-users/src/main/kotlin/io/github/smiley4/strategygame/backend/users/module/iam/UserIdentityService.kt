@@ -8,37 +8,13 @@ import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 internal interface UserIdentityService {
 
-    sealed class UserIdentityError : Exception()
-
-    /**
-     * The user already exists
-     */
-    class UserAlreadyExistsError : UserIdentityError()
-
-    /**
-     * The email or password is not valid
-     */
-    class InvalidEmailOrPasswordError : UserIdentityError()
-
-    /**
-     * the confirmation code could not be delivered (e.g. via email)
-     */
-    class CodeDeliveryError : UserIdentityError()
-
-    /**
-     * The given credentials are not valid, i.e. the user is not authorized
-     */
-    class NotAuthorizedError : UserIdentityError()
-
-    /**
-     * The user has not confirmed the account yet
-     */
-    class UserNotConfirmedError : UserIdentityError()
-
-    /**
-     * No user with the given data exists
-     */
-    class UserNotFoundError : UserIdentityError()
+    sealed class UserIdentityError(message: String, cause: Throwable? = null) : Exception(message, cause)
+    class UserAlreadyExistsError(cause: Throwable? = null) : UserIdentityError("The user already exists", cause)
+    class InvalidEmailOrPasswordError(cause: Throwable? = null) : UserIdentityError("The email or password is not valid", cause)
+    class CodeDeliveryError(cause: Throwable? = null) : UserIdentityError("The confirmation code could not be delivered", cause)
+    class NotAuthorizedError(cause: Throwable? = null) : UserIdentityError("The given credentials are not valid, i.e. the user is not authorized", cause)
+    class UserNotConfirmedError(cause: Throwable? = null) : UserIdentityError("The user has not confirmed the account yet", cause)
+    class UserNotFoundError(cause: Throwable? = null) : UserIdentityError("No user with the given data exists", cause)
 
 
     companion object {

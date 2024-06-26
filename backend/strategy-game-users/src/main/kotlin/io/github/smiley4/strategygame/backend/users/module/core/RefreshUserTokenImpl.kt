@@ -12,9 +12,9 @@ internal class RefreshUserTokenImpl(private val userIdentity: UserIdentityServic
             return userIdentity.refreshAuthentication(refreshToken)
         } catch (e: UserIdentityService.UserIdentityError) {
             when (e) {
-                is UserIdentityService.NotAuthorizedError -> throw RefreshUserToken.NotAuthorizedError()
-                is UserIdentityService.UserNotConfirmedError -> throw RefreshUserToken.UserNotConfirmedError()
-                is UserIdentityService.UserNotFoundError -> throw RefreshUserToken.UserNotFoundError()
+                is UserIdentityService.NotAuthorizedError -> throw RefreshUserToken.NotAuthorizedError(e)
+                is UserIdentityService.UserNotConfirmedError -> throw RefreshUserToken.UserNotConfirmedError(e)
+                is UserIdentityService.UserNotFoundError -> throw RefreshUserToken.UserNotFoundError(e)
                 else -> throw Exception("Token could not be refreshed", e)
             }
         }

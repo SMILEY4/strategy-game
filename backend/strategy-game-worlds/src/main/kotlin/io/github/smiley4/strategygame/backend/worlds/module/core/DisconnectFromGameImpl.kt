@@ -7,7 +7,6 @@ import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectFromGame
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GamesByUserQuery
-import io.ktor.websocket.*
 
 internal class DisconnectFromGameImpl(
     private val gamesByUserQuery: GamesByUserQuery,

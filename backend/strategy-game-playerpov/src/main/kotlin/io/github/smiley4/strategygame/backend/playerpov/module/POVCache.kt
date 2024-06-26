@@ -11,7 +11,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 
 
-class POVCache(
+internal class  POVCache(
     private val game: GameExtended,
     private val gameConfig: GameConfig,
     private val povCountryId: String

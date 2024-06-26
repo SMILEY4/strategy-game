@@ -11,7 +11,7 @@ import io.github.smiley4.strategygame.backend.commondata.TileInfluence
 import io.github.smiley4.strategygame.backend.commondata.TileObject
 
 
-class TilePOVBuilder(
+internal class  TilePOVBuilder(
     private val povCache: POVCache,
     private val countryId: String,
 ) {

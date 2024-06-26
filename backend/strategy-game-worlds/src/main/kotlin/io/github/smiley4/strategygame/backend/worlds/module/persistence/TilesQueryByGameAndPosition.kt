@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.TileEntity
 
 
-class TilesQueryByGameAndPosition(private val database: ArangoDatabase) {
+internal class TilesQueryByGameAndPosition(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(TilesQueryByGameAndPosition::class)
 

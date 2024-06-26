@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 import io.github.smiley4.strategygame.backend.commondata.DetailLogEntry
 
 
-data class DetailLogEntryEntity<T : Enum<*>>(
+internal data class DetailLogEntryEntity<T : Enum<*>>(
     val id: T,
     val data: Map<String, DetailLogValueEntity>
 ) {

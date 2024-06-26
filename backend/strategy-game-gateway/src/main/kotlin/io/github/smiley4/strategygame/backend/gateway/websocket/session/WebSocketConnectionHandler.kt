@@ -7,7 +7,7 @@ import java.util.Collections
 /**
  * Handler for active websocket-connections
  */
-class WebSocketConnectionHandler {
+internal class WebSocketConnectionHandler {
 
     private val logger = KotlinLogging.logger(WebSocketConnectionHandler::class.java.name)
     private val connections = Collections.synchronizedMap(HashMap<Long, WebSocketConnection>())

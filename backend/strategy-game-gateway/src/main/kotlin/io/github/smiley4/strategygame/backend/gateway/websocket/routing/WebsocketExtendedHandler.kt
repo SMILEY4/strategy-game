@@ -14,7 +14,7 @@ import io.ktor.websocket.readBytes
 import io.ktor.websocket.readText
 import mu.KotlinLogging
 
-class WebsocketExtendedHandler(
+internal class WebsocketExtendedHandler(
     private val config: WebsocketExtendedRouteConfig,
     private val connectionHandler: WebSocketConnectionHandler
 ) {

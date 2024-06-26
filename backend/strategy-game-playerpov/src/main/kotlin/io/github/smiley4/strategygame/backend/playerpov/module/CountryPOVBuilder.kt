@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 
-class CountryPOVBuilder(
+internal class  CountryPOVBuilder(
     private val povCache: POVCache,
     private val povCountryId: String,
     private val game: GameExtended

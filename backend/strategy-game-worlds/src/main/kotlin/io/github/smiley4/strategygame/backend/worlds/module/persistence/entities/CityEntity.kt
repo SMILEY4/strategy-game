@@ -12,7 +12,7 @@ import io.github.smiley4.strategygame.backend.commondata.DetailLog
 import io.github.smiley4.strategygame.backend.commondata.SettlementTier
 
 
-class CityEntity(
+internal class CityEntity(
     val gameId: String,
     val countryId: String,
     val tile: TileRefEntity,

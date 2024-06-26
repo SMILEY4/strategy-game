@@ -17,21 +17,16 @@ internal class ListGamesImpl(
     override suspend fun perform(userId: String): List<GameSessionData> {
         return time(metricId) {
             log().info("Listing all game-ids of user $userId")
-            getGames(userId)
+            gamesByUserQuery.execute(userId).map {
+                GameSessionData(
+                    id = it.gameId,
+                    name = it.name,
+                    creationTimestamp = it.creationTimestamp,
+                    players = it.players.size,
+                    currentTurn = it.turn
+                )
+            }
         }
-    }
-
-    /**
-     * Find all games with the given user as a player
-     */
-    private suspend fun getGames(userId: String): List<GameSessionData> {
-        return gamesByUserQuery.execute(userId).map { GameSessionData(
-            id = it.gameId,
-            name = it.name,
-            creationTimestamp = it.creationTimestamp,
-            players = it.players.size,
-            currentTurn = it.turn
-        ) }
     }
 
 }

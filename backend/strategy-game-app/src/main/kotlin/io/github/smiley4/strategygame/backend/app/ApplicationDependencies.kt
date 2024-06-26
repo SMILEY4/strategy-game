@@ -88,7 +88,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.core.JoinGameImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.ListGamesImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.RequestConnectionToGameImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.TurnEndImpl
-import io.github.smiley4.strategygame.backend.worlds.module.core.TurnSubmitActionImpl
+import io.github.smiley4.strategygame.backend.worlds.module.core.TurnSubmitImpl
 import io.github.smiley4.strategygame.backend.worlds.external.message.handler.MessageHandler
 import io.github.smiley4.strategygame.backend.worlds.external.message.producer.GameMessageProducer
 import io.github.smiley4.strategygame.backend.worlds.external.message.producer.GameMessageProducerImpl
@@ -190,7 +190,7 @@ val applicationDependencies = module {
     single<JoinGame> { JoinGameImpl(get(), get(), get()) }
     single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get()) }
-    single<TurnSubmit> { TurnSubmitActionImpl(get(), get(), get(), get()) }
+    single<TurnSubmit> { TurnSubmitImpl(get(), get(), get(), get()) }
     single<MessageHandler> { MessageHandler(get()) }
     single<GameStep> { GameStepImpl(get(), get(), get(), get()) }
     single<DisconnectAllPlayers> { DisconnectAllPlayersImpl(get(), get()) }

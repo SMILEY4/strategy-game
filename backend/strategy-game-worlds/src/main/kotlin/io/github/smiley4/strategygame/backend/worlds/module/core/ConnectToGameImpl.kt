@@ -4,8 +4,6 @@ import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
-import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.playerpov.edge.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.worlds.edge.ConnectToGame
 import io.github.smiley4.strategygame.backend.worlds.edge.GameMessageProducer
@@ -33,8 +31,6 @@ internal class ConnectToGameImpl(
         }
     }
 
-
-
     /**
      * Persist the (new) connection state of the player.
      */
@@ -53,7 +49,6 @@ internal class ConnectToGameImpl(
         }
     }
 
-
     /**
      * Send the initial game-state to the connected player
      * */
@@ -61,7 +56,7 @@ internal class ConnectToGameImpl(
         val game = try {
             gameExtendedQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
-            throw ConnectToGame.GameNotFoundError()
+            throw ConnectToGame.GameNotFoundError(e)
         }
         val view = playerViewCreator.build(userId, game)
         producer.sendGameState(connectionId, view)

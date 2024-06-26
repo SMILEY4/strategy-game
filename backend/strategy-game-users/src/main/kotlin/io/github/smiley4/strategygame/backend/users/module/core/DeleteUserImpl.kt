@@ -11,9 +11,9 @@ internal class DeleteUserImpl(private val userIdentity: UserIdentityService): De
             userIdentity.deleteUser(email, password)
         } catch (e: UserIdentityService.UserIdentityError) {
             when (e) {
-                is UserIdentityService.NotAuthorizedError -> throw DeleteUser.NotAuthorizedError()
-                is UserIdentityService.UserNotConfirmedError -> throw DeleteUser.UserNotConfirmedError()
-                is UserIdentityService.UserNotFoundError -> throw DeleteUser.UserNotFoundError()
+                is UserIdentityService.NotAuthorizedError -> throw DeleteUser.NotAuthorizedError(e)
+                is UserIdentityService.UserNotConfirmedError -> throw DeleteUser.UserNotConfirmedError(e)
+                is UserIdentityService.UserNotFoundError -> throw DeleteUser.UserNotFoundError(e)
                 else -> throw Exception("Could not delete user", e)
             }
         }

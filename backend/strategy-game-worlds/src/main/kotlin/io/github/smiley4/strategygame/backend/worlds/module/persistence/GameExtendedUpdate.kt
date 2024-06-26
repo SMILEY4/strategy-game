@@ -20,7 +20,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.RouteEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.TileEntity
 
-class GameExtendedUpdate(private val database: ArangoDatabase) {
+internal class GameExtendedUpdate(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GameExtendedUpdate::class)
 

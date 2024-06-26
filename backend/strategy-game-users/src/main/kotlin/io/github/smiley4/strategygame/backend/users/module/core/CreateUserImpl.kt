@@ -11,9 +11,9 @@ internal class CreateUserImpl(private val userIdentity: UserIdentityService): Cr
             userIdentity.createUser(email, password, username)
         } catch (e: UserIdentityService.UserIdentityError) {
             when (e) {
-                is UserIdentityService.CodeDeliveryError -> throw CreateUser.CodeDeliveryError()
-                is UserIdentityService.InvalidEmailOrPasswordError -> throw CreateUser.InvalidEmailOrPasswordError()
-                is UserIdentityService.UserAlreadyExistsError -> throw CreateUser.UserAlreadyExistsError()
+                is UserIdentityService.CodeDeliveryError -> throw CreateUser.CodeDeliveryError(e)
+                is UserIdentityService.InvalidEmailOrPasswordError -> throw CreateUser.InvalidEmailOrPasswordError(e)
+                is UserIdentityService.UserAlreadyExistsError -> throw CreateUser.UserAlreadyExistsError(e)
                 else -> throw Exception("Could not create user", e)
             }
         }

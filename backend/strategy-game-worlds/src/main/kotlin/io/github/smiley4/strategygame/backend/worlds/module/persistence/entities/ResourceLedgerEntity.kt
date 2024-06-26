@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.ResourceLedgerEntryEntity.Companion.asServiceModel
 
 
-data class ResourceLedgerEntity(
+internal data class ResourceLedgerEntity(
     val entries: List<ResourceLedgerEntryEntity>
 ) {
 

@@ -100,15 +100,15 @@ group handle websocket message
         db --> worlds
         deactivate db
 
-        worlds -> playerpov: build pov state for player
+        worlds -> playerpov: build pov state for each player
         activate playerpov
         playerpov --> worlds
         deactivate playerpov
 
-        worlds -> gateway: send pov game state message
+        worlds -> gateway: send pov state to each player
         deactivate worlds
 
-        gateway -> client: send pov game state message
+        gateway -> client: send pov state to each player
 
     end
 

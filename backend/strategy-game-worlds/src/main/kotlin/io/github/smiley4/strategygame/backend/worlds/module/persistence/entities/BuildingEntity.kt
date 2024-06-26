@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commondata.Building
 import io.github.smiley4.strategygame.backend.commondata.BuildingDetailType
 
 
-class BuildingEntity(
+internal class BuildingEntity(
     val type: BuildingType,
     val tile: TileRefEntity?,
     val active: Boolean,

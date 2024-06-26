@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 
 
 @JsonTypeName(TurnResultMessage.TYPE)
-class TurnResultMessage(payload: TurnResultPayload) : Message<TurnResultMessage.Companion.TurnResultPayload>(TYPE, payload) {
+internal class TurnResultMessage(payload: TurnResultPayload) : Message<TurnResultMessage.Companion.TurnResultPayload>(TYPE, payload) {
 	companion object {
 
 		const val TYPE = "turn-result"

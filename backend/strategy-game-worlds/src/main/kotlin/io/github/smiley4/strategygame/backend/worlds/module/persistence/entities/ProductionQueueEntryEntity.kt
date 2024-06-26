@@ -18,7 +18,7 @@ import io.github.smiley4.strategygame.backend.commondata.SettlerProductionQueueE
     JsonSubTypes.Type(value = BuildingProductionQueueEntryEntity::class),
     JsonSubTypes.Type(value = SettlerProductionQueueEntryEntity::class),
 )
-sealed class ProductionQueueEntryEntity(
+internal sealed class ProductionQueueEntryEntity(
     val type: String,
     val entryId: String,
     val collectedResources: List<ResourceStackEntity>,
@@ -56,7 +56,7 @@ sealed class ProductionQueueEntryEntity(
 
 
 @JsonTypeName(BuildingProductionQueueEntryEntity.TYPE)
-class BuildingProductionQueueEntryEntity(
+internal class BuildingProductionQueueEntryEntity(
     entryId: String,
     collectedResources: List<ResourceStackEntity>,
     val buildingType: BuildingType
@@ -68,7 +68,7 @@ class BuildingProductionQueueEntryEntity(
 
 
 @JsonTypeName(SettlerProductionQueueEntryEntity.TYPE)
-class SettlerProductionQueueEntryEntity(
+internal class SettlerProductionQueueEntryEntity(
     entryId: String,
     collectedResources: List<ResourceStackEntity>,
 ) : ProductionQueueEntryEntity(TYPE, entryId, collectedResources) {

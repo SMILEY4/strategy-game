@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.TileEntity
 
 
-class TilesInsert(private val database: ArangoDatabase) {
+internal class TilesInsert(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(TilesInsert::class)
 

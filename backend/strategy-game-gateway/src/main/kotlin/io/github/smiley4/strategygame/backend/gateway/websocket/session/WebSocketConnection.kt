@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong
  * A single active websocket connection
  * @param session the ktor websocket session
  */
-class WebSocketConnection(
+internal class WebSocketConnection(
     private val session: DefaultWebSocketSession,
     private val initialData: Map<String, Any?>
 ) {

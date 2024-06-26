@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
 import io.github.smiley4.strategygame.backend.commondata.Province
 
 
-class ProvincePOVBuilder(
+internal class  ProvincePOVBuilder(
     private val povCache: POVCache,
     private val detailLogBuilder: DetailLogPOVBuilder,
     private val povCountryId: String,

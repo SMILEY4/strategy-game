@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceStack
 import io.github.smiley4.strategygame.backend.commondata.ResourceType
 
 
-class ResourceStackEntity(
+internal class ResourceStackEntity(
     val type: ResourceType,
     val amount: Float
 ) {

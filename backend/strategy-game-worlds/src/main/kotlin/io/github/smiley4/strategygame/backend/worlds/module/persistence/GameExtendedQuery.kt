@@ -22,7 +22,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.RouteEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.TileEntity
 
-class GameExtendedQuery(private val database: ArangoDatabase) {
+internal class GameExtendedQuery(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GameExtendedQuery::class)
 
@@ -41,7 +41,7 @@ class GameExtendedQuery(private val database: ArangoDatabase) {
                         gameId = gameId,
                         turn = game.turn
                     ),
-                    countries = countries,
+                    countries = countries.tracking(),
                     tiles = TileContainer(tiles),
                     cities = cities.tracking(),
                     provinces = provinces.tracking(),

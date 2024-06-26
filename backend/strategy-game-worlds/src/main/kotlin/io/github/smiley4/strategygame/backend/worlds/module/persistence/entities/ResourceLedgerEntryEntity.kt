@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerDetailTyp
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerEntry
 
 
-data class ResourceLedgerEntryEntity(
+internal data class ResourceLedgerEntryEntity(
     val resourceType: ResourceType,
     val produced: Float,
     val consumed: Float,

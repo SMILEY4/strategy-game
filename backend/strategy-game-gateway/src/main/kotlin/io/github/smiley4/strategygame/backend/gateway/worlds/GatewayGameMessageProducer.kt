@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.gateway.websocket.messages.WebSock
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.GameStateMessage
 import io.github.smiley4.strategygame.backend.worlds.edge.GameMessageProducer
 
-class GatewayGameMessageProducer(private val producer: WebSocketMessageProducer) : GameMessageProducer {
+internal class GatewayGameMessageProducer(private val producer: WebSocketMessageProducer) : GameMessageProducer {
 
     override suspend fun sendGameState(connectionId: Long, gameState: JsonType) {
         producer.sendToSingle(

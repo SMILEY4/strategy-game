@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 import io.github.smiley4.strategygame.backend.commondata.TileInfluence
 
 
-class TileInfluenceEntity(
+internal class TileInfluenceEntity(
     val countryId: String,
     val provinceId: String,
     val cityId: String,

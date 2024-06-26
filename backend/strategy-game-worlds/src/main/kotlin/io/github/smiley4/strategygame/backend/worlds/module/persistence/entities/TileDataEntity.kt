@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.TileData
 
 
-class TileDataEntity(
+internal class TileDataEntity(
     val terrainType: TerrainType,
     val resourceType: TerrainResourceType,
 ) {

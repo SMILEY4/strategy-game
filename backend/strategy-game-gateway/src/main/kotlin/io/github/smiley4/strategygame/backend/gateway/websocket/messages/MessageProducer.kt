@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.gateway.websocket.messages
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 
 
-interface MessageProducer {
+internal interface MessageProducer {
 
 	suspend fun <T> sendToAll(message: Message<T>)
 

@@ -12,7 +12,7 @@ import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.SettlerProductionQueueEntry
 
 
-class CityPOVBuilder(
+internal class CityPOVBuilder(
     private val povCache: POVCache,
     private val detailLogDTOBuilder: DetailLogPOVBuilder,
     private val povCountryId: String,

@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 /**
  * A message-producer sending messages via a websocket
  */
-class WebSocketMessageProducer(private val connectionHandler: WebSocketConnectionHandler) : MessageProducer, Logging {
+internal class WebSocketMessageProducer(private val connectionHandler: WebSocketConnectionHandler) : MessageProducer, Logging {
 
     override suspend fun <T> sendToAll(message: Message<T>) {
         log().info("Sending message '${message.type}' to all")

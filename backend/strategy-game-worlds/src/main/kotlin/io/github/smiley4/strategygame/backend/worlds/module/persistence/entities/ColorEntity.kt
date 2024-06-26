@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 import io.github.smiley4.strategygame.backend.common.utils.RGBColor
 
 
-data class ColorEntity(
+internal data class ColorEntity(
     val red: Int,
     val green: Int,
     val blue: Int

@@ -5,7 +5,6 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.PlayerContainer
 import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
 import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
@@ -24,18 +23,18 @@ internal class CreateGameImpl(
     override suspend fun perform(name: String, seed: Int?): String {
         return time(metricId) {
             log().info("Creating new game with seed $seed")
-            val game = createEmptyGame(name)
-            val gameExtended = initialize(game, seed)
-            saveGameExtended(gameExtended)
+            val game = createEmpty(name)
+            initialize(game, seed)
             log().info("Created new game with id ${game.gameId}")
             game.gameId
         }
     }
 
+
     /**
      * Build and persist an empty game
      */
-    private suspend fun createEmptyGame(name: String): Game {
+    private suspend fun createEmpty(name: String): Game {
         return Game(
             gameId = DbId.PLACEHOLDER,
             name = name,
@@ -48,22 +47,19 @@ internal class CreateGameImpl(
         }
     }
 
-    /**
-     * Initialize and populate the world
-     */
-    private suspend fun initialize(game: Game, worldSeed: Int?): GameExtended {
-        try {
-            return initializeWorld.perform(game, worldSeed)
-        } catch (e: Exception) {
-            throw CreateGame.WorldInitError()
-        }
-    }
 
     /**
-     * Save the given game and all related data
+     * Initialize, populate and persist the world
      */
-    private suspend fun saveGameExtended(game: GameExtended) {
-        gameExtendedUpdate.execute(game)
+    private suspend fun initialize(game: Game, worldSeed: Int?) {
+        val gameExtended = try {
+            initializeWorld.perform(game, worldSeed)
+        } catch (e: InitializeWorld.InitializeWorldError) {
+            when (e) {
+                is InitializeWorld.GameNotFoundError -> throw CreateGame.WorldInitError(e)
+            }
+        }
+        gameExtendedUpdate.execute(gameExtended)
     }
 
 }

@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 import io.github.smiley4.strategygame.backend.commondata.TileRef
 
 
-class TileRefEntity(
+internal class TileRefEntity(
     val tileId: String,
     val q: Int,
     val r: Int

@@ -5,11 +5,10 @@ package io.github.smiley4.strategygame.backend.worlds.edge
  */
 interface JoinGame {
 
-    sealed class GameJoinActionErrors : Exception()
-
-    class UserAlreadyJoinedError : GameJoinActionErrors()
-
-    class GameNotFoundError : GameJoinActionErrors()
+    sealed class GameJoinActionErrors(message: String, cause: Throwable? = null) : Exception(message, cause)
+    class UserAlreadyJoinedError(cause: Throwable? = null) : GameJoinActionErrors("The user is already a player in the given game", cause)
+    class GameNotFoundError(cause: Throwable? = null) : GameJoinActionErrors("No game with the given id was found", cause)
+    class InitializePlayerError(cause: Throwable? = null) : GameJoinActionErrors("Failed to initialize the new player", cause)
 
 
     /**

@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Route
 
 
-class RouteEntity(
+internal class RouteEntity(
     val gameId: String,
     val cityIdA: String,
     val cityIdB: String,

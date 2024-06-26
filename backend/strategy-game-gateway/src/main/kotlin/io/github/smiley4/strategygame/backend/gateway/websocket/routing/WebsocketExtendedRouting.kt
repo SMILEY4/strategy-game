@@ -19,7 +19,7 @@ import java.util.Collections
 /**
  * Creates a route providing tickets for authenticating websocket-connections.
  */
-fun Route.webSocketTicket(ticketManager: WebsocketTicketAuthManager, ticketDataBuilder: (call: ApplicationCall) -> Map<String, Any?>) {
+internal fun Route.webSocketTicket(ticketManager: WebsocketTicketAuthManager, ticketDataBuilder: (call: ApplicationCall) -> Map<String, Any?>) {
     get {
         val additionalData = ticketDataBuilder(call)
         call.respondText(ticketManager.generateTicket(additionalData))
@@ -29,7 +29,7 @@ fun Route.webSocketTicket(ticketManager: WebsocketTicketAuthManager, ticketDataB
 /**
  * See [webSocket]
  */
-fun Route.webSocketExt(
+internal fun Route.webSocketExt(
     connectionHandler: WebSocketConnectionHandler,
     ticketManager: WebsocketTicketAuthManager? = null,
     protocol: String? = null,
@@ -54,7 +54,7 @@ fun Route.webSocketExt(
 /**
  * See [webSocket]
  */
-fun Route.webSocketExt(
+internal fun Route.webSocketExt(
     path: String,
     connectionHandler: WebSocketConnectionHandler,
     ticketManager: WebsocketTicketAuthManager? = null,

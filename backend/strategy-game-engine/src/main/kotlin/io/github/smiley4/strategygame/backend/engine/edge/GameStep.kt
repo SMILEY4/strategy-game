@@ -1,25 +1,17 @@
 package io.github.smiley4.strategygame.backend.engine.edge
 
-import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.commondata.Command
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 
 interface GameStep {
 
-    sealed class GameStepError : Exception()
-
-
-    /**
-     * The requested game could not be found
-     */
-    class GameNotFoundError : GameStepError()
-
+    sealed class GameStepError(message: String, cause: Throwable? = null) : Exception(message, cause)
 
     /**
      * Performs a single game-step
-     * @return the game state from the perspective of the participating players
      * @throws GameStepError
-     * @throws POVBuilder.PlayerViewCreatorError
      */
-    suspend fun perform(gameId: String, commands: Collection<Command<*>>, userIds: Collection<String>): Map<String, JsonType>
+    suspend fun perform(game: GameExtended, commands: Collection<Command<*>>)
+
 }

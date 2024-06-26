@@ -5,9 +5,10 @@ import io.github.smiley4.strategygame.backend.commondata.CommandData
 
 interface TurnSubmit {
 
-    sealed class TurnSubmitActionError : Exception()
-    class NotParticipantError : TurnSubmitActionError()
-
+    sealed class TurnSubmitActionError(message: String, cause: Throwable? = null) : Exception(message, cause)
+    class NotParticipantError(cause: Throwable? = null) : TurnSubmitActionError("The given user is not a player in the game", cause)
+    class GameNotFoundError(cause: Throwable? = null) : TurnSubmitActionError("No game with the given id could be found", cause)
+    class EndTurnError(cause: Throwable? = null) : TurnSubmitActionError("Failed to properly end the turn", cause)
 
     /**
      * Submits the given commands of the given player for the given game

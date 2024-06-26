@@ -37,6 +37,14 @@ internal object RouteCreate {
         detail = "The user has already joined the game."
     )
 
+    private object InitializePlayerErrorResponse : ErrorResponse(
+        status = 500,
+        title = "Initialize player failed",
+        errorCode = "INITIALIZE_PLAYER_ERROR",
+        detail = "Failed to initialize the new player."
+    )
+
+
     fun Route.routeCreate(createGame: CreateGame, joinGame: JoinGame) = post("create", {
         description = "Create and join a new game. Other players can join this game via the returned game-id"
         request {
@@ -77,6 +85,7 @@ internal object RouteCreate {
                 when (e) {
                     is JoinGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
                     is JoinGame.UserAlreadyJoinedError -> call.respond(UserAlreadyPlayerResponse)
+                    is JoinGame.InitializePlayerError -> call.respond(InitializePlayerErrorResponse)
                 }
             }
         }

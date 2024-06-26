@@ -141,10 +141,10 @@ internal class AwsCognitoService(
         } catch (e: Exception) {
             log().info("Failed to create user $email: ${e.message}", e)
             when (e) {
-                is UsernameExistsException -> throw UserIdentityService.UserAlreadyExistsError()
-                is InvalidParameterException -> throw UserIdentityService.InvalidEmailOrPasswordError()
-                is InvalidPasswordException -> throw UserIdentityService.InvalidEmailOrPasswordError()
-                is CodeDeliveryFailureException -> throw UserIdentityService.CodeDeliveryError()
+                is UsernameExistsException -> throw UserIdentityService.UserAlreadyExistsError(e)
+                is InvalidParameterException -> throw UserIdentityService.InvalidEmailOrPasswordError(e)
+                is InvalidPasswordException -> throw UserIdentityService.InvalidEmailOrPasswordError(e)
+                is CodeDeliveryFailureException -> throw UserIdentityService.CodeDeliveryError(e)
                 else -> throw Exception("Could not create user.", e)
             }
         }
@@ -174,9 +174,9 @@ internal class AwsCognitoService(
         } catch (e: Exception) {
             log().info("Failed to authenticate user $email: ${e.message}", e)
             when (e) {
-                is NotAuthorizedException -> throw UserIdentityService.NotAuthorizedError()
-                is UserNotConfirmedException -> throw UserIdentityService.UserNotConfirmedError()
-                is UserNotFoundException -> throw UserIdentityService.UserNotFoundError()
+                is NotAuthorizedException -> throw UserIdentityService.NotAuthorizedError(e)
+                is UserNotConfirmedException -> throw UserIdentityService.UserNotConfirmedError(e)
+                is UserNotFoundException -> throw UserIdentityService.UserNotFoundError(e)
                 else -> throw Exception("Could not authenticate user.", e)
             }
         }
@@ -200,9 +200,9 @@ internal class AwsCognitoService(
         } catch (e: Exception) {
             log().info("Failed to refresh user-authentication: ${e.message}", e)
             when (e) {
-                is NotAuthorizedException -> throw UserIdentityService.NotAuthorizedError()
-                is UserNotConfirmedException -> throw UserIdentityService.UserNotConfirmedError()
-                is UserNotFoundException -> throw UserIdentityService.UserNotFoundError()
+                is NotAuthorizedException -> throw UserIdentityService.NotAuthorizedError(e)
+                is UserNotConfirmedException -> throw UserIdentityService.UserNotConfirmedError(e)
+                is UserNotFoundException -> throw UserIdentityService.UserNotFoundError(e)
                 else -> throw Exception("Could not refresh auth-token.", e)
             }
         }

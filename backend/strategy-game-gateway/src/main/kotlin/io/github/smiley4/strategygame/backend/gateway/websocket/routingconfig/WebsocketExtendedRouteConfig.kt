@@ -4,18 +4,18 @@ import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocke
 import io.ktor.server.application.ApplicationCall
 
 
-typealias TicketProvider = (call: ApplicationCall) -> String?
+internal typealias TicketProvider = (call: ApplicationCall) -> String?
 
-typealias OnConnectHandler = suspend (call: ApplicationCall, data: MutableMap<String, Any?>) -> Unit
+internal typealias OnConnectHandler = suspend (call: ApplicationCall, data: MutableMap<String, Any?>) -> Unit
 
-typealias OnOpenHandler = suspend (connection: WebSocketConnection) -> Unit
+internal typealias OnOpenHandler = suspend (connection: WebSocketConnection) -> Unit
 
-typealias OnCloseHandler = suspend (connection: WebSocketConnection) -> Unit
+internal typealias OnCloseHandler = suspend (connection: WebSocketConnection) -> Unit
 
 /**
  * Configuration for a websocket route
  */
-class WebsocketExtendedRouteConfig {
+internal class WebsocketExtendedRouteConfig {
 
     var tickerProvider: TicketProvider = { null }
 

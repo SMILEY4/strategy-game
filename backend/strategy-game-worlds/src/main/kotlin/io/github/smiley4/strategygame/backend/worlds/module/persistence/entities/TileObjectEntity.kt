@@ -18,7 +18,7 @@ import io.github.smiley4.strategygame.backend.commondata.TileObject
     JsonSubTypes.Type(value = ScoutTileObjectEntity::class),
     JsonSubTypes.Type(value = CityTileObjectEntity::class),
 )
-sealed class TileObjectEntity(
+internal sealed class TileObjectEntity(
     val type: String,
     val countryId: String
 ) {
@@ -63,7 +63,7 @@ sealed class TileObjectEntity(
 
 
 @JsonTypeName(MarkerTileObjectEntity.TYPE)
-class MarkerTileObjectEntity(
+internal class MarkerTileObjectEntity(
     countryId: String,
     val label: String
 ) : TileObjectEntity(TYPE, countryId) {
@@ -73,7 +73,7 @@ class MarkerTileObjectEntity(
 }
 
 @JsonTypeName(ScoutTileObjectEntity.TYPE)
-class ScoutTileObjectEntity(
+internal class ScoutTileObjectEntity(
     countryId: String,
     val creationTurn: Int,
 ) : TileObjectEntity(TYPE, countryId) {
@@ -84,7 +84,7 @@ class ScoutTileObjectEntity(
 
 
 @JsonTypeName(CityTileObjectEntity.TYPE)
-class CityTileObjectEntity(
+internal class CityTileObjectEntity(
     countryId: String,
     val cityId: String,
 ) : TileObjectEntity(TYPE, countryId) {

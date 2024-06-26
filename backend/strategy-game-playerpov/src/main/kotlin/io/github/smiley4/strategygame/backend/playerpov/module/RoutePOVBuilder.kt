@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
 import io.github.smiley4.strategygame.backend.commondata.Route
 
 
-class RoutePOVBuilder(
+internal class  RoutePOVBuilder(
     private val povCache: POVCache,
 ) {
 

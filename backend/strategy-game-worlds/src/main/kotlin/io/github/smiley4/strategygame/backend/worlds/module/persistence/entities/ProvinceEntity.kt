@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.ResourceLedgerEntity.Companion.asServiceModel
 
 
-class ProvinceEntity(
+internal class ProvinceEntity(
     val gameId: String,
     val countryId: String,
     val cityIds: List<String>,

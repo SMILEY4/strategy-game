@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 
 
-class GameExistsQuery(val database: ArangoDatabase) {
+internal class GameExistsQuery(val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GameExistsQuery::class)
 

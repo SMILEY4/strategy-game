@@ -12,7 +12,7 @@ import io.github.smiley4.strategygame.backend.commondata.ResourcesDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
 
 
-class DetailLogPOVBuilder {
+internal class  DetailLogPOVBuilder {
 
     fun build(detailLog: DetailLog<*>): List<JsonType> {
         return detailLog.getDetails().map { detail -> build(detail) }

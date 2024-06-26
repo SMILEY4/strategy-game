@@ -3,10 +3,10 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
 import io.github.smiley4.strategygame.backend.worlds.edge.TurnEnd
@@ -16,7 +16,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameQuer
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
 
 
-internal class TurnSubmitActionImpl(
+internal class TurnSubmitImpl(
     private val actionEndTurn: TurnEnd,
     private val gameQuery: GameQuery,
     private val gameUpdate: GameUpdate,
@@ -43,7 +43,7 @@ internal class TurnSubmitActionImpl(
         try {
             return gameQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
-            throw Exception("Could not get game $gameId")
+            throw TurnSubmit.GameNotFoundError(e)
         }
     }
 
@@ -65,16 +65,8 @@ internal class TurnSubmitActionImpl(
     /**
      * save the given commands at the given game
      */
-    private suspend fun saveCommands(game: Game, userId: String, commands: Collection<CommandData>) {
-        commandsInsert.execute(createCommands(game, userId, commands))
-    }
-
-
-    /**
-     * Create commands from the given command-data
-     */
-    private fun createCommands(game: Game, userId: String, commands: Collection<CommandData>): List<Command<*>> {
-        return commands.map { data ->
+    private suspend fun saveCommands(game: Game, userId: String, commandData: Collection<CommandData>) {
+        val commands = commandData.map { data ->
             Command(
                 commandId = DbId.PLACEHOLDER,
                 userId = userId,
@@ -83,6 +75,7 @@ internal class TurnSubmitActionImpl(
                 data = data
             )
         }
+        commandsInsert.execute(commands)
     }
 
 
@@ -92,7 +85,14 @@ internal class TurnSubmitActionImpl(
     private suspend fun maybeEndTurn(game: Game) {
         val countPlaying = game.players.count { it.state == PlayerState.PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
-            actionEndTurn.perform(game.gameId)
+            try {
+                actionEndTurn.perform(game.gameId)
+            } catch (e: TurnEnd.TurnEndError) {
+                when (e) {
+                    is TurnEnd.GameNotFoundError -> throw TurnSubmit.EndTurnError(e)
+                    is TurnEnd.GameStepError -> throw TurnSubmit.EndTurnError(e)
+                }
+            }
         }
     }
 

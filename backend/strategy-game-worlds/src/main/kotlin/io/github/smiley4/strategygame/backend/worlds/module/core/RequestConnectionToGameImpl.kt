@@ -31,7 +31,7 @@ internal class RequestConnectionToGameImpl(
         try {
             return gameQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
-            throw RequestConnectionToGame.GameNotFoundError()
+            throw RequestConnectionToGame.GameNotFoundError(e)
         }
     }
 

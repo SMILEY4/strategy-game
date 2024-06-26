@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
 
 
-class TilePositionEntity(
+internal class TilePositionEntity(
     val q: Int,
     val r: Int
 ) {

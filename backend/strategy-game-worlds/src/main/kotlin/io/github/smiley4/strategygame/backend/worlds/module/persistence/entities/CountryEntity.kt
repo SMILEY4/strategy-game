@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Country
 
 
-class CountryEntity(
+internal class CountryEntity(
     val gameId: String,
     val userId: String,
     val color: ColorEntity,

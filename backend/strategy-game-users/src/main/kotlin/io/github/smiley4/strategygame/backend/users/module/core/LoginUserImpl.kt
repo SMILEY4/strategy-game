@@ -12,9 +12,9 @@ internal class LoginUserImpl(private val userIdentity: UserIdentityService): Log
             return userIdentity.authenticate(email, password)
         } catch (e: UserIdentityService.UserIdentityError) {
             when (e) {
-                is UserIdentityService.NotAuthorizedError -> throw LoginUser.NotAuthorizedError()
-                is UserIdentityService.UserNotConfirmedError -> throw LoginUser.UserNotConfirmedError()
-                is UserIdentityService.UserNotFoundError -> throw LoginUser.UserNotFoundError()
+                is UserIdentityService.NotAuthorizedError -> throw LoginUser.NotAuthorizedError(e)
+                is UserIdentityService.UserNotConfirmedError -> throw LoginUser.UserNotConfirmedError(e)
+                is UserIdentityService.UserNotFoundError -> throw LoginUser.UserNotFoundError(e)
                 else -> throw Exception("User could not be authenticated", e)
             }
         }

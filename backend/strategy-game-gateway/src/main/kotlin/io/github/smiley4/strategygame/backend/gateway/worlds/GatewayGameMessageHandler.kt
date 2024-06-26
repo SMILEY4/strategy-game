@@ -9,7 +9,7 @@ import io.github.smiley4.strategygame.backend.worlds.edge.TurnSubmit
 /**
  * Message-dispatcher for websocket messages
  */
-class GatewayGameMessageHandler(
+internal class GatewayGameMessageHandler(
     private val turnSubmitAction: TurnSubmit
 ) : Logging {
 

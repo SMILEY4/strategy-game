@@ -5,7 +5,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
 
-open class ErrorResponse(
+internal open class ErrorResponse(
     /**
      * an url to a document describing the error
      */
@@ -53,11 +53,11 @@ open class ErrorResponse(
 
 }
 
-fun OpenApiResponse.bodyErrorResponse() {
+internal fun OpenApiResponse.bodyErrorResponse() {
     this.body<ErrorResponse>()
 }
 
-fun <T : ErrorResponse> OpenApiResponse.bodyErrorResponse(response: T) {
+internal fun <T : ErrorResponse> OpenApiResponse.bodyErrorResponse(response: T) {
     this.body(response::class) {
         example(response.title, response) {
             description = response.detail
@@ -65,7 +65,7 @@ fun <T : ErrorResponse> OpenApiResponse.bodyErrorResponse(response: T) {
     }
 }
 
-fun OpenApiResponse.bodyErrorResponse(vararg responses: ErrorResponse) {
+internal fun OpenApiResponse.bodyErrorResponse(vararg responses: ErrorResponse) {
     this.body<ErrorResponse> {
         responses.forEach { response ->
             example(response.title, response) {
@@ -75,6 +75,6 @@ fun OpenApiResponse.bodyErrorResponse(vararg responses: ErrorResponse) {
     }
 }
 
-suspend inline fun <reified T : ErrorResponse> ApplicationCall.respond(response: T) {
+internal suspend inline fun <reified T : ErrorResponse> ApplicationCall.respond(response: T) {
     this.respond(HttpStatusCode.fromValue(response.status), response)
 }

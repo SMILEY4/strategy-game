@@ -16,14 +16,9 @@ internal class DisconnectAllPlayersImpl(
 
     override suspend fun perform() {
         time(metricId) {
-            getUserIds().forEach { userId ->
-                disconnect.perform(userId)
-            }
+            queryConnectedUsers.execute()
+                .forEach { disconnect.perform(it) }
         }
-    }
-
-    private suspend fun getUserIds(): List<String> {
-        return queryConnectedUsers.execute()
     }
 
 }

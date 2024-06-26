@@ -29,13 +29,13 @@ import io.github.smiley4.strategygame.backend.commondata.UpgradeSettlementTierCo
     JsonSubTypes.Type(value = ProductionQueueAddSettlerEntryCommandMsg::class),
     JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandMsg::class),
 )
-sealed class PlayerCommandMsg(val type: String) {
+internal sealed class PlayerCommandMsg(val type: String) {
     abstract fun asCommandData(): CommandData
 }
 
 
 @JsonTypeName(PlaceMarkerCommandMsg.TYPE)
-class PlaceMarkerCommandMsg(
+internal class PlaceMarkerCommandMsg(
     val q: Int,
     val r: Int,
     val label: String
@@ -53,7 +53,7 @@ class PlaceMarkerCommandMsg(
 
 
 @JsonTypeName(DeleteMarkerCommandMsg.TYPE)
-class DeleteMarkerCommandMsg(
+internal class DeleteMarkerCommandMsg(
     val q: Int,
     val r: Int,
 ) : PlayerCommandMsg(TYPE) {
@@ -68,7 +68,7 @@ class DeleteMarkerCommandMsg(
 }
 
 @JsonTypeName(CreateCityCommandMsg.TYPE)
-class CreateCityCommandMsg(
+internal class CreateCityCommandMsg(
     val q: Int,
     val r: Int,
     val name: String,
@@ -88,7 +88,7 @@ class CreateCityCommandMsg(
 
 
 @JsonTypeName(UpgradeSettlementTierCommandMsg.TYPE)
-class UpgradeSettlementTierCommandMsg(
+internal class UpgradeSettlementTierCommandMsg(
     val cityId: String
 ) : PlayerCommandMsg(TYPE) {
     companion object {
@@ -102,7 +102,7 @@ class UpgradeSettlementTierCommandMsg(
 
 
 @JsonTypeName(PlaceScoutCommandMsg.TYPE)
-class PlaceScoutCommandMsg(
+internal class PlaceScoutCommandMsg(
     val q: Int,
     val r: Int,
 ) : PlayerCommandMsg(TYPE) {
@@ -118,7 +118,7 @@ class PlaceScoutCommandMsg(
 
 
 @JsonTypeName(ProductionQueueAddBuildingEntryCommandMsg.TYPE)
-class ProductionQueueAddBuildingEntryCommandMsg(
+internal class ProductionQueueAddBuildingEntryCommandMsg(
     val cityId: String,
     val buildingType: BuildingType
 ) : PlayerCommandMsg(TYPE) {
@@ -134,7 +134,7 @@ class ProductionQueueAddBuildingEntryCommandMsg(
 
 
 @JsonTypeName(ProductionQueueAddSettlerEntryCommandMsg.TYPE)
-class ProductionQueueAddSettlerEntryCommandMsg(
+internal class ProductionQueueAddSettlerEntryCommandMsg(
     val cityId: String,
 ) : PlayerCommandMsg(TYPE) {
     companion object {
@@ -148,7 +148,7 @@ class ProductionQueueAddSettlerEntryCommandMsg(
 
 
 @JsonTypeName(ProductionQueueRemoveEntryCommandMsg.TYPE)
-class ProductionQueueRemoveEntryCommandMsg(
+internal class ProductionQueueRemoveEntryCommandMsg(
     val cityId: String,
     val queueEntryId: String
 ) : PlayerCommandMsg(TYPE) {
