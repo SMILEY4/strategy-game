@@ -1,16 +1,16 @@
 package io.github.smiley4.strategygame.backend.pathfinding.module.algorithms.backtracking
 
-import io.github.smiley4.strategygame.backend.pathfinding.module.NeighbourProvider
-import io.github.smiley4.strategygame.backend.pathfinding.module.Node
+import io.github.smiley4.strategygame.backend.pathfinding.edge.NeighbourProvider
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Node
 import io.github.smiley4.strategygame.backend.pathfinding.module.NodeScore
-import io.github.smiley4.strategygame.backend.pathfinding.module.Path
-import io.github.smiley4.strategygame.backend.pathfinding.module.Pathfinder
-import io.github.smiley4.strategygame.backend.pathfinding.module.ScoreCalculator
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Path
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Pathfinder
+import io.github.smiley4.strategygame.backend.pathfinding.edge.ScoreCalculator
 import java.util.PriorityQueue
 
 private typealias OpenPathQueue<T> = PriorityQueue<BacktrackingPath<T>>
 
-internal class BacktrackingPathfinder<T : Node>(
+internal class BacktrackingPathfinderImpl<T : Node>(
     private val neighbourProvider: NeighbourProvider<T>,
     private val scoreCalculator: ScoreCalculator<T>
 ) : Pathfinder<T> {
