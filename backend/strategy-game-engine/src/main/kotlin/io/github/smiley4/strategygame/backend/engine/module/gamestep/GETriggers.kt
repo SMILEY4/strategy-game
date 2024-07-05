@@ -1,7 +1,7 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.EventTriggerDefinition
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 
 object TriggerGlobalUpdate : EventTriggerDefinition<GameExtended>()

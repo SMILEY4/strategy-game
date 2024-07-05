@@ -1,7 +1,7 @@
-package io.github.smiley4.strategygame.backend.ecosim.module.data
+package io.github.smiley4.strategygame.backend.ecosim.edge
 
 
-internal interface EconomyEntity {
+interface EconomyEntity {
     val owner: EconomyNode
     val config: EconomyEntityConfig
     val state: EconomyEntityUpdateState

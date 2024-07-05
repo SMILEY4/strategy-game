@@ -71,5 +71,3 @@ fun Module.dependenciesWorlds() {
     single<UsersConnectedToGamesQuery> { UsersConnectedToGamesQuery(get()) }
 
 }
-
-

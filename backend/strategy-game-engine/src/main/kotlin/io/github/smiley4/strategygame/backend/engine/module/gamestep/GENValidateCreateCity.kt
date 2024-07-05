@@ -1,12 +1,12 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.EventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
-import io.github.smiley4.strategygame.backend.common.models.terrain.TerrainType
 import io.github.smiley4.strategygame.backend.common.utils.max
 import io.github.smiley4.strategygame.backend.common.utils.validations
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.TerrainType
 
 
 class GENValidateCreateCity(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {

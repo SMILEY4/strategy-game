@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.common.monitoring
 
-class NoOpMonitoringService() : MonitoringService {
+class NoOpMonitoringService : MonitoringService {
     override fun currentTime(): Long = System.currentTimeMillis()
     override fun recordTimer(id: MetricId, time: Long) = Unit
     override fun recordCount(id: MetricId, amount: Number) = Unit

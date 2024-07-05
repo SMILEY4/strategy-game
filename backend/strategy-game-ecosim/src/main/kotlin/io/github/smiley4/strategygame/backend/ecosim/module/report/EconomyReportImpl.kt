@@ -4,14 +4,17 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.ecosim.edge.ConsumptionReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyEntity
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.edge.MissingResourcesReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.edge.ProductionReportEntry
 
 
-internal class EconomyReport {
+internal class EconomyReportImpl : EconomyReport {
 
     private val entries = mutableListOf<EconomyReportEntry>()
+
+    override fun getEntries(): List<EconomyReportEntry> = entries
 
     fun addConsumption(entity: EconomyEntity, fromNode: EconomyNode, resources: ResourceCollection) {
         add(
@@ -45,7 +48,5 @@ internal class EconomyReport {
     fun add(entry: EconomyReportEntry) {
         entries.add(entry)
     }
-
-    fun getEntries(): List<EconomyReportEntry> = entries
 
 }

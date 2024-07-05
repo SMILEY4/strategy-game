@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.module.core
+package io.github.smiley4.strategygame.backend.engine.module
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
@@ -20,7 +20,7 @@ internal class DiscoverMapArea : Logging {
     fun perform(country: Country, game: GameExtended, center: TilePosition, radius: Int) {
         return time(metricId) {
             val tiles = getTiles(game, center, radius)
-            uncoverTiles(tiles, country)
+            discoverTiles(tiles, country)
         }
     }
 
@@ -34,7 +34,7 @@ internal class DiscoverMapArea : Logging {
     /**
      * Mark the given tiles as discovered by the given country
      */
-    private fun uncoverTiles(tiles: Collection<Tile>, country: Country) {
+    private fun discoverTiles(tiles: Collection<Tile>, country: Country) {
         tiles
             .filter { !it.discoveredByCountries.contains(country.countryId) }
             .forEach { it.discoveredByCountries.add(country.countryId) }

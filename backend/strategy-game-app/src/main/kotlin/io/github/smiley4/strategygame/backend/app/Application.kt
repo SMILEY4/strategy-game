@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.backend.app
 
+import io.github.smiley4.strategygame.backend.app.engine.CustomNettyEngineMain
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 
 object ApplicationMode {

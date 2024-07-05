@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.EventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem

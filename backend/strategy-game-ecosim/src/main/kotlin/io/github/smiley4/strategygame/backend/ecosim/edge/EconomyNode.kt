@@ -1,9 +1,9 @@
-package io.github.smiley4.strategygame.backend.ecosim.module.data
+package io.github.smiley4.strategygame.backend.ecosim.edge
 
 /**
  * Something that "owns" resources, e.g. a city, province, market-area, country, ...
  */
-internal interface EconomyNode {
+interface EconomyNode {
 
     companion object {
         /**

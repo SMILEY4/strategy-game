@@ -1,23 +1,22 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.common
+package io.github.smiley4.strategygame.backend.engine.module.common
 
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
-import io.github.smiley4.strategygame.backend.common.models.TilePosition
-import io.github.smiley4.strategygame.backend.common.models.terrain.TerrainType
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.common.models.Tile
 import io.github.smiley4.strategygame.backend.common.utils.distance
-import io.github.smiley4.strategygame.backend.engine.ports.models.TileContainer
-import io.github.smiley4.strategygame.backend.pathfinding.module.ConditionalNeighbourProvider
-import io.github.smiley4.strategygame.backend.pathfinding.module.NeighbourCondition
-import io.github.smiley4.strategygame.backend.pathfinding.module.Node
-import io.github.smiley4.strategygame.backend.pathfinding.module.Pathfinder
-import io.github.smiley4.strategygame.backend.pathfinding.module.ScoreCalculator
-import io.github.smiley4.strategygame.backend.pathfinding.module.algorithms.backtracking.BacktrackingPathfinder
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.TerrainType
+import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.TileContainer
+import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.pathfinding.edge.ConditionalNeighbourProvider
+import io.github.smiley4.strategygame.backend.pathfinding.edge.NeighbourCondition
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Node
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Pathfinder
+import io.github.smiley4.strategygame.backend.pathfinding.edge.ScoreCalculator
 
 
 internal fun buildCityNetworkPathfinder(game: GameExtended, config: GameConfig): Pathfinder<CityNetworkNode> {
-    return BacktrackingPathfinder(
+    return Pathfinder.createBacktracking(
         CityNetworkNeighbourProvider(game.tiles).withConditions(
             CityNetworkNeighbourCondition.BlockingTiles(setOf(TerrainType.MOUNTAIN)),
             CityNetworkNeighbourCondition.MaxPathLength(config.maxRouteLength),

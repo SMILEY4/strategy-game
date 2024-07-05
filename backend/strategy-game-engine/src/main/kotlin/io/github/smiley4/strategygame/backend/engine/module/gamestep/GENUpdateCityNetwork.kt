@@ -1,22 +1,20 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.monitoring.MetricId.Companion.action
-import io.github.smiley4.strategygame.backend.engine.core.common.RouteGenerator
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.engine.ports.models.Province
-import io.github.smiley4.strategygame.backend.engine.ports.models.Route
-import io.github.smiley4.strategygame.backend.engine.ports.required.ReservationInsert
+import io.github.smiley4.strategygame.backend.common.utils.Id
+import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.Route
+import io.github.smiley4.strategygame.backend.engine.module.common.RouteGenerator
 
 
 /**
  * Connects newly created cities with other cities
  */
 class GENUpdateCityNetwork(
-    private val reservationInsert: ReservationInsert,
     private val routeGenerator: RouteGenerator,
     eventSystem: EventSystem
 ) : Logging {
@@ -50,8 +48,8 @@ class GENUpdateCityNetwork(
             }
             game.routes.add(
                 Route(
-                    routeId = reservationInsert.reserveRoute(),
-                    cityIdA = route.cityIdA ?: reservationInsert.reserveRoute(),
+                    routeId = Id.gen(),
+                    cityIdA = route.cityIdA,
                     cityIdB = route.cityIdB,
                     path = route.path
                 )

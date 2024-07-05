@@ -1,10 +1,15 @@
-package io.github.smiley4.strategygame.backend.ecosim.module.ledger
+package io.github.smiley4.strategygame.backend.engine.module.eco
 
 import io.github.smiley4.strategygame.backend.commondata.BuildingTypeDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.DetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.FloatDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerDetailType
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyEntity
+import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.BuildingEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.PopulationBaseEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.PopulationGrowthEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.ProductionQueueEconomyEntity
 
 
 class ResourceLedgerDetailBuilderImpl : ResourceLedgerDetailBuilder {

@@ -1,91 +1,61 @@
-package io.github.smiley4.strategygame.backend.engine.module.core
+package io.github.smiley4.strategygame.backend.engine.module
 
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.Command
-import io.github.smiley4.strategygame.backend.common.models.CreateCityCommandData
-import io.github.smiley4.strategygame.backend.common.models.DeleteMarkerCommandData
-import io.github.smiley4.strategygame.backend.common.models.PlaceMarkerCommandData
-import io.github.smiley4.strategygame.backend.common.models.PlaceScoutCommandData
-import io.github.smiley4.strategygame.backend.common.models.ProductionQueueAddBuildingEntryCommandData
-import io.github.smiley4.strategygame.backend.common.models.ProductionQueueAddSettlerEntryCommandData
-import io.github.smiley4.strategygame.backend.common.models.ProductionQueueRemoveEntryCommandData
-import io.github.smiley4.strategygame.backend.common.models.UpgradeSettlementTierCommandData
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.persistence.EntityNotFoundError
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.AddProductionQueueEntryOperationData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.BuildingProductionQueueEntryData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.CreateCityOperationData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.DeleteMarkerOperationData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.PlaceMarkerOperationData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.PlaceScoutOperationData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.RemoveProductionQueueEntryOperationData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.SettlerProductionQueueEntryData
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerGlobalUpdate
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerResolveAddProductionQueueEntry
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerResolveCreateCity
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerResolveDeleteMarker
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerResolvePlaceMarker
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerResolvePlaceScout
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerResolveRemoveProductionQueueEntry
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.TriggerResolveUpgradeSettlementTier
-import io.github.smiley4.strategygame.backend.engine.core.gamestep.UpgradeSettlementTierOperationData
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.engine.ports.models.nextTier
-import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
-import io.github.smiley4.strategygame.backend.engine.ports.provided.POVBuilder
-import io.github.smiley4.strategygame.backend.engine.ports.required.GameExtendedQuery
-import io.github.smiley4.strategygame.backend.engine.ports.required.GameExtendedUpdate
+import io.github.smiley4.strategygame.backend.commondata.Command
+import io.github.smiley4.strategygame.backend.commondata.CreateCityCommandData
+import io.github.smiley4.strategygame.backend.commondata.DeleteMarkerCommandData
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.PlaceMarkerCommandData
+import io.github.smiley4.strategygame.backend.commondata.PlaceScoutCommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddBuildingEntryCommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddSettlerEntryCommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueRemoveEntryCommandData
+import io.github.smiley4.strategygame.backend.commondata.UpgradeSettlementTierCommandData
+import io.github.smiley4.strategygame.backend.commondata.nextTier
+import io.github.smiley4.strategygame.backend.engine.edge.GameStep
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.AddProductionQueueEntryOperationData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.BuildingProductionQueueEntryData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.CreateCityOperationData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.DeleteMarkerOperationData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.PlaceMarkerOperationData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.PlaceScoutOperationData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.RemoveProductionQueueEntryOperationData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.SettlerProductionQueueEntryData
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerGlobalUpdate
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerResolveAddProductionQueueEntry
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerResolveCreateCity
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerResolveDeleteMarker
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerResolvePlaceMarker
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerResolvePlaceScout
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerResolveRemoveProductionQueueEntry
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.TriggerResolveUpgradeSettlementTier
+import io.github.smiley4.strategygame.backend.engine.module.gamestep.UpgradeSettlementTierOperationData
 
 
 class GameStepImpl(
-    private val gameExtendedQuery: GameExtendedQuery,
-    private val gameExtendedUpdate: GameExtendedUpdate,
     private val eventSystem: EventSystem,
-    private val playerViewCreator: POVBuilder
 ) : GameStep, Logging {
 
     private val metricId = MetricId.action(GameStep::class)
 
-    override suspend fun perform(gameId: String, commands: Collection<Command<*>>, userIds: Collection<String>): Map<String, JsonType> {
+    override suspend fun perform(game: GameExtended, commands: Collection<Command<*>>) {
         return time(metricId) {
-            val game = getGameState(gameId)
             handleCommands(game, commands)
             handleGlobalUpdate(game)
             prepareNextTurn(game)
-            saveGameState(game)
-            userIds.associateWith { userId ->
-                playerViewCreator.build(userId, game)
-            }
         }
     }
 
-
-    /**
-     * Find and return the [GameExtended] or [GameNotFoundError] if the game does not exist
-     */
-    private suspend fun getGameState(gameId: String): GameExtended {
-        try {
-            return gameExtendedQuery.execute(gameId)
-        } catch (e: EntityNotFoundError) {
-            throw GameStep.GameNotFoundError()
-        }
-    }
 
 
     private fun prepareNextTurn(game: GameExtended) {
         game.meta.turn += 1
     }
 
-
-    /**
-     * Update the game state in the database
-     */
-    private suspend fun saveGameState(game: GameExtended) {
-        gameExtendedUpdate.execute(game)
-    }
 
 
     private suspend fun handleCommands(game: GameExtended, commands: Collection<Command<*>>) {

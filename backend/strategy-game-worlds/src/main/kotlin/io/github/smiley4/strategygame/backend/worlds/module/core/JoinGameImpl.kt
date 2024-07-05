@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.core
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.utils.COUNTRY_COLORS
+import io.github.smiley4.strategygame.backend.commondata.COUNTRY_COLORS
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.Player
@@ -81,7 +81,7 @@ internal class JoinGameImpl(
     private suspend fun initializePlayer(game: Game, userId: String) {
         val gameExtended = gameExtendedQuery.execute(game.gameId)
         try {
-        initializePlayer.perform(gameExtended, userId, COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size])
+            initializePlayer.perform(gameExtended, userId, COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size])
         } catch (e: InitializePlayer.InitializePlayerError) {
             when(e) {
                 is InitializePlayer.GameNotFoundError -> throw JoinGame.InitializePlayerError(e)

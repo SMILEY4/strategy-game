@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.backend.users.module.core
 
 import io.github.smiley4.strategygame.backend.users.edge.LoginUser
 import io.github.smiley4.strategygame.backend.users.edge.models.AuthDataExtended
-import io.github.smiley4.strategygame.backend.users.module.iam.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService
 
 
 internal class LoginUserImpl(private val userIdentity: UserIdentityService): LoginUser {

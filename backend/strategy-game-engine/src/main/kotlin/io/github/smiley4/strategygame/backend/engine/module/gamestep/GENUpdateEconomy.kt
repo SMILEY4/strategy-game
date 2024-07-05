@@ -1,31 +1,33 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
-import io.github.smiley4.strategygame.backend.common.detaillog.BooleanDetailLogValue
-import io.github.smiley4.strategygame.backend.common.detaillog.ResourcesDetailLogValue
 import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
-import io.github.smiley4.strategygame.backend.common.models.resources.ResourceType
 import io.github.smiley4.strategygame.backend.common.utils.buildMutableMap
+import io.github.smiley4.strategygame.backend.commondata.BooleanDetailLogValue
+import io.github.smiley4.strategygame.backend.commondata.BuildingDetailType
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerImpl
+import io.github.smiley4.strategygame.backend.commondata.ResourceType
+import io.github.smiley4.strategygame.backend.commondata.ResourcesDetailLogValue
+import io.github.smiley4.strategygame.backend.ecosim.edge.ConsumptionReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.collectNodes
-import io.github.smiley4.strategygame.backend.ecosim.module.logic.EconomyService
-import io.github.smiley4.strategygame.backend.ecosim.module.report.ConsumptionReportEntry
-import io.github.smiley4.strategygame.backend.ecosim.module.report.EconomyReport
-import io.github.smiley4.strategygame.backend.ecosim.module.report.MissingResourcesReportEntry
-import io.github.smiley4.strategygame.backend.ecosim.module.report.ProductionReportEntry
-import io.github.smiley4.strategygame.backend.engine.core.eco.EconomyPopFoodConsumptionProvider
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.BuildingEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.GameEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.PopulationBaseEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.PopulationGrowthEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.ProductionQueueEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.ledger.ResourceLedger
-import io.github.smiley4.strategygame.backend.engine.core.eco.node.ProvinceEconomyNode
-import io.github.smiley4.strategygame.backend.engine.core.eco.node.WorldEconomyNode
-import io.github.smiley4.strategygame.backend.engine.ports.models.BuildingDetailType
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyReport
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyService
+import io.github.smiley4.strategygame.backend.ecosim.edge.MissingResourcesReportEntry
+import io.github.smiley4.strategygame.backend.ecosim.edge.ProductionReportEntry
+import io.github.smiley4.strategygame.backend.ecosim.edge.record
+import io.github.smiley4.strategygame.backend.engine.module.eco.EconomyPopFoodConsumptionProvider
+import io.github.smiley4.strategygame.backend.engine.module.eco.ResourceLedgerDetailBuilderImpl
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.BuildingEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.GameEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.PopulationBaseEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.PopulationGrowthEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.ProductionQueueEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.node.ProvinceEconomyNode
+import io.github.smiley4.strategygame.backend.engine.module.eco.node.WorldEconomyNode
 
 
 /**
@@ -34,12 +36,11 @@ import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
 class GENUpdateEconomy(
     private val config: GameConfig,
     private val popFoodConsumption: EconomyPopFoodConsumptionProvider,
+    private val economyService: EconomyService,
     eventSystem: EventSystem
 ) : Logging {
 
     object Definition : BasicEventNodeDefinition<GameExtended, GameExtended>()
-
-    private val economyService = EconomyService()
 
     init {
         eventSystem.createNode(Definition) {
@@ -53,6 +54,8 @@ class GENUpdateEconomy(
             }
         }
     }
+
+    private val resourceLedgerDetailBuilder = ResourceLedgerDetailBuilderImpl()
 
     private fun buildEconomyTree(game: GameExtended): EconomyNode {
         return WorldEconomyNode(game, config, popFoodConsumption)
@@ -76,7 +79,7 @@ class GENUpdateEconomy(
         // save ledger
         rootNode.collectNodes().forEach { node ->
             if (node is ProvinceEconomyNode) {
-                val ledger = ResourceLedger().also { it.record(report, node) }
+                val ledger = ResourceLedgerImpl().also { it.record(report, node, resourceLedgerDetailBuilder) }
                 node.province.resourceLedger = ledger
             }
         }

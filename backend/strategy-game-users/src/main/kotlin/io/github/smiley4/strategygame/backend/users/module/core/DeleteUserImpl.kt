@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.users.module.core
 
 import io.github.smiley4.strategygame.backend.users.edge.DeleteUser
-import io.github.smiley4.strategygame.backend.users.module.iam.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService
 
 
 internal class DeleteUserImpl(private val userIdentity: UserIdentityService): DeleteUser {

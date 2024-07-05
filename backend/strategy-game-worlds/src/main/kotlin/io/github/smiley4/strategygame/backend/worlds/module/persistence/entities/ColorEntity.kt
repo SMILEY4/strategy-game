@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.RGBColor
 
 
 internal data class ColorEntity(

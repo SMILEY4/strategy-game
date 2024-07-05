@@ -1,7 +1,6 @@
-package io.github.smiley4.strategygame.backend.engine.module.common
+package io.github.smiley4.strategygame.backend.engine.module.eco
 
-import io.github.smiley4.strategygame.backend.engine.core.eco.EconomyPopFoodConsumptionProvider
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
+import io.github.smiley4.strategygame.backend.commondata.City
 import kotlin.math.ceil
 
 class PopFoodConsumption: EconomyPopFoodConsumptionProvider {

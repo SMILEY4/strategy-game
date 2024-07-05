@@ -10,7 +10,7 @@ import java.util.PriorityQueue
 
 private typealias OpenPathQueue<T> = PriorityQueue<BacktrackingPath<T>>
 
-internal class BacktrackingPathfinderImpl<T : Node>(
+internal class BacktrackingPathfinder<T : Node>(
     private val neighbourProvider: NeighbourProvider<T>,
     private val scoreCalculator: ScoreCalculator<T>
 ) : Pathfinder<T> {

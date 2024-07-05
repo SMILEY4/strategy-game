@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.backend.playerpov.module
 
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.RGBColor
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended

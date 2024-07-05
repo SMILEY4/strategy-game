@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.ecosim.edge
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 
 
-internal sealed interface EconomyReportEntry {
+sealed interface EconomyReportEntry {
     val entity: EconomyEntity
 }
 
@@ -11,7 +11,7 @@ internal sealed interface EconomyReportEntry {
 /**
  * Resources were consumed by the entity from the node (node does not have to be owner of entity)
  */
-internal data class ConsumptionReportEntry(
+data class ConsumptionReportEntry(
     override val entity: EconomyEntity,
     val fromNode: EconomyNode,
     val resources: ResourceCollection
@@ -21,7 +21,7 @@ internal data class ConsumptionReportEntry(
 /**
  * Resources were produced in the node by the entity
  */
-internal data class ProductionReportEntry(
+data class ProductionReportEntry(
     override val entity: EconomyEntity,
     val inNode: EconomyNode,
     val resources: ResourceCollection
@@ -31,7 +31,7 @@ internal data class ProductionReportEntry(
 /**
  * Resources are missing for the entity
  */
-internal data class MissingResourcesReportEntry(
+data class MissingResourcesReportEntry(
     override val entity: EconomyEntity,
     val resources: ResourceCollection
 ) : EconomyReportEntry

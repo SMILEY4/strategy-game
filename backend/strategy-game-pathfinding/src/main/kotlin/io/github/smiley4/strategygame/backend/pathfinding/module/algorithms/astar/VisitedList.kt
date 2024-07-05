@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.pathfinding.module.algorithms.astar
 
-import io.github.smiley4.strategygame.backend.pathfinding.module.Node
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Node
 
 
 /**

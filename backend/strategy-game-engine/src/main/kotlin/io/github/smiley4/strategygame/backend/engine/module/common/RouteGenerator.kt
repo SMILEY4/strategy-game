@@ -1,14 +1,14 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.common
+package io.github.smiley4.strategygame.backend.engine.module.common
 
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
-import io.github.smiley4.strategygame.backend.common.utils.mapParallel
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.engine.ports.models.Route
-import io.github.smiley4.strategygame.backend.common.models.TileRef
 import io.github.smiley4.strategygame.backend.common.utils.distance
-import io.github.smiley4.strategygame.backend.pathfinding.module.Path
-import io.github.smiley4.strategygame.backend.pathfinding.module.Pathfinder
+import io.github.smiley4.strategygame.backend.common.utils.mapParallel
+import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.Route
+import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Path
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Pathfinder
 
 
 class RouteGenerator(
@@ -18,7 +18,7 @@ class RouteGenerator(
     companion object {
 
         data class RequestCity(
-            val cityId: String?,
+            val cityId: String,
             val isProvinceCapital: Boolean,
             val tile: TileRef
         ) {
@@ -35,7 +35,7 @@ class RouteGenerator(
 
         data class GeneratedRoute(
             val existing: Route?,
-            val cityIdA: String?,
+            val cityIdA: String,
             val cityIdB: String,
             val path: List<TileRef>
         )

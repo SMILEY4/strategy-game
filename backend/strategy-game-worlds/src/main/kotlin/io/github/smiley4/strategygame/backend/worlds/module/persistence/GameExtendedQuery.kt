@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence
 import arrow.fx.coroutines.parZip
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.common.utils.tracking
+import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DocumentNotFoundError
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError

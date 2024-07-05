@@ -1,6 +1,6 @@
-package io.github.smiley4.strategygame.backend.ecosim.module.data
+package io.github.smiley4.strategygame.backend.ecosim.edge
 
-internal enum class EconomyUpdateState {
+enum class EconomyUpdateState {
     CONSUME,
     PRODUCE,
     DONE

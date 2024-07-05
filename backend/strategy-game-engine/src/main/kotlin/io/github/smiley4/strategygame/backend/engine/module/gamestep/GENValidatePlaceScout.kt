@@ -1,11 +1,11 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.EventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
 import io.github.smiley4.strategygame.backend.common.utils.validations
-import io.github.smiley4.strategygame.backend.common.models.ScoutTileObject
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.ScoutTileObject
 
 
 class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {

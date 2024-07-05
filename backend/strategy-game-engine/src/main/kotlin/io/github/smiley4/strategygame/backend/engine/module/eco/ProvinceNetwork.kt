@@ -1,8 +1,8 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.eco
+package io.github.smiley4.strategygame.backend.engine.module.eco
 
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.engine.ports.models.Province
-import io.github.smiley4.strategygame.backend.engine.ports.models.Route
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.Route
 
 
 class ProvinceNetwork {

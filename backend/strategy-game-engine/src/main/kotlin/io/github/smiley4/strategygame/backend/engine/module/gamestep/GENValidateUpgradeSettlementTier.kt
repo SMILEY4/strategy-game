@@ -1,11 +1,11 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.EventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.validations
-import io.github.smiley4.strategygame.backend.engine.ports.models.SettlementTier
-import io.github.smiley4.strategygame.backend.engine.ports.models.nextTier
+import io.github.smiley4.strategygame.backend.commondata.SettlementTier
+import io.github.smiley4.strategygame.backend.commondata.nextTier
 
 
 class GENValidateUpgradeSettlementTier(eventSystem: EventSystem) : Logging {

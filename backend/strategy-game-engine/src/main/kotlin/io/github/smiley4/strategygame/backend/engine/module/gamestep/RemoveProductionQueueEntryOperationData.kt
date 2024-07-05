@@ -1,9 +1,9 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
-import io.github.smiley4.strategygame.backend.engine.ports.models.Country
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.engine.ports.models.Province
+import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.Country
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.Province
 
 
 data class RemoveProductionQueueEntryOperationData(

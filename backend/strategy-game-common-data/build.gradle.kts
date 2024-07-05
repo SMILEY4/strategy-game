@@ -13,8 +13,6 @@ repositories {
 
 dependencies {
 
-    implementation(project(":strategy-game-common"))
-
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")
 

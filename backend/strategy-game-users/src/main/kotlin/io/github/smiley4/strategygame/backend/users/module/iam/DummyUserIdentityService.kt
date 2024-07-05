@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService
 import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
 import io.github.smiley4.strategygame.backend.users.edge.models.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider

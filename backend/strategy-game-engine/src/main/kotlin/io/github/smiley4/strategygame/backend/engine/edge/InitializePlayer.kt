@@ -1,19 +1,18 @@
 package io.github.smiley4.strategygame.backend.engine.edge
 
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.RGBColor
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 
 interface InitializePlayer {
 
-    sealed class InitializePlayerError : Exception()
-    class GameNotFoundError : InitializePlayerError()
+    sealed class InitializePlayerError(message: String, cause: Throwable? = null) : Exception(message, cause)
+    class GameNotFoundError(cause: Throwable? = null) : InitializePlayerError("No matching game could be found", cause)
 
 
     /**
      * Initializes the player
      * @throws InitializePlayerError
-     * @throws DiscoverMapAreaError
      */
     suspend fun perform(game: GameExtended, userId: String, color: RGBColor)
 }

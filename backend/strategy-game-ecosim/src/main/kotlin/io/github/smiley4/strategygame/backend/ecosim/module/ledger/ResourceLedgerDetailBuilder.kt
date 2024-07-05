@@ -1,6 +1,8 @@
-package io.github.smiley4.strategygame.backend.commondata
+package io.github.smiley4.strategygame.backend.ecosim.module.ledger
 
-import io.github.smiley4.strategygame.backend.ecosim.module.data.EconomyEntity
+import io.github.smiley4.strategygame.backend.commondata.DetailLogValue
+import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerDetailType
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyEntity
 
 
 interface ResourceLedgerDetailBuilder {

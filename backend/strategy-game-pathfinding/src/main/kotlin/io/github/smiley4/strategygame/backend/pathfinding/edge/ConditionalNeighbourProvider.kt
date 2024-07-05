@@ -1,9 +1,7 @@
-package io.github.smiley4.strategygame.backend.pathfinding.module
-
-import io.github.smiley4.strategygame.backend.pathfinding.edge.Node
+package io.github.smiley4.strategygame.backend.pathfinding.edge
 
 
-internal abstract class ConditionalNeighbourProvider<T : Node> : NeighbourProvider<T> {
+abstract class ConditionalNeighbourProvider<T : Node> : NeighbourProvider<T> {
 
     private val rules = mutableListOf<NeighbourCondition<T>>()
 

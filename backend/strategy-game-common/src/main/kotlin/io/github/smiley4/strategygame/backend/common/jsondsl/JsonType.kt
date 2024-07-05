@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.common.jsondsl
 
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.RGBColor
 
 interface JsonType {
 

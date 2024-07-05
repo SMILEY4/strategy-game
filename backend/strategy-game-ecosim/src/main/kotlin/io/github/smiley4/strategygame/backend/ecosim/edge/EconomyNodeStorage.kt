@@ -1,12 +1,19 @@
-package io.github.smiley4.strategygame.backend.ecosim.module.data
+package io.github.smiley4.strategygame.backend.ecosim.edge
 
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourceType
+import io.github.smiley4.strategygame.backend.ecosim.module.prebuilt.EconomyNodeStorageImpl
+import io.github.smiley4.strategygame.backend.ecosim.module.prebuilt.NoOpEconomyNodeStorageImpl
 
 /**
  * stores and manages resources or [EconomyNode]s
  */
-internal interface EconomyNodeStorage {
+interface EconomyNodeStorage {
+
+    companion object {
+        fun build(initialResources: ResourceCollection): EconomyNodeStorage = EconomyNodeStorageImpl(initialResources)
+        fun noOp(): EconomyNodeStorage = NoOpEconomyNodeStorageImpl()
+    }
 
     /**
      * prepare this storage and revert to its initial state, i.e. revert to the resources it had at the beginning of the turn

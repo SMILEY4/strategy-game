@@ -1,9 +1,9 @@
-package io.github.smiley4.strategygame.backend.pathfinding.module
+package io.github.smiley4.strategygame.backend.pathfinding.edge
 
 /**
  * Base node
  */
-internal open class Node(
+open class Node(
     val locationId: String,
     val prevNode: Node? = null,
     var f: Float,

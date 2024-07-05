@@ -1,9 +1,9 @@
-package io.github.smiley4.strategygame.backend.ecosim.module.data
+package io.github.smiley4.strategygame.backend.ecosim.edge
 
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 
 
-internal class EconomyEntityUpdateState(input: ResourceCollection) {
+class EconomyEntityUpdateState(input: ResourceCollection) {
 
     var state = EconomyUpdateState.CONSUME
         private set

@@ -1,12 +1,14 @@
-package io.github.smiley4.strategygame.backend.users.module.iam
+package io.github.smiley4.strategygame.backend.users.edge
 
 import io.github.smiley4.strategygame.backend.common.UserIdentityProvider
 import io.github.smiley4.strategygame.backend.common.UserIdentityServiceConfig
 import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
 import io.github.smiley4.strategygame.backend.users.edge.models.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.module.iam.AwsCognitoService
+import io.github.smiley4.strategygame.backend.users.module.iam.DummyUserIdentityService
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
-internal interface UserIdentityService {
+interface UserIdentityService {
 
     sealed class UserIdentityError(message: String, cause: Throwable? = null) : Exception(message, cause)
     class UserAlreadyExistsError(cause: Throwable? = null) : UserIdentityError("The user already exists", cause)

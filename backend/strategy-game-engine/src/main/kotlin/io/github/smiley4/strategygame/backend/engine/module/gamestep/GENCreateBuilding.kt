@@ -1,19 +1,19 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
-import io.github.smiley4.strategygame.backend.common.detaillog.DetailLog
-import io.github.smiley4.strategygame.backend.common.detaillog.TileRefDetailLogValue
 import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.BuildingType
-import io.github.smiley4.strategygame.backend.common.models.TilePosition
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
-import io.github.smiley4.strategygame.backend.engine.ports.models.Building
-import io.github.smiley4.strategygame.backend.engine.ports.models.BuildingDetailType
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.common.models.Tile
-import io.github.smiley4.strategygame.backend.common.models.TileRef
+import io.github.smiley4.strategygame.backend.commondata.Building
+import io.github.smiley4.strategygame.backend.commondata.BuildingDetailType
+import io.github.smiley4.strategygame.backend.commondata.BuildingType
+import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.DetailLog
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
 
 
 /**

@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.backend.ecosim.module.prebuilt
 
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourceType
-import io.github.smiley4.strategygame.backend.ecosim.module.data.EconomyNodeStorage
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNodeStorage
 
 
 internal class EconomyNodeStorageImpl(private val initialResources: ResourceCollection) : EconomyNodeStorage {
@@ -15,7 +15,7 @@ internal class EconomyNodeStorageImpl(private val initialResources: ResourceColl
     }
 
     override fun merge(other: EconomyNodeStorage) {
-        ResourceType.values().forEach { type ->
+        ResourceType.entries.forEach { type ->
             available.add(type, other.getAvailable(type))
         }
     }

@@ -1,9 +1,9 @@
-package io.github.smiley4.strategygame.backend.engine.module.core
+package io.github.smiley4.strategygame.backend.engine.module
 
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.Id
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.RGBColor
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended

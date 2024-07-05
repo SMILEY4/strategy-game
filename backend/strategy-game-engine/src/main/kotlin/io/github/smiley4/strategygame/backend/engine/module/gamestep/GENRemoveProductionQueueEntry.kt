@@ -1,14 +1,14 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
-import io.github.smiley4.strategygame.backend.common.detaillog.FloatDetailLogValue
 import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
-import io.github.smiley4.strategygame.backend.engine.core.eco.ledger.ResourceLedgerDetailType
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
-import io.github.smiley4.strategygame.backend.engine.ports.models.ProductionQueueEntry
-import io.github.smiley4.strategygame.backend.engine.ports.models.Province
+import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.FloatDetailLogValue
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerDetailType
 
 
 /**

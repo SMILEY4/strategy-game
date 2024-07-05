@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.pathfinding.module.algorithms.backtracking
 
-import io.github.smiley4.strategygame.backend.pathfinding.module.Node
-import io.github.smiley4.strategygame.backend.pathfinding.module.Path
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Node
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Path
 
 
 /**

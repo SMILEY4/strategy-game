@@ -1,28 +1,28 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
-import io.github.smiley4.strategygame.backend.engine.core.eco.ledger.ResourceLedger
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
-import io.github.smiley4.strategygame.backend.engine.ports.models.CityInfrastructure
-import io.github.smiley4.strategygame.backend.engine.ports.models.CityMetadata
-import io.github.smiley4.strategygame.backend.engine.ports.models.CityPopulation
-import io.github.smiley4.strategygame.backend.common.models.CityTileObject
-import io.github.smiley4.strategygame.backend.engine.ports.models.Country
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.engine.ports.models.Province
-import io.github.smiley4.strategygame.backend.engine.ports.models.SettlementTier
-import io.github.smiley4.strategygame.backend.common.models.Tile
-import io.github.smiley4.strategygame.backend.common.models.TileRef
-import io.github.smiley4.strategygame.backend.engine.ports.required.ReservationInsert
+import io.github.smiley4.strategygame.backend.common.utils.Id
+import io.github.smiley4.strategygame.backend.commondata.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.CityInfrastructure
+import io.github.smiley4.strategygame.backend.commondata.CityMetadata
+import io.github.smiley4.strategygame.backend.commondata.CityPopulation
+import io.github.smiley4.strategygame.backend.commondata.CityTileObject
+import io.github.smiley4.strategygame.backend.commondata.Country
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerImpl
+import io.github.smiley4.strategygame.backend.commondata.SettlementTier
+import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.TileRef
 import kotlin.math.max
 
 /**
  * Creates the new city at the given location and creates new province (if required)
  */
-class GENCreateCity(private val reservationInsert: ReservationInsert, eventSystem: EventSystem) : Logging {
+class GENCreateCity(eventSystem: EventSystem) : Logging {
 
     object Definition : BasicEventNodeDefinition<CreateCityOperationData, CreateCityResultData>()
 
@@ -43,7 +43,7 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
         country.availableSettlers = max(0, country.availableSettlers - 1)
     }
 
-    private suspend fun createCity(
+    private fun createCity(
         game: GameExtended,
         country: Country,
         tile: Tile,
@@ -65,9 +65,9 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
         return withNewProvince || targetTile.owner == null
     }
 
-    private suspend fun createCity(game: GameExtended, countryId: String, tile: Tile, name: String, isProvinceCapital: Boolean): City {
+    private fun createCity(game: GameExtended, countryId: String, tile: Tile, name: String, isProvinceCapital: Boolean): City {
         return City(
-            cityId = reservationInsert.reserveCity(),
+            cityId = Id.gen(),
             countryId = countryId,
             tile = TileRef(tile),
             tier = SettlementTier.VILLAGE,
@@ -101,14 +101,14 @@ class GENCreateCity(private val reservationInsert: ReservationInsert, eventSyste
         return province.also { it.cityIds.add(city.cityId) }
     }
 
-    private suspend fun addToNewProvince(game: GameExtended, city: City, country: Country): Province {
+    private fun addToNewProvince(game: GameExtended, city: City, country: Country): Province {
         return Province(
-            provinceId = reservationInsert.reserveProvince(),
+            provinceId = Id.gen(),
             countryId = country.countryId,
             cityIds = mutableListOf(city.cityId),
             provinceCapitalCityId = city.cityId,
             color = RGBColor.random(),
-            resourceLedger = ResourceLedger()
+            resourceLedger = ResourceLedgerImpl()
         ).also { game.provinces.add(it) }
     }
 

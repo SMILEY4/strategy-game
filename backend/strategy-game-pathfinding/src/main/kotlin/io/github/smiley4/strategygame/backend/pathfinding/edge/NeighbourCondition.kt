@@ -1,6 +1,6 @@
-package io.github.smiley4.strategygame.backend.pathfinding.module
+package io.github.smiley4.strategygame.backend.pathfinding.edge
 
-internal interface NeighbourCondition<T> {
+interface NeighbourCondition<T> {
     /**
      * @return true, if a path from the [prev] location to the [next] location is possible/allowed
      */

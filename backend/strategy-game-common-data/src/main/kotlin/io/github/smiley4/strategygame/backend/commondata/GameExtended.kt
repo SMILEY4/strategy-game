@@ -1,8 +1,5 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-import io.github.smiley4.strategygame.backend.common.utils.TrackingList
-
-
 data class GameExtended(
     val meta: GameMeta,
     val tiles: TileContainer,

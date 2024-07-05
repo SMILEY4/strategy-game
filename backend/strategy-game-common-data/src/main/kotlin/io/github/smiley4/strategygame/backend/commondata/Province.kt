@@ -1,8 +1,5 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
-
-
 data class Province(
     val provinceId: String,
     val countryId: String,

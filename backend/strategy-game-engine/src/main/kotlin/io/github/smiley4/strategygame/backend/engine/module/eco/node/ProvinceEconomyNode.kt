@@ -1,17 +1,16 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.eco.node
+package io.github.smiley4.strategygame.backend.engine.module.eco.node
 
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyEntity
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNodeStorage
-import io.github.smiley4.strategygame.backend.ecosim.module.prebuilt.EconomyNodeStorageImpl
-import io.github.smiley4.strategygame.backend.engine.core.eco.EconomyPopFoodConsumptionProvider
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.BuildingEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.PopulationBaseEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.PopulationGrowthEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.core.eco.entity.ProductionQueueEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.ports.models.GameExtended
-import io.github.smiley4.strategygame.backend.engine.ports.models.Province
+import io.github.smiley4.strategygame.backend.engine.module.eco.EconomyPopFoodConsumptionProvider
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.BuildingEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.PopulationBaseEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.PopulationGrowthEconomyEntity
+import io.github.smiley4.strategygame.backend.engine.module.eco.entity.ProductionQueueEconomyEntity
 
 
 class ProvinceEconomyNode(
@@ -25,7 +24,7 @@ class ProvinceEconomyNode(
         var enablePopGrowthEntity = true
     }
 
-    override val storage: EconomyNodeStorage = EconomyNodeStorageImpl(province.resourceLedger.getProduced())
+    override val storage: EconomyNodeStorage = EconomyNodeStorage.build(province.resourceLedger.getProduced())
 
     override val children: Collection<EconomyNode> = emptyList()
 

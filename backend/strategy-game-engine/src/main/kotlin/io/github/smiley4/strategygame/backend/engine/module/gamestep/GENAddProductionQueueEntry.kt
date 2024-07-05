@@ -1,13 +1,13 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.resources.ResourceCollection
 import io.github.smiley4.strategygame.backend.common.utils.Id
-import io.github.smiley4.strategygame.backend.engine.ports.models.BuildingProductionQueueEntry
-import io.github.smiley4.strategygame.backend.engine.ports.models.ProductionQueueEntry
-import io.github.smiley4.strategygame.backend.engine.ports.models.SettlerProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.BuildingProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
+import io.github.smiley4.strategygame.backend.commondata.SettlerProductionQueueEntry
 
 
 /**

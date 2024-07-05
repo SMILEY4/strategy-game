@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.gateway.worlds.models.GameStateMes
 
 
 @JsonTypeName(GameStateMessage.TYPE)
-class GameStateMessage(payload: GameStatePayload) : Message<GameStatePayload>(TYPE, payload) {
+internal class GameStateMessage(payload: GameStatePayload) : Message<GameStatePayload>(TYPE, payload) {
     companion object {
 
         const val TYPE = "game-state"

@@ -1,9 +1,9 @@
-package io.github.smiley4.strategygame.backend.pathfinding.module
+package io.github.smiley4.strategygame.backend.pathfinding.edge
 
 /**
  * Result of a pathfinding process
  */
-internal data class Path<T : Node>(val nodes: Collection<T>) {
+data class Path<T : Node>(val nodes: Collection<T>) {
     companion object {
         fun <T : Node> empty() = Path<T>(emptyList())
     }

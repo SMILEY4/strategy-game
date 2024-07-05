@@ -1,13 +1,13 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.gamestep
+package io.github.smiley4.strategygame.backend.engine.module.gamestep
 
 import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.models.GameConfig
 import io.github.smiley4.strategygame.backend.common.utils.max
-import io.github.smiley4.strategygame.backend.common.models.Tile
-import io.github.smiley4.strategygame.backend.common.models.TileInfluence
-import io.github.smiley4.strategygame.backend.common.models.TileOwner
+import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.TileInfluence
+import io.github.smiley4.strategygame.backend.commondata.TileOwner
 
 
 /**

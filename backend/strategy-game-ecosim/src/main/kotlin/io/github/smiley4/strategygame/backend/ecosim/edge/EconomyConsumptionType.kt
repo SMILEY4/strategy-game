@@ -1,6 +1,6 @@
-package io.github.smiley4.strategygame.backend.ecosim.module.data
+package io.github.smiley4.strategygame.backend.ecosim.edge
 
-internal enum class EconomyConsumptionType {
+enum class EconomyConsumptionType {
     /**
      * The entity must consume ALL required resources from one node all at once.
      */

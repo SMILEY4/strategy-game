@@ -1,7 +1,5 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-import io.github.smiley4.strategygame.backend.common.utils.RGBColor
-
 
 class City(
     val cityId: String,

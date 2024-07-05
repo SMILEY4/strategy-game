@@ -1,11 +1,11 @@
 package io.github.smiley4.strategygame.backend.pathfinding.module.algorithms.astar
 
-import io.github.smiley4.strategygame.backend.pathfinding.module.NeighbourProvider
-import io.github.smiley4.strategygame.backend.pathfinding.module.Node
+import io.github.smiley4.strategygame.backend.pathfinding.edge.NeighbourProvider
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Node
 import io.github.smiley4.strategygame.backend.pathfinding.module.NodeScore
-import io.github.smiley4.strategygame.backend.pathfinding.module.Path
-import io.github.smiley4.strategygame.backend.pathfinding.module.Pathfinder
-import io.github.smiley4.strategygame.backend.pathfinding.module.ScoreCalculator
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Path
+import io.github.smiley4.strategygame.backend.pathfinding.edge.Pathfinder
+import io.github.smiley4.strategygame.backend.pathfinding.edge.ScoreCalculator
 
 internal class AStarPathfinder<T : Node>(
     private val neighbourProvider: NeighbourProvider<T>,

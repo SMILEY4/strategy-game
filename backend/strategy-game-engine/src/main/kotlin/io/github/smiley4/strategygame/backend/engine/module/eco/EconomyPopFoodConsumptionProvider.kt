@@ -1,7 +1,6 @@
-package io.github.smiley4.strategygame.backend.engine.module.core.eco
+package io.github.smiley4.strategygame.backend.engine.module.eco
 
-import io.github.smiley4.strategygame.backend.engine.ports.models.City
-
+import io.github.smiley4.strategygame.backend.commondata.City
 
 interface EconomyPopFoodConsumptionProvider {
     fun getRequiredFood(city: City): Float
