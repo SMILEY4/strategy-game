@@ -25,6 +25,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.RSAKeyProvider
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService.UserIdentityError
 import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
 import io.github.smiley4.strategygame.backend.users.edge.models.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
@@ -217,7 +218,10 @@ internal class AwsCognitoService(
             log().info("Successfully deleted user $email")
         } catch (e: Exception) {
             log().info("Failed to delete user $email: ${e.message}", e)
-            throw Exception("Could not delete user.", e)
+            when (e) {
+                is UserIdentityError -> throw e
+                else -> throw Exception("Could not delete user.", e)
+            }
         }
     }
 
