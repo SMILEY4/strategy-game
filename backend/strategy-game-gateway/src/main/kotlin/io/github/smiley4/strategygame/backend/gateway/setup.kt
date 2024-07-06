@@ -16,6 +16,8 @@ import io.github.smiley4.strategygame.backend.gateway.users.RouteRefresh.routeRe
 import io.github.smiley4.strategygame.backend.gateway.users.RouteSignup.routeSignup
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManagerImpl
+import io.github.smiley4.strategygame.backend.gateway.websocket.messages.MessageProducer
+import io.github.smiley4.strategygame.backend.gateway.websocket.messages.WebSocketMessageProducer
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.GatewayGameMessageHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.GatewayGameMessageProducer
@@ -27,8 +29,6 @@ import io.github.smiley4.strategygame.backend.gateway.worlds.RouteJoin.routeJoin
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteList.routeList
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteWebsocket.routeWebsocket
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteWebsocketTicket.routeWebsocketTicket
-import io.github.smiley4.strategygame.backend.gateway.websocket.messages.MessageProducer
-import io.github.smiley4.strategygame.backend.gateway.websocket.messages.WebSocketMessageProducer
 import io.github.smiley4.strategygame.backend.users.edge.CreateUser
 import io.github.smiley4.strategygame.backend.users.edge.DeleteUser
 import io.github.smiley4.strategygame.backend.users.edge.LoginUser
@@ -197,52 +197,56 @@ fun Application.ktorGateway() {
 
 private fun Route.routingGateway() {
 
-    val meterRegistry by inject<PrometheusMeterRegistry>()
-    routeHealth()
-    route("operation") {
-        authenticate("auth-technical-user") {
-            routeMetrics(meterRegistry)
-        }
-    }
+    route("api") {
 
-    val userCreate by inject<CreateUser>()
-    val userLogin by inject<LoginUser>()
-    val userRefresh by inject<RefreshUserToken>()
-    val userDelete by inject<DeleteUser>()
-    route("user") {
-        routeLogin(userLogin)
-        routeRefresh(userRefresh)
-        routeSignup(userCreate)
-        authenticate("user") {
-            routeDelete(userDelete)
+        val meterRegistry by inject<PrometheusMeterRegistry>()
+        routeHealth()
+        route("operation") {
+            authenticate("auth-technical-user") {
+                routeMetrics(meterRegistry)
+            }
         }
-    }
 
-    val wsTicketManager by inject<WebsocketTicketAuthManager>()
-    val wsConnectionHandler by inject<WebSocketConnectionHandler>()
-    val createGame by inject<CreateGame>()
-    val joinGame by inject<JoinGame>()
-    val listGames by inject<ListGames>()
-    val deleteGame by inject<DeleteGame>()
-    val gameConfig by inject<GameConfig>()
-    val messageHandler by inject<GatewayGameMessageHandler>()
-    val disconnectAction by inject<DisconnectPlayer>()
-    val requestConnection by inject<RequestConnectionToGame>()
-    val connectAction by inject<ConnectToGame>()
-    val disconnectAll by inject<DisconnectAllPlayers>()
-    route("session") {
-        authenticate("user") {
-            routeCreate(createGame, joinGame)
-            routeJoin(joinGame)
-            routeList(listGames)
-            routeDelete(deleteGame)
-            routeConfig(gameConfig)
-            routeWebsocketTicket(wsTicketManager)
+        val userCreate by inject<CreateUser>()
+        val userLogin by inject<LoginUser>()
+        val userRefresh by inject<RefreshUserToken>()
+        val userDelete by inject<DeleteUser>()
+        route("user") {
+            routeLogin(userLogin)
+            routeRefresh(userRefresh)
+            routeSignup(userCreate)
+            authenticate("user") {
+                routeDelete(userDelete)
+            }
         }
-        authenticate("auth-technical-user") {
-            routeDisconnectAll(disconnectAll)
+
+        val wsTicketManager by inject<WebsocketTicketAuthManager>()
+        val wsConnectionHandler by inject<WebSocketConnectionHandler>()
+        val createGame by inject<CreateGame>()
+        val joinGame by inject<JoinGame>()
+        val listGames by inject<ListGames>()
+        val deleteGame by inject<DeleteGame>()
+        val gameConfig by inject<GameConfig>()
+        val messageHandler by inject<GatewayGameMessageHandler>()
+        val disconnectAction by inject<DisconnectPlayer>()
+        val requestConnection by inject<RequestConnectionToGame>()
+        val connectAction by inject<ConnectToGame>()
+        val disconnectAll by inject<DisconnectAllPlayers>()
+        route("session") {
+            authenticate("user") {
+                routeCreate(createGame, joinGame)
+                routeJoin(joinGame)
+                routeList(listGames)
+                routeDelete(deleteGame)
+                routeConfig(gameConfig)
+                routeWebsocketTicket(wsTicketManager)
+            }
+            authenticate("auth-technical-user") {
+                routeDisconnectAll(disconnectAll)
+            }
+            routeWebsocket(wsTicketManager, wsConnectionHandler, messageHandler, disconnectAction, requestConnection, connectAction)
         }
-        routeWebsocket(wsTicketManager, wsConnectionHandler, messageHandler, disconnectAction, requestConnection, connectAction)
+
     }
 
 }

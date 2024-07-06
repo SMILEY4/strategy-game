@@ -12,6 +12,8 @@ import io.github.smiley4.strategygame.backend.engine.dependenciesEngine
 import io.github.smiley4.strategygame.backend.pathfinding.dependenciesPathfinding
 import io.github.smiley4.strategygame.backend.playerpov.dependenciesPlayerPoV
 import io.github.smiley4.strategygame.backend.worlds.dependenciesWorlds
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
 import org.koin.dsl.module
@@ -26,5 +28,6 @@ val applicationDependencies = module {
     dependenciesWorldGen()
     dependenciesWorlds()
     single<GameConfig> { GameConfig.default() }
+    single<PrometheusMeterRegistry> { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
     single<MonitoringService> { MicrometerMonitoringService(get()).also { Monitoring.service = it } } withOptions { createdAtStart() }
 }

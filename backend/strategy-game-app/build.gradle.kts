@@ -3,8 +3,15 @@ val projectVersion: String by project
 group = projectGroupId
 version = projectVersion
 
+application {
+    mainClass.set("io.github.smiley4.strategygame.backend.app.ApplicationKt")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${System.getProperty("ev") ?: "false"}")
+}
+
 plugins {
+    application
     kotlin("jvm")
+    id("com.github.johnrengelman.shadow")
 }
 
 repositories {
