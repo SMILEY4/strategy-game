@@ -4,16 +4,16 @@ import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.Game
-import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectFromGame
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectPlayer
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameUpdate
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GamesByUserQuery
 
-internal class DisconnectFromGameImpl(
+internal class DisconnectPlayerImpl(
     private val gamesByUserQuery: GamesByUserQuery,
     private val gameUpdate: GameUpdate,
-) : DisconnectFromGame, Logging {
+) : DisconnectPlayer, Logging {
 
-    private val metricId = MetricId.action(DisconnectFromGame::class)
+    private val metricId = MetricId.action(DisconnectPlayer::class)
 
     override suspend fun perform(userId: String) {
         time(metricId) {

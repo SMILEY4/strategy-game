@@ -7,7 +7,6 @@ import io.github.smiley4.strategygame.backend.commondata.GameExtended
 interface InitializeWorld {
 
     sealed class InitializeWorldError(message: String?) : Exception(message)
-    class GameNotFoundError : InitializeWorldError("The requested game could not be found")
 
     /**
      * Initializes the given empty game world

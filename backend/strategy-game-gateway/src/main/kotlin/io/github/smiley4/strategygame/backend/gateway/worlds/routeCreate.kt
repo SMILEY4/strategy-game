@@ -78,9 +78,7 @@ internal object RouteCreate {
                 joinGame.perform(userId, gameId)
                 call.respond(HttpStatusCode.OK, gameId)
             } catch (e: CreateGame.CreateGameError) {
-                when (e) {
-                    is CreateGame.WorldInitError -> call.respond(WorldInitErrorResponse)
-                }
+                // do nothing
             } catch (e: JoinGame.GameJoinActionErrors) {
                 when (e) {
                     is JoinGame.GameNotFoundError -> call.respond(GameNotFoundResponse)

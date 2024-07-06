@@ -36,7 +36,7 @@ internal class TurnEndImpl(
             val game = getGame(gameId)
             val gameExtended = getGameExtended(gameId)
             stepGame(gameExtended)
-            updateGameInfo(game)
+            updateGameInfo(game, gameExtended)
             sendPoVGameState(game, gameExtended)
         }
     }
@@ -83,10 +83,11 @@ internal class TurnEndImpl(
     /**
      * Update the state of the game to prepare it for the next turn
      */
-    private suspend fun updateGameInfo(game: Game) {
+    private suspend fun updateGameInfo(game: Game, gameExtended: GameExtended) {
         game.players.forEach { player ->
             player.state = PlayerState.PLAYING
         }
+        game.turn = gameExtended.meta.turn
         updateGame.execute(game)
     }
 

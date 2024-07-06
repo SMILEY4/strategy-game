@@ -8,23 +8,30 @@ import kotlin.time.Duration
 
 object DatabaseProvider {
 
+    data class Config(
+        val host: String,
+        val port: Int,
+        val username: String?,
+        val password: String?,
+        val name: String,
+        val retryCount: Int,
+        val retryTimeout: Duration
+    )
+
     private val logger = KotlinLogging.logger {}
 
-    var portOverwrite: Int? = null
-
-    suspend fun create(dbName: String, host: String, port: Int, retryCount: Int, retryTimeout: Duration, currentRetryCounter: Int = 0): ArangoDatabase {
-        val actualPort = portOverwrite ?: port
+    suspend fun create(config: Config, currentRetryCounter: Int = 0): ArangoDatabase {
         try {
-            logger.info("Trying to connect to database $dbName on $host:$actualPort (retryCount=$currentRetryCounter)")
-            return ArangoDatabase.create(host, actualPort, null, null, dbName)
+            logger.info("Trying to connect to database ${config.name} on ${config.host}:${config.port} (retryCount=$currentRetryCounter)")
+            return ArangoDatabase.create(config.host, config.port, config.username, config.password, config.name)
         } catch (e: CompletionException) {
             if (e.cause is ArangoDBException) {
-                if (currentRetryCounter >= retryCount) {
+                if (currentRetryCounter >= config.retryCount) {
                     throw DBConnectionException()
                 } else {
-                    logger.warn("Could not connect to database, retrying in ${retryTimeout.inWholeSeconds} seconds")
-                    delay(retryTimeout)
-                    return create(dbName, host, actualPort, retryCount, retryTimeout, currentRetryCounter + 1)
+                    logger.warn("Could not connect to database, retrying in ${config.retryTimeout.inWholeSeconds} seconds")
+                    delay(config.retryTimeout)
+                    return create(config, currentRetryCounter + 1)
                 }
             } else {
                 throw e.cause ?: e

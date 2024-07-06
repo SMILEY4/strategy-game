@@ -36,7 +36,7 @@ import org.koin.core.Koin
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
-class AwsCognitoUserTests : FreeSpec({
+class AwsCognitoUserTest : FreeSpec({
 
     "create user" - {
 

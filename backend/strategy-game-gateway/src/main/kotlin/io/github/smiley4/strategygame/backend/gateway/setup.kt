@@ -38,7 +38,7 @@ import io.github.smiley4.strategygame.backend.worlds.edge.ConnectToGame
 import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
 import io.github.smiley4.strategygame.backend.worlds.edge.DeleteGame
 import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectAllPlayers
-import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectFromGame
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectPlayer
 import io.github.smiley4.strategygame.backend.worlds.edge.GameMessageProducer
 import io.github.smiley4.strategygame.backend.worlds.edge.JoinGame
 import io.github.smiley4.strategygame.backend.worlds.edge.ListGames
@@ -226,7 +226,7 @@ private fun Route.routingGateway() {
     val deleteGame by inject<DeleteGame>()
     val gameConfig by inject<GameConfig>()
     val messageHandler by inject<GatewayGameMessageHandler>()
-    val disconnectAction by inject<DisconnectFromGame>()
+    val disconnectAction by inject<DisconnectPlayer>()
     val requestConnection by inject<RequestConnectionToGame>()
     val connectAction by inject<ConnectToGame>()
     val disconnectAll by inject<DisconnectAllPlayers>()

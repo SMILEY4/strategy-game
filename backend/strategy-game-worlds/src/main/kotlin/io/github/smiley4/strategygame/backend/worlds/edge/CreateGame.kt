@@ -7,7 +7,6 @@ package io.github.smiley4.strategygame.backend.worlds.edge
 interface CreateGame {
 
 	sealed class CreateGameError(message: String, cause: Throwable? = null) : Exception(message, cause)
-	class WorldInitError(cause: Throwable? = null) : CreateGameError("Failed to initialize world", cause)
 
 
 	/**

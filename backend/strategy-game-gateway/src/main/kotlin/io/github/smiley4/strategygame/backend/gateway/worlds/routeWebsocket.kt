@@ -13,7 +13,7 @@ import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocke
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.MessageMetadata
 import io.github.smiley4.strategygame.backend.worlds.edge.ConnectToGame
-import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectFromGame
+import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectPlayer
 import io.github.smiley4.strategygame.backend.worlds.edge.RequestConnectionToGame
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -46,7 +46,7 @@ internal object RouteWebsocket {
         ticketManager: WebsocketTicketAuthManager,
         connectionHandler: WebSocketConnectionHandler,
         messageHandler: GatewayGameMessageHandler,
-        disconnectAction: DisconnectFromGame,
+        disconnectAction: DisconnectPlayer,
         requestConnection: RequestConnectionToGame,
         connectAction: ConnectToGame
     ) = webSocketExt("{${WebsocketConstants.GAME_ID}}", connectionHandler, ticketManager, authenticate = true) {

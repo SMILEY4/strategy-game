@@ -52,13 +52,7 @@ internal class CreateGameImpl(
      * Initialize, populate and persist the world
      */
     private suspend fun initialize(game: Game, worldSeed: Int?) {
-        val gameExtended = try {
-            initializeWorld.perform(game, worldSeed)
-        } catch (e: InitializeWorld.InitializeWorldError) {
-            when (e) {
-                is InitializeWorld.GameNotFoundError -> throw CreateGame.WorldInitError(e)
-            }
-        }
+        val gameExtended = initializeWorld.perform(game, worldSeed)
         gameExtendedUpdate.execute(gameExtended)
     }
 
