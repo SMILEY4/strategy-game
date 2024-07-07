@@ -50,6 +50,7 @@ export class TextureBindingHandler {
         // find unit already used for name
         for (let unitInfo of this.units) {
             if (unitInfo.used && unitInfo.boundName === name) {
+                console.log("Finding texture unit for " + name + ": using unit already used by name.", unitInfo)
                 return unitInfo.unit;
             }
         }
@@ -58,6 +59,7 @@ export class TextureBindingHandler {
             if (!unitInfo.used) {
                 unitInfo.used = true;
                 unitInfo.boundName = name;
+                console.log("Finding texture unit for " + name + ": using unused unit.", unitInfo)
                 return unitInfo.unit;
             }
         }
@@ -66,6 +68,7 @@ export class TextureBindingHandler {
             if (unitInfo.used && lockedNames.indexOf(unitInfo.boundName ?? "") === -1) {
                 unitInfo.used = true;
                 unitInfo.boundName = name;
+                console.log("Finding texture unit for " + name + ": overwriting unit.", unitInfo)
                 return unitInfo.unit;
             }
         }

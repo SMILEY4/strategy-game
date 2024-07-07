@@ -1,0 +1,144 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+group request connection to game
+
+    client -> gateway: request websocket connection
+    activate gateway
+    gateway -> worlds: request connection for game
+    activate worlds
+    worlds -> db: query game
+    activate db
+    db --> worlds
+    deactivate db
+    worlds -> worlds: validate connection request
+    activate worlds
+    deactivate worlds
+    worlds --> gateway: allow or deny request
+    deactivate worlds
+    gateway --> client: accept or deny connection
+    deactivate gateway
+
+end
+
+group connect to game
+
+    client -> gateway: open websocket connection
+    activate gateway
+
+    gateway -> gateway: create connection
+    activate gateway
+    deactivate gateway
+
+    gateway -> worlds: connect user to game
+    activate worlds
+
+    worlds -> db: update game.player connection state
+    activate db
+    db --> worlds
+    deactivate db
+
+    worlds -> db: query complete game state
+    activate db
+    db --> worlds
+    deactivate db
+
+    worlds -> playerpov: build pov state for player
+    activate playerpov
+    playerpov --> worlds
+    deactivate playerpov
+
+    worlds -> gateway: send pov game state message
+    deactivate worlds
+
+    gateway -> client: send pov game state message
+
+end
+
+
+group handle websocket message
+
+    client -> gateway: send message "submit turn"
+
+    gateway -> worlds: submit turn
+    activate worlds
+
+    worlds -> db: query game
+    activate db
+    db --> worlds
+    deactivate db
+
+    worlds -> db: update player turn state
+    activate db
+    db --> worlds
+    deactivate db
+
+    worlds -> db: insert submitted commands
+    activate db
+    db --> worlds
+    deactivate db
+
+    alt all players ended turn
+
+        worlds -> db: query complete game state & all commands
+        activate db
+        db --> worlds
+        deactivate db
+
+        worlds -> engine: step game
+        activate engine
+        engine --> worlds
+        deactivate engine
+
+        worlds -> db: update complete game state
+        activate db
+        db --> worlds
+        deactivate db
+
+        worlds -> db: update player turn state
+        activate db
+        db --> worlds
+        deactivate db
+
+        worlds -> playerpov: build pov state for each player
+        activate playerpov
+        playerpov --> worlds
+        deactivate playerpov
+
+        worlds -> gateway: send pov state to each player
+        deactivate worlds
+
+        gateway -> client: send pov state to each player
+
+    end
+
+    deactivate worlds
+
+end
+
+group close websocket connection
+
+    client -> gateway: close websocket connection
+    gateway -> worlds: disconnect player from games
+    activate worlds
+
+    worlds -> db: query all games by user & currently connected
+    activate db
+    db --> worlds
+    deactivate db
+
+    worlds -> db: for each game: update player connection state
+    activate db
+    db --> worlds
+    deactivate db
+
+    worlds --> gateway
+    deactivate worlds
+
+    gateway -> gateway: dispose connection
+    activate gateway
+    deactivate gateway
+
+end
+
+@enduml
