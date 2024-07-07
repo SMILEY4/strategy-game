@@ -21,6 +21,8 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
      * - must have exactly one render target output
      */
     public validate(nodes: AbstractRenderNode[]): [boolean, string] {
+        console.log("Validating render graph (webgl).")
+
         if (nodes.length === 0) {
             return [false, "graph is empty"];
         }
@@ -48,10 +50,14 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
     }
 
     public compile(nodes: AbstractRenderNode[]): WebGLRenderCommand.Base[] {
+        console.log("Compiling render graph (webgl).")
+
         const commands: WebGLRenderCommand.Base[] = [];
         const textureBindingHandler = new TextureBindingHandler(16);
 
         for (let node of nodes) {
+            console.log("Compiling render graph node", node.id, node)
+
             if (node instanceof VertexRenderNode) {
                 this.compileVertex(node, commands);
             }
