@@ -17,7 +17,6 @@ import ManagedVertexBuffer = WebGLResourceManager.ManagedVertexBuffer;
 import ManagedVertexData = WebGLResourceManager.ManagedVertexData;
 import VertexAttribute = NodeOutput.VertexAttribute;
 import VertexBuffer = NodeOutput.VertexBuffer;
-import GLProgramAttribute = GLProgram.GLProgramAttribute;
 
 export class WebGLResourceManager implements ResourceManager {
 
@@ -71,9 +70,9 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeVertexBuffer(id: string, node: VertexRenderNode): ManagedVertexBuffer {
-        console.log("Loading vertex-buffer with id", id);
+		console.log("Loading vertex-buffer with id", id);
 
-        if (this.vertexBuffers.has(id)) {
+		if (this.vertexBuffers.has(id)) {
 			return this.vertexBuffers.get(id)!;
 		}
 
@@ -90,9 +89,9 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode, nodes: AbstractRenderNode[]): ManagedVertexData {
-		console.log("initializing vertex descriptor", id, type, bufferIds)
+		console.log("initializing vertex descriptor", id, type, bufferIds);
 
-        // already initialized
+		// already initialized
 		if (this.vertexData.has(id)) {
 			return this.vertexData.get(id)!!;
 		}
@@ -134,8 +133,14 @@ export class WebGLResourceManager implements ResourceManager {
 			});
 		});
 
-		function findProgramAttribute(program: WebGLResourceManager.ManagedProgram, attribute: NodeOutput.VertexAttribute): GLProgramAttribute | undefined {
-			return program.program.getInformation().attributes.find(a => a.name === attribute.name);
+		function findProgramAttributeLocation(program: WebGLResourceManager.ManagedProgram, attribute: NodeOutput.VertexAttribute): number {
+			const programAttribute = program.program.getInformation().attributes.find(a => a.name === attribute.name);
+			if (programAttribute) {
+				return programAttribute.location;
+			} else {
+				// attribute is not used in shader but needs to be included for correct calculation of offset & stride of other attributes
+				return -1;
+			}
 		}
 
 		// create vertex-arrays
@@ -145,10 +150,9 @@ export class WebGLResourceManager implements ResourceManager {
 			const vertexArray = GLVertexArray.create(
 				this.gl,
 				vertexAttributes
-					.filter(attribute => findProgramAttribute(program, attribute.attribute) !== undefined)
 					.map(attribute => ({
 						buffer: buffers.get(attribute.bufferId)!!.buffer,
-                        location: findProgramAttribute(program, attribute.attribute)!.location,
+						location: findProgramAttributeLocation(program, attribute.attribute),
 						type: attribute.attribute.type,
 						amountComponents: attribute.attribute.amountComponents,
 						normalized: attribute.attribute.normalized,
@@ -176,9 +180,9 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeShaderProgram(vertex: string, fragment: string): ManagedProgram {
-        console.log("Loading shader program with", vertex, fragment);
+		console.log("Loading shader program with", vertex, fragment);
 
-        const programId = this.getProgramId(vertex, fragment);
+		const programId = this.getProgramId(vertex, fragment);
 		if (this.shaders.has(programId)) {
 			return this.shaders.get(programId)!;
 		}
@@ -210,7 +214,7 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeFramebuffer(renderTargetId: string, depth: boolean, scale: number) {
-        console.log("Initializing framebuffer", renderTargetId, depth, scale)
+		console.log("Initializing framebuffer", renderTargetId, depth, scale);
 		if (this.framebuffers.has(renderTargetId)) {
 			return this.framebuffers.get(renderTargetId)!;
 		}
