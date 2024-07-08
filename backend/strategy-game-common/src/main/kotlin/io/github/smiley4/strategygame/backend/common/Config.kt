@@ -12,23 +12,21 @@ object Config {
 
 
     /**
-     * @param envName the name of the environment. Defines, which config file(s) to load in addition to the base file(s) ( application.<env>.conf, application.<env>.local.conf )
+     * @param envName the name of the environment. Defines, which config file(s) to load in addition to the base file(s) ( application.<env>.conf )
      */
     fun load(envName: String) {
         val baseConfig = ConfigFactory.parseResources("application.conf")
-        val baseLocalConfig = ConfigFactory.parseResources("application.local.conf")
         val envConfig = ConfigFactory.parseResources("application.$envName.conf")
-        val envLocalConfig = ConfigFactory.parseResources("application.$envName.local.conf")
 
         val typesafeConfig = ConfigFactory.load()
-            .withFallback(envLocalConfig)
-            .withFallback(envConfig)
-            .withFallback(baseLocalConfig)
             .withFallback(baseConfig)
+            .withFallback(envConfig)
+            .resolve()
 
         val jsonConfig = typesafeConfig.root().render(
             ConfigRenderOptions
                 .defaults()
+                .setShowEnvVariableValues(true)
                 .setOriginComments(false)
                 .setComments(false)
                 .setFormatted(true)

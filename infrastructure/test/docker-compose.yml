@@ -2,6 +2,24 @@ version: "2.1"
 
 services:
 
+    backend:
+        image: strategy-game-backend
+        ports:
+            - "8080:8080"
+        secrets:
+            - secretAccessKey
+            - adminPassword
+        environment:
+            LOG_AS_JSON: "true"
+        depends_on:
+            - promtail
+        logging:
+            driver: syslog
+            options:
+                syslog-address: "tcp://127.0.0.1:1514"
+                syslog-format: "rfc5424"
+                tag: "backend"
+
     database:
         image: arangodb:3.10.0
         environment:
@@ -11,6 +29,15 @@ services:
         volumes:
             - "arangodb_data_container:/var/lib/arangodb3"
             - "arangodb_apps_data_container:/var/lib/arangodb3-apps"
+        depends_on:
+            - promtail
+        command: --log.use-json-format
+        logging:
+            driver: syslog
+            options:
+                syslog-address: "tcp://127.0.0.1:1514"
+                syslog-format: "rfc5424"
+                tag: "database"
 
 
     prometheus:
@@ -49,19 +76,14 @@ services:
             - "./grafana/datasources:/etc/grafana/provisioning/datasources"
             - "grafana_data:/var/lib/grafana"
 
-
-    flog:
-        image: mingrammer/flog
-        command: -f json -d 5s -l
-        logging:
-            driver: syslog
-            options:
-                syslog-address: "tcp://127.0.0.1:1514"
-                syslog-format: "rfc5424"
-
-
 volumes:
     arangodb_data_container:
     arangodb_apps_data_container:
     prometheus_data:
     grafana_data:
+
+secrets:
+    secretAccessKey:
+        environment: "SECRET_ACCESS_KEY"
+    adminPassword:
+        environment: "ADMIN_PASSWORD"

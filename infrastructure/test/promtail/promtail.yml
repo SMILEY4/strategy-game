@@ -8,13 +8,61 @@ positions:
 clients:
   - url: http://loki:3100/loki/api/v1/push
 
+
 scrape_configs:
+
   - job_name: syslog
     syslog:
       listen_address: 0.0.0.0:1514
       listen_protocol: tcp
+      label_structured_data: yes
       labels:
-        job: "syslog"
+        job: syslog
+
     relabel_configs:
-      - source_labels: ['__syslog_message_hostname']
-        target_label: 'host'
+      - source_labels: ['__syslog_message_app_name']
+        target_label: appname
+
+    pipeline_stages:
+
+      - match:
+          selector: '{appname="database"}'
+          stages:
+            - json:
+                expressions:
+                  message: message
+                  level: level
+            - labels:
+                level:
+            - template:
+                source: outputMessage
+                template: '{{ .message }}'
+            - output:
+                source: outputMessage
+
+      - match:
+          selector: '{appname="backend"}'
+          stages:
+            - json:
+                expressions:
+                  message: message
+                  stackTrace: stack_trace
+                  loggerName: logger_name
+                  threadName: thread_name
+                  level: level
+                  traceId: traceId
+            - labels:
+                loggerName:
+                threadName:
+                level:
+                appname:
+                traceId:
+            - template:
+                source: outputMessage
+                template: '{{ .message }} {{ .stackTrace }}'
+            - replace:
+                source: outputMessage
+                expression: "(<no value>)"
+                replace: ""
+            - output:
+                source: outputMessage

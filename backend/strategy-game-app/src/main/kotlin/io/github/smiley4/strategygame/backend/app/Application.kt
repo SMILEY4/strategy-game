@@ -15,7 +15,7 @@ var APPLICATION_MODE = ApplicationMode.DEFAULT
  * Entry point of the application
  */
 fun main(args: Array<String>) {
-    APPLICATION_MODE = getMode(args)
+    APPLICATION_MODE = ApplicationMode.PROD // getMode(args)
     Logging.create().info("Starting application in $APPLICATION_MODE mode.")
     CustomNettyEngineMain.main(APPLICATION_MODE, args)
 }

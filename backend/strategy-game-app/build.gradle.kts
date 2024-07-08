@@ -76,3 +76,13 @@ dependencies {
 kotlin {
     jvmToolchain(17)
 }
+
+tasks {
+    shadowJar {
+        isZip64 = true
+        archiveFileName.set("${project.name}.jar")
+        manifest {
+            attributes(Pair("Main-Class", "io.ktor.server.netty.EngineMain"))
+        }
+    }
+}
