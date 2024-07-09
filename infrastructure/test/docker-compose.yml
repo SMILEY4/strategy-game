@@ -2,6 +2,30 @@ version: "2.1"
 
 services:
 
+    reverse_proxy:
+        image: caddy:2.6.4
+        ports:
+            - "80:80"
+            - "443:443"
+            - "443:443/udp"
+            - "2019:2019"
+        volumes:
+            - "./caddy/Caddyfile:/etc/caddy/Caddyfile"
+            - "caddy_data:/data"
+            - "caddy_config:/config"
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+        depends_on:
+            - promtail
+        logging:
+            driver: syslog
+            options:
+                syslog-address: "tcp://127.0.0.1:1514"
+                syslog-format: "rfc5424"
+                tag: "caddy"
+
     backend:
         image: strategy-game-backend
         ports:
@@ -37,13 +61,15 @@ services:
             options:
                 syslog-address: "tcp://127.0.0.1:1514"
                 syslog-format: "rfc5424"
-                tag: "database"
+                tag: "arango"
 
 
     prometheus:
         image: prom/prometheus:v2.39.1
         ports:
             - "9090:9090"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         volumes:
             - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
             - "prometheus_data:/prometheus"
@@ -76,7 +102,17 @@ services:
             - "./grafana/datasources:/etc/grafana/provisioning/datasources"
             - "grafana_data:/var/lib/grafana"
 
+    dex:
+        image: spx01/dex:0.0.8
+        expose:
+            - "8080"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+
+
 volumes:
+    caddy_data:
+    caddy_config:
     arangodb_data_container:
     arangodb_apps_data_container:
     prometheus_data:

@@ -1,0 +1,10 @@
+{
+	servers {
+    	metrics
+    }
+    admin :2019
+}
+
+localhost {
+	reverse_proxy backend:8080
+}

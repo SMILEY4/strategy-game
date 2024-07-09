@@ -201,11 +201,7 @@ private fun Route.routingGateway() {
 
         val meterRegistry by inject<PrometheusMeterRegistry>()
         routeHealth()
-        route("operation") {
-            authenticate("auth-technical-user") {
-                routeMetrics(meterRegistry)
-            }
-        }
+        routeMetrics(meterRegistry)
 
         val userCreate by inject<CreateUser>()
         val userLogin by inject<LoginUser>()

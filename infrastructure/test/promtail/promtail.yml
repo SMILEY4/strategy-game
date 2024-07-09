@@ -26,7 +26,25 @@ scrape_configs:
     pipeline_stages:
 
       - match:
-          selector: '{appname="database"}'
+          selector: '{appname="caddy"}'
+          stages:
+            - json:
+                expressions:
+                  message: msg
+                  level: level
+                  logger: logger
+            - labels:
+                level:
+                logger:
+                appname:
+            - template:
+                source: outputMessage
+                template: '{{ .message }}'
+            - output:
+                source: outputMessage
+
+      - match:
+          selector: '{appname="arango"}'
           stages:
             - json:
                 expressions:
@@ -34,6 +52,8 @@ scrape_configs:
                   level: level
             - labels:
                 level:
+                logger: "default"
+                appname:
             - template:
                 source: outputMessage
                 template: '{{ .message }}'
@@ -46,16 +66,17 @@ scrape_configs:
             - json:
                 expressions:
                   message: message
-                  stackTrace: stack_trace
-                  loggerName: logger_name
-                  threadName: thread_name
                   level: level
+                  logger: logger_name
+                  stackTrace: stack_trace
+                  threadName: thread_name
                   traceId: traceId
             - labels:
+                level:
+                logger:
+                appname:
                 loggerName:
                 threadName:
-                level:
-                appname:
                 traceId:
             - template:
                 source: outputMessage
