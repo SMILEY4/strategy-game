@@ -10,6 +10,6 @@ RUN mkdir /app
 COPY docker-entrypoint.sh docker-entrypoint.sh
 RUN ["chmod", "+x", "./docker-entrypoint.sh"]
 
-COPY --from=build /home/gradle/src/build/libs/strategy-game-backend.jar /app/strategy-game.jar
+COPY --from=build /home/gradle/src/strategy-game-app/build/libs/strategy-game-app.jar /app/strategy-game.jar
 
 ENTRYPOINT ["/bin/bash", "-c", "./docker-entrypoint.sh"]

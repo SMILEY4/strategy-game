@@ -1,0 +1,125 @@
+version: "2.1"
+
+services:
+
+    reverse_proxy:
+        image: caddy:2.6.4
+        ports:
+            - "80:80"
+            - "443:443"
+            - "443:443/udp"
+            - "2019:2019"
+        volumes:
+            - "./caddy/Caddyfile:/etc/caddy/Caddyfile"
+            - "caddy_data:/data"
+            - "caddy_config:/config"
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+        depends_on:
+            - promtail
+        logging:
+            driver: syslog
+            options:
+                syslog-address: "tcp://127.0.0.1:1514"
+                syslog-format: "rfc5424"
+                tag: "caddy"
+
+    backend:
+        image: strategy-game-backend
+        ports:
+            - "8080:8080"
+        secrets:
+            - secretAccessKey
+            - adminPassword
+        environment:
+            LOG_AS_JSON: "true"
+        depends_on:
+            - promtail
+        logging:
+            driver: syslog
+            options:
+                syslog-address: "tcp://127.0.0.1:1514"
+                syslog-format: "rfc5424"
+                tag: "backend"
+
+    database:
+        image: arangodb:3.10.0
+        environment:
+            ARANGO_NO_AUTH: 1
+        ports:
+            - "8529:8529"
+        volumes:
+            - "arangodb_data_container:/var/lib/arangodb3"
+            - "arangodb_apps_data_container:/var/lib/arangodb3-apps"
+        depends_on:
+            - promtail
+        command: --log.use-json-format
+        logging:
+            driver: syslog
+            options:
+                syslog-address: "tcp://127.0.0.1:1514"
+                syslog-format: "rfc5424"
+                tag: "arango"
+
+
+    prometheus:
+        image: prom/prometheus:v2.39.1
+        ports:
+            - "9090:9090"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+            - "prometheus_data:/prometheus"
+        command: --config.file=/etc/prometheus/prometheus.yml
+
+    promtail:
+        image: grafana/promtail:2.9.9
+        ports:
+            - "12201:12201"
+            - "9080:9080"
+            - "1514:1514"
+        volumes:
+            - "./promtail/promtail.yml:/etc/promtail/config.yml"
+        command: -config.file=/etc/promtail/config.yml
+
+    loki:
+        image: grafana/loki:2.9.9
+        ports:
+            - "3100:3100"
+        volumes:
+            - "./loki/loki.yml:/etc/loki/loki-config.yaml"
+
+    grafana:
+        image: grafana/grafana:11.0.1
+        ports:
+            - "3000:3000"
+        user: "104"
+        volumes:
+            - "./grafana/dashboards:/etc/grafana/provisioning/dashboards"
+            - "./grafana/datasources:/etc/grafana/provisioning/datasources"
+            - "grafana_data:/var/lib/grafana"
+
+    dex:
+        image: spx01/dex:0.0.8
+        expose:
+            - "8080"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+
+
+volumes:
+    caddy_data:
+    caddy_config:
+    arangodb_data_container:
+    arangodb_apps_data_container:
+    prometheus_data:
+    grafana_data:
+
+secrets:
+    secretAccessKey:
+        environment: "SECRET_ACCESS_KEY"
+    adminPassword:
+        environment: "ADMIN_PASSWORD"

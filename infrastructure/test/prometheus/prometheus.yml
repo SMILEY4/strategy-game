@@ -1,0 +1,25 @@
+scrape_configs:
+
+    - job_name: 'backend'
+      metrics_path: /api/metrics
+      scrape_interval: 10s
+      static_configs:
+          - targets: ['backend:8080']
+
+
+    - job_name: 'database'
+      metrics_path: /_admin/metrics/v2
+      scrape_interval: 10s
+      static_configs:
+          - targets: ['database:8529']
+
+    - job_name: 'caddy'
+      scrape_interval: 10s
+      static_configs:
+          - targets: ['reverse_proxy:2019']
+
+    - job_name: 'dex'
+      scrape_interval: 10s
+      static_configs:
+          - targets: ["dex:8080"]
+
