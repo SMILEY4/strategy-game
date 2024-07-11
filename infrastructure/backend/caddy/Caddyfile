@@ -1,3 +1,0 @@
-api.strategy-game.lruegner.de {
-	reverse_proxy app:8080
-}
