@@ -2,37 +2,7 @@ apiVersion: 1
 
 providers:
 
-- name: ArangoDb
-  folder: ''
-  type: file
-  editable: true
-  options:
-    path: /etc/grafana/provisioning/dashboards/general/ArangoDb.yml
-
-- name: Backend
-  folder: ''
-  type: file
-  editable: true
-  options:
-    path: /etc/grafana/provisioning/dashboards/general/Backend.yml
-
-- name: Caddy
-  folder: ''
-  type: file
-  editable: true
-  options:
-    path: /etc/grafana/provisioning/dashboards/general/Caddy.yml
-
-- name: Docker
-  folder: ''
-  type: file
-  editable: true
-  options:
-    path: /etc/grafana/provisioning/dashboards/general/Docker.yml
-
-- name: Logs
-  folder: ''
-  type: file
-  editable: true
-  options:
-    path: /etc/grafana/provisioning/dashboards/general/Logs.yml
+  - name: "Dashboard provider"
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards

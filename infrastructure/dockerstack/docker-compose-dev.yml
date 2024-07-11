@@ -99,9 +99,3 @@ volumes:
     arangodb_apps_data_container:
     prometheus_data:
     grafana_data:
-
-secrets:
-    secretAccessKey:
-        environment: "SECRET_ACCESS_KEY"
-    adminPassword:
-        environment: "ADMIN_PASSWORD"

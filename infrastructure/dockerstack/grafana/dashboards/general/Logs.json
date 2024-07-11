@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_LOKI",
+      "name": "Loki",
       "label": "Loki",
       "description": "",
       "type": "datasource",
@@ -59,10 +59,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "loki",
-        "uid": "${DS_LOKI}"
-      },
+      "datasource": "Loki",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -186,10 +183,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "loki",
-            "uid": "${DS_LOKI}"
-          },
+          "datasource": "Loki",
           "editorMode": "code",
           "expr": "sum by (level) (rate(({job=\"syslog\", appname=~`$application`, level=~`$level`} |~ `$contains` !~ `(?i)\"\"|$containsNot`)[$__auto]))",
           "legendFormat": "{{level}}",
@@ -201,10 +195,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "loki",
-        "uid": "${DS_LOKI}"
-      },
+      "datasource": "Loki",
       "gridPos": {
         "h": 23,
         "w": 24,
@@ -224,10 +215,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "loki",
-            "uid": "${DS_LOKI}"
-          },
+          "datasource": "Loki",
           "editorMode": "code",
           "expr": "{job=\"syslog\", appname=~\"$application\", level=~`$level`} |~ `$contains` !~ `(?i)\"\"|$containsNot`",
           "queryType": "range",
@@ -246,10 +234,7 @@
       {
         "allValue": ".*",
         "current": {},
-        "datasource": {
-          "type": "loki",
-          "uid": "${DS_LOKI}"
-        },
+        "datasource": "Loki",
         "definition": "",
         "hide": 0,
         "includeAll": true,
@@ -272,10 +257,7 @@
       {
         "allValue": ".*",
         "current": {},
-        "datasource": {
-          "type": "loki",
-          "uid": "${DS_LOKI}"
-        },
+        "datasource": "Loki",
         "definition": "",
         "hide": 0,
         "includeAll": true,

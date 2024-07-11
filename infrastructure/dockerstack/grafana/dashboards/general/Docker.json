@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS",
+      "name": "prometheus",
       "label": "Prometheus",
       "description": "",
       "type": "datasource",
@@ -73,10 +73,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -161,10 +158,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "count(dex_container_running{container_name=~\"$container\"}) by (container_name)",
           "interval": "",
@@ -176,10 +170,7 @@
       "type": "state-timeline"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -226,10 +217,7 @@
       "pluginVersion": "11.0.1",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "count(dex_container_running{container_name=~\"$container\"})",
           "interval": "",
@@ -241,10 +229,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -297,10 +282,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "avg_over_time(dex_cpu_utilization_percent{container_name=~\"$container\"}[$range])",
           "instant": true,
@@ -313,10 +295,7 @@
       "type": "piechart"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -369,10 +348,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "avg_over_time(dex_memory_usage_bytes{container_name=~\"$container\"}[$range])",
           "instant": true,
@@ -385,10 +361,7 @@
       "type": "piechart"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -466,10 +439,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "avg_over_time(dex_cpu_utilization_percent{container_name=~\"$container\"}[$range])",
           "interval": "",
@@ -481,10 +451,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -563,10 +530,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "dex_memory_usage_bytes{container_name=~\"$container\"}",
           "hide": false,
@@ -579,10 +543,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -660,10 +621,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "rate(dex_network_rx_bytes{container_name=~\"$container\"}[$range])",
           "interval": "",
@@ -671,10 +629,7 @@
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "-rate(dex_network_tx_bytes{container_name=~\"$container\"}[$range])",
           "hide": false,
@@ -687,10 +642,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -770,10 +722,7 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "rate(dex_block_io_read_bytes{container_name=~\"$container\"}[$range])",
           "interval": "",
@@ -781,10 +730,7 @@
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
+          "datasource": "Prometheus",
           "exemplar": true,
           "expr": "-rate(dex_block_io_write_bytes{container_name=~\"$container\"}[$range])",
           "hide": false,
@@ -804,10 +750,7 @@
     "list": [
       {
         "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
+        "datasource": "Prometheus",
         "definition": "dex_block_io_read_bytes",
         "hide": 0,
         "includeAll": true,
