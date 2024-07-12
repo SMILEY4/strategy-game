@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+
+    #===================================================================================================================
+    #    Docker Repository
+    #===================================================================================================================
+
+    DockerRepository:
+        Type: "AWS::ECR::Repository"
+        Properties:
+            ImageTagMutability: "MUTABLE"
+            RepositoryName: "strategy-game"
+
+
+Outputs:
+    DockerRepositoryName:
+        Description: "Name of the docker repository"
+        Value: !Ref DockerRepository
+    DockerRepositoryUri:
+        Description: "Url to the docker repository"
+        Value: !GetAtt DockerRepository.RepositoryUri
