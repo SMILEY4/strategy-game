@@ -39,7 +39,7 @@ Resources:
                         Action:
                             - "sts:AssumeRole"
             ManagedPolicyArns:
-                - "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
+                - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 
     ServerInstanceProfile:
         Type: "AWS::IAM::InstanceProfile"
@@ -94,17 +94,28 @@ Resources:
                     sudo apt update -y
                     sudo apt-get update -y
                     
-                    #install aws-cli
+                    # install aws tools
                     sudo apt-get install awscli -y
+                    sudo apt install amazon-ecr-credential-helper -y
 
-                    #install docker
+                    # install docker
                     sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
                     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
                     sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu focal stable"
                     apt-cache policy docker-ce
                     sudo apt install docker-ce -y
+
+                    # configure docker usergoup
+                    sudo usermod -a -G docker $USER
+                    newgrp docker
     
-                    #install docker compose
+                    # configure docker ecr login
+                    mkdir ~/.docker
+                    touch ~/.docker/config.json
+                    echo "{\"credsStore\": \"ecr-login\"}" > ~/.docker/config.json
+                    sudo service docker restart
+
+                    # install docker compose
                     sudo apt-get install docker-compose-plugin -y
 
     #===================================================================================================================

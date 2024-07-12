@@ -1,8 +1,9 @@
-name: Publish
+name: Deploy Backend
 
 on: workflow_dispatch
 
 permissions:
+    id-token: write
     contents: read
 
 jobs:
@@ -12,11 +13,52 @@ jobs:
         if: github.repository == 'SMILEY4/strategy-game'
 
         steps:
+
+            -   name: Configure AWS Credentials
+                uses: aws-actions/configure-aws-credentials@v4
+                with:
+                    role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+                    aws-region: ${{ vars.AWS_REGION }}
+                    role-session-name: gh-action-deploy-backend
+
+
+            -   name: Login to Amazon ECR
+                id: login-ecr
+                uses: aws-actions/amazon-ecr-login@v2
+
+
+            -   uses: actions/checkout@v3
+
+
+#            -   name: Build, tag, and push docker image to Amazon ECR
+#                env:
+#                    REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#                    REPOSITORY: strategy-game
+#                    IMAGE_TAG: ${{ github.sha }}
+#                working-directory: ./backend
+#                run: |
+#                    docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+#                    docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+
             -   name: Install SSH key
                 uses: shimataro/ssh-key-action@v2
                 with:
                     key: ${{ secrets.SSH_KEY }}
                     known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-            -   name: SSH
-                run: ssh ${{ secrets.USERNAME }}@${{ secrets.KNOWN_HOSTS }}
+
+            -   name: Copy files
+                uses: garygrossgarten/github-action-scp@release
+                with:
+                    local: infrastructure/dockerstack
+                    remote: dockerstack
+                    host: ${{ secrets.HOST }}
+                    username: ${{ secrets.USERNAME }}
+                    privateKey: ${{ secrets.SSH_KEY }}
+                    rmRemote: true
+
+            -   name: Start new Docker Stack
+                run: |
+                    ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'docker compose -f ~/dockerstack/docker-compose.yml down || true'
+                    ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'BACKEND_VERSION=10a8cd58330f5d0b0745a11fa77179c96bcb5a45 SECRET_ACCESS_KEY=x ADMIN_PASSWORD=x docker compose -f ~/dockerstack/docker-compose.yml up -d'

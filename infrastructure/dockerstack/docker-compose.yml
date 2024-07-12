@@ -27,7 +27,7 @@ services:
                 tag: "caddy"
 
     backend:
-        image: strategy-game-backend
+        image: 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game:${BACKEND_VERSION:-latest}
         ports:
             - "8080:8080"
         secrets:
