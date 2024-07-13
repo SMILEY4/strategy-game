@@ -7,8 +7,6 @@ services:
         ports:
             - "80:80"
             - "443:443"
-            - "443:443/udp"
-            - "2019:2019"
         volumes:
             - "./caddy/Caddyfile:/etc/caddy/Caddyfile"
             - "caddy_data:/data"
