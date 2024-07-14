@@ -42,10 +42,13 @@ jobs:
                     IMAGE_TAG: ${{ github.sha }}
                 working-directory: ./backend
                 run: |
-                    export ACTIONS_CACHE_URL=$(echo "$ACTIONS_ID_TOKEN_REQUEST_URL" | grep -Po 'https://[^/]+/[^/]+/' | sed 's/pipelines/artifactcache/')
-                    export ACTIONS_RUNTIME_TOKEN=$ACTIONS_ID_TOKEN_REQUEST_TOKEN
-                    docker buildx build --platform linux/arm64 --load --progress=plain --network=host --cache-to "type=gha,mode=max" --cache-from type=gha -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                    docker buildx build --platform linux/arm64 --load --progress=plain --network=host -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
                     docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+#                    export ACTIONS_CACHE_URL=$(echo "$ACTIONS_ID_TOKEN_REQUEST_URL" | grep -Po 'https://[^/]+/[^/]+/' | sed 's/pipelines/artifactcache/')
+#                    export ACTIONS_RUNTIME_TOKEN=$ACTIONS_ID_TOKEN_REQUEST_TOKEN
+#                    docker buildx build --platform linux/arm64 --load --progress=plain --network=host --cache-to "type=gha,mode=max" --cache-from type=gha -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+#                    docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
             -   name: Install SSH Key
                 uses: shimataro/ssh-key-action@v2
