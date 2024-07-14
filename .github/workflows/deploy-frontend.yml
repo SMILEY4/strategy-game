@@ -1,0 +1,46 @@
+name: Deploy Frontend
+
+on: workflow_dispatch
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+        if: github.repository == 'SMILEY4/strategy-game'
+
+        steps:
+
+            -   name: Configure AWS Credentials
+                uses: aws-actions/configure-aws-credentials@v4
+                with:
+                    role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+                    aws-region: ${{ vars.AWS_REGION }}
+                    role-session-name: gh-action-deploy-backend
+
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Setup Node.js environment
+                uses: actions/setup-node@v2.1.5
+                with:
+                    node-version: "20.12.2"
+
+            -   name: Cache dependencies
+                uses: actions/cache@v2
+                with:
+                    path: ~/.npm
+                    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                    restore-keys: |
+                        ${{ runner.os }}-node-
+
+            -   name: Install dependencies
+                working-directory: ./frontend
+                run: npm i
+
+            -   name: Build
+                working-directory: ./frontend
+                run: npm run build

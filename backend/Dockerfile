@@ -6,10 +6,7 @@ RUN gradle build -x test --no-daemon
 FROM openjdk:17-jdk-buster
 EXPOSE 8080
 RUN mkdir /app
-
 COPY docker-entrypoint.sh docker-entrypoint.sh
-RUN ["chmod", "+x", "./docker-entrypoint.sh"]
-
 COPY --from=build /home/gradle/src/strategy-game-app/build/libs/strategy-game-app.jar /app/strategy-game.jar
-
+RUN ["chmod", "+x", "./docker-entrypoint.sh"]
 ENTRYPOINT ["/bin/bash", "-c", "./docker-entrypoint.sh"]
