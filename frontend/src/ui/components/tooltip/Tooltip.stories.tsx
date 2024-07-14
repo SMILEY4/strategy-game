@@ -1,6 +1,6 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {TooltipContent, TooltipContext, TooltipTrigger} from "./Tooltip";
+import {TooltipContent, TooltipContext, TooltipTrigger} from "./TooltipContext";
 
 const meta = {
     title: "Controls/Tooltip",

@@ -126,7 +126,6 @@ export class NextTurnService {
                 influences: HiddenType.hidden(),
             },
             objects: HiddenType.hidden(),
-            renderData: null,
         };
         return tile;
     }
@@ -190,7 +189,6 @@ export class NextTurnService {
                     }
                 });
             }),
-            renderData: null,
         };
         return tile;
     }

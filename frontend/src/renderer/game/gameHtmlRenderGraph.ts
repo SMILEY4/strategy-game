@@ -4,7 +4,7 @@ import {TileDatabase} from "../../state/tileDatabase";
 import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {ChangeProvider} from "./changeProvider";
 import {HtmlResourceIconsNode} from "./rendernodes/htmlResourceIconsNode";
-import {HtmlRenderContext} from "../core/html/htmlRenderCommand";
+import {HtmlRenderCommand} from "../core/html/htmlRenderCommand";
 import {NoOpRenderGraphSorter} from "../core/prebuilt/NoOpRenderGraphSorter";
 import {HtmlResourceManager} from "../core/html/htmlResourceManager";
 import {HtmlRenderGraphCompiler} from "../core/html/htmlRenderGraphCompiler";
@@ -12,7 +12,7 @@ import {HtmlCityLabelsNode} from "./rendernodes/htmlCityLabelsNode";
 import {CityDatabase} from "../../state/cityDatabase";
 
 
-export class GameHtmlRenderGraph extends RenderGraph<HtmlRenderContext> {
+export class GameHtmlRenderGraph extends RenderGraph<HtmlRenderCommand.Context> {
 
     private camera: Camera = new Camera();
 

@@ -1,7 +1,6 @@
 import {useTooltip} from "../headless/useTooltip";
 import React from "react";
 import {FloatingPortal} from "@floating-ui/react";
-import {createRoutesFromChildren} from "react-router-dom";
 
 export interface TooltipContextProps {
     delay?: number;
