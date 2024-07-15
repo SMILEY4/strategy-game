@@ -1,8 +1,8 @@
-FROM gradle:jdk17 AS build
+FROM strategy-game-build:latest AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN ./gradlew --version
-RUN ./gradlew build -x test --parallel --no-daemon --scan
+RUN ./gradlew build -x test --parallel --no-daemon
 
 FROM openjdk:17-jdk-buster
 EXPOSE 8080
