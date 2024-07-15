@@ -9,5 +9,17 @@ localhost {
 	reverse_proxy backend:8080
 }
 api.strategy-game.lruegner.de {
+
+    # block internal routes
+    respond /api/metrics 403
+
+    # block common routes
+    respond /config/* 403
+    respond /data/* 403
+    respond /.htacces 403
+    respond /db_structure/* 403
+    respond /.xml 403
+    respond /README 403
+
     reverse_proxy backend:8080
 }

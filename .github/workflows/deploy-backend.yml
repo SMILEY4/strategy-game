@@ -35,15 +35,21 @@ jobs:
                 uses: docker/setup-buildx-action@v3
 
 
-            -   name: Build and Push to Amazon ECR
+            -   name: Build Application .jar
+                working-directory: ./backend
+                run: ./gradlew build -x test --parallel --no-daemon
+
+
+            -   name: Build Image and Push to Amazon ECR
                 env:
                     REGISTRY: ${{ steps.login-ecr.outputs.registry }}
                     REPOSITORY: strategy-game
                     IMAGE_TAG: ${{ github.sha }}
                 working-directory: ./backend
                 run: |
-                    docker buildx build --platform linux/arm64 --pull --load --progress=plain --network=host -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                    docker buildx build -f Dockerfile-External --platform linux/arm64 --load --progress=plain -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
                     docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
 
             -   name: Install SSH Key
                 uses: shimataro/ssh-key-action@v2
@@ -52,7 +58,7 @@ jobs:
                     known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
 
-            -   name: Copy Files
+            -   name: Copy Files to Server
                 uses: garygrossgarten/github-action-scp@release
                 with:
                     local: infrastructure/dockerstack
@@ -62,11 +68,12 @@ jobs:
                     privateKey: ${{ secrets.SSH_KEY }}
                     rmRemote: true
 
-            -   name: Start new Application
+
+            -   name: Start Application
                 env:
                     IMAGE_TAG: ${{ github.sha }}
-                    SECRET_ACCESS_KEY: "testKey"
-                    ADMIN_PASSWORD: "testPw"
+                    SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_TECHNICAL_USER }}
+                    ADMIN_PASSWORD: ${{ secrets.BACKEND_ADMIN_PASSWORD }}
                 run: |
                     echo "docker compose -f ~/application/docker-compose.yml down || true" | ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }}
                     echo "BACKEND_VERSION=$IMAGE_TAG SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY ADMIN_PASSWORD=$ADMIN_PASSWORD docker compose -f ~/application/docker-compose.yml up -d" | ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }}

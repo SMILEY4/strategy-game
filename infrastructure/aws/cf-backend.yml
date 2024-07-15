@@ -13,6 +13,22 @@ Parameters:
         Type: "String"
         Description: "Name of a key-pair for ec2-instances"
         Default: "ec2-kp"
+    InstanceType:
+        Type: "String"
+        Description: "Type of the ec2-instance"
+        Default: "t4g.small"
+    ImageId:
+        Type: "String"
+        Description: "Type of the image. Use Ubuntu or change the username in the UserData-Script of the ec2 instance."
+        Default: "ami-07f04613f3950ffdd"  # Ubuntu, 20.04 LTS, arm64
+    RootDeviceName:
+        Type: "String"
+        Description: "The device name of the root volume of your AMI (https://repost.aws/knowledge-center/cloudformation-root-volume-property)"
+        Default: "/dev/sda1"
+    VolumeSize:
+        Type: "String"
+        Description: "The volume size of the instance"
+        Default: "16"
 
 Resources:
 
@@ -70,10 +86,6 @@ Resources:
                     ToPort: 443
                     CidrIp: 0.0.0.0/0
                 -   IpProtocol: tcp
-                    FromPort: 8443
-                    ToPort: 8443
-                    CidrIp: 0.0.0.0/0
-                -   IpProtocol: tcp
                     FromPort: 22
                     ToPort: 22
                     CidrIp: 0.0.0.0/0
@@ -81,12 +93,18 @@ Resources:
     ServerInstance:
         Type: "AWS::EC2::Instance"
         Properties:
-            ImageId: "ami-07f04613f3950ffdd" # Ubuntu, 20.04 LTS, arm64
-            InstanceType: "t4g.small"
+            ImageId: !Ref ImageId
+            InstanceType: !Ref InstanceType
             IamInstanceProfile: !Ref ServerInstanceProfile
             SecurityGroupIds:
                 - !Ref ServerSecurityGroup
             KeyName: !Ref Ec2InstanceKeyPairName
+            BlockDeviceMappings:
+                -   DeviceName: !Ref RootDeviceName
+                    Ebs:
+                        VolumeType: "gp2"
+                        DeleteOnTermination: "true"
+                        VolumeSize: !Ref VolumeSize
             UserData:
                 Fn::Base64: |
                     #!/bin/bash -xe

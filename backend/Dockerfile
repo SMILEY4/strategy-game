@@ -1,8 +1,8 @@
-FROM 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game-build:787c130d2633d300b1329f739e4bc61f1026b1c2 AS build
+FROM eclipse-temurin:17 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN ./gradlew --version
-RUN ./gradlew build -x test --parallel
+RUN ./gradlew build -x test --parallel --no-daemon --scan -Dorg.gradle.jvmargs=-Xmx2g
 
 FROM eclipse-temurin:17
 EXPOSE 8080

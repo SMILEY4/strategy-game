@@ -21,13 +21,16 @@ jobs:
                     aws-region: ${{ vars.AWS_REGION }}
                     role-session-name: gh-action-deploy-frontend
 
+
             -   name: Checkout
                 uses: actions/checkout@v3
+
 
             -   name: Setup Node.js environment
                 uses: actions/setup-node@v2.1.5
                 with:
                     node-version: "20.12.2"
+
 
             -   name: Cache dependencies
                 uses: actions/cache@v2
@@ -37,9 +40,11 @@ jobs:
                     restore-keys: |
                         ${{ runner.os }}-node-
 
+
             -   name: Install dependencies
                 working-directory: ./frontend
                 run: npm i
+
 
             -   name: Build
                 working-directory: ./frontend
