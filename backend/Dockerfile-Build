@@ -2,19 +2,21 @@ FROM eclipse-temurin:17
 
 COPY --chown=gradle:gradle . /home/gradle/build
 
-RUN gradle --version
+WORKDIR /home/gradle/build
 
-RUN gradle dependencies
-RUN gradle strategy-game-app:dependencies
-RUN gradle strategy-game-common-arangodb:dependencies
-RUN gradle strategy-game-common-data:dependencies
-RUN gradle strategy-game-ecosim:dependencies
-RUN gradle strategy-game-engine:dependencies
-RUN gradle strategy-game-gateway:dependencies
-RUN gradle strategy-game-pathfinding:dependencies
-RUN gradle strategy-game-playerpov:dependencies
-RUN gradle strategy-game-users:dependencies
-RUN gradle strategy-game-worldgen:dependencies
-RUN gradle strategy-game-worlds:dependencies
+RUN ./gradlew --version
+
+RUN ./gradlew dependencies
+RUN ./gradlew strategy-game-app:dependencies
+RUN ./gradlew strategy-game-common-arangodb:dependencies
+RUN ./gradlew strategy-game-common-data:dependencies
+RUN ./gradlew strategy-game-ecosim:dependencies
+RUN ./gradlew strategy-game-engine:dependencies
+RUN ./gradlew strategy-game-gateway:dependencies
+RUN ./gradlew strategy-game-pathfinding:dependencies
+RUN ./gradlew strategy-game-playerpov:dependencies
+RUN ./gradlew strategy-game-users:dependencies
+RUN ./gradlew strategy-game-worldgen:dependencies
+RUN ./gradlew strategy-game-worlds:dependencies
 
 RUN rm -rf /home/gradle
