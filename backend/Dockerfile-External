@@ -1,0 +1,7 @@
+FROM eclipse-temurin:17
+EXPOSE 8080
+RUN mkdir /app
+COPY docker-entrypoint.sh docker-entrypoint.sh
+COPY /strategy-game-app/build/libs/strategy-game-app.jar /app/strategy-game.jar
+RUN ["chmod", "+x", "./docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "-c", "./docker-entrypoint.sh"]
