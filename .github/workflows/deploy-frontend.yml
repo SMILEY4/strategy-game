@@ -19,7 +19,7 @@ jobs:
                 with:
                     role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
                     aws-region: ${{ vars.AWS_REGION }}
-                    role-session-name: gh-action-deploy-backend
+                    role-session-name: gh-action-deploy-frontend
 
             -   name: Checkout
                 uses: actions/checkout@v3
@@ -44,3 +44,10 @@ jobs:
             -   name: Build
                 working-directory: ./frontend
                 run: npm run build
+
+
+            -   name: Deploy to AWS S3
+                env:
+                    BUCKETNAME_FRONTEND: ${{ vars.BUCKETNAME_FRONTEND }}
+                working-directory: ./frontend
+                run: aws s3 sync ./dist/ s3://$BUCKETNAME_FRONTEND --delete

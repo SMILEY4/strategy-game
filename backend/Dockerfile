@@ -1,10 +1,10 @@
-FROM strategy-game-build:latest AS build
+FROM 627717213620.dkr.ecr.eu-central-1.amazonaws.com/strategy-game-build:787c130d2633d300b1329f739e4bc61f1026b1c2 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN ./gradlew --version
-RUN ./gradlew build -x test --parallel --no-daemon
+RUN ./gradlew build -x test --parallel
 
-FROM openjdk:17-jdk-buster
+FROM eclipse-temurin:17
 EXPOSE 8080
 RUN mkdir /app
 COPY docker-entrypoint.sh docker-entrypoint.sh
