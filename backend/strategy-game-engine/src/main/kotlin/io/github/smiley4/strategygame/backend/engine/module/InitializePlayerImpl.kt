@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer
+import io.github.smiley4.strategygame.backend.engine.moduleold.DiscoverMapArea
 
 
 internal class InitializePlayerImpl(
