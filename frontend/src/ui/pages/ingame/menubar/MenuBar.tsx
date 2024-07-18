@@ -4,25 +4,17 @@ import {HBox} from "../../../components/layout/hbox/HBox";
 import {Spacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";
 import {FiFlag, FiHexagon, FiMap} from "react-icons/fi";
-import {PiScrollBold} from "react-icons/pi";
 import "./menubar.scoped.less";
-import {Country} from "../../../../models/country";
 import {AppCtx} from "../../../../appContext";
-import {UseCommandLogWindow} from "../windows/commandLog/useCommandLogWindow";
-import {UseCountryWindow} from "../windows/country/useCountryWindow";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseTileWindow} from "../windows/tile/useTileWindow";
-import {GameSessionDatabase} from "../../../../state/gameSessionDatabase";
-import {CountryDatabase} from "../../../../state/countryDatabase";
+import {GameSessionDatabase} from "../../../../state/database/gameSessionDatabase";
 
 export function MenuBar(): ReactElement {
 
-    const playerCountry = usePlayerCountry();
     const openDevMenu = UseDevWindow.useOpen();
     const openMapMenu = UseMapWindow.useOpen();
-    const openCountryMenu = UseCountryWindow.useOpen();
-    const openCommandLogMenu = UseCommandLogWindow.useOpen();
     const openTileMenu = UseTileWindow.useOpen();
     const currentTurn = GameSessionDatabase.useTurn()
     const [endTurnDisabled, endTurn] = useEndTurn();
@@ -40,14 +32,6 @@ export function MenuBar(): ReactElement {
                         <FiMap/>
                     </ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={() => openCountryMenu(playerCountry.identifier.id, true)}>
-                        <FiFlag/>
-                    </ButtonPrimary>
-
-                    <ButtonPrimary blue round onClick={openCommandLogMenu}>
-                        <PiScrollBold/>
-                    </ButtonPrimary>
-
                     <ButtonPrimary blue round onClick={() => openTileMenu(null)}>
                         <FiHexagon/>
                     </ButtonPrimary>
@@ -62,11 +46,6 @@ export function MenuBar(): ReactElement {
         </div>
     );
 
-}
-
-function usePlayerCountry(): Country {
-    const userId = AppCtx.UserService().getUserId();
-    return CountryDatabase.useCountryByUserId(userId);
 }
 
 function useEndTurn(): [boolean, () => void] {

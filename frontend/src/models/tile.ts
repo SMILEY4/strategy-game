@@ -15,16 +15,16 @@ export interface TileIdentifier {
 
 export interface Tile {
     identifier: TileIdentifier,
-    visibility: TileVisibility
-    basic: {
-        terrainType: HiddenType<TerrainType>,
-        resourceType: HiddenType<TerrainResourceType>
-    },
-    political: {
-        owner: HiddenType<TileOwner | null>,
-        influences: HiddenType<TileInfluence[]>,
-    }
-    objects: HiddenType<TileObject[]>,
+    // visibility: TileVisibility
+    // basic: {
+    //     terrainType: HiddenType<TerrainType>,
+    //     resourceType: HiddenType<TerrainResourceType>
+    // },
+    // political: {
+    //     owner: HiddenType<TileOwner | null>,
+    //     influences: HiddenType<TileInfluence[]>,
+    // }
+    // objects: HiddenType<TileObject[]>,
 }
 
 export interface TileOwner {

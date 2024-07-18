@@ -2,31 +2,32 @@ import {RenderGraph} from "../core/graph/renderGraph";
 import {WebGLRenderGraphSorter} from "../core/webgl/webGLRenderGraphSorter";
 import {WebGLResourceManager} from "../core/webgl/webGLResourceManager";
 import {WebGLRenderGraphCompiler} from "../core/webgl/webGLRenderGraphCompiler";
-import {DrawTilesWaterNode} from "./rendernodes/drawTilesWaterNode";
-import {VertexTilesNode} from "./rendernodes/vertexTilesNode";
+import {TilesWaterDrawNode} from "./rendernodes/tilesWaterDrawNode";
+import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {WebGLRenderCommand} from "../core/webgl/webGLRenderCommand";
 import {BaseRenderer} from "../../shared/webgl/baseRenderer";
 import {Camera} from "../../shared/webgl/camera";
-import {TileDatabase} from "../../state/tileDatabase";
-import {DrawTilesLandNode} from "./rendernodes/drawTilesLandNode";
-import {DrawTilesFogNode} from "./rendernodes/drawTilesFogNode";
-import {DrawCombineLayersNode} from "./rendernodes/drawCombineLayersNode";
+import {TileDatabase} from "../../state/database/tileDatabase";
+import {TilesLandDrawNode} from "./rendernodes/tilesLandDrawNode";
+import {TilesFogDrawNode} from "./rendernodes/tilesFogDrawNode";
+import {CombineLayersDrawNode} from "./rendernodes/combineLayersDrawNode";
 import {GameShaderSourceManager} from "./shaders/gameShaderSourceManager";
 import {VertexFullQuadNode} from "../core/prebuilt/vertexFullquadNode";
-import {VertexEntitiesNode} from "./rendernodes/vertexEntitiesNode";
-import {DrawEntitiesNode} from "./rendernodes/drawEntitiesNode";
-import {DrawRoutesNode} from "./rendernodes/drawRoutesNode";
-import {VertexRoutesNode} from "./rendernodes/vertexRoutesNode";
-import {RouteDatabase} from "../../state/routeDatabase";
-import {DrawTilesOverlayNode} from "./rendernodes/drawTilesOverlayNode";
-import {VertexOverlayNode} from "./rendernodes/vertexOverlayNode";
-import {GameSessionDatabase} from "../../state/gameSessionDatabase";
-import {VertexDetailsNode} from "./rendernodes/vertexDetailsNode";
-import {DrawDetailsNode} from "./rendernodes/drawDetailsNode";
-import {CommandDatabase} from "../../state/commandDatabase";
+import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";
+import {EntitiesDrawNode} from "./rendernodes/entitiesDrawNode";
+import {RoutesDrawNode} from "./rendernodes/routesDrawNode";
+import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
+import {RouteDatabase} from "../../state/database/routeDatabase";
+import {OverlayDrawNode} from "./rendernodes/overlayDrawNode";
+import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
+import {GameSessionDatabase} from "../../state/database/gameSessionDatabase";
+import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
+import {DetailsDrawNode} from "./rendernodes/detailsDrawNode";
+import {CommandDatabase} from "../../state/database/commandDatabase";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {HtmlResourceIconsNode} from "./rendernodes/htmlResourceIconsNode";
+import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
+import {GameRepository} from "../../state/gameRepository";
 
 
 export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
@@ -40,10 +41,7 @@ export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context
         changeProvider: ChangeProvider,
         gl: WebGL2RenderingContext,
         renderConfig: () => GameRenderConfig,
-        tileDb: TileDatabase,
-        routeDb: RouteDatabase,
-        gameSessionDb: GameSessionDatabase,
-        commandDb: CommandDatabase,
+        gameRepository: GameRepository,
     ) {
         super({
             sorter: new WebGLRenderGraphSorter(),
@@ -51,19 +49,19 @@ export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context
             compiler: new WebGLRenderGraphCompiler(),
             nodes: [
                 new VertexFullQuadNode(),
-                new VertexTilesNode(changeProvider, renderConfig, tileDb),
-                new VertexOverlayNode(changeProvider, tileDb, gameSessionDb),
-                new VertexEntitiesNode(changeProvider, tileDb, commandDb),
-                new VertexDetailsNode(changeProvider, tileDb),
-                new VertexRoutesNode(changeProvider, routeDb),
-                new DrawTilesWaterNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawTilesLandNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawTilesFogNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawTilesOverlayNode(gameSessionDb, () => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawEntitiesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawDetailsNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawRoutesNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new DrawCombineLayersNode(() => this.camera, () => gameSessionDb.getMapMode()),
+                new TilesVertexNode(changeProvider, renderConfig, gameRepository),
+                new OverlayVertexNode(changeProvider, gameRepository),
+                new EntitiesVertexNode(changeProvider, gameRepository),
+                new DetailsVertexNode(changeProvider),
+                new RoutesVertexNode(changeProvider),
+                new TilesWaterDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new TilesLandDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new TilesFogDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new OverlayDrawNode(gameRepository, () => this.camera.getViewProjectionMatrixOrThrow()),
+                new EntitiesDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new DetailsDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new RoutesDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
+                new CombineLayersDrawNode(() => this.camera, () => gameRepository.getMapMode()),
             ],
         });
         this.gl = gl;

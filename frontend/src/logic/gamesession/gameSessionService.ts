@@ -1,9 +1,8 @@
 import {GameSessionClient} from "./gameSessionClient";
 import {handleResponseError} from "../../shared/httpClient";
 import {UnauthorizedError} from "../../models/UnauthorizedError";
-import {GameSessionDatabase} from "../../state/gameSessionDatabase";
+import {GameSessionDatabase} from "../../state/database/gameSessionDatabase";
 import {GameSessionMeta} from "../../models/gameSessionMeta";
-import {Preloader} from "../../shared/preloader";
 import {RenderGraphPreloader} from "../../renderer/core/graph/renderGraphPreloader";
 
 export class GameSessionService {

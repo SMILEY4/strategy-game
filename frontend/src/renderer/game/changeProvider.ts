@@ -1,8 +1,10 @@
 import {ChangeDetector} from "../../shared/changeDetector";
-import {GameSessionDatabase} from "../../state/gameSessionDatabase";
-import {TileDatabase} from "../../state/tileDatabase";
-import {CommandDatabase} from "../../state/commandDatabase";
+import {GameSessionDatabase} from "../../state/database/gameSessionDatabase";
+import {TileDatabase} from "../../state/database/tileDatabase";
+import {CommandDatabase} from "../../state/database/commandDatabase";
 import {Camera} from "../../shared/webgl/camera";
+import {GameRepository} from "../../state/gameRepository";
+import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
 
 interface Changes {
     initFrame: boolean,
@@ -14,9 +16,7 @@ interface Changes {
 
 export class ChangeProvider {
 
-    private readonly gameSessionDb: GameSessionDatabase;
-    private readonly tileDb: TileDatabase;
-    private readonly commandDb: CommandDatabase;
+    private readonly gameRepository: GameRepository;
 
     private readonly detectorRemoteGameStateRevId = new ChangeDetector();
     private readonly detectorCommandRevId = new ChangeDetector();
@@ -33,14 +33,8 @@ export class ChangeProvider {
         camera: true,
     }
 
-    constructor(
-        gameSessionDb: GameSessionDatabase,
-        tileDb: TileDatabase,
-        commandDb: CommandDatabase,
-    ) {
-        this.gameSessionDb = gameSessionDb;
-        this.tileDb = tileDb;
-        this.commandDb = commandDb;
+    constructor(gameRepository: GameRepository,) {
+        this.gameRepository = gameRepository;
     }
 
     public prepareFrame(camera: Camera) {
@@ -50,9 +44,9 @@ export class ChangeProvider {
             this.changes.initFrame = true
             this.frame ++;
         }
-        this.changes.turn = this.detectorCurrentTurn.check(this.gameSessionDb.get().turn);
-        this.changes.commands = this.detectorCommandRevId.check(this.commandDb.getRevId());
-        this.changes.mapMode = this.detectorMapMode.check(this.gameSessionDb.getMapMode())
+        this.changes.turn = this.detectorCurrentTurn.check(this.gameRepository.getTurn());
+        this.changes.commands = false; // todo this.detectorCommandRevId.check(this.commandDb.getRevId());
+        this.changes.mapMode = false; // todo this.detectorMapMode.check(this.gameSessionDb.getMapMode())
         this.changes.camera = this.detectorCamera.check(camera.getHash())
     }
 
@@ -60,7 +54,7 @@ export class ChangeProvider {
         if(name === "basemesh") {
             return this.changes.initFrame
         }
-        if(name === "vertexnode.details") {
+        if(name === DetailsVertexNode.ID) {
             return this.changes.turn
         }
         if(name === "vertexnode.entities") {

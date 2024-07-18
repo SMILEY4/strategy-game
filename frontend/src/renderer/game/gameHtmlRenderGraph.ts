@@ -1,15 +1,13 @@
 import {RenderGraph} from "../core/graph/renderGraph";
 import {Camera} from "../../shared/webgl/camera";
-import {TileDatabase} from "../../state/tileDatabase";
-import {GameSessionDatabase} from "../../state/gameSessionDatabase";
 import {ChangeProvider} from "./changeProvider";
-import {HtmlResourceIconsNode} from "./rendernodes/htmlResourceIconsNode";
+import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {HtmlRenderCommand} from "../core/html/htmlRenderCommand";
 import {NoOpRenderGraphSorter} from "../core/prebuilt/NoOpRenderGraphSorter";
 import {HtmlResourceManager} from "../core/html/htmlResourceManager";
 import {HtmlRenderGraphCompiler} from "../core/html/htmlRenderGraphCompiler";
-import {HtmlCityLabelsNode} from "./rendernodes/htmlCityLabelsNode";
-import {CityDatabase} from "../../state/cityDatabase";
+import {CityLabelsHtmlNode} from "./rendernodes/cityLabelsHtmlNode";
+import {GameRepository} from "../../state/gameRepository";
 
 
 export class GameHtmlRenderGraph extends RenderGraph<HtmlRenderCommand.Context> {
@@ -18,17 +16,15 @@ export class GameHtmlRenderGraph extends RenderGraph<HtmlRenderCommand.Context> 
 
     constructor(
         changeProvider: ChangeProvider,
-        tileDb: TileDatabase,
-        cityDb: CityDatabase,
-        gameSessionDb: GameSessionDatabase,
+        gameRepository: GameRepository
     ) {
         super({
             sorter: new NoOpRenderGraphSorter(),
             resourceManager: new HtmlResourceManager(),
             compiler: new HtmlRenderGraphCompiler(),
             nodes: [
-                new HtmlResourceIconsNode(changeProvider, tileDb, gameSessionDb, () => this.camera),
-                new HtmlCityLabelsNode(changeProvider, cityDb, () => this.camera)
+                new ResourceIconsHtmlNode(changeProvider, gameRepository, () => this.camera),
+                new CityLabelsHtmlNode(changeProvider, gameRepository, () => this.camera)
             ],
         });
     }

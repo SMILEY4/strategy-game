@@ -2,7 +2,7 @@ import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {WebGLMonitor} from "../../../../../shared/webgl/monitor/webGLMonitor";
 import {DevStatsWindow} from "./DevStatsWindow";
-import {MonitoringRepository} from "../../../../../state/monitoringRepository";
+import {MonitoringRepository} from "../../../../../state/database/monitoringRepository";
 
 export namespace UseDevStatsWindow {
 

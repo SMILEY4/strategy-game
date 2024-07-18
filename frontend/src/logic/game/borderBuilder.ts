@@ -1,5 +1,5 @@
 import {Tile} from "../../models/tile";
-import {TileDatabase} from "../../state/tileDatabase";
+import {GameRepository} from "../../state/gameRepository";
 
 export namespace BorderBuilder {
 
@@ -12,9 +12,9 @@ export namespace BorderBuilder {
         [+1, -1], // bottom right
     ];
 
-    export function build(tile: Tile, tileDb: TileDatabase, defaultValue: boolean, isBorder: (a: Tile, b: Tile) => boolean): boolean[] {
+    export function build(tile: Tile, gameRepository: GameRepository, defaultValue: boolean, isBorder: (a: Tile, b: Tile) => boolean): boolean[] {
         return NEIGHBOUR_OFFSETS.map(offset => {
-            const neighbour = tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [tile.identifier.q + offset[0], tile.identifier.r + offset[1]]);
+            const neighbour = gameRepository.getTileAt(tile.identifier.q + offset[0], tile.identifier.r + offset[1]);
             if (neighbour) {
                 return isBorder(tile, neighbour);
             } else {

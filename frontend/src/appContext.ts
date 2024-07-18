@@ -8,28 +8,24 @@ import {UserService} from "./logic/user/userService";
 import {GameSessionClient} from "./logic/gamesession/gameSessionClient";
 import {GameSessionService} from "./logic/gamesession/gameSessionService";
 import {EndTurnService} from "./logic/game/endTurnService";
-import {CommandService} from "./logic/game/commandService";
-import {CityCreationService} from "./logic/game/cityCreationService";
 import {GameLoopService} from "./logic/game/gameLoopService";
-import {CityUpgradeService} from "./logic/game/cityUpgradeService";
 import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
 import {UserClient} from "./logic/user/userClient";
 import {TilePicker} from "./logic/game/tilePicker";
 import {AudioService} from "./logic/audio/audioService";
-import {DataViewService} from "./logic/game/dataViewService";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
-import {CameraDatabase} from "./state/cameraDatabase";
-import {CityDatabase} from "./state/cityDatabase";
-import {CommandDatabase} from "./state/commandDatabase";
-import {CountryDatabase} from "./state/countryDatabase";
-import {GameSessionDatabase} from "./state/gameSessionDatabase";
-import {ProvinceDatabase} from "./state/provinceDatabase";
-import {RouteDatabase} from "./state/routeDatabase";
-import {TileDatabase} from "./state/tileDatabase";
-import {MonitoringRepository} from "./state/monitoringRepository";
-import {UserRepository} from "./state/userRepository";
-import {MarkerService} from "./logic/game/markerService";
+import {CameraDatabase} from "./state/database/cameraDatabase";
+import {CityDatabase} from "./state/database/cityDatabase";
+import {CommandDatabase} from "./state/database/commandDatabase";
+import {CountryDatabase} from "./state/database/countryDatabase";
+import {GameSessionDatabase} from "./state/database/gameSessionDatabase";
+import {ProvinceDatabase} from "./state/database/provinceDatabase";
+import {RouteDatabase} from "./state/database/routeDatabase";
+import {TileDatabase} from "./state/database/tileDatabase";
+import {MonitoringRepository} from "./state/database/monitoringRepository";
+import {UserRepository} from "./state/database/userRepository";
 import {GameRenderer} from "./renderer/game/gameRenderer";
+import {GameRepository} from "./state/gameRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -49,13 +45,8 @@ interface AppCtxDef {
     UserClient: () => UserClient,
     UserService: () => UserService,
 
-    DataViewService: () => DataViewService;
     NextTurnService: () => NextTurnService,
     EndTurnService: () => EndTurnService,
-    CommandService: () => CommandService,
-    MarkerService: () => MarkerService,
-    CityCreationService: () => CityCreationService,
-    CityUpgradeService: () => CityUpgradeService,
     GameLoopService: () => GameLoopService,
 
     WebGLMonitor: () => WebGLMonitor,
@@ -66,6 +57,7 @@ interface AppCtxDef {
     MonitoringRepository: () => MonitoringRepository,
     UserRepository: () => UserRepository,
 
+    GameRepository: () => GameRepository,
     CameraDatabase: () => CameraDatabase,
     CityDatabase: () => CityDatabase,
     CommandDatabase: () => CommandDatabase,
@@ -126,10 +118,6 @@ export const AppCtx: AppCtxDef = {
     ),
 
 
-    DataViewService: diContext.register(
-        "ModifiedAccessService",
-        () => new DataViewService(),
-    ),
     NextTurnService: diContext.register(
         "NextTurnService",
         () => new NextTurnService(
@@ -145,41 +133,7 @@ export const AppCtx: AppCtxDef = {
     ),
     EndTurnService: diContext.register(
         "EndTurnService",
-        () => new EndTurnService(AppCtx.GameSessionClient(), AppCtx.CommandDatabase()),
-    ),
-    CommandService: diContext.register(
-        "CommandService",
-        () => new CommandService(AppCtx.CommandDatabase()),
-    ),
-    MarkerService: diContext.register(
-        "MarkerService",
-        () => new MarkerService(
-            AppCtx.CommandDatabase(),
-            AppCtx.TileDatabase(),
-            AppCtx.CommandService(),
-        ),
-    ),
-    CityCreationService: diContext.register(
-        "CityCreationService",
-        () => new CityCreationService(
-            AppCtx.CommandService(),
-            AppCtx.UserService(),
-            AppCtx.GameSessionDatabase(),
-            AppCtx.CommandDatabase(),
-            AppCtx.CountryDatabase(),
-            AppCtx.CityDatabase(),
-        ),
-    ),
-    CityUpgradeService: diContext.register(
-        "CityUpgradeService",
-        () => new CityUpgradeService(
-            AppCtx.CommandService(),
-            AppCtx.UserService(),
-            AppCtx.CountryDatabase(),
-            AppCtx.ProvinceDatabase(),
-            AppCtx.CityDatabase(),
-            AppCtx.CommandDatabase(),
-        ),
+        () => new EndTurnService(AppCtx.GameSessionClient()),
     ),
     GameLoopService: diContext.register(
         "GameLoopService",
@@ -201,12 +155,7 @@ export const AppCtx: AppCtxDef = {
         "GameRenderer",
         () => new GameRenderer(
             AppCtx.CanvasHandle(),
-            AppCtx.CameraDatabase(),
-            AppCtx.TileDatabase(),
-            AppCtx.CityDatabase(),
-            AppCtx.RouteDatabase(),
-            AppCtx.GameSessionDatabase(),
-            AppCtx.CommandDatabase()
+            AppCtx.GameRepository(),
         ),
     ),
 
@@ -215,6 +164,14 @@ export const AppCtx: AppCtxDef = {
         () => new CanvasHandle(),
     ),
 
+    GameRepository: diContext.register(
+        "GameRepository",
+        () => new GameRepository(
+            AppCtx.GameSessionDatabase(),
+            AppCtx.CameraDatabase(),
+            AppCtx.TileDatabase()
+        )
+    ),
     MonitoringRepository: diContext.register(
         "MonitoringRepository",
         () => new MonitoringRepository(),
@@ -227,7 +184,6 @@ export const AppCtx: AppCtxDef = {
         "CameraRepository",
         () => new CameraDatabase(),
     ),
-
     CityDatabase: diContext.register(
         "CityDatabase",
         () => new CityDatabase(),

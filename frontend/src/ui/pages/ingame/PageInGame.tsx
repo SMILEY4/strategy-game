@@ -8,7 +8,7 @@ import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../components/text/Text";
 import {useConnectGameSession} from "../../hooks/gameSessions";
 import "./pageInGame.scoped.less";
-import {GameSessionDatabase} from "../../../state/gameSessionDatabase";
+import {GameSessionDatabase} from "../../../state/database/gameSessionDatabase";
 
 const USE_DUMMY_CANVAS = false;
 
