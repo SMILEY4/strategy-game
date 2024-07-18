@@ -1236,13 +1236,18 @@ https://en.wikipedia.org/wiki/Artisan -> list of medieval jobs of artisans
   - takes up production-queue of that city
   - choose between building settler/city and improving city, building military, ...
 
-- here: (probably) no settler-unit on map
-
+- **Idea 1**: (probably) no settler-unit on map
   - maybe still produce settler in another city
   - settler is a resource that can be used in country or in same province or in influence area of city or in certain radius or ...
   - effect: no units on map that need managing, but action is still a choice between creating city and something else
-
   
+
+- **Idea 2**: limit via resources
+  - generate "influence"/"control" as country-resource via various sources
+  - creating settlement costs "influence"/"control" that could also be spent for something different
+  - also costs one command-point that limits actions per turn
+
+
 
 # Combat City-Micromanagement
 
@@ -1414,10 +1419,16 @@ Process:
     - woodcutter lvl 2 collects 10/turn
     - => never runs out, but no point upgrading past lvl 2 
   - gold mine
-    - max 100
+    - max = 100
     - replenishment +3/turn
     - mine collects 10/turn
     - => gold deposit can eventually run out
+  - wheat fields
+    - max = 10
+    - replenishment = +10/turn
+    - farm lvl 1 collects 8/turn
+    - farm lvl 2 collects 10/turn
+    - => is created by farm-building on available tile instead of generating naturally
   - dead soldiers
     - max = infinite
     - battle occurs with 200 dead => adds 200 to tile
