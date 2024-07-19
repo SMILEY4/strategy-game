@@ -6,7 +6,7 @@ import {
 } from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
+import {TilemapUtils} from "../../../shared/tilemapUtils";
 import {buildMap} from "../../../shared/utils";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;

@@ -1,6 +1,5 @@
-import {Tile, TileInfluence} from "./tile";
+import {Tile} from "./tile";
 import {Color} from "./color";
-import {getHiddenOrDefault, getHiddenOrNull, mapHiddenOrDefault} from "./hiddenType";
 
 export interface MapModeRenderData {
     grayscale: boolean,

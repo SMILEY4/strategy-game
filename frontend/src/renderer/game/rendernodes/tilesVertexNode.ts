@@ -1,13 +1,8 @@
 import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
-import {TileDatabase} from "../../../state/database/tileDatabase";
+import {TilemapUtils} from "../../../shared/tilemapUtils";
 import {Tile} from "../../../models/tile";
-import {TerrainType} from "../../../models/terrainType";
-import {BorderBuilder} from "../../../logic/game/borderBuilder";
-import {getHiddenOrNull} from "../../../models/hiddenType";
-import {packBorder} from "./packBorder";
 import seedrandom from "seedrandom";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import {GameRenderConfig} from "../gameRenderConfig";
@@ -15,7 +10,6 @@ import {ChangeProvider} from "../changeProvider";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {shuffleArray} from "../../../shared/utils";
-import {TileVisibility} from "../../../models/tileVisibility";
 import {GameRepository} from "../../../state/gameRepository";
 
 export class TilesVertexNode extends VertexRenderNode {

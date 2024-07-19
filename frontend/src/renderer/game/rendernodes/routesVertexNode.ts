@@ -6,9 +6,6 @@ import {
 } from "../../core/graph/vertexRenderNode";
 import {MixedArrayBuffer, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
-import {RouteDatabase} from "../../../state/database/routeDatabase";
-import {Route} from "../../../models/route";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
 import {LineMesh} from "../../../shared/webgl/lines/lineMesh";
 import {LineMeshCreator} from "../../../shared/webgl/lines/lineMeshCreator";
 import {LineCapsButt} from "../../../shared/webgl/lines/lineCapsButt";
@@ -98,14 +95,6 @@ export class RoutesVertexNode extends VertexRenderNode {
                     instanceCount: 0,
                 },
             }),
-        });
-    }
-
-    private toLines(routes: Route[]): number[][][] {
-        return routes.map(route => {
-            return route.path.map(tile => {
-                return TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r);
-            });
         });
     }
 

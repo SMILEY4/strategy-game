@@ -7,7 +7,6 @@ import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {WebGLRenderCommand} from "../core/webgl/webGLRenderCommand";
 import {BaseRenderer} from "../../shared/webgl/baseRenderer";
 import {Camera} from "../../shared/webgl/camera";
-import {TileDatabase} from "../../state/database/tileDatabase";
 import {TilesLandDrawNode} from "./rendernodes/tilesLandDrawNode";
 import {TilesFogDrawNode} from "./rendernodes/tilesFogDrawNode";
 import {CombineLayersDrawNode} from "./rendernodes/combineLayersDrawNode";
@@ -17,16 +16,12 @@ import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";
 import {EntitiesDrawNode} from "./rendernodes/entitiesDrawNode";
 import {RoutesDrawNode} from "./rendernodes/routesDrawNode";
 import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
-import {RouteDatabase} from "../../state/database/routeDatabase";
 import {OverlayDrawNode} from "./rendernodes/overlayDrawNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
-import {GameSessionDatabase} from "../../state/database/gameSessionDatabase";
 import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
 import {DetailsDrawNode} from "./rendernodes/detailsDrawNode";
-import {CommandDatabase} from "../../state/database/commandDatabase";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {GameRepository} from "../../state/gameRepository";
 
 

@@ -1,4 +1,4 @@
-import {TilePosition} from "../../models/tilePosition";
+import {TilePosition} from "../models/tilePosition";
 
 export namespace TilemapUtils {
 

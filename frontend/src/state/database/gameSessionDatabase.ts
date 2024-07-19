@@ -1,6 +1,5 @@
 import {AbstractSingletonDatabase} from "../../shared/db/database/abstractSingletonDatabase";
 import {GameSession} from "../../models/gameSession";
-import {GameConfig} from "../../models/gameConfig";
 import {GameSessionState} from "../../models/gameSessionState";
 import {GameTurnState} from "../../models/gameTurnState";
 import {AppCtx} from "../../appContext";
@@ -15,7 +14,6 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
             state: "none",
             turnState: "playing",
             turn: -1,
-            config: null,
             selectedTile: null,
             hoverTile: null,
             mapMode: MapMode.DEFAULT,
@@ -42,22 +40,6 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
         this.update(() => ({
             turn: turn,
         }));
-    }
-
-    public setConfig(config: GameConfig | null) {
-        this.update(() => ({
-            config: config,
-        }));
-    }
-
-
-    public getGameConfig(): GameConfig {
-        const config = this.get().config;
-        if (config !== null) {
-            return config;
-        } else {
-            throw new Error("No config present");
-        }
     }
 
     public setMapMode(mode: MapMode) {

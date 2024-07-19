@@ -7,10 +7,8 @@ import {
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {Tile} from "../../../models/tile";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
+import {TilemapUtils} from "../../../shared/tilemapUtils";
 import {buildMap} from "../../../shared/utils";
-import {Command, DeleteMarkerCommand, PlaceMarkerCommand} from "../../../models/command";
-import {CommandType} from "../../../models/commandType";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
@@ -33,7 +31,6 @@ export class EntitiesVertexNode extends VertexRenderNode {
     ];
 
     private readonly changeProvider: ChangeProvider;
-    private readonly gameRepository: GameRepository;
 
     constructor(changeProvider: ChangeProvider, gameRepository: GameRepository) {
         super({
@@ -63,16 +60,12 @@ export class EntitiesVertexNode extends VertexRenderNode {
             ]
         });
         this.changeProvider = changeProvider;
-        this.gameRepository = gameRepository;
     }
 
     public execute(): VertexDataResource {
         if(!this.changeProvider.hasChange(this.id)) {
             return EMPTY_VERTEX_DATA_RESOURCE;
         }
-
-        // const commands = this.commandDb.queryMany(CommandDatabase.QUERY_ALL, null);
-        // const tiles = this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
 
         const renderEntities: RenderEntity[] = [] // todo: this.collectEntities(tiles, commands);
 
@@ -92,85 +85,6 @@ export class EntitiesVertexNode extends VertexRenderNode {
                 },
             }),
         });
-    }
-
-    private collectEntities(tiles: Tile[], commands: Command[]): RenderEntity[] {
-        const entities: RenderEntity[] = [];
-
-        const deletedMarkers = this.getDeletedMarkers(commands);
-
-        // for (let i = 0, n = tiles.length; i < n; i++) {
-        //     const tile = tiles[i];
-        //     if (tile.objects.visible) {
-        //         for (let j = 0, m = tile.objects.value.length; j < m; j++) {
-        //             const obj = tile.objects.value[j];
-        //             if (obj.type === "city") {
-        //                 entities.push({
-        //                     q: tile.identifier.q,
-        //                     r: tile.identifier.r,
-        //                     type: "city",
-        //                 });
-        //             }
-        //             if (obj.type === "scout") {
-        //                 entities.push({
-        //                     q: tile.identifier.q,
-        //                     r: tile.identifier.r,
-        //                     type: "scout",
-        //                 });
-        //             }
-        //             if (obj.type === "marker" && !deletedMarkers.has(tile.identifier.id)) {
-        //                 entities.push({
-        //                     q: tile.identifier.q,
-        //                     r: tile.identifier.r,
-        //                     type: "marker",
-        //                 });
-        //             }
-        //         }
-        //     }
-        // }
-
-        for (let i = 0, n = commands.length; i < n; i++) {
-            const command = commands[i];
-            if (command.type === CommandType.MARKER_PLACE) {
-                const cmd = command as PlaceMarkerCommand;
-                entities.push({
-                    q: cmd.tile.q,
-                    r: cmd.tile.r,
-                    type: "marker",
-                });
-            }
-            if (command.type === CommandType.SCOUT_PLACE) {
-                const cmd = command as PlaceMarkerCommand;
-                entities.push({
-                    q: cmd.tile.q,
-                    r: cmd.tile.r,
-                    type: "scout",
-                });
-            }
-            if (command.type === CommandType.CITY_CREATE) {
-                const cmd = command as PlaceMarkerCommand;
-                entities.push({
-                    q: cmd.tile.q,
-                    r: cmd.tile.r,
-                    type: "city",
-                });
-            }
-        }
-
-        entities.sort((a,b) => b.r - a.r)
-
-        return entities;
-    }
-
-    private getDeletedMarkers(commands: Command[]): Set<string> {
-        const tileIds = new Set<string>();
-        for (let i = 0; i < commands.length; i++) {
-            const command = commands[i];
-            if (command.type === CommandType.MARKER_DELETE) {
-                tileIds.add((command as DeleteMarkerCommand).tile.id);
-            }
-        }
-        return tileIds;
     }
 
     private appendEntity(entity: RenderEntity, cursor: MixedArrayBufferCursor) {

@@ -1,5 +1,5 @@
-import {Tile} from "../../models/tile";
-import {GameRepository} from "../../state/gameRepository";
+import {Tile} from "../../../models/tile";
+import {GameRepository} from "../../../state/gameRepository";
 
 export namespace BorderBuilder {
 

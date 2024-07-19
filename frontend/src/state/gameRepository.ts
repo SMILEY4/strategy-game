@@ -21,8 +21,16 @@ export class GameRepository {
 		return this.gameSessionDb.get().turn
 	}
 
+	public setTurnState(state: "playing" | "waiting"): void {
+		this.gameSessionDb.setTurnState(state)
+	}
+
 	public getCamera(): CameraData {
 		return this.cameraDb.get()
+	}
+
+	public setCamera(camera: CameraData): void {
+		return this.cameraDb.set(camera)
 	}
 
 	public getMapMode(): MapMode {
@@ -33,8 +41,16 @@ export class GameRepository {
 		return this.gameSessionDb.getSelectedTile()
 	}
 
+	public setSelectedTile(tile: TileIdentifier | null) {
+		this.gameSessionDb.setSelectedTile(tile)
+	}
+
 	public getHoverTile(): TileIdentifier | null {
 		return this.gameSessionDb.getHoverTile()
+	}
+
+	public setHoverTile(tile: TileIdentifier | null): void {
+		return this.gameSessionDb.setHoverTile(tile)
 	}
 
 	public getTilesAll(): Tile[] {

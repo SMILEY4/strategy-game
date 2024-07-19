@@ -13,7 +13,6 @@ export class EndTurnService {
 			"submit-turn",
 			{commands: []},
 		);
-		// this.commandDb.deleteAll();
 	}
 
 }

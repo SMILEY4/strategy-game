@@ -1,13 +1,11 @@
 import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../../logic/game/tilemapUtils";
-import {TileDatabase} from "../../../state/database/tileDatabase";
+import {TilemapUtils} from "../../../shared/tilemapUtils";
 import {Tile} from "../../../models/tile";
-import {BorderBuilder} from "../../../logic/game/borderBuilder";
+import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
 import {MapMode} from "../../../models/mapMode";
-import {GameSessionDatabase} from "../../../state/database/gameSessionDatabase";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import {ChangeProvider} from "../changeProvider";
 import VertexBuffer = NodeOutput.VertexBuffer;
@@ -135,31 +133,31 @@ export class OverlayVertexNode extends VertexRenderNode {
             buffers.set("vertexbuffer.mesh.overlay", new VertexBufferResource(baseMeshData));
         }
 
-        if (this.changeProvider.hasChange(this.id + ".instances")) {
-
-            // tile instances
-            const tiles = this.gameRepository.getTilesAll();
-            const tileCounts = this.countTiles(tiles);
-
-            const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, OverlayVertexNode.INSTANCE_PATTERN);
-
-            const mapMode = this.gameRepository.getMapMode()
-            const mapModeContext = mapMode.renderData.context(tiles);
-
-            for (let i = 0, n = tiles.length; i < n; i++) {
-                const tile = tiles[i];
-                // if (tile.basic.terrainType.visible) {
-                    this.appendOverlayInstance(tile, mapMode, mapModeContext, cursorOverlay);
-                // }
-            }
-
-            buffers.set("vertexbuffer.instance.overlay", new VertexBufferResource(arrayBufferOverlay.getRawBuffer()));
-            outputs.set("vertexdata.overlay", {
-                vertexCount: OverlayVertexNode.MESH_VERTEX_COUNT,
-                instanceCount: tileCounts,
-            });
-
-        }
+        // if (this.changeProvider.hasChange(this.id + ".instances")) {
+        //
+        //     // tile instances
+        //     const tiles = this.gameRepository.getTilesAll();
+        //     const tileCounts = this.countTiles(tiles);
+        //
+        //     const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, OverlayVertexNode.INSTANCE_PATTERN);
+        //
+        //     const mapMode = this.gameRepository.getMapMode()
+        //     const mapModeContext = mapMode.renderData.context(tiles);
+        //
+        //     for (let i = 0, n = tiles.length; i < n; i++) {
+        //         const tile = tiles[i];
+        //         if (tile.basic.terrainType.visible) {
+        //             this.appendOverlayInstance(tile, mapMode, mapModeContext, cursorOverlay);
+        //         }
+        //     }
+        //
+        //     buffers.set("vertexbuffer.instance.overlay", new VertexBufferResource(arrayBufferOverlay.getRawBuffer()));
+        //     outputs.set("vertexdata.overlay", {
+        //         vertexCount: OverlayVertexNode.MESH_VERTEX_COUNT,
+        //         instanceCount: tileCounts,
+        //     });
+        //
+        // }
 
         return new VertexDataResource({
             buffers: buffers,
