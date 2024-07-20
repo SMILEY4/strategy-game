@@ -10,9 +10,11 @@ import {ChangeProvider} from "../changeProvider";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {shuffleArray} from "../../../shared/utils";
-import {GameRepository} from "../../../state/gameRepository";
+import {RenderRepository} from "../RenderRepository";
 
 export class TilesVertexNode extends VertexRenderNode {
+
+    public static readonly ID = "vertexnode.tiles"
 
     private static readonly MESH_VERTEX_COUNT = 6 * 3;
 
@@ -51,15 +53,15 @@ export class TilesVertexNode extends VertexRenderNode {
     ];
 
     private readonly changeProvider: ChangeProvider;
-    private readonly gameRepository: GameRepository;
+    private readonly repository: RenderRepository;
     private readonly renderConfig: () => GameRenderConfig;
 
     private tileIndices: number[] = [];
 
 
-    constructor(changeProvider: ChangeProvider, renderConfig: () => GameRenderConfig, gameRepository: GameRepository) {
+    constructor(changeProvider: ChangeProvider, renderConfig: () => GameRenderConfig, renderRepository: RenderRepository) {
         super({
-            id: "vertexnode.tiles",
+            id: TilesVertexNode.ID,
             input: [],
             output: [
                 new VertexBuffer({
@@ -171,7 +173,7 @@ export class TilesVertexNode extends VertexRenderNode {
             ],
         });
         this.changeProvider = changeProvider;
-        this.gameRepository = gameRepository;
+        this.repository = renderRepository;
         this.renderConfig = renderConfig;
     }
 
@@ -187,9 +189,9 @@ export class TilesVertexNode extends VertexRenderNode {
         }
 
         // tile instances
-        if (this.changeProvider.hasChange(this.id + ".instances")) {
+        if (this.changeProvider.hasChange(this.id)) {
 
-            const tiles = this.gameRepository.getTilesAll();
+            const tiles = this.repository.getTilesAll();
             const tileCounts = this.countTileTypes(tiles);
 
             if (this.tileIndices.length !== tiles.length) {

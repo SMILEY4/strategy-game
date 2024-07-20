@@ -6,14 +6,12 @@ import {
 } from "../../core/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {Tile} from "../../../models/tile";
 import {TilemapUtils} from "../../../shared/tilemapUtils";
 import {buildMap} from "../../../shared/utils";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {ChangeProvider} from "../changeProvider";
-import {GameRepository} from "../../../state/gameRepository";
 
 interface RenderEntity {
     q: number,
@@ -22,6 +20,8 @@ interface RenderEntity {
 }
 
 export class EntitiesVertexNode extends VertexRenderNode {
+
+    public static readonly ID = "vertexnode.entities"
 
     private static readonly PATTERN = [
         // vertex position
@@ -32,9 +32,9 @@ export class EntitiesVertexNode extends VertexRenderNode {
 
     private readonly changeProvider: ChangeProvider;
 
-    constructor(changeProvider: ChangeProvider, gameRepository: GameRepository) {
+    constructor(changeProvider: ChangeProvider) {
         super({
-            id: "vertexnode.entities",
+            id: EntitiesVertexNode.ID,
             input: [],
             output: [
                 new VertexBuffer({

@@ -22,10 +22,12 @@ import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
 import {DetailsDrawNode} from "./rendernodes/detailsDrawNode";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {GameRepository} from "../../state/gameRepository";
+import {RenderRepository} from "./RenderRepository";
 
-
-export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context> {
+/**
+ * Render graph for webgl-render-nodes
+ */
+export class GameRenderGraphWebGL extends RenderGraph<WebGLRenderCommand.Context> {
 
     private readonly gl: WebGL2RenderingContext;
     private readonly renderer: BaseRenderer;
@@ -36,7 +38,7 @@ export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context
         changeProvider: ChangeProvider,
         gl: WebGL2RenderingContext,
         renderConfig: () => GameRenderConfig,
-        gameRepository: GameRepository,
+        renderRepository: RenderRepository,
     ) {
         super({
             sorter: new WebGLRenderGraphSorter(),
@@ -44,25 +46,28 @@ export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context
             compiler: new WebGLRenderGraphCompiler(),
             nodes: [
                 new VertexFullQuadNode(),
-                new TilesVertexNode(changeProvider, renderConfig, gameRepository),
-                new OverlayVertexNode(changeProvider, gameRepository),
-                new EntitiesVertexNode(changeProvider, gameRepository),
+                new TilesVertexNode(changeProvider, renderConfig, renderRepository),
+                new OverlayVertexNode(changeProvider, renderRepository),
+                new EntitiesVertexNode(changeProvider),
                 new DetailsVertexNode(changeProvider),
                 new RoutesVertexNode(changeProvider),
                 new TilesWaterDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new TilesLandDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new TilesFogDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new OverlayDrawNode(gameRepository, () => this.camera.getViewProjectionMatrixOrThrow()),
+                new OverlayDrawNode(renderRepository, () => this.camera.getViewProjectionMatrixOrThrow()),
                 new EntitiesDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new DetailsDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
                 new RoutesDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-                new CombineLayersDrawNode(() => this.camera, () => gameRepository.getMapMode()),
+                new CombineLayersDrawNode(renderRepository, () => this.camera),
             ],
         });
         this.gl = gl;
         this.renderer = new BaseRenderer(this.gl);
     }
 
+    /**
+     * Initialize the render graph
+     */
     public initialize() {
         super.initialize({
             gl: this.gl,
@@ -71,6 +76,9 @@ export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context
         });
     }
 
+    /**
+     * Update the camera
+     */
     public updateCamera(camera: Camera) {
         this.camera = camera;
         this.updateContext(ctx => ({
@@ -79,6 +87,9 @@ export class GameWebGlRenderGraph extends RenderGraph<WebGLRenderCommand.Context
         }));
     }
 
+    /**
+     * Execute this render graph and "draw" to screen
+     */
     public execute() {
         super.execute();
     }

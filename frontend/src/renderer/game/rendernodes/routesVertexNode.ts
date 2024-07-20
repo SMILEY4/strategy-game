@@ -18,6 +18,8 @@ import {ChangeProvider} from "../changeProvider";
 
 export class RoutesVertexNode extends VertexRenderNode {
 
+    public static readonly ID = "vertexbuffer.routes"
+
     private static readonly THICKNESS = 1.0;
 
     private static readonly PATTERN = [
@@ -33,7 +35,7 @@ export class RoutesVertexNode extends VertexRenderNode {
 
     constructor(changeProvider: ChangeProvider) {
         super({
-            id: "vertexnode.routes",
+            id: RoutesVertexNode.ID,
             input: [],
             output: [
                 new VertexBuffer({

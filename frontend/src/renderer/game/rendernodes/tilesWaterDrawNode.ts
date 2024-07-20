@@ -6,9 +6,11 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 
 export class TilesWaterDrawNode extends DrawRenderNode {
 
+    public static readonly ID = "drawnode.tileswater"
+
     constructor(vpMatrixProvider: () => Float32Array) {
         super({
-            id: "drawnode.tileswater",
+            id: TilesWaterDrawNode.ID,
             input: [
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],

@@ -1,5 +1,8 @@
-import {UserRepository} from "../../state/database/userRepository";
+import {UserRepository} from "./userRepository";
 
+/**
+ * Service prodding authentication information of the current user
+ */
 export class AuthProvider {
 
     private readonly userRepository: UserRepository;

@@ -5,9 +5,11 @@ import {NodeInput} from "../../core/graph/nodeInput";
 
 export class DetailsDrawNode extends DrawRenderNode {
 
+    public static readonly ID = "drawnode.details"
+
     constructor(vpMatrixProvider: () => Float32Array) {
         super({
-            id: "drawnode.details",
+            id: DetailsDrawNode.ID,
             input: [
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],

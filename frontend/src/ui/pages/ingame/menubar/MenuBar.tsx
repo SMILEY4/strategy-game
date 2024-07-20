@@ -3,7 +3,7 @@ import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../components/layout/hbox/HBox";
 import {Spacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";
-import {FiFlag, FiHexagon, FiMap} from "react-icons/fi";
+import {FiHexagon, FiMap} from "react-icons/fi";
 import "./menubar.scoped.less";
 import {AppCtx} from "../../../../appContext";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
@@ -49,7 +49,7 @@ export function MenuBar(): ReactElement {
 }
 
 function useEndTurn(): [boolean, () => void] {
-    const endTurnService = AppCtx.EndTurnService();
+    const endTurnService = AppCtx.TurnEndService();
     const disabled = GameSessionDatabase.useGameTurnState() === "waiting";
     const setTurnState = GameSessionDatabase.useSetGameTurnState();
 

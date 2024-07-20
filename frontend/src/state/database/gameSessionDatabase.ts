@@ -11,7 +11,7 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
 
     constructor() {
         super({
-            state: "none",
+            sessionState: "none",
             turnState: "playing",
             turn: -1,
             selectedTile: null,
@@ -22,12 +22,12 @@ export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> 
 
     public setState(state: "none" | "loading" | "playing" | "error") {
         this.update(() => ({
-            state: state,
+            sessionState: state,
         }));
     }
 
     public getState(): "none" | "loading" | "playing" | "error" {
-        return this.get().state;
+        return this.get().sessionState;
     }
 
     public setTurnState(turnState: "playing" | "waiting") {
@@ -81,7 +81,7 @@ export namespace GameSessionDatabase {
     }
 
     export function useGameSessionState(): GameSessionState {
-        return usePartialSingletonEntity(AppCtx.GameSessionDatabase(), e => e.state);
+        return usePartialSingletonEntity(AppCtx.GameSessionDatabase(), e => e.sessionState);
     }
 
     export function useGameTurnState(): GameTurnState {

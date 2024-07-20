@@ -5,9 +5,11 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 
 export class TilesFogDrawNode extends DrawRenderNode {
 
+    public static readonly ID = "drawnode.tilesfog"
+
     constructor(vpMatrixProvider: () => Float32Array) {
         super({
-            id: "drawnode.tilesfog",
+            id: TilesFogDrawNode.ID,
             input: [
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],

@@ -1,4 +1,4 @@
-import {TileIdentifier} from "../../../models/tile";
+import {TileIdentifier} from "../../models/tile";
 
 
 export interface GameStateMessage {

@@ -63,10 +63,10 @@ export namespace UseDevWindow {
 
 
     function useWebGlContext() {
-        const canvasHandle = AppCtx.CanvasHandle();
+        const service = AppCtx.GameLoopService();
         return [
-            () => canvasHandle.debugLooseWebglContext(),
-            () => canvasHandle.debugRestoreWebglContext(),
+            () => service.getCanvasHandle().debugLooseWebglContext(),
+            () => service.getCanvasHandle().debugRestoreWebglContext(),
         ];
     }
 

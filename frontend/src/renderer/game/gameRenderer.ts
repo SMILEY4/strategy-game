@@ -1,63 +1,74 @@
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
-import {GameWebGlRenderGraph} from "./gameWebGlRenderGraph";
+import {GameRenderGraphWebGL} from "./gameRenderGraphWebGL";
 import {Camera} from "../../shared/webgl/camera";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {GameHtmlRenderGraph} from "./gameHtmlRenderGraph";
-import {GameRepository} from "../../state/gameRepository";
+import {GameRenderGraphHtml} from "./gameRenderGraphHtml";
+import {RenderRepository} from "./RenderRepository";
 
+/**
+ * Renderer
+ */
 export class GameRenderer {
 
 	private readonly changeProvider;
-	private readonly canvasHandle: CanvasHandle;
-	private readonly gameRepository: GameRepository;
+	private readonly repository: RenderRepository;
 
 	private renderConfig: GameRenderConfig | null = null;
-	private webGlRenderGraph: GameWebGlRenderGraph | null = null;
-	private htmlRenderGraph: GameHtmlRenderGraph | null = null;
+	private webGlRenderGraph: GameRenderGraphWebGL | null = null;
+	private htmlRenderGraph: GameRenderGraphHtml | null = null;
 
 	constructor(
-		canvasHandle: CanvasHandle,
-		gameRepository: GameRepository,
+		renderRepository: RenderRepository,
 	) {
-		this.canvasHandle = canvasHandle;
-		this.gameRepository = gameRepository;
-		this.changeProvider = new ChangeProvider(gameRepository);
+		this.repository = renderRepository;
+		this.changeProvider = new ChangeProvider(renderRepository);
 	}
 
-	public initialize(): void {
+	/**
+	 * Initialize the renderer for the given canvas
+	 */
+	public initialize(canvasHandle: CanvasHandle): void {
 		GameRenderConfig.initialize();
-		this.webGlRenderGraph = new GameWebGlRenderGraph(this.changeProvider, this.canvasHandle.getGL(), () => this.renderConfig!, this.gameRepository);
+		this.webGlRenderGraph = new GameRenderGraphWebGL(this.changeProvider, canvasHandle.getGL(), () => this.renderConfig!, this.repository);
+		this.htmlRenderGraph = new GameRenderGraphHtml();
 		this.webGlRenderGraph.initialize();
-		this.htmlRenderGraph = new GameHtmlRenderGraph(this.changeProvider, this.gameRepository);
 		this.htmlRenderGraph.initialize();
 	}
 
-	public render() {
-		const camera = this.getRenderCamera();
+	/**
+	 * Render a new frame
+	 */
+	public render(canvasHandle: CanvasHandle) {
+		const camera = this.getRenderCamera(canvasHandle);
 		this.changeProvider.prepareFrame(camera);
 		this.renderConfig = GameRenderConfig.load();
+
 		this.webGlRenderGraph?.updateCamera(camera);
 		this.webGlRenderGraph?.execute();
+
 		this.htmlRenderGraph?.updateCamera(camera);
 		this.htmlRenderGraph?.execute();
 	}
 
+	/**
+	 * Dispose the renderer and all resources
+	 */
 	public dispose() {
 		this.webGlRenderGraph?.dispose();
-		this.webGlRenderGraph = null;
 		this.htmlRenderGraph?.dispose();
+		this.webGlRenderGraph = null;
 		this.htmlRenderGraph = null;
 	}
 
-	private getRenderCamera(): Camera {
-		const data = this.gameRepository.getCamera();
+	private getRenderCamera(canvasHandle: CanvasHandle): Camera {
+		const data = this.repository.getCamera();
 		return Camera.create(
 			data,
-			this.canvasHandle.getCanvasWidth(),
-			this.canvasHandle.getCanvasHeight(),
-			this.canvasHandle.getClientWidth(),
-			this.canvasHandle.getClientHeight(),
+			canvasHandle.getCanvasWidth(),
+			canvasHandle.getCanvasHeight(),
+			canvasHandle.getClientWidth(),
+			canvasHandle.getClientHeight(),
 		);
 	}
 

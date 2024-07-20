@@ -1,9 +1,10 @@
 import {MapMode} from "../models/mapMode";
 import {Tile, TileIdentifier} from "../models/tile";
-import {TileDatabase} from "./database/tileDatabase";
-import {CameraDatabase} from "./database/cameraDatabase";
+import {TileDatabase} from "../state/database/tileDatabase";
+import {CameraDatabase} from "../state/database/cameraDatabase";
 import {CameraData} from "../models/cameraData";
-import {GameSessionDatabase} from "./database/gameSessionDatabase";
+import {GameSessionDatabase} from "../state/database/gameSessionDatabase";
+import {Transaction} from "../shared/db/database/transaction";
 
 export class GameRepository {
 
@@ -17,24 +18,12 @@ export class GameRepository {
 		this.tileDb = tileDb;
 	}
 
-	public getTurn(): number {
-		return this.gameSessionDb.get().turn
-	}
-
-	public setTurnState(state: "playing" | "waiting"): void {
-		this.gameSessionDb.setTurnState(state)
-	}
-
 	public getCamera(): CameraData {
 		return this.cameraDb.get()
 	}
 
 	public setCamera(camera: CameraData): void {
 		return this.cameraDb.set(camera)
-	}
-
-	public getMapMode(): MapMode {
-		return MapMode.DEFAULT
 	}
 
 	public getSelectedTile(): TileIdentifier | null {
@@ -53,12 +42,17 @@ export class GameRepository {
 		return this.gameSessionDb.setHoverTile(tile)
 	}
 
-	public getTilesAll(): Tile[] {
-		return this.tileDb.queryMany(TileDatabase.QUERY_ALL, null)
-	}
-
 	public getTileAt(q: number, r: number): Tile | null {
 		return this.tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r])
+	}
+
+	public transactionForStartTurn(action: () => void) {
+		Transaction.run([this.tileDb], action);
+	}
+
+	public replaceTiles(tiles: Tile[]) {
+		this.tileDb.deleteAll();
+		this.tileDb.insertMany(tiles);
 	}
 
 }

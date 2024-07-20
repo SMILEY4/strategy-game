@@ -1,5 +1,5 @@
 import {Howl} from "howler";
-import {UIAudio} from "../../ui/components/audio";
+import {UIAudio} from "../ui/components/audio";
 
 export class AudioType {
 

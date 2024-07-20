@@ -159,6 +159,7 @@ export class WebGLResourceManager implements ResourceManager {
 						stride: attribute.attribute.stride,
 						offset: attribute.attribute.offset,
 						divisor: attribute.attribute.divisor,
+						debugName: program.vertex + "-" + program.fragment + "/" + attribute.attribute.name
 					})),
 			);
 			vertexArrays.set(program.id, vertexArray);

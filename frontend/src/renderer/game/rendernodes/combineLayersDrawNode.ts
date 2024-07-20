@@ -5,19 +5,21 @@ import {NodeInput} from "../../core/graph/nodeInput";
 import {GLUniformType} from "../../../shared/webgl/glTypes";
 import {Camera} from "../../../shared/webgl/camera";
 import {mat3} from "../../../shared/webgl/mat3";
-import {MapMode} from "../../../models/mapMode";
+import {RenderRepository} from "../RenderRepository";
 
 /**
  * Combines all individual (non-html) layers into the final image.
  */
 export class CombineLayersDrawNode extends DrawRenderNode {
 
-    private readonly camera: () => Camera;
-    private readonly mapMode: () => MapMode;
+    public static readonly ID = "drawnode.combinelayers"
 
-    constructor(camera: () => Camera, mapMode: () => MapMode) {
+    private readonly camera: () => Camera;
+    private readonly repository: RenderRepository;
+
+    constructor(renderRepository: RenderRepository, camera: () => Camera) {
         super({
-            id: "drawnode.combinelayers",
+            id: CombineLayersDrawNode.ID,
             input: [
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 1],
@@ -46,7 +48,7 @@ export class CombineLayersDrawNode extends DrawRenderNode {
                     binding: "u_common.isGrayscale",
                     type: GLUniformType.INT,
                     valueConstant: null,
-                    valueProvider: () => this.mapMode().renderData.grayscale ? 1 : 0
+                    valueProvider: () => this.repository.getMapMode().renderData.grayscale ? 1 : 0
                 }),
                 new NodeInput.Texture({
                     binding: "u_common.noise",
@@ -228,6 +230,6 @@ export class CombineLayersDrawNode extends DrawRenderNode {
             ],
         });
         this.camera = camera;
-        this.mapMode = mapMode;
+        this.repository = renderRepository;
     }
 }

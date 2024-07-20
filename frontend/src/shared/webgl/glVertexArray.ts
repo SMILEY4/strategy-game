@@ -48,6 +48,7 @@ export namespace GLVertexArray {
         stride?: number,
         offset?: number,
         divisor?: number,
+        debugName?: string
     }
 
     export function create(gl: WebGL2RenderingContext, attributes: AttributeConfig[], indexBuffer?: GLIndexBuffer) {
@@ -73,6 +74,10 @@ export namespace GLVertexArray {
 
         // configure attributes
         attributes.forEach(attribute => {
+
+            if(attribute.location == -1) {
+                console.warn("Vertex attribute has invalid location", attribute.debugName, attribute)
+            }
 
             // enable
             gl.enableVertexAttribArray(attribute.location);

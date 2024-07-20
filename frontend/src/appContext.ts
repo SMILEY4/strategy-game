@@ -1,31 +1,27 @@
 import {DIContext} from "./shared/dependencyinjection/di";
 import {HttpClient} from "./shared/httpClient";
 import {WebsocketClient} from "./shared/websocketClient";
-import {AuthProvider} from "./logic/user/authProvider";
+import {AuthProvider} from "./user/authProvider";
 import {CanvasHandle} from "./shared/webgl/canvasHandle";
-import {NextTurnService} from "./logic/game/nextTurnService";
-import {UserService} from "./logic/user/userService";
-import {GameSessionClient} from "./logic/gamesession/gameSessionClient";
-import {GameSessionService} from "./logic/gamesession/gameSessionService";
-import {EndTurnService} from "./logic/game/endTurnService";
-import {GameLoopService} from "./logic/game/gameLoopService";
-import {GameSessionMessageHandler} from "./logic/gamesession/gameSessionMessageHandler";
-import {UserClient} from "./logic/user/userClient";
-import {TilePicker} from "./logic/game/tilePicker";
-import {AudioService} from "./logic/audio/audioService";
+import {TurnStartService} from "./game/turnStartService";
+import {UserService} from "./user/userService";
+import {GameSessionClient} from "./gamesession/gameSessionClient";
+import {GameSessionService} from "./gamesession/gameSessionService";
+import {GameLoopService} from "./game/gameLoopService";
+import {UserClient} from "./user/userClient";
+import {TilePicker} from "./game/tilePicker";
+import {AudioService} from "./shared/audioService";
 import {WebGLMonitor} from "./shared/webgl/monitor/webGLMonitor";
 import {CameraDatabase} from "./state/database/cameraDatabase";
-import {CityDatabase} from "./state/database/cityDatabase";
-import {CommandDatabase} from "./state/database/commandDatabase";
-import {CountryDatabase} from "./state/database/countryDatabase";
 import {GameSessionDatabase} from "./state/database/gameSessionDatabase";
-import {ProvinceDatabase} from "./state/database/provinceDatabase";
-import {RouteDatabase} from "./state/database/routeDatabase";
 import {TileDatabase} from "./state/database/tileDatabase";
 import {MonitoringRepository} from "./state/database/monitoringRepository";
-import {UserRepository} from "./state/database/userRepository";
+import {UserRepository} from "./user/userRepository";
 import {GameRenderer} from "./renderer/game/gameRenderer";
-import {GameRepository} from "./state/gameRepository";
+import {GameRepository} from "./game/gameRepository";
+import {GameSessionRepository} from "./gamesession/gameSessionRepository";
+import {TurnEndService} from "./game/turnEndService";
+import {RenderRepository} from "./renderer/game/RenderRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -37,34 +33,28 @@ interface AppCtxDef {
     WebsocketClient: () => WebsocketClient,
     AudioService: () => AudioService,
 
-    GameSessionMessageHandler: () => GameSessionMessageHandler,
     GameSessionClient: () => GameSessionClient,
     GameSessionService: () => GameSessionService,
+    GameSessionRepository: () => GameSessionRepository,
 
-    AuthProvider: () => AuthProvider,
     UserClient: () => UserClient,
     UserService: () => UserService,
+    UserRepository: () => UserRepository,
+    AuthProvider: () => AuthProvider,
 
-    NextTurnService: () => NextTurnService,
-    EndTurnService: () => EndTurnService,
+    TurnStartService: () => TurnStartService,
+    TurnEndService: () => TurnEndService,
     GameLoopService: () => GameLoopService,
+    GameRepository: () => GameRepository,
 
-    WebGLMonitor: () => WebGLMonitor,
     GameRenderer: () => GameRenderer,
-
-    CanvasHandle: () => CanvasHandle,
+    RenderRepository: () => RenderRepository,
 
     MonitoringRepository: () => MonitoringRepository,
-    UserRepository: () => UserRepository,
+    WebGLMonitor: () => WebGLMonitor,
 
-    GameRepository: () => GameRepository,
     CameraDatabase: () => CameraDatabase,
-    CityDatabase: () => CityDatabase,
-    CommandDatabase: () => CommandDatabase,
-    CountryDatabase: () => CountryDatabase,
     GameSessionDatabase: () => GameSessionDatabase,
-    ProvinceDatabase: () => ProvinceDatabase,
-    RouteDatabase: () => RouteDatabase,
     TileDatabase: () => TileDatabase,
 }
 
@@ -90,17 +80,17 @@ export const AppCtx: AppCtxDef = {
     ),
 
 
-    GameSessionMessageHandler: diContext.register(
-        "GameSessionMessageHandler",
-        () => new GameSessionMessageHandler(AppCtx.NextTurnService()),
-    ),
     GameSessionClient: diContext.register(
         "GameSessionClient",
-        () => new GameSessionClient(AppCtx.AuthProvider(), AppCtx.HttpClient(), AppCtx.WebsocketClient(), AppCtx.GameSessionMessageHandler()),
+        () => new GameSessionClient(AppCtx.AuthProvider(), AppCtx.HttpClient(), AppCtx.WebsocketClient()),
     ),
     GameSessionService: diContext.register(
         "GameSessionService",
-        () => new GameSessionService(AppCtx.GameSessionClient(), AppCtx.GameSessionDatabase()),
+        () => new GameSessionService(AppCtx.GameSessionClient(), AppCtx.GameSessionRepository(), AppCtx.TurnStartService()),
+    ),
+    GameSessionRepository: diContext.register(
+        "GameSessionRepository",
+        () => new GameSessionRepository(AppCtx.GameSessionDatabase()),
     ),
 
 
@@ -118,30 +108,22 @@ export const AppCtx: AppCtxDef = {
     ),
 
 
-    NextTurnService: diContext.register(
-        "NextTurnService",
-        () => new NextTurnService(
-            AppCtx.GameLoopService(),
-            AppCtx.GameSessionDatabase(),
+    TurnStartService: diContext.register(
+        "TurnStartService",
+        () => new TurnStartService(
+            AppCtx.GameRepository(),
             AppCtx.MonitoringRepository(),
-            AppCtx.CityDatabase(),
-            AppCtx.CountryDatabase(),
-            AppCtx.ProvinceDatabase(),
-            AppCtx.RouteDatabase(),
-            AppCtx.TileDatabase(),
         ),
     ),
-    EndTurnService: diContext.register(
+    TurnEndService: diContext.register(
         "EndTurnService",
-        () => new EndTurnService(AppCtx.GameSessionClient()),
+        () => new TurnEndService(AppCtx.GameSessionService()),
     ),
     GameLoopService: diContext.register(
         "GameLoopService",
         () => new GameLoopService(
-            AppCtx.CanvasHandle(),
-            new TilePicker(AppCtx.CanvasHandle(), AppCtx.CameraDatabase(), AppCtx.TileDatabase()),
-            AppCtx.CameraDatabase(),
-            AppCtx.GameSessionDatabase(),
+            new TilePicker(AppCtx.GameRepository()),
+            AppCtx.GameRepository(),
             AppCtx.GameRenderer(),
             AppCtx.AudioService(),
         ),
@@ -154,14 +136,16 @@ export const AppCtx: AppCtxDef = {
     GameRenderer: diContext.register(
         "GameRenderer",
         () => new GameRenderer(
-            AppCtx.CanvasHandle(),
-            AppCtx.GameRepository(),
+            AppCtx.RenderRepository(),
         ),
     ),
-
-    CanvasHandle: diContext.register(
-        "CanvasHandle",
-        () => new CanvasHandle(),
+    RenderRepository: diContext.register(
+        "RenderRepository",
+        () => new RenderRepository(
+            AppCtx.GameSessionDatabase(),
+            AppCtx.CameraDatabase(),
+            AppCtx.TileDatabase()
+        )
     ),
 
     GameRepository: diContext.register(
@@ -184,29 +168,9 @@ export const AppCtx: AppCtxDef = {
         "CameraRepository",
         () => new CameraDatabase(),
     ),
-    CityDatabase: diContext.register(
-        "CityDatabase",
-        () => new CityDatabase(),
-    ),
-    CommandDatabase: diContext.register(
-        "CommandDatabase",
-        () => new CommandDatabase(),
-    ),
-    CountryDatabase: diContext.register(
-        "CountryDatabase",
-        () => new CountryDatabase(),
-    ),
     GameSessionDatabase: diContext.register(
         "GameSessionDatabase",
         () => new GameSessionDatabase(),
-    ),
-    ProvinceDatabase: diContext.register(
-        "ProvinceDatabase",
-        () => new ProvinceDatabase(),
-    ),
-    RouteDatabase: diContext.register(
-        "RouteDatabase",
-        () => new RouteDatabase(),
     ),
     TileDatabase: diContext.register(
         "TileDatabase",
