@@ -1,10 +1,9 @@
 import {CanvasHandle} from "../../shared/webgl/canvasHandle";
-import {GameRenderGraphWebGL} from "./gameRenderGraphWebGL";
 import {Camera} from "../../shared/webgl/camera";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {GameRenderGraphHtml} from "./gameRenderGraphHtml";
 import {RenderRepository} from "./renderRepository";
+import {GameRenderGraph} from "./gameRenderGraph";
 
 /**
  * Renderer
@@ -15,8 +14,7 @@ export class GameRenderer {
 	private readonly repository: RenderRepository;
 
 	private renderConfig: GameRenderConfig | null = null;
-	private webGlRenderGraph: GameRenderGraphWebGL | null = null;
-	private htmlRenderGraph: GameRenderGraphHtml | null = null;
+	private renderGraph: GameRenderGraph | null = null;
 
 	constructor(
 		renderRepository: RenderRepository,
@@ -30,10 +28,8 @@ export class GameRenderer {
 	 */
 	public initialize(canvasHandle: CanvasHandle): void {
 		GameRenderConfig.initialize();
-		this.webGlRenderGraph = new GameRenderGraphWebGL(this.changeProvider, canvasHandle.getGL(), () => this.renderConfig!, this.repository);
-		this.htmlRenderGraph = new GameRenderGraphHtml(this.changeProvider, this.repository);
-		this.webGlRenderGraph.initialize();
-		this.htmlRenderGraph.initialize();
+		this.renderGraph = new GameRenderGraph(this.changeProvider, this.repository, canvasHandle.getGL(), () => this.renderConfig!)
+		this.renderGraph.initialize()
 	}
 
 	/**
@@ -44,21 +40,16 @@ export class GameRenderer {
 		this.changeProvider.prepareFrame(camera);
 		this.renderConfig = GameRenderConfig.load();
 
-		this.webGlRenderGraph?.updateCamera(camera);
-		this.webGlRenderGraph?.execute();
-
-		this.htmlRenderGraph?.updateCamera(camera);
-		this.htmlRenderGraph?.execute();
+		this.renderGraph?.updateCamera(camera)
+		this.renderGraph?.execute()
 	}
 
 	/**
 	 * Dispose the renderer and all resources
 	 */
 	public dispose() {
-		this.webGlRenderGraph?.dispose();
-		this.htmlRenderGraph?.dispose();
-		this.webGlRenderGraph = null;
-		this.htmlRenderGraph = null;
+		this.renderGraph?.dispose();
+		this.renderGraph = null;
 	}
 
 	private getRenderCamera(canvasHandle: CanvasHandle): Camera {
