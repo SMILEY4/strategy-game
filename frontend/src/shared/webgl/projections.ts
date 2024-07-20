@@ -1,5 +1,5 @@
 import {mat3} from "./mat3";
-import {TilemapUtils} from "../../logic/game/tilemapUtils";
+import {TilemapUtils} from "../tilemapUtils";
 import {Camera} from "./camera";
 
 export namespace Projections {

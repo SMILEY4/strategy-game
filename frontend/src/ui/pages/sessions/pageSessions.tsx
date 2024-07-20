@@ -10,7 +10,7 @@ import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import {Spacer} from "../../components/spacer/Spacer";
 import "./pageSessions.less";
-import {AudioType} from "../../../logic/audio/audioService";
+import {AudioType} from "../../../shared/audioService";
 import {Text} from "../../components/text/Text";
 import {GameSessionMeta} from "../../../models/gameSessionMeta";
 

@@ -32,7 +32,7 @@ jobs:
                     node-version: "20.12.2"
 
 
-            -   name: Cache dependencies
+            -   name: Cache Dependencies
                 uses: actions/cache@v2
                 with:
                     path: ~/.npm
@@ -41,7 +41,7 @@ jobs:
                         ${{ runner.os }}-node-
 
 
-            -   name: Install dependencies
+            -   name: Install Dependencies
                 working-directory: ./frontend
                 run: npm i
 

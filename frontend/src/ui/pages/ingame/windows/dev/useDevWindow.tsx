@@ -5,7 +5,7 @@ import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppCtx} from "../../../../../appContext";
 import {CameraData} from "../../../../../models/cameraData";
 import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
-import {CameraDatabase} from "../../../../../state/cameraDatabase";
+import {CameraDatabase} from "../../../../../state/database/cameraDatabase";
 
 export namespace UseDevWindow {
 
@@ -63,10 +63,10 @@ export namespace UseDevWindow {
 
 
     function useWebGlContext() {
-        const canvasHandle = AppCtx.CanvasHandle();
+        const service = AppCtx.GameLoopService();
         return [
-            () => canvasHandle.debugLooseWebglContext(),
-            () => canvasHandle.debugRestoreWebglContext(),
+            () => service.getCanvasHandle().debugLooseWebglContext(),
+            () => service.getCanvasHandle().debugRestoreWebglContext(),
         ];
     }
 

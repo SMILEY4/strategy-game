@@ -1,5 +1,5 @@
 import {UIAudio} from "../audio";
-import {AudioType} from "../../../logic/audio/audioService";
+import {AudioType} from "../../../shared/audioService";
 
 export interface UseButtonProps {
     disabled?: boolean,

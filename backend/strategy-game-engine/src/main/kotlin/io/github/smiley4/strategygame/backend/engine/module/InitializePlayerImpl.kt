@@ -21,34 +21,34 @@ internal class InitializePlayerImpl(
 
     override suspend fun perform(game: GameExtended, userId: String, color: RGBColor) {
         return time(metricId) {
-            val country = addCountry(game, userId, color)
-            uncoverStartingArea(country, game)
+//            val country = addCountry(game, userId, color)
+//            uncoverStartingArea(country, game)
         }
     }
 
 
-    /**
-     * Add the country for the given user to the given game
-     * @return the added country
-     */
-    private fun addCountry(game: GameExtended, userId: String, color: RGBColor): Country {
-        val country = Country(
-            countryId = Id.gen(),
-            userId = userId,
-            color = color,
-            availableSettlers = 3
-        )
-        game.countries.add(country)
-        return country
-    }
-
-
-    /**
-     * Pick a random starting location and uncover the surrounding tiles.
-     */
-    private fun uncoverStartingArea(country: Country, game: GameExtended) {
-        val startingTile = game.tiles.random()
-        discoverMapArea.perform(country, game, startingTile.position, gameConfig.startingAreaRadius)
-    }
+//    /**
+//     * Add the country for the given user to the given game
+//     * @return the added country
+//     */
+//    private fun addCountry(game: GameExtended, userId: String, color: RGBColor): Country {
+//        val country = Country(
+//            countryId = Id.gen(),
+//            userId = userId,
+//            color = color,
+//            availableSettlers = 3
+//        )
+//        game.countries.add(country)
+//        return country
+//    }
+//
+//
+//    /**
+//     * Pick a random starting location and uncover the surrounding tiles.
+//     */
+//    private fun uncoverStartingArea(country: Country, game: GameExtended) {
+//        val startingTile = game.tiles.random()
+//        discoverMapArea.perform(country, game, startingTile.position, gameConfig.startingAreaRadius)
+//    }
 
 }
