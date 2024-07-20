@@ -1,12 +1,31 @@
 import {Tile} from "./tile";
 import {Color} from "./color";
+import {TileResourceType} from "./TileResourceType";
 
 export interface MapModeRenderData {
+    /**
+     * Whether to render the base map as grayscale
+     */
     grayscale: boolean,
+    /**
+     * Additional data shared by each tile that can be accessed by each tile in the map mode functions
+     */
     context: (tiles: Tile[]) => any
+    /**
+     * A solid fill color of the tile
+     */
     fillColor: (tile: Tile, context: any) => [number, number, number, number],
+    /**
+     * A border color of the tile
+     */
     borderColor: (tile: Tile, context: any) => [number, number, number, number],
+    /**
+     * Whether to show a border when the tile has no neighbour tile
+     */
     borderDefault: boolean,
+    /**
+     * A check determining whether there is a border between the two given tiles
+     */
     borderCheck: (a: Tile, b: Tile) => boolean
 }
 
@@ -20,7 +39,6 @@ export class MapMode {
         } else {
             return MapMode.NO_COLOR;
         }
-
     }
 
     public static readonly DEFAULT = new MapMode(0, "Default", {
@@ -28,120 +46,26 @@ export class MapMode {
         context: () => null,
         fillColor: tile => MapMode.NO_COLOR,
         borderColor: tile => MapMode.NO_COLOR,
-        borderCheck: (ta: Tile, tb: Tile) => {
-            const a = null;
-            const b = null;
-            return (!a && !b) ? false : !!a && a !== b;
-        },
-        // fillColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.country.color)),
-        // borderColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.country.color)),
-        // borderCheck: (ta: Tile, tb: Tile) => {
-        //     const a = getHiddenOrNull(ta.political.owner)?.country.id;
-        //     const b = getHiddenOrNull(tb.political.owner)?.country.id;
-        //     return (!a && !b) ? false : !!a && a !== b;
-        // },
+        borderCheck: (ta: Tile, tb: Tile) => false,
         borderDefault: false,
     });
 
-    // public static readonly COUNTRIES = new MapMode(1, "Countries", {
-    //     grayscale: true,
-    //     context: () => null,
-    //     fillColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.country.color)),
-    //     borderColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.country.color)),
-    //     borderCheck: (ta: Tile, tb: Tile) => {
-    //         const a = getHiddenOrNull(ta.political.owner)?.country.id;
-    //         const b = getHiddenOrNull(tb.political.owner)?.country.id;
-    //         return (!a && !b) ? false : !!a && a !== b;
-    //     },
-    //     borderDefault: false,
-    // });
-    //
-    // public static readonly PROVINCES = new MapMode(2, "Provinces", {
-    //     grayscale: true,
-    //     context: () => null,
-    //     fillColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.province.color)),
-    //     borderColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.province.color)),
-    //     borderCheck: (ta: Tile, tb: Tile) => {
-    //         const a = getHiddenOrNull(ta.political.owner)?.province.id;
-    //         const b = getHiddenOrNull(tb.political.owner)?.province.id;
-    //         return (!a && !b) ? false : !!a && a !== b;
-    //     },
-    //     borderDefault: false,
-    // });
-    //
-    // public static readonly CITIES = new MapMode(3, "Cities", {
-    //     grayscale: true,
-    //     context: () => null,
-    //     fillColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.province.color)),
-    //     borderColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.province.color)),
-    //     borderCheck: (ta: Tile, tb: Tile) => {
-    //         const a = getHiddenOrNull(ta.political.owner)?.city?.id ?? null;
-    //         const b = getHiddenOrNull(tb.political.owner)?.city?.id ?? null;
-    //         return (!a && !b) ? false : !!a && a !== b;
-    //     },
-    //     borderDefault: false,
-    // });
-    //
-    // public static readonly TERRAIN = new MapMode(4, "Terrain", {
-    //     grayscale: false,
-    //     context: () => null,
-    //     fillColor: () => MapMode.NO_COLOR,
-    //     borderColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.country.color)),
-    //     borderCheck: (ta: Tile, tb: Tile) => {
-    //         const a = getHiddenOrNull(ta.political.owner)?.country.id;
-    //         const b = getHiddenOrNull(tb.political.owner)?.country.id;
-    //         return (!a && !b) ? false : !!a && a !== b;
-    //     },
-    //     borderDefault: false,
-    // });
-    //
-    // public static readonly RESOURCES = new MapMode(5, "Resources", {
-    //     grayscale: true,
-    //     context: () => null,
-    //     fillColor: tile => mapHiddenOrDefault(tile.basic.resourceType, MapMode.NO_COLOR, resource => MapMode.toColor(resource.color)),
-    //     borderColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.country.color)),
-    //     borderCheck: (ta: Tile, tb: Tile) => {
-    //         const a = getHiddenOrNull(ta.political.owner)?.country.id;
-    //         const b = getHiddenOrNull(tb.political.owner)?.country.id;
-    //         return (!a && !b) ? false : !!a && a !== b;
-    //     },
-    //     borderDefault: false,
-    // });
-    //
-    // public static readonly INFLUENCE = new MapMode(6, "Influence", {
-    //     grayscale: true,
-    //     context: () => null,
-    //     fillColor: (tile) => {
-    //         const influences = getHiddenOrDefault(tile.political.influences, []);
-    //         let maxInfluence: TileInfluence | null = null;
-    //         for (let influence of influences) {
-    //             if (maxInfluence === null || maxInfluence.amount < influence.amount) {
-    //                 maxInfluence = influence;
-    //             }
-    //         }
-    //         if (maxInfluence) {
-    //             const alpha = Math.min(1, maxInfluence.amount / 5); // todo: "5" = country border threshold
-    //             return MapMode.toColor(maxInfluence.country.color, alpha);
-    //         } else {
-    //             return MapMode.NO_COLOR;
-    //         }
-    //     },
-    //     borderColor: tile => mapHiddenOrDefault(tile.political.owner, MapMode.NO_COLOR, owner => MapMode.toColor(owner?.country.color)),
-    //     borderCheck: (ta: Tile, tb: Tile) => {
-    //         const a = getHiddenOrNull(ta.political.owner)?.country.id;
-    //         const b = getHiddenOrNull(tb.political.owner)?.country.id;
-    //         return (!a && !b) ? false : !!a && a !== b;
-    //     },
-    //     borderDefault: false,
-    // });
+    public static readonly RESOURCES = new MapMode(0, "Resources", {
+        grayscale: true,
+        context: () => null,
+        fillColor: tile => MapMode.toColor(tile.resourceType.color),
+        borderColor: tile => MapMode.NO_COLOR,
+        borderCheck: (ta: Tile, tb: Tile) => false,
+        borderDefault: false,
+    });
 
     private static readonly values = [
         MapMode.DEFAULT,
+        MapMode.RESOURCES,
         // MapMode.COUNTRIES,
         // MapMode.PROVINCES,
         // MapMode.CITIES,
         // MapMode.TERRAIN,
-        // MapMode.RESOURCES,
         // MapMode.INFLUENCE,
     ];
 

@@ -24,7 +24,7 @@ abstract class BuildingTemplateData(
     val constructionCost: ResourceCollection = ResourceCollection.empty(),
     val requires: ResourceCollection = ResourceCollection.empty(),
     val produces: ResourceCollection = ResourceCollection.empty(),
-    val requiredTileResource: TerrainResourceType? = null
+    val requiredTileResource: TileResourceType? = null
 )
 
 class BuildingTemplateDataFarm : BuildingTemplateData(
@@ -35,7 +35,6 @@ class BuildingTemplateDataFarm : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.FOOD.amount(1f)
     ),
-    requiredTileResource = TerrainResourceType.PLAINS,
 )
 
 class BuildingTemplateDataFishersHut : BuildingTemplateData(
@@ -46,7 +45,7 @@ class BuildingTemplateDataFishersHut : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.FOOD.amount(1f)
     ),
-    requiredTileResource = TerrainResourceType.FISH,
+    requiredTileResource = TileResourceType.FISH,
 )
 
 class BuildingTemplateDataWoodcutter : BuildingTemplateData(
@@ -57,7 +56,7 @@ class BuildingTemplateDataWoodcutter : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.WOOD.amount(1f)
     ),
-    requiredTileResource = TerrainResourceType.FOREST,
+    requiredTileResource = TileResourceType.WOOD,
 )
 
 class BuildingTemplateDataQuarry : BuildingTemplateData(
@@ -68,7 +67,7 @@ class BuildingTemplateDataQuarry : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.STONE.amount(1f)
     ),
-    requiredTileResource = TerrainResourceType.STONE,
+    requiredTileResource = TileResourceType.STONE,
 )
 
 class BuildingTemplateDataMine : BuildingTemplateData(
@@ -79,7 +78,7 @@ class BuildingTemplateDataMine : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.METAL.amount(1f)
     ),
-    requiredTileResource = TerrainResourceType.METAL,
+    requiredTileResource = TileResourceType.METAL,
 )
 
 class BuildingTemplateDataArmorSmith : BuildingTemplateData(

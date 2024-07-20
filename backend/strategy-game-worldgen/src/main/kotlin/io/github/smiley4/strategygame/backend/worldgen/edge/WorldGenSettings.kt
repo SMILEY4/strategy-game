@@ -4,7 +4,7 @@ import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import java.util.Random
 
 data class WorldGenSettings(
-    val size: Int = 30,
+    val size: Int = 50,
     val seed: Int = Random().nextInt(),
     val singleTileType: TerrainType?, // if =/= null => all tiles will be of this type
 ) {

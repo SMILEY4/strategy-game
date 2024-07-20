@@ -22,7 +22,7 @@ import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
 import {DetailsDrawNode} from "./rendernodes/detailsDrawNode";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {RenderRepository} from "./RenderRepository";
+import {RenderRepository} from "./renderRepository";
 
 /**
  * Render graph for webgl-render-nodes

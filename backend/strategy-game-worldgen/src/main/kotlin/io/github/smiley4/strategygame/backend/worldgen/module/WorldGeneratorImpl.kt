@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.worldgen.module
 
 import io.github.smiley4.strategygame.backend.common.utils.WeightedCollection
-import io.github.smiley4.strategygame.backend.commondata.TerrainResourceType
+import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenerator
@@ -22,21 +22,16 @@ internal class WorldGeneratorImpl : WorldGenerator {
     }
 
     private val resourceConfig = mapOf(
-        TerrainType.LAND to WeightedCollection<TerrainResourceType>().apply {
-            add(0.6, TerrainResourceType.PLAINS)
-            add(0.2, TerrainResourceType.FOREST)
-            add(0.15, TerrainResourceType.STONE)
-            add(0.05, TerrainResourceType.METAL)
+        TerrainType.LAND to WeightedCollection<TileResourceType>().apply {
+            add(0.6, TileResourceType.NONE)
+            add(0.2, TileResourceType.WOOD)
+            add(0.15, TileResourceType.STONE)
+            add(0.05, TileResourceType.METAL)
         },
-        TerrainType.WATER to WeightedCollection<TerrainResourceType>().apply {
-            add(0.7, TerrainResourceType.NONE)
-            add(0.3, TerrainResourceType.FISH)
+        TerrainType.WATER to WeightedCollection<TileResourceType>().apply {
+            add(0.7, TileResourceType.NONE)
+            add(0.3, TileResourceType.FISH)
         },
-        TerrainType.MOUNTAIN to WeightedCollection<TerrainResourceType>().apply {
-            add(0.1, TerrainResourceType.NONE)
-            add(0.5, TerrainResourceType.STONE)
-            add(0.3, TerrainResourceType.METAL)
-        }
     )
 
     private var random = Random(0)
@@ -54,23 +49,22 @@ internal class WorldGeneratorImpl : WorldGenerator {
         return WorldGenTile(
             q = position.q,
             r = position.r,
+            height = height,
             type = terrainType,
             resource = resourceTypeAt(terrainType)
         )
     }
 
     private fun tileTypeAt(height: Float): TerrainType {
-        return if (height < 0) {
-            TerrainType.WATER
-        } else if (height > 0.4 && random.nextFloat() > 0.35) {
-            TerrainType.MOUNTAIN
-        } else {
+        return if (height > 0) {
             TerrainType.LAND
+        } else {
+            TerrainType.WATER
         }
     }
 
-    private fun resourceTypeAt(terrain: TerrainType): TerrainResourceType {
-        return resourceConfig[terrain]?.chooseRandom(random) ?: TerrainResourceType.NONE
+    private fun resourceTypeAt(terrain: TerrainType): TileResourceType {
+        return resourceConfig[terrain]?.chooseRandom(random) ?: TileResourceType.NONE
     }
 
 }

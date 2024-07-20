@@ -4,7 +4,7 @@ import {Camera} from "../../shared/webgl/camera";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
 import {GameRenderGraphHtml} from "./gameRenderGraphHtml";
-import {RenderRepository} from "./RenderRepository";
+import {RenderRepository} from "./renderRepository";
 
 /**
  * Renderer
@@ -31,7 +31,7 @@ export class GameRenderer {
 	public initialize(canvasHandle: CanvasHandle): void {
 		GameRenderConfig.initialize();
 		this.webGlRenderGraph = new GameRenderGraphWebGL(this.changeProvider, canvasHandle.getGL(), () => this.renderConfig!, this.repository);
-		this.htmlRenderGraph = new GameRenderGraphHtml();
+		this.htmlRenderGraph = new GameRenderGraphHtml(this.changeProvider, this.repository);
 		this.webGlRenderGraph.initialize();
 		this.htmlRenderGraph.initialize();
 	}

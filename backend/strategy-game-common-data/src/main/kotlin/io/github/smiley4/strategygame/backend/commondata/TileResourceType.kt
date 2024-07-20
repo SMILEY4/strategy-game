@@ -1,9 +1,8 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-enum class TerrainResourceType {
+enum class TileResourceType {
     NONE,
-    PLAINS,
-    FOREST,
+    WOOD,
     FISH,
     STONE,
     METAL,

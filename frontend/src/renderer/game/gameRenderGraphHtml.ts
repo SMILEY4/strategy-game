@@ -4,6 +4,9 @@ import {HtmlRenderCommand} from "../core/html/htmlRenderCommand";
 import {NoOpRenderGraphSorter} from "../core/prebuilt/NoOpRenderGraphSorter";
 import {HtmlResourceManager} from "../core/html/htmlResourceManager";
 import {HtmlRenderGraphCompiler} from "../core/html/htmlRenderGraphCompiler";
+import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
+import {ChangeProvider} from "./changeProvider";
+import {RenderRepository} from "./renderRepository";
 
 /**
  * Render graph for html-render-nodes
@@ -12,12 +15,19 @@ export class GameRenderGraphHtml extends RenderGraph<HtmlRenderCommand.Context> 
 
 	private camera: Camera = new Camera();
 
-	constructor() {
+	constructor(changeProvider: ChangeProvider, renderRepository: RenderRepository) {
 		super({
 			sorter: new NoOpRenderGraphSorter(),
 			resourceManager: new HtmlResourceManager(),
 			compiler: new HtmlRenderGraphCompiler(),
-			nodes: [],
+			nodes: [
+				new ResourceIconsHtmlNode(
+					changeProvider,
+					renderRepository,
+					() => this.camera
+				)
+
+			],
 		});
 	}
 

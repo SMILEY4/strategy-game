@@ -21,7 +21,7 @@ import {GameRenderer} from "./renderer/game/gameRenderer";
 import {GameRepository} from "./game/gameRepository";
 import {GameSessionRepository} from "./gamesession/gameSessionRepository";
 import {TurnEndService} from "./game/turnEndService";
-import {RenderRepository} from "./renderer/game/RenderRepository";
+import {RenderRepository} from "./renderer/game/renderRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;

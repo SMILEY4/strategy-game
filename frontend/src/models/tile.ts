@@ -1,3 +1,5 @@
+import {TerrainType} from "./TerrainType";
+import {TileResourceType} from "./TileResourceType";
 
 export interface TileIdentifier {
 	id: string,
@@ -7,4 +9,7 @@ export interface TileIdentifier {
 
 export interface Tile {
 	identifier: TileIdentifier,
+	terrainType: TerrainType,
+	resourceType: TileResourceType,
+	height: number
 }
