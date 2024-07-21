@@ -7,6 +7,8 @@ import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
+import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
+import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 
 interface Changes {
     initFrame: boolean,
@@ -54,7 +56,7 @@ export class ChangeProvider {
     }
 
     /**
-     * @return whether there are changes relevant to the render node with the given id
+     * @return whether there are changes relevant to the action or render-node with the given id
      */
     public hasChange(name: string): boolean {
         if(name === "basemesh") {
@@ -77,6 +79,12 @@ export class ChangeProvider {
         }
         if(name === ResourceIconsHtmlNode.ID) {
             return this.changes.turn || this.changes.mapMode || this.changes.camera
+        }
+        if(name === WorldObjectsHtmlNode.ID) {
+            return this.changes.turn || this.changes.camera
+        }
+        if(name === PathsHtmlNode.ID) {
+            return this.changes.turn || this.changes.camera
         }
         return true;
     }

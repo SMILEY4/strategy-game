@@ -9,6 +9,10 @@ import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
 import {TileResourceType} from "../../../models/TileResourceType";
 import {WorldObjectType} from "../../../models/worldObjectType";
+import * as path from "node:path";
+import Point = Projections.Point;
+
+var dirty = true
 
 export class WorldObjectsHtmlNode extends HtmlRenderNode {
 
@@ -43,6 +47,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 
 	public execute(): HtmlDataResource {
 		if (!this.changeProvider.hasChange(this.id)) {
+			dirty = false
 			return EMPTY_HTML_DATA_RESOURCE;
 		}
 
@@ -55,13 +60,21 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 				elements.push({
 					tile: worldObject.tile,
 					type: worldObject.type,
+					pathMovement: [
+						{id: "", q: 0, r: 0},
+						{id: "", q: 1, r: 0},
+						{id: "", q: 1, r: 1},
+						{id: "", q: 0, r: 1},
+						{id: "", q: 0, r: 2}
+					]
 				});
 			}
 		}
 
+		dirty = true
 		return new HtmlDataResource({
 			outputs: buildMap({
-				"htmldata.resourceicons": elements,
+				"htmldata.worldobjects": elements,
 			}),
 		});
 	}
@@ -80,6 +93,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 interface WorldObjectIconElement {
 	tile: TileIdentifier,
 	type: WorldObjectType,
+	pathMovement: TileIdentifier[]
 }
 
 function render(camera: Camera, element: WorldObjectIconElement, html: HTMLElement): void {
