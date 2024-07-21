@@ -8,7 +8,7 @@ import "./decoratedWindow.less";
 import {AudioType} from "../../../../shared/audioService";
 import {VBox} from "../../layout/vbox/VBox";
 import {HeaderBanner} from "../../banner/Banner";
-import {Header, Header1} from "../../header/Header";
+import {Header} from "../../header/Header";
 import {Spacer} from "../../spacer/Spacer";
 
 export interface DecoratedWindowProps {

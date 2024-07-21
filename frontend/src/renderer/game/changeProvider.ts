@@ -14,7 +14,8 @@ interface Changes {
     initFrame: boolean,
     turn: boolean,
     mapMode: boolean,
-    camera: boolean
+    camera: boolean,
+    movementPaths: boolean,
 }
 
 /**
@@ -27,6 +28,7 @@ export class ChangeProvider {
     private readonly detectorCamera = new ChangeDetector();
     private readonly detectorCurrentTurn = new ChangeDetector();
     private readonly detectorMapMode = new ChangeDetector();
+    private readonly detectorMovementPaths = new ChangeDetector();
 
     private frame: number = 0
     private changes: Changes = {
@@ -34,6 +36,7 @@ export class ChangeProvider {
         turn: true,
         mapMode: true,
         camera: true,
+        movementPaths: true,
     }
 
     constructor(renderRepository: RenderRepository,) {
@@ -53,6 +56,7 @@ export class ChangeProvider {
         this.changes.turn = this.detectorCurrentTurn.check(this.repository.getTurn());
         this.changes.mapMode = this.detectorMapMode.check(this.repository.getMapMode())
         this.changes.camera = this.detectorCamera.check(camera.getHash())
+        this.changes.movementPaths = this.detectorMovementPaths.check(this.repository.getMovementPathsCheckId())
     }
 
     /**
@@ -84,7 +88,7 @@ export class ChangeProvider {
             return this.changes.turn || this.changes.camera
         }
         if(name === PathsHtmlNode.ID) {
-            return this.changes.turn || this.changes.camera
+            return this.changes.turn || this.changes.camera || this.changes.movementPaths
         }
         return true;
     }

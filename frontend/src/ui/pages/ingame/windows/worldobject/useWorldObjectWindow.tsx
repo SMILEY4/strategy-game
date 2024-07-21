@@ -6,6 +6,7 @@ import {TileDatabase} from "../../../../../state/database/tileDatabase";
 import {GameSessionDatabase} from "../../../../../state/database/gameSessionDatabase";
 import {WorldObject} from "../../../../../models/worldObject";
 import {WorldObjectDatabase} from "../../../../../state/database/objectDatabase";
+import {UseMoveWindow} from "../move/useWorldObjectWindow";
 
 export namespace UseWorldObjectWindow {
 
@@ -40,15 +41,19 @@ export namespace UseWorldObjectWindow {
 
     export interface Data {
         worldObject: WorldObject;
+        startMoveCommand: () => void;
     }
 
     export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
 
         const worldObject = AppCtx.WorldObjectDatabase().querySingle(WorldObjectDatabase.QUERY_BY_ID, identifier);
 
+        const openMoveWindow = UseMoveWindow.useOpen()
+
         if (worldObject) {
             return {
                 worldObject: worldObject,
+                startMoveCommand: () => identifier && openMoveWindow(identifier),
             };
         } else {
             return null;

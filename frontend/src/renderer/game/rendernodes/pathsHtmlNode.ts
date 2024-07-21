@@ -45,16 +45,10 @@ export class PathsHtmlNode extends HtmlRenderNode {
 
 		const elements: PathsElement[] = [];
 
-		const worldObjects = this.repository.getWorldObjects();
-		for (let i = 0, n = worldObjects.length; i < n; i++) {
+		const paths = this.repository.getMovementPaths();
+		for (let i = 0, n = paths.length; i < n; i++) {
 			elements.push({
-				path: [
-					{id: "", q: 0, r: 0},
-					{id: "", q: 1, r: 0},
-					{id: "", q: 1, r: 1},
-					{id: "", q: 0, r: 1},
-					{id: "", q: 0, r: 2},
-				],
+				path: paths[i],
 			});
 		}
 

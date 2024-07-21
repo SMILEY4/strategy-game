@@ -5,25 +5,29 @@ import {AudioService, AudioType} from "../shared/audioService";
 import {GameRenderer} from "../renderer/game/gameRenderer";
 import {GameRepository} from "./gameRepository";
 import {UseWorldObjectWindow} from "../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
+import {MovementService} from "./movementService";
 
 /**
  * Service to handle logic for the continuous game loop.
  */
 export class GameLoopService {
 
-	private readonly canvasHandle: CanvasHandle;
+	private readonly movementService: MovementService;
 	private readonly gameRepository: GameRepository;
 	private readonly tilePicker: TilePicker;
 	private readonly gameRenderer: GameRenderer;
 	private readonly audioService: AudioService;
+	private readonly canvasHandle: CanvasHandle;
 
 
 	constructor(
+		movementService: MovementService,
 		tilePicker: TilePicker,
 		gameRepository: GameRepository,
 		gameRenderer: GameRenderer,
 		audioService: AudioService,
 	) {
+		this.movementService = movementService;
 		this.tilePicker = tilePicker;
 		this.gameRepository = gameRepository;
 		this.gameRenderer = gameRenderer;
@@ -62,13 +66,17 @@ export class GameLoopService {
 		if (this.gameRepository.getSelectedTile()?.id !== tile?.identifier) {
 			this.gameRepository.setSelectedTile(tile?.identifier ?? null);
 			if (tile) {
-				const worldObject = this.gameRepository.getWorldObjectByTile(tile.identifier);
-				if (worldObject) {
-					AudioType.CLICK_PRIMARY.play(this.audioService);
-					UseWorldObjectWindow.open(worldObject.id);
+				if (this.movementService.isMovementMode()) {
+					this.movementService.addToPath(tile.identifier)
 				} else {
-					AudioType.CLICK_PRIMARY.play(this.audioService);
-					UseTileWindow.open(tile.identifier);
+					const worldObject = this.gameRepository.getWorldObjectByTile(tile.identifier);
+					if (worldObject) {
+						AudioType.CLICK_PRIMARY.play(this.audioService);
+						UseWorldObjectWindow.open(worldObject.id);
+					} else {
+						AudioType.CLICK_PRIMARY.play(this.audioService);
+						UseTileWindow.open(tile.identifier);
+					}
 				}
 			}
 		}

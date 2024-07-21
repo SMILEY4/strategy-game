@@ -60,13 +60,6 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 				elements.push({
 					tile: worldObject.tile,
 					type: worldObject.type,
-					pathMovement: [
-						{id: "", q: 0, r: 0},
-						{id: "", q: 1, r: 0},
-						{id: "", q: 1, r: 1},
-						{id: "", q: 0, r: 1},
-						{id: "", q: 0, r: 2}
-					]
 				});
 			}
 		}
@@ -93,7 +86,6 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 interface WorldObjectIconElement {
 	tile: TileIdentifier,
 	type: WorldObjectType,
-	pathMovement: TileIdentifier[]
 }
 
 function render(camera: Camera, element: WorldObjectIconElement, html: HTMLElement): void {

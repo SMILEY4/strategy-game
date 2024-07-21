@@ -6,6 +6,7 @@ import {MapMode} from "../../models/mapMode";
 import {CameraData} from "../../models/cameraData";
 import {WorldObjectDatabase} from "../../state/database/objectDatabase";
 import {WorldObject} from "../../models/worldObject";
+import {MovementService} from "../../game/movementService";
 
 export class RenderRepository {
 
@@ -13,43 +14,65 @@ export class RenderRepository {
 	private readonly cameraDb: CameraDatabase;
 	private readonly tileDb: TileDatabase;
 	private readonly worldObjectDb: WorldObjectDatabase;
+	private readonly movementService: MovementService;
 
-	constructor(gameSessionDb: GameSessionDatabase, cameraDb: CameraDatabase, tileDb: TileDatabase, worldObjectDb: WorldObjectDatabase) {
+	constructor(
+		gameSessionDb: GameSessionDatabase,
+		cameraDb: CameraDatabase,
+		tileDb: TileDatabase,
+		worldObjectDb: WorldObjectDatabase,
+		movementService: MovementService,
+	) {
 		this.gameSessionDb = gameSessionDb;
 		this.cameraDb = cameraDb;
 		this.tileDb = tileDb;
 		this.worldObjectDb = worldObjectDb;
+		this.movementService = movementService;
 	}
 
 	public getCamera(): CameraData {
-		return this.cameraDb.get()
+		return this.cameraDb.get();
 	}
 
 	public getTurn(): number {
-		return this.gameSessionDb.get().turn
+		return this.gameSessionDb.get().turn;
 	}
 
 	public getTilesAll(): Tile[] {
-		return this.tileDb.queryMany(TileDatabase.QUERY_ALL, null)
+		return this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
 	}
 
 	public getTileAt(q: number, r: number): Tile | null {
-		return this.tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r])
+		return this.tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
 	}
 
 	public getSelectedTile(): TileIdentifier | null {
-		return this.gameSessionDb.getSelectedTile()
+		return this.gameSessionDb.getSelectedTile();
 	}
 
 	public getHoverTile(): TileIdentifier | null {
-		return this.gameSessionDb.getHoverTile()
+		return this.gameSessionDb.getHoverTile();
 	}
 
 	public getMapMode(): MapMode {
-		return this.gameSessionDb.getMapMode()
+		return this.gameSessionDb.getMapMode();
 	}
 
 	public getWorldObjects(): WorldObject[] {
 		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_ALL, null);
+	}
+
+	public getMovementPaths(): TileIdentifier[][] {
+		return [this.movementService.getPath()];
+	}
+
+	public getMovementPathsCheckId(): string {
+		let str = "";
+		this.getMovementPaths().forEach(path => {
+			path.forEach(tile => {
+				str += tile.id;
+			});
+		});
+		return str;
 	}
 }

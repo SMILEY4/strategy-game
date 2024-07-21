@@ -23,6 +23,8 @@ import {GameSessionRepository} from "./gamesession/gameSessionRepository";
 import {TurnEndService} from "./game/turnEndService";
 import {RenderRepository} from "./renderer/game/renderRepository";
 import {WorldObjectDatabase} from "./state/database/objectDatabase";
+import {MovementService} from "./game/movementService";
+import {App} from "./ui/pages/App";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -46,6 +48,7 @@ interface AppCtxDef {
     TurnStartService: () => TurnStartService,
     TurnEndService: () => TurnEndService,
     GameLoopService: () => GameLoopService,
+    MovementService: () => MovementService,
     GameRepository: () => GameRepository,
 
     GameRenderer: () => GameRenderer,
@@ -124,11 +127,16 @@ export const AppCtx: AppCtxDef = {
     GameLoopService: diContext.register(
         "GameLoopService",
         () => new GameLoopService(
+            AppCtx.MovementService(),
             new TilePicker(AppCtx.GameRepository()),
             AppCtx.GameRepository(),
             AppCtx.GameRenderer(),
             AppCtx.AudioService(),
         ),
+    ),
+    MovementService: diContext.register(
+        "MovementService",
+        () => new MovementService(),
     ),
 
     WebGLMonitor: diContext.register(
@@ -147,7 +155,8 @@ export const AppCtx: AppCtxDef = {
             AppCtx.GameSessionDatabase(),
             AppCtx.CameraDatabase(),
             AppCtx.TileDatabase(),
-            AppCtx.WorldObjectDatabase()
+            AppCtx.WorldObjectDatabase(),
+            AppCtx.MovementService()
         )
     ),
 

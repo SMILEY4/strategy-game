@@ -9,6 +9,7 @@ import {WindowSection} from "../../../../components/section/ContentSection";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
+import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
 export interface WorldObjectWindowProps {
 	windowId: string;
@@ -45,6 +46,11 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
 					</InsetKeyValueGrid>
 				</WindowSection>
+
+				<ButtonPrimary color="blue" onClick={data.startMoveCommand}>
+					Move
+				</ButtonPrimary>
+
 			</DefaultDecoratedWindowWithBanner>
 		);
 	}
