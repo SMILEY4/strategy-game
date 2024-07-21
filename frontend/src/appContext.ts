@@ -22,6 +22,7 @@ import {GameRepository} from "./game/gameRepository";
 import {GameSessionRepository} from "./gamesession/gameSessionRepository";
 import {TurnEndService} from "./game/turnEndService";
 import {RenderRepository} from "./renderer/game/renderRepository";
+import {WorldObjectDatabase} from "./state/database/objectDatabase";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -56,6 +57,7 @@ interface AppCtxDef {
     CameraDatabase: () => CameraDatabase,
     GameSessionDatabase: () => GameSessionDatabase,
     TileDatabase: () => TileDatabase,
+    WorldObjectDatabase: () => WorldObjectDatabase,
 }
 
 const diContext = new DIContext();
@@ -144,7 +146,8 @@ export const AppCtx: AppCtxDef = {
         () => new RenderRepository(
             AppCtx.GameSessionDatabase(),
             AppCtx.CameraDatabase(),
-            AppCtx.TileDatabase()
+            AppCtx.TileDatabase(),
+            AppCtx.WorldObjectDatabase()
         )
     ),
 
@@ -153,7 +156,8 @@ export const AppCtx: AppCtxDef = {
         () => new GameRepository(
             AppCtx.GameSessionDatabase(),
             AppCtx.CameraDatabase(),
-            AppCtx.TileDatabase()
+            AppCtx.TileDatabase(),
+            AppCtx.WorldObjectDatabase()
         )
     ),
     MonitoringRepository: diContext.register(
@@ -175,6 +179,10 @@ export const AppCtx: AppCtxDef = {
     TileDatabase: diContext.register(
         "TileDatabase",
         () => new TileDatabase(),
+    ),
+    WorldObjectDatabase: diContext.register(
+        "WorldObjectDatabase",
+        () => new WorldObjectDatabase(),
     ),
 
 };

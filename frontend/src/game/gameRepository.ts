@@ -1,21 +1,25 @@
-import {MapMode} from "../models/mapMode";
 import {Tile, TileIdentifier} from "../models/tile";
 import {TileDatabase} from "../state/database/tileDatabase";
 import {CameraDatabase} from "../state/database/cameraDatabase";
 import {CameraData} from "../models/cameraData";
 import {GameSessionDatabase} from "../state/database/gameSessionDatabase";
 import {Transaction} from "../shared/db/database/transaction";
+import {WorldObjectDatabase} from "../state/database/objectDatabase";
+import {WorldObject} from "../models/worldObject";
+import {WorldObjectType} from "../models/worldObjectType";
 
 export class GameRepository {
 
 	private readonly gameSessionDb: GameSessionDatabase;
 	private readonly cameraDb: CameraDatabase;
 	private readonly tileDb: TileDatabase;
+	private readonly worldObjectDb: WorldObjectDatabase;
 
-	constructor(gameSessionDb: GameSessionDatabase, cameraDb: CameraDatabase, tileDb: TileDatabase) {
+	constructor(gameSessionDb: GameSessionDatabase, cameraDb: CameraDatabase, tileDb: TileDatabase, worldObjectDb: WorldObjectDatabase) {
 		this.gameSessionDb = gameSessionDb;
 		this.cameraDb = cameraDb;
 		this.tileDb = tileDb;
+		this.worldObjectDb = worldObjectDb;
 	}
 
 	public getCamera(): CameraData {
@@ -46,6 +50,10 @@ export class GameRepository {
 		return this.tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r])
 	}
 
+	public getWorldObjectByTile(tileId: TileIdentifier): WorldObject | null {
+		return this.worldObjectDb.querySingle(WorldObjectDatabase.QUERY_BY_POSITION, [tileId.q, tileId.r])
+	}
+
 	public transactionForStartTurn(action: () => void) {
 		Transaction.run([this.tileDb], action);
 	}
@@ -55,4 +63,8 @@ export class GameRepository {
 		this.tileDb.insertMany(tiles);
 	}
 
+	public replaceWorldObjects(worldObject: WorldObject[]) {
+		this.worldObjectDb.deleteAll()
+		this.worldObjectDb.insertMany(worldObject)
+	}
 }

@@ -4,17 +4,21 @@ import {GameSessionDatabase} from "../../state/database/gameSessionDatabase";
 import {CameraDatabase} from "../../state/database/cameraDatabase";
 import {MapMode} from "../../models/mapMode";
 import {CameraData} from "../../models/cameraData";
+import {WorldObjectDatabase} from "../../state/database/objectDatabase";
+import {WorldObject} from "../../models/worldObject";
 
 export class RenderRepository {
 
 	private readonly gameSessionDb: GameSessionDatabase;
 	private readonly cameraDb: CameraDatabase;
 	private readonly tileDb: TileDatabase;
+	private readonly worldObjectDb: WorldObjectDatabase;
 
-	constructor(gameSessionDb: GameSessionDatabase, cameraDb: CameraDatabase, tileDb: TileDatabase) {
+	constructor(gameSessionDb: GameSessionDatabase, cameraDb: CameraDatabase, tileDb: TileDatabase, worldObjectDb: WorldObjectDatabase) {
 		this.gameSessionDb = gameSessionDb;
 		this.cameraDb = cameraDb;
 		this.tileDb = tileDb;
+		this.worldObjectDb = worldObjectDb;
 	}
 
 	public getCamera(): CameraData {
@@ -43,5 +47,9 @@ export class RenderRepository {
 
 	public getMapMode(): MapMode {
 		return this.gameSessionDb.getMapMode()
+	}
+
+	public getWorldObjects(): WorldObject[] {
+		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_ALL, null);
 	}
 }

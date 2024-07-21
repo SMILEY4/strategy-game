@@ -5,6 +5,7 @@ import {Tile} from "../models/tile";
 import {GameRepository} from "./gameRepository";
 import {TerrainType} from "../models/TerrainType";
 import {TileResourceType} from "../models/TileResourceType";
+import {WorldObjectType} from "../models/worldObjectType";
 
 /**
  * Service to handle the start of a new turn
@@ -30,7 +31,18 @@ export class TurnStartService {
 		this.monitorSetGameState(() => {
 
 			this.gameRepository.transactionForStartTurn(() => {
+
 				this.gameRepository.replaceTiles(this.buildTiles(gameState));
+
+				// todo: add world objects from message
+				this.gameRepository.replaceWorldObjects([
+					{
+						id: "test-scout",
+						type: WorldObjectType.SCOUT,
+						tile: gameState.tiles.find(it => it.identifier.q == 0 && it.identifier.r == 0)!.identifier
+					}
+				])
+
 			});
 
 		});

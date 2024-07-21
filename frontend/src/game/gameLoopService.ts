@@ -4,6 +4,7 @@ import {UseTileWindow} from "../ui/pages/ingame/windows/tile/useTileWindow";
 import {AudioService, AudioType} from "../shared/audioService";
 import {GameRenderer} from "../renderer/game/gameRenderer";
 import {GameRepository} from "./gameRepository";
+import {UseWorldObjectWindow} from "../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
 
 /**
  * Service to handle logic for the continuous game loop.
@@ -42,7 +43,7 @@ export class GameLoopService {
 	 * Dispose this game loop
 	 */
 	public dispose() {
-		this.canvasHandle.set(null)
+		this.canvasHandle.set(null);
 		this.gameRenderer.dispose();
 	}
 
@@ -61,8 +62,14 @@ export class GameLoopService {
 		if (this.gameRepository.getSelectedTile()?.id !== tile?.identifier) {
 			this.gameRepository.setSelectedTile(tile?.identifier ?? null);
 			if (tile) {
-				AudioType.CLICK_PRIMARY.play(this.audioService);
-				UseTileWindow.open(tile.identifier);
+				const worldObject = this.gameRepository.getWorldObjectByTile(tile.identifier);
+				if (worldObject) {
+					AudioType.CLICK_PRIMARY.play(this.audioService);
+					UseWorldObjectWindow.open(worldObject.id);
+				} else {
+					AudioType.CLICK_PRIMARY.play(this.audioService);
+					UseTileWindow.open(tile.identifier);
+				}
 			}
 		}
 	}
@@ -110,7 +117,7 @@ export class GameLoopService {
 	 * @return the canvas handle
 	 */
 	public getCanvasHandle(): CanvasHandle {
-		return this.canvasHandle
+		return this.canvasHandle;
 	}
 
 }
