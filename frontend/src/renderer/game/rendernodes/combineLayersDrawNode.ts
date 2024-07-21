@@ -5,7 +5,7 @@ import {NodeInput} from "../../core/graph/nodeInput";
 import {GLUniformType} from "../../../shared/webgl/glTypes";
 import {Camera} from "../../../shared/webgl/camera";
 import {mat3} from "../../../shared/webgl/mat3";
-import {RenderRepository} from "../RenderRepository";
+import {RenderRepository} from "../renderRepository";
 
 /**
  * Combines all individual (non-html) layers into the final image.

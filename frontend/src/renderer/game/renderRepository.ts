@@ -42,6 +42,6 @@ export class RenderRepository {
 	}
 
 	public getMapMode(): MapMode {
-		return MapMode.DEFAULT
+		return this.gameSessionDb.getMapMode()
 	}
 }

@@ -1,5 +1,5 @@
 import {Tile} from "../../../models/tile";
-import {RenderRepository} from "../RenderRepository";
+import {RenderRepository} from "../renderRepository";
 
 export namespace BorderBuilder {
 

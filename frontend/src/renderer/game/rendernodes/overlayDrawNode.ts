@@ -2,7 +2,7 @@ import {DrawRenderNode} from "../../core/graph/drawRenderNode";
 import {GLUniformType} from "../../../shared/webgl/glTypes";
 import {NodeInput} from "../../core/graph/nodeInput";
 import {NodeOutput} from "../../core/graph/nodeOutput";
-import {RenderRepository} from "../RenderRepository";
+import {RenderRepository} from "../renderRepository";
 
 export class OverlayDrawNode extends DrawRenderNode {
 

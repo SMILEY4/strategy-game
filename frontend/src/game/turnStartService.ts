@@ -3,6 +3,8 @@ import {ValueHistory} from "../shared/valueHistory";
 import {MonitoringRepository} from "../state/database/monitoringRepository";
 import {Tile} from "../models/tile";
 import {GameRepository} from "./gameRepository";
+import {TerrainType} from "../models/TerrainType";
+import {TileResourceType} from "../models/TileResourceType";
 
 /**
  * Service to handle the start of a new turn
@@ -45,7 +47,12 @@ export class TurnStartService {
 	}
 
 	private buildTiles(game: GameStateMessage): Tile[] {
-		return game.tiles.map(tileMsg => ({identifier: tileMsg.identifier}));
+		return game.tiles.map(tileMsg => ({
+			identifier: tileMsg.identifier,
+			terrainType: TerrainType.fromString(tileMsg.terrainType),
+			resourceType: TileResourceType.fromString(tileMsg.resourceType),
+			height: tileMsg.height,
+		}));
 	}
 
 }

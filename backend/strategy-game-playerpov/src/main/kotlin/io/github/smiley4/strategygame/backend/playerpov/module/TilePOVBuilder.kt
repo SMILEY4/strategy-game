@@ -14,6 +14,9 @@ internal class TilePOVBuilder {
                 "q" to tile.position.q
                 "r" to tile.position.r
             }
+            "terrainType" to tile.data.terrainType
+            "resourceType" to tile.data.resourceType
+            "height" to tile.data.height
         }
     }
 

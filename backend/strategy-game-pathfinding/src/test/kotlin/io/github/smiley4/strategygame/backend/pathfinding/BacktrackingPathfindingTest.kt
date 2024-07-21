@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.backend.pathfinding
 
 import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
-import io.github.smiley4.strategygame.backend.commondata.TerrainResourceType
+import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
@@ -227,7 +227,7 @@ class BacktrackingPathfindingTest : StringSpec({
                                     2 -> TerrainType.MOUNTAIN
                                     else -> TerrainType.LAND
                                 },
-                                resourceType = TerrainResourceType.NONE
+                                resourceType = TileResourceType.NONE
                             ),
                             influences = mutableListOf(),
                             owner = null,

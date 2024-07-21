@@ -39,7 +39,8 @@ class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : Initiali
                 position = TilePosition(it.q, it.r),
                 data = TileData(
                     terrainType = it.type,
-                    resourceType = it.resource
+                    resourceType = it.resource,
+                    height = it.height,
                 ),
                 objects = trackingListOf(),
                 influences = mutableListOf(),

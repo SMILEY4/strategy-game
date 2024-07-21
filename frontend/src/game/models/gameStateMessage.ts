@@ -11,5 +11,7 @@ export interface GameStateMessage {
 
 export interface TileMessage {
 	identifier: TileIdentifier,
+	terrainType: "LAND" | "WATER",
+	resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
+	height: number
 }
-

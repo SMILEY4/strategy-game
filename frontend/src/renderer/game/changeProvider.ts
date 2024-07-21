@@ -1,16 +1,16 @@
 import {ChangeDetector} from "../../shared/changeDetector";
 import {Camera} from "../../shared/webgl/camera";
 import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
-import {RenderRepository} from "./RenderRepository";
+import {RenderRepository} from "./renderRepository";
 import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
+import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 
 interface Changes {
     initFrame: boolean,
     turn: boolean,
-    commands: boolean,
     mapMode: boolean,
     camera: boolean
 }
@@ -24,12 +24,12 @@ export class ChangeProvider {
 
     private readonly detectorCamera = new ChangeDetector();
     private readonly detectorCurrentTurn = new ChangeDetector();
+    private readonly detectorMapMode = new ChangeDetector();
 
     private frame: number = 0
     private changes: Changes = {
         initFrame: true,
         turn: true,
-        commands: true,
         mapMode: true,
         camera: true,
     }
@@ -49,8 +49,7 @@ export class ChangeProvider {
             this.frame ++;
         }
         this.changes.turn = this.detectorCurrentTurn.check(this.repository.getTurn());
-        this.changes.commands = false; // todo this.detectorCommandRevId.check(this.commandDb.getRevId());
-        this.changes.mapMode = false; // todo this.detectorMapMode.check(this.gameSessionDb.getMapMode())
+        this.changes.mapMode = this.detectorMapMode.check(this.repository.getMapMode())
         this.changes.camera = this.detectorCamera.check(camera.getHash())
     }
 
@@ -65,7 +64,7 @@ export class ChangeProvider {
             return this.changes.turn
         }
         if(name === EntitiesVertexNode.ID) {
-            return this.changes.turn || this.changes.commands
+            return this.changes.turn
         }
         if(name === OverlayVertexNode.ID) {
             return this.changes.turn || this.changes.mapMode
@@ -75,6 +74,9 @@ export class ChangeProvider {
         }
         if(name === TilesVertexNode.ID) {
             return this.changes.turn
+        }
+        if(name === ResourceIconsHtmlNode.ID) {
+            return this.changes.turn || this.changes.mapMode || this.changes.camera
         }
         return true;
     }

@@ -8,7 +8,7 @@ import {packBorder} from "./packBorder";
 import {MapMode} from "../../../models/mapMode";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import {ChangeProvider} from "../changeProvider";
-import {RenderRepository} from "../RenderRepository";
+import {RenderRepository} from "../renderRepository";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 
@@ -148,9 +148,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 
 			for (let i = 0, n = tiles.length; i < n; i++) {
 				const tile = tiles[i];
-				// if (tile.basic.terrainType.visible) {
 				this.appendOverlayInstance(tile, mapMode, mapModeContext, cursorOverlay);
-				// }
 			}
 
 			buffers.set("vertexbuffer.instance.overlay", new VertexBufferResource(arrayBufferOverlay.getRawBuffer()));
@@ -204,15 +202,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 	//===== INSTANCES ===============================================
 
 	private countTiles(tiles: Tile[]): number {
-		let count = 0;
-		for (let i = 0, n = tiles.length; i < n; i++) {
-			const tile = tiles[i];
-			count++;
-			// if (tile.basic.terrainType.visible) {
-			//     count++;
-			// }
-		}
-		return count;
+		return tiles.length;
 	}
 
 	private appendOverlayInstance(tile: Tile, mapMode: MapMode, mapModeContext: any, cursor: MixedArrayBufferCursor) {
