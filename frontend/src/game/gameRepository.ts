@@ -8,6 +8,7 @@ import {WorldObjectDatabase} from "../state/database/objectDatabase";
 import {WorldObject} from "../models/worldObject";
 import {WorldObjectType} from "../models/worldObjectType";
 import {MovementModeState} from "../state/movementModeState";
+import {TilePosition} from "../models/tilePosition";
 
 export class GameRepository {
 
@@ -69,16 +70,17 @@ export class GameRepository {
 		this.worldObjectDb.insertMany(worldObject)
 	}
 
-	public getCurrentMovementModeState(): {worldObjectId: string | null, path: TileIdentifier[]} {
+	public getCurrentMovementModeState(): {worldObjectId: string | null, path: TileIdentifier[], availablePositions: TilePosition[]} {
 		const state = MovementModeState.useState.getState();
 		return {
 			worldObjectId: state.worldObjectId,
-			path: state.path
+			path: state.path,
+			availablePositions: state.availablePositions,
 		}
 	}
 
-	public setCurrentMovementModeState(worldObjectId: string | null, path: TileIdentifier[]) {
-		MovementModeState.useState.getState().set(worldObjectId, path);
+	public setCurrentMovementModeState(worldObjectId: string | null, path: TileIdentifier[], availablePositions: TilePosition[]) {
+		MovementModeState.useState.getState().set(worldObjectId, path, availablePositions);
 	}
 
 }

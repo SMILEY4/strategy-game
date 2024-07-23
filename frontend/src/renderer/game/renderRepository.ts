@@ -7,6 +7,7 @@ import {CameraData} from "../../models/cameraData";
 import {WorldObjectDatabase} from "../../state/database/objectDatabase";
 import {WorldObject} from "../../models/worldObject";
 import {MovementService} from "../../game/movementService";
+import {MovementModeState} from "../../state/movementModeState";
 
 export class RenderRepository {
 
@@ -74,5 +75,9 @@ export class RenderRepository {
 			});
 		});
 		return str;
+	}
+
+	public getHighlightMovementTileIds(): Set<string> {
+		return new Set<string>(MovementModeState.useState.getState().availablePositions.map(it => it.q + "/" + it.r)) // todo: temp key
 	}
 }

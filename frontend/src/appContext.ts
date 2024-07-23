@@ -122,7 +122,10 @@ export const AppCtx: AppCtxDef = {
     ),
     TurnEndService: diContext.register(
         "EndTurnService",
-        () => new TurnEndService(AppCtx.GameSessionService()),
+        () => new TurnEndService(
+            AppCtx.GameSessionService(),
+            AppCtx.MovementService()
+        ),
     ),
     GameLoopService: diContext.register(
         "GameLoopService",

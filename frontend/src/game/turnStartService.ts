@@ -6,6 +6,7 @@ import {GameRepository} from "./gameRepository";
 import {TerrainType} from "../models/TerrainType";
 import {TileResourceType} from "../models/TileResourceType";
 import {WorldObjectType} from "../models/worldObjectType";
+import {MovementModeState} from "../state/movementModeState";
 
 /**
  * Service to handle the start of a new turn

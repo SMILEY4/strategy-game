@@ -73,7 +73,7 @@ export class ChangeProvider {
             return this.changes.turn
         }
         if(name === OverlayVertexNode.ID) {
-            return this.changes.turn || this.changes.mapMode
+            return this.changes.turn || this.changes.mapMode || this.changes.movementPaths
         }
         if(name === RoutesVertexNode.ID) {
             return this.changes.turn
