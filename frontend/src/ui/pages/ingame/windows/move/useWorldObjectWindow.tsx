@@ -19,6 +19,7 @@ export namespace UseMoveWindow {
                 width: 370,
                 left: 1000,
                 right: 1000,
+                blockOthers: true,
                 content: <MoveWindow windowId={WINDOW_ID} identifier={worldObjectId}/>,
             });
         };
@@ -34,6 +35,7 @@ export namespace UseMoveWindow {
             width: 370,
             left: 1000,
             right: 1000,
+            blockOthers: true,
             content: <MoveWindow windowId={WINDOW_ID} identifier={worldObjectId}/>,
         });
     }
