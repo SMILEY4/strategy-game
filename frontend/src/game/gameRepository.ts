@@ -7,6 +7,7 @@ import {Transaction} from "../shared/db/database/transaction";
 import {WorldObjectDatabase} from "../state/database/objectDatabase";
 import {WorldObject} from "../models/worldObject";
 import {WorldObjectType} from "../models/worldObjectType";
+import {MovementModeState} from "../state/movementModeState";
 
 export class GameRepository {
 
@@ -67,4 +68,17 @@ export class GameRepository {
 		this.worldObjectDb.deleteAll()
 		this.worldObjectDb.insertMany(worldObject)
 	}
+
+	public getCurrentMovementModeState(): {worldObjectId: string | null, path: TileIdentifier[]} {
+		const state = MovementModeState.useState.getState();
+		return {
+			worldObjectId: state.worldObjectId,
+			path: state.path
+		}
+	}
+
+	public setCurrentMovementModeState(worldObjectId: string | null, path: TileIdentifier[]) {
+		MovementModeState.useState.getState().set(worldObjectId, path);
+	}
+
 }

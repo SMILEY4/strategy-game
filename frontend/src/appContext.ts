@@ -136,7 +136,9 @@ export const AppCtx: AppCtxDef = {
     ),
     MovementService: diContext.register(
         "MovementService",
-        () => new MovementService(),
+        () => new MovementService(
+            AppCtx.GameRepository()
+        ),
     ),
 
     WebGLMonitor: diContext.register(

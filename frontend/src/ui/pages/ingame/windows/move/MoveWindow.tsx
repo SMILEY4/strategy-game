@@ -6,7 +6,6 @@ import {UseMoveWindow} from "./useWorldObjectWindow";
 import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {Spacer} from "../../../../components/spacer/Spacer";
 
 export interface MoveWindowProps {
 	windowId: string;
@@ -38,7 +37,7 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 			>
 				<VBox fillParent gap_s top stretch>
 					<Header1>Move Unit</Header1>
-					<Spacer size="m"/>
+					<Text>{data.remainingPoints + "/" + data.totalPoints + "Movement Points left"}</Text>
 					<HBox right gap_s>
 						<ButtonPrimary color="red" onClick={data.cancel}>Cancel</ButtonPrimary>
 						<ButtonPrimary color="green" onClick={data.accept}>Accept</ButtonPrimary>

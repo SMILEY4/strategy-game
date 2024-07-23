@@ -1,40 +1,51 @@
 import {TileIdentifier} from "../models/tile";
+import {GameRepository} from "./gameRepository";
 
 /**
  * Logic for handling issuing movement of units
  */
 export class MovementService {
 
-	private worldObjectId: string | null = null;
-	private path: TileIdentifier[] = [];
+	private readonly repository: GameRepository;
+
+	constructor(repository: GameRepository) {
+		this.repository = repository;
+	}
 
 	public isMovementMode(): boolean {
-		return this.worldObjectId !== null;
+		return this.repository.getCurrentMovementModeState().worldObjectId !== null;
 	}
 
 	public startMovement(worldObjectId: string, tile: TileIdentifier) {
-		this.cancelMovement();
-		this.worldObjectId = worldObjectId;
-		this.addToPath(tile)
+		this.repository.setCurrentMovementModeState(worldObjectId, [tile])
 	}
 
 	public cancelMovement() {
-		this.worldObjectId = null;
-		this.path = [];
+		this.repository.setCurrentMovementModeState(null, [])
 	}
 
 	public completeMovement() {
-		console.log("Move", this.worldObjectId, this.path);
-		this.worldObjectId = null;
-		this.path = [];
+		this.repository.setCurrentMovementModeState(null, [])
 	}
 
 	public addToPath(tileId: TileIdentifier) {
-		this.path.push(tileId);
+		if(this.getPathCost() < this.getMaxPathCost()) {
+			const current = this.repository.getCurrentMovementModeState();
+			this.repository.setCurrentMovementModeState(current.worldObjectId, [...current.path, tileId])
+		}
 	}
 
 	public getPath(): TileIdentifier[] {
-		return this.path;
+		return this.repository.getCurrentMovementModeState().path
+	}
+
+	public getPathCost(): number {
+		const path = this.repository.getCurrentMovementModeState().path
+		return Math.max(0, path.length - 1)
+	}
+
+	public getMaxPathCost(): number {
+		return 5 // todo: get from unit
 	}
 
 }
