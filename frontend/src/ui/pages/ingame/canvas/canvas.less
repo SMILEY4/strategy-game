@@ -3,7 +3,7 @@
     width:            100%;
     height:           100%;
     overflow:         hidden;
-    background-color: #794c4c;
+    background-color: #ff00ff;
     pointer-events:   all;
 }
 
@@ -46,4 +46,36 @@
         filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
     }
 
+    .world-ui__path #movement-arrow {
+        fill: #FFD700;
+    }
+
+    .world-ui__path > svg > path {
+        fill: none;
+        stroke: #FFD700;
+        stroke-width: 10;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: 60%;
+    }
+
+    .world-ui__path {
+        filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, .5));
+    }
+
+    .world-ui__path-pending {
+        animation: anim-world-ui__path-glow 1s ease-out infinite;
+        animation-direction: alternate;
+    }
+
+
+}
+
+@keyframes anim-world-ui__path-glow {
+    0% {
+        filter: drop-shadow(0 0 10px rgba(255, 229, 92, 0)) drop-shadow(3px 3px 2px rgba(0, 0, 0, 50%));
+    }
+    100% {
+        filter: drop-shadow(0 0 5px rgba(255, 229, 92, 100%)) drop-shadow(3px 3px 2px rgba(0, 0, 0, 0));
+    }
 }

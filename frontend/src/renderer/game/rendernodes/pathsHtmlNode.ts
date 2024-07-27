@@ -81,28 +81,20 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 			}
 		}
 
-		const color = element.pending ? "orange" : "red"
-
 		const svgMarkerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
 		svgMarkerPath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
 
 		const svgMarker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
 		svgMarker.id = "movement-arrow";
-		svgMarker.style.fill = color;
 		svgMarker.setAttribute("viewBox", "0 0 10 10");
 		svgMarker.setAttribute("refX", "5");
 		svgMarker.setAttribute("refY", "5");
-		svgMarker.setAttribute("markerWidth", "4");
-		svgMarker.setAttribute("markerHeight", "4");
+		svgMarker.setAttribute("markerWidth", "3");
+		svgMarker.setAttribute("markerHeight", "3");
 		svgMarker.setAttribute("orient", "auto-start-reverse");
 		svgMarker.appendChild(svgMarkerPath);
 
 		const svgPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-		svgPath.style.fill = "none";
-		svgPath.style.stroke = color;
-		svgPath.style.strokeWidth = "10";
-		svgPath.style.strokeLinecap = "round";
-		svgPath.style.strokeLinejoin = "round";
 		svgPath.setAttribute("d", path)
 		svgPath.setAttribute("marker-end", "url(#movement-arrow)");
 
@@ -114,6 +106,7 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 		svg.appendChild(svgDefs);
 		svg.appendChild(svgPath);
 
+		html.className = "world-ui__path" + (element.pending ? " world-ui__path-pending" : "");
 		html.replaceChildren(svg);
 
 	}

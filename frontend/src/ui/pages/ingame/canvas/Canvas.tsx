@@ -1,6 +1,6 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
 import {AppCtx} from "../../../../appContext";
-import "./canvas.css";
+import "./canvas.less";
 
 
 export function Canvas() {
