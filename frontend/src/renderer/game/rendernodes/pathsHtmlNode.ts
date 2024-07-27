@@ -3,9 +3,10 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 import {Camera} from "../../../shared/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../shared/utils";
-import {TileIdentifier} from "../../../models/tile";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
+import {TilePosition} from "../../../models/tilePosition";
+import * as path from "node:path";
 
 export class PathsHtmlNode extends HtmlRenderNode {
 
@@ -48,7 +49,8 @@ export class PathsHtmlNode extends HtmlRenderNode {
 		const paths = this.repository.getMovementPaths();
 		for (let i = 0, n = paths.length; i < n; i++) {
 			elements.push({
-				path: paths[i],
+				path: paths[i].positions,
+				pending: paths[i].pending
 			});
 		}
 
@@ -62,7 +64,8 @@ export class PathsHtmlNode extends HtmlRenderNode {
 }
 
 interface PathsElement {
-	path: TileIdentifier[];
+	path: TilePosition[];
+	pending: boolean,
 }
 
 function render(camera: Camera, element: PathsElement, html: HTMLElement): void {
@@ -78,13 +81,14 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 			}
 		}
 
+		const color = element.pending ? "orange" : "red"
 
 		const svgMarkerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
 		svgMarkerPath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
 
 		const svgMarker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
 		svgMarker.id = "movement-arrow";
-		svgMarker.style.fill = "red";
+		svgMarker.style.fill = color;
 		svgMarker.setAttribute("viewBox", "0 0 10 10");
 		svgMarker.setAttribute("refX", "5");
 		svgMarker.setAttribute("refY", "5");
@@ -95,7 +99,7 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 
 		const svgPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
 		svgPath.style.fill = "none";
-		svgPath.style.stroke = "red";
+		svgPath.style.stroke = color;
 		svgPath.style.strokeWidth = "10";
 		svgPath.style.strokeLinecap = "round";
 		svgPath.style.strokeLinejoin = "round";

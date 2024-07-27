@@ -1,4 +1,4 @@
-import {GameStateMessage} from "./models/gameStateMessage";
+import {GameStateMessage} from "../gamesession/models/gameStateMessage";
 import {ValueHistory} from "../shared/valueHistory";
 import {MonitoringRepository} from "../state/database/monitoringRepository";
 import {Tile} from "../models/tile";
@@ -32,18 +32,17 @@ export class TurnStartService {
 		this.monitorSetGameState(() => {
 
 			this.gameRepository.transactionForStartTurn(() => {
-
+				this.gameRepository.clearCommands()
 				this.gameRepository.replaceTiles(this.buildTiles(gameState));
-
-				// todo: add world objects from message
+				// todo: add world objects from message instead of dummy
 				this.gameRepository.replaceWorldObjects([
 					{
 						id: "test-scout",
 						type: WorldObjectType.SCOUT,
-						tile: gameState.tiles.find(it => it.identifier.q == 0 && it.identifier.r == 0)!.identifier
+						tile: gameState.tiles.find(it => it.identifier.q == 0 && it.identifier.r == 0)!.identifier,
+						movementPoints: 5,
 					}
 				])
-
 			});
 
 		});

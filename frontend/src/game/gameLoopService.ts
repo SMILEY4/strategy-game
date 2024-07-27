@@ -67,7 +67,12 @@ export class GameLoopService {
 			this.gameRepository.setSelectedTile(tile?.identifier ?? null);
 			if (tile) {
 				if (this.movementService.isMovementMode()) {
-					this.movementService.addToPath(tile.identifier)
+					const added = this.movementService.addToPath(tile.identifier)
+					if(added)  {
+						AudioType.CLICK_PRIMARY.play(this.audioService);
+					} else {
+						AudioType.CLICK_CLOSE.play(this.audioService);
+					}
 				} else {
 					const worldObject = this.gameRepository.getWorldObjectByTile(tile.identifier);
 					if (worldObject) {

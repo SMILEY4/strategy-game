@@ -51,7 +51,7 @@ export namespace UseMoveWindow {
 
     export function useData(worldObjectId: string | null): UseMoveWindow.Data | null {
 
-        const _ = MovementModeState.useState(state => state.path) // re-render on changes
+        const _ = MovementModeState.useState(state => state.path) // force re-render on changes
 
         const worldObject = AppCtx.WorldObjectDatabase().querySingle(WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
         const movementService = AppCtx.MovementService();
@@ -66,8 +66,8 @@ export namespace UseMoveWindow {
         if (worldObject) {
             return {
                 worldObject: worldObject,
-                remainingPoints: 5 - movementService.getPathCost(),
-                totalPoints: movementService.getMaxPathCost(),
+                remainingPoints: movementService.getMaxPathCost(worldObject) - movementService.getPathCost(),
+                totalPoints: movementService.getMaxPathCost(worldObject),
                 cancel: () => {
                     movementService.cancelMovement()
                     closeWindow("move-command");

@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {
-    DefaultDecoratedWindow,
-    DefaultDecoratedWindowWithBanner,
+	DefaultDecoratedWindow,
+	DefaultDecoratedWindowWithBanner,
 } from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
@@ -10,6 +10,7 @@ import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Else, If, Then} from "react-if";
 
 export interface WorldObjectWindowProps {
 	windowId: string;
@@ -47,9 +48,19 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 					</InsetKeyValueGrid>
 				</WindowSection>
 
-				<ButtonPrimary color="blue" onClick={data.startMoveCommand}>
-					Move
-				</ButtonPrimary>
+				<If condition={data.hasMoveCommand}>
+					<Then>
+						<ButtonPrimary color="blue" onClick={data.cancelMoveCommand}>
+							Cancel Movement
+						</ButtonPrimary>
+					</Then>
+					<Else>
+						<ButtonPrimary color="blue" onClick={data.startMoveCommand}>
+							Move
+						</ButtonPrimary>
+					</Else>
+				</If>
+
 
 			</DefaultDecoratedWindowWithBanner>
 		);

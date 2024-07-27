@@ -5,4 +5,5 @@ export interface WorldObject {
 	id: string;
 	type: WorldObjectType;
 	tile: TileIdentifier;
+	movementPoints: number
 }

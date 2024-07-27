@@ -24,7 +24,9 @@ import {TurnEndService} from "./game/turnEndService";
 import {RenderRepository} from "./renderer/game/renderRepository";
 import {WorldObjectDatabase} from "./state/database/objectDatabase";
 import {MovementService} from "./game/movementService";
+import {CommandService} from "./game/commandService";
 import {App} from "./ui/pages/App";
+import {CommandDatabase} from "./state/database/commandDatabase";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -49,6 +51,7 @@ interface AppCtxDef {
     TurnEndService: () => TurnEndService,
     GameLoopService: () => GameLoopService,
     MovementService: () => MovementService,
+    CommandService: () => CommandService,
     GameRepository: () => GameRepository,
 
     GameRenderer: () => GameRenderer,
@@ -61,6 +64,7 @@ interface AppCtxDef {
     GameSessionDatabase: () => GameSessionDatabase,
     TileDatabase: () => TileDatabase,
     WorldObjectDatabase: () => WorldObjectDatabase,
+    CommandDatabase: () => CommandDatabase,
 }
 
 const diContext = new DIContext();
@@ -124,6 +128,7 @@ export const AppCtx: AppCtxDef = {
         "EndTurnService",
         () => new TurnEndService(
             AppCtx.GameSessionService(),
+            AppCtx.GameRepository(),
             AppCtx.MovementService()
         ),
     ),
@@ -140,8 +145,16 @@ export const AppCtx: AppCtxDef = {
     MovementService: diContext.register(
         "MovementService",
         () => new MovementService(
+            AppCtx.CommandService(),
             AppCtx.GameRepository()
         ),
+    ),
+    CommandService: diContext.register(
+        "CommandService",
+        () => new CommandService(
+            AppCtx.GameRepository(),
+            AppCtx.AudioService(),
+        )
     ),
 
     WebGLMonitor: diContext.register(
@@ -161,7 +174,7 @@ export const AppCtx: AppCtxDef = {
             AppCtx.CameraDatabase(),
             AppCtx.TileDatabase(),
             AppCtx.WorldObjectDatabase(),
-            AppCtx.MovementService()
+            AppCtx.CommandDatabase(),
         )
     ),
 
@@ -171,7 +184,8 @@ export const AppCtx: AppCtxDef = {
             AppCtx.GameSessionDatabase(),
             AppCtx.CameraDatabase(),
             AppCtx.TileDatabase(),
-            AppCtx.WorldObjectDatabase()
+            AppCtx.WorldObjectDatabase(),
+            AppCtx.CommandDatabase()
         )
     ),
     MonitoringRepository: diContext.register(
@@ -197,6 +211,10 @@ export const AppCtx: AppCtxDef = {
     WorldObjectDatabase: diContext.register(
         "WorldObjectDatabase",
         () => new WorldObjectDatabase(),
+    ),
+    CommandDatabase: diContext.register(
+        "CommandDatabase",
+        () => new CommandDatabase(),
     ),
 
 };

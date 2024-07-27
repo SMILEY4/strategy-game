@@ -6,8 +6,10 @@ import {MapMode} from "../../models/mapMode";
 import {CameraData} from "../../models/cameraData";
 import {WorldObjectDatabase} from "../../state/database/objectDatabase";
 import {WorldObject} from "../../models/worldObject";
-import {MovementService} from "../../game/movementService";
 import {MovementModeState} from "../../state/movementModeState";
+import {CommandDatabase} from "../../state/database/commandDatabase";
+import {CommandType, MoveCommand} from "../../models/command";
+import {TilePosition} from "../../models/tilePosition";
 
 export class RenderRepository {
 
@@ -15,20 +17,20 @@ export class RenderRepository {
 	private readonly cameraDb: CameraDatabase;
 	private readonly tileDb: TileDatabase;
 	private readonly worldObjectDb: WorldObjectDatabase;
-	private readonly movementService: MovementService;
+	private readonly commandDb: CommandDatabase;
 
 	constructor(
 		gameSessionDb: GameSessionDatabase,
 		cameraDb: CameraDatabase,
 		tileDb: TileDatabase,
 		worldObjectDb: WorldObjectDatabase,
-		movementService: MovementService,
+		commandDb: CommandDatabase
 	) {
 		this.gameSessionDb = gameSessionDb;
 		this.cameraDb = cameraDb;
 		this.tileDb = tileDb;
 		this.worldObjectDb = worldObjectDb;
-		this.movementService = movementService;
+		this.commandDb = commandDb;
 	}
 
 	public getCamera(): CameraData {
@@ -63,16 +65,31 @@ export class RenderRepository {
 		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_ALL, null);
 	}
 
-	public getMovementPaths(): TileIdentifier[][] {
-		return [this.movementService.getPath()];
+	public getMovementPaths(): {positions: TilePosition[], pending: boolean}[] {
+
+		const paths: {positions: TilePosition[], pending: boolean}[] = [];
+
+		const movementState = MovementModeState.useState.getState();
+		if(movementState.worldObjectId !== null){
+			paths.push({positions: movementState.path, pending: true})
+		}
+
+		const moveCommands = this.commandDb.queryMany(CommandDatabase.QUERY_ALL, null).filter(it => it.type === CommandType.MOVE)
+		moveCommands.forEach(cmd => {
+			const path = (cmd as MoveCommand).path.map(tile => ({q: tile.q, r: tile.r}))
+			paths.push({positions: path, pending: false})
+		})
+
+		return paths;
 	}
 
 	public getMovementPathsCheckId(): string {
 		let str = "";
 		this.getMovementPaths().forEach(path => {
-			path.forEach(tile => {
-				str += tile.id;
+			path.positions.forEach(pos => {
+				str += pos.q + "," + pos.r + "/";
 			});
+			str += path.pending + "/"
 		});
 		return str;
 	}

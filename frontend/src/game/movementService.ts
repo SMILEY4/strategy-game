@@ -1,15 +1,20 @@
 import {TileIdentifier} from "../models/tile";
 import {GameRepository} from "./gameRepository";
 import {TilePosition} from "../models/tilePosition";
+import {HexUtils} from "../shared/hexUtils";
+import {CommandService} from "./commandService";
+import {WorldObject} from "../models/worldObject";
 
 /**
- * Logic for handling issuing movement of units
+ * Logic for handling movement of units
  */
 export class MovementService {
 
+	private readonly commandService: CommandService;
 	private readonly repository: GameRepository;
 
-	constructor(repository: GameRepository) {
+	constructor(commandService: CommandService, repository: GameRepository) {
+		this.commandService = commandService;
 		this.repository = repository;
 	}
 
@@ -18,8 +23,11 @@ export class MovementService {
 	}
 
 	public startMovement(worldObjectId: string, tile: TileIdentifier) {
-		this.repository.setCurrentMovementModeState(worldObjectId, [], []);
-		this.addToPath(tile);
+		const worldObject = this.repository.getWorldObject(worldObjectId)
+		if(worldObject == null) {
+			return;
+		}
+		this.repository.setCurrentMovementModeState(worldObjectId, [tile], this.getAvailablePositions([tile], worldObject));
 	}
 
 	public cancelMovement() {
@@ -27,21 +35,29 @@ export class MovementService {
 	}
 
 	public completeMovement() {
+		const current = this.repository.getCurrentMovementModeState();
+		if (current.worldObjectId !== null && current.path.length > 0) {
+			this.commandService.addMovementCommand(current.worldObjectId, current.path);
+		}
 		this.repository.setCurrentMovementModeState(null, [], []);
 	}
 
-	public addToPath(tileId: TileIdentifier) {
-		if (this.getPathCost() < this.getMaxPathCost()) { // todo: check if in available positions
-			const current = this.repository.getCurrentMovementModeState();
-			const path = [...current.path, tileId];
-			const availablePositions = this.getAvailablePositions(path);
-			console.log(availablePositions);
-			this.repository.setCurrentMovementModeState(current.worldObjectId, path, availablePositions);
+	public addToPath(tileId: TileIdentifier): boolean {
+		const current = this.repository.getCurrentMovementModeState();
+		if(current.worldObjectId == null) {
+			return false;
 		}
-	}
+		const worldObject = this.repository.getWorldObject(current.worldObjectId)
+		if(worldObject == null) {
+			return false;
+		}
 
-	public getPath(): TileIdentifier[] {
-		return this.repository.getCurrentMovementModeState().path;
+		if (this.getPathCost() < this.getMaxPathCost(worldObject) && current.availablePositions.some(it => it.q == tileId.q && it.r == tileId.r)) {
+			const newPath = [...current.path, tileId];
+			this.repository.setCurrentMovementModeState(current.worldObjectId, newPath, this.getAvailablePositions(newPath, worldObject));
+			return true
+		}
+		return false
 	}
 
 	public getPathCost(): number {
@@ -49,31 +65,17 @@ export class MovementService {
 		return Math.max(0, path.length - 1);
 	}
 
-	public getMaxPathCost(): number {
-		return 5; // todo: get from unit
+	public getMaxPathCost(worldObject: WorldObject): number {
+		return worldObject.movementPoints
 	}
 
-	private getAvailablePositions(path: TileIdentifier[]): TilePosition[] {// todo: empty if over max cost
-		const head = path[path.length - 1];
-		return this.getPositionsRadius(head.q, head.r, 1);
-	}
-
-	private getPositionsRadius(q: number, r: number, radius: number): TilePosition[] {// todo: move to utils
-		const positions: TilePosition[] = [];
-		for (let iq = q - radius; iq <= q + radius; iq++) {
-			for (let ir = r - radius; ir <= r + radius; ir++) {
-				if (this.hexDistance(q, r, iq, ir) <= radius) {
-					positions.push({q: iq, r: ir});
-				}
-			}
+	private getAvailablePositions(path: TileIdentifier[], worldObject: WorldObject): TilePosition[] {
+		const stepCost = 1;
+		if (this.getMaxPathCost(worldObject) - this.getPathCost() <= stepCost) {
+			return [];
 		}
-		return positions;
-	}
-
-	private hexDistance(q0: number, r0: number, q1: number, r1: number): number { // todo: move to utils
-		const q = q0 - q1;
-		const r = r0 - r1;
-		return (Math.abs(q) + Math.abs(r) + Math.abs(-q - r)) / 2;
+		const head = path[path.length - 1];
+		return HexUtils.getPositionsRadius(head.q, head.r, 1).filter(it => !(it.q == head.q && it.r == head.r));
 	}
 
 }
