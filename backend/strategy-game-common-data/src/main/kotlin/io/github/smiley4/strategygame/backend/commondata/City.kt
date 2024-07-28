@@ -15,7 +15,7 @@ class City(
 
     fun findProvince(game: GameExtended): Province = game.findProvinceByCity(cityId)
 
-    fun findTile(game: GameExtended): Tile = game.findTile(tile.tileId)
+    fun findTile(game: GameExtended): Tile = game.findTile(tile.id)
 
     fun findProductionQueueEntry(entryId: String): ProductionQueueEntry = infrastructure.productionQueue.find { it.entryId == entryId }
         ?: throw Exception("Could not find production-queue-entry $entryId in city $cityId")

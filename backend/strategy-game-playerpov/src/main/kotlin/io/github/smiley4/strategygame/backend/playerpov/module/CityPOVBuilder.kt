@@ -30,7 +30,7 @@ internal class CityPOVBuilder(
             "id" to city.cityId
             "country" to city.countryId
             "province" to province.provinceId
-            "tile" to povCache.tileIdentifier(city.tile.tileId)
+            "tile" to povCache.tileIdentifier(city.tile.id)
             "isPlayerOwned" to isPlayerOwned
             "isProvinceCapital" to city.meta.isProvinceCapital
             "tier" to city.tier.name
@@ -40,7 +40,7 @@ internal class CityPOVBuilder(
                         obj {
                             "type" to building.type.name
                             "active" to building.active
-                            "tile" to povCache.tileIdentifierOrNull(building.tile?.tileId)
+                            "tile" to povCache.tileIdentifierOrNull(building.tile?.id)
                             "details" to detailLogDTOBuilder.build(building.details)
                         }
                     }

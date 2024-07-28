@@ -100,19 +100,18 @@ export class GameSessionService implements WebsocketMessageHandler {
 		this.client.sendMessage(
 			"submit-turn",
 			{
-                commands: [] // todo: add back mapping when backend is ready
-				// commands: commands.map(it => {
-				// 	if (it.type === CommandType.MOVE) {
-				// 		const cmd = it as MoveCommand;
-				// 		const cmdMsg: MoveCommandMessage = {
-				// 			type: cmd.type.id,
-				// 			worldObjectId: cmd.worldObjectId,
-				// 			path: cmd.path,
-				// 		};
-				// 		return cmdMsg;
-				// 	}
-				// 	throw new Error("Unexpected command type: " + it.type.id)
-				// }),
+				commands: commands.map(it => {
+					if (it.type === CommandType.MOVE) {
+						const cmd = it as MoveCommand;
+						const cmdMsg: MoveCommandMessage = {
+							type: cmd.type.id,
+							worldObjectId: cmd.worldObjectId,
+							path: cmd.path,
+						};
+						return cmdMsg;
+					}
+					throw new Error("Unexpected command type: " + it.type.id)
+				}),
 			},
 		);
 	}

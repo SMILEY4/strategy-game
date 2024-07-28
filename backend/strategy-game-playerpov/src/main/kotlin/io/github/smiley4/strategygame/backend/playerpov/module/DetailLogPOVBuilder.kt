@@ -40,7 +40,7 @@ internal class  DetailLogPOVBuilder {
                             is TileRefDetailLogValue -> {
                                 "type" to "tile"
                                 "value" to obj {
-                                    "id" to value.value.tileId
+                                    "id" to value.value.id
                                     "q" to value.value.q
                                     "r" to value.value.r
                                 }

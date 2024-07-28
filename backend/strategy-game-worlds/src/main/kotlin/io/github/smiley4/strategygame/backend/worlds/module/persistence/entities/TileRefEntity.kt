@@ -11,14 +11,14 @@ internal class TileRefEntity(
 
     companion object {
         fun of(serviceModel: TileRef) = TileRefEntity(
-            tileId = serviceModel.tileId,
+            tileId = serviceModel.id,
             q = serviceModel.q,
             r = serviceModel.r
         )
     }
 
     fun asServiceModel() = TileRef(
-        tileId = this.tileId,
+        id = this.tileId,
         q = this.q,
         r = this.r
     )

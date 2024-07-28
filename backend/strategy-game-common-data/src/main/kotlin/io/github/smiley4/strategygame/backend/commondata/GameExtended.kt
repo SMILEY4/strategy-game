@@ -21,7 +21,7 @@ data class GameExtended(
 
     fun findTileOrNull(pos: TilePosition): Tile? = findTileOrNull(pos.q, pos.r)
 
-    fun findTile(ref: TileRef): Tile = findTile(ref.tileId)
+    fun findTile(ref: TileRef): Tile = findTile(ref.id)
 
     fun findCountry(countryId: String): Country = countries.firstOrNull { it.countryId == countryId }
         ?: throw Exception("Could not find country $countryId in game ${meta.gameId}")

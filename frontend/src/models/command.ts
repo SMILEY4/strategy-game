@@ -1,4 +1,4 @@
-import {TilePosition} from "./tilePosition";
+import {TileIdentifier} from "./tile";
 
 export class CommandType {
 
@@ -18,5 +18,5 @@ export interface Command {
 
 export interface MoveCommand extends Command {
 	worldObjectId: string,
-	path: TilePosition[]
+	path: TileIdentifier[]
 }

@@ -1,4 +1,4 @@
-import {TilePosition} from "../../models/tilePosition";
+import {TileIdentifier} from "../../models/tile";
 
 export interface CommandMessage {
 	type: string,
@@ -6,5 +6,5 @@ export interface CommandMessage {
 
 export interface MoveCommandMessage extends CommandMessage {
 	worldObjectId: string,
-	path: TilePosition[]
+	path: TileIdentifier[]
 }

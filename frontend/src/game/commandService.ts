@@ -1,8 +1,8 @@
 import {GameRepository} from "./gameRepository";
-import {TilePosition} from "../models/tilePosition";
 import {Command, CommandType, MoveCommand} from "../models/command";
 import {UID} from "../shared/uid";
 import {AudioService, AudioType} from "../shared/audioService";
+import {TileIdentifier} from "../models/tile";
 
 export class CommandService {
 
@@ -24,7 +24,7 @@ export class CommandService {
 		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
-	public addMovementCommand(worldObjectId: string, path: TilePosition[]) {
+	public addMovementCommand(worldObjectId: string, path: TileIdentifier[]) {
 		const command: MoveCommand = {
 			id: UID.generate(),
 			type: CommandType.MOVE,

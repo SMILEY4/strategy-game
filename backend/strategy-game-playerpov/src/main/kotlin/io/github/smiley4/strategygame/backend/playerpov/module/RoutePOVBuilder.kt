@@ -24,10 +24,10 @@ internal class  RoutePOVBuilder(
                 route.cityIdB
             }
             "path" to route.path
-                .filter { povCache.tileVisibility(it.tileId) !== TileVisibilityDTO.UNKNOWN }
+                .filter { povCache.tileVisibility(it.id) !== TileVisibilityDTO.UNKNOWN }
                 .map { tile ->
                     obj {
-                        "id" to tile.tileId
+                        "id" to tile.id
                         "q" to tile.q
                         "r" to tile.r
                     }
