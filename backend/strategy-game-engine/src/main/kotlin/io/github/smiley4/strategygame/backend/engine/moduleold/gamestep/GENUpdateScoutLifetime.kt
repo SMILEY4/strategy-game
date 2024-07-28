@@ -48,7 +48,8 @@ class GENUpdateScoutLifetime(
     }
 
     private fun getScoutOrNull(tile: Tile): Pair<Tile, ScoutWorldObject>? {
-        return tile.findOneObject<ScoutWorldObject>()?.let { tile to it }
+        return null
+//        return tile.findOneObject<ScoutWorldObject>()?.let { tile to it }
     }
 
     private fun handleScout(
@@ -64,13 +65,14 @@ class GENUpdateScoutLifetime(
     }
 
     private fun getTimeAlive(game: GameExtended, scout: ScoutWorldObject): Int {
-        return game.meta.turn - scout.creationTurn
+//        return game.meta.turn - scout.creationTurn
+        return 0
     }
 
     private fun removeScouts(scoutsToRemove: Map<Tile, List<ScoutWorldObject>>) {
-        scoutsToRemove.forEach { (tile, scouts) ->
-            tile.objects.removeAll(scouts)
-        }
+//        scoutsToRemove.forEach { (tile, scouts) ->
+//            tile.objects.removeAll(scouts)
+//        }
     }
 
 }

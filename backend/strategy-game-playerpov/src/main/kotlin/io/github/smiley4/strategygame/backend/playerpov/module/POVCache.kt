@@ -3,10 +3,8 @@ package io.github.smiley4.strategygame.backend.playerpov.module
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
 import io.github.smiley4.strategygame.backend.commondata.RGBColor
-import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 
@@ -108,11 +106,12 @@ internal class  POVCache(
 
     private fun calculateVisibility(tile: Tile, tiles: TileContainer): TileVisibilityDTO {
         if (tile.discoveredByCountries.contains(povCountryId)) {
-            val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
-                .asSequence()
-                .mapNotNull { pos -> tiles.get(pos) }
-                .mapNotNull { t -> t.objects.find { it is ScoutWorldObject }?.let { it as ScoutWorldObject } }
-                .any { it.countryId == povCountryId }
+            val scoutNearby = false
+//            val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
+//                .asSequence()
+//                .mapNotNull { pos -> tiles.get(pos) }
+//                .mapNotNull { t -> t.objects.find { it is ScoutWorldObject }?.let { it as ScoutWorldObject } }
+//                .any { it.countryId == povCountryId }
             if (scoutNearby) {
                 return TileVisibilityDTO.VISIBLE
             }

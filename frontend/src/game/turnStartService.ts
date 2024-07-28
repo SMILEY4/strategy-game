@@ -7,6 +7,7 @@ import {TerrainType} from "../models/TerrainType";
 import {TileResourceType} from "../models/TileResourceType";
 import {WorldObjectType} from "../models/worldObjectType";
 import {MovementModeState} from "../state/movementModeState";
+import {WorldObject} from "../models/worldObject";
 
 /**
  * Service to handle the start of a new turn
@@ -34,15 +35,7 @@ export class TurnStartService {
 			this.gameRepository.transactionForStartTurn(() => {
 				this.gameRepository.clearCommands()
 				this.gameRepository.replaceTiles(this.buildTiles(gameState));
-				// todo: add world objects from message instead of dummy
-				this.gameRepository.replaceWorldObjects([
-					{
-						id: "test-scout",
-						type: WorldObjectType.SCOUT,
-						tile: gameState.tiles.find(it => it.identifier.q == 0 && it.identifier.r == 0)!.identifier,
-						movementPoints: 5,
-					}
-				])
+				this.gameRepository.replaceWorldObjects(this.buildWorldObjects(gameState))
 			});
 
 		});
@@ -65,6 +58,20 @@ export class TurnStartService {
 			resourceType: TileResourceType.fromString(tileMsg.resourceType),
 			height: tileMsg.height,
 		}));
+	}
+
+	private buildWorldObjects(game: GameStateMessage): WorldObject[] {
+		return game.worldObjects.map(worldObjMsg => {
+			if(worldObjMsg.type === "scout") {
+				return {
+					id: worldObjMsg.id,
+					type: WorldObjectType.SCOUT,
+					tile: worldObjMsg.tile,
+					movementPoints: 5
+				}
+			}
+			return null
+		}).filterDefined()
 	}
 
 }

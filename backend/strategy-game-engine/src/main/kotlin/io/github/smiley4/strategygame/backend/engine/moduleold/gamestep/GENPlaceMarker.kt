@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefini
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.commondata.Country
-import io.github.smiley4.strategygame.backend.commondata.MarkerTileObject
 import io.github.smiley4.strategygame.backend.commondata.Tile
 
 
@@ -27,12 +26,12 @@ class GENPlaceMarker(eventSystem: EventSystem) : Logging {
     }
 
     private fun addMarker(tile: Tile, country: Country, label: String) {
-        tile.objects.add(
-            MarkerTileObject(
-                countryId = country.countryId,
-                label = label
-            )
-        )
+//        tile.objects.add(
+//            MarkerTileObject(
+//                countryId = country.countryId,
+//                label = label
+//            )
+//        )
     }
 
 }

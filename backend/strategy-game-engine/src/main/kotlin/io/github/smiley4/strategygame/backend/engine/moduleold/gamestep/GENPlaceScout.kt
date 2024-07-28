@@ -31,12 +31,12 @@ class GENPlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem
 
 
     private fun addScout(tile: Tile, countryId: String, turn: Int) {
-        tile.objects.add(
-            ScoutWorldObject(
-                countryId = countryId,
-                creationTurn = turn,
-            )
-        )
+//        tile.objects.add(
+//            ScoutWorldObject(
+//                countryId = countryId,
+//                creationTurn = turn,
+//            )
+//        )
     }
 
     private fun discoverTiles(game: GameExtended, scoutTile: Tile, countryId: String) {

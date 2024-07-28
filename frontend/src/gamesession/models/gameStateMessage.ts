@@ -6,6 +6,7 @@ export interface GameStateMessage {
 		turn: number
 	},
 	tiles: TileMessage[],
+	worldObjects: WorldObjectMessage[]
 }
 
 
@@ -14,4 +15,11 @@ export interface TileMessage {
 	terrainType: "LAND" | "WATER",
 	resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
 	height: number
+}
+
+
+export interface WorldObjectMessage {
+	type: string,
+	id: string,
+	tile: TileIdentifier
 }

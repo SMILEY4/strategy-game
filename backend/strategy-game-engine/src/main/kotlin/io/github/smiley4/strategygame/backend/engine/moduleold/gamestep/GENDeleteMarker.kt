@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.common.events.BasicEventNodeDefini
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.commondata.Country
-import io.github.smiley4.strategygame.backend.commondata.MarkerTileObject
 import io.github.smiley4.strategygame.backend.commondata.Tile
 
 
@@ -27,7 +26,7 @@ class GENDeleteMarker(eventSystem: EventSystem) : Logging {
     }
 
     private fun deleteMarker(tile: Tile, country: Country) {
-        tile.objects.removeIf { it is MarkerTileObject && it.countryId == country.countryId }
+//        tile.objects.removeIf { it is MarkerTileObject && it.countryId == country.countryId }
     }
 
 }

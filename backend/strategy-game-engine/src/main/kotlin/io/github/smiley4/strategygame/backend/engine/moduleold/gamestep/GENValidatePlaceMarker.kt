@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.common.events.EventNodeDefinition
 import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.validations
-import io.github.smiley4.strategygame.backend.commondata.MarkerTileObject
 
 
 class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {
@@ -16,9 +15,9 @@ class GENValidatePlaceMarker(eventSystem: EventSystem) : Logging {
             trigger(TriggerResolvePlaceMarker)
             action { data ->
                 val result = validations {
-                    mustBeTrue("MARKER.TILE_SPACE") {
-                        data.targetTile.objects.none { it is MarkerTileObject && it.countryId == data.country.countryId }
-                    }
+//                    mustBeTrue("MARKER.TILE_SPACE") {
+//                        data.targetTile.objects.none { it is MarkerTileObject && it.countryId == data.country.countryId }
+//                    }
                 }
                 if (result.isInvalid()) {
                     log().info("Invalid operation: placing marker: ${result.getInvalidCodes()}")
