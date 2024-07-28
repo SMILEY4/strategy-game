@@ -16,6 +16,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 import io.github.smiley4.strategygame.backend.commondata.TileData
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenerator
@@ -42,7 +43,6 @@ class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : Initiali
                     resourceType = it.resource,
                     height = it.height,
                 ),
-                objects = trackingListOf(),
                 influences = mutableListOf(),
                 owner = null,
                 discoveredByCountries = mutableListOf()
@@ -57,6 +57,7 @@ class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : Initiali
                 turn = game.turn
             ),
             tiles = TileContainer(tiles),
+            worldObjects = emptyList<WorldObject>().tracking(),
             countries = emptyList<Country>().tracking(),
             cities = emptyList<City>().tracking(),
             provinces = emptyList<Province>().tracking(),

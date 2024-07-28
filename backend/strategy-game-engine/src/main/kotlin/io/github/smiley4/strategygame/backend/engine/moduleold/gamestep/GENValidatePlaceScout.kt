@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.validations
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
-import io.github.smiley4.strategygame.backend.commondata.ScoutTileObject
+import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
 
 
 class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem) : Logging {
@@ -22,13 +22,13 @@ class GENValidatePlaceScout(private val gameConfig: GameConfig, eventSystem: Eve
                     }
                     mustBeTrue("SCOUT.TILE_SPACE") {
                         data.targetTile.objects
-                            .filterIsInstance<ScoutTileObject>()
+                            .filterIsInstance<ScoutWorldObject>()
                             .none { it.countryId == data.country.countryId }
                     }
                     mustBeTrue("SCOUT.AMOUNT") {
                         data.game.tiles
                             .asSequence()
-                            .mapNotNull { tile -> tile.objects.find { it is ScoutTileObject }?.let { it as ScoutTileObject } }
+                            .mapNotNull { tile -> tile.objects.find { it is ScoutWorldObject }?.let { it as ScoutWorldObject } }
                             .filter { scout -> scout.countryId == data.country.countryId }
                             .count() < gameConfig.scoutsMaxAmount
                     }

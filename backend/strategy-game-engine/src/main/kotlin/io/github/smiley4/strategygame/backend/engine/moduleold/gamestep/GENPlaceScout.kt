@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.ScoutTileObject
+import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
 import io.github.smiley4.strategygame.backend.commondata.Tile
 
 
@@ -32,7 +32,7 @@ class GENPlaceScout(private val gameConfig: GameConfig, eventSystem: EventSystem
 
     private fun addScout(tile: Tile, countryId: String, turn: Int) {
         tile.objects.add(
-            ScoutTileObject(
+            ScoutWorldObject(
                 countryId = countryId,
                 creationTurn = turn,
             )

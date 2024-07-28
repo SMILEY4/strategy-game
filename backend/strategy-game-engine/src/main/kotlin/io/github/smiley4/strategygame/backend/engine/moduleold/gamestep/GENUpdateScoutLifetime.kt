@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.common.events.EventSystem
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.ScoutTileObject
+import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
 import io.github.smiley4.strategygame.backend.commondata.Tile
 
 
@@ -32,30 +32,30 @@ class GENUpdateScoutLifetime(
         }
     }
 
-    private fun getScoutsToRemove(game: GameExtended): MutableMap<Tile, MutableList<ScoutTileObject>> {
-        val scoutsToRemove = mutableMapOf<Tile, MutableList<ScoutTileObject>>()
+    private fun getScoutsToRemove(game: GameExtended): MutableMap<Tile, MutableList<ScoutWorldObject>> {
+        val scoutsToRemove = mutableMapOf<Tile, MutableList<ScoutWorldObject>>()
         iterateScouts(game) { tile, scout ->
             handleScout(game, tile, scout, scoutsToRemove)
         }
         return scoutsToRemove
     }
 
-    private fun iterateScouts(game: GameExtended, consumer: (tile: Tile, scout: ScoutTileObject) -> Unit) {
+    private fun iterateScouts(game: GameExtended, consumer: (tile: Tile, scout: ScoutWorldObject) -> Unit) {
         game.tiles
             .asSequence()
             .mapNotNull { tile -> getScoutOrNull(tile) }
             .forEach { (tile, scout) -> consumer(tile, scout) }
     }
 
-    private fun getScoutOrNull(tile: Tile): Pair<Tile, ScoutTileObject>? {
-        return tile.findOneObject<ScoutTileObject>()?.let { tile to it }
+    private fun getScoutOrNull(tile: Tile): Pair<Tile, ScoutWorldObject>? {
+        return tile.findOneObject<ScoutWorldObject>()?.let { tile to it }
     }
 
     private fun handleScout(
         game: GameExtended,
         tile: Tile,
-        scout: ScoutTileObject,
-        scoutsToRemove: MutableMap<Tile, MutableList<ScoutTileObject>>
+        scout: ScoutWorldObject,
+        scoutsToRemove: MutableMap<Tile, MutableList<ScoutWorldObject>>
     ) {
         val lifetime = getTimeAlive(game, scout)
         if (lifetime > gameConfig.scoutLifetime) {
@@ -63,11 +63,11 @@ class GENUpdateScoutLifetime(
         }
     }
 
-    private fun getTimeAlive(game: GameExtended, scout: ScoutTileObject): Int {
+    private fun getTimeAlive(game: GameExtended, scout: ScoutWorldObject): Int {
         return game.meta.turn - scout.creationTurn
     }
 
-    private fun removeScouts(scoutsToRemove: Map<Tile, List<ScoutTileObject>>) {
+    private fun removeScouts(scoutsToRemove: Map<Tile, List<ScoutWorldObject>>) {
         scoutsToRemove.forEach { (tile, scouts) ->
             tile.objects.removeAll(scouts)
         }

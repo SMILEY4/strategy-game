@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.commondata
 data class GameExtended(
     val meta: GameMeta,
     val tiles: TileContainer,
+    val worldObjects: TrackingList<WorldObject>,
     val countries: TrackingList<Country>,
     val cities: TrackingList<City>,
     val provinces: TrackingList<Province>,

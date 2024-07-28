@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.commondata.RGBColor
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.ScoutTileObject
+import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 
@@ -111,7 +111,7 @@ internal class  POVCache(
             val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
                 .asSequence()
                 .mapNotNull { pos -> tiles.get(pos) }
-                .mapNotNull { t -> t.objects.find { it is ScoutTileObject }?.let { it as ScoutTileObject } }
+                .mapNotNull { t -> t.objects.find { it is ScoutWorldObject }?.let { it as ScoutWorldObject } }
                 .any { it.countryId == povCountryId }
             if (scoutNearby) {
                 return TileVisibilityDTO.VISIBLE
