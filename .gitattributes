@@ -6,4 +6,5 @@
 *.psd binary
 *.ttf binary
 *.mp3 binary
+*.wav binary
 *.jar binary

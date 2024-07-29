@@ -39,7 +39,7 @@ export class AudioService implements UIAudio.AudioProvider {
         this.sounds.set(
             AudioType.WRITING_ON_PAPER.id,
             new Howl({
-                src: ["/sfx/pencil-writing-on-paper-3-strokes-take-a.wav"],
+                src: ["/sfx/pencil-writing-on-paper-3-strokes-take-a.mp3"],
             }),
         );
         UIAudio.audioProvider = this;
