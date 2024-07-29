@@ -3,9 +3,11 @@ package io.github.smiley4.strategygame.backend.engine
 import io.github.smiley4.strategygame.backend.engine.edge.GameStep
 import io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer
 import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
+import io.github.smiley4.strategygame.backend.engine.edge.PublicApiService
 import io.github.smiley4.strategygame.backend.engine.module.GameStepImpl
 import io.github.smiley4.strategygame.backend.engine.module.InitializePlayerImpl
 import io.github.smiley4.strategygame.backend.engine.module.InitializeWorldImpl
+import io.github.smiley4.strategygame.backend.engine.module.PublicApiServiceImpl
 import io.github.smiley4.strategygame.backend.engine.module.core.GameEventSystem
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandsStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.RootUpdateStep
@@ -21,6 +23,7 @@ fun Module.dependenciesEngine() {
     single<InitializePlayer> { InitializePlayerImpl(get(), get()) }
     single<InitializeWorld> { InitializeWorldImpl(get()) }
     single<DiscoverMapArea> { DiscoverMapArea() }
+    single<PublicApiService> { PublicApiServiceImpl() }
 
     single<EconomyPopFoodConsumptionProvider> { PopFoodConsumption() }
     single<RouteGenerator> { RouteGenerator(get()) }

@@ -8,6 +8,7 @@ import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
 import io.github.smiley4.ktorswaggerui.dsl.AuthType
 import io.github.smiley4.strategygame.backend.common.Config
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
+import io.github.smiley4.strategygame.backend.gateway.game.RouteMovementAvailablePositions.routeMovementAvailablePositions
 import io.github.smiley4.strategygame.backend.gateway.operation.routeHealth
 import io.github.smiley4.strategygame.backend.gateway.operation.routeMetrics
 import io.github.smiley4.strategygame.backend.gateway.users.RouteDelete.routeDelete
@@ -40,6 +41,7 @@ import io.github.smiley4.strategygame.backend.worlds.edge.DeleteGame
 import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectAllPlayers
 import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectPlayer
 import io.github.smiley4.strategygame.backend.worlds.edge.GameMessageProducer
+import io.github.smiley4.strategygame.backend.worlds.edge.GameService
 import io.github.smiley4.strategygame.backend.worlds.edge.JoinGame
 import io.github.smiley4.strategygame.backend.worlds.edge.ListGames
 import io.github.smiley4.strategygame.backend.worlds.edge.RequestConnectionToGame
@@ -241,6 +243,15 @@ private fun Route.routingGateway() {
                 routeDisconnectAll(disconnectAll)
             }
             routeWebsocket(wsTicketManager, wsConnectionHandler, messageHandler, disconnectAction, requestConnection, connectAction)
+        }
+
+        val gameService by inject<GameService>()
+        authenticate("user") {
+            route("game") {
+                route("movement") {
+                    routeMovementAvailablePositions(gameService)
+                }
+            }
         }
 
     }

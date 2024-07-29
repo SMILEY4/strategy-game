@@ -61,13 +61,13 @@ export class GameLoopService {
 	/**
 	 * Handle a mouse click at the given position relative to the viewport
 	 */
-	public mouseClick(x: number, y: number) {
+	public async mouseClick(x: number, y: number) {
 		const tile = this.tilePicker.tileAt(x, y, this.canvasHandle);
 		if (this.gameRepository.getSelectedTile()?.id !== tile?.identifier) {
 			this.gameRepository.setSelectedTile(tile?.identifier ?? null);
 			if (tile) {
 				if (this.movementService.isMovementMode()) {
-					const added = this.movementService.addToPath(tile.identifier)
+					const added = await this.movementService.addToPath(tile.identifier)
 					if(added)  {
 						AudioType.CLICK_PRIMARY.play(this.audioService);
 					} else {

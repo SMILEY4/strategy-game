@@ -15,14 +15,18 @@ data class GameExtended(
 
     fun findTileOrNull(q: Int, r: Int): Tile? = tiles.get(q, r)
 
-    fun findTile(tileId: String): Tile = tiles.get(tileId)
+    fun findTile(tileId: String): Tile = findTileOrNull(tileId)
         ?: throw Exception("Could not find tile $tileId in game ${meta.gameId}")
+
+    fun findTileOrNull(tileId: String): Tile? = tiles.get(tileId)
 
     fun findTile(pos: TilePosition): Tile = findTile(pos.q, pos.r)
 
     fun findTileOrNull(pos: TilePosition): Tile? = findTileOrNull(pos.q, pos.r)
 
     fun findTile(ref: TileRef): Tile = findTile(ref.id)
+
+    fun findWorldObject(worldObjectId: String): WorldObject? = worldObjects.find { it.id == worldObjectId }
 
     fun findCountry(countryId: String): Country = countries.firstOrNull { it.countryId == countryId }
         ?: throw Exception("Could not find country $countryId in game ${meta.gameId}")

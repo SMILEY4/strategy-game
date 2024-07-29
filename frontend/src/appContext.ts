@@ -25,8 +25,9 @@ import {RenderRepository} from "./renderer/game/renderRepository";
 import {WorldObjectDatabase} from "./state/database/objectDatabase";
 import {MovementService} from "./game/movementService";
 import {CommandService} from "./game/commandService";
-import {App} from "./ui/pages/App";
 import {CommandDatabase} from "./state/database/commandDatabase";
+import {GameClient} from "./game/gameClient";
+import {GameIdProvider} from "./gamesession/gameIdProvider";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -53,6 +54,8 @@ interface AppCtxDef {
     MovementService: () => MovementService,
     CommandService: () => CommandService,
     GameRepository: () => GameRepository,
+    GameClient: () => GameClient,
+    GameIdProvider: () => GameIdProvider,
 
     GameRenderer: () => GameRenderer,
     RenderRepository: () => RenderRepository,
@@ -146,7 +149,8 @@ export const AppCtx: AppCtxDef = {
         "MovementService",
         () => new MovementService(
             AppCtx.CommandService(),
-            AppCtx.GameRepository()
+            AppCtx.GameClient(),
+            AppCtx.GameRepository(),
         ),
     ),
     CommandService: diContext.register(
@@ -155,6 +159,18 @@ export const AppCtx: AppCtxDef = {
             AppCtx.GameRepository(),
             AppCtx.AudioService(),
         )
+    ),
+    GameClient: diContext.register(
+        "GameClient",
+        () => new GameClient(
+            AppCtx.AuthProvider(),
+            AppCtx.GameIdProvider(),
+            AppCtx.HttpClient()
+        )
+    ),
+    GameIdProvider: diContext.register(
+        "GameIdProvider",
+        () => new GameIdProvider(),
     ),
 
     WebGLMonitor: diContext.register(

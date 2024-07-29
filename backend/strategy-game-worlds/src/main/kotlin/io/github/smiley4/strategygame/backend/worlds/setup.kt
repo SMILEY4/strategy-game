@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
 import io.github.smiley4.strategygame.backend.worlds.edge.DeleteGame
 import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectAllPlayers
 import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectPlayer
+import io.github.smiley4.strategygame.backend.worlds.edge.GameService
 import io.github.smiley4.strategygame.backend.worlds.edge.JoinGame
 import io.github.smiley4.strategygame.backend.worlds.edge.ListGames
 import io.github.smiley4.strategygame.backend.worlds.edge.RequestConnectionToGame
@@ -18,6 +19,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.core.CreateGameImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.DeleteGameImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.DisconnectAllPlayersImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.DisconnectPlayerImpl
+import io.github.smiley4.strategygame.backend.worlds.module.core.GameServiceImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.JoinGameImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.ListGamesImpl
 import io.github.smiley4.strategygame.backend.worlds.module.core.RequestConnectionToGameImpl
@@ -53,6 +55,7 @@ fun Module.dependenciesWorlds() {
     single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get(), get(), get(), get()) }
     single<TurnSubmit> { TurnSubmitImpl(get(), get(), get(), get()) }
+    single<GameService> { GameServiceImpl(get(), get()) }
 
     // persistence
     single<DatabaseProvider.Config> {
