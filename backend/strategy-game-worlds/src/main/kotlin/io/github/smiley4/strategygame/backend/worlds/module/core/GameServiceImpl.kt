@@ -5,23 +5,23 @@ import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileRef
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
-import io.github.smiley4.strategygame.backend.engine.edge.PublicApiService
+import io.github.smiley4.strategygame.backend.engine.edge.MovementService
 import io.github.smiley4.strategygame.backend.worlds.edge.GameService
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameExtendedQuery
 
 internal class GameServiceImpl(
-    private val publicApiService: PublicApiService,
+    private val movementService: MovementService,
     private val gameQuery: GameExtendedQuery
 ) : GameService {
 
     override suspend fun getAvailableMovementPositions(gameId: String, worldObjectId: String, tileId: String): List<TileRef> {
-        val game = findGame(gameId)
-        val worldObject = findWorldObject(game, worldObjectId)
-        val tile = findTile(game, tileId)
-        return publicApiService.getAvailableMovementPositions(game, worldObject, tile)
+        val game = getGame(gameId)
+        val worldObject = getWorldObject(game, worldObjectId)
+        val tile = getTile(game, tileId)
+        return movementService.getAvailablePositions(game, worldObject, tile)
     }
 
-    private suspend fun findGame(gameId: String): GameExtended {
+    private suspend fun getGame(gameId: String): GameExtended {
         try {
             return gameQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
@@ -29,11 +29,11 @@ internal class GameServiceImpl(
         }
     }
 
-    private fun findWorldObject(game: GameExtended, worldObjectId: String): WorldObject {
+    private fun getWorldObject(game: GameExtended, worldObjectId: String): WorldObject {
         return game.findWorldObject(worldObjectId) ?: throw GameService.WorldObjectNotFoundError()
     }
 
-    private fun findTile(game: GameExtended, tileId: String): Tile {
+    private fun getTile(game: GameExtended, tileId: String): Tile {
         return game.findTileOrNull(tileId) ?: throw GameService.TileNotFoundError()
     }
 

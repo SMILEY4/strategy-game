@@ -39,7 +39,7 @@ internal class  POVCache(
         game.tiles.forEach { tile ->
             val visibility = calculateVisibility(tile, game.tiles)
             tileVisibilities[tile.tileId] = visibility
-            if (visibility !== TileVisibilityDTO.UNKNOWN) {
+            if (visibility != TileVisibilityDTO.UNKNOWN) {
                 tile.owner?.countryId?.also { knownCountries.add(it) }
                 tile.owner?.provinceId?.also { knownProvinces.add(it) }
                 tile.owner?.cityId?.also { knownCities.add(it) }

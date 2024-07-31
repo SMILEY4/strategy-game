@@ -1707,3 +1707,12 @@ the way to gain extra benefits
 
 - can do elections
 - list of laws (bonuses) that can be approved (unlocked) when certain happiness levels for certain denizen groups are achieved
+
+
+
+# Trade and Research
+
+- Discoveries can be made in certain fields (e.g. Black Magic, Steampunk-Tech, ...)
+- Trade (and similar) boosts discoveries in same fields as (trade) partner
+- Country profiting more from trade gains biggger boost
+- its an advantage to have (force) neighbors/paratners to be interested in same field

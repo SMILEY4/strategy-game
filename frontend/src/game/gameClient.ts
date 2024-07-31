@@ -5,7 +5,7 @@ import {TileIdentifier} from "../models/tile";
 import {GameIdProvider} from "../gamesession/gameIdProvider";
 
 /**
- * API-Client for ingame game operations
+ * API-Client for ingame-operations
  */
 export class GameClient {
 
