@@ -24,7 +24,8 @@ internal class InitializePlayerImpl : InitializePlayer {
         game.worldObjects.add(
             ScoutWorldObject(
                 id = Id.gen(),
-                tile = game.tiles.random().ref()
+                tile = game.tiles.random().ref(),
+                maxMovement = 5
             )
         )
     }

@@ -1,12 +1,12 @@
 import {TileIdentifier} from "../models/tile";
 import {GameRepository} from "./gameRepository";
-import {TilePosition} from "../models/tilePosition";
 import {CommandService} from "./commandService";
 import {WorldObject} from "../models/worldObject";
 import {GameClient} from "./gameClient";
+import {MovementTarget} from "../models/movementTarget";
 
 /**
- * Logic for handling movement of units
+ * Logic for handling movement of world objects
  */
 export class MovementService {
 
@@ -29,7 +29,11 @@ export class MovementService {
 		if (worldObject == null) {
 			return;
 		}
-		this.repository.setCurrentMovementModeState(worldObjectId, [tile], await this.getAvailablePositions([tile], worldObject));
+		const initTarget: MovementTarget = {
+			tile: tile,
+			cost: 0,
+		};
+		this.repository.setCurrentMovementModeState(worldObjectId, [initTarget], await this.getAvailableTargets(tile, worldObject, 0));
 	}
 
 	public cancelMovement() {
@@ -39,7 +43,7 @@ export class MovementService {
 	public completeMovement() {
 		const current = this.repository.getCurrentMovementModeState();
 		if (current.worldObjectId !== null && current.path.length > 0) {
-			this.commandService.addMovementCommand(current.worldObjectId, current.path);
+			this.commandService.addMovementCommand(current.worldObjectId, current.path.map(it => it.tile));
 		}
 		this.repository.setCurrentMovementModeState(null, [], []);
 	}
@@ -54,26 +58,27 @@ export class MovementService {
 			return false;
 		}
 
-		if (this.getPathCost() < this.getMaxPathCost(worldObject) && current.availablePositions.some(it => it.q == tileId.q && it.r == tileId.r)) {
-			const newPath = [...current.path, tileId];
-			this.repository.setCurrentMovementModeState(current.worldObjectId, newPath, await this.getAvailablePositions(newPath, worldObject));
+		const target = current.availableTargets.find(it => it.tile.q == tileId.q && it.tile.r == tileId.r)
+		if (target) {
+			const newPath = [...current.path, target];
+			const newTotalCost = newPath.sum(0, it => it.cost)
+			this.repository.setCurrentMovementModeState(current.worldObjectId, newPath, await this.getAvailableTargets(newPath[newPath.length - 1].tile, worldObject, newTotalCost));
 			return true;
 		}
 		return false;
 	}
 
 	public getPathCost(): number {
-		const path = this.repository.getCurrentMovementModeState().path;
-		return Math.max(0, path.length - 1);
+		return this.repository.getCurrentMovementModeState().path.sum(0, it => it.cost)
 	}
 
 	public getMaxPathCost(worldObject: WorldObject): number {
 		return worldObject.movementPoints;
 	}
 
-	private async getAvailablePositions(path: TileIdentifier[], worldObject: WorldObject): Promise<TilePosition[]> {
+	private async getAvailableTargets(tile: TileIdentifier, worldObject: WorldObject, points: number): Promise<MovementTarget[]> {
 		try {
-			return await this.gameClient.getAvailableMovementPositions(worldObject.id, path[path.length - 1]);
+			return await this.gameClient.getAvailableMovementPositions(worldObject.id, tile, points);
 		} catch (e) {
 			return [];
 		}

@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.worlds.edge
 
-import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.commondata.MovementTarget
 
 interface GameService {
 
@@ -14,5 +14,5 @@ interface GameService {
      * @throws GameServiceError
      * @returns the possible tiles the given world object can move to when starting from the given tile
      */
-    suspend fun getAvailableMovementPositions(gameId: String, worldObjectId: String, tileId: String): List<TileRef>
+    suspend fun getAvailableMovementPositions(gameId: String, worldObjectId: String, tileId: String, currentCost: Int): List<MovementTarget>
 }

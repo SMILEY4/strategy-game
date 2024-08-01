@@ -1,11 +1,10 @@
 package io.github.smiley4.strategygame.backend.gateway.game
 
 import io.github.smiley4.ktorswaggerui.dsl.get
-import io.github.smiley4.ktorswaggerui.dsl.post
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
-import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.commondata.MovementTarget
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
@@ -60,7 +59,7 @@ internal object RouteMovementAvailablePositions {
         }
         response {
             HttpStatusCode.OK to {
-                body<List<TileRef>>()
+                body<List<MovementTarget>>()
             }
             HttpStatusCode.Unauthorized to {
                 bodyErrorResponse(UnauthorizedResponse)
@@ -78,12 +77,13 @@ internal object RouteMovementAvailablePositions {
     }) {
         val userId = call.getUserIdOrThrow()
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
-            val gameId = call.parameters["gameId"] as String
-            val worldObjectId = call.parameters["worldObjectId"] as String
-            val position = call.parameters["pos"] as String
+            val gameId = call.parameters["gameId"]!!
+            val worldObjectId = call.parameters["worldObjectId"]!!
+            val position = call.parameters["pos"]!!
+            val points = call.parameters["points"]!!.toInt()
             try {
-                val positions = service.getAvailableMovementPositions(gameId, worldObjectId, position)
-                call.respond(HttpStatusCode.OK, positions)
+                val targets = service.getAvailableMovementPositions(gameId, worldObjectId, position, points)
+                call.respond(HttpStatusCode.OK, targets)
             } catch (e: GameService.GameServiceError) {
                 when(e) {
                     is GameService.GameNotFoundError -> call.respond(GameNotFound)

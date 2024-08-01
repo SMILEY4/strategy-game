@@ -71,7 +71,7 @@ export class RenderRepository {
 
 		const movementState = MovementModeState.useState.getState();
 		if(movementState.worldObjectId !== null){
-			paths.push({positions: movementState.path, pending: true})
+			paths.push({positions: movementState.path.map(it => it.tile), pending: true})
 		}
 
 		const moveCommands = this.commandDb.queryMany(CommandDatabase.QUERY_ALL, null).filter(it => it.type === CommandType.MOVE)
@@ -95,6 +95,6 @@ export class RenderRepository {
 	}
 
 	public getHighlightMovementTileIds(): Set<string> {
-		return new Set<string>(MovementModeState.useState.getState().availablePositions.map(it => it.q + "/" + it.r)) // todo: temp key
+		return new Set<string>(MovementModeState.useState.getState().availableTargets.map(it => it.tile.q + "/" + it.tile.r)) // todo: temp key
 	}
 }

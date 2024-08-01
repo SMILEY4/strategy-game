@@ -10,6 +10,7 @@ import {MovementModeState} from "../state/movementModeState";
 import {TilePosition} from "../models/tilePosition";
 import {Command} from "../models/command";
 import {CommandDatabase} from "../state/database/commandDatabase";
+import {MovementTarget} from "../models/movementTarget";
 
 export class GameRepository {
 
@@ -101,19 +102,19 @@ export class GameRepository {
 
 	public getCurrentMovementModeState(): {
 		worldObjectId: string | null,
-		path: TileIdentifier[],
-		availablePositions: TilePosition[]
+		path: MovementTarget[],
+		availableTargets: MovementTarget[]
 	} {
 		const state = MovementModeState.useState.getState();
 		return {
 			worldObjectId: state.worldObjectId,
 			path: state.path,
-			availablePositions: state.availablePositions,
+			availableTargets: state.availableTargets,
 		};
 	}
 
-	public setCurrentMovementModeState(worldObjectId: string | null, path: TileIdentifier[], availablePositions: TilePosition[]) {
-		MovementModeState.useState.getState().set(worldObjectId, path, availablePositions);
+	public setCurrentMovementModeState(worldObjectId: string | null, path: MovementTarget[], availableTargets: MovementTarget[]) {
+		MovementModeState.useState.getState().set(worldObjectId, path, availableTargets);
 	}
 
 }

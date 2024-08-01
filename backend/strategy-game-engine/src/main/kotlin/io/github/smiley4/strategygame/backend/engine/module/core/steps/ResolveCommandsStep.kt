@@ -41,15 +41,18 @@ class ResolveCommandsStep(private val movementService: MovementService) : GameEv
             throw Exception("World object not located at start of path ${worldObject.tile} vs ${command.data.path.first()}")
         }
 
-        // step path as far as possible
+        // step along path (as far as possible)
+        var currentCost = 0
         var currentTile = command.data.path.first()
         for (i in 1 until command.data.path.size) {
-            val availableTiles = movementService.getAvailablePositions(game, worldObject, game.findTile(currentTile))
+            val availableTiles = movementService.getAvailablePositions(game, worldObject, currentTile, currentCost)
             val nextTile = command.data.path[i]
-            if(!availableTiles.contains(nextTile)) {
+            val movementTarget = availableTiles.find { it.tile == nextTile && currentCost + it.cost <= worldObject.maxMovement}
+            if(movementTarget == null) {
                 break
             }
             currentTile = nextTile
+            currentCost += movementTarget.cost
         }
 
         worldObject.tile = currentTile
