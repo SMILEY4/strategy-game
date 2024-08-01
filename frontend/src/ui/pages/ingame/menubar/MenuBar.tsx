@@ -12,6 +12,7 @@ import {UseTileWindow} from "../windows/tile/useTileWindow";
 import {GameSessionDatabase} from "../../../../state/database/gameSessionDatabase";
 import {PiScrollBold} from "react-icons/pi";
 import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
+import {isBlockingWindowOpen} from "../../../components/headless/useWindowData";
 
 export function MenuBar(): ReactElement {
 
@@ -56,14 +57,17 @@ export function MenuBar(): ReactElement {
 }
 
 function useEndTurn(): [boolean, () => void] {
-    const endTurnService = AppCtx.TurnEndService();
-    const disabled = GameSessionDatabase.useGameTurnState() === "waiting";
+    const isBlocked = isBlockingWindowOpen()
+    const isWaiting = GameSessionDatabase.useGameTurnState() === "waiting";
     const setTurnState = GameSessionDatabase.useSetGameTurnState();
+    const isDisabled = isBlocked || isWaiting
+
+    const endTurnService = AppCtx.TurnEndService();
 
     function endTurn() {
         endTurnService.endTurn();
         setTurnState("waiting");
     }
 
-    return [disabled, endTurn];
+    return [isDisabled, endTurn];
 }

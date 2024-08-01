@@ -13,6 +13,11 @@ export function useWindowStack() {
     };
 }
 
+export function isBlockingWindowOpen(): boolean {
+    const dataWindows = WindowStore.useState(state => state.windows);
+    return dataWindows.some(w => w.blockOthers === true)
+}
+
 export function useWindowData(id: string) {
     const dataWindows = WindowStore.useState(state => state.windows);
     const data = dataWindows.find(w => w.id === id);
