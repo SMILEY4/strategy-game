@@ -1564,3 +1564,155 @@ Example
 - random walk for a random distance (distance also influenced by base terrain/biome)
 - if next step would connect to a nother impassable terrain (ocean, mountain, ...), the probability to move that direction is lower to avoid to many dead ends
 - alt: probability to move into a specific direction lower, the more and closer other impassable tiles are
+
+
+
+
+# Political System
+
+https://forums.civfanatics.com/threads/what-should-the-civ-vii-political-system-be-like.685156/
+
+
+
+https://forums.civfanatics.com/threads/what-should-the-civ-vii-political-system-be-like.685156/post-16496820
+
+**Political System**
+
+- changes only with a period of Anarchy and potential Civil War, with unclear outcome
+- shaped by random processes, great people, foreign actors, population, ...
+
+**Legitimacy**
+
+- modifier to the political system
+- "Monarchy" can be anything from "Theocracy" to "Divine Right Monarchy" 
+
+**Economics**
+
+- ...
+
+**Ideology/Religion**
+
+- ...
+
+
+
+https://forums.civfanatics.com/threads/what-should-the-civ-vii-political-system-be-like.685156/post-16498313
+
+**Denizen**
+
+- population unit with abstract amount of inhabitants
+- occupy districts, villages
+- can relocate and migrate
+- each unit three distinct parameters
+  - Belief
+  - Heritage
+    - (traditions) - provide unique bonuses when integrated into empire
+    - relations to other leaders related to their denizens and belief
+  - Class
+    - Laborers - work in farms, plantations, mines, ...; help to gain great engineers
+    - Artisans - work in workshops; help to gain great artists
+    - Traders - work in trade and commerce buildings; help to gain great merchants
+    - Clerigs - work in religion buildings; help to gain great prophets
+    - Scholars - work in science buildings; help to gain great scientists
+    - Warrior - work in military buildings; help to gain great generals
+
+
+
+https://forums.civfanatics.com/threads/what-should-the-civ-vii-political-system-be-like.685156/post-16540984
+
+**Administrative Structure**
+
+Status of the cities under your direct control and how they are governed
+
+*Centralism*
+
+- cities titled as provinces
+- assign one of magistrates as governor to provide specific bonuses
+- limited number of magistrates (-> works better for tall gameplay)
+- bonus to every province capital city yield
+
+*Federalism*
+
+- cities are titles as states
+- each state has random generated governors with own bonuses
+- happiness bonus to every city
+
+*Vassalism*
+
+- cities are titled as vassals
+- each vassall has a rank (1-3, e.g. barony, county, duchy) 
+- rank can be upgraded by spent money, direct cultural influence, emissaries
+- rank 1 = no bonus, rank 2 = small bonus, rank 3 = huge bonus with some downsides
+- bonuses can be chosen
+
+**Suzerainty Structure**
+
+status of client cities that are under your control by diplomatic or military actions
+
+*Colonialism*
+
+- outer cities titled as colonies
+- can build buildings, units, get yields, tax, etc like in regular cities
+- downside: revolt earlier, do not count for diplomatic actions
+
+*Imperialism*
+
+- outer cities titled as protectorates
+- work as autonomous entities
+- can be required to pay tribute (e.g. money, food, production, units)
+- provide bonus to trade routes and luxury resources
+
+*Internationalism*
+
+- outer cities titled as members
+- more autonomous and friendly form of control
+- secure their support for your goals in world congress
+- envoys there are more effective, i.e. easier to influence them 
+
+**Authority Legitimacy**
+
+manage happiness
+
+*Monarchism*
+
+- cities (i.e. governors) are influenced through consorts (special kind of envoy)
+- consorts can be sent to form ties with houses (royal houses, tribal clans, ...)
+- sent consort to a specific house triggers event with request, fulfil request to provide bonus
+
+*Republicanism*
+
+- denizens managed through legislators
+- legislators represent each one of different denizen classes, beliefs, heritages in whole civilisation
+- access needs of each sector, satisfying needs of sector provides bonuses
+
+**Authority Source**
+
+the way to gain extra benefits
+
+*Absolutism*
+
+- can do decrees
+- big bonuses for a specific theme
+- only one can be active
+- can not be changed quickly
+
+*Elitism*
+
+- can do pacts
+- made with elite classes (secondary ideologies determine which classes are elites)
+- pacts provide bonuses in exchange for privileges (e.g. less taxes)
+- elitism provides happiness bonus to elites automatically
+
+*Constitutionalism*
+
+- can do elections
+- list of laws (bonuses) that can be approved (unlocked) when certain happiness levels for certain denizen groups are achieved
+
+
+
+# Trade and Research
+
+- Discoveries can be made in certain fields (e.g. Black Magic, Steampunk-Tech, ...)
+- Trade (and similar) boosts discoveries in same fields as (trade) partner
+- Country profiting more from trade gains biggger boost
+- its an advantage to have (force) neighbors/paratners to be interested in same field

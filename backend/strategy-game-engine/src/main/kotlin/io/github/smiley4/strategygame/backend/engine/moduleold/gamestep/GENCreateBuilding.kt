@@ -70,7 +70,7 @@ class GENCreateBuilding(eventSystem: EventSystem) : Logging {
     }
 
     private fun isTileFreeForBuilding(tile: Tile, city: City): Boolean {
-        return city.infrastructure.buildings.none { tile.tileId == it.tile?.tileId }
+        return city.infrastructure.buildings.none { tile.tileId == it.tile?.id }
     }
 
     private fun hasRequiredResource(tile: Tile, buildingType: BuildingType): Boolean {

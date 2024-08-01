@@ -10,6 +10,7 @@ export interface WindowData {
     bottom?: number | null,
     width?: number | null,
     height?: number | null,
+    blockOthers?: boolean | null,
     content: any,
 }
 
@@ -44,6 +45,7 @@ export namespace WindowStore {
                                     bottom: window.bottom,
                                     width: window.width,
                                     height: window.height,
+                                    blockOthers: window.blockOthers
                                 };
                             } else {
                                 return window;

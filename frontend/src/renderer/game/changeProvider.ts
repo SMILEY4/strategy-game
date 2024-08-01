@@ -7,12 +7,15 @@ import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
+import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
+import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 
 interface Changes {
     initFrame: boolean,
     turn: boolean,
     mapMode: boolean,
-    camera: boolean
+    camera: boolean,
+    movementPaths: boolean,
 }
 
 /**
@@ -25,6 +28,7 @@ export class ChangeProvider {
     private readonly detectorCamera = new ChangeDetector();
     private readonly detectorCurrentTurn = new ChangeDetector();
     private readonly detectorMapMode = new ChangeDetector();
+    private readonly detectorMovementPaths = new ChangeDetector();
 
     private frame: number = 0
     private changes: Changes = {
@@ -32,6 +36,7 @@ export class ChangeProvider {
         turn: true,
         mapMode: true,
         camera: true,
+        movementPaths: true,
     }
 
     constructor(renderRepository: RenderRepository,) {
@@ -51,10 +56,11 @@ export class ChangeProvider {
         this.changes.turn = this.detectorCurrentTurn.check(this.repository.getTurn());
         this.changes.mapMode = this.detectorMapMode.check(this.repository.getMapMode())
         this.changes.camera = this.detectorCamera.check(camera.getHash())
+        this.changes.movementPaths = this.detectorMovementPaths.check(this.repository.getMovementPathsCheckId())
     }
 
     /**
-     * @return whether there are changes relevant to the render node with the given id
+     * @return whether there are changes relevant to the action or render-node with the given id
      */
     public hasChange(name: string): boolean {
         if(name === "basemesh") {
@@ -67,7 +73,7 @@ export class ChangeProvider {
             return this.changes.turn
         }
         if(name === OverlayVertexNode.ID) {
-            return this.changes.turn || this.changes.mapMode
+            return this.changes.turn || this.changes.mapMode || this.changes.movementPaths
         }
         if(name === RoutesVertexNode.ID) {
             return this.changes.turn
@@ -77,6 +83,12 @@ export class ChangeProvider {
         }
         if(name === ResourceIconsHtmlNode.ID) {
             return this.changes.turn || this.changes.mapMode || this.changes.camera
+        }
+        if(name === WorldObjectsHtmlNode.ID) {
+            return this.changes.turn || this.changes.camera
+        }
+        if(name === PathsHtmlNode.ID) {
+            return this.changes.turn || this.changes.camera || this.changes.movementPaths
         }
         return true;
     }

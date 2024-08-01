@@ -160,3 +160,17 @@ fun getNeighbourPositions(q: Int, r: Int): List<Pair<Int, Int>> {
         positionsNeighbours(q, r) { nq, nr -> positions.add(nq to nr) }
     }
 }
+
+/**
+ * @return all tile positions that are neighbours of the given tile position
+ */
+fun getNeighbourPositions(pos: TilePosition): List<Pair<Int, Int>> {
+    return getNeighbourPositions(pos.q, pos.r)
+}
+
+/**
+ * @return all tile positions that are neighbours of the given tile position
+ */
+fun getNeighbourPositions(pos: TileRef): List<Pair<Int, Int>> {
+    return getNeighbourPositions(pos.q, pos.r)
+}

@@ -22,6 +22,12 @@ import {GameRepository} from "./game/gameRepository";
 import {GameSessionRepository} from "./gamesession/gameSessionRepository";
 import {TurnEndService} from "./game/turnEndService";
 import {RenderRepository} from "./renderer/game/renderRepository";
+import {WorldObjectDatabase} from "./state/database/objectDatabase";
+import {MovementService} from "./game/movementService";
+import {CommandService} from "./game/commandService";
+import {CommandDatabase} from "./state/database/commandDatabase";
+import {GameClient} from "./game/gameClient";
+import {GameIdProvider} from "./gamesession/gameIdProvider";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -45,7 +51,11 @@ interface AppCtxDef {
     TurnStartService: () => TurnStartService,
     TurnEndService: () => TurnEndService,
     GameLoopService: () => GameLoopService,
+    MovementService: () => MovementService,
+    CommandService: () => CommandService,
     GameRepository: () => GameRepository,
+    GameClient: () => GameClient,
+    GameIdProvider: () => GameIdProvider,
 
     GameRenderer: () => GameRenderer,
     RenderRepository: () => RenderRepository,
@@ -56,6 +66,8 @@ interface AppCtxDef {
     CameraDatabase: () => CameraDatabase,
     GameSessionDatabase: () => GameSessionDatabase,
     TileDatabase: () => TileDatabase,
+    WorldObjectDatabase: () => WorldObjectDatabase,
+    CommandDatabase: () => CommandDatabase,
 }
 
 const diContext = new DIContext();
@@ -117,16 +129,48 @@ export const AppCtx: AppCtxDef = {
     ),
     TurnEndService: diContext.register(
         "EndTurnService",
-        () => new TurnEndService(AppCtx.GameSessionService()),
+        () => new TurnEndService(
+            AppCtx.GameSessionService(),
+            AppCtx.GameRepository(),
+            AppCtx.MovementService()
+        ),
     ),
     GameLoopService: diContext.register(
         "GameLoopService",
         () => new GameLoopService(
+            AppCtx.MovementService(),
             new TilePicker(AppCtx.GameRepository()),
             AppCtx.GameRepository(),
             AppCtx.GameRenderer(),
             AppCtx.AudioService(),
         ),
+    ),
+    MovementService: diContext.register(
+        "MovementService",
+        () => new MovementService(
+            AppCtx.CommandService(),
+            AppCtx.GameClient(),
+            AppCtx.GameRepository(),
+        ),
+    ),
+    CommandService: diContext.register(
+        "CommandService",
+        () => new CommandService(
+            AppCtx.GameRepository(),
+            AppCtx.AudioService(),
+        )
+    ),
+    GameClient: diContext.register(
+        "GameClient",
+        () => new GameClient(
+            AppCtx.AuthProvider(),
+            AppCtx.GameIdProvider(),
+            AppCtx.HttpClient()
+        )
+    ),
+    GameIdProvider: diContext.register(
+        "GameIdProvider",
+        () => new GameIdProvider(),
     ),
 
     WebGLMonitor: diContext.register(
@@ -144,7 +188,9 @@ export const AppCtx: AppCtxDef = {
         () => new RenderRepository(
             AppCtx.GameSessionDatabase(),
             AppCtx.CameraDatabase(),
-            AppCtx.TileDatabase()
+            AppCtx.TileDatabase(),
+            AppCtx.WorldObjectDatabase(),
+            AppCtx.CommandDatabase(),
         )
     ),
 
@@ -153,7 +199,9 @@ export const AppCtx: AppCtxDef = {
         () => new GameRepository(
             AppCtx.GameSessionDatabase(),
             AppCtx.CameraDatabase(),
-            AppCtx.TileDatabase()
+            AppCtx.TileDatabase(),
+            AppCtx.WorldObjectDatabase(),
+            AppCtx.CommandDatabase()
         )
     ),
     MonitoringRepository: diContext.register(
@@ -175,6 +223,14 @@ export const AppCtx: AppCtxDef = {
     TileDatabase: diContext.register(
         "TileDatabase",
         () => new TileDatabase(),
+    ),
+    WorldObjectDatabase: diContext.register(
+        "WorldObjectDatabase",
+        () => new WorldObjectDatabase(),
+    ),
+    CommandDatabase: diContext.register(
+        "CommandDatabase",
+        () => new CommandDatabase(),
     ),
 
 };

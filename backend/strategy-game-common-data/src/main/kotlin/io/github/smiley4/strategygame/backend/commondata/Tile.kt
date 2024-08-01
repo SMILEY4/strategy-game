@@ -7,11 +7,10 @@ data class Tile(
     val influences: MutableList<TileInfluence>,
     var owner: TileOwner?,
     val discoveredByCountries: MutableList<String>,
-    val objects: MutableList<TileObject>
 ) {
 
-    inline fun <reified T : TileObject> findObjects(): List<T> = objects.filterIsInstance<T>()
+    inline fun <reified T : WorldObject> findObjects(game: GameExtended): List<T> = game.worldObjects.filter { it.tile.id == tileId }.filterIsInstance<T>()
 
-    inline fun <reified T : TileObject> findOneObject(): T? = findObjects<T>().firstOrNull()
+    inline fun <reified T : WorldObject> findOneObject(game: GameExtended): T? = findObjects<T>(game).firstOrNull()
 
 }

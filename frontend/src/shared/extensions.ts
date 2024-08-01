@@ -5,6 +5,7 @@ declare global {
         associateValue<V>(valueSelector: (key: T) => V): Map<T, V>,
         associateKey<K>(keySelector: (value: T) => K): Map<K, T>
         count(condition: (value: T) => boolean): number
+        sum<V>(initial: V, valueSelector: (value: T) => V): V
     }
 }
 
@@ -45,6 +46,14 @@ export namespace ArrayExtensions {
             }
             return count;
         };
+
+        Array.prototype.sum = function (initial: any, valueSelector: (value: any) => any) {
+            let totalSum = initial
+            for(let value of this) {
+                totalSum += valueSelector(value)
+            }
+            return totalSum
+        }
 
     }
 

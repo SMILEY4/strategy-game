@@ -28,7 +28,7 @@ class TileContainer() : Collection<Tile> {
     }
 
     fun get(ref: TileRef): Tile? {
-        return get(ref.tileId)
+        return get(ref.id)
     }
 
     private fun toKey(pos: TilePosition, a: Int) = toKey(pos.q, pos.r, a)

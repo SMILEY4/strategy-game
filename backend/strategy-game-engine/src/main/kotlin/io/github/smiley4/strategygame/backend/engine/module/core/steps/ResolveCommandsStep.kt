@@ -1,66 +1,61 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
-import io.github.smiley4.strategygame.backend.commondata.CreateCityCommandData
-import io.github.smiley4.strategygame.backend.commondata.DeleteMarkerCommandData
-import io.github.smiley4.strategygame.backend.commondata.PlaceMarkerCommandData
-import io.github.smiley4.strategygame.backend.commondata.PlaceScoutCommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddBuildingEntryCommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddSettlerEntryCommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueRemoveEntryCommandData
-import io.github.smiley4.strategygame.backend.commondata.UpgradeSettlementTierCommandData
-import io.github.smiley4.strategygame.backend.engine.module.core.GameEventNode
-import io.github.smiley4.strategygame.backend.engine.module.core.GameEventPublisher
+import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.commondata.Command
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
+import io.github.smiley4.strategygame.backend.engine.edge.MovementService
+import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
+import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
 import io.github.smiley4.strategygame.backend.engine.module.core.events.ResolveCommandsEvent
 
-class ResolveCommandsStep : GameEventNode<ResolveCommandsEvent> {
+class ResolveCommandsStep(private val movementService: MovementService) : GameEventNode<ResolveCommandsEvent>, Logging {
 
     override fun handle(event: ResolveCommandsEvent, publisher: GameEventPublisher) {
+        log().info("Resolving ${event.commands.size} commands for game ${event.game.meta.gameId}")
         event.commands.forEach {
-            when(it.data) {
-                is CreateCityCommandData -> {
-
-                    // todo
-                    //  validate command
-                    //  send event "ResolveCreateCity"
-
-                    // ignore "with/without new province" for now ?
-
-                    // VALIDATION
-                    /*
-                        - name
-                            - must not be blank
-                        - target tile
-                            - must be valid type
-                            - must not contain city
-                            - any of
-                                - already owns tile
-                                - has most influence in tile
-                                - nobody has more than x influence in tile
-                    */
+            try {
+                @Suppress("UNCHECKED_CAST")
+                when (it.data) {
+                    is MoveCommandData -> handle(event.game, it as Command<MoveCommandData>)
                 }
-                is DeleteMarkerCommandData -> {
-                    // todo
-                }
-                is PlaceMarkerCommandData -> {
-                    // todo
-                }
-                is PlaceScoutCommandData -> {
-                    // todo
-                }
-                is ProductionQueueAddBuildingEntryCommandData -> {
-                    // todo
-                }
-                is ProductionQueueAddSettlerEntryCommandData -> {
-                    // todo
-                }
-                is ProductionQueueRemoveEntryCommandData -> {
-                    // todo
-                }
-                is UpgradeSettlementTierCommandData -> {
-                    // todo
-                }
+            } catch (e: Exception) {
+                log().warn("Failed to resolve command '$it' - skipping command.", e)
             }
         }
+    }
+
+    private fun handle(game: GameExtended, command: Command<MoveCommandData>) {
+        log().debug("Resolving move command for object ${command.data.worldObjectId} with path size ${command.data.path.size}")
+
+        val worldObject = game.worldObjects.find { it.id == command.data.worldObjectId }
+            ?: throw Exception("Could not find world object ${command.data.worldObjectId}")
+
+        // skip empty paths
+        if(command.data.path.isEmpty()) {
+            return
+        }
+
+        // first tile in patch must match current location of object
+        if (worldObject.tile.id != command.data.path.first().id) {
+            throw Exception("World object not located at start of path ${worldObject.tile} vs ${command.data.path.first()}")
+        }
+
+        // step along path (as far as possible)
+        var currentCost = 0
+        var currentTile = command.data.path.first()
+        for (i in 1 until command.data.path.size) {
+            val availableTiles = movementService.getAvailablePositions(game, worldObject, currentTile, currentCost)
+            val nextTile = command.data.path[i]
+            val movementTarget = availableTiles.find { it.tile == nextTile && currentCost + it.cost <= worldObject.maxMovement}
+            if(movementTarget == null) {
+                break
+            }
+            currentTile = nextTile
+            currentCost += movementTarget.cost
+        }
+
+        worldObject.tile = currentTile
     }
 
 }

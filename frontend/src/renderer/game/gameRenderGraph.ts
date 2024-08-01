@@ -28,6 +28,8 @@ import {NoOpRenderGraphSorter} from "../core/prebuilt/NoOpRenderGraphSorter";
 import {HtmlResourceManager} from "../core/html/htmlResourceManager";
 import {HtmlRenderGraphCompiler} from "../core/html/htmlRenderGraphCompiler";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
+import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
+import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 
 export class GameRenderGraph {
 
@@ -76,11 +78,9 @@ export class GameRenderGraph {
 			resourceManager: new HtmlResourceManager(),
 			compiler: new HtmlRenderGraphCompiler(),
 			nodes: [
-				new ResourceIconsHtmlNode(
-					changeProvider,
-					renderRepository,
-					() => this.camera,
-				),
+				new PathsHtmlNode(changeProvider, renderRepository, () => this.camera,),
+				new ResourceIconsHtmlNode(changeProvider, renderRepository, () => this.camera,),
+				new WorldObjectsHtmlNode(changeProvider, renderRepository, () => this.camera,),
 			],
 		});
 	}

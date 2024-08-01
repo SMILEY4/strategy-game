@@ -34,11 +34,19 @@ export class OverlayVertexNode extends VertexRenderNode {
 		...MixedArrayBufferType.VEC2,
 		// tile position (q,r)
 		...MixedArrayBufferType.INT_VEC2,
-		// border mask
+
+		// primary border mask
 		MixedArrayBufferType.INT,
-		// border color
+		// primary border color
 		...MixedArrayBufferType.VEC4,
-		// fill color
+		// primary fill color
+		...MixedArrayBufferType.VEC4,
+
+		// highlight border mask
+		MixedArrayBufferType.INT,
+		// highlight border color
+		...MixedArrayBufferType.VEC4,
+		// highlight fill color
 		...MixedArrayBufferType.VEC4,
 	];
 
@@ -108,6 +116,24 @@ export class OverlayVertexNode extends VertexRenderNode {
 							amountComponents: 4,
 							divisor: 1,
 						},
+						{
+							name: "in_highlightBorderMask",
+							type: GLAttributeType.INT,
+							amountComponents: 1,
+							divisor: 1,
+						},
+						{
+							name: "in_highlightBorderColor",
+							type: GLAttributeType.FLOAT,
+							amountComponents: 4,
+							divisor: 1,
+						},
+						{
+							name: "in_highlightFillColor",
+							type: GLAttributeType.FLOAT,
+							amountComponents: 4,
+							divisor: 1,
+						},
 					],
 				}),
 				new VertexDescriptor({
@@ -145,10 +171,11 @@ export class OverlayVertexNode extends VertexRenderNode {
 
 			const mapMode = this.repository.getMapMode();
 			const mapModeContext = mapMode.renderData.context(tiles);
+			const highlightMovementTiles = this.repository.getHighlightMovementTileIds();
 
 			for (let i = 0, n = tiles.length; i < n; i++) {
 				const tile = tiles[i];
-				this.appendOverlayInstance(tile, mapMode, mapModeContext, cursorOverlay);
+				this.appendOverlayInstance(tile, mapMode, mapModeContext, highlightMovementTiles, cursorOverlay);
 			}
 
 			buffers.set("vertexbuffer.instance.overlay", new VertexBufferResource(arrayBufferOverlay.getRawBuffer()));
@@ -205,7 +232,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 		return tiles.length;
 	}
 
-	private appendOverlayInstance(tile: Tile, mapMode: MapMode, mapModeContext: any, cursor: MixedArrayBufferCursor) {
+	private appendOverlayInstance(tile: Tile, mapMode: MapMode, mapModeContext: any, highlightMovementTiles: Set<string>, cursor: MixedArrayBufferCursor) {
 		const q = tile.identifier.q;
 		const r = tile.identifier.r;
 
@@ -218,16 +245,26 @@ export class OverlayVertexNode extends VertexRenderNode {
 		cursor.append(q);
 		cursor.append(r);
 
-		// border mask
+		// primary border mask
 		const borderData = BorderBuilder.build(tile, this.repository, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
 		const borderPacked = packBorder(borderData);
 		cursor.append(borderPacked);
 
-		// border color
+		// primary border & fill color
 		cursor.append(mapMode.renderData.borderColor(tile, mapModeContext));
-
-		// fill color
 		cursor.append(mapMode.renderData.fillColor(tile, mapModeContext));
+
+
+		// highlight border mask & border color & fill color
+		if(highlightMovementTiles.has(tile.identifier.q + "/" + tile.identifier.r)) {
+			cursor.append(0);
+			cursor.append([0, 0, 0, 0]);
+			cursor.append([0.941, 0.921, 0.686, 0.9]); // todo: find color
+		} else {
+			cursor.append(0);
+			cursor.append([0, 0, 0, 0]);
+			cursor.append([0, 0, 0, 0]);
+		}
 	}
 
 

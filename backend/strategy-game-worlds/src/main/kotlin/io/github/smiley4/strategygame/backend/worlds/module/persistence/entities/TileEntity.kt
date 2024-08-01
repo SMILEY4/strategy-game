@@ -12,7 +12,6 @@ internal class TileEntity(
     val influences: List<TileInfluenceEntity>,
     val owner: TileOwnerEntity?,
     val discoveredByCountries: List<String>,
-    val content: List<TileObjectEntity>,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -25,7 +24,6 @@ internal class TileEntity(
             influences = serviceModel.influences.map { TileInfluenceEntity.of(it) },
             owner = serviceModel.owner?.let { TileOwnerEntity.of(it) },
             discoveredByCountries = serviceModel.discoveredByCountries,
-            content = serviceModel.objects.map { TileObjectEntity.of(it) },
         )
     }
 
@@ -36,7 +34,6 @@ internal class TileEntity(
         influences = this.influences.map { it.asServiceModel() }.toMutableList(),
         owner = this.owner?.asServiceModel(),
         discoveredByCountries = this.discoveredByCountries.toMutableList(),
-        objects = this.content.map { it.asServiceModel() }.toMutableList(),
     )
 
 }

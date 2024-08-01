@@ -10,11 +10,15 @@ import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseTileWindow} from "../windows/tile/useTileWindow";
 import {GameSessionDatabase} from "../../../../state/database/gameSessionDatabase";
+import {PiScrollBold} from "react-icons/pi";
+import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
+import {isBlockingWindowOpen} from "../../../components/headless/useWindowData";
 
 export function MenuBar(): ReactElement {
 
     const openDevMenu = UseDevWindow.useOpen();
     const openMapMenu = UseMapWindow.useOpen();
+    const openCommandLogMenu = UseCommandLogWindow.useOpen();
     const openTileMenu = UseTileWindow.useOpen();
     const currentTurn = GameSessionDatabase.useTurn()
     const [endTurnDisabled, endTurn] = useEndTurn();
@@ -30,6 +34,10 @@ export function MenuBar(): ReactElement {
 
                     <ButtonPrimary blue round onClick={openMapMenu}>
                         <FiMap/>
+                    </ButtonPrimary>
+
+                    <ButtonPrimary blue round onClick={openCommandLogMenu}>
+                        <PiScrollBold/>
                     </ButtonPrimary>
 
                     <ButtonPrimary blue round onClick={() => openTileMenu(null)}>
@@ -49,14 +57,17 @@ export function MenuBar(): ReactElement {
 }
 
 function useEndTurn(): [boolean, () => void] {
-    const endTurnService = AppCtx.TurnEndService();
-    const disabled = GameSessionDatabase.useGameTurnState() === "waiting";
+    const isBlocked = isBlockingWindowOpen()
+    const isWaiting = GameSessionDatabase.useGameTurnState() === "waiting";
     const setTurnState = GameSessionDatabase.useSetGameTurnState();
+    const isDisabled = isBlocked || isWaiting
+
+    const endTurnService = AppCtx.TurnEndService();
 
     function endTurn() {
         endTurnService.endTurn();
         setTurnState("waiting");
     }
 
-    return [disabled, endTurn];
+    return [isDisabled, endTurn];
 }

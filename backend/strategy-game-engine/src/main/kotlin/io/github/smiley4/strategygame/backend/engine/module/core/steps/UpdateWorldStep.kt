@@ -1,13 +1,14 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
-import io.github.smiley4.strategygame.backend.engine.module.core.GameEventNode
-import io.github.smiley4.strategygame.backend.engine.module.core.GameEventPublisher
+import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
+import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWorldEvent
 
-class UpdateWorldStep : GameEventNode<UpdateWorldEvent> {
+class UpdateWorldStep : GameEventNode<UpdateWorldEvent>,  Logging {
 
     override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
-        TODO("Not yet implemented")
+        log().debug("UpdateWorldStep not implemented")
     }
 
 }

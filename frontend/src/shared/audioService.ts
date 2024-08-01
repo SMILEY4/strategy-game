@@ -5,6 +5,7 @@ export class AudioType {
 
     public static readonly CLICK_PRIMARY = new AudioType("click.primary");
     public static readonly CLICK_CLOSE = new AudioType("click.close");
+    public static readonly WRITING_ON_PAPER = new AudioType("writing-on-paper");
 
     readonly id: string;
 
@@ -33,6 +34,12 @@ export class AudioService implements UIAudio.AudioProvider {
             AudioType.CLICK_CLOSE.id,
             new Howl({
                 src: ["/sfx/menu-button-click-11.mp3"],
+            }),
+        );
+        this.sounds.set(
+            AudioType.WRITING_ON_PAPER.id,
+            new Howl({
+                src: ["/sfx/pencil-writing-on-paper-3-strokes-take-a.mp3"],
             }),
         );
         UIAudio.audioProvider = this;

@@ -1,6 +1,7 @@
 import {WindowData, WindowStore} from "./windowStore";
 import {MouseEvent, useRef} from "react";
 import {useDraggable} from "./useDraggable";
+import {joinClassNames} from "../utils";
 
 const FRAME_STACK_ID = "window-stack";
 
@@ -12,8 +13,15 @@ export function useWindowStack() {
     };
 }
 
+export function isBlockingWindowOpen(): boolean {
+    const dataWindows = WindowStore.useState(state => state.windows);
+    return dataWindows.some(w => w.blockOthers === true)
+}
+
 export function useWindowData(id: string) {
-    const data = WindowStore.useState(state => state.windows).find(w => w.id === id);
+    const dataWindows = WindowStore.useState(state => state.windows);
+    const data = dataWindows.find(w => w.id === id);
+    const isNotInteractable = dataWindows.some(w => w.id !== id && w.blockOthers === true)
     if (!data) {
         throw new Error("Could not find window with id " + id);
     }
@@ -29,7 +37,10 @@ export function useWindowData(id: string) {
             },
         },
         content: data.content,
-        className: data.className,
+        className: joinClassNames([
+            data.className,
+            isNotInteractable ? "non-interactable": null,
+        ]),
     };
 }
 

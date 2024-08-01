@@ -3,7 +3,6 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence
 import arrow.fx.coroutines.parZip
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DocumentNotFoundError
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
@@ -15,12 +14,15 @@ import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
+import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.CityEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.CountryEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.GameEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.ProvinceEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.RouteEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.TileEntity
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.WorldObjectEntity
 
 internal class GameExtendedQuery(private val database: ArangoDatabase) {
 
@@ -32,10 +34,11 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
             parZip(
                 { fetchCountries(gameId) },
                 { fetchTiles(gameId) },
+                { fetchWorldObjects(gameId) },
                 { fetchCities(gameId) },
                 { fetchProvinces(gameId) },
                 { fetchRoutes(gameId) }
-            ) { countries, tiles, cities, provinces, routes ->
+            ) { countries, tiles, worldObjects, cities, provinces, routes ->
                 GameExtended(
                     meta = GameMeta(
                         gameId = gameId,
@@ -43,6 +46,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
                     ),
                     countries = countries.tracking(),
                     tiles = TileContainer(tiles),
+                    worldObjects = worldObjects.tracking(),
                     cities = cities.tracking(),
                     provinces = provinces.tracking(),
                     routes = routes.tracking()
@@ -124,6 +128,20 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
 			""".trimIndent(),
             mapOf("gameId" to gameId),
             RouteEntity::class.java
+        ).map { it.asServiceModel() }
+    }
+
+    private suspend fun fetchWorldObjects(gameId: String): List<WorldObject> {
+        database.assertCollections(Collections.WORLD_OBJECTS)
+        return database.query(
+            """
+				FOR worldObject IN ${Collections.WORLD_OBJECTS}
+					FILTER worldObject._documentType != "reservation"
+					FILTER worldObject.gameId == @gameId
+					RETURN worldObject
+			""".trimIndent(),
+            mapOf("gameId" to gameId),
+            WorldObjectEntity::class.java
         ).map { it.asServiceModel() }
     }
 

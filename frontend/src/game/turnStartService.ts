@@ -1,10 +1,13 @@
-import {GameStateMessage} from "./models/gameStateMessage";
+import {GameStateMessage} from "../gamesession/models/gameStateMessage";
 import {ValueHistory} from "../shared/valueHistory";
 import {MonitoringRepository} from "../state/database/monitoringRepository";
 import {Tile} from "../models/tile";
 import {GameRepository} from "./gameRepository";
 import {TerrainType} from "../models/TerrainType";
 import {TileResourceType} from "../models/TileResourceType";
+import {WorldObjectType} from "../models/worldObjectType";
+import {MovementModeState} from "../state/movementModeState";
+import {WorldObject} from "../models/worldObject";
 
 /**
  * Service to handle the start of a new turn
@@ -30,7 +33,9 @@ export class TurnStartService {
 		this.monitorSetGameState(() => {
 
 			this.gameRepository.transactionForStartTurn(() => {
+				this.gameRepository.clearCommands()
 				this.gameRepository.replaceTiles(this.buildTiles(gameState));
+				this.gameRepository.replaceWorldObjects(this.buildWorldObjects(gameState))
 			});
 
 		});
@@ -53,6 +58,20 @@ export class TurnStartService {
 			resourceType: TileResourceType.fromString(tileMsg.resourceType),
 			height: tileMsg.height,
 		}));
+	}
+
+	private buildWorldObjects(game: GameStateMessage): WorldObject[] {
+		return game.worldObjects.map(worldObjMsg => {
+			if(worldObjMsg.type === "scout") {
+				return {
+					id: worldObjMsg.id,
+					type: WorldObjectType.SCOUT,
+					tile: worldObjMsg.tile,
+					movementPoints: 5
+				}
+			}
+			return null
+		}).filterDefined()
 	}
 
 }

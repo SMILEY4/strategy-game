@@ -1,6 +1,6 @@
 import {MouseEvent, useEffect, useRef, WheelEvent} from "react";
 import {AppCtx} from "../../../../appContext";
-import "./canvas.css";
+import "./canvas.less";
 
 
 export function Canvas() {
@@ -103,7 +103,7 @@ export function Canvas() {
 
     function click(duration: number, e: MouseEvent) {
         if (duration < 150) {
-            gameLoopService.mouseClick(e.clientX, e.clientY);
+            gameLoopService.mouseClick(e.clientX, e.clientY).then(_ => undefined);
         }
     }
 

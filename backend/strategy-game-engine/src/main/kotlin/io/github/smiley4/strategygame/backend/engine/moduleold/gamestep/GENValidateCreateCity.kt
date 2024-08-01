@@ -26,7 +26,7 @@ class GENValidateCreateCity(private val gameConfig: GameConfig, eventSystem: Eve
                         data.targetTile.data.terrainType == TerrainType.LAND
                     }
                     mustBeTrue("CITY.TILE_SPACE") {
-                        data.game.cities.find { it.tile.tileId == data.targetTile.tileId } == null
+                        data.game.cities.find { it.tile.id == data.targetTile.tileId } == null
                     }
                     if (data.withNewProvince) {
                         mustBeTrue("CITY.TARGET_TILE_OWNER") {

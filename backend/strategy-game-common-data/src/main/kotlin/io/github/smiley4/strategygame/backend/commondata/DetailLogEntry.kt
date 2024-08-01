@@ -29,7 +29,7 @@ data class DetailLogEntry<T: Enum<*>>(
                 is FloatDetailLogValue -> true
                 is IntDetailLogValue -> true
                 is ResourcesDetailLogValue -> true
-                is TileRefDetailLogValue -> (baseValue as TileRefDetailLogValue).value.tileId == value.value.tileId
+                is TileRefDetailLogValue -> (baseValue as TileRefDetailLogValue).value.id == value.value.id
             }
         }
     }

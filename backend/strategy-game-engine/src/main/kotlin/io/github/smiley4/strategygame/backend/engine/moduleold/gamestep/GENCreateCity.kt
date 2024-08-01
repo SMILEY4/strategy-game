@@ -9,7 +9,6 @@ import io.github.smiley4.strategygame.backend.commondata.City
 import io.github.smiley4.strategygame.backend.commondata.CityInfrastructure
 import io.github.smiley4.strategygame.backend.commondata.CityMetadata
 import io.github.smiley4.strategygame.backend.commondata.CityPopulation
-import io.github.smiley4.strategygame.backend.commondata.CityTileObject
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Province
@@ -86,12 +85,12 @@ class GENCreateCity(eventSystem: EventSystem) : Logging {
             ),
         ).also {
             game.cities.add(it)
-            tile.objects.add(
-                CityTileObject(
-                    countryId = countryId,
-                    cityId = it.cityId,
-                )
-            )
+//            tile.objects.add(
+//                CityTileObject(
+//                    countryId = countryId,
+//                    cityId = it.cityId,
+//                )
+//            )
         }
     }
 

@@ -6,6 +6,28 @@ describe("array extensions", () => {
         ArrayExtensions.setup()
     })
 
+    describe("sum", () => {
+
+        test("empty array", () => {
+            const result: number = [].sum(4, it => it)
+            const expected = 4
+            expect(result).toEqual(expected)
+        })
+
+        test("numbers", () => {
+            const result: number = [1, 2, 3, 4, 5].sum(0, it => it)
+            const expected = 1 + 2 + 3 + 4 + 5
+            expect(result).toEqual(expected)
+        })
+
+        test("strings", () => {
+            const result: string = ["a", "b", "c"].sum(" - ", it => it)
+            const expected = " - abc"
+            expect(result).toEqual(expected)
+        })
+
+    })
+
     describe("distinct", () => {
 
         test("already duplicate numbers", () => {

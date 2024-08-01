@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DatabaseProvider
 import io.github.smiley4.strategygame.backend.commondata.City
 import io.github.smiley4.strategygame.backend.commondata.Country
-import io.github.smiley4.strategygame.backend.commondata.CreateCityCommandData
+import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
@@ -421,7 +421,7 @@ class WorldsTest : FreeSpec({
 
             submitTurn.perform(
                 "test-user-1", gameId, listOf(
-                    CreateCityCommandData(
+                    MoveCommandData(
                         q = 0,
                         r = 0,
                         name = "test-city",
@@ -456,7 +456,7 @@ class WorldsTest : FreeSpec({
                     command.userId shouldBe "test-user-1"
                     command.turn shouldBe 0
                 }
-                commands.map { it.data }.filterIsInstance<CreateCityCommandData>() shouldHaveSize 1
+                commands.map { it.data }.filterIsInstance<MoveCommandData>() shouldHaveSize 1
                 commands.map { it.data }.filterIsInstance<PlaceMarkerCommandData>() shouldHaveSize 1
             }
         }
@@ -518,7 +518,7 @@ class WorldsTest : FreeSpec({
 
             submitTurn.perform(
                 "test-user-1", gameId, listOf(
-                    CreateCityCommandData(
+                    MoveCommandData(
                         q = 0,
                         r = 0,
                         name = "test-city",

@@ -3,10 +3,8 @@ package io.github.smiley4.strategygame.backend.playerpov.module
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
 import io.github.smiley4.strategygame.backend.commondata.RGBColor
-import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.ScoutTileObject
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 
@@ -41,7 +39,7 @@ internal class  POVCache(
         game.tiles.forEach { tile ->
             val visibility = calculateVisibility(tile, game.tiles)
             tileVisibilities[tile.tileId] = visibility
-            if (visibility !== TileVisibilityDTO.UNKNOWN) {
+            if (visibility != TileVisibilityDTO.UNKNOWN) {
                 tile.owner?.countryId?.also { knownCountries.add(it) }
                 tile.owner?.provinceId?.also { knownProvinces.add(it) }
                 tile.owner?.cityId?.also { knownCities.add(it) }
@@ -108,11 +106,12 @@ internal class  POVCache(
 
     private fun calculateVisibility(tile: Tile, tiles: TileContainer): TileVisibilityDTO {
         if (tile.discoveredByCountries.contains(povCountryId)) {
-            val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
-                .asSequence()
-                .mapNotNull { pos -> tiles.get(pos) }
-                .mapNotNull { t -> t.objects.find { it is ScoutTileObject }?.let { it as ScoutTileObject } }
-                .any { it.countryId == povCountryId }
+            val scoutNearby = false
+//            val scoutNearby = positionsCircle(tile.position, gameConfig.scoutVisibilityRange)
+//                .asSequence()
+//                .mapNotNull { pos -> tiles.get(pos) }
+//                .mapNotNull { t -> t.objects.find { it is ScoutWorldObject }?.let { it as ScoutWorldObject } }
+//                .any { it.countryId == povCountryId }
             if (scoutNearby) {
                 return TileVisibilityDTO.VISIBLE
             }

@@ -1,6 +1,5 @@
 import {Tile} from "./tile";
 import {Color} from "./color";
-import {TileResourceType} from "./TileResourceType";
 
 export interface MapModeRenderData {
     /**

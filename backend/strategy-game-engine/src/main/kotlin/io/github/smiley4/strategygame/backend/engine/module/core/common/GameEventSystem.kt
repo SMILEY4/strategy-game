@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.module.core
+package io.github.smiley4.strategygame.backend.engine.module.core.common
 
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf

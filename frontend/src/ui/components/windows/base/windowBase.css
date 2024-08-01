@@ -1,0 +1,12 @@
+.non-interactable {
+
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+    filter: saturate(40%);
+
+     * {
+        pointer-events: none !important;
+        cursor: not-allowed !important;
+    }
+
+}

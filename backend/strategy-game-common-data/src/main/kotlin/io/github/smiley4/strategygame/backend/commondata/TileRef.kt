@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.backend.commondata
 
 
 data class TileRef(
-    val tileId: String,
+    val id: String,
     val q: Int,
     val r: Int
 ) {
