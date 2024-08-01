@@ -62,9 +62,9 @@ class GENValidateCreateCity(private val gameConfig: GameConfig, eventSystem: Eve
                             data.targetTile.owner?.countryId == data.country.countryId && data.targetTile.owner?.cityId == null
                         }
                     }
-                    mustBeTrue("CITY.AVAILABLE_SETTLERS") {
-                        data.country.availableSettlers > 0
-                    }
+//                    mustBeTrue("CITY.AVAILABLE_SETTLERS") {
+//                        data.country.availableSettlers > 0
+//                    }
                 }
                 if (result.isInvalid()) {
                     log().info("Invalid operation: creating city ${data.targetName}: ${result.getInvalidCodes()}")

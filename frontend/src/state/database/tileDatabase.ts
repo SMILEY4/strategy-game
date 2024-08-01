@@ -70,8 +70,4 @@ export namespace TileDatabase {
         },
     };
 
-    export function useTileById(tileIdentifier: TileIdentifier | null): Tile | null {
-        return useQuerySingle(AppCtx.TileDatabase(), QUERY_BY_ID, tileIdentifier === null ? null : tileIdentifier.id);
-    }
-
 }

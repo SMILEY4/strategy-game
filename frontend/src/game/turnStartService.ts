@@ -6,8 +6,8 @@ import {GameRepository} from "./gameRepository";
 import {TerrainType} from "../models/TerrainType";
 import {TileResourceType} from "../models/TileResourceType";
 import {WorldObjectType} from "../models/worldObjectType";
-import {MovementModeState} from "../state/movementModeState";
 import {WorldObject} from "../models/worldObject";
+import {Country} from "../models/country";
 
 /**
  * Service to handle the start of a new turn
@@ -31,13 +31,12 @@ export class TurnStartService {
 	 */
 	public setGameState(gameState: GameStateMessage) {
 		this.monitorSetGameState(() => {
-
 			this.gameRepository.transactionForStartTurn(() => {
-				this.gameRepository.clearCommands()
+				this.gameRepository.clearCommands();
 				this.gameRepository.replaceTiles(this.buildTiles(gameState));
-				this.gameRepository.replaceWorldObjects(this.buildWorldObjects(gameState))
+				this.gameRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
+				this.gameRepository.replaceCountries(this.buildCountries(gameState))
 			});
-
 		});
 	}
 
@@ -60,18 +59,36 @@ export class TurnStartService {
 		}));
 	}
 
+	private buildCountries(game: GameStateMessage): Country[] {
+		return game.countries.map(countryMsg => ({
+			identifier: {
+				id: countryMsg.id,
+				name: countryMsg.name,
+			},
+			player: {
+				userId: countryMsg.player.userId,
+				name: countryMsg.player.name,
+			},
+		}));
+	}
+
 	private buildWorldObjects(game: GameStateMessage): WorldObject[] {
 		return game.worldObjects.map(worldObjMsg => {
-			if(worldObjMsg.type === "scout") {
+			const countryMsg = game.countries.find(it => it.id === worldObjMsg.country)!
+			if (worldObjMsg.type === "scout") {
 				return {
 					id: worldObjMsg.id,
 					type: WorldObjectType.SCOUT,
 					tile: worldObjMsg.tile,
-					movementPoints: 5
-				}
+					country: {
+						id: countryMsg.id,
+						name: countryMsg.name,
+					},
+					movementPoints: 5,
+				};
 			}
-			return null
-		}).filterDefined()
+			return null;
+		}).filterDefined();
 	}
 
 }

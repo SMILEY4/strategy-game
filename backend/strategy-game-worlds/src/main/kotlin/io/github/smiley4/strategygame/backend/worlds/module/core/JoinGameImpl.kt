@@ -81,7 +81,7 @@ internal class JoinGameImpl(
     private suspend fun initializePlayer(game: Game, userId: String) {
         val gameExtended = gameExtendedQuery.execute(game.gameId)
         try {
-            initializePlayer.perform(gameExtended, userId, COUNTRY_COLORS[(game.players.size - 1) % COUNTRY_COLORS.size])
+            initializePlayer.perform(gameExtended, userId)
         } catch (e: InitializePlayer.InitializePlayerError) {
             when(e) {
                 is InitializePlayer.GameNotFoundError -> throw JoinGame.InitializePlayerError(e)

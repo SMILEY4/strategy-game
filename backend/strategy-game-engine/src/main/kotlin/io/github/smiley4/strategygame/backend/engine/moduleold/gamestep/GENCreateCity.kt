@@ -39,7 +39,7 @@ class GENCreateCity(eventSystem: EventSystem) : Logging {
 
 
     private fun consumeSettler(country: Country) {
-        country.availableSettlers = max(0, country.availableSettlers - 1)
+//        country.availableSettlers = max(0, country.availableSettlers - 1)
     }
 
     private fun createCity(

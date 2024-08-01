@@ -5,6 +5,7 @@ data class GameExtended(
     val tiles: TileContainer,
     val worldObjects: TrackingList<WorldObject>,
     val countries: TrackingList<Country>,
+
     val cities: TrackingList<City>,
     val provinces: TrackingList<Province>,
     val routes: TrackingList<Route>,

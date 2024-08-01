@@ -1,25 +1,39 @@
-import {TileIdentifier} from "../../models/tile";
-
-
 export interface GameStateMessage {
 	meta: {
 		turn: number
 	},
 	tiles: TileMessage[],
+	countries: CountryMessage[],
 	worldObjects: WorldObjectMessage[]
 }
 
-
 export interface TileMessage {
-	identifier: TileIdentifier,
+	identifier: {
+		id: string,
+		q: number,
+		r: number
+	},
 	terrainType: "LAND" | "WATER",
 	resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
 	height: number
 }
 
+export interface CountryMessage {
+	id: string,
+	name: string,
+	player: {
+		userId: string,
+		name: string
+	}
+}
 
 export interface WorldObjectMessage {
 	type: string,
 	id: string,
-	tile: TileIdentifier
+	country: string,
+	tile: {
+		id: string,
+		q: number,
+		r: number
+	}
 }

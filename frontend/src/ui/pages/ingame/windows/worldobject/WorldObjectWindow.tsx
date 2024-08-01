@@ -45,6 +45,10 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 						<EnrichedText>Position</EnrichedText>
 						<EnrichedText>{data.worldObject.tile.q + ", " + data.worldObject.tile.r}</EnrichedText>
 
+						<EnrichedText>Country</EnrichedText>
+						<EnrichedText>{data.worldObject.country.name}</EnrichedText>
+
+
 					</InsetKeyValueGrid>
 				</WindowSection>
 

@@ -9,7 +9,6 @@ internal class CountryEntity(
     val gameId: String,
     val userId: String,
     val color: ColorEntity,
-    val availableSettlers: Int,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -19,7 +18,6 @@ internal class CountryEntity(
             gameId = gameId,
             userId = serviceModel.userId,
             color = ColorEntity.of(serviceModel.color),
-            availableSettlers = serviceModel.availableSettlers
         )
     }
 
@@ -27,7 +25,6 @@ internal class CountryEntity(
         countryId = this.getKeyOrThrow(),
         userId = this.userId,
         color = this.color.toRGBColor(),
-        availableSettlers = this.availableSettlers
     )
 
 }

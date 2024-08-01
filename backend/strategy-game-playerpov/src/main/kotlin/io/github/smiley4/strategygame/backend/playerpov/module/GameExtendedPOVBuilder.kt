@@ -13,13 +13,17 @@ internal class GameExtendedPOVBuilder {
 
     fun create(game: GameExtended): JsonType {
         return time(metricId) {
+
             val tileBuilder = TilePOVBuilder()
             val worldObjectBuilder = WorldObjectPOVBuilder()
+            val countryBuilder = CountryPOVBuilder()
+
             obj {
                 "meta" to obj {
                     "turn" to game.meta.turn
                 }
                 "tiles" to game.tiles.mapNotNull { tileBuilder.build(it) }
+                "countries" to game.countries.map { countryBuilder.build(it) }
                 "worldObjects" to game.worldObjects.map { worldObjectBuilder.build(it) }
             }
         }
