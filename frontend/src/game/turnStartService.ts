@@ -69,6 +69,7 @@ export class TurnStartService {
 				userId: countryMsg.player.userId,
 				name: countryMsg.player.name,
 			},
+			ownedByPlayer: countryMsg.ownedByUser
 		}));
 	}
 
@@ -85,6 +86,7 @@ export class TurnStartService {
 						name: countryMsg.name,
 					},
 					movementPoints: 5,
+					ownedByPlayer: countryMsg.ownedByUser
 				};
 			}
 			return null;

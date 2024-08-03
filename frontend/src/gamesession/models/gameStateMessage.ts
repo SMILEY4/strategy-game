@@ -24,7 +24,8 @@ export interface CountryMessage {
 	player: {
 		userId: string,
 		name: string
-	}
+	},
+	ownedByUser: boolean
 }
 
 export interface WorldObjectMessage {

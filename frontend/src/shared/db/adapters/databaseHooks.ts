@@ -89,7 +89,6 @@ export function useQuerySingle<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID
 ): ENTITY | null {
     const initial = db.querySingle(query, args);
     const [entity, setEntity] = useForceRepaintState<ENTITY | null>(initial);
-    console.log("useQuerySingle", args, initial, entity)
     useEffect(() => {
         const [subscriberId, _] = db.subscribeOnQuerySingle(query, args, result => setEntity(result));
         return () => db.unsubscribe(subscriberId);

@@ -8,4 +8,5 @@ export interface WorldObject {
 	tile: TileIdentifier,
 	country: CountryIdentifier,
 	movementPoints: number,
+	ownedByPlayer: boolean
 }

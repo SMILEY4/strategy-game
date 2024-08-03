@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commondata.Country
 
 internal class  CountryPOVBuilder {
 
-    fun build(country: Country): JsonType {
+    fun build(country: Country, userId: String): JsonType {
         return obj {
             "id" to country.countryId
             "name" to country.countryId
@@ -15,6 +15,7 @@ internal class  CountryPOVBuilder {
                 "userId" to country.userId
                 "name" to country.userId // todo
             }
+            "ownedByUser" to (country.userId == userId)
         }
     }
 

@@ -2,7 +2,8 @@ import {PlayerIdentifier} from "./player";
 
 export interface Country {
 	identifier: CountryIdentifier
-	player: PlayerIdentifier
+	player: PlayerIdentifier,
+	ownedByPlayer: boolean
 }
 
 export interface CountryIdentifier {

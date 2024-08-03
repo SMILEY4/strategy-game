@@ -42,24 +42,30 @@ export namespace UseWorldObjectWindow {
 
 	export interface Data {
 		worldObject: WorldObject;
-        hasMoveCommand: boolean,
-		startMoveCommand: () => void;
-		cancelMoveCommand: () => void;
+		movement: {
+			possible: boolean,
+			hasCommand: boolean,
+			start: () => void,
+			cancel: () => void
+		};
 	}
 
 	export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
 
 		const worldObject = useQuerySingle(AppCtx.WorldObjectDatabase(), WorldObjectDatabase.QUERY_BY_ID, identifier);
-        const hasMoveCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.type === CommandType.MOVE && (it as MoveCommand).worldObjectId === identifier);
+		const hasMoveCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.type === CommandType.MOVE && (it as MoveCommand).worldObjectId === identifier);
 
 		const openMoveWindow = UseMoveWindow.useOpen();
 
 		if (worldObject) {
 			return {
 				worldObject: worldObject,
-                hasMoveCommand: hasMoveCommand,
-				startMoveCommand: () => identifier && openMoveWindow(worldObject.id),
-                cancelMoveCommand: () => cancelMovementCommand(worldObject.id)
+				movement: {
+					possible: worldObject.ownedByPlayer,
+					hasCommand: hasMoveCommand,
+					start: () => identifier && openMoveWindow(worldObject.id),
+					cancel: () => cancelMovementCommand(worldObject.id),
+				},
 			};
 		} else {
 			return null;
@@ -68,12 +74,11 @@ export namespace UseWorldObjectWindow {
 
 	function cancelMovementCommand(worldObjectId: string) {
 		const command = AppCtx.CommandDatabase()
-            .queryMany(CommandDatabase.QUERY_ALL, null)
+			.queryMany(CommandDatabase.QUERY_ALL, null)
 			.find(it => it.type == CommandType.MOVE && (it as MoveCommand).worldObjectId === worldObjectId);
 		if (command) {
 			AppCtx.CommandService().cancelCommand(command.id);
 		}
 	}
-
 
 }

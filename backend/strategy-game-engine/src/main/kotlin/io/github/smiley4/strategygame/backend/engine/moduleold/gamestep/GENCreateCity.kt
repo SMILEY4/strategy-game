@@ -16,7 +16,6 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceLedgerImpl
 import io.github.smiley4.strategygame.backend.commondata.SettlementTier
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileRef
-import kotlin.math.max
 
 /**
  * Creates the new city at the given location and creates new province (if required)
