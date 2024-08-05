@@ -29,6 +29,7 @@ import {CommandDatabase} from "./state/database/commandDatabase";
 import {GameClient} from "./game/gameClient";
 import {GameIdProvider} from "./gamesession/gameIdProvider";
 import {CountryDatabase} from "./state/database/countryDatabase";
+import {SettlementService} from "./game/settlementService";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -57,6 +58,7 @@ interface AppCtxDef {
     GameRepository: () => GameRepository,
     GameClient: () => GameClient,
     GameIdProvider: () => GameIdProvider,
+    SettlementService: () => SettlementService,
 
     GameRenderer: () => GameRenderer,
     RenderRepository: () => RenderRepository,
@@ -174,6 +176,12 @@ export const AppCtx: AppCtxDef = {
     GameIdProvider: diContext.register(
         "GameIdProvider",
         () => new GameIdProvider(),
+    ),
+    SettlementService: diContext.register(
+        "SettlementService",
+        () => new SettlementService(
+            AppCtx.CommandService()
+        ),
     ),
 
     WebGLMonitor: diContext.register(

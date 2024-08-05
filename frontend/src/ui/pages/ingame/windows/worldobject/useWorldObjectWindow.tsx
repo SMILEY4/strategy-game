@@ -8,6 +8,7 @@ import {UseMoveWindow} from "../move/useWorldObjectWindow";
 import {CommandType, MoveCommand} from "../../../../../models/command";
 import {CommandDatabase} from "../../../../../state/database/commandDatabase";
 import {useQueryMultiple, useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
+import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
 
 export namespace UseWorldObjectWindow {
 
@@ -63,8 +64,8 @@ export namespace UseWorldObjectWindow {
 		const hasCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.worldObjectId === identifier);
 		const hasMoveCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.type === CommandType.MOVE && (it as MoveCommand).worldObjectId === identifier);
 
-
 		const openMoveWindow = UseMoveWindow.useOpen();
+		const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen()
 
 		if (worldObject) {
 			return {
@@ -79,7 +80,7 @@ export namespace UseWorldObjectWindow {
 				settlement: {
 					possible: worldObject.ownedByPlayer,
 					enabled: !hasCommand,
-					start: () => foundSettlement(worldObject),
+					start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
 				}
 			};
 		} else {
@@ -94,12 +95,6 @@ export namespace UseWorldObjectWindow {
 		if (command) {
 			AppCtx.CommandService().cancelCommand(command.id);
 		}
-	}
-
-	function foundSettlement(worldObject: WorldObject) {
-		// todo
-		console.log("Found settlement by " + worldObject.id + " at " + worldObject.tile.q + "," + worldObject.tile.r)
-		AppCtx.CommandService().addFoundSettlementCommand(worldObject.id, worldObject.tile, worldObject.id)
 	}
 
 }

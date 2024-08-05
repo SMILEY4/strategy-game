@@ -34,7 +34,7 @@ export class CommandService {
 		this.addCommand(command);
 	}
 
-	public addFoundSettlementCommand(worldObjectId: string, tile: TileIdentifier, name: string) {
+	public addFoundSettlementCommand(worldObjectId: string | null, tile: TileIdentifier, name: string) {
 		const command: FoundSettlementCommand = {
 			id: UID.generate(),
 			type: CommandType.FOUND_SETTLEMENT,
