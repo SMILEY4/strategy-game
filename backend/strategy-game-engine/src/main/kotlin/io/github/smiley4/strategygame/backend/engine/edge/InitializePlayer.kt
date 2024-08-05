@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.backend.engine.edge
 
-import io.github.smiley4.strategygame.backend.commondata.RGBColor
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 
@@ -14,5 +13,5 @@ interface InitializePlayer {
      * Initializes the player
      * @throws InitializePlayerError
      */
-    suspend fun perform(game: GameExtended, userId: String, color: RGBColor)
+    suspend fun perform(game: GameExtended, userId: String)
 }

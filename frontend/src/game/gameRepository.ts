@@ -7,10 +7,11 @@ import {Transaction} from "../shared/db/database/transaction";
 import {WorldObjectDatabase} from "../state/database/objectDatabase";
 import {WorldObject} from "../models/worldObject";
 import {MovementModeState} from "../state/movementModeState";
-import {TilePosition} from "../models/tilePosition";
 import {Command} from "../models/command";
 import {CommandDatabase} from "../state/database/commandDatabase";
 import {MovementTarget} from "../models/movementTarget";
+import {Country} from "../models/country";
+import {CountryDatabase} from "../state/database/countryDatabase";
 
 export class GameRepository {
 
@@ -19,19 +20,22 @@ export class GameRepository {
 	private readonly tileDb: TileDatabase;
 	private readonly worldObjectDb: WorldObjectDatabase;
 	private readonly commandDb: CommandDatabase;
+	private readonly countryDb: CountryDatabase;
 
 	constructor(
 		gameSessionDb: GameSessionDatabase,
 		cameraDb: CameraDatabase,
 		tileDb: TileDatabase,
 		worldObjectDb: WorldObjectDatabase,
-		commandDb: CommandDatabase
+		commandDb: CommandDatabase,
+		countryDb: CountryDatabase
 	) {
 		this.gameSessionDb = gameSessionDb;
 		this.cameraDb = cameraDb;
 		this.tileDb = tileDb;
 		this.worldObjectDb = worldObjectDb;
 		this.commandDb = commandDb;
+		this.countryDb = countryDb;
 	}
 
 	public getCamera(): CameraData {
@@ -87,12 +91,17 @@ export class GameRepository {
 	}
 
 	public transactionForStartTurn(action: () => void) {
-		Transaction.run([this.tileDb, this.commandDb], action);
+		Transaction.run([this.tileDb, this.commandDb, this.countryDb], action);
 	}
 
 	public replaceTiles(tiles: Tile[]) {
 		this.tileDb.deleteAll();
 		this.tileDb.insertMany(tiles);
+	}
+
+	public replaceCountries(countries: Country[]) {
+		this.countryDb.deleteAll();
+		this.countryDb.insertMany(countries);
 	}
 
 	public replaceWorldObjects(worldObject: WorldObject[]) {

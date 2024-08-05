@@ -6,7 +6,6 @@ import {buildMap} from "../../../shared/utils";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
 import {TilePosition} from "../../../models/tilePosition";
-import * as path from "node:path";
 
 export class PathsHtmlNode extends HtmlRenderNode {
 

@@ -10,7 +10,7 @@ import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {Else, If, Then} from "react-if";
+import {Else, If, Then, When} from "react-if";
 
 export interface WorldObjectWindowProps {
 	windowId: string;
@@ -45,21 +45,27 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 						<EnrichedText>Position</EnrichedText>
 						<EnrichedText>{data.worldObject.tile.q + ", " + data.worldObject.tile.r}</EnrichedText>
 
+						<EnrichedText>Country</EnrichedText>
+						<EnrichedText>{data.worldObject.country.name}</EnrichedText>
+
+
 					</InsetKeyValueGrid>
 				</WindowSection>
 
-				<If condition={data.hasMoveCommand}>
-					<Then>
-						<ButtonPrimary color="blue" onClick={data.cancelMoveCommand}>
-							Cancel Movement
-						</ButtonPrimary>
-					</Then>
-					<Else>
-						<ButtonPrimary color="blue" onClick={data.startMoveCommand}>
-							Move
-						</ButtonPrimary>
-					</Else>
-				</If>
+				<When condition={data.movement.possible}>
+					<If condition={data.movement.hasCommand}>
+						<Then>
+							<ButtonPrimary color="blue" onClick={data.movement.cancel}>
+								Cancel Movement
+							</ButtonPrimary>
+						</Then>
+						<Else>
+							<ButtonPrimary color="blue" onClick={data.movement.start}>
+								Move
+							</ButtonPrimary>
+						</Else>
+					</If>
+				</When>
 
 
 			</DefaultDecoratedWindowWithBanner>

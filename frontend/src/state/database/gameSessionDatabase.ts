@@ -3,7 +3,7 @@ import {GameSession} from "../../models/gameSession";
 import {GameSessionState} from "../../models/gameSessionState";
 import {GameTurnState} from "../../models/gameTurnState";
 import {AppCtx} from "../../appContext";
-import {usePartialSingletonEntity, useSingletonEntity} from "../../shared/db/adapters/databaseHooks";
+import {usePartialSingletonEntity} from "../../shared/db/adapters/databaseHooks";
 import {MapMode} from "../../models/mapMode";
 import {TileIdentifier} from "../../models/tile";
 

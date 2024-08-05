@@ -10,7 +10,6 @@ import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedP
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {AudioType} from "../../../../../shared/audioService";
 import {CgClose} from "react-icons/cg";
 
 export interface CommandLogWindowProps {

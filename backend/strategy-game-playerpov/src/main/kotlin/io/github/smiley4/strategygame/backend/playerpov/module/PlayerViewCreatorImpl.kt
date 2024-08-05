@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.playerpov.edge.PlayerViewCreator
 internal class PlayerViewCreatorImpl : PlayerViewCreator {
 
     override fun build(userId: String, game: GameExtended): JsonType {
-        return GameExtendedPOVBuilder().create(game)
+        return GameExtendedPOVBuilder().create(userId, game)
     }
 
 }

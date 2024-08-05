@@ -15,7 +15,7 @@ function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
     const [data, setData] = useState<{ refId: string, item: T }>({refId: UID.generate(), item: initial});
     useEffect(() => {
         setData({refId: UID.generate(), item: initial})
-    }, []);
+    }, [initial]);
     return [
         data.item,
         (item: T) => setData({refId: UID.generate(), item: item}),
@@ -87,7 +87,8 @@ export function useQuerySingle<STORAGE extends PrimaryDatabaseStorage<ENTITY, ID
     query: Query<STORAGE, ENTITY, ID, ARGS>,
     args: ARGS,
 ): ENTITY | null {
-    const [entity, setEntity] = useForceRepaintState<ENTITY | null>(db.querySingle(query, args));
+    const initial = db.querySingle(query, args);
+    const [entity, setEntity] = useForceRepaintState<ENTITY | null>(initial);
     useEffect(() => {
         const [subscriberId, _] = db.subscribeOnQuerySingle(query, args, result => setEntity(result));
         return () => db.unsubscribe(subscriberId);
