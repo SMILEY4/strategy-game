@@ -3,6 +3,7 @@ import {TileIdentifier} from "./tile";
 export class CommandType {
 
 	public static readonly MOVE = new CommandType("move")
+	public static readonly FOUND_SETTLEMENT = new CommandType("found_settlement")
 
 	readonly id: string;
 
@@ -14,9 +15,14 @@ export class CommandType {
 export interface Command {
 	id: string
 	type: CommandType
+	worldObjectId: string | null
 }
 
 export interface MoveCommand extends Command {
-	worldObjectId: string,
 	path: TileIdentifier[]
+}
+
+export interface FoundSettlementCommand extends Command {
+	name: string
+	tile: TileIdentifier
 }

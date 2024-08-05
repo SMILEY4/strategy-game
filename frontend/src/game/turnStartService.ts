@@ -90,7 +90,20 @@ export class TurnStartService {
 						id: countryMsg.id,
 						name: countryMsg.name,
 					},
-					movementPoints: 5,
+					movementPoints: 5, // todo
+					ownedByPlayer: countryMsg.ownedByUser
+				};
+			}
+			if (worldObjMsg.type === "settler") {
+				return {
+					id: worldObjMsg.id,
+					type: WorldObjectType.SETTLER,
+					tile: worldObjMsg.tile,
+					country: {
+						id: countryMsg.id,
+						name: countryMsg.name,
+					},
+					movementPoints: 5,// todo
 					ownedByPlayer: countryMsg.ownedByUser
 				};
 			}

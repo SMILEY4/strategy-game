@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {UseCommandLogWindow} from "./useCommandLogWindow";
 import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
-import {Command, CommandType, MoveCommand} from "../../../../../models/command";
+import {Command, CommandType, FoundSettlementCommand, MoveCommand} from "../../../../../models/command";
 import {Text} from "../../../../components/text/Text";
 import {Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
@@ -56,6 +56,18 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: Com
 					<Spacer size="s"/>
 					<Text onLight>{"world-object-id: " + cmd.worldObjectId}</Text>
 					<Text onLight>{"from " + cmd.path[0].q + "," + cmd.path[0].r + " to: " + cmd.path[cmd.path.length-1].q + "," + cmd.path[cmd.path.length-1].r}</Text>
+				</>
+			)
+		}
+		if(command.type == CommandType.FOUND_SETTLEMENT) {
+			const cmd = command as FoundSettlementCommand
+			return (
+				<>
+					<Header4 onLight>{"Found Settlement"}</Header4>
+					<Spacer size="s"/>
+					<Text onLight>{"with name " + cmd.name}</Text>
+					<Text onLight>{"at " + cmd.tile.q + "," + cmd.tile.r}</Text>
+					<Text onLight>{"by world-object-id: " + cmd.worldObjectId}</Text>
 				</>
 			)
 		}

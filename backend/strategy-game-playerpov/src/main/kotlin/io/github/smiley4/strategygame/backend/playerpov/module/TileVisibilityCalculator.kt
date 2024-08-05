@@ -20,9 +20,8 @@ internal class TileVisibilityCalculator {
     private fun hasLineOfSight(game: GameExtended, povCountryId: String, tile: Tile): Boolean {
         return game.worldObjects
             .asSequence()
-            .filterIsInstance<ScoutWorldObject>()
             .filter { it.country == povCountryId }
-            .any { scout -> tile.position.distance(scout.tile) <= scout.viewDistance }
+            .any { worldObject -> tile.position.distance(worldObject.tile) <= worldObject.viewDistance }
     }
 
 }
