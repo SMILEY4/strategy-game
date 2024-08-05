@@ -177,7 +177,8 @@ vec4 getLayerLand() {
 
 vec4 getLayerFog() {
     vec4 layer = framebuffer(u_fog.layer, v_textureCoordinates);
-    vec4 color = mix(u_fog.colorUnknown, u_fog.colorDiscovered, layer.g) * layer.a;
+    vec4 color = mix(u_fog.colorDiscovered, u_fog.colorUnknown, layer.r) * layer.a;
+//    vec4 color = u_fog.colorUnknown * layer.a;
     return color;
 }
 

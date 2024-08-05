@@ -14,6 +14,13 @@ export class TilesFogDrawNode extends DrawRenderNode {
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],
                 }),
+                new NodeInput.BlendMode({
+                    func: gl => gl.blendFuncSeparate(
+                        gl.SRC_ALPHA,
+                        gl.ONE,
+                        gl.ONE,
+                        gl.ONE_MINUS_SRC_ALPHA),
+                }),
                 new NodeInput.Texture({
                     path: "/textures/groundSplotches.png",
                     binding: "u_texture",

@@ -213,27 +213,22 @@ export namespace WebGLRenderCommand {
 
         private readonly vertexDataId: string;
         private readonly clearColor: [number, number, number, number];
+        private readonly blendFunction: ((gl: WebGL2RenderingContext) => void) | null;
         private readonly renderToTexture: boolean;
         private readonly renderScale: number;
         private readonly depth: boolean;
 
-        constructor(vertexDataId: string, clearColor: [number, number, number, number], renderToTexture: boolean, renderScale: number, depth: boolean) {
+        constructor(vertexDataId: string, clearColor: [number, number, number, number], blendFunction: ((gl: WebGL2RenderingContext) => void) | null, renderToTexture: boolean, renderScale: number, depth: boolean) {
             this.vertexDataId = vertexDataId;
             this.clearColor = clearColor;
+            this.blendFunction = blendFunction;
             this.renderToTexture = renderToTexture;
             this.renderScale = renderScale;
             this.depth = depth;
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            context.renderer.prepareFrame(context.camera, this.clearColor, this.renderToTexture, this.renderScale, this.depth);
-            if(this.vertexDataId === "vertexdata.water") {
-                context.gl.blendFuncSeparate(
-                    context.gl.SRC_ALPHA,
-                    context.gl.ONE_MINUS_SRC_ALPHA,
-                    context.gl.ONE,
-                    context.gl.ONE_MINUS_SRC_ALPHA);
-            }
+            context.renderer.prepareFrame(context.camera, this.clearColor, this.blendFunction, this.renderToTexture, this.renderScale, this.depth);
 
             const data = resourceManager.getVertexData(this.vertexDataId);
             switch (data.type) {
