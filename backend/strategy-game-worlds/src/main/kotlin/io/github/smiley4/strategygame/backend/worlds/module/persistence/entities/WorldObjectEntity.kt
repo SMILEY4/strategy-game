@@ -22,6 +22,7 @@ internal sealed class WorldObjectEntity(
     val tile: TileRefEntity,
     val country: String,
     val maxMovement: Int,
+    val viewDistance: Int,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -33,7 +34,8 @@ internal sealed class WorldObjectEntity(
                     key = DbId.asDbId(serviceModel.id),
                     tile = TileRefEntity.of(serviceModel.tile),
                     country = serviceModel.country,
-                    maxMovement = serviceModel.maxMovement
+                    maxMovement = serviceModel.maxMovement,
+                    viewDistance = serviceModel.viewDistance
                 )
             }
         }
@@ -45,7 +47,8 @@ internal sealed class WorldObjectEntity(
                 id = this.getKeyOrThrow(),
                 tile = this.tile.asServiceModel(),
                 country = this.country,
-                maxMovement = this.maxMovement
+                maxMovement = this.maxMovement,
+                viewDistance = this.viewDistance
             )
         }
     }
@@ -59,8 +62,17 @@ internal class ScoutWorldObjectEntity(
     gameId: String,
     tile: TileRefEntity,
     country: String,
-    maxMovement: Int
-) : WorldObjectEntity(type = TYPE, gameId = gameId, tile = tile, country = country, maxMovement = maxMovement, key = key) {
+    maxMovement: Int,
+    viewDistance: Int,
+) : WorldObjectEntity(
+    type = TYPE,
+    gameId = gameId,
+    tile = tile,
+    country = country,
+    maxMovement = maxMovement,
+    viewDistance = viewDistance,
+    key = key
+) {
     companion object {
         internal const val TYPE = "scout"
     }

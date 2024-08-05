@@ -1,3 +1,5 @@
+import {HiddenType} from "../../models/hiddenType";
+
 export interface GameStateMessage {
 	meta: {
 		turn: number
@@ -13,9 +15,12 @@ export interface TileMessage {
 		q: number,
 		r: number
 	},
-	terrainType: "LAND" | "WATER",
-	resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
-	height: number
+	visibility: "UNKNOWN" | "DISCOVERED" | "VISIBLE"
+	base: HiddenType<{
+		terrainType: "LAND" | "WATER",
+		resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
+		height: number
+	}>
 }
 
 export interface CountryMessage {

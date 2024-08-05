@@ -14,8 +14,11 @@ internal class GameExtendedPOVBuilder {
     fun create(userId: String, game: GameExtended): JsonType {
         return time(metricId) {
 
-            val tileBuilder = TilePOVBuilder()
-            val worldObjectBuilder = WorldObjectPOVBuilder()
+            val playerCountry = game.findCountryByUser(userId)
+            val povCache = POVCache(game, playerCountry.countryId, TileVisibilityCalculator())
+
+            val tileBuilder = TilePOVBuilder(povCache)
+            val worldObjectBuilder = WorldObjectPOVBuilder(povCache)
             val countryBuilder = CountryPOVBuilder()
 
             obj {
@@ -24,7 +27,7 @@ internal class GameExtendedPOVBuilder {
                 }
                 "tiles" to game.tiles.mapNotNull { tileBuilder.build(it) }
                 "countries" to game.countries.map { countryBuilder.build(it, userId) }
-                "worldObjects" to game.worldObjects.map { worldObjectBuilder.build(it) }
+                "worldObjects" to game.worldObjects.mapNotNull { worldObjectBuilder.build(it) }
             }
         }
     }

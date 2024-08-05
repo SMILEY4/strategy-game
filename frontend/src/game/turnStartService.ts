@@ -8,6 +8,8 @@ import {TileResourceType} from "../models/TileResourceType";
 import {WorldObjectType} from "../models/worldObjectType";
 import {WorldObject} from "../models/worldObject";
 import {Country} from "../models/country";
+import {Visibility} from "../models/visibility";
+import {mapHidden} from "../models/hiddenType";
 
 /**
  * Service to handle the start of a new turn
@@ -53,10 +55,13 @@ export class TurnStartService {
 	private buildTiles(game: GameStateMessage): Tile[] {
 		return game.tiles.map(tileMsg => ({
 			identifier: tileMsg.identifier,
-			terrainType: TerrainType.fromString(tileMsg.terrainType),
-			resourceType: TileResourceType.fromString(tileMsg.resourceType),
-			height: tileMsg.height,
-		}));
+			visibility: Visibility.fromString(tileMsg.visibility),
+			base: mapHidden(tileMsg.base, baseMsg => ({
+				terrainType: TerrainType.fromString(baseMsg.terrainType),
+				resourceType: TileResourceType.fromString(baseMsg.resourceType),
+				height: baseMsg.height
+			}))
+		}))
 	}
 
 	private buildCountries(game: GameStateMessage): Country[] {

@@ -14,6 +14,8 @@ import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {Visibility} from "../../../models/visibility";
+import {mapHiddenOrNull} from "../../../models/hiddenType";
 
 export class TilesVertexNode extends VertexRenderNode {
 
@@ -314,28 +316,27 @@ export class TilesVertexNode extends VertexRenderNode {
 	//===== FOG INSTANCES ===========================================
 
 	private isFog(tile: Tile): boolean {
-		return false;
-		// return tile.visibility === TileVisibility.UNKNOWN || tile.visibility === TileVisibility.DISCOVERED;
+		return tile.visibility === Visibility.UNKNOWN || tile.visibility === Visibility.DISCOVERED;
 	}
 
 	private appendFogInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
-		// const q = tile.identifier.q;
-		// const r = tile.identifier.r;
-		//
-		// // world position
-		// const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
-		// cursor.append(center[0]);
-		// cursor.append(center[1]);
-		//
-		// // visibility
-		// cursor.append(tile.visibility.renderId)
+		const q = tile.identifier.q;
+		const r = tile.identifier.r;
+
+		// world position
+		const center = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, q, r);
+		cursor.append(center[0]);
+		cursor.append(center[1]);
+
+		// visibility
+		cursor.append(tile.visibility.renderId)
 
 	}
 
 	//===== WATER INSTANCES =========================================
 
 	private isWater(tile: Tile): boolean {
-		return tile.terrainType == TerrainType.WATER;
+		return tile.base.visible && tile.base.value.terrainType == TerrainType.WATER;
 	}
 
 	private appendWaterInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
@@ -349,12 +350,12 @@ export class TilesVertexNode extends VertexRenderNode {
 
 		// color
 		const heightJitter = seedrandom(tile.identifier.id).quick() * 0.1 - 0.5;
-		cursor.append(1 - this.clamp(0, (tile.height + 1) * 2 + heightJitter, 1));
+		cursor.append(1 - this.clamp(0, (tile.base.value.height + 1) * 2 + heightJitter, 1));
 
 		// water border mask
 		const border = BorderBuilder.build(tile, this.repository, false, (ta, tb) => {
-			const a = ta.terrainType;
-			const b = tb.terrainType;
+			const a = mapHiddenOrNull(ta.base, it => it.terrainType)
+			const b = mapHiddenOrNull(tb.base, it => it.terrainType)
 			return (!a && !b) ? false : a === TerrainType.WATER && b !== null && a !== b;
 		});
 		const borderPacked = packBorder(border);
@@ -364,7 +365,7 @@ export class TilesVertexNode extends VertexRenderNode {
 	//===== LAND INSTANCES ==========================================
 
 	private isLand(tile: Tile): boolean {
-		return tile.terrainType == TerrainType.LAND;
+		return tile.base.visible && tile.base.value.terrainType == TerrainType.LAND;
 	}
 
 	private appendLandInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
@@ -378,7 +379,7 @@ export class TilesVertexNode extends VertexRenderNode {
 
 		// color
 		const heightJitter = seedrandom(tile.identifier.id).quick() * 0.1 - 0.5;
-		const color = this.mix(this.renderConfig().land.colorLight, this.renderConfig().land.colorDark, tile.height * 2 + heightJitter);
+		const color = this.mix(this.renderConfig().land.colorLight, this.renderConfig().land.colorDark, tile.base.value.height * 2 + heightJitter);
 		cursor.append(color);
 	}
 

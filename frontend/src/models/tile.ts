@@ -1,3 +1,5 @@
+import {HiddenType} from "./hiddenType";
+import {Visibility} from "./visibility";
 import {TerrainType} from "./TerrainType";
 import {TileResourceType} from "./TileResourceType";
 
@@ -9,7 +11,10 @@ export interface TileIdentifier {
 
 export interface Tile {
 	identifier: TileIdentifier,
-	terrainType: TerrainType,
-	resourceType: TileResourceType,
-	height: number
+	visibility: Visibility
+	base: HiddenType<{
+		terrainType: TerrainType,
+		resourceType: TileResourceType,
+		height: number
+	}>
 }

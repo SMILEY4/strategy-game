@@ -275,10 +275,10 @@ void main() {
     color = mix(color, water, water.a);
     color = mix(color, land, land.a);
     color = mix(color, details, details.a);
-    color = mix(color, overlay, overlay.a);
     color = mix(color, routes, routes.a);
     color = mix(color, entities, entities.a);
     color = mix(color, fog, fog.a);
+    color = mix(color, overlay, overlay.a);
 
     // apply paper effect
     color = applyEffectPaper(color);

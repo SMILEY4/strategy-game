@@ -5,6 +5,7 @@ sealed interface WorldObject {
     var tile: TileRef
     var country: String
     var maxMovement: Int
+    var viewDistance: Int
 }
 
 class ScoutWorldObject(
@@ -12,4 +13,5 @@ class ScoutWorldObject(
     override var tile: TileRef,
     override var country: String,
     override var maxMovement: Int,
+    override var viewDistance: Int,
 ) : WorldObject

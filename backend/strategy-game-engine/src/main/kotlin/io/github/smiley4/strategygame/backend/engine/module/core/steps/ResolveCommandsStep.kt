@@ -1,9 +1,13 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
+import io.github.smiley4.strategygame.backend.commondata.MovementTarget
+import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.engine.edge.MovementService
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
@@ -32,7 +36,7 @@ class ResolveCommandsStep(private val movementService: MovementService) : GameEv
             ?: throw Exception("Could not find world object ${command.data.worldObjectId}")
 
         // skip empty paths
-        if(command.data.path.isEmpty()) {
+        if (command.data.path.isEmpty() || command.data.path.size == 1) {
             return
         }
 
@@ -42,20 +46,43 @@ class ResolveCommandsStep(private val movementService: MovementService) : GameEv
         }
 
         // step along path (as far as possible)
+        walkPath(command.data.path, game, worldObject) { next ->
+            worldObject.tile = next
+            positionsCircle(next, worldObject.viewDistance).forEach { pos ->
+                game.findTileOrNull(pos)?.discoveredByCountries?.add(worldObject.country)
+            }
+        }
+    }
+
+    private fun walkPath(path: List<TileRef>, game: GameExtended, worldObject: WorldObject, action: (next: TileRef) -> Unit) {
+        val openPath = path.toMutableList()
+        var currentPathEntry = openPath.removeFirst()
         var currentCost = 0
-        var currentTile = command.data.path.first()
-        for (i in 1 until command.data.path.size) {
-            val availableTiles = movementService.getAvailablePositions(game, worldObject, currentTile, currentCost)
-            val nextTile = command.data.path[i]
-            val movementTarget = availableTiles.find { it.tile == nextTile && currentCost + it.cost <= worldObject.maxMovement}
-            if(movementTarget == null) {
+
+        while (openPath.isNotEmpty()) {
+            val nextPathEntry = openPath.removeFirst()
+
+            val target = findMovementTarget(currentPathEntry, nextPathEntry, currentCost, game, worldObject)
+            if (target == null) {
                 break
             }
-            currentTile = nextTile
-            currentCost += movementTarget.cost
-        }
 
-        worldObject.tile = currentTile
+            action(nextPathEntry)
+
+            currentCost += target.cost
+            currentPathEntry = nextPathEntry
+        }
+    }
+
+    private fun findMovementTarget(
+        current: TileRef,
+        destination: TileRef,
+        currentCost: Int,
+        game: GameExtended,
+        worldObject: WorldObject
+    ): MovementTarget? {
+        val availableTargets = movementService.getAvailablePositions(game, worldObject, current, currentCost)
+        return availableTargets.find { it.tile == destination && currentCost + it.cost <= worldObject.maxMovement }
     }
 
 }

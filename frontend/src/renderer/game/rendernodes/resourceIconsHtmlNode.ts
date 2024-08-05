@@ -52,10 +52,13 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode {
 				const tiles = this.repository.getTilesAll();
 				for (let i = 0, n = tiles.length; i < n; i++) {
 					const tile = tiles[i];
-					if (tile.resourceType !== TileResourceType.NONE && this.isVisible(tile, 0)) {
+					if(!tile.base.visible) {
+						continue;
+					}
+					if (tile.base.value.resourceType !== TileResourceType.NONE && this.isVisible(tile, 0)) {
 						elements.push({
 							tile: tile.identifier,
-							type: tile.resourceType,
+							type: tile.base.value.resourceType,
 						});
 					}
 				}

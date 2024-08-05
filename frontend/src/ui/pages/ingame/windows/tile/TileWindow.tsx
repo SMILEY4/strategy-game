@@ -10,6 +10,7 @@ import {Text} from "../../../../components/text/Text";
 import {WindowSection} from "../../../../components/section/ContentSection";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
+import {mapHidden, mapHiddenOrDefault} from "../../../../../models/hiddenType";
 
 export interface TileWindowProps {
 	windowId: string;
@@ -29,10 +30,12 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 			</DefaultDecoratedWindow>
 		);
 	} else {
+
+
 		return (
 			<DefaultDecoratedWindowWithBanner
 				windowId={props.windowId}
-				title={data.tile.terrainType.id}
+				title={mapHiddenOrDefault(data.tile.base, "Undiscovered", base => base.terrainType.id)}
 				subtitle={"Tile"}
 			>
 				<WindowSection>
@@ -45,13 +48,17 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 						<EnrichedText>{data.tile.identifier.q + ", " + data.tile.identifier.r}</EnrichedText>
 
 						<EnrichedText>Height</EnrichedText>
-						<EnrichedText>{data.tile.height}</EnrichedText>
+						<EnrichedText>{mapHiddenOrDefault(data.tile.base, "?", base => base.height.toString())}</EnrichedText>
 
 						<EnrichedText>Terrain</EnrichedText>
-						<EnrichedText>{data.tile.terrainType.id}</EnrichedText>
+						<EnrichedText>{mapHiddenOrDefault(data.tile.base, "?", base => base.terrainType.id)}</EnrichedText>
 
 						<EnrichedText>Resource</EnrichedText>
-						<EnrichedText>{data.tile.resourceType.id}</EnrichedText>
+						<EnrichedText>{mapHiddenOrDefault(data.tile.base, "?", base => base.resourceType.id)}</EnrichedText>
+
+
+						<EnrichedText>Visibility</EnrichedText>
+						<EnrichedText>{data.tile.visibility.id}</EnrichedText>
 
 					</InsetKeyValueGrid>
 				</WindowSection>
