@@ -29,12 +29,21 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
 				title={"Found Settlement"}
 			>
 
-				<TextField
-					value={data.input.name.value}
-					placeholder={"Settlement Name"}
-					type="text"
-					onChange={data.input.name.set}
-				/>
+				<HBox>
+
+					<TextField
+						value={data.input.name.value}
+						placeholder={"Settlement Name"}
+						type="text"
+						onChange={data.input.name.set}
+					/>
+
+					<ButtonPrimary blue onClick={data.randomizeName}>
+						Random
+					</ButtonPrimary>
+
+				</HBox>
+
 
 				<HBox right centerVertical gap_s>
 

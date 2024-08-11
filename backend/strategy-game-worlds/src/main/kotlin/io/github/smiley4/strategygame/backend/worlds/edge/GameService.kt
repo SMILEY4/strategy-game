@@ -15,4 +15,11 @@ interface GameService {
      * @returns the possible tiles the given world object can move to when starting from the given tile
      */
     suspend fun getAvailableMovementPositions(gameId: String, worldObjectId: String, tileId: String, currentCost: Int): List<MovementTarget>
+
+    /**
+     * @throws GameServiceError
+     * @returns a randomly generated name for a new settlement
+     */
+    suspend fun getSettlementName(): String
+
 }

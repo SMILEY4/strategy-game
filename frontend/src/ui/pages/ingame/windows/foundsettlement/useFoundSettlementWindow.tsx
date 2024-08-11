@@ -4,7 +4,7 @@ import {FoundSettlementWindow} from "./FoundSettlementWindow";
 import {useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../../../../../appContext";
 import {TileDatabase} from "../../../../../state/database/tileDatabase";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 export namespace UseFoundSettlementWindow {
 
@@ -34,6 +34,7 @@ export namespace UseFoundSettlementWindow {
 				set: (value: string) => void
 			}
 		};
+		randomizeName: () => void;
 		cancel: () => void;
 		create: () => void;
 	}
@@ -46,6 +47,10 @@ export namespace UseFoundSettlementWindow {
 		const [valid, failedValidations, create] = useCreateSettlementWithSettler(worldObjectId, tile, name);
 		const closeWindow = useCloseWindow();
 
+		useEffect(() => {
+			setRandomName(setName)
+		}, []);
+
 		return {
 			input: {
 				valid: valid,
@@ -55,6 +60,7 @@ export namespace UseFoundSettlementWindow {
 					set: setName,
 				},
 			},
+			randomizeName: () => setRandomName(setName),
 			cancel: () => closeWindow(windowId),
 			create: () => {
 				create();
@@ -63,6 +69,9 @@ export namespace UseFoundSettlementWindow {
 		};
 	}
 
+	function setRandomName(set: (name: string) => void) {
+		AppCtx.SettlementService().getRandomName().then(set)
+	}
 
 	function useCreateSettlementWithSettler(worldObjectId: string, tile: Tile, name: string | null): [boolean, string[], () => void] {
 		const settlementService = AppCtx.SettlementService();

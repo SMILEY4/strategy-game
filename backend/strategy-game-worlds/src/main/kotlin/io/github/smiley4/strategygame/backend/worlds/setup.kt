@@ -55,7 +55,7 @@ fun Module.dependenciesWorlds() {
     single<RequestConnectionToGame> { RequestConnectionToGameImpl(get()) }
     single<TurnEnd> { TurnEndImpl(get(), get(), get(), get(), get(), get(), get(), get()) }
     single<TurnSubmit> { TurnSubmitImpl(get(), get(), get(), get()) }
-    single<GameService> { GameServiceImpl(get(), get()) }
+    single<GameService> { GameServiceImpl(get(), get(), get()) }
 
     // persistence
     single<DatabaseProvider.Config> {
