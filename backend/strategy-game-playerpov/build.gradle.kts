@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
 
+    implementation(project(":strategy-game-engine"))
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-data"))
 

@@ -10,7 +10,7 @@ import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEven
 import io.github.smiley4.strategygame.backend.engine.module.core.events.RootStepEvent
 
 
-class GameStepImpl(
+internal class GameStepImpl(
     private var eventSystem: GameEventSystem
 ) : GameStep, Logging {
 

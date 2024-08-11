@@ -44,6 +44,7 @@ export interface WorldObjectMessage {
 		r: number
 	},
 	maxMovement: number,
+	canCreateSettlement?: boolean,
 }
 
 export interface SettlementMessage {

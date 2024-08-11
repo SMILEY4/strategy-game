@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEven
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWorldEvent
 
-class UpdateWorldStep : GameEventNode<UpdateWorldEvent>,  Logging {
+internal class UpdateWorldStep : GameEventNode<UpdateWorldEvent>,  Logging {
 
     override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
         log().debug("UpdateWorldStep not implemented")

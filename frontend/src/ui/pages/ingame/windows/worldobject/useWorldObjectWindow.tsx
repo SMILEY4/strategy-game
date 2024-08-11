@@ -79,7 +79,7 @@ export namespace UseWorldObjectWindow {
 				},
 				settlement: {
 					possible: worldObject.ownedByPlayer,
-					enabled: !hasCommand,
+					enabled: !hasCommand && worldObject.canCreateSettlement!,
 					start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
 				}
 			};

@@ -60,7 +60,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 							</ButtonPrimary>
 						</Then>
 						<Else>
-							<ButtonPrimary color="blue" onClick={data.movement.start} disabled={!data.settlement.enabled}>
+							<ButtonPrimary color="blue" onClick={data.movement.start} disabled={!data.movement.enabled}>
 								Move
 							</ButtonPrimary>
 						</Else>

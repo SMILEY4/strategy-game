@@ -110,7 +110,8 @@ export class TurnStartService {
 						name: countryMsg.name,
 					},
 					movementPoints: worldObjMsg.maxMovement,
-					ownedByPlayer: countryMsg.ownedByUser
+					ownedByPlayer: countryMsg.ownedByUser,
+					canCreateSettlement: false
 				};
 			}
 			if (worldObjMsg.type === "settler") {
@@ -123,7 +124,8 @@ export class TurnStartService {
 						name: countryMsg.name,
 					},
 					movementPoints: worldObjMsg.maxMovement,
-					ownedByPlayer: countryMsg.ownedByUser
+					ownedByPlayer: countryMsg.ownedByUser,
+					canCreateSettlement: worldObjMsg.canCreateSettlement
 				};
 			}
 			return null;

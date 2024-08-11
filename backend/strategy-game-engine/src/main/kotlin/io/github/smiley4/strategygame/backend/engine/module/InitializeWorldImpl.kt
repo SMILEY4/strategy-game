@@ -20,7 +20,7 @@ import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenerator
 
-class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : InitializeWorld {
+internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : InitializeWorld {
 
     private val metricId = MetricId.action(InitializeWorld::class)
 
