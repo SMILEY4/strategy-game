@@ -6,13 +6,10 @@ import {buildMap} from "../../../shared/utils";
 import {TileIdentifier} from "../../../models/tile";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
-import {WorldObjectType} from "../../../models/worldObjectType";
 
-var dirty = true;
+export class SettlementsHtmlNode extends HtmlRenderNode {
 
-export class WorldObjectsHtmlNode extends HtmlRenderNode {
-
-	public static readonly ID = "htmlnode.worldobjects";
+	public static readonly ID = "htmlnode.settlements";
 
 	private readonly changeProvider: ChangeProvider;
 	private readonly repository: RenderRepository;
@@ -24,14 +21,14 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 		camera: () => Camera,
 	) {
 		super({
-			id: WorldObjectsHtmlNode.ID,
+			id: SettlementsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({
 					id: "game-canvas-overlay",
 				}),
 				new NodeOutput.HtmlData({
-					name: "htmldata.worldobjects",
+					name: "htmldata.settlements",
 					renderFunction: (element: any, html: HTMLElement) => render(this.camera(), element, html),
 				}),
 			],
@@ -43,27 +40,25 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 
 	public execute(): HtmlDataResource {
 		if (!this.changeProvider.hasChange(this.id)) {
-			dirty = false;
 			return EMPTY_HTML_DATA_RESOURCE;
 		}
 
-		const elements: WorldObjectIconElement[] = [];
+		const elements: SettlementsElement[] = [];
 
-		const worldObjects = this.repository.getWorldObjects();
-		for (let i = 0, n = worldObjects.length; i < n; i++) {
-			const worldObject = worldObjects[i];
-			if (this.isVisible(worldObject.tile, 0)) {
+		const settlements = this.repository.getSettlements();
+		for (let i = 0, n = settlements.length; i < n; i++) {
+			const settlement = settlements[i];
+			if (this.isVisible(settlement.tile, 0)) {
 				elements.push({
-					tile: worldObject.tile,
-					type: worldObject.type,
+					tile: settlement.tile,
+					name: settlement.identifier.name,
 				});
 			}
 		}
 
-		dirty = true;
 		return new HtmlDataResource({
 			outputs: buildMap({
-				"htmldata.worldobjects": elements,
+				"htmldata.settlements": elements,
 			}),
 		});
 	}
@@ -79,17 +74,16 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 
 }
 
-interface WorldObjectIconElement {
+interface SettlementsElement {
 	tile: TileIdentifier,
-	type: WorldObjectType,
+	name: string,
 }
 
-function render(camera: Camera, element: WorldObjectIconElement, html: HTMLElement): void {
+function render(camera: Camera, element: SettlementsElement, html: HTMLElement): void {
 	const pos = Projections.hexToScreen(camera, element.tile.q, element.tile.r);
-	pos.y = camera.getClientHeight() - pos.y;
-	html.className = "world-ui__icon";
+	pos.y = camera.getClientHeight() - pos.y - 20;
+	html.className = "world-ui__label";
 	html.style.left = pos.x + "px";
 	html.style.top = pos.y + "px";
-	html.style.backgroundImage = "url('" + element.type.icon + "')";
-	html.textContent = "";
+	html.textContent = element.name;
 }

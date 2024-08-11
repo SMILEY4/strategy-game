@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {UseCommandLogWindow} from "./useCommandLogWindow";
 import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
-import {Command, CommandType, FoundSettlementCommand, MoveCommand} from "../../../../../models/command";
+import {Command, CommandType, CreateSettlementWithSettlerCommand, MoveCommand} from "../../../../../models/command";
 import {Text} from "../../../../components/text/Text";
 import {Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
@@ -59,8 +59,8 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: Com
 				</>
 			)
 		}
-		if(command.type == CommandType.FOUND_SETTLEMENT) {
-			const cmd = command as FoundSettlementCommand
+		if(command.type == CommandType.CREATE_SETTLEMENT_WITH_SETTLER) {
+			const cmd = command as CreateSettlementWithSettlerCommand
 			return (
 				<>
 					<Header4 onLight>{"Found Settlement"}</Header4>

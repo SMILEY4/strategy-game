@@ -10,7 +10,7 @@ import {UseFoundSettlementWindow} from "./useFoundSettlementWindow";
 export interface FoundSettlementWindowProps {
 	windowId: string;
 	tile: TileIdentifier,
-	worldObjectId: string | null
+	worldObjectId: string
 }
 
 

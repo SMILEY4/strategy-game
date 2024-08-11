@@ -6,7 +6,7 @@ data class Tile(
     val data: TileData,
     val influences: MutableList<TileInfluence>,
     var owner: TileOwner?,
-    val discoveredByCountries: MutableList<String>,
+    val discoveredByCountries: MutableSet<String>,
 ) {
 
     inline fun <reified T : WorldObject> findObjects(game: GameExtended): List<T> = game.worldObjects.filter { it.tile.id == tileId }.filterIsInstance<T>()

@@ -10,7 +10,7 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObject
 internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
 
     fun build(worldObject: WorldObject): JsonType? {
-        if (!povCache.worldObjectVisibility(worldObject.id).isAtLeast(TileVisibilityDTO.DISCOVERED)) {
+        if (povCache.worldObjectVisibility(worldObject.id).isLessThan(TileVisibilityDTO.DISCOVERED)) {
             return null
         }
         return when (worldObject) {
@@ -23,6 +23,7 @@ internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
                     "q" to worldObject.tile.q
                     "r" to worldObject.tile.r
                 }
+                "maxMovement" to worldObject.maxMovement
             }
             is SettlerWorldObject -> obj {
                 "type" to "settler"
@@ -33,6 +34,7 @@ internal class WorldObjectPOVBuilder(private val povCache: POVCache) {
                     "q" to worldObject.tile.q
                     "r" to worldObject.tile.r
                 }
+                "maxMovement" to worldObject.maxMovement
             }
         }
     }

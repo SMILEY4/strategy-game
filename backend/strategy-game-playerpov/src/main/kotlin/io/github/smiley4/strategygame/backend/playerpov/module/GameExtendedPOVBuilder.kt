@@ -20,6 +20,7 @@ internal class GameExtendedPOVBuilder {
             val tileBuilder = TilePOVBuilder(povCache)
             val worldObjectBuilder = WorldObjectPOVBuilder(povCache)
             val countryBuilder = CountryPOVBuilder()
+            val settlementBuilder = SettlementPOVBuilder(povCache)
 
             obj {
                 "meta" to obj {
@@ -28,6 +29,7 @@ internal class GameExtendedPOVBuilder {
                 "tiles" to game.tiles.mapNotNull { tileBuilder.build(it) }
                 "countries" to game.countries.map { countryBuilder.build(it, userId) }
                 "worldObjects" to game.worldObjects.mapNotNull { worldObjectBuilder.build(it) }
+                "settlements" to game.settlements.mapNotNull { settlementBuilder.build(it) }
             }
         }
     }

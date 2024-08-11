@@ -10,6 +10,8 @@ import {MovementModeState} from "../../state/movementModeState";
 import {CommandDatabase} from "../../state/database/commandDatabase";
 import {CommandType, MoveCommand} from "../../models/command";
 import {TilePosition} from "../../models/tilePosition";
+import {Settlement} from "../../models/Settlement";
+import {SettlementDatabase} from "../../state/database/settlementDatabase";
 
 export class RenderRepository {
 
@@ -17,6 +19,7 @@ export class RenderRepository {
 	private readonly cameraDb: CameraDatabase;
 	private readonly tileDb: TileDatabase;
 	private readonly worldObjectDb: WorldObjectDatabase;
+	private readonly settlementDb: SettlementDatabase;
 	private readonly commandDb: CommandDatabase;
 
 	constructor(
@@ -24,12 +27,14 @@ export class RenderRepository {
 		cameraDb: CameraDatabase,
 		tileDb: TileDatabase,
 		worldObjectDb: WorldObjectDatabase,
-		commandDb: CommandDatabase
+		settlementDb: SettlementDatabase,
+		commandDb: CommandDatabase,
 	) {
 		this.gameSessionDb = gameSessionDb;
 		this.cameraDb = cameraDb;
 		this.tileDb = tileDb;
 		this.worldObjectDb = worldObjectDb;
+		this.settlementDb= settlementDb;
 		this.commandDb = commandDb;
 	}
 
@@ -63,6 +68,10 @@ export class RenderRepository {
 
 	public getWorldObjects(): WorldObject[] {
 		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_ALL, null);
+	}
+
+	public getSettlements(): Settlement[] {
+		return this.settlementDb.queryMany(SettlementDatabase.QUERY_ALL, null)
 	}
 
 	public getMovementPaths(): {positions: TilePosition[], pending: boolean}[] {

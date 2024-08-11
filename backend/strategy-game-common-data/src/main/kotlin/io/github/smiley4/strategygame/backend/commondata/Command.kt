@@ -15,3 +15,8 @@ class MoveCommandData(
     val worldObjectId: String,
     val path: List<TileRef>
 ) : CommandData()
+
+class CreateSettlementWithSettlerCommandData(
+    val name: String,
+    val worldObjectId: String
+) : CommandData()

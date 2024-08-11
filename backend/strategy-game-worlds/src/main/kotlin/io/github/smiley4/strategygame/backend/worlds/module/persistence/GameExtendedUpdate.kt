@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.utils.parallelIO
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DocumentNotFoundError
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
-import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
@@ -14,7 +14,7 @@ import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
-import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.CityEntity
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.SettlementEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.CountryEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.GameEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.ProvinceEntity
@@ -34,8 +34,8 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
                 { updateTiles(game.tiles, gameId) },
                 { updateCountries(game.countries, gameId) },
                 { deleteCountries(game.countries.getRemovedElements(), gameId) },
-                { updateCities(game.cities, gameId) },
-                { deleteCities(game.cities.getRemovedElements(), gameId) },
+                { updateCities(game.settlements, gameId) },
+                { deleteCities(game.settlements.getRemovedElements(), gameId) },
                 { updateProvinces(game.provinces, gameId) },
                 { deleteProvinces(game.provinces.getRemovedElements(), gameId) },
                 { updateRoutes(game.routes, gameId) },
@@ -68,12 +68,12 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
         database.deleteDocuments(Collections.COUNTRIES, countries.map { CountryEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
-    private suspend fun updateCities(cities: Collection<City>, gameId: String) {
-        database.insertOrReplaceDocuments(Collections.CITIES, cities.map { CityEntity.of(it, gameId) })
+    private suspend fun updateCities(cities: Collection<Settlement>, gameId: String) {
+        database.insertOrReplaceDocuments(Collections.CITIES, cities.map { SettlementEntity.of(it, gameId) })
     }
 
-    private suspend fun deleteCities(cities: Set<City>, gameId: String) {
-        database.deleteDocuments(Collections.CITIES, cities.map { CityEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+    private suspend fun deleteCities(cities: Set<Settlement>, gameId: String) {
+        database.deleteDocuments(Collections.CITIES, cities.map { SettlementEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
     private suspend fun updateProvinces(provinces: Collection<Province>, gameId: String) {
@@ -97,7 +97,7 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
     }
 
     private suspend fun deleteWorldObjects(worldObjects: Set<WorldObject>, gameId: String) {
-        database.deleteDocuments(Collections.ROUTES, worldObjects.map { WorldObjectEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+        database.deleteDocuments(Collections.WORLD_OBJECTS, worldObjects.map { WorldObjectEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
 }

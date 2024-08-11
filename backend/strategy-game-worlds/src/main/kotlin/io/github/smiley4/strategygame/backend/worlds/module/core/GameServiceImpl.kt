@@ -4,7 +4,6 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.MovementTarget
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileRef
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.engine.edge.MovementService
@@ -32,7 +31,7 @@ internal class GameServiceImpl(
     }
 
     private fun getWorldObject(game: GameExtended, worldObjectId: String): WorldObject {
-        return game.findWorldObject(worldObjectId) ?: throw GameService.WorldObjectNotFoundError()
+        return game.findWorldObjectOrNull(worldObjectId) ?: throw GameService.WorldObjectNotFoundError()
     }
 
     private fun getTile(game: GameExtended, tileId: String): Tile {

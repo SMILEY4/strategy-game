@@ -9,6 +9,7 @@ import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
+import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
 
 interface Changes {
     initFrame: boolean,
@@ -89,6 +90,9 @@ export class ChangeProvider {
         }
         if(name === PathsHtmlNode.ID) {
             return this.changes.turn || this.changes.camera || this.changes.movementPaths
+        }
+        if(name === SettlementsHtmlNode.ID) {
+            return this.changes.turn || this.changes.camera
         }
         return true;
     }

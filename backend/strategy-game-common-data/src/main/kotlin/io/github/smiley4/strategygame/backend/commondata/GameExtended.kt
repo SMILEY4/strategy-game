@@ -6,7 +6,7 @@ data class GameExtended(
     val worldObjects: TrackingList<WorldObject>,
     val countries: TrackingList<Country>,
 
-    val cities: TrackingList<City>,
+    val settlements: TrackingList<Settlement>,
     val provinces: TrackingList<Province>,
     val routes: TrackingList<Route>,
 ) {
@@ -27,7 +27,10 @@ data class GameExtended(
 
     fun findTile(ref: TileRef): Tile = findTile(ref.id)
 
-    fun findWorldObject(worldObjectId: String): WorldObject? = worldObjects.find { it.id == worldObjectId }
+    fun findWorldObject(worldObjectId: String): WorldObject = findWorldObjectOrNull(worldObjectId)
+        ?: throw Exception("Could not find world-object $worldObjectId in game ${meta.gameId}")
+
+    fun findWorldObjectOrNull(worldObjectId: String): WorldObject? = worldObjects.find { it.id == worldObjectId }
 
     fun findCountry(countryId: String): Country = countries.firstOrNull { it.countryId == countryId }
         ?: throw Exception("Could not find country $countryId in game ${meta.gameId}")
@@ -35,7 +38,7 @@ data class GameExtended(
     fun findCountryByUser(userId: String): Country = countries.firstOrNull { it.userId == userId }
         ?: throw Exception("Could not find country for user $userId in game ${meta.gameId}")
 
-    fun findCity(cityId: String): City = cities.firstOrNull { it.cityId == cityId }
+    fun findCity(cityId: String): Settlement = settlements.firstOrNull { it.settlementId == cityId }
         ?: throw Exception("Could not find city $cityId in game ${meta.gameId}")
 
     fun findProvince(provinceId: String): Province = provinces.firstOrNull { it.provinceId == provinceId }

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
-import io.github.smiley4.strategygame.backend.commondata.BuildingType
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
 
 internal class CommandEntity<T : CommandEntityData>(
@@ -34,6 +34,10 @@ internal class CommandEntity<T : CommandEntityData>(
                     worldObjectId = serviceModel.worldObjectId,
                     path = serviceModel.path.map { TileRefEntity.of(it) },
                 )
+                is CreateSettlementWithSettlerCommandData -> CreateSettlementWithSettlerCommandEntityData(
+                    name = serviceModel.name,
+                    worldObjectId = serviceModel.worldObjectId
+                )
             }
         }
 
@@ -52,6 +56,10 @@ internal class CommandEntity<T : CommandEntityData>(
             is MoveCommandEntityData -> MoveCommandData(
                 worldObjectId = entity.worldObjectId,
                 path = entity.path.map { it.asServiceModel() },
+            )
+            is CreateSettlementWithSettlerCommandEntityData -> CreateSettlementWithSettlerCommandData(
+                name = entity.name,
+                worldObjectId = entity.worldObjectId,
             )
         }
     }
@@ -79,5 +87,16 @@ internal class MoveCommandEntityData(
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "move"
+    }
+}
+
+
+@JsonTypeName(CreateSettlementWithSettlerCommandEntityData.TYPE)
+internal class CreateSettlementWithSettlerCommandEntityData(
+    val name: String,
+    val worldObjectId: String
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "create-settlement-settler"
     }
 }

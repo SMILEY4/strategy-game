@@ -3,8 +3,7 @@ package io.github.smiley4.strategygame.backend.engine.module
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.tracking
-import io.github.smiley4.strategygame.backend.commondata.trackingListOf
-import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
@@ -45,7 +44,7 @@ class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : Initiali
                 ),
                 influences = mutableListOf(),
                 owner = null,
-                discoveredByCountries = mutableListOf()
+                discoveredByCountries = mutableSetOf()
             )
         }
     }
@@ -59,7 +58,7 @@ class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : Initiali
             tiles = TileContainer(tiles),
             worldObjects = emptyList<WorldObject>().tracking(),
             countries = emptyList<Country>().tracking(),
-            cities = emptyList<City>().tracking(),
+            settlements = emptyList<Settlement>().tracking(),
             provinces = emptyList<Province>().tracking(),
             routes = emptyList<Route>().tracking()
         )

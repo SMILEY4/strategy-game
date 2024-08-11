@@ -18,8 +18,8 @@ export class SettlementService {
 		return failureReasons
 	}
 
-	public foundSettlement(worldObjectId: string |null, tile: Tile, name: string) {
-		this.commandService.addFoundSettlementCommand(worldObjectId, tile.identifier, name)
+	public createSettlementWithSettler(worldObjectId: string, tile: Tile, name: string) {
+		this.commandService.addCreateSettlementCommandWithSettler(worldObjectId, tile.identifier, name)
 	}
 
 }

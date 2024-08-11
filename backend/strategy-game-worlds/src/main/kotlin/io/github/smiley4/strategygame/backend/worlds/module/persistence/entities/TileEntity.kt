@@ -11,7 +11,7 @@ internal class TileEntity(
     val data: TileDataEntity,
     val influences: List<TileInfluenceEntity>,
     val owner: TileOwnerEntity?,
-    val discoveredByCountries: List<String>,
+    val discoveredByCountries: Set<String>,
     key: String? = null
 ) : DbEntity(key) {
 
@@ -33,7 +33,7 @@ internal class TileEntity(
         data = this.data.asServiceModel(),
         influences = this.influences.map { it.asServiceModel() }.toMutableList(),
         owner = this.owner?.asServiceModel(),
-        discoveredByCountries = this.discoveredByCountries.toMutableList(),
+        discoveredByCountries = this.discoveredByCountries.toMutableSet(),
     )
 
 }

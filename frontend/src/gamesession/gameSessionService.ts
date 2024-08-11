@@ -7,8 +7,8 @@ import {GameSessionRepository} from "./gameSessionRepository";
 import {TurnStartService} from "../game/turnStartService";
 import {GameStateMessage} from "./models/gameStateMessage";
 import {WebsocketMessageHandler} from "../shared/websocketMessageHandler";
-import {Command, CommandType, MoveCommand} from "../models/command";
-import {MoveCommandMessage} from "./models/commandMessage";
+import {Command, CommandType, CreateSettlementWithSettlerCommand, MoveCommand} from "../models/command";
+import {CreateSettlementWithSettlerCommandMessage, MoveCommandMessage} from "./models/commandMessage";
 
 /**
  * Game session service logic
@@ -101,15 +101,27 @@ export class GameSessionService implements WebsocketMessageHandler {
 			"submit-turn",
 			{
 				commands: commands.map(it => {
+
 					if (it.type === CommandType.MOVE) {
 						const cmd = it as MoveCommand;
 						const cmdMsg: MoveCommandMessage = {
 							type: cmd.type.id,
-							worldObjectId: cmd.worldObjectId,
+							worldObjectId: cmd.worldObjectId!,
 							path: cmd.path,
 						};
 						return cmdMsg;
 					}
+
+					if (it.type === CommandType.CREATE_SETTLEMENT_WITH_SETTLER) {
+						const cmd = it as CreateSettlementWithSettlerCommand;
+						const cmdMsg: CreateSettlementWithSettlerCommandMessage = {
+							type: cmd.type.id,
+							name: cmd.name,
+							worldObjectId: cmd.worldObjectId!
+						};
+						return cmdMsg;
+					}
+
 					throw new Error("Unexpected command type: " + it.type.id)
 				}),
 			},

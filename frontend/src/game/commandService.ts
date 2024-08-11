@@ -1,5 +1,5 @@
 import {GameRepository} from "./gameRepository";
-import {Command, CommandType, FoundSettlementCommand, MoveCommand} from "../models/command";
+import {Command, CommandType, CreateSettlementWithSettlerCommand, MoveCommand} from "../models/command";
 import {UID} from "../shared/uid";
 import {AudioService, AudioType} from "../shared/audioService";
 import {TileIdentifier} from "../models/tile";
@@ -34,10 +34,10 @@ export class CommandService {
 		this.addCommand(command);
 	}
 
-	public addFoundSettlementCommand(worldObjectId: string | null, tile: TileIdentifier, name: string) {
-		const command: FoundSettlementCommand = {
+	public addCreateSettlementCommandWithSettler(worldObjectId: string, tile: TileIdentifier, name: string) {
+		const command: CreateSettlementWithSettlerCommand = {
 			id: UID.generate(),
-			type: CommandType.FOUND_SETTLEMENT,
+			type: CommandType.CREATE_SETTLEMENT_WITH_SETTLER,
 			worldObjectId: worldObjectId,
 			tile: tile,
 			name: name

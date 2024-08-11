@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
-import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.commondata.TileRef
 
 @JsonTypeInfo(
@@ -15,6 +15,7 @@ import io.github.smiley4.strategygame.backend.commondata.TileRef
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = MoveCommandMsg::class),
+    JsonSubTypes.Type(value = CreateSettlementWithSettlerCommandMsg::class),
 )
 internal sealed class PlayerCommandMsg(val type: String) {
     abstract fun asCommandData(): CommandData
@@ -34,5 +35,22 @@ internal class MoveCommandMsg(
     override fun asCommandData() = MoveCommandData(
         worldObjectId = this.worldObjectId,
         path = this.path
+    )
+}
+
+
+@JsonTypeName(CreateSettlementWithSettlerCommandMsg.TYPE)
+internal class CreateSettlementWithSettlerCommandMsg(
+    val name: String,
+    val worldObjectId: String
+) : PlayerCommandMsg(TYPE) {
+
+    companion object {
+        internal const val TYPE = "create-settlement-settler"
+    }
+
+    override fun asCommandData() = CreateSettlementWithSettlerCommandData(
+        name = this.name,
+        worldObjectId = this.worldObjectId
     )
 }

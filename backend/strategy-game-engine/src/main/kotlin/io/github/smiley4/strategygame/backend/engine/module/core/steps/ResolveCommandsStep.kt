@@ -1,8 +1,11 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.common.utils.Id
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Command
+import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
 import io.github.smiley4.strategygame.backend.commondata.MovementTarget
@@ -22,6 +25,7 @@ class ResolveCommandsStep(private val movementService: MovementService) : GameEv
                 @Suppress("UNCHECKED_CAST")
                 when (it.data) {
                     is MoveCommandData -> handle(event.game, it as Command<MoveCommandData>)
+                    is CreateSettlementWithSettlerCommandData -> handle(event.game, it as Command<CreateSettlementWithSettlerCommandData>)
                 }
             } catch (e: Exception) {
                 log().warn("Failed to resolve command '$it' - skipping command.", e)
@@ -29,6 +33,7 @@ class ResolveCommandsStep(private val movementService: MovementService) : GameEv
         }
     }
 
+    @JvmName("handleMove")
     private fun handle(game: GameExtended, command: Command<MoveCommandData>) {
         log().debug("Resolving move command for object ${command.data.worldObjectId} with path size ${command.data.path.size}")
 
@@ -85,4 +90,25 @@ class ResolveCommandsStep(private val movementService: MovementService) : GameEv
         return availableTargets.find { it.tile == destination && currentCost + it.cost <= worldObject.maxMovement }
     }
 
+    @JvmName("handleCreateSettlement")
+    private fun handle(game: GameExtended, command: Command<CreateSettlementWithSettlerCommandData>) {
+
+        val country = game.findCountryByUser(command.userId)
+        val settler = game.findWorldObject(command.data.worldObjectId)
+
+        val settlement = Settlement(
+            settlementId = Id.gen(),
+            countryId = country.countryId,
+            tile = settler.tile,
+            name = command.data.name,
+            viewDistance = 1
+        )
+
+        game.settlements.add(settlement)
+        game.worldObjects.remove(settler)
+
+        positionsCircle(settlement.tile, settlement.viewDistance).forEach { pos ->
+            game.findTileOrNull(pos)?.discoveredByCountries?.add(settlement.countryId)
+        }
+    }
 }
