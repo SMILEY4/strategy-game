@@ -4,16 +4,17 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.MovementTarget
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileRef
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.engine.edge.MovementService
+import io.github.smiley4.strategygame.backend.worldgen.edge.NameGenerator
 import io.github.smiley4.strategygame.backend.worlds.edge.GameService
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameExtendedQuery
 
 internal class GameServiceImpl(
     private val movementService: MovementService,
-    private val gameQuery: GameExtendedQuery
+    private val gameQuery: GameExtendedQuery,
+    private val nameGenerator: NameGenerator
 ) : GameService {
 
     override suspend fun getAvailableMovementPositions(gameId: String, worldObjectId: String, tileId: String, currentCost: Int): List<MovementTarget> {
@@ -21,6 +22,10 @@ internal class GameServiceImpl(
         val worldObject = getWorldObject(game, worldObjectId)
         val tile = getTile(game, tileId)
         return movementService.getAvailablePositions(game, worldObject, tile.ref(), currentCost)
+    }
+
+    override suspend fun getSettlementName(): String {
+        return nameGenerator.generateSettlementName()
     }
 
     private suspend fun getGame(gameId: String): GameExtended {
@@ -32,7 +37,7 @@ internal class GameServiceImpl(
     }
 
     private fun getWorldObject(game: GameExtended, worldObjectId: String): WorldObject {
-        return game.findWorldObject(worldObjectId) ?: throw GameService.WorldObjectNotFoundError()
+        return game.findWorldObjectOrNull(worldObjectId) ?: throw GameService.WorldObjectNotFoundError()
     }
 
     private fun getTile(game: GameExtended, tileId: String): Tile {

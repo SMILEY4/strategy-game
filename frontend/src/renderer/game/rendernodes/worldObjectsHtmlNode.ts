@@ -3,20 +3,16 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 import {Camera} from "../../../shared/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../shared/utils";
-import {MapMode} from "../../../models/mapMode";
-import {Tile, TileIdentifier} from "../../../models/tile";
+import {TileIdentifier} from "../../../models/tile";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
-import {TileResourceType} from "../../../models/TileResourceType";
 import {WorldObjectType} from "../../../models/worldObjectType";
-import * as path from "node:path";
-import Point = Projections.Point;
 
-var dirty = true
+var dirty = true;
 
 export class WorldObjectsHtmlNode extends HtmlRenderNode {
 
-	public static readonly ID = "htmlnode.worldobjects"
+	public static readonly ID = "htmlnode.worldobjects";
 
 	private readonly changeProvider: ChangeProvider;
 	private readonly repository: RenderRepository;
@@ -47,7 +43,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 
 	public execute(): HtmlDataResource {
 		if (!this.changeProvider.hasChange(this.id)) {
-			dirty = false
+			dirty = false;
 			return EMPTY_HTML_DATA_RESOURCE;
 		}
 
@@ -64,7 +60,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 			}
 		}
 
-		dirty = true
+		dirty = true;
 		return new HtmlDataResource({
 			outputs: buildMap({
 				"htmldata.worldobjects": elements,

@@ -9,6 +9,7 @@ import io.github.smiley4.ktorswaggerui.dsl.AuthType
 import io.github.smiley4.strategygame.backend.common.Config
 import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.gateway.game.RouteMovementAvailablePositions.routeMovementAvailablePositions
+import io.github.smiley4.strategygame.backend.gateway.game.RouteSettlementName.routeSettlementName
 import io.github.smiley4.strategygame.backend.gateway.operation.routeHealth
 import io.github.smiley4.strategygame.backend.gateway.operation.routeMetrics
 import io.github.smiley4.strategygame.backend.gateway.users.RouteDelete.routeDelete
@@ -250,6 +251,9 @@ private fun Route.routingGateway() {
             route("game") {
                 route("movement") {
                     routeMovementAvailablePositions(gameService)
+                }
+                route("settlement") {
+                    routeSettlementName(gameService)
                 }
             }
         }

@@ -15,3 +15,11 @@ class ScoutWorldObject(
     override var maxMovement: Int,
     override var viewDistance: Int,
 ) : WorldObject
+
+class SettlerWorldObject(
+    override val id: String,
+    override var tile: TileRef,
+    override var country: String,
+    override var maxMovement: Int,
+    override var viewDistance: Int,
+) : WorldObject

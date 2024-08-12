@@ -3,7 +3,7 @@ package io.github.smiley4.strategygame.backend.engine.module.core.common
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-class GameEventSystem {
+internal class GameEventSystem {
 
     private val nodes = mutableListOf<Pair<GameEventNode<*>, KType>>()
 

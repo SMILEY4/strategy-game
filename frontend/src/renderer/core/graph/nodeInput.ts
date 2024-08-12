@@ -67,6 +67,18 @@ export namespace NodeInput {
     }
 
     /**
+     * the blend function
+     */
+    export class BlendMode {
+
+        readonly func: (gl: WebGL2RenderingContext) => void
+
+        constructor(props: {func: (gl: WebGL2RenderingContext) => void}) {
+            this.func = props.func
+        }
+    }
+
+    /**
      * Property, usually accessible in the shader
      */
     export class Property {

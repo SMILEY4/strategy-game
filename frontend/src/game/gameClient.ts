@@ -30,4 +30,15 @@ export class GameClient {
 		});
 	}
 
+	/**
+	 * Get a random name for a settlement
+	 */
+	public getRandomSettlementName(): Promise<{name: string}> {
+		return this.httpClient.get<{name: string}>({
+			url: "/api/game/settlement/randomname",
+			requireAuth: true,
+			token: this.authProvider.getToken(),
+		});
+	}
+
 }

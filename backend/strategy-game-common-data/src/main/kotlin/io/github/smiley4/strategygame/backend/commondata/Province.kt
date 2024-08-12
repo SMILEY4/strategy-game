@@ -11,8 +11,8 @@ data class Province(
 
     fun findCountry(game: GameExtended): Country = game.findCountry(countryId)
 
-    fun findCities(game: GameExtended): List<City> = cityIds.map { game.findCity(it) }
+    fun findCities(game: GameExtended): List<Settlement> = cityIds.map { game.findCity(it) }
 
-    fun findCapitalCity(game: GameExtended): City = game.findCity(provinceCapitalCityId)
+    fun findCapitalCity(game: GameExtended): Settlement = game.findCity(provinceCapitalCityId)
 
 }

@@ -13,3 +13,8 @@ internal fun TileVisibilityDTO.isAtLeast(visibility: TileVisibilityDTO): Boolean
         TileVisibilityDTO.VISIBLE -> this == TileVisibilityDTO.VISIBLE
     }
 }
+
+
+internal fun TileVisibilityDTO.isLessThan(visibility: TileVisibilityDTO): Boolean {
+    return !this.isAtLeast(visibility)
+}

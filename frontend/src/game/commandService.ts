@@ -1,5 +1,5 @@
 import {GameRepository} from "./gameRepository";
-import {Command, CommandType, MoveCommand} from "../models/command";
+import {Command, CommandType, CreateSettlementWithSettlerCommand, MoveCommand} from "../models/command";
 import {UID} from "../shared/uid";
 import {AudioService, AudioType} from "../shared/audioService";
 import {TileIdentifier} from "../models/tile";
@@ -30,6 +30,17 @@ export class CommandService {
 			type: CommandType.MOVE,
 			worldObjectId: worldObjectId,
 			path: path,
+		};
+		this.addCommand(command);
+	}
+
+	public addCreateSettlementCommandWithSettler(worldObjectId: string, tile: TileIdentifier, name: string) {
+		const command: CreateSettlementWithSettlerCommand = {
+			id: UID.generate(),
+			type: CommandType.CREATE_SETTLEMENT_WITH_SETTLER,
+			worldObjectId: worldObjectId,
+			tile: tile,
+			name: name
 		};
 		this.addCommand(command);
 	}

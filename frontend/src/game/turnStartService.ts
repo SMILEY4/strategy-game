@@ -10,6 +10,7 @@ import {WorldObject} from "../models/worldObject";
 import {Country} from "../models/country";
 import {Visibility} from "../models/visibility";
 import {mapHidden} from "../models/hiddenType";
+import {Settlement} from "../models/Settlement";
 
 /**
  * Service to handle the start of a new turn
@@ -38,6 +39,7 @@ export class TurnStartService {
 				this.gameRepository.replaceTiles(this.buildTiles(gameState));
 				this.gameRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
 				this.gameRepository.replaceCountries(this.buildCountries(gameState))
+				this.gameRepository.replaceSettlements(this.buildSettlements(gameState))
 			});
 		});
 	}
@@ -78,6 +80,23 @@ export class TurnStartService {
 		}));
 	}
 
+	private buildSettlements(game: GameStateMessage): Settlement[] {
+		return game.settlements.map(settlementMsg => {
+			const countryMsg = game.countries.find(it => it.id === settlementMsg.country)!
+			return {
+				identifier: {
+					id: settlementMsg.id,
+					name: settlementMsg.name,
+				},
+				country: {
+					id: countryMsg.id,
+					name: countryMsg.name
+				},
+				tile: settlementMsg.tile
+			}
+		})
+	}
+
 	private buildWorldObjects(game: GameStateMessage): WorldObject[] {
 		return game.worldObjects.map(worldObjMsg => {
 			const countryMsg = game.countries.find(it => it.id === worldObjMsg.country)!
@@ -90,8 +109,23 @@ export class TurnStartService {
 						id: countryMsg.id,
 						name: countryMsg.name,
 					},
-					movementPoints: 5,
-					ownedByPlayer: countryMsg.ownedByUser
+					movementPoints: worldObjMsg.maxMovement,
+					ownedByPlayer: countryMsg.ownedByUser,
+					canCreateSettlement: false
+				};
+			}
+			if (worldObjMsg.type === "settler") {
+				return {
+					id: worldObjMsg.id,
+					type: WorldObjectType.SETTLER,
+					tile: worldObjMsg.tile,
+					country: {
+						id: countryMsg.id,
+						name: countryMsg.name,
+					},
+					movementPoints: worldObjMsg.maxMovement,
+					ownedByPlayer: countryMsg.ownedByUser,
+					canCreateSettlement: worldObjMsg.canCreateSettlement
 				};
 			}
 			return null;

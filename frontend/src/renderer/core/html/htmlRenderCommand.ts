@@ -57,13 +57,11 @@ export namespace HtmlRenderCommand {
             const container = resourceManager.getContainer(this.containerId);
             const availableHtmlElements = this.prepareElements(totalCount, container);
 
-            // prepare elements
+            // reset elements
             for (let i = 0, n=availableHtmlElements.length; i < n; i++) {
                 const element = availableHtmlElements[i]
-                element.removeAttribute("id");
-                element.removeAttribute("style")
-                element.removeAttribute("class")
                 element.replaceChildren()
+                element.getAttributeNames().forEach(it => element.removeAttribute(it))
             }
 
             // update elements

@@ -3,15 +3,15 @@ package io.github.smiley4.strategygame.backend.engine.module.core.common
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-interface GameEventPublisher {
+internal interface GameEventPublisher {
     fun <T> send(type: KType, event: T)
 
 }
 
-    inline fun <reified T> GameEventPublisher.send(event: T) = this.send(typeOf<T>(), event)
+internal inline fun <reified T> GameEventPublisher.send(event: T) = this.send(typeOf<T>(), event)
 
 
-class GameEventPublisherImpl : GameEventPublisher {
+internal class GameEventPublisherImpl : GameEventPublisher {
 
     private val events = mutableListOf<Pair<KType, Any>>()
 

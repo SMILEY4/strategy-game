@@ -6,6 +6,7 @@ import {GameRenderer} from "../renderer/game/gameRenderer";
 import {GameRepository} from "./gameRepository";
 import {UseWorldObjectWindow} from "../ui/pages/ingame/windows/worldobject/useWorldObjectWindow";
 import {MovementService} from "./movementService";
+import {UseSettlementWindow} from "../ui/pages/ingame/windows/settlement/useSettlementWindow";
 
 /**
  * Service to handle logic for the continuous game loop.
@@ -67,21 +68,31 @@ export class GameLoopService {
 			this.gameRepository.setSelectedTile(tile?.identifier ?? null);
 			if (tile) {
 				if (this.movementService.isMovementMode()) {
-					const added = await this.movementService.addToPath(tile.identifier)
-					if(added)  {
+					const added = await this.movementService.addToPath(tile.identifier);
+					if (added) {
 						AudioType.CLICK_PRIMARY.play(this.audioService);
 					} else {
 						AudioType.CLICK_CLOSE.play(this.audioService);
 					}
 				} else {
+
 					const worldObject = this.gameRepository.getWorldObjectByTile(tile.identifier);
 					if (worldObject) {
 						AudioType.CLICK_PRIMARY.play(this.audioService);
 						UseWorldObjectWindow.open(worldObject.id);
-					} else {
-						AudioType.CLICK_PRIMARY.play(this.audioService);
-						UseTileWindow.open(tile.identifier);
+						return;
 					}
+
+					const settlement = this.gameRepository.getSettlementByTile(tile.identifier);
+					if (settlement) {
+						AudioType.CLICK_PRIMARY.play(this.audioService);
+						UseSettlementWindow.open(settlement.identifier.id);
+						return;
+					}
+
+					AudioType.CLICK_PRIMARY.play(this.audioService);
+					UseTileWindow.open(tile.identifier);
+					return;
 				}
 			}
 		}

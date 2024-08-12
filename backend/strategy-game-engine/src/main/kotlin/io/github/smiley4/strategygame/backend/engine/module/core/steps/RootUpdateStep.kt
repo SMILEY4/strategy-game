@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.engine.module.core.events.RootStep
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWorldEvent
 import io.github.smiley4.strategygame.backend.engine.module.core.common.send
 
-class RootUpdateStep : GameEventNode<RootStepEvent> {
+internal class RootUpdateStep : GameEventNode<RootStepEvent> {
 
     override fun handle(event: RootStepEvent, publisher: GameEventPublisher) {
         publisher.send(ResolveCommandsEvent(event.game, event.commands))

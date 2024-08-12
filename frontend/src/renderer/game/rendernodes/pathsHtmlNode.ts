@@ -6,6 +6,7 @@ import {buildMap} from "../../../shared/utils";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
 import {TilePosition} from "../../../models/tilePosition";
+import {Simulate} from "react-dom/test-utils";
 
 export class PathsHtmlNode extends HtmlRenderNode {
 
@@ -83,7 +84,7 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 		const svgMarkerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
 		svgMarkerPath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
 
-		const svgMarker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+		const svgMarker = document.createElementNS("http://www.w3.org/2000/svg", "marker"); // todo: move arrow to common parent element and reuse by id
 		svgMarker.id = "movement-arrow";
 		svgMarker.setAttribute("viewBox", "0 0 10 10");
 		svgMarker.setAttribute("refX", "5");
@@ -101,12 +102,13 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 		svgDefs.appendChild(svgMarker);
 
 		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		svg.setAttribute("viewBox", "0 0 " + camera.getClientWidth() + " " + camera.getClientHeight());
 		svg.appendChild(svgDefs);
 		svg.appendChild(svgPath);
 
 		html.className = "world-ui__path" + (element.pending ? " world-ui__path-pending" : "");
 		html.replaceChildren(svg);
+		html.style.left = "0px";
+		html.style.top = "0px";
 
 	}
 }

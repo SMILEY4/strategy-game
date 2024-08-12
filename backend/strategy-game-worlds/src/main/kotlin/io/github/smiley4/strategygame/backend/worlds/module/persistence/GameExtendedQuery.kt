@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DocumentNotFoundError
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
-import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
@@ -16,7 +16,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.tracking
-import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.CityEntity
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.SettlementEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.CountryEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.GameEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.ProvinceEntity
@@ -47,7 +47,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
                     countries = countries.tracking(),
                     tiles = TileContainer(tiles),
                     worldObjects = worldObjects.tracking(),
-                    cities = cities.tracking(),
+                    settlements = cities.tracking(),
                     provinces = provinces.tracking(),
                     routes = routes.tracking()
                 )
@@ -89,7 +89,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
         ).map { it.asServiceModel() }
     }
 
-    private suspend fun fetchCities(gameId: String): List<City> {
+    private suspend fun fetchCities(gameId: String): List<Settlement> {
         database.assertCollections(Collections.CITIES)
         return database.query(
             """
@@ -99,7 +99,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
 					RETURN city
 			""".trimIndent(),
             mapOf("gameId" to gameId),
-            CityEntity::class.java
+            SettlementEntity::class.java
         ).map { it.asServiceModel() }
     }
 

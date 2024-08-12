@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":strategy-game-common"))
     implementation(project(":strategy-game-common-data"))
     implementation(project(":strategy-game-common-arangodb"))
+    implementation(project(":strategy-game-worldgen"))
 
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")

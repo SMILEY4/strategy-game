@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MonitoringServic
 import io.github.smiley4.strategygame.backend.common.monitoring.NoOpMonitoringService
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commonarangodb.DatabaseProvider
-import io.github.smiley4.strategygame.backend.commondata.City
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
 import io.github.smiley4.strategygame.backend.commondata.Game
@@ -662,7 +662,7 @@ class WorldsTest : FreeSpec({
                                         ),
                                         tiles = TileContainer(emptyList()),
                                         countries = emptyList<Country>().tracking(),
-                                        cities = emptyList<City>().tracking(),
+                                        settlements = emptyList<Settlement>().tracking(),
                                         provinces = emptyList<Province>().tracking(),
                                         routes = emptyList<Route>().tracking()
                                     )

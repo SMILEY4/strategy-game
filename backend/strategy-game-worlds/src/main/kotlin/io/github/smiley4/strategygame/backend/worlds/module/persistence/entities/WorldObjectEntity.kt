@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
+import io.github.smiley4.strategygame.backend.commondata.SettlerWorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 @JsonTypeInfo(
@@ -15,6 +16,7 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObject
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = ScoutWorldObjectEntity::class),
+    JsonSubTypes.Type(value = SettlerWorldObjectEntity::class),
 )
 internal sealed class WorldObjectEntity(
     val type: String,
@@ -37,6 +39,14 @@ internal sealed class WorldObjectEntity(
                     maxMovement = serviceModel.maxMovement,
                     viewDistance = serviceModel.viewDistance
                 )
+                is SettlerWorldObject -> SettlerWorldObjectEntity(
+                    gameId = gameId,
+                    key = DbId.asDbId(serviceModel.id),
+                    tile = TileRefEntity.of(serviceModel.tile),
+                    country = serviceModel.country,
+                    maxMovement = serviceModel.maxMovement,
+                    viewDistance = serviceModel.viewDistance
+                )
             }
         }
     }
@@ -44,6 +54,13 @@ internal sealed class WorldObjectEntity(
     fun asServiceModel(): WorldObject {
         return when (this) {
             is ScoutWorldObjectEntity -> ScoutWorldObject(
+                id = this.getKeyOrThrow(),
+                tile = this.tile.asServiceModel(),
+                country = this.country,
+                maxMovement = this.maxMovement,
+                viewDistance = this.viewDistance
+            )
+            is SettlerWorldObjectEntity -> SettlerWorldObject(
                 id = this.getKeyOrThrow(),
                 tile = this.tile.asServiceModel(),
                 country = this.country,
@@ -75,5 +92,27 @@ internal class ScoutWorldObjectEntity(
 ) {
     companion object {
         internal const val TYPE = "scout"
+    }
+}
+
+@JsonTypeName(SettlerWorldObjectEntity.TYPE)
+internal class SettlerWorldObjectEntity(
+    key: String?,
+    gameId: String,
+    tile: TileRefEntity,
+    country: String,
+    maxMovement: Int,
+    viewDistance: Int,
+) : WorldObjectEntity(
+    type = TYPE,
+    gameId = gameId,
+    tile = tile,
+    country = country,
+    maxMovement = maxMovement,
+    viewDistance = viewDistance,
+    key = key
+) {
+    companion object {
+        internal const val TYPE = "settler"
     }
 }

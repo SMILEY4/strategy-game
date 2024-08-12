@@ -12,6 +12,8 @@ import {CommandDatabase} from "../state/database/commandDatabase";
 import {MovementTarget} from "../models/movementTarget";
 import {Country} from "../models/country";
 import {CountryDatabase} from "../state/database/countryDatabase";
+import {Settlement} from "../models/Settlement";
+import {SettlementDatabase} from "../state/database/settlementDatabase";
 
 export class GameRepository {
 
@@ -21,6 +23,7 @@ export class GameRepository {
 	private readonly worldObjectDb: WorldObjectDatabase;
 	private readonly commandDb: CommandDatabase;
 	private readonly countryDb: CountryDatabase;
+	private readonly settlementDb: SettlementDatabase;
 
 	constructor(
 		gameSessionDb: GameSessionDatabase,
@@ -28,7 +31,8 @@ export class GameRepository {
 		tileDb: TileDatabase,
 		worldObjectDb: WorldObjectDatabase,
 		commandDb: CommandDatabase,
-		countryDb: CountryDatabase
+		countryDb: CountryDatabase,
+		settlementDb: SettlementDatabase
 	) {
 		this.gameSessionDb = gameSessionDb;
 		this.cameraDb = cameraDb;
@@ -36,6 +40,7 @@ export class GameRepository {
 		this.worldObjectDb = worldObjectDb;
 		this.commandDb = commandDb;
 		this.countryDb = countryDb;
+		this.settlementDb = settlementDb;
 	}
 
 	public getCamera(): CameraData {
@@ -82,6 +87,10 @@ export class GameRepository {
 		return this.tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
 	}
 
+	public getSettlementByTile(tileId: TileIdentifier): Settlement | null {
+		return this.settlementDb.querySingle(SettlementDatabase.QUERY_BY_POSITION, [tileId.q, tileId.r]);
+	}
+
 	public getWorldObjectByTile(tileId: TileIdentifier): WorldObject | null {
 		return this.worldObjectDb.querySingle(WorldObjectDatabase.QUERY_BY_POSITION, [tileId.q, tileId.r]);
 	}
@@ -91,7 +100,7 @@ export class GameRepository {
 	}
 
 	public transactionForStartTurn(action: () => void) {
-		Transaction.run([this.tileDb, this.commandDb, this.countryDb], action);
+		Transaction.run([this.tileDb, this.commandDb, this.countryDb, this.settlementDb], action);
 	}
 
 	public replaceTiles(tiles: Tile[]) {
@@ -102,6 +111,11 @@ export class GameRepository {
 	public replaceCountries(countries: Country[]) {
 		this.countryDb.deleteAll();
 		this.countryDb.insertMany(countries);
+	}
+
+	public replaceSettlements(settlements: Settlement[]) {
+		this.settlementDb.deleteAll();
+		this.settlementDb.insertMany(settlements)
 	}
 
 	public replaceWorldObjects(worldObject: WorldObject[]) {

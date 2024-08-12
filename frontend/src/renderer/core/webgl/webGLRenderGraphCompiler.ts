@@ -163,6 +163,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         outCommands.push(new WebGLRenderCommand.Draw(
             inputVertexData.vertexDataId,
             this.getClearColor(node),
+            this.getBlendFunction(node),
             renderToTexture,
             renderScale,
             renderDepth,
@@ -185,6 +186,15 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
             return (config as NodeInput.ClearColor).clearColor
         } else {
             return [0,0,0,1]
+        }
+    }
+
+    private getBlendFunction(node: DrawRenderNode): ((gl: WebGL2RenderingContext) => void) | null {
+        const config = node.config.input.find(e => e instanceof NodeInput.BlendMode)
+        if(config) {
+            return (config as NodeInput.BlendMode).func
+        } else {
+            return null
         }
     }
 

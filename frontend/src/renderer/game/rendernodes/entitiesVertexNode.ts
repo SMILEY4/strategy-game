@@ -12,6 +12,7 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {ChangeProvider} from "../changeProvider";
+import {RenderRepository} from "../renderRepository";
 
 interface RenderEntity {
     q: number,
@@ -31,8 +32,9 @@ export class EntitiesVertexNode extends VertexRenderNode {
     ];
 
     private readonly changeProvider: ChangeProvider;
+    private readonly repository: RenderRepository;
 
-    constructor(changeProvider: ChangeProvider) {
+    constructor(changeProvider: ChangeProvider, repository: RenderRepository) {
         super({
             id: EntitiesVertexNode.ID,
             input: [],
@@ -60,6 +62,7 @@ export class EntitiesVertexNode extends VertexRenderNode {
             ]
         });
         this.changeProvider = changeProvider;
+        this.repository = repository;
     }
 
     public execute(): VertexDataResource {
@@ -67,7 +70,7 @@ export class EntitiesVertexNode extends VertexRenderNode {
             return EMPTY_VERTEX_DATA_RESOURCE;
         }
 
-        const renderEntities: RenderEntity[] = [] // todo: this.collectEntities(tiles, commands);
+        const renderEntities = this.collectEntities()
 
         const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(renderEntities.length * 6, EntitiesVertexNode.PATTERN);
         for (let i = 0; i < renderEntities.length; i++) {
@@ -85,6 +88,23 @@ export class EntitiesVertexNode extends VertexRenderNode {
                 },
             }),
         });
+    }
+
+    private collectEntities(): RenderEntity[] {
+
+        const entities: RenderEntity[] = []
+
+        const settlements = this.repository.getSettlements();
+        for (let i = 0, n=settlements.length; i < n; i++) {
+            const settlement = settlements[i]
+            entities.push({
+                q: settlement.tile.q,
+                r: settlement.tile.r,
+                type: "city"
+            })
+        }
+
+        return entities;
     }
 
     private appendEntity(entity: RenderEntity, cursor: MixedArrayBufferCursor) {

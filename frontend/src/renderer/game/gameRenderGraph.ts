@@ -30,6 +30,7 @@ import {HtmlRenderGraphCompiler} from "../core/html/htmlRenderGraphCompiler";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
+import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
 
 export class GameRenderGraph {
 
@@ -59,7 +60,7 @@ export class GameRenderGraph {
 				new VertexFullQuadNode(),
 				new TilesVertexNode(changeProvider, renderConfig, renderRepository),
 				new OverlayVertexNode(changeProvider, renderRepository),
-				new EntitiesVertexNode(changeProvider),
+				new EntitiesVertexNode(changeProvider, renderRepository),
 				new DetailsVertexNode(changeProvider),
 				new RoutesVertexNode(changeProvider),
 				new TilesWaterDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
@@ -81,6 +82,7 @@ export class GameRenderGraph {
 				new PathsHtmlNode(changeProvider, renderRepository, () => this.camera,),
 				new ResourceIconsHtmlNode(changeProvider, renderRepository, () => this.camera,),
 				new WorldObjectsHtmlNode(changeProvider, renderRepository, () => this.camera,),
+				new SettlementsHtmlNode(changeProvider, renderRepository, () => this.camera,),
 			],
 		});
 	}
