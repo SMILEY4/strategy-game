@@ -12,7 +12,7 @@ export namespace UseFoundSettlementWindow {
 	export function useOpen() {
 		const WINDOW_ID = "found-settlement-window";
 		const addWindow = useOpenWindow();
-		return (tile: TileIdentifier, worldObjectId: string) => {
+		return (tile: TileIdentifier, worldObjectId: string | null) => {
 			addWindow({
 				id: WINDOW_ID,
 				className: "found-settlement-window",
@@ -39,13 +39,13 @@ export namespace UseFoundSettlementWindow {
 		create: () => void;
 	}
 
-	export function useData(windowId: string, tileIdentifier: TileIdentifier, worldObjectId: string): UseFoundSettlementWindow.Data {
+	export function useData(windowId: string, tileIdentifier: TileIdentifier, worldObjectId: string | null): UseFoundSettlementWindow.Data {
 
 		const tile = useQuerySingleOrThrow(AppCtx.TileDatabase(), TileDatabase.QUERY_BY_ID, tileIdentifier.id);
 
-		const [name, setName] = useState("");
-		const [valid, failedValidations, create] = useCreateSettlementWithSettler(worldObjectId, tile, name);
 		const closeWindow = useCloseWindow();
+		const [name, setName] = useState("");
+		const [valid, failedValidations, create] = worldObjectId ? useCreateSettlementWithSettler(worldObjectId, tile, name) : useCreateSettlementDirect(tile, name);
 
 		useEffect(() => {
 			setRandomName(setName)
@@ -71,6 +71,17 @@ export namespace UseFoundSettlementWindow {
 
 	function setRandomName(set: (name: string) => void) {
 		AppCtx.SettlementService().getRandomName().then(set)
+	}
+
+	function useCreateSettlementDirect(tile: Tile, name: string | null): [boolean, string[], () => void] {
+		const settlementService = AppCtx.SettlementService();
+		const [possible, reasons] = useValidateCreateSettlement(tile, name);
+
+		function perform() {
+			settlementService.createSettlementDirect(tile, name!)
+		}
+
+		return [possible, reasons, perform];
 	}
 
 	function useCreateSettlementWithSettler(worldObjectId: string, tile: Tile, name: string | null): [boolean, string[], () => void] {

@@ -30,6 +30,7 @@ import {GameIdProvider} from "./gamesession/gameIdProvider";
 import {CountryDatabase} from "./state/database/countryDatabase";
 import {SettlementService} from "./game/settlementService";
 import {SettlementDatabase} from "./state/database/settlementDatabase";
+import {ProvinceDatabase} from "./state/database/provinceDatabase";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -68,11 +69,12 @@ interface AppCtxDef {
 
 	CameraDatabase: () => CameraDatabase,
 	GameSessionDatabase: () => GameSessionDatabase,
-	TileDatabase: () => TileDatabase,
-	WorldObjectDatabase: () => WorldObjectDatabase,
 	CommandDatabase: () => CommandDatabase,
+	TileDatabase: () => TileDatabase,
 	CountryDatabase: () => CountryDatabase,
+	ProvinceDatabase: () => ProvinceDatabase,
 	SettlementDatabase: () => SettlementDatabase,
+	WorldObjectDatabase: () => WorldObjectDatabase,
 
 }
 
@@ -217,6 +219,7 @@ export const AppCtx: AppCtxDef = {
 			AppCtx.WorldObjectDatabase(),
 			AppCtx.CommandDatabase(),
 			AppCtx.CountryDatabase(),
+			AppCtx.ProvinceDatabase(),
 			AppCtx.SettlementDatabase(),
 		),
 	),
@@ -256,7 +259,10 @@ export const AppCtx: AppCtxDef = {
 		"SettlementDatabase",
 		() => new SettlementDatabase(),
 	),
-
+	ProvinceDatabase: diContext.register(
+		"ProvinceDatabase",
+		() => new ProvinceDatabase(),
+	),
 };
 
 diContext.initialize();

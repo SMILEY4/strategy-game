@@ -6,8 +6,9 @@ export interface GameStateMessage {
 	},
 	tiles: TileMessage[],
 	countries: CountryMessage[],
+	provinces: ProvinceMessage[]
+	settlements: SettlementMessage[],
 	worldObjects: WorldObjectMessage[],
-	settlements: SettlementMessage[]
 }
 
 export interface TileMessage {
@@ -34,17 +35,9 @@ export interface CountryMessage {
 	ownedByUser: boolean
 }
 
-export interface WorldObjectMessage {
-	type: string,
+export interface ProvinceMessage {
 	id: string,
-	country: string,
-	tile: {
-		id: string,
-		q: number,
-		r: number
-	},
-	maxMovement: number,
-	canCreateSettlement?: boolean,
+	settlements: string[]
 }
 
 export interface SettlementMessage {
@@ -56,4 +49,17 @@ export interface SettlementMessage {
 		r: number
 	},
 	name: string
+}
+
+export interface WorldObjectMessage {
+	type: string,
+	id: string,
+	country: string,
+	tile: {
+		id: string,
+		q: number,
+		r: number
+	},
+	maxMovement: number,
+	canCreateSettlement?: boolean,
 }

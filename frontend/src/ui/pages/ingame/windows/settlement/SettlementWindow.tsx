@@ -47,6 +47,9 @@ export function SettlementWindow(props: WorldObjectWindowProps): ReactElement {
 						<EnrichedText>Country</EnrichedText>
 						<EnrichedText>{data.settlement.country.name}</EnrichedText>
 
+						<EnrichedText>Province</EnrichedText>
+						<EnrichedText>{data.province.id}</EnrichedText>
+
 					</InsetKeyValueGrid>
 				</WindowSection>
 

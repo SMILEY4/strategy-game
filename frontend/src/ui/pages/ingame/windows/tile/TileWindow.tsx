@@ -10,7 +10,8 @@ import {Text} from "../../../../components/text/Text";
 import {WindowSection} from "../../../../components/section/ContentSection";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {mapHidden, mapHiddenOrDefault} from "../../../../../models/hiddenType";
+import {mapHiddenOrDefault} from "../../../../../models/hiddenType";
+import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
 export interface TileWindowProps {
 	windowId: string;
@@ -61,6 +62,9 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 						<EnrichedText>{data.tile.visibility.id}</EnrichedText>
 
 					</InsetKeyValueGrid>
+
+					<ButtonPrimary blue onClick={data.settlement.found}>Found Settlement</ButtonPrimary>
+
 				</WindowSection>
 			</DefaultDecoratedWindowWithBanner>
 		);

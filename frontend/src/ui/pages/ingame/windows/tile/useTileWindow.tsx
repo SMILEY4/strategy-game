@@ -5,6 +5,7 @@ import {TileWindow} from "./TileWindow";
 import {AppCtx} from "../../../../../appContext";
 import {TileDatabase} from "../../../../../state/database/tileDatabase";
 import {GameSessionDatabase} from "../../../../../state/database/gameSessionDatabase";
+import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
 
 export namespace UseTileWindow {
 
@@ -39,16 +40,23 @@ export namespace UseTileWindow {
 
     export interface Data {
         tile: Tile;
+        settlement: {
+            found: () => void
+        }
     }
 
     export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
 
         const selectedTileIdentifier = GameSessionDatabase.useSelectedTile();
         const tile = AppCtx.TileDatabase().querySingle(TileDatabase.QUERY_BY_ID, (overwriteTile ?? selectedTileIdentifier)?.id ?? null);
+        const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen()
 
         if (tile) {
             return {
                 tile: tile,
+                settlement: {
+                    found: () => openFoundSettlementWindow(tile.identifier, null)
+                }
             };
         } else {
             return null;

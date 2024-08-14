@@ -49,7 +49,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
                     worldObjects = worldObjects.tracking(),
                     settlements = cities.tracking(),
                     provinces = provinces.tracking(),
-                    routes = routes.tracking()
+//                    routes = routes.tracking()
                 )
             }
         }

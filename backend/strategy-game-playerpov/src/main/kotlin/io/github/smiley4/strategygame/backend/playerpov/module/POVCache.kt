@@ -18,6 +18,7 @@ internal class POVCache(
 
     // visibility states for all things
     private val tileVisibilities = mutableMapOf<String, TileVisibilityDTO>()
+    private val settlementVisibilities = mutableMapOf<String, TileVisibilityDTO>()
     private val worldObjectVisibilities = mutableMapOf<String, TileVisibilityDTO>()
 
     init {
@@ -43,6 +44,11 @@ internal class POVCache(
             tileVisibilities[tile.tileId] = tileVisibilityCalculator.calculateVisibility(game, povCountryId, tile)
         }
 
+        // calculate visibility state for all settlements
+        game.settlements.forEach { settlement ->
+            settlementVisibilities[settlement.settlementId] = tileVisibilities[settlement.tile.id] ?: TileVisibilityDTO.UNKNOWN
+        }
+
         // calculate visible world objects
         game.worldObjects.forEach { worldObject ->
             worldObjectVisibilities[worldObject.id] =
@@ -66,6 +72,9 @@ internal class POVCache(
 
     fun tileVisibility(tileId: String): TileVisibilityDTO =
         tileVisibilities[tileId] ?: throw Exception("No visibility for tile $tileId")
+
+    fun settlementVisibility(settlementId: String): TileVisibilityDTO =
+        settlementVisibilities[settlementId] ?: throw Exception("No visibility for settlement $settlementId")
 
     fun worldObjectVisibility(worldObjectId: String): TileVisibilityDTO =
         worldObjectVisibilities[worldObjectId] ?: throw Exception("No visibility for world-object $worldObjectId")

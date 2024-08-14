@@ -25,8 +25,12 @@ export class SettlementService {
 		return failureReasons
 	}
 
+	public createSettlementDirect(tile: Tile, name: string) {
+		this.commandService.addCreateSettlementDirectCommand(tile.identifier, name)
+	}
+
 	public createSettlementWithSettler(worldObjectId: string, tile: Tile, name: string) {
-		this.commandService.addCreateSettlementCommandWithSettler(worldObjectId, tile.identifier, name)
+		this.commandService.addCreateSettlementWithSettlerCommand(worldObjectId, tile.identifier, name)
 	}
 
 }

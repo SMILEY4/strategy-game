@@ -6,19 +6,19 @@ class Settlement(
     val countryId: String,
     val tile: TileRef,
     val name: String,
-    val viewDistance: Int
+    val viewDistance: Int,
 //    var tier: SettlementTier,
 //    val meta: CityMetadata,
 //    val infrastructure: CityInfrastructure,
 //    val population: CityPopulation,
 ) {
 
-    fun findCountry(game: GameExtended): Country = game.findCountry(countryId)
-
-    fun findProvince(game: GameExtended): Province = game.findProvinceByCity(settlementId)
-
-    fun findTile(game: GameExtended): Tile = game.findTile(tile.id)
-
+//    fun findCountry(game: GameExtended): Country = game.findCountry(countryId)
+//
+    fun findProvince(game: GameExtended): Province = game.findProvinceBySettlement(settlementId)
+//
+//    fun findTile(game: GameExtended): Tile = game.findTile(tile.id)
+//
 //    fun findProductionQueueEntry(entryId: String): ProductionQueueEntry = infrastructure.productionQueue.find { it.entryId == entryId }
 //        ?: throw Exception("Could not find production-queue-entry $entryId in city $settlementId")
 

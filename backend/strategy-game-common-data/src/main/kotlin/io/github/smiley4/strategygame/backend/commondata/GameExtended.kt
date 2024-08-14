@@ -3,12 +3,11 @@ package io.github.smiley4.strategygame.backend.commondata
 data class GameExtended(
     val meta: GameMeta,
     val tiles: TileContainer,
-    val worldObjects: TrackingList<WorldObject>,
     val countries: TrackingList<Country>,
-
-    val settlements: TrackingList<Settlement>,
     val provinces: TrackingList<Province>,
-    val routes: TrackingList<Route>,
+    val settlements: TrackingList<Settlement>,
+    val worldObjects: TrackingList<WorldObject>,
+//    val routes: TrackingList<Route>,
 ) {
 
     fun findTile(q: Int, r: Int): Tile = tiles.get(q, r)
@@ -27,10 +26,12 @@ data class GameExtended(
 
     fun findTile(ref: TileRef): Tile = findTile(ref.id)
 
+
     fun findWorldObject(worldObjectId: String): WorldObject = findWorldObjectOrNull(worldObjectId)
         ?: throw Exception("Could not find world-object $worldObjectId in game ${meta.gameId}")
 
     fun findWorldObjectOrNull(worldObjectId: String): WorldObject? = worldObjects.find { it.id == worldObjectId }
+
 
     fun findCountry(countryId: String): Country = countries.firstOrNull { it.countryId == countryId }
         ?: throw Exception("Could not find country $countryId in game ${meta.gameId}")
@@ -38,13 +39,17 @@ data class GameExtended(
     fun findCountryByUser(userId: String): Country = countries.firstOrNull { it.userId == userId }
         ?: throw Exception("Could not find country for user $userId in game ${meta.gameId}")
 
-    fun findCity(cityId: String): Settlement = settlements.firstOrNull { it.settlementId == cityId }
-        ?: throw Exception("Could not find city $cityId in game ${meta.gameId}")
+
 
     fun findProvince(provinceId: String): Province = provinces.firstOrNull { it.provinceId == provinceId }
         ?: throw Exception("Could not find province $provinceId in game ${meta.gameId}")
 
-    fun findProvinceByCity(cityId: String): Province = provinces.firstOrNull { it.cityIds.contains(cityId) }
-        ?: throw Exception("Could not find province with city $cityId in game ${meta.gameId}")
+
+    fun findProvinceBySettlementOrNull(settlementId: String): Province? {
+        return provinces.find { it.settlementIds.contains(settlementId) }
+    }
+
+    fun findProvinceBySettlement(settlementId: String) = findProvinceBySettlementOrNull(settlementId)
+        ?: throw Exception("Could not find province for settlement $settlementId in game ${meta.gameId}")
 
 }

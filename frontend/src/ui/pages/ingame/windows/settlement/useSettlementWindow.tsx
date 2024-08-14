@@ -2,9 +2,11 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
 import {AppCtx} from "../../../../../appContext";
-import {useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
+import {useQuerySingle, useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";
 import {Settlement} from "../../../../../models/Settlement";
 import {SettlementDatabase} from "../../../../../state/database/settlementDatabase";
+import {Province} from "../../../../../models/province";
+import {ProvinceDatabase} from "../../../../../state/database/provinceDatabase";
 
 export namespace UseSettlementWindow {
 
@@ -39,15 +41,18 @@ export namespace UseSettlementWindow {
 
 	export interface Data {
 		settlement: Settlement;
+		province: Province;
 	}
 
 	export function useData(identifier: string | null): UseSettlementWindow.Data | null {
 
 		const settlement = useQuerySingle(AppCtx.SettlementDatabase(), SettlementDatabase.QUERY_BY_ID, identifier);
+		const province = useQuerySingle(AppCtx.ProvinceDatabase(), ProvinceDatabase.QUERY_BY_SETTLEMENT_ID, settlement?.identifier.id)
 
-		if (settlement) {
+		if (settlement && province) {
 			return {
 				settlement: settlement,
+				province: province
 			};
 		} else {
 			return null;

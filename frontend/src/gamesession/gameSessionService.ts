@@ -7,8 +7,18 @@ import {GameSessionRepository} from "./gameSessionRepository";
 import {TurnStartService} from "../game/turnStartService";
 import {GameStateMessage} from "./models/gameStateMessage";
 import {WebsocketMessageHandler} from "../shared/websocketMessageHandler";
-import {Command, CommandType, CreateSettlementWithSettlerCommand, MoveCommand} from "../models/command";
-import {CreateSettlementWithSettlerCommandMessage, MoveCommandMessage} from "./models/commandMessage";
+import {
+	Command,
+	CommandType,
+	CreateSettlementDirectCommand,
+	CreateSettlementWithSettlerCommand,
+	MoveCommand,
+} from "../models/command";
+import {
+	CreateSettlementDirectCommandMessage,
+	CreateSettlementWithSettlerCommandMessage,
+	MoveCommandMessage,
+} from "./models/commandMessage";
 
 /**
  * Game session service logic
@@ -108,6 +118,16 @@ export class GameSessionService implements WebsocketMessageHandler {
 							type: cmd.type.id,
 							worldObjectId: cmd.worldObjectId!,
 							path: cmd.path,
+						};
+						return cmdMsg;
+					}
+
+					if (it.type === CommandType.CREATE_SETTLEMENT_DIRECT) {
+						const cmd = it as CreateSettlementDirectCommand;
+						const cmdMsg: CreateSettlementDirectCommandMessage = {
+							type: cmd.type.id,
+							name: cmd.name,
+							tile: cmd.tile
 						};
 						return cmdMsg;
 					}

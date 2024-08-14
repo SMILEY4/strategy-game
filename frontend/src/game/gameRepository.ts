@@ -14,6 +14,8 @@ import {Country} from "../models/country";
 import {CountryDatabase} from "../state/database/countryDatabase";
 import {Settlement} from "../models/Settlement";
 import {SettlementDatabase} from "../state/database/settlementDatabase";
+import {ProvinceDatabase} from "../state/database/provinceDatabase";
+import {Province} from "../models/province";
 
 export class GameRepository {
 
@@ -23,6 +25,7 @@ export class GameRepository {
 	private readonly worldObjectDb: WorldObjectDatabase;
 	private readonly commandDb: CommandDatabase;
 	private readonly countryDb: CountryDatabase;
+	private readonly provinceDb: ProvinceDatabase;
 	private readonly settlementDb: SettlementDatabase;
 
 	constructor(
@@ -32,6 +35,7 @@ export class GameRepository {
 		worldObjectDb: WorldObjectDatabase,
 		commandDb: CommandDatabase,
 		countryDb: CountryDatabase,
+		provinceDb: ProvinceDatabase,
 		settlementDb: SettlementDatabase
 	) {
 		this.gameSessionDb = gameSessionDb;
@@ -40,6 +44,7 @@ export class GameRepository {
 		this.worldObjectDb = worldObjectDb;
 		this.commandDb = commandDb;
 		this.countryDb = countryDb;
+		this.provinceDb = provinceDb;
 		this.settlementDb = settlementDb;
 	}
 
@@ -100,7 +105,7 @@ export class GameRepository {
 	}
 
 	public transactionForStartTurn(action: () => void) {
-		Transaction.run([this.tileDb, this.commandDb, this.countryDb, this.settlementDb], action);
+		Transaction.run([this.tileDb, this.commandDb, this.countryDb, this.settlementDb, this.provinceDb], action);
 	}
 
 	public replaceTiles(tiles: Tile[]) {
@@ -111,6 +116,11 @@ export class GameRepository {
 	public replaceCountries(countries: Country[]) {
 		this.countryDb.deleteAll();
 		this.countryDb.insertMany(countries);
+	}
+
+	public replaceProvinces(provinces: Province[]) {
+		this.provinceDb.deleteAll();
+		this.provinceDb.insertMany(provinces)
 	}
 
 	public replaceSettlements(settlements: Settlement[]) {

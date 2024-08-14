@@ -10,7 +10,12 @@ export interface MoveCommandMessage extends CommandMessage {
 }
 
 
+export interface CreateSettlementDirectCommandMessage extends CommandMessage {
+	name: string;
+	tile: TileIdentifier;
+}
+
 export interface CreateSettlementWithSettlerCommandMessage extends CommandMessage {
-	name: string
-	worldObjectId: string
+	name: string;
+	worldObjectId: string;
 }
