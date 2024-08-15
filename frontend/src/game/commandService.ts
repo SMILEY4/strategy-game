@@ -34,7 +34,18 @@ export class CommandService {
 		this.addCommand(command);
 	}
 
-	public addCreateSettlementCommandWithSettler(worldObjectId: string, tile: TileIdentifier, name: string) {
+	public addCreateSettlementDirectCommand(tile: TileIdentifier, name: string) {
+		const command: CreateSettlementWithSettlerCommand = {
+			id: UID.generate(),
+			type: CommandType.CREATE_SETTLEMENT_DIRECT,
+			worldObjectId: null,
+			tile: tile,
+			name: name
+		};
+		this.addCommand(command);
+	}
+
+	public addCreateSettlementWithSettlerCommand(worldObjectId: string, tile: TileIdentifier, name: string) {
 		const command: CreateSettlementWithSettlerCommand = {
 			id: UID.generate(),
 			type: CommandType.CREATE_SETTLEMENT_WITH_SETTLER,

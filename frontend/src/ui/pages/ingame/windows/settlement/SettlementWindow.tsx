@@ -9,6 +9,8 @@ import {WindowSection} from "../../../../components/section/ContentSection";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseSettlementWindow} from "./useSettlementWindow";
+import {Spacer} from "../../../../components/spacer/Spacer";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 
 export interface WorldObjectWindowProps {
 	windowId: string;
@@ -47,7 +49,20 @@ export function SettlementWindow(props: WorldObjectWindowProps): ReactElement {
 						<EnrichedText>Country</EnrichedText>
 						<EnrichedText>{data.settlement.country.name}</EnrichedText>
 
+						<EnrichedText>Province</EnrichedText>
+						<EnrichedText>{data.province.id}</EnrichedText>
+
 					</InsetKeyValueGrid>
+				</WindowSection>
+
+				<Spacer size="m"/>
+
+				<WindowSection title="Province Settlements">
+					<InsetPanel>
+						{data.province.settlements.map(settlement => (
+							<EnrichedText>{settlement.name}</EnrichedText>
+						))}
+					</InsetPanel>
 				</WindowSection>
 
 			</DefaultDecoratedWindowWithBanner>

@@ -16,6 +16,11 @@ class MoveCommandData(
     val path: List<TileRef>
 ) : CommandData()
 
+class CreateSettlementDirectCommandData(
+    val name: String,
+    val tile: TileRef
+) : CommandData()
+
 class CreateSettlementWithSettlerCommandData(
     val name: String,
     val worldObjectId: String

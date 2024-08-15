@@ -16,5 +16,9 @@ export interface Tile {
 		terrainType: TerrainType,
 		resourceType: TileResourceType,
 		height: number
-	}>
+	}>,
+	createSettlement: {
+		settler: boolean,
+		direct: boolean
+	}
 }

@@ -60,7 +60,7 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
             countries = emptyList<Country>().tracking(),
             settlements = emptyList<Settlement>().tracking(),
             provinces = emptyList<Province>().tracking(),
-            routes = emptyList<Route>().tracking()
+//            routes = emptyList<Route>().tracking()
         )
     }
 

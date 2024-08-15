@@ -9,5 +9,4 @@ export interface WorldObject {
 	country: CountryIdentifier,
 	movementPoints: number,
 	ownedByPlayer: boolean,
-	canCreateSettlement?: boolean // todo: split models into specific unit types (settler, scout, ...)
 }

@@ -11,6 +11,7 @@ import {Country} from "../models/country";
 import {Visibility} from "../models/visibility";
 import {mapHidden} from "../models/hiddenType";
 import {Settlement} from "../models/Settlement";
+import {Province} from "../models/province";
 
 /**
  * Service to handle the start of a new turn
@@ -38,8 +39,9 @@ export class TurnStartService {
 				this.gameRepository.clearCommands();
 				this.gameRepository.replaceTiles(this.buildTiles(gameState));
 				this.gameRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
-				this.gameRepository.replaceCountries(this.buildCountries(gameState))
-				this.gameRepository.replaceSettlements(this.buildSettlements(gameState))
+				this.gameRepository.replaceCountries(this.buildCountries(gameState));
+				this.gameRepository.replaceProvinces(this.buildProvinces(gameState));
+				this.gameRepository.replaceSettlements(this.buildSettlements(gameState));
 			});
 		});
 	}
@@ -61,9 +63,13 @@ export class TurnStartService {
 			base: mapHidden(tileMsg.base, baseMsg => ({
 				terrainType: TerrainType.fromString(baseMsg.terrainType),
 				resourceType: TileResourceType.fromString(baseMsg.resourceType),
-				height: baseMsg.height
-			}))
-		}))
+				height: baseMsg.height,
+			})),
+			createSettlement: {
+				settler: tileMsg.createSettlement.settler,
+				direct: tileMsg.createSettlement.direct,
+			}
+		}));
 	}
 
 	private buildCountries(game: GameStateMessage): Country[] {
@@ -76,13 +82,27 @@ export class TurnStartService {
 				userId: countryMsg.player.userId,
 				name: countryMsg.player.name,
 			},
-			ownedByPlayer: countryMsg.ownedByUser
+			ownedByPlayer: countryMsg.ownedByUser,
 		}));
+	}
+
+	private buildProvinces(game: GameStateMessage): Province[] {
+		return game.provinces.map(provinceMsg => {
+			return {
+				id: provinceMsg.id,
+				settlements: provinceMsg.settlements
+					.map(settlementId => game.settlements.find(settlementMsg => settlementMsg.id == settlementId)!)
+					.map(settlementMsg => ({
+						id: settlementMsg.id,
+						name: settlementMsg.name,
+					})),
+			};
+		});
 	}
 
 	private buildSettlements(game: GameStateMessage): Settlement[] {
 		return game.settlements.map(settlementMsg => {
-			const countryMsg = game.countries.find(it => it.id === settlementMsg.country)!
+			const countryMsg = game.countries.find(it => it.id === settlementMsg.country)!;
 			return {
 				identifier: {
 					id: settlementMsg.id,
@@ -90,16 +110,16 @@ export class TurnStartService {
 				},
 				country: {
 					id: countryMsg.id,
-					name: countryMsg.name
+					name: countryMsg.name,
 				},
-				tile: settlementMsg.tile
-			}
-		})
+				tile: settlementMsg.tile,
+			};
+		});
 	}
 
 	private buildWorldObjects(game: GameStateMessage): WorldObject[] {
 		return game.worldObjects.map(worldObjMsg => {
-			const countryMsg = game.countries.find(it => it.id === worldObjMsg.country)!
+			const countryMsg = game.countries.find(it => it.id === worldObjMsg.country)!;
 			if (worldObjMsg.type === "scout") {
 				return {
 					id: worldObjMsg.id,
@@ -111,7 +131,6 @@ export class TurnStartService {
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,
-					canCreateSettlement: false
 				};
 			}
 			if (worldObjMsg.type === "settler") {
@@ -125,7 +144,6 @@ export class TurnStartService {
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,
-					canCreateSettlement: worldObjMsg.canCreateSettlement
 				};
 			}
 			return null;

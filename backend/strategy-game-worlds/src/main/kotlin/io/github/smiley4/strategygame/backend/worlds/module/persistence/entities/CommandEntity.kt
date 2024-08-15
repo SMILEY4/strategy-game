@@ -7,8 +7,10 @@ import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectCommandData
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
+import io.github.smiley4.strategygame.backend.commondata.TileRef
 
 internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -34,6 +36,10 @@ internal class CommandEntity<T : CommandEntityData>(
                     worldObjectId = serviceModel.worldObjectId,
                     path = serviceModel.path.map { TileRefEntity.of(it) },
                 )
+                is CreateSettlementDirectCommandData -> CreateSettlementDirectCommandEntityData(
+                    name = serviceModel.name,
+                    tile = TileRefEntity.of(serviceModel.tile)
+                )
                 is CreateSettlementWithSettlerCommandData -> CreateSettlementWithSettlerCommandEntityData(
                     name = serviceModel.name,
                     worldObjectId = serviceModel.worldObjectId
@@ -57,6 +63,10 @@ internal class CommandEntity<T : CommandEntityData>(
                 worldObjectId = entity.worldObjectId,
                 path = entity.path.map { it.asServiceModel() },
             )
+            is CreateSettlementDirectCommandEntityData -> CreateSettlementDirectCommandData(
+                name = entity.name,
+                tile = entity.tile.asServiceModel()
+            )
             is CreateSettlementWithSettlerCommandEntityData -> CreateSettlementWithSettlerCommandData(
                 name = entity.name,
                 worldObjectId = entity.worldObjectId,
@@ -74,6 +84,8 @@ internal class CommandEntity<T : CommandEntityData>(
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = MoveCommandEntityData::class),
+    JsonSubTypes.Type(value = CreateSettlementDirectCommandEntityData::class),
+    JsonSubTypes.Type(value = CreateSettlementWithSettlerCommandEntityData::class),
 )
 internal sealed class CommandEntityData(
     val type: String
@@ -87,6 +99,16 @@ internal class MoveCommandEntityData(
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "move"
+    }
+}
+
+@JsonTypeName(CreateSettlementDirectCommandEntityData.TYPE)
+internal class CreateSettlementDirectCommandEntityData(
+    val name: String,
+    val tile: TileRefEntity
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "create-settlement-direct"
     }
 }
 

@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.Settlement
 internal class SettlementPOVBuilder(private val povCache: POVCache) {
 
     fun build(settlement: Settlement): JsonType? {
-        if (povCache.tileVisibility(settlement.tile.id).isLessThan(TileVisibilityDTO.DISCOVERED)) {
+        if (povCache.settlementVisibility(settlement.settlementId).isLessThan(TileVisibilityDTO.DISCOVERED)) {
             return null
         }
         return obj {

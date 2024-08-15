@@ -38,8 +38,8 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
                 { deleteCities(game.settlements.getRemovedElements(), gameId) },
                 { updateProvinces(game.provinces, gameId) },
                 { deleteProvinces(game.provinces.getRemovedElements(), gameId) },
-                { updateRoutes(game.routes, gameId) },
-                { deleteRoutes(game.routes.getRemovedElements(), gameId) },
+//                { updateRoutes(game.routes, gameId) },
+//                { deleteRoutes(game.routes.getRemovedElements(), gameId) },
                 { updateWorldObjects(game.worldObjects, gameId) },
                 { deleteWorldObjects(game.worldObjects.getRemovedElements(), gameId) }
             )
