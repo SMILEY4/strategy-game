@@ -54,7 +54,7 @@ internal class InitializePlayerImpl : InitializePlayer {
         )
         game.worldObjects.add(scout)
         positionsCircle(scout.tile, scout.viewDistance).forEach { pos ->
-            game.findTileOrNull(pos)?.discoveredByCountries?.add(countryId)
+            game.findTileOrNull(pos)?.dataPolitical?.discoveredByCountries?.add(countryId)
         }
     }
 
@@ -68,7 +68,7 @@ internal class InitializePlayerImpl : InitializePlayer {
         )
         game.worldObjects.add(settler)
         positionsCircle(settler.tile, settler.viewDistance).forEach { pos ->
-            game.findTileOrNull(pos)?.discoveredByCountries?.add(countryId)
+            game.findTileOrNull(pos)?.dataPolitical?.discoveredByCountries?.add(countryId)
         }
     }
 

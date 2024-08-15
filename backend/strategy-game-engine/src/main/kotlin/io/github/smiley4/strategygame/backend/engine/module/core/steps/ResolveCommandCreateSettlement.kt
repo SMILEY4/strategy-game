@@ -44,7 +44,7 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
         game.worldObjects.remove(settler)
 
         positionsCircle(settlement.tile, settlement.viewDistance).forEach { pos ->
-            game.findTileOrNull(pos)?.discoveredByCountries?.add(settlement.countryId)
+            game.findTileOrNull(pos)?.dataPolitical?.discoveredByCountries?.add(settlement.countryId)
         }
     }
 
@@ -74,7 +74,7 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
         game.settlements.add(settlement)
 
         positionsCircle(settlement.tile, settlement.viewDistance).forEach { pos ->
-            game.findTileOrNull(pos)?.discoveredByCountries?.add(settlement.countryId)
+            game.findTileOrNull(pos)?.dataPolitical?.discoveredByCountries?.add(settlement.countryId)
         }
     }
 

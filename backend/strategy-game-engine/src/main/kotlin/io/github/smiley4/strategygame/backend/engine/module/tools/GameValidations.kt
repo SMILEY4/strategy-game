@@ -16,8 +16,8 @@ internal class GameValidationsImpl : GameValidations {
 
     override fun validateSettlementLocation(game: GameExtended, tile: Tile) {
         // invalid terrain type
-        if(tile.data.terrainType != TerrainType.LAND) {
-            throw Exception("Validation: settlement may not be placed on '${tile.data.terrainType}' tiles")
+        if(tile.dataWorld.terrainType != TerrainType.LAND) {
+            throw Exception("Validation: settlement may not be placed on '${tile.dataWorld.terrainType}' tiles")
         }
         // tile already occupied
         if(game.settlements.any { it.tile.id == tile.tileId }) {

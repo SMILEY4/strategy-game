@@ -2,20 +2,20 @@ package io.github.smiley4.strategygame.backend.engine.module
 
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
-import io.github.smiley4.strategygame.backend.commondata.tracking
-import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
 import io.github.smiley4.strategygame.backend.commondata.Province
-import io.github.smiley4.strategygame.backend.commondata.Route
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TileData
+import io.github.smiley4.strategygame.backend.commondata.TilePoliticalData
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.TileWorldData
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
+import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenerator
@@ -37,14 +37,16 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
             Tile(
                 tileId = DbId.PLACEHOLDER,
                 position = TilePosition(it.q, it.r),
-                data = TileData(
+                dataWorld = TileWorldData(
                     terrainType = it.type,
                     resourceType = it.resource,
                     height = it.height,
                 ),
-                influences = mutableListOf(),
-                owner = null,
-                discoveredByCountries = mutableSetOf()
+                dataPolitical = TilePoliticalData(
+                    discoveredByCountries = mutableSetOf(),
+                    influences = mutableListOf(),
+                    owner = null,
+                ),
             )
         }
     }

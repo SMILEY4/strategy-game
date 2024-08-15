@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 internal class TileVisibilityCalculator {
 
     fun calculateVisibility(game: GameExtended, povCountryId: String, tile: Tile): TileVisibilityDTO {
-        if (!tile.discoveredByCountries.contains(povCountryId)) {
+        if (!tile.dataPolitical.discoveredByCountries.contains(povCountryId)) {
             return TileVisibilityDTO.UNKNOWN
         }
         if (hasLineOfSight(game, povCountryId, tile)) {
