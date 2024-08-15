@@ -41,6 +41,7 @@ export namespace UseTileWindow {
     export interface Data {
         tile: Tile;
         settlement: {
+            valid: boolean,
             found: () => void
         }
     }
@@ -55,6 +56,7 @@ export namespace UseTileWindow {
             return {
                 tile: tile,
                 settlement: {
+                    valid: tile.createSettlement.direct,
                     found: () => openFoundSettlementWindow(tile.identifier, null)
                 }
             };

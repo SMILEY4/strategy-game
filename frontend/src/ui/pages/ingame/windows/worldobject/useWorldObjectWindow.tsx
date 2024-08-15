@@ -9,6 +9,8 @@ import {CommandType, MoveCommand} from "../../../../../models/command";
 import {CommandDatabase} from "../../../../../state/database/commandDatabase";
 import {useQueryMultiple, useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
 import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
+import {App} from "../../../App";
+import {TileDatabase} from "../../../../../state/database/tileDatabase";
 
 export namespace UseWorldObjectWindow {
 
@@ -60,6 +62,7 @@ export namespace UseWorldObjectWindow {
 	export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
 
 		const worldObject = useQuerySingle(AppCtx.WorldObjectDatabase(), WorldObjectDatabase.QUERY_BY_ID, identifier);
+		const tile = useQuerySingle(AppCtx.TileDatabase(), TileDatabase.QUERY_BY_ID, worldObject?.tile.id)
 
 		const hasCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.worldObjectId === identifier);
 		const hasMoveCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.type === CommandType.MOVE && (it as MoveCommand).worldObjectId === identifier);
@@ -79,7 +82,7 @@ export namespace UseWorldObjectWindow {
 				},
 				settlement: {
 					possible: worldObject.ownedByPlayer,
-					enabled: !hasCommand && worldObject.canCreateSettlement!,
+					enabled: !hasCommand && tile?.createSettlement.settler!,
 					start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
 				}
 			};

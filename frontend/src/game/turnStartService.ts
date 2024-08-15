@@ -65,6 +65,10 @@ export class TurnStartService {
 				resourceType: TileResourceType.fromString(baseMsg.resourceType),
 				height: baseMsg.height,
 			})),
+			createSettlement: {
+				settler: tileMsg.createSettlement.settler,
+				direct: tileMsg.createSettlement.direct,
+			}
 		}));
 	}
 
@@ -127,7 +131,6 @@ export class TurnStartService {
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,
-					canCreateSettlement: false,
 				};
 			}
 			if (worldObjMsg.type === "settler") {
@@ -141,7 +144,6 @@ export class TurnStartService {
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,
-					canCreateSettlement: worldObjMsg.canCreateSettlement,
 				};
 			}
 			return null;

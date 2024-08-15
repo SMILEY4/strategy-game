@@ -22,7 +22,11 @@ export interface TileMessage {
 		terrainType: "LAND" | "WATER",
 		resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
 		height: number
-	}>
+	}>,
+	createSettlement: {
+		settler: boolean
+		direct: boolean
+	}
 }
 
 export interface CountryMessage {
@@ -61,5 +65,4 @@ export interface WorldObjectMessage {
 		r: number
 	},
 	maxMovement: number,
-	canCreateSettlement?: boolean,
 }

@@ -18,8 +18,8 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
             val playerCountry = game.findCountryByUser(userId)
             val povCache = POVCache(game, playerCountry.countryId, TileVisibilityCalculator())
 
-            val tileBuilder = TilePOVBuilder(povCache)
-            val worldObjectBuilder = WorldObjectPOVBuilder(povCache, gameValidations)
+            val tileBuilder = TilePOVBuilder(povCache, gameValidations)
+            val worldObjectBuilder = WorldObjectPOVBuilder(povCache)
             val countryBuilder = CountryPOVBuilder()
             val settlementBuilder = SettlementPOVBuilder(povCache)
             val provinceBuilder = ProvincePOVBuilder(povCache)
@@ -28,9 +28,9 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
                 "meta" to obj {
                     "turn" to game.meta.turn
                 }
-                "tiles" to game.tiles.mapNotNull { tileBuilder.build(it) }
+                "tiles" to game.tiles.mapNotNull { tileBuilder.build(it, game) }
                 "countries" to game.countries.map { countryBuilder.build(it, userId) }
-                "worldObjects" to game.worldObjects.mapNotNull { worldObjectBuilder.build(game, it) }
+                "worldObjects" to game.worldObjects.mapNotNull { worldObjectBuilder.build(it) }
                 "settlements" to game.settlements.mapNotNull { settlementBuilder.build(it) }
                 "provinces" to game.provinces.mapNotNull { provinceBuilder.build(it) }
             }

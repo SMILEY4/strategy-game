@@ -63,7 +63,7 @@ export function TileWindow(props: TileWindowProps): ReactElement {
 
 					</InsetKeyValueGrid>
 
-					<ButtonPrimary blue onClick={data.settlement.found}>Found Settlement</ButtonPrimary>
+					<ButtonPrimary blue disabled={!data.settlement.valid} onClick={data.settlement.found}>Found Settlement</ButtonPrimary>
 
 				</WindowSection>
 			</DefaultDecoratedWindowWithBanner>

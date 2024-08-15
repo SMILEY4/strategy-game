@@ -66,7 +66,7 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             viewDistance = 1
         )
 
-        val closestSettlement = game.settlements // todo: province assignment temporary until territory is implemented
+        val closestSettlement = game.settlements // todo: province assignment temporary until territory is implemented -> SG-191
             .minByOrNull { it.tile.distance(settlement.tile) }
             ?: throw Exception("Validation: settlement requires host province")
 
