@@ -3,14 +3,24 @@ package io.github.smiley4.strategygame.backend.commondata
 data class Tile(
     val tileId: String,
     val position: TilePosition,
-    val data: TileData,
+    val dataWorld: TileWorldData,
+    val dataPolitical: TilePoliticalData,
+)
+
+data class TileWorldData(
+    var terrainType: TerrainType,
+    var resourceType: TileResourceType,
+    var height: Float,
+)
+
+data class TilePoliticalData(
     val influences: MutableList<TileInfluence>,
-    var owner: TileOwner?,
     val discoveredByCountries: MutableSet<String>,
-) {
+    var controlledBy: TileOwner?
+)
 
-    inline fun <reified T : WorldObject> findObjects(game: GameExtended): List<T> = game.worldObjects.filter { it.tile.id == tileId }.filterIsInstance<T>()
-
-    inline fun <reified T : WorldObject> findOneObject(game: GameExtended): T? = findObjects<T>(game).firstOrNull()
-
-}
+data class TileOwner(
+    val countryId: String,
+    val provinceId: String,
+    val settlementId: String
+)

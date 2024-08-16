@@ -32,7 +32,7 @@ internal class ResolveCommandMove(private val movementService: MovementService) 
         walkPath(command.data.path, game, worldObject) { next ->
             worldObject.tile = next
             positionsCircle(next, worldObject.viewDistance).forEach { pos ->
-                game.findTileOrNull(pos)?.discoveredByCountries?.add(worldObject.country)
+                game.findTileOrNull(pos)?.dataPolitical?.discoveredByCountries?.add(worldObject.country)
             }
         }
     }

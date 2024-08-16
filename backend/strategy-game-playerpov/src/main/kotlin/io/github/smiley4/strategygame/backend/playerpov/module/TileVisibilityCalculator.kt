@@ -3,20 +3,21 @@ package io.github.smiley4.strategygame.backend.playerpov.module
 import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.engine.module.GameConfig
 
 internal class TileVisibilityCalculator {
 
     fun calculateVisibility(game: GameExtended, povCountryId: String, tile: Tile): TileVisibilityDTO {
-        if (!tile.discoveredByCountries.contains(povCountryId)) {
+        if (!tile.dataPolitical.discoveredByCountries.contains(povCountryId)) {
             return TileVisibilityDTO.UNKNOWN
         }
-        if (hasLineOfSight(game, povCountryId, tile)) {
+        if (hasInfluenceVision(povCountryId, tile) || hasLineOfSight(game, povCountryId, tile)) {
             return TileVisibilityDTO.VISIBLE
         }
         return TileVisibilityDTO.DISCOVERED
     }
 
-    
+
     private fun hasLineOfSight(game: GameExtended, povCountryId: String, tile: Tile): Boolean {
 
         val losWorldObject = game.worldObjects
@@ -36,6 +37,13 @@ internal class TileVisibilityCalculator {
         }
 
         return false
+    }
+
+    private fun hasInfluenceVision(povCountryId: String, tile: Tile): Boolean {
+        val totalInfluence = tile.dataPolitical.influences
+            .filter { it.countryId == povCountryId }
+            .sumOf { it.amount }
+        return totalInfluence >= GameConfig.influenceThresholdVision
     }
 
 }

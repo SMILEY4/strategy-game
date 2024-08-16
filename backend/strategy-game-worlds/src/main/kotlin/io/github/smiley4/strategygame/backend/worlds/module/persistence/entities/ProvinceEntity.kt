@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.Province
 internal class ProvinceEntity(
     val gameId: String,
     val settlementIds: Set<String>,
+    val color: ColorEntity,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -15,14 +16,16 @@ internal class ProvinceEntity(
         fun of(serviceModel: Province, gameId: String) = ProvinceEntity(
             key = DbId.asDbId(serviceModel.provinceId),
             gameId = gameId,
-            settlementIds = serviceModel.settlementIds
+            settlementIds = serviceModel.settlementIds,
+            color = ColorEntity.of(serviceModel.color)
         )
 
     }
 
     fun asServiceModel() = Province(
         provinceId = this.getKeyOrThrow(),
-        settlementIds = this.settlementIds.toMutableSet()
+        settlementIds = this.settlementIds.toMutableSet(),
+        color = this.color.toRGBColor()
     )
 
 }

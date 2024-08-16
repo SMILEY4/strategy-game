@@ -14,8 +14,10 @@ import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCo
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandMove
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandsStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.RootUpdateStep
+import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateInfluenceStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateWorldStep
 import io.github.smiley4.strategygame.backend.engine.module.tools.GameValidationsImpl
+import io.github.smiley4.strategygame.backend.engine.module.tools.InfluenceCalculator
 import org.koin.core.module.Module
 
 fun Module.dependenciesEngine() {
@@ -25,6 +27,7 @@ fun Module.dependenciesEngine() {
     single<MovementService> { MovementServiceImpl() }
 
     single<GameValidations> { GameValidationsImpl() }
+    single<InfluenceCalculator> { InfluenceCalculator() }
 
     single<ResolveCommandMove> { ResolveCommandMove(get()) }
     single<ResolveCommandCreateSettlement> { ResolveCommandCreateSettlement(get()) }
@@ -34,6 +37,7 @@ fun Module.dependenciesEngine() {
             it.register(RootUpdateStep())
             it.register(ResolveCommandsStep(get(), get()))
             it.register(UpdateWorldStep())
+            it.register(UpdateInfluenceStep(get()))
         }
     }
 

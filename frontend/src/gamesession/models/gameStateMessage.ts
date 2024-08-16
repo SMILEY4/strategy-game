@@ -23,6 +23,13 @@ export interface TileMessage {
 		resourceType: "NONE" | "WOOD" | "FISH" | "STONE" | "METAL",
 		height: number
 	}>,
+	political: HiddenType<{
+		controlledBy: null | {
+			country: string,
+			province: string,
+			settlement: string
+		}
+	}>,
 	createSettlement: {
 		settler: boolean
 		direct: boolean
@@ -32,6 +39,11 @@ export interface TileMessage {
 export interface CountryMessage {
 	id: string,
 	name: string,
+	color: {
+		red: number,
+		green: number,
+		blue: number,
+	},
 	player: {
 		userId: string,
 		name: string
@@ -41,11 +53,21 @@ export interface CountryMessage {
 
 export interface ProvinceMessage {
 	id: string,
+	color: {
+		red: number,
+		green: number,
+		blue: number,
+	},
 	settlements: string[]
 }
 
 export interface SettlementMessage {
 	id: string,
+	color: {
+		red: number,
+		green: number,
+		blue: number,
+	},
 	country: string,
 	tile: {
 		id: string,

@@ -23,7 +23,8 @@ export interface MapModeRenderData {
 	 */
 	borderDefault: boolean,
 	/**
-	 * A check determining whether there is a border between the two given tiles
+	 * A check determining whether there is a border between the two given tiles.
+	 * Return 'true' to show a border inside tile "a" facing tile "b".
 	 */
 	borderCheck: (a: Tile, b: Tile) => boolean
 }
@@ -43,29 +44,113 @@ export class MapMode {
 	public static readonly DEFAULT = new MapMode(0, "Default", {
 		grayscale: false,
 		context: () => null,
-		fillColor: tile => MapMode.NO_COLOR,
-		borderColor: tile => MapMode.NO_COLOR,
-		borderCheck: (ta: Tile, tb: Tile) => false,
-		borderDefault: false,
+		fillColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.country.color)
+			: MapMode.NO_COLOR,
+		borderColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.country.color)
+			: MapMode.NO_COLOR,
+		borderCheck: (ta: Tile, tb: Tile) => {
+			const countryA = ta.political.visible && ta.political.value.controlledBy != null
+				? ta.political.value.controlledBy.country.id
+				: null;
+			const countryB = tb.political.visible && tb.political.value.controlledBy != null
+				? tb.political.value.controlledBy.country.id
+				: null;
+			return countryA !== countryB
+		},
+		borderDefault: true,
 	});
 
-	public static readonly RESOURCES = new MapMode(0, "Resources", {
+	public static readonly COUNTRIES = new MapMode(1, "Countries", {
+		grayscale: true,
+		context: () => null,
+		fillColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.country.color)
+			: MapMode.NO_COLOR,
+		borderColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.country.color)
+			: MapMode.NO_COLOR,
+		borderCheck: (ta: Tile, tb: Tile) => {
+			const countryA = ta.political.visible && ta.political.value.controlledBy != null
+				? ta.political.value.controlledBy.country.id
+				: null;
+			const countryB = tb.political.visible && tb.political.value.controlledBy != null
+				? tb.political.value.controlledBy.country.id
+				: null;
+			return countryA !== countryB
+		},
+		borderDefault: true,
+	});
+
+	public static readonly PROVINCES = new MapMode(2, "Provinces", {
+		grayscale: true,
+		context: () => null,
+		fillColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.province.color)
+			: MapMode.NO_COLOR,
+		borderColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.province.color)
+			: MapMode.NO_COLOR,
+		borderCheck: (ta: Tile, tb: Tile) => {
+			const provinceA = ta.political.visible && ta.political.value.controlledBy != null
+				? ta.political.value.controlledBy.province.id
+				: null;
+			const provinceB = tb.political.visible && tb.political.value.controlledBy != null
+				? tb.political.value.controlledBy.province.id
+				: null;
+			return provinceA !== provinceB
+		},
+		borderDefault: true,
+	});
+
+	public static readonly SETTLEMENTS = new MapMode(3, "Settlements", {
+		grayscale: true,
+		context: () => null,
+		fillColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.settlement.color)
+			: MapMode.NO_COLOR,
+		borderColor: tile => tile.political.visible && tile.political.value.controlledBy != null
+			? MapMode.toColor(tile.political.value.controlledBy.settlement.color)
+			: MapMode.NO_COLOR,
+		borderCheck: (ta: Tile, tb: Tile) => {
+			const settlementA = ta.political.visible && ta.political.value.controlledBy != null
+				? ta.political.value.controlledBy.settlement.id
+				: null;
+			const settlementB = tb.political.visible && tb.political.value.controlledBy != null
+				? tb.political.value.controlledBy.settlement.id
+				: null;
+			return settlementA !== settlementB
+		},
+		borderDefault: true,
+	});
+
+
+	public static readonly RESOURCES = new MapMode(4, "Resources", {
 		grayscale: true,
 		context: () => null,
 		fillColor: tile => tile.base.visible ? MapMode.toColor(tile.base.value?.resourceType.color) : MapMode.NO_COLOR,
-		borderColor: tile => MapMode.NO_COLOR,
-		borderCheck: (ta: Tile, tb: Tile) => false,
+		borderColor: () => MapMode.NO_COLOR,
+		borderCheck: () => false,
+		borderDefault: false,
+	});
+
+	public static readonly TERRAIN = new MapMode(5, "Terrain", {
+		grayscale: false,
+		context: () => null,
+		fillColor: () => MapMode.NO_COLOR,
+		borderColor: () => MapMode.NO_COLOR,
+		borderCheck: () => false,
 		borderDefault: false,
 	});
 
 	private static readonly values = [
 		MapMode.DEFAULT,
 		MapMode.RESOURCES,
-		// MapMode.COUNTRIES,
-		// MapMode.PROVINCES,
-		// MapMode.CITIES,
-		// MapMode.TERRAIN,
-		// MapMode.INFLUENCE,
+		MapMode.COUNTRIES,
+		MapMode.PROVINCES,
+		MapMode.SETTLEMENTS,
+		MapMode.TERRAIN,
 	];
 
 	public static getValues(): MapMode[] {

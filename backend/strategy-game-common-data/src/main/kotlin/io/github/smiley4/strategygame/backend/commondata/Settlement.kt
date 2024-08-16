@@ -7,6 +7,7 @@ class Settlement(
     val tile: TileRef,
     val name: String,
     val viewDistance: Int,
+    val color: RGBColor
 //    var tier: SettlementTier,
 //    val meta: CityMetadata,
 //    val infrastructure: CityInfrastructure,

@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
-import io.github.smiley4.strategygame.backend.common.utils.mapMutable
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Settlement
@@ -12,6 +11,7 @@ internal class SettlementEntity(
     val tile: TileRefEntity,
     val name: String,
     val viewDistance: Int,
+    val color: ColorEntity,
 //    val tier: String,
 //    val color: ColorEntity,
 //    val isProvinceCapital: Boolean,
@@ -30,7 +30,8 @@ internal class SettlementEntity(
             countryId = serviceModel.countryId,
             tile = TileRefEntity.of(serviceModel.tile),
             name = serviceModel.name,
-            viewDistance = serviceModel.viewDistance
+            viewDistance = serviceModel.viewDistance,
+            color = ColorEntity.of(serviceModel.color)
 //            tier = serviceModel.tier.name,
 //            color = ColorEntity.of(serviceModel.meta.color),
 //            isProvinceCapital = serviceModel.meta.isProvinceCapital,
@@ -47,7 +48,8 @@ internal class SettlementEntity(
         countryId = this.countryId,
         tile = this.tile.asServiceModel(),
         name = this.name,
-        viewDistance = this.viewDistance
+        viewDistance = this.viewDistance,
+        color = this.color.toRGBColor()
 //        tier = SettlementTier.valueOf(this.tier),
 //        meta = CityMetadata(
 //            name = this.name,

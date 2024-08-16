@@ -1,3 +1,7 @@
+export function mapValue<T,R>(value: T, mapping: (value: T) => R): R {
+    return mapping(value);
+}
+
 export function isPresent<T>(value: T | null | undefined): boolean {
     return !(value === undefined || value === null);
 }

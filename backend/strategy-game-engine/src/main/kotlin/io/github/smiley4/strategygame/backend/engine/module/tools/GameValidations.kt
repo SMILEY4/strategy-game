@@ -14,10 +14,26 @@ internal class GameValidationsImpl : GameValidations {
         }
     }
 
-    override fun validateSettlementLocation(game: GameExtended, tile: Tile) {
+    override fun validateSettlementLocationSettler(game: GameExtended, tile: Tile, countryId: String) {
+        validateSettlementLocation(game, tile)
+        // invalid tile owner
+        if(tile.dataPolitical.controlledBy != null) {
+            throw Exception("Validation: settlement may not be placed on tile owned by any country")
+        }
+    }
+
+    override fun validateSettlementLocationDirect(game: GameExtended, tile: Tile, countryId: String) {
+        validateSettlementLocation(game, tile)
+        // invalid tile owner
+        if(tile.dataPolitical.controlledBy == null || tile.dataPolitical.controlledBy?.countryId != countryId) {
+            throw Exception("Validation: settlement may not be placed on tile not owned by country")
+        }
+    }
+
+    private fun validateSettlementLocation(game: GameExtended, tile: Tile) {
         // invalid terrain type
-        if(tile.data.terrainType != TerrainType.LAND) {
-            throw Exception("Validation: settlement may not be placed on '${tile.data.terrainType}' tiles")
+        if(tile.dataWorld.terrainType != TerrainType.LAND) {
+            throw Exception("Validation: settlement may not be placed on '${tile.dataWorld.terrainType}' tiles")
         }
         // tile already occupied
         if(game.settlements.any { it.tile.id == tile.tileId }) {

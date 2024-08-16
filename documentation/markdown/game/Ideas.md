@@ -41,7 +41,7 @@ https://forums.civfanatics.com/threads/citizens-in-civilization-vii.676009/
 
 https://github.com/Gedemon/Civ6-GCO/blob/master/Concepts.lua
 
-​	https://forums.civfanatics.com/threads/gedemons-civilization-development-thread.615222
+https://forums.civfanatics.com/threads/gedemons-civilization-development-thread.615222
 
 https://forums.civfanatics.com/forums/civ4col-medieval-conquests.483
 
@@ -1716,3 +1716,10 @@ the way to gain extra benefits
 - Trade (and similar) boosts discoveries in same fields as (trade) partner
 - Country profiting more from trade gains biggger boost
 - its an advantage to have (force) neighbors/paratners to be interested in same field
+
+
+
+
+# "Occupying" / Taking Cities in Medieval Times
+
+- https://worldbuilding.stackexchange.com/questions/195071/what-are-some-good-example-cases-of-how-middle-ages-medieval-period-armies-occ

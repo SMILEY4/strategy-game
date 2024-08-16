@@ -1,4 +1,9 @@
-import {GameStateMessage} from "../gamesession/models/gameStateMessage";
+import {
+	CountryMessage,
+	GameStateMessage,
+	ProvinceMessage,
+	SettlementMessage,
+} from "../gamesession/models/gameStateMessage";
 import {ValueHistory} from "../shared/valueHistory";
 import {MonitoringRepository} from "../state/database/monitoringRepository";
 import {Tile} from "../models/tile";
@@ -12,6 +17,7 @@ import {Visibility} from "../models/visibility";
 import {mapHidden} from "../models/hiddenType";
 import {Settlement} from "../models/Settlement";
 import {Province} from "../models/province";
+import {mapValue} from "../shared/utils";
 
 /**
  * Service to handle the start of a new turn
@@ -65,10 +71,28 @@ export class TurnStartService {
 				resourceType: TileResourceType.fromString(baseMsg.resourceType),
 				height: baseMsg.height,
 			})),
+			political: mapHidden(tileMsg.political, politicalMsg => ({
+				controlledBy: politicalMsg.controlledBy ? {
+					country: mapValue(this.findCountryById(game, politicalMsg.controlledBy.country), country => ({
+						id: country.id,
+						name: country.name,
+						color: country.color,
+					})),
+					province: mapValue(this.findProvinceById(game, politicalMsg.controlledBy.province), province => ({
+						id: province.id,
+						color: province.color,
+					})),
+					settlement: mapValue(this.findSettlementById(game, politicalMsg.controlledBy.settlement), settlement => ({
+						id: settlement.id,
+						name: settlement.name,
+						color: settlement.color,
+					})),
+				} : null,
+			})),
 			createSettlement: {
 				settler: tileMsg.createSettlement.settler,
 				direct: tileMsg.createSettlement.direct,
-			}
+			},
 		}));
 	}
 
@@ -77,7 +101,9 @@ export class TurnStartService {
 			identifier: {
 				id: countryMsg.id,
 				name: countryMsg.name,
+				color: countryMsg.color
 			},
+			color: countryMsg.color,
 			player: {
 				userId: countryMsg.player.userId,
 				name: countryMsg.player.name,
@@ -89,12 +115,17 @@ export class TurnStartService {
 	private buildProvinces(game: GameStateMessage): Province[] {
 		return game.provinces.map(provinceMsg => {
 			return {
-				id: provinceMsg.id,
+				identifier: {
+					id: provinceMsg.id,
+					color: provinceMsg.color
+				},
+				color: provinceMsg.color,
 				settlements: provinceMsg.settlements
 					.map(settlementId => game.settlements.find(settlementMsg => settlementMsg.id == settlementId)!)
 					.map(settlementMsg => ({
 						id: settlementMsg.id,
 						name: settlementMsg.name,
+						color: settlementMsg.color
 					})),
 			};
 		});
@@ -102,15 +133,18 @@ export class TurnStartService {
 
 	private buildSettlements(game: GameStateMessage): Settlement[] {
 		return game.settlements.map(settlementMsg => {
-			const countryMsg = game.countries.find(it => it.id === settlementMsg.country)!;
+			const countryMsg = this.findCountryById(game, settlementMsg.country);
 			return {
 				identifier: {
 					id: settlementMsg.id,
 					name: settlementMsg.name,
+					color: settlementMsg.color
 				},
+				color: settlementMsg.color,
 				country: {
 					id: countryMsg.id,
 					name: countryMsg.name,
+					color: countryMsg.color
 				},
 				tile: settlementMsg.tile,
 			};
@@ -119,7 +153,7 @@ export class TurnStartService {
 
 	private buildWorldObjects(game: GameStateMessage): WorldObject[] {
 		return game.worldObjects.map(worldObjMsg => {
-			const countryMsg = game.countries.find(it => it.id === worldObjMsg.country)!;
+			const countryMsg = this.findCountryById(game, worldObjMsg.country);
 			if (worldObjMsg.type === "scout") {
 				return {
 					id: worldObjMsg.id,
@@ -128,6 +162,7 @@ export class TurnStartService {
 					country: {
 						id: countryMsg.id,
 						name: countryMsg.name,
+						color: countryMsg.color
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,
@@ -141,6 +176,7 @@ export class TurnStartService {
 					country: {
 						id: countryMsg.id,
 						name: countryMsg.name,
+						color: countryMsg.color
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,
@@ -148,6 +184,30 @@ export class TurnStartService {
 			}
 			return null;
 		}).filterDefined();
+	}
+
+	private findCountryById(game: GameStateMessage, id: string): CountryMessage {
+		const result = game.countries.find(it => it.id === id);
+		if (!result) {
+			throw new Error("Could not find country with id '" + id + "'");
+		}
+		return result;
+	}
+
+	private findProvinceById(game: GameStateMessage, id: string): ProvinceMessage {
+		const result = game.provinces.find(it => it.id === id);
+		if (!result) {
+			throw new Error("Could not find province with id '" + id + "'");
+		}
+		return result;
+	}
+
+	private findSettlementById(game: GameStateMessage, id: string): SettlementMessage {
+		const result = game.settlements.find(it => it.id === id);
+		if (!result) {
+			throw new Error("Could not find settlement with id '" + id + "'");
+		}
+		return result;
 	}
 
 }

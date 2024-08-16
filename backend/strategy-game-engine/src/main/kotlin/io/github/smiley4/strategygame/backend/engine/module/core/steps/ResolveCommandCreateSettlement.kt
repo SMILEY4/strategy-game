@@ -9,6 +9,7 @@ import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectC
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.RGBColor
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
@@ -24,29 +25,28 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
         val tile = game.findTile(settler.tile)
 
         gameValidations.validateSettlementName(command.data.name)
-        gameValidations.validateSettlementLocation(game, tile)
+        gameValidations.validateSettlementLocationSettler(game, tile, country.countryId)
 
         val settlement = Settlement(
             settlementId = Id.gen(),
             countryId = country.countryId,
             tile = settler.tile,
             name = command.data.name,
-            viewDistance = 1
+            viewDistance = 1,
+            color = RGBColor.random()
         )
 
         val province = Province(
             provinceId = Id.gen(),
             settlementIds = mutableSetOf(settlement.settlementId),
+            color = RGBColor.random()
         )
 
         game.settlements.add(settlement)
         game.provinces.add(province)
         game.worldObjects.remove(settler)
-
-        positionsCircle(settlement.tile, settlement.viewDistance).forEach { pos ->
-            game.findTileOrNull(pos)?.discoveredByCountries?.add(settlement.countryId)
-        }
     }
+
 
     @JvmName("resolveDirect")
     fun resolve(game: GameExtended, command: Command<CreateSettlementDirectCommandData>) {
@@ -56,26 +56,26 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
         val tile = game.findTile(command.data.tile)
 
         gameValidations.validateSettlementName(command.data.name)
-        gameValidations.validateSettlementLocation(game, tile)
+        gameValidations.validateSettlementLocationDirect(game, tile, country.countryId)
 
         val settlement = Settlement(
             settlementId = Id.gen(),
             countryId = country.countryId,
             tile = tile.ref(),
             name = command.data.name,
-            viewDistance = 1
+            viewDistance = 1,
+            color = RGBColor.random()
+
         )
 
-        val closestSettlement = game.settlements // todo: province assignment temporary until territory is implemented -> SG-191
-            .minByOrNull { it.tile.distance(settlement.tile) }
-            ?: throw Exception("Validation: settlement requires host province")
+        val province = tile.dataPolitical.controlledBy?.provinceId?.let { game.findProvince(it) }
 
-        game.findProvinceBySettlement(closestSettlement.settlementId).settlementIds.add(settlement.settlementId)
-        game.settlements.add(settlement)
-
-        positionsCircle(settlement.tile, settlement.viewDistance).forEach { pos ->
-            game.findTileOrNull(pos)?.discoveredByCountries?.add(settlement.countryId)
+        if(province == null || tile.dataPolitical.controlledBy?.countryId != country.countryId) {
+            throw Exception("Can not create direct settlement on tile not owned by country.")
         }
+
+        province.settlementIds.add(settlement.settlementId)
+        game.settlements.add(settlement)
     }
 
 }
