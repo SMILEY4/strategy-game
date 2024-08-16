@@ -14,6 +14,11 @@ internal class ProvincePOVBuilder(private val povCache: POVCache) {
         }
         return obj {
             "id" to province.provinceId
+            "color" to obj {
+                "red" to province.color.red
+                "green" to province.color.green
+                "blue" to province.color.blue
+            }
             "settlements" to knownSettlements
         }
     }

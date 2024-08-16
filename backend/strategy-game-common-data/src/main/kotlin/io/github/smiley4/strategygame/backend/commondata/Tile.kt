@@ -14,7 +14,13 @@ data class TileWorldData(
 )
 
 data class TilePoliticalData(
-    val discoveredByCountries: MutableSet<String>,
     val influences: MutableList<TileInfluence>,
-    var owner: TileOwner?,
+    val discoveredByCountries: MutableSet<String>,
+    var controlledBy: TileOwner?
+)
+
+data class TileOwner(
+    val countryId: String,
+    val provinceId: String,
+    val settlementId: String
 )

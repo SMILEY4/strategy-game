@@ -16,7 +16,7 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
         return time(metricId) {
 
             val playerCountry = game.findCountryByUser(userId)
-            val povCache = POVCache(game, playerCountry.countryId, TileVisibilityCalculator())
+            val povCache = POVCache(playerCountry.countryId, game, TileVisibilityCalculator())
 
             val tileBuilder = TilePOVBuilder(povCache, gameValidations)
             val worldObjectBuilder = WorldObjectPOVBuilder(povCache)

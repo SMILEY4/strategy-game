@@ -25,15 +25,20 @@ internal class TilePOVBuilder(private val povCache: POVCache, private val gameVa
                     "height" to tile.dataWorld.height
                 }
             }
+            "political" to objHidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
+                obj {
+                    "controlledBy" to tile.dataPolitical.controlledBy?.let {
+                        obj {
+                            "country" to it.countryId
+                            "province" to it.provinceId
+                            "settlement" to it.settlementId
+                        }
+                    }
+                }
+            }
             "createSettlement" to obj {
                 "settler" to canCreateSettlementWithSettler(game, tile, visibility)
                 "direct" to canCreateSettlementDirect(game, tile, visibility)
-            }
-        }.also {
-            try {
-                it.toPrettyJsonString()
-            } catch (e: Exception) {
-                println("failed printing")
             }
         }
     }
@@ -43,7 +48,7 @@ internal class TilePOVBuilder(private val povCache: POVCache, private val gameVa
             return false
         }
         try {
-            gameValidations.validateSettlementLocation(game, tile)
+            gameValidations.validateSettlementLocationSettler(game, tile, povCache.povCountryId)
             return true
         } catch (e: Exception) {
             return false
@@ -55,7 +60,7 @@ internal class TilePOVBuilder(private val povCache: POVCache, private val gameVa
             return false
         }
         try {
-            gameValidations.validateSettlementLocation(game, tile)
+            gameValidations.validateSettlementLocationDirect(game, tile, povCache.povCountryId)
             return true
         } catch (e: Exception) {
             return false

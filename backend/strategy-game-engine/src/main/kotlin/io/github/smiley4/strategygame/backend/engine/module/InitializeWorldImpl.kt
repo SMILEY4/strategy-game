@@ -31,7 +31,6 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
         }
     }
 
-
     private fun buildTiles(worldSettings: WorldGenSettings): List<Tile> {
         return worldGenerator.buildTiles(worldSettings).map {
             Tile(
@@ -43,9 +42,9 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
                     height = it.height,
                 ),
                 dataPolitical = TilePoliticalData(
-                    discoveredByCountries = mutableSetOf(),
                     influences = mutableListOf(),
-                    owner = null,
+                    discoveredByCountries = mutableSetOf(),
+                    controlledBy = null
                 ),
             )
         }
@@ -62,7 +61,6 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
             countries = emptyList<Country>().tracking(),
             settlements = emptyList<Settlement>().tracking(),
             provinces = emptyList<Province>().tracking(),
-//            routes = emptyList<Route>().tracking()
         )
     }
 

@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.commondata.TileInfluence
 internal class TileInfluenceEntity(
     val countryId: String,
     val provinceId: String,
-    val cityId: String,
+    val settlementId: String,
     val amount: Double,
 ) {
 
@@ -14,7 +14,7 @@ internal class TileInfluenceEntity(
         fun of(serviceModel: TileInfluence) = TileInfluenceEntity(
             countryId = serviceModel.countryId,
             provinceId = serviceModel.provinceId,
-            cityId = serviceModel.cityId,
+            settlementId = serviceModel.settlementId,
             amount = serviceModel.amount
 
         )
@@ -23,7 +23,7 @@ internal class TileInfluenceEntity(
     fun asServiceModel() = TileInfluence(
         countryId = this.countryId,
         provinceId = this.provinceId,
-        cityId = this.cityId,
+        settlementId = this.settlementId,
         amount = this.amount
     )
 }

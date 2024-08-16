@@ -13,6 +13,11 @@ internal class SettlementPOVBuilder(private val povCache: POVCache) {
         }
         return obj {
             "id" to settlement.settlementId
+            "color" to obj {
+                "red" to settlement.color.red
+                "green" to settlement.color.green
+                "blue" to settlement.color.blue
+            }
             "country" to settlement.countryId
             "tile" to obj {
                 "id" to settlement.tile.id

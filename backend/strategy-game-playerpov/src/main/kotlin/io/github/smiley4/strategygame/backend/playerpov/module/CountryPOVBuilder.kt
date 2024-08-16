@@ -11,6 +11,11 @@ internal class  CountryPOVBuilder {
         return obj {
             "id" to country.countryId
             "name" to country.countryId
+            "color" to obj {
+                "red" to country.color.red
+                "green" to country.color.green
+                "blue" to country.color.blue
+            }
             "player" to obj {
                 "userId" to country.userId
                 "name" to country.userId // todo

@@ -9,7 +9,7 @@ import {MapUniqueSupportingStorage} from "../../shared/db/storage/supporting/map
 import {Province} from "../../models/province";
 
 function provideId(e: Province): string {
-	return e.id;
+	return e.identifier;
 }
 
 interface ProvinceStorageConfig extends DatabaseStorageConfig<Province, string> {

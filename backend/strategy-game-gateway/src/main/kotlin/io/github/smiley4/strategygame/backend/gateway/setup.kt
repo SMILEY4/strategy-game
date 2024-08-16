@@ -7,7 +7,6 @@ import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
 import io.github.smiley4.ktorswaggerui.dsl.AuthType
 import io.github.smiley4.strategygame.backend.common.Config
-import io.github.smiley4.strategygame.backend.commondata.GameConfig
 import io.github.smiley4.strategygame.backend.gateway.game.RouteMovementAvailablePositions.routeMovementAvailablePositions
 import io.github.smiley4.strategygame.backend.gateway.game.RouteSettlementName.routeSettlementName
 import io.github.smiley4.strategygame.backend.gateway.operation.routeHealth
@@ -23,7 +22,6 @@ import io.github.smiley4.strategygame.backend.gateway.websocket.messages.WebSock
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.GatewayGameMessageHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.GatewayGameMessageProducer
-import io.github.smiley4.strategygame.backend.gateway.worlds.RouteConfig.routeConfig
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteCreate.routeCreate
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteDelete.routeDelete
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteDisconnectAll.routeDisconnectAll
@@ -225,7 +223,6 @@ private fun Route.routingGateway() {
         val joinGame by inject<JoinGame>()
         val listGames by inject<ListGames>()
         val deleteGame by inject<DeleteGame>()
-        val gameConfig by inject<GameConfig>()
         val messageHandler by inject<GatewayGameMessageHandler>()
         val disconnectAction by inject<DisconnectPlayer>()
         val requestConnection by inject<RequestConnectionToGame>()
@@ -237,7 +234,6 @@ private fun Route.routingGateway() {
                 routeJoin(joinGame)
                 routeList(listGames)
                 routeDelete(deleteGame)
-                routeConfig(gameConfig)
                 routeWebsocketTicket(wsTicketManager)
             }
             authenticate("auth-technical-user") {

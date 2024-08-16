@@ -6,8 +6,8 @@ import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 
 internal class POVCache(
+    val povCountryId: String,
     private val game: GameExtended,
-    private val povCountryId: String,
     private val tileVisibilityCalculator: TileVisibilityCalculator
 ) {
 
