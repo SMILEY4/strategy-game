@@ -12,7 +12,7 @@ import {Spacer} from "../../components/spacer/Spacer";
 import "./pageSessions.less";
 import {AudioType} from "../../../shared/audioService";
 import {Text} from "../../components/text/Text";
-import {GameSessionMeta} from "../../../models/gameSessionMeta";
+import {GameSessionMeta} from "../../../models/primitives/gameSessionMeta";
 
 
 export function PageSessions(): ReactElement {

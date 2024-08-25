@@ -1,7 +1,7 @@
 import {MapPrimaryStorage} from "../../shared/db/storage/primary/mapPrimaryStorage";
 import {AbstractDatabase} from "../../shared/db/database/abstractDatabase";
 import {Query} from "../../shared/db/query/query";
-import {Tile, TileIdentifier} from "../../models/tile";
+import {Tile, TileIdentifier} from "../../models/primitives/tile";
 import {useQuerySingle} from "../../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../../appContext";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../shared/db/storage/databaseStorage";

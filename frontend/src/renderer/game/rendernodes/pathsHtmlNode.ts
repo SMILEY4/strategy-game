@@ -5,7 +5,7 @@ import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../shared/utils";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
-import {TilePosition} from "../../../models/tilePosition";
+import {TilePosition} from "../../../models/primitives/tilePosition";
 import {Simulate} from "react-dom/test-utils";
 
 export class PathsHtmlNode extends HtmlRenderNode {

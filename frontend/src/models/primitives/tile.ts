@@ -1,4 +1,4 @@
-import {HiddenType} from "./hiddenType";
+import {HiddenType} from "../common/hiddenType";
 import {Visibility} from "./visibility";
 import {TerrainType} from "./TerrainType";
 import {TileResourceType} from "./TileResourceType";

@@ -1,9 +1,9 @@
-import {TileIdentifier} from "../models/tile";
+import {TileIdentifier} from "../models/primitives/tile";
 import {GameRepository} from "./gameRepository";
 import {CommandService} from "./commandService";
-import {WorldObject} from "../models/worldObject";
+import {WorldObject} from "../models/primitives/worldObject";
 import {GameClient} from "./gameClient";
-import {MovementTarget} from "../models/movementTarget";
+import {MovementTarget} from "../models/primitives/movementTarget";
 
 /**
  * Logic for handling movement of world objects

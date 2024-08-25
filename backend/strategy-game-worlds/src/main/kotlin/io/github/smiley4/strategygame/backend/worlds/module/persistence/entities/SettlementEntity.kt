@@ -12,14 +12,7 @@ internal class SettlementEntity(
     val name: String,
     val viewDistance: Int,
     val color: ColorEntity,
-//    val tier: String,
-//    val color: ColorEntity,
-//    val isProvinceCapital: Boolean,
-//    val buildings: List<BuildingEntity>,
-//    val productionQueue: List<ProductionQueueEntryEntity>,
-//    val size: Int,
-//    val growthProgress: Float,
-//    val growthDetails: List<DetailLogEntryEntity<CityPopulationGrowthDetailType>>,
+    val productionQueue: List<ProductionQueueEntryEntity>,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -31,15 +24,8 @@ internal class SettlementEntity(
             tile = TileRefEntity.of(serviceModel.tile),
             name = serviceModel.name,
             viewDistance = serviceModel.viewDistance,
-            color = ColorEntity.of(serviceModel.color)
-//            tier = serviceModel.tier.name,
-//            color = ColorEntity.of(serviceModel.meta.color),
-//            isProvinceCapital = serviceModel.meta.isProvinceCapital,
-//            buildings = serviceModel.infrastructure.buildings.map { BuildingEntity.of(it) },
-//            productionQueue = serviceModel.infrastructure.productionQueue.map { ProductionQueueEntryEntity.of(it) },
-//            size = serviceModel.population.size,
-//            growthProgress = serviceModel.population.growthProgress,
-//            growthDetails = serviceModel.population.growthDetailLog.getDetails().map { DetailLogEntryEntity.of(it) }
+            color = ColorEntity.of(serviceModel.color),
+            productionQueue = serviceModel.productionQueue.map { ProductionQueueEntryEntity.of(it) },
         )
     }
 
@@ -49,24 +35,8 @@ internal class SettlementEntity(
         tile = this.tile.asServiceModel(),
         name = this.name,
         viewDistance = this.viewDistance,
-        color = this.color.toRGBColor()
-//        tier = SettlementTier.valueOf(this.tier),
-//        meta = CityMetadata(
-//            name = this.name,
-//            color = this.color.toRGBColor(),
-//            isProvinceCapital = this.isProvinceCapital,
-//        ),
-//        infrastructure = CityInfrastructure(
-//            buildings = this.buildings.map
-//            { it.asServiceModel() }.toMutableList(),
-//            productionQueue = this.productionQueue.map
-//            { it.asServiceModel() }.toMutableList(),
-//        ),
-//        population = CityPopulation(
-//            size = this.size,
-//            growthProgress = this.growthProgress,
-//            growthDetailLog = DetailLog(this.growthDetails.mapMutable { it.asServiceModel() })
-//        )
+        color = this.color.toRGBColor(),
+        productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList()
     )
 
 }

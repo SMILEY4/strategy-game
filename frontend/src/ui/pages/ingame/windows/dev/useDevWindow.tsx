@@ -3,7 +3,7 @@ import React from "react";
 import {DevWindow} from "./DevWindow";
 import {useFullscreen} from "../../../../components/headless/useFullscreen";
 import {AppCtx} from "../../../../../appContext";
-import {CameraData} from "../../../../../models/cameraData";
+import {CameraData} from "../../../../../models/primitives/cameraData";
 import {UseDevStatsWindow} from "../devstats/useDevStatsWindow";
 import {CameraDatabase} from "../../../../../state/database/cameraDatabase";
 

@@ -1,6 +1,6 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import {AppCtx} from "../../../../../appContext";
-import {Command} from "../../../../../models/command";
+import {Command} from "../../../../../models/primitives/command";
 import React from "react";
 import {CommandLogWindow} from "./CommandLogWindow";
 import {useQueryMultiple, useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";

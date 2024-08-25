@@ -2,13 +2,15 @@ package io.github.smiley4.strategygame.backend.playerpov.module
 
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 
 
 internal class SettlementPOVBuilder(private val povCache: POVCache) {
 
     fun build(settlement: Settlement): JsonType? {
-        if (povCache.settlementVisibility(settlement.settlementId).isLessThan(TileVisibilityDTO.DISCOVERED)) {
+        val visibility = povCache.settlementVisibility(settlement.settlementId)
+        if (visibility.isLessThan(TileVisibilityDTO.DISCOVERED)) {
             return null
         }
         return obj {
@@ -18,13 +20,24 @@ internal class SettlementPOVBuilder(private val povCache: POVCache) {
                 "green" to settlement.color.green
                 "blue" to settlement.color.blue
             }
+            "name" to settlement.name
             "country" to settlement.countryId
             "tile" to obj {
                 "id" to settlement.tile.id
                 "q" to settlement.tile.q
                 "r" to settlement.tile.r
             }
-            "name" to settlement.name
+            "productionQueue" to objHidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
+                settlement.productionQueue.map {
+                    when (it) {
+                        is ProductionQueueEntry.Settler -> obj {
+                            "type" to "settler"
+                            "entryId" to it.entryId
+                            "progress" to it.progress
+                        }
+                    }
+                }
+            }
         }
     }
 

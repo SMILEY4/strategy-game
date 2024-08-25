@@ -1,5 +1,5 @@
 import {AbstractSingletonDatabase} from "../../shared/db/database/abstractSingletonDatabase";
-import {CameraData} from "../../models/cameraData";
+import {CameraData} from "../../models/primitives/cameraData";
 import {useSingletonEntity} from "../../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../../appContext";
 

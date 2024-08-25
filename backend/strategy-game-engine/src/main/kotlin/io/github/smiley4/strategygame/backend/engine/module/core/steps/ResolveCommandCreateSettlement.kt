@@ -2,8 +2,6 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.Id
-import io.github.smiley4.strategygame.backend.common.utils.distance
-import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectCommandData
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
@@ -33,7 +31,8 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             tile = settler.tile,
             name = command.data.name,
             viewDistance = 1,
-            color = RGBColor.random()
+            color = RGBColor.random(),
+            productionQueue = mutableListOf()
         )
 
         val province = Province(
@@ -64,13 +63,13 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             tile = tile.ref(),
             name = command.data.name,
             viewDistance = 1,
-            color = RGBColor.random()
-
+            color = RGBColor.random(),
+            productionQueue = mutableListOf()
         )
 
         val province = tile.dataPolitical.controlledBy?.provinceId?.let { game.findProvince(it) }
 
-        if(province == null || tile.dataPolitical.controlledBy?.countryId != country.countryId) {
+        if (province == null || tile.dataPolitical.controlledBy?.countryId != country.countryId) {
             throw Exception("Can not create direct settlement on tile not owned by country.")
         }
 

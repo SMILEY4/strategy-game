@@ -1,0 +1,38 @@
+@import "./../../../../components/common.less";
+
+.production-entry-background {
+	position:            absolute;
+	top:                 0;
+	bottom:              0;
+	left:                10%;
+	right:               0;
+
+	border-radius:       @border-radius-secondary;
+	background-size:     cover;
+	background-position: 50% 50%;
+
+	mask-image:          linear-gradient(to right, transparent 25%, black 75%);
+	opacity:             70%;
+}
+
+.production-entry--disabled .production-entry-background {
+	filter:  grayscale(80%);
+	opacity: 30%;
+}
+
+.production-entry__name {
+	flex-shrink: 1;
+	flex-grow:   1;
+}
+
+.production-entry__count {
+	opacity:     70%;
+	flex-shrink: 0;
+	flex-grow:   0;
+	min-width:   3rem;
+
+	.change-info-text__next:not(svg) {
+		opacity: 100%;
+	}
+
+}

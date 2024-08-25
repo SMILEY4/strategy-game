@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
-import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectCommandData
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
+import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
-import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddEntryCommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueRemoveEntryCommandData
 
 internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -44,6 +45,13 @@ internal class CommandEntity<T : CommandEntityData>(
                     name = serviceModel.name,
                     worldObjectId = serviceModel.worldObjectId
                 )
+                is ProductionQueueRemoveEntryCommandData -> ProductionQueueRemoveEntryCommandEntityData(
+                    entryId = serviceModel.entryId,
+                    settlementId = serviceModel.settlementId
+                )
+                is ProductionQueueAddEntryCommandData.Settler -> ProductionQueueAddSettlerCommandEntityData(
+                    settlementId = serviceModel.settlementId
+                )
             }
         }
 
@@ -71,6 +79,13 @@ internal class CommandEntity<T : CommandEntityData>(
                 name = entity.name,
                 worldObjectId = entity.worldObjectId,
             )
+            is ProductionQueueRemoveEntryCommandEntityData -> ProductionQueueRemoveEntryCommandData(
+                entryId = entity.entryId,
+                settlementId = entity.settlementId
+            )
+            is ProductionQueueAddSettlerCommandEntityData -> ProductionQueueAddEntryCommandData.Settler(
+                settlementId = entity.settlementId
+            )
         }
     }
 
@@ -86,6 +101,8 @@ internal class CommandEntity<T : CommandEntityData>(
     JsonSubTypes.Type(value = MoveCommandEntityData::class),
     JsonSubTypes.Type(value = CreateSettlementDirectCommandEntityData::class),
     JsonSubTypes.Type(value = CreateSettlementWithSettlerCommandEntityData::class),
+    JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandEntityData::class),
+    JsonSubTypes.Type(value = ProductionQueueAddSettlerCommandEntityData::class),
 )
 internal sealed class CommandEntityData(
     val type: String
@@ -101,6 +118,7 @@ internal class MoveCommandEntityData(
         internal const val TYPE = "move"
     }
 }
+
 
 @JsonTypeName(CreateSettlementDirectCommandEntityData.TYPE)
 internal class CreateSettlementDirectCommandEntityData(
@@ -120,5 +138,26 @@ internal class CreateSettlementWithSettlerCommandEntityData(
 ) : CommandEntityData(TYPE) {
     companion object {
         internal const val TYPE = "create-settlement-settler"
+    }
+}
+
+
+@JsonTypeName(ProductionQueueRemoveEntryCommandEntityData.TYPE)
+internal class ProductionQueueRemoveEntryCommandEntityData(
+    val entryId: String,
+    val settlementId: String
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue.remove-entry"
+    }
+}
+
+
+@JsonTypeName(ProductionQueueAddSettlerCommandEntityData.TYPE)
+internal class ProductionQueueAddSettlerCommandEntityData(
+    val settlementId: String
+) : CommandEntityData(TYPE) {
+    companion object {
+        internal const val TYPE = "production-queue.add.settler"
     }
 }

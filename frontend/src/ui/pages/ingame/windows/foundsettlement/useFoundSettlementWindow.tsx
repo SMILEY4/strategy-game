@@ -1,5 +1,5 @@
 import {useCloseWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
-import {Tile, TileIdentifier} from "../../../../../models/tile";
+import {Tile, TileIdentifier} from "../../../../../models/primitives/tile";
 import {FoundSettlementWindow} from "./FoundSettlementWindow";
 import {useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";
 import {AppCtx} from "../../../../../appContext";
@@ -104,6 +104,5 @@ export namespace UseFoundSettlementWindow {
 			return [false, ["No tile selected"]];
 		}
 	}
-
 
 }

@@ -1,16 +1,16 @@
-import {Tile, TileIdentifier} from "../../models/tile";
+import {Tile, TileIdentifier} from "../../models/primitives/tile";
 import {TileDatabase} from "../../state/database/tileDatabase";
 import {GameSessionDatabase} from "../../state/database/gameSessionDatabase";
 import {CameraDatabase} from "../../state/database/cameraDatabase";
-import {MapMode} from "../../models/mapMode";
-import {CameraData} from "../../models/cameraData";
+import {MapMode} from "../../models/primitives/mapMode";
+import {CameraData} from "../../models/primitives/cameraData";
 import {WorldObjectDatabase} from "../../state/database/objectDatabase";
-import {WorldObject} from "../../models/worldObject";
-import {MovementModeState} from "../../state/movementModeState";
+import {WorldObject} from "../../models/primitives/worldObject";
+import {MovementModeState} from "../../state/database/movementModeState";
 import {CommandDatabase} from "../../state/database/commandDatabase";
-import {CommandType, MoveCommand} from "../../models/command";
-import {TilePosition} from "../../models/tilePosition";
-import {Settlement} from "../../models/Settlement";
+import {CommandType, MoveCommand} from "../../models/primitives/command";
+import {TilePosition} from "../../models/primitives/tilePosition";
+import {Settlement} from "../../models/primitives/Settlement";
 import {SettlementDatabase} from "../../state/database/settlementDatabase";
 
 export class RenderRepository {

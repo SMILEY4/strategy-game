@@ -1,11 +1,11 @@
 import {AbstractSingletonDatabase} from "../../shared/db/database/abstractSingletonDatabase";
-import {GameSession} from "../../models/gameSession";
-import {GameSessionState} from "../../models/gameSessionState";
-import {GameTurnState} from "../../models/gameTurnState";
+import {GameSession} from "../../models/primitives/gameSession";
+import {GameSessionState} from "../../models/primitives/gameSessionState";
+import {GameTurnState} from "../../models/primitives/gameTurnState";
 import {AppCtx} from "../../appContext";
 import {usePartialSingletonEntity} from "../../shared/db/adapters/databaseHooks";
-import {MapMode} from "../../models/mapMode";
-import {TileIdentifier} from "../../models/tile";
+import {MapMode} from "../../models/primitives/mapMode";
+import {TileIdentifier} from "../../models/primitives/tile";
 
 export class GameSessionDatabase extends AbstractSingletonDatabase<GameSession> {
 

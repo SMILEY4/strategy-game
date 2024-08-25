@@ -1,5 +1,5 @@
 import {Camera} from "../shared/webgl/camera";
-import {Tile} from "../models/tile";
+import {Tile} from "../models/primitives/tile";
 import {CanvasHandle} from "../shared/webgl/canvasHandle";
 import {Projections} from "../shared/webgl/projections";
 import {GameRepository} from "./gameRepository";

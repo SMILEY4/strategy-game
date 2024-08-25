@@ -52,4 +52,11 @@ data class GameExtended(
     fun findProvinceBySettlement(settlementId: String) = findProvinceBySettlementOrNull(settlementId)
         ?: throw Exception("Could not find province for settlement $settlementId in game ${meta.gameId}")
 
+
+    fun findSettlementOrNull(settlementId: String): Settlement? {
+        return settlements.find { it.settlementId == settlementId }
+    }
+
+    fun findSettlement(settlementId: String) = findSettlementOrNull(settlementId)
+        ?: throw Exception("Could not find settlement with id $settlementId in game ${meta.gameId}")
 }

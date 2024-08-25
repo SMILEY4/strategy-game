@@ -184,6 +184,7 @@ export const AppCtx: AppCtxDef = {
 		"SettlementService",
 		() => new SettlementService(
 			AppCtx.CommandService(),
+			AppCtx.GameRepository(),
 			AppCtx.GameClient(),
 		),
 	),

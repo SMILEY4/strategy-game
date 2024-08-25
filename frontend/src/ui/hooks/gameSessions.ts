@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useHandleUnauthorized} from "./authentication";
-import {UnauthorizedError} from "../../models/UnauthorizedError";
+import {UnauthorizedError} from "../../models/common/UnauthorizedError";
 import {AppCtx} from "../../appContext";
 
 export function useLoadGameSessions() {

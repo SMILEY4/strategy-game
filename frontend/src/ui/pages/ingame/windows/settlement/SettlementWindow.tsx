@@ -11,6 +11,12 @@ import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {UseSettlementWindow} from "./useSettlementWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {HBox} from "../../../../components/layout/hbox/HBox";
+import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {FiPlus} from "react-icons/fi";
+import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
+import {CgClose} from "react-icons/cg";
+import "./settlementWindow.less"
 
 export interface WorldObjectWindowProps {
 	windowId: string;
@@ -65,8 +71,53 @@ export function SettlementWindow(props: WorldObjectWindowProps): ReactElement {
 					</InsetPanel>
 				</WindowSection>
 
+				<WindowSection title={"Buildings"}>
+					<ProductionQueueSection {...data}/>
+				</WindowSection>
+
 			</DefaultDecoratedWindowWithBanner>
 		);
 	}
 
 }
+
+function ProductionQueueSection(props: UseSettlementWindow.Data) {
+	return (
+		<HBox centerVertical left gap_s>
+			<ProductionQueueAddButton {...props}/>
+			<ProductionQueueProgressBar {...props}/>
+			<ProductionQueueCancelButton {...props}/>
+		</HBox>
+	)
+}
+
+function ProductionQueueAddButton(props: UseSettlementWindow.Data): ReactElement {
+	return (
+		<ButtonPrimary square onClick={props.productionQueue.add}>
+			<FiPlus/>
+		</ButtonPrimary>
+	);
+}
+
+function ProductionQueueProgressBar(props: UseSettlementWindow.Data): ReactElement {
+	return (
+		<ProgressBar
+			progress={props.productionQueue.activeEntry=== null ? 0 : props.productionQueue.activeEntry.progress}
+			onClick={props.productionQueue.open}
+			className="production_queue__progress"
+		>
+			<Text relative>
+				{props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.optionType.name}
+			</Text>
+		</ProgressBar>
+	);
+}
+
+function ProductionQueueCancelButton(props: UseSettlementWindow.Data): ReactElement {
+	return (
+		<ButtonPrimary square round small onClick={props.productionQueue.cancel}>
+			<CgClose/>
+		</ButtonPrimary>
+	);
+}
+

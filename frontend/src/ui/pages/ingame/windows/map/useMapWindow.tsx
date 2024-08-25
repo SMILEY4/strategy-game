@@ -1,7 +1,7 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {MapWindow} from "./MapWindow";
-import {MapMode} from "../../../../../models/mapMode";
+import {MapMode} from "../../../../../models/primitives/mapMode";
 import {GameSessionDatabase} from "../../../../../state/database/gameSessionDatabase";
 
 export namespace UseMapWindow {

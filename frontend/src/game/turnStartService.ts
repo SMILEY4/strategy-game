@@ -6,18 +6,21 @@ import {
 } from "../gamesession/models/gameStateMessage";
 import {ValueHistory} from "../shared/valueHistory";
 import {MonitoringRepository} from "../state/database/monitoringRepository";
-import {Tile} from "../models/tile";
+import {Tile} from "../models/primitives/tile";
 import {GameRepository} from "./gameRepository";
-import {TerrainType} from "../models/TerrainType";
-import {TileResourceType} from "../models/TileResourceType";
-import {WorldObjectType} from "../models/worldObjectType";
-import {WorldObject} from "../models/worldObject";
-import {Country} from "../models/country";
-import {Visibility} from "../models/visibility";
-import {mapHidden} from "../models/hiddenType";
-import {Settlement} from "../models/Settlement";
-import {Province} from "../models/province";
+import {TerrainType} from "../models/primitives/TerrainType";
+import {TileResourceType} from "../models/primitives/TileResourceType";
+import {WorldObjectType} from "../models/primitives/worldObjectType";
+import {WorldObject} from "../models/primitives/worldObject";
+import {Country} from "../models/primitives/country";
+import {Visibility} from "../models/primitives/visibility";
+import {HiddenType, mapHidden} from "../models/common/hiddenType";
+import {Settlement} from "../models/primitives/Settlement";
+import {Province} from "../models/primitives/province";
 import {mapValue} from "../shared/utils";
+import hidden = HiddenType.hidden;
+import visible = HiddenType.visible;
+import {ProductionOptionType} from "../models/primitives/productionOptionType";
 
 /**
  * Service to handle the start of a new turn
@@ -101,7 +104,7 @@ export class TurnStartService {
 			identifier: {
 				id: countryMsg.id,
 				name: countryMsg.name,
-				color: countryMsg.color
+				color: countryMsg.color,
 			},
 			color: countryMsg.color,
 			player: {
@@ -117,7 +120,7 @@ export class TurnStartService {
 			return {
 				identifier: {
 					id: provinceMsg.id,
-					color: provinceMsg.color
+					color: provinceMsg.color,
 				},
 				color: provinceMsg.color,
 				settlements: provinceMsg.settlements
@@ -125,7 +128,7 @@ export class TurnStartService {
 					.map(settlementMsg => ({
 						id: settlementMsg.id,
 						name: settlementMsg.name,
-						color: settlementMsg.color
+						color: settlementMsg.color,
 					})),
 			};
 		});
@@ -138,15 +141,24 @@ export class TurnStartService {
 				identifier: {
 					id: settlementMsg.id,
 					name: settlementMsg.name,
-					color: settlementMsg.color
+					color: settlementMsg.color,
 				},
 				color: settlementMsg.color,
 				country: {
 					id: countryMsg.id,
 					name: countryMsg.name,
-					color: countryMsg.color
+					color: countryMsg.color,
 				},
 				tile: settlementMsg.tile,
+				productionQueue: mapHidden(settlementMsg.productionQueue, productionQueueMsg => productionQueueMsg.map(entryMsg => ({
+					option: ProductionOptionType.fromId(entryMsg.type),
+					entryId: entryMsg.entryId,
+					progress: entryMsg.progress,
+				}))),
+				productionOptions: visible([ // todo
+					ProductionOptionType.SETTLER,
+					ProductionOptionType.TOOL_WORKSHOP
+				])
 			};
 		});
 	}
@@ -162,7 +174,7 @@ export class TurnStartService {
 					country: {
 						id: countryMsg.id,
 						name: countryMsg.name,
-						color: countryMsg.color
+						color: countryMsg.color,
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,
@@ -176,7 +188,7 @@ export class TurnStartService {
 					country: {
 						id: countryMsg.id,
 						name: countryMsg.name,
-						color: countryMsg.color
+						color: countryMsg.color,
 					},
 					movementPoints: worldObjMsg.maxMovement,
 					ownedByPlayer: countryMsg.ownedByUser,

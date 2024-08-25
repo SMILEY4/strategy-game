@@ -2,10 +2,10 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import React from "react";
 import {WorldObjectWindow} from "./WorldObjectWindow";
 import {AppCtx} from "../../../../../appContext";
-import {WorldObject} from "../../../../../models/worldObject";
+import {WorldObject} from "../../../../../models/primitives/worldObject";
 import {WorldObjectDatabase} from "../../../../../state/database/objectDatabase";
 import {UseMoveWindow} from "../move/useWorldObjectWindow";
-import {CommandType, MoveCommand} from "../../../../../models/command";
+import {CommandType, MoveCommand} from "../../../../../models/primitives/command";
 import {CommandDatabase} from "../../../../../state/database/commandDatabase";
 import {useQueryMultiple, useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
 import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";

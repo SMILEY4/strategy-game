@@ -1,7 +1,7 @@
 import {AuthProvider} from "../user/authProvider";
 import {HttpClient} from "../shared/httpClient";
 import {WebsocketClient} from "../shared/websocketClient";
-import {GameSessionMeta} from "../models/gameSessionMeta";
+import {GameSessionMeta} from "../models/primitives/gameSessionMeta";
 import {WebsocketMessageHandler} from "../shared/websocketMessageHandler";
 
 /**

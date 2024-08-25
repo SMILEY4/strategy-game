@@ -2,9 +2,9 @@ import {openWindow, useCloseWindow, useOpenWindow} from "../../../../components/
 import React, {useEffect} from "react";
 import {MoveWindow} from "./MoveWindow";
 import {AppCtx} from "../../../../../appContext";
-import {WorldObject} from "../../../../../models/worldObject";
+import {WorldObject} from "../../../../../models/primitives/worldObject";
 import {WorldObjectDatabase} from "../../../../../state/database/objectDatabase";
-import {MovementModeState} from "../../../../../state/movementModeState";
+import {MovementModeState} from "../../../../../state/database/movementModeState";
 
 export namespace UseMoveWindow {
 
