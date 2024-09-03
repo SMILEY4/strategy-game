@@ -25,3 +25,17 @@ class CreateSettlementWithSettlerCommandData(
     val name: String,
     val worldObjectId: String
 ) : CommandData()
+
+class ProductionQueueRemoveEntryCommandData(
+    val entryId: String,
+    val settlementId: String
+) : CommandData()
+
+sealed class ProductionQueueAddEntryCommandData(
+    val settlementId: String
+) : CommandData() {
+
+    class Settler(settlementId: String) : ProductionQueueAddEntryCommandData(settlementId)
+
+}
+

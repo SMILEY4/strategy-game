@@ -2,10 +2,10 @@ import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../
 import {GLAttributeType} from "../../../shared/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../shared/tilemapUtils";
-import {Tile} from "../../../models/tile";
+import {Tile} from "../../../models/primitives/tile";
 import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
-import {MapMode} from "../../../models/mapMode";
+import {MapMode} from "../../../models/primitives/mapMode";
 import {NodeOutput} from "../../core/graph/nodeOutput";
 import {ChangeProvider} from "../changeProvider";
 import {RenderRepository} from "../renderRepository";

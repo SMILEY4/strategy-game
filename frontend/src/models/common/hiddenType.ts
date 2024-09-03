@@ -12,6 +12,13 @@ export namespace HiddenType {
         }
     }
 
+    export function visible<T>(value: T): HiddenType<T> {
+        return {
+            visible: true,
+            value: value
+        }
+    }
+
 }
 
 export function getHiddenOrNull<T>(type: HiddenType<T>): T | null {

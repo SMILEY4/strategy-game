@@ -3,10 +3,10 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 import {Camera} from "../../../shared/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../shared/utils";
-import {TileIdentifier} from "../../../models/tile";
+import {TileIdentifier} from "../../../models/primitives/tile";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
-import {WorldObjectType} from "../../../models/worldObjectType";
+import {WorldObjectType} from "../../../models/primitives/worldObjectType";
 
 var dirty = true;
 

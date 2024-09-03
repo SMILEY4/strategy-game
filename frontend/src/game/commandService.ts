@@ -1,8 +1,17 @@
 import {GameRepository} from "./gameRepository";
-import {Command, CommandType, CreateSettlementWithSettlerCommand, MoveCommand} from "../models/command";
+import {
+	ProductionQueueAddCommand,
+	Command,
+	CommandType,
+	CreateSettlementWithSettlerCommand,
+	MoveCommand, ProductionQueueCancelCommand,
+} from "../models/primitives/command";
 import {UID} from "../shared/uid";
 import {AudioService, AudioType} from "../shared/audioService";
-import {TileIdentifier} from "../models/tile";
+import {TileIdentifier} from "../models/primitives/tile";
+import {SettlementIdentifier} from "../models/primitives/Settlement";
+import {ProductionOptionAggregate, ProductionQueueEntryAggregate} from "../models/aggregates/SettlementAggregate";
+import {ProductionOptionType} from "../models/primitives/productionOptionType";
 
 export class CommandService {
 
@@ -52,6 +61,34 @@ export class CommandService {
 			worldObjectId: worldObjectId,
 			tile: tile,
 			name: name
+		};
+		this.addCommand(command);
+	}
+
+	public addProductionQueueEntry(settlementId: SettlementIdentifier, type: ProductionOptionType) {
+		const cmdId = UID.generate()
+		const command: ProductionQueueAddCommand = {
+			id: cmdId,
+			type: CommandType.PRODUCTION_QUEUE_ADD,
+			worldObjectId: null,
+			settlement: settlementId,
+			entry: {
+				id: cmdId,
+				optionType: type,
+				progress: 0,
+				isCommand: true
+			}
+		};
+		this.addCommand(command);
+	}
+
+	public cancelProductionQueueEntry(settlementId: SettlementIdentifier, entry: ProductionQueueEntryAggregate) {
+		const command: ProductionQueueCancelCommand = {
+			id: UID.generate(),
+			type: CommandType.PRODUCTION_QUEUE_CANCEL,
+			worldObjectId: null,
+			settlement: settlementId,
+			entry: entry
 		};
 		this.addCommand(command);
 	}

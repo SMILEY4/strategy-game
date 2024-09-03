@@ -1,7 +1,7 @@
 import {GameSessionClient} from "./gameSessionClient";
 import {handleResponseError} from "../shared/httpClient";
-import {UnauthorizedError} from "../models/UnauthorizedError";
-import {GameSessionMeta} from "../models/gameSessionMeta";
+import {UnauthorizedError} from "../models/common/UnauthorizedError";
+import {GameSessionMeta} from "../models/primitives/gameSessionMeta";
 import {RenderGraphPreloader} from "../renderer/core/graph/renderGraphPreloader";
 import {GameSessionRepository} from "./gameSessionRepository";
 import {TurnStartService} from "../game/turnStartService";
@@ -12,12 +12,12 @@ import {
 	CommandType,
 	CreateSettlementDirectCommand,
 	CreateSettlementWithSettlerCommand,
-	MoveCommand,
-} from "../models/command";
+	MoveCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
+} from "../models/primitives/command";
 import {
 	CreateSettlementDirectCommandMessage,
 	CreateSettlementWithSettlerCommandMessage,
-	MoveCommandMessage,
+	MoveCommandMessage, ProductionQueueAddCommandMessage, ProductionQueueCancelCommandMessage,
 } from "./models/commandMessage";
 
 /**
@@ -138,6 +138,25 @@ export class GameSessionService implements WebsocketMessageHandler {
 							type: cmd.type.id,
 							name: cmd.name,
 							worldObjectId: cmd.worldObjectId!
+						};
+						return cmdMsg;
+					}
+
+					if (it.type === CommandType.PRODUCTION_QUEUE_ADD) {
+						const cmd = it as ProductionQueueAddCommand;
+						const cmdMsg: ProductionQueueAddCommandMessage = {
+							type: cmd.type.id,
+							settlementId: cmd.settlement.id,
+						};
+						return cmdMsg;
+					}
+
+					if (it.type === CommandType.PRODUCTION_QUEUE_CANCEL) {
+						const cmd = it as ProductionQueueCancelCommand;
+						const cmdMsg: ProductionQueueCancelCommandMessage = {
+							type: cmd.type.id,
+							entryId: cmd.entry.id,
+							settlementId: cmd.settlement.id
 						};
 						return cmdMsg;
 					}

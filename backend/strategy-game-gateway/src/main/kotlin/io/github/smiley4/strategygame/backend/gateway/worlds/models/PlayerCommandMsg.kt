@@ -7,6 +7,8 @@ import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectCommandData
 import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
 import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddEntryCommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueRemoveEntryCommandData
 import io.github.smiley4.strategygame.backend.commondata.TileRef
 
 @JsonTypeInfo(
@@ -18,7 +20,9 @@ import io.github.smiley4.strategygame.backend.commondata.TileRef
     JsonSubTypes.Type(value = MoveCommandMsg::class),
     JsonSubTypes.Type(value = CreateSettlementDirectCommandMsg::class),
     JsonSubTypes.Type(value = CreateSettlementWithSettlerCommandMsg::class),
-    )
+    JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandMsg::class),
+    JsonSubTypes.Type(value = ProductionQueueAddSettlerCommandMsg::class),
+)
 internal sealed class PlayerCommandMsg(val type: String) {
     abstract fun asCommandData(): CommandData
 }
@@ -71,5 +75,37 @@ internal class CreateSettlementWithSettlerCommandMsg(
     override fun asCommandData() = CreateSettlementWithSettlerCommandData(
         name = this.name,
         worldObjectId = this.worldObjectId
+    )
+}
+
+
+@JsonTypeName(ProductionQueueRemoveEntryCommandMsg.TYPE)
+internal class ProductionQueueRemoveEntryCommandMsg(
+    val entryId: String,
+    val settlementId: String
+) : PlayerCommandMsg(TYPE) {
+
+    companion object {
+        internal const val TYPE = "production-queue.remove-entry"
+    }
+
+    override fun asCommandData() = ProductionQueueRemoveEntryCommandData(
+        entryId = this.entryId,
+        settlementId = this.settlementId
+    )
+}
+
+
+@JsonTypeName(ProductionQueueAddSettlerCommandMsg.TYPE)
+internal class ProductionQueueAddSettlerCommandMsg(
+    val settlementId: String,
+) : PlayerCommandMsg(TYPE) {
+
+    companion object {
+        internal const val TYPE = "production-queue.add.settler"
+    }
+
+    override fun asCommandData() = ProductionQueueAddEntryCommandData.Settler(
+        settlementId = this.settlementId
     )
 }

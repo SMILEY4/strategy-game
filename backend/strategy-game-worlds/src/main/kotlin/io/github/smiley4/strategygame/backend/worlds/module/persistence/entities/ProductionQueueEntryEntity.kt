@@ -3,11 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import io.github.smiley4.strategygame.backend.commondata.BuildingType
-import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
-import io.github.smiley4.strategygame.backend.commondata.BuildingProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
-import io.github.smiley4.strategygame.backend.commondata.SettlerProductionQueueEntry
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -15,63 +11,40 @@ import io.github.smiley4.strategygame.backend.commondata.SettlerProductionQueueE
     property = "type"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = BuildingProductionQueueEntryEntity::class),
     JsonSubTypes.Type(value = SettlerProductionQueueEntryEntity::class),
 )
 internal sealed class ProductionQueueEntryEntity(
     val type: String,
     val entryId: String,
-    val collectedResources: List<ResourceStackEntity>,
+    val progress: Float,
 ) {
 
     companion object {
         fun of(serviceModel: ProductionQueueEntry) =
             when (serviceModel) {
-                is BuildingProductionQueueEntry -> BuildingProductionQueueEntryEntity(
+                is ProductionQueueEntry.Settler -> SettlerProductionQueueEntryEntity(
                     entryId = serviceModel.entryId,
-                    collectedResources = serviceModel.collectedResources.toStacks().map { ResourceStackEntity.of(it) },
-                    buildingType = serviceModel.buildingType
-                )
-                is SettlerProductionQueueEntry -> SettlerProductionQueueEntryEntity(
-                    entryId = serviceModel.entryId,
-                    collectedResources = serviceModel.collectedResources.toStacks().map { ResourceStackEntity.of(it) },
+                    progress = serviceModel.progress
                 )
             }
     }
 
     fun asServiceModel(): ProductionQueueEntry =
-        when(this) {
-            is BuildingProductionQueueEntryEntity -> BuildingProductionQueueEntry(
+        when (this) {
+            is SettlerProductionQueueEntryEntity -> ProductionQueueEntry.Settler(
                 entryId = this.entryId,
-                buildingType = this.buildingType,
-                collectedResources = ResourceCollection.basic(this.collectedResources.map { it.asServiceModel() })
-            )
-            is SettlerProductionQueueEntryEntity -> SettlerProductionQueueEntry(
-                entryId = this.entryId,
-                collectedResources = ResourceCollection.basic(this.collectedResources.map { it.asServiceModel() })
+                progress = this.progress
             )
         }
 
 }
 
 
-@JsonTypeName(BuildingProductionQueueEntryEntity.TYPE)
-internal class BuildingProductionQueueEntryEntity(
-    entryId: String,
-    collectedResources: List<ResourceStackEntity>,
-    val buildingType: BuildingType
-) : ProductionQueueEntryEntity(TYPE, entryId, collectedResources) {
-    companion object {
-        internal const val TYPE = "building"
-    }
-}
-
-
 @JsonTypeName(SettlerProductionQueueEntryEntity.TYPE)
 internal class SettlerProductionQueueEntryEntity(
     entryId: String,
-    collectedResources: List<ResourceStackEntity>,
-) : ProductionQueueEntryEntity(TYPE, entryId, collectedResources) {
+    progress: Float
+) : ProductionQueueEntryEntity(TYPE, entryId, progress) {
     companion object {
         internal const val TYPE = "settler"
     }

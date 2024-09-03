@@ -1,5 +1,5 @@
 import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
-import {Tile, TileIdentifier} from "../../../../../models/tile";
+import {Tile, TileIdentifier} from "../../../../../models/primitives/tile";
 import React from "react";
 import {TileWindow} from "./TileWindow";
 import {AppCtx} from "../../../../../appContext";

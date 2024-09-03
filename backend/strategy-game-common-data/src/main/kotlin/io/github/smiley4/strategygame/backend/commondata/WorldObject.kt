@@ -8,7 +8,7 @@ sealed interface WorldObject {
     var viewDistance: Int
 }
 
-class ScoutWorldObject(
+class ScoutWorldObject( // todo: as nested class of WorldObject ? -> WorldObject.Scout(...)
     override val id: String,
     override var tile: TileRef,
     override var country: String,
@@ -16,7 +16,7 @@ class ScoutWorldObject(
     override var viewDistance: Int,
 ) : WorldObject
 
-class SettlerWorldObject(
+class SettlerWorldObject( // todo: as nested class of WorldObject ? -> WorldObject.Settler(...)
     override val id: String,
     override var tile: TileRef,
     override var country: String,

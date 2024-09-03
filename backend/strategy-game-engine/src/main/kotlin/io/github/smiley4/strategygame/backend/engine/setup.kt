@@ -12,9 +12,11 @@ import io.github.smiley4.strategygame.backend.engine.module.ingame.MovementServi
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventSystem
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandCreateSettlement
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandMove
+import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandProductionQueue
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandsStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.RootUpdateStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateInfluenceStep
+import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateProductionQueues
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateWorldStep
 import io.github.smiley4.strategygame.backend.engine.module.tools.GameValidationsImpl
 import io.github.smiley4.strategygame.backend.engine.module.tools.InfluenceCalculator
@@ -31,12 +33,14 @@ fun Module.dependenciesEngine() {
 
     single<ResolveCommandMove> { ResolveCommandMove(get()) }
     single<ResolveCommandCreateSettlement> { ResolveCommandCreateSettlement(get()) }
+    single<ResolveCommandProductionQueue> { ResolveCommandProductionQueue() }
 
     single<GameEventSystem> {
         GameEventSystem().also {
             it.register(RootUpdateStep())
-            it.register(ResolveCommandsStep(get(), get()))
+            it.register(ResolveCommandsStep(get(), get(), get()))
             it.register(UpdateWorldStep())
+            it.register(UpdateProductionQueues())
             it.register(UpdateInfluenceStep(get()))
         }
     }

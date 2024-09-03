@@ -1,21 +1,21 @@
-import {Tile, TileIdentifier} from "../models/tile";
+import {Tile, TileIdentifier} from "../models/primitives/tile";
 import {TileDatabase} from "../state/database/tileDatabase";
 import {CameraDatabase} from "../state/database/cameraDatabase";
-import {CameraData} from "../models/cameraData";
+import {CameraData} from "../models/primitives/cameraData";
 import {GameSessionDatabase} from "../state/database/gameSessionDatabase";
 import {Transaction} from "../shared/db/database/transaction";
 import {WorldObjectDatabase} from "../state/database/objectDatabase";
-import {WorldObject} from "../models/worldObject";
-import {MovementModeState} from "../state/movementModeState";
-import {Command} from "../models/command";
+import {WorldObject} from "../models/primitives/worldObject";
+import {MovementModeState} from "../state/database/movementModeState";
+import {Command} from "../models/primitives/command";
 import {CommandDatabase} from "../state/database/commandDatabase";
-import {MovementTarget} from "../models/movementTarget";
-import {Country} from "../models/country";
+import {MovementTarget} from "../models/primitives/movementTarget";
+import {Country} from "../models/primitives/country";
 import {CountryDatabase} from "../state/database/countryDatabase";
-import {Settlement} from "../models/Settlement";
+import {Settlement} from "../models/primitives/Settlement";
 import {SettlementDatabase} from "../state/database/settlementDatabase";
 import {ProvinceDatabase} from "../state/database/provinceDatabase";
-import {Province} from "../models/province";
+import {Province} from "../models/primitives/province";
 
 export class GameRepository {
 

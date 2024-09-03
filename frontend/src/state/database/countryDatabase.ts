@@ -3,7 +3,7 @@ import {AbstractDatabase} from "../../shared/db/database/abstractDatabase";
 import {Query} from "../../shared/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../shared/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../shared/db/storage/supporting/arraySupportingStorage";
-import {Country} from "../../models/country";
+import {Country} from "../../models/primitives/country";
 
 function provideId(e: Country): string {
 	return e.identifier.id;

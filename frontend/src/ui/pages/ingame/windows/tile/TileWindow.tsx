@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {TileIdentifier} from "../../../../../models/tile";
+import {TileIdentifier} from "../../../../../models/primitives/tile";
 import {UseTileWindow} from "./useTileWindow";
 import {
     DefaultDecoratedWindow,
@@ -10,7 +10,7 @@ import {Text} from "../../../../components/text/Text";
 import {WindowSection} from "../../../../components/section/ContentSection";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {mapHiddenOrDefault} from "../../../../../models/hiddenType";
+import {mapHiddenOrDefault} from "../../../../../models/common/hiddenType";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
 export interface TileWindowProps {

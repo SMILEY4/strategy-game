@@ -1,4 +1,4 @@
-import {HiddenType} from "../../models/hiddenType";
+import {HiddenType} from "../../models/common/hiddenType";
 
 export interface GameStateMessage {
 	meta: {
@@ -68,13 +68,18 @@ export interface SettlementMessage {
 		green: number,
 		blue: number,
 	},
+	name: string
 	country: string,
 	tile: {
 		id: string,
 		q: number,
 		r: number
 	},
-	name: string
+	productionQueue: HiddenType<({
+		type: "settler"
+		entryId: string
+		progress: number
+	})[]>
 }
 
 export interface WorldObjectMessage {

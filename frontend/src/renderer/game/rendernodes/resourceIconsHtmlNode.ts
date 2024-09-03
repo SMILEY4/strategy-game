@@ -3,11 +3,11 @@ import {NodeOutput} from "../../core/graph/nodeOutput";
 import {Camera} from "../../../shared/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../shared/utils";
-import {MapMode} from "../../../models/mapMode";
-import {Tile, TileIdentifier} from "../../../models/tile";
+import {MapMode} from "../../../models/primitives/mapMode";
+import {Tile, TileIdentifier} from "../../../models/primitives/tile";
 import {Projections} from "../../../shared/webgl/projections";
 import {RenderRepository} from "../renderRepository";
-import {TileResourceType} from "../../../models/TileResourceType";
+import {TileResourceType} from "../../../models/primitives/TileResourceType";
 
 export class ResourceIconsHtmlNode extends HtmlRenderNode {
 

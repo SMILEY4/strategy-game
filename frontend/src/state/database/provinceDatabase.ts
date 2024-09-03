@@ -3,10 +3,10 @@ import {AbstractDatabase} from "../../shared/db/database/abstractDatabase";
 import {Query} from "../../shared/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../shared/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../shared/db/storage/supporting/arraySupportingStorage";
-import {Settlement} from "../../models/Settlement";
-import {WorldObject} from "../../models/worldObject";
+import {Settlement} from "../../models/primitives/Settlement";
+import {WorldObject} from "../../models/primitives/worldObject";
 import {MapUniqueSupportingStorage} from "../../shared/db/storage/supporting/mapUniqueSupportingStorage";
-import {Province} from "../../models/province";
+import {Province} from "../../models/primitives/province";
 
 function provideId(e: Province): string {
 	return e.identifier;

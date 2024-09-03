@@ -4,7 +4,7 @@ import {Query} from "../../shared/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../shared/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../shared/db/storage/supporting/arraySupportingStorage";
 import {MapUniqueSupportingStorage} from "../../shared/db/storage/supporting/mapUniqueSupportingStorage";
-import {WorldObject} from "../../models/worldObject";
+import {WorldObject} from "../../models/primitives/worldObject";
 
 function provideId(e: WorldObject): string {
     return e.id;

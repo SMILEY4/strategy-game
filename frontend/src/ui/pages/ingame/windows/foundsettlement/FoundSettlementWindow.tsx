@@ -1,4 +1,4 @@
-import {TileIdentifier} from "../../../../../models/tile";
+import {TileIdentifier} from "../../../../../models/primitives/tile";
 import React from "react";
 import {TextField} from "../../../../components/textfield/TextField";
 import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";

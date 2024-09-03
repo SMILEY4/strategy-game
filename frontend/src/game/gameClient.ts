@@ -1,8 +1,8 @@
 import {AuthProvider} from "../user/authProvider";
 import {HttpClient} from "../shared/httpClient";
-import {TileIdentifier} from "../models/tile";
+import {TileIdentifier} from "../models/primitives/tile";
 import {GameIdProvider} from "../gamesession/gameIdProvider";
-import {MovementTarget} from "../models/movementTarget";
+import {MovementTarget} from "../models/primitives/movementTarget";
 
 /**
  * API-Client for ingame-operations

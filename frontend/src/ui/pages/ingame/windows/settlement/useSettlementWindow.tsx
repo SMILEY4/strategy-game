@@ -2,11 +2,16 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
 import {AppCtx} from "../../../../../appContext";
-import {useQuerySingle, useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";
-import {Settlement} from "../../../../../models/Settlement";
-import {SettlementDatabase} from "../../../../../state/database/settlementDatabase";
-import {Province} from "../../../../../models/province";
+import {useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
+import {Province} from "../../../../../models/primitives/province";
 import {ProvinceDatabase} from "../../../../../state/database/provinceDatabase";
+import {UseProductionWindow} from "../production/useProductionWindow";
+import {
+	ProductionQueueEntryAggregate,
+	SettlementAggregate,
+} from "../../../../../models/aggregates/SettlementAggregate";
+import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
+import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
 
 export namespace UseSettlementWindow {
 
@@ -40,19 +45,37 @@ export namespace UseSettlementWindow {
 	}
 
 	export interface Data {
-		settlement: Settlement;
+		settlement: SettlementAggregate;
 		province: Province;
+		productionQueue: {
+			activeEntry: ProductionQueueEntryAggregate | null
+			add: () => void
+			open: () => void,
+			cancel: () => void,
+		};
 	}
 
 	export function useData(identifier: string | null): UseSettlementWindow.Data | null {
 
-		const settlement = useQuerySingle(AppCtx.SettlementDatabase(), SettlementDatabase.QUERY_BY_ID, identifier);
-		const province = useQuerySingle(AppCtx.ProvinceDatabase(), ProvinceDatabase.QUERY_BY_SETTLEMENT_ID, settlement?.identifier.id)
+		const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
+		const province = useQuerySingle(AppCtx.ProvinceDatabase(), ProvinceDatabase.QUERY_BY_SETTLEMENT_ID, settlement?.identifier.id);
+
+		const service = AppCtx.SettlementService();
+
+		const openProductionWindow = UseProductionWindow.useOpen();
+		const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
 
 		if (settlement && province) {
+
 			return {
 				settlement: settlement,
-				province: province
+				province: province,
+				productionQueue: {
+					activeEntry: settlement.production.queue.length === 0 ? null : settlement.production.queue[0],
+					add: () => openProductionWindow(identifier!),
+					open: () => openProductionQueueWindow(identifier!),
+					cancel: () => settlement.production.queue.length > 0 && service.cancelProductionQueue(settlement.identifier, settlement.production.queue[0]),
+				},
 			};
 		} else {
 			return null;
