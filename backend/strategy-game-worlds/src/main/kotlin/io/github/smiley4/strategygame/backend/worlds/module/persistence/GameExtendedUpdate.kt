@@ -21,6 +21,7 @@ import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.RouteEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.TileEntity
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.WorldObjectEntity
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.WorldObjectEntityCollection.Companion.toTypedCollection
 
 internal class GameExtendedUpdate(private val database: ArangoDatabase) {
 
@@ -93,7 +94,7 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
     }
 
     private suspend fun updateWorldObjects(worldObjects: Collection<WorldObject>, gameId: String) {
-        database.insertOrReplaceDocuments(Collections.WORLD_OBJECTS, worldObjects.map { WorldObjectEntity.of(it, gameId) })
+        database.insertOrReplaceDocuments(Collections.WORLD_OBJECTS, worldObjects.map { WorldObjectEntity.of(it, gameId) }.toTypedCollection())
     }
 
     private suspend fun deleteWorldObjects(worldObjects: Set<WorldObject>, gameId: String) {

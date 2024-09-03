@@ -1,8 +1,6 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
@@ -10,16 +8,11 @@ import io.github.smiley4.strategygame.backend.commondata.SettlerWorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    use = JsonTypeInfo.Id.MINIMAL_CLASS,
+    include = JsonTypeInfo.As.PROPERTY,
     property = "type"
 )
-@JsonSubTypes(
-    JsonSubTypes.Type(value = ScoutWorldObjectEntity::class),
-    JsonSubTypes.Type(value = SettlerWorldObjectEntity::class),
-)
 internal sealed class WorldObjectEntity(
-    val type: String,
     val gameId: String,
     val tile: TileRefEntity,
     val country: String,
@@ -73,7 +66,6 @@ internal sealed class WorldObjectEntity(
 }
 
 
-@JsonTypeName(ScoutWorldObjectEntity.TYPE)
 internal class ScoutWorldObjectEntity(
     key: String?,
     gameId: String,
@@ -82,20 +74,15 @@ internal class ScoutWorldObjectEntity(
     maxMovement: Int,
     viewDistance: Int,
 ) : WorldObjectEntity(
-    type = TYPE,
     gameId = gameId,
     tile = tile,
     country = country,
     maxMovement = maxMovement,
     viewDistance = viewDistance,
     key = key
-) {
-    companion object {
-        internal const val TYPE = "scout"
-    }
-}
+)
 
-@JsonTypeName(SettlerWorldObjectEntity.TYPE)
+
 internal class SettlerWorldObjectEntity(
     key: String?,
     gameId: String,
@@ -104,15 +91,23 @@ internal class SettlerWorldObjectEntity(
     maxMovement: Int,
     viewDistance: Int,
 ) : WorldObjectEntity(
-    type = TYPE,
     gameId = gameId,
     tile = tile,
     country = country,
     maxMovement = maxMovement,
     viewDistance = viewDistance,
     key = key
-) {
+)
+
+/**
+ * Required to retain type information (i.e. data from JsonTypeInfo) of otherwise generic list during serialization.
+ * "type"-field will be missing otherwise if serialized as elements of a generic list.
+ * See https://github.com/FasterXML/jackson-databind/pull/1309
+ */
+internal class WorldObjectEntityCollection : ArrayList<WorldObjectEntity>() {
     companion object {
-        internal const val TYPE = "settler"
+        fun Collection<WorldObjectEntity>.toTypedCollection(): WorldObjectEntityCollection {
+            return WorldObjectEntityCollection().also { it.addAll(this) }
+        }
     }
 }
