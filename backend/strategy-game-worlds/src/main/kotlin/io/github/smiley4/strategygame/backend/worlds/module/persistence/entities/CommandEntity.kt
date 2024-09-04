@@ -1,8 +1,6 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
@@ -93,71 +91,34 @@ internal class CommandEntity<T : CommandEntityData>(
 
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    use = JsonTypeInfo.Id.MINIMAL_CLASS,
+    include = JsonTypeInfo.As.PROPERTY,
     property = "type"
 )
-@JsonSubTypes(
-    JsonSubTypes.Type(value = MoveCommandEntityData::class),
-    JsonSubTypes.Type(value = CreateSettlementDirectCommandEntityData::class),
-    JsonSubTypes.Type(value = CreateSettlementWithSettlerCommandEntityData::class),
-    JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandEntityData::class),
-    JsonSubTypes.Type(value = ProductionQueueAddSettlerCommandEntityData::class),
-)
-internal sealed class CommandEntityData(
-    val type: String
-)
+internal sealed class CommandEntityData
 
-
-@JsonTypeName(MoveCommandEntityData.TYPE)
 internal class MoveCommandEntityData(
     val worldObjectId: String,
     val path: List<TileRefEntity>,
-) : CommandEntityData(TYPE) {
-    companion object {
-        internal const val TYPE = "move"
-    }
-}
+) : CommandEntityData()
 
-
-@JsonTypeName(CreateSettlementDirectCommandEntityData.TYPE)
 internal class CreateSettlementDirectCommandEntityData(
     val name: String,
     val tile: TileRefEntity
-) : CommandEntityData(TYPE) {
-    companion object {
-        internal const val TYPE = "create-settlement-direct"
-    }
-}
+) : CommandEntityData()
 
-
-@JsonTypeName(CreateSettlementWithSettlerCommandEntityData.TYPE)
 internal class CreateSettlementWithSettlerCommandEntityData(
     val name: String,
     val worldObjectId: String
-) : CommandEntityData(TYPE) {
-    companion object {
-        internal const val TYPE = "create-settlement-settler"
-    }
-}
+) : CommandEntityData()
 
 
-@JsonTypeName(ProductionQueueRemoveEntryCommandEntityData.TYPE)
 internal class ProductionQueueRemoveEntryCommandEntityData(
     val entryId: String,
     val settlementId: String
-) : CommandEntityData(TYPE) {
-    companion object {
-        internal const val TYPE = "production-queue.remove-entry"
-    }
-}
+) : CommandEntityData()
 
 
-@JsonTypeName(ProductionQueueAddSettlerCommandEntityData.TYPE)
 internal class ProductionQueueAddSettlerCommandEntityData(
     val settlementId: String
-) : CommandEntityData(TYPE) {
-    companion object {
-        internal const val TYPE = "production-queue.add.settler"
-    }
-}
+) : CommandEntityData()

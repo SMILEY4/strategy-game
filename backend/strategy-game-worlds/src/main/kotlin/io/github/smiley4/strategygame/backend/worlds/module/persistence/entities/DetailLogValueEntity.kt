@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commondata.BooleanDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.BuildingType
@@ -16,14 +15,6 @@ import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
     use = JsonTypeInfo.Id.MINIMAL_CLASS,
     include = JsonTypeInfo.As.PROPERTY,
     property = "type"
-)
-@JsonSubTypes(
-    JsonSubTypes.Type(value = BooleanDetailLogValueEntity::class),
-    JsonSubTypes.Type(value = FloatDetailLogValueEntity::class),
-    JsonSubTypes.Type(value = IntDetailLogValueEntity::class),
-    JsonSubTypes.Type(value = BuildingTypeDetailLogValueEntity::class),
-    JsonSubTypes.Type(value = ResourcesDetailLogValueEntity::class),
-    JsonSubTypes.Type(value = TileRefDetailLogValueEntity::class),
 )
 internal sealed interface DetailLogValueEntity {
     companion object {

@@ -1,6 +1,5 @@
 package io.github.smiley4.strategygame.backend.gateway.worlds.models
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commondata.CommandData
@@ -13,31 +12,19 @@ import io.github.smiley4.strategygame.backend.commondata.TileRef
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    include = JsonTypeInfo.As.PROPERTY,
     property = "type"
 )
-@JsonSubTypes(
-    JsonSubTypes.Type(value = MoveCommandMsg::class),
-    JsonSubTypes.Type(value = CreateSettlementDirectCommandMsg::class),
-    JsonSubTypes.Type(value = CreateSettlementWithSettlerCommandMsg::class),
-    JsonSubTypes.Type(value = ProductionQueueRemoveEntryCommandMsg::class),
-    JsonSubTypes.Type(value = ProductionQueueAddSettlerCommandMsg::class),
-)
-internal sealed class PlayerCommandMsg(val type: String) {
+internal sealed class PlayerCommandMsg {
     abstract fun asCommandData(): CommandData
 }
 
 
-@JsonTypeName(MoveCommandMsg.TYPE)
+@JsonTypeName("move")
 internal class MoveCommandMsg(
     val worldObjectId: String,
     val path: List<TileRef>
-) : PlayerCommandMsg(TYPE) {
-
-    companion object {
-        internal const val TYPE = "move"
-    }
-
+) : PlayerCommandMsg() {
     override fun asCommandData() = MoveCommandData(
         worldObjectId = this.worldObjectId,
         path = this.path
@@ -45,16 +32,11 @@ internal class MoveCommandMsg(
 }
 
 
-@JsonTypeName(CreateSettlementDirectCommandMsg.TYPE)
+@JsonTypeName("create-settlement-direct")
 internal class CreateSettlementDirectCommandMsg(
     val name: String,
     val tile: TileRef
-) : PlayerCommandMsg(TYPE) {
-
-    companion object {
-        internal const val TYPE = "create-settlement-direct"
-    }
-
+) : PlayerCommandMsg() {
     override fun asCommandData() = CreateSettlementDirectCommandData(
         name = this.name,
         tile = this.tile
@@ -62,16 +44,11 @@ internal class CreateSettlementDirectCommandMsg(
 }
 
 
-@JsonTypeName(CreateSettlementWithSettlerCommandMsg.TYPE)
+@JsonTypeName("create-settlement-settler")
 internal class CreateSettlementWithSettlerCommandMsg(
     val name: String,
     val worldObjectId: String
-) : PlayerCommandMsg(TYPE) {
-
-    companion object {
-        internal const val TYPE = "create-settlement-settler"
-    }
-
+) : PlayerCommandMsg() {
     override fun asCommandData() = CreateSettlementWithSettlerCommandData(
         name = this.name,
         worldObjectId = this.worldObjectId
@@ -79,16 +56,11 @@ internal class CreateSettlementWithSettlerCommandMsg(
 }
 
 
-@JsonTypeName(ProductionQueueRemoveEntryCommandMsg.TYPE)
+@JsonTypeName("production-queue.remove-entry")
 internal class ProductionQueueRemoveEntryCommandMsg(
     val entryId: String,
     val settlementId: String
-) : PlayerCommandMsg(TYPE) {
-
-    companion object {
-        internal const val TYPE = "production-queue.remove-entry"
-    }
-
+) : PlayerCommandMsg() {
     override fun asCommandData() = ProductionQueueRemoveEntryCommandData(
         entryId = this.entryId,
         settlementId = this.settlementId
@@ -96,15 +68,10 @@ internal class ProductionQueueRemoveEntryCommandMsg(
 }
 
 
-@JsonTypeName(ProductionQueueAddSettlerCommandMsg.TYPE)
+@JsonTypeName("production-queue.add.settler")
 internal class ProductionQueueAddSettlerCommandMsg(
     val settlementId: String,
-) : PlayerCommandMsg(TYPE) {
-
-    companion object {
-        internal const val TYPE = "production-queue.add.settler"
-    }
-
+) : PlayerCommandMsg() {
     override fun asCommandData() = ProductionQueueAddEntryCommandData.Settler(
         settlementId = this.settlementId
     )

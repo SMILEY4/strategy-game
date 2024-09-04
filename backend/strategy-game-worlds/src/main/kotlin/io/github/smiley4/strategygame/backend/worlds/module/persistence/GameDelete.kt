@@ -16,6 +16,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
                 Collections.GAMES,
                 Collections.COUNTRIES,
                 Collections.TILES,
+                Collections.WORLD_OBJECTS,
                 Collections.CITIES,
                 Collections.COMMANDS,
                 Collections.PROVINCES,
@@ -25,6 +26,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
                 { deleteGame(gameId) },
                 { deleteCountries(gameId) },
                 { deleteTiles(gameId) },
+                { deleteWorldObjects(gameId) },
                 { deleteCities(gameId) },
                 { deleteCommands(gameId) },
                 { deleteProvinces(gameId) },
@@ -59,6 +61,16 @@ internal class GameDelete(private val database: ArangoDatabase) {
         )
     }
 
+    private suspend fun deleteWorldObjects(gameId: String) {
+        database.execute(
+            """
+				FOR worldObject IN ${Collections.WORLD_OBJECTS}
+					FILTER worldObject.gameId == @gameId
+                    REMOVE worldObject in ${Collections.WORLD_OBJECTS}
+            """.trimIndent(),
+            mapOf("gameId" to gameId)
+        )
+    }
 
     private suspend fun deleteCities(gameId: String) {
         database.execute(
