@@ -66,6 +66,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
     private suspend fun fetchCountries(gameId: String): List<Country> {
         database.assertCollections(Collections.COUNTRIES)
         return database.query(
+            //language=aql
             """
 				FOR country IN ${Collections.COUNTRIES}
 					FILTER country.gameId == @gameId
@@ -79,6 +80,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
     private suspend fun fetchTiles(gameId: String): List<Tile> {
         database.assertCollections(Collections.TILES)
         return database.query(
+            //language=aql
             """
 				FOR tile IN ${Collections.TILES}
 					FILTER tile.gameId == @gameId
@@ -92,6 +94,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
     private suspend fun fetchCities(gameId: String): List<Settlement> {
         database.assertCollections(Collections.CITIES)
         return database.query(
+            //language=aql
             """
 				FOR city IN ${Collections.CITIES}
 					FILTER city._documentType != "reservation"
@@ -106,6 +109,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
     private suspend fun fetchProvinces(gameId: String): List<Province> {
         database.assertCollections(Collections.PROVINCES)
         return database.query(
+            //language=aql
             """
 				FOR province IN ${Collections.PROVINCES}
 					FILTER province._documentType != "reservation"
@@ -120,6 +124,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
     private suspend fun fetchRoutes(gameId: String): List<Route> {
         database.assertCollections(Collections.ROUTES)
         return database.query(
+            //language=aql
             """
 				FOR route IN ${Collections.ROUTES}
 					FILTER route._documentType != "reservation"
@@ -134,6 +139,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
     private suspend fun fetchWorldObjects(gameId: String): List<WorldObject> {
         database.assertCollections(Collections.WORLD_OBJECTS)
         return database.query(
+            //language=aql
             """
 				FOR worldObject IN ${Collections.WORLD_OBJECTS}
 					FILTER worldObject._documentType != "reservation"

@@ -13,6 +13,7 @@ internal class UsersConnectedToGamesQuery(private val database: ArangoDatabase) 
         return time(metricId) {
             database.assertCollections(Collections.GAMES)
             database.query(
+                //language=aql
                 """
                 FOR uid IN (
                     FLATTEN(
@@ -21,8 +22,8 @@ internal class UsersConnectedToGamesQuery(private val database: ArangoDatabase) 
                             FILTER LENGTH(connectionIds) > 0
                             LET userIds = game.players[*].userId
                             RETURN userIds
-                        )
                     )
+                )
                     RETURN DISTINCT uid
                 """.trimIndent(),
                 String::class.java

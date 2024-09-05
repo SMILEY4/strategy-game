@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.parallelIO
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
+import org.intellij.lang.annotations.Language
 
 
 internal class GameDelete(private val database: ArangoDatabase) {
@@ -41,6 +42,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private suspend fun deleteCountries(gameId: String) {
         database.execute(
+            //language=aql
             """
 				FOR country IN ${Collections.COUNTRIES}
 					FILTER country.gameId == @gameId
@@ -52,6 +54,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private suspend fun deleteTiles(gameId: String) {
         database.execute(
+            //language=aql
             """
                 FOR tile IN ${Collections.TILES}
                     FILTER tile.gameId == @gameId
@@ -63,6 +66,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private suspend fun deleteWorldObjects(gameId: String) {
         database.execute(
+            //language=aql
             """
 				FOR worldObject IN ${Collections.WORLD_OBJECTS}
 					FILTER worldObject.gameId == @gameId
@@ -74,6 +78,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private suspend fun deleteCities(gameId: String) {
         database.execute(
+            //language=aql
             """
 				FOR city IN ${Collections.CITIES}
 					FILTER city.gameId == @gameId
@@ -85,6 +90,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private suspend fun deleteCommands(gameId: String) {
         database.execute(
+            //language=aql
             """
 				FOR command IN ${Collections.COMMANDS}
 					FILTER command.gameId == @gameId
@@ -96,6 +102,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private suspend fun deleteProvinces(gameId: String) {
         database.execute(
+            //language=aql
             """
 				FOR province IN ${Collections.PROVINCES}
 					FILTER province.gameId == @gameId
@@ -107,6 +114,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private suspend fun deleteRoutes(gameId: String) {
         database.execute(
+            //language=aql
             """
 				FOR route IN ${Collections.ROUTES}
 					FILTER route.gameId == @gameId

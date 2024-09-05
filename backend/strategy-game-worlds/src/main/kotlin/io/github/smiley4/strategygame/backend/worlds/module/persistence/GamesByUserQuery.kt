@@ -15,6 +15,7 @@ internal class GamesByUserQuery(private val database: ArangoDatabase) {
         return time(metricId) {
             database.assertCollections(Collections.GAMES)
             database.query(
+                //language=aql
                 """
 				FOR game IN ${Collections.GAMES}
 					FILTER game.players[*].userId ANY == @userId

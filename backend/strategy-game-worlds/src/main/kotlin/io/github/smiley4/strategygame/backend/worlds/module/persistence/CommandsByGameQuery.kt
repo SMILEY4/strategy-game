@@ -15,6 +15,7 @@ internal class CommandsByGameQuery(private val database: ArangoDatabase) {
         database.assertCollections(Collections.COMMANDS)
         return time(metricId) {
             database.query(
+                //language=aql
                 """
 				FOR command IN ${Collections.COMMANDS}
 					FILTER command.gameId == @gameId AND command.turn == @turn
