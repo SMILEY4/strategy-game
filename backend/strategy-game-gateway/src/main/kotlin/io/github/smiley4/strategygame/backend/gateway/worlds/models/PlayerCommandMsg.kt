@@ -3,12 +3,10 @@ package io.github.smiley4.strategygame.backend.gateway.worlds.models
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commondata.CommandData
-import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectCommandData
-import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
-import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddEntryCommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueRemoveEntryCommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.TileRef
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -25,8 +23,8 @@ internal class MoveCommandMsg(
     val worldObjectId: String,
     val path: List<TileRef>
 ) : PlayerCommandMsg() {
-    override fun asCommandData() = MoveCommandData(
-        worldObjectId = this.worldObjectId,
+    override fun asCommandData() = CommandData.Move(
+        worldObject = WorldObject.Id(worldObjectId),
         path = this.path
     )
 }
@@ -37,7 +35,7 @@ internal class CreateSettlementDirectCommandMsg(
     val name: String,
     val tile: TileRef
 ) : PlayerCommandMsg() {
-    override fun asCommandData() = CreateSettlementDirectCommandData(
+    override fun asCommandData() = CommandData.CreateSettlementDirect(
         name = this.name,
         tile = this.tile
     )
@@ -49,9 +47,9 @@ internal class CreateSettlementWithSettlerCommandMsg(
     val name: String,
     val worldObjectId: String
 ) : PlayerCommandMsg() {
-    override fun asCommandData() = CreateSettlementWithSettlerCommandData(
+    override fun asCommandData() = CommandData.CreateSettlementWithSettler(
         name = this.name,
-        worldObjectId = this.worldObjectId
+        worldObject = WorldObject.Id(this.worldObjectId)
     )
 }
 
@@ -61,9 +59,9 @@ internal class ProductionQueueRemoveEntryCommandMsg(
     val entryId: String,
     val settlementId: String
 ) : PlayerCommandMsg() {
-    override fun asCommandData() = ProductionQueueRemoveEntryCommandData(
-        entryId = this.entryId,
-        settlementId = this.settlementId
+    override fun asCommandData() = CommandData.ProductionQueueRemoveEntry(
+        entry = ProductionQueueEntry.Id(this.entryId),
+        settlement = Settlement.Id(this.settlementId)
     )
 }
 
@@ -72,7 +70,7 @@ internal class ProductionQueueRemoveEntryCommandMsg(
 internal class ProductionQueueAddSettlerCommandMsg(
     val settlementId: String,
 ) : PlayerCommandMsg() {
-    override fun asCommandData() = ProductionQueueAddEntryCommandData.Settler(
-        settlementId = this.settlementId
+    override fun asCommandData() = CommandData.ProductionQueueAddEntry.Settler(
+        settlement = Settlement.Id(this.settlementId)
     )
 }

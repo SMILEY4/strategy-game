@@ -7,6 +7,7 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.engine.edge.GameStep
 import io.github.smiley4.strategygame.backend.playerpov.edge.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.worlds.edge.GameMessageProducer
@@ -30,7 +31,7 @@ internal class TurnEndImpl(
 
     private val metricId = MetricId.action(TurnEnd::class)
 
-    override suspend fun perform(gameId: String) {
+    override suspend fun perform(gameId: Game.Id) {
         return time(metricId) {
             log().info("End turn of game $gameId")
             val game = getGame(gameId)
@@ -45,7 +46,7 @@ internal class TurnEndImpl(
     /**
      * @return the game or throw
      */
-    private suspend fun getGame(gameId: String): Game {
+    private suspend fun getGame(gameId: Game.Id): Game {
         try {
             return queryGame.execute(gameId)
         } catch (e: EntityNotFoundError) {
@@ -57,7 +58,7 @@ internal class TurnEndImpl(
     /**
      * @return the complete game state or throw
      */
-    private suspend fun getGameExtended(gameId: String): GameExtended {
+    private suspend fun getGameExtended(gameId: Game.Id): GameExtended {
         try {
             return queryGameExtended.execute(gameId)
         } catch (e: EntityNotFoundError) {
@@ -70,7 +71,7 @@ internal class TurnEndImpl(
      * update the game and world
      */
     private suspend fun stepGame(game: GameExtended) {
-        val commands = commandsByGameQuery.execute(game.meta.gameId, game.meta.turn)
+        val commands = commandsByGameQuery.execute(game.meta.id, game.meta.turn)
         try {
             gameStepAction.perform(game, commands)
         } catch (e: GameStep.GameStepError) {
@@ -98,7 +99,7 @@ internal class TurnEndImpl(
     private suspend fun sendPoVGameState(game: Game, gameExtended: GameExtended) {
         game.players
             .filter { it.connectionId != null }
-            .map { it.userId }
+            .map { it.user }
             .forEach { sendPoVGameState(it, game, gameExtended) }
     }
 
@@ -106,7 +107,7 @@ internal class TurnEndImpl(
     /**
      * Send the new game-state to the given player
      */
-    private suspend fun sendPoVGameState(userId: String, game: Game, gameExtended: GameExtended) {
+    private suspend fun sendPoVGameState(userId: User.Id, game: Game, gameExtended: GameExtended) {
         val connectionId = game.players.findByUserId(userId)?.connectionId ?: throw Exception("Player is not connected")
         val playerView = playerViewCreator.build(userId, gameExtended)
         producer.sendGameState(connectionId, playerView)

@@ -4,6 +4,7 @@ import io.github.smiley4.ktorswaggerui.dsl.post
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
@@ -75,7 +76,7 @@ internal object RouteCreate {
             val seed: String? = call.request.queryParameters["seed"]
             try {
                 val gameId = createGame.perform(name, seed?.hashCode())
-                joinGame.perform(userId, gameId)
+                joinGame.perform(User.Id(userId), gameId)
                 call.respond(HttpStatusCode.OK, gameId)
             } catch (e: CreateGame.CreateGameError) {
                 // do nothing

@@ -1,5 +1,8 @@
 package io.github.smiley4.strategygame.backend.worlds.edge
 
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.User
+
 /**
  * Checks if a user is allowed to connect to a game
  */
@@ -21,6 +24,6 @@ interface RequestConnectionToGame {
      * Checks if the given user is allowed to connect to the game
      * @throws GameRequestConnectionActionError
      */
-    suspend fun perform(userId: String, gameId: String)
+    suspend fun perform(userId: User.Id, gameId: Game.Id)
 
 }

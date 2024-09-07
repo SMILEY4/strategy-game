@@ -5,6 +5,7 @@ import io.github.smiley4.strategygame.backend.common.jsondsl.obj
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
 
 
@@ -12,11 +13,11 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
 
     private val metricId = MetricId.action(GameExtendedPOVBuilder::class)
 
-    fun create(userId: String, game: GameExtended): JsonType {
+    fun create(userId: User.Id, game: GameExtended): JsonType {
         return time(metricId) {
 
             val playerCountry = game.findCountryByUser(userId)
-            val povCache = POVCache(playerCountry.countryId, game, TileVisibilityCalculator())
+            val povCache = POVCache(playerCountry.id, game, TileVisibilityCalculator())
 
             val tileBuilder = TilePOVBuilder(povCache, gameValidations)
             val worldObjectBuilder = WorldObjectPOVBuilder(povCache)

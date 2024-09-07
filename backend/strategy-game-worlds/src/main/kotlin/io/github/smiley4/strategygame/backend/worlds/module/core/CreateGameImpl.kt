@@ -20,13 +20,13 @@ internal class CreateGameImpl(
 
     private val metricId = MetricId.action(CreateGame::class)
 
-    override suspend fun perform(name: String, seed: Int?): String {
+    override suspend fun perform(name: String, seed: Int?): Game.Id {
         return time(metricId) {
             log().info("Creating new game with seed $seed")
             val game = createEmpty(name)
             initialize(game, seed)
-            log().info("Created new game with id ${game.gameId}")
-            game.gameId
+            log().info("Created new game with id ${game.id}")
+            game.id
         }
     }
 
@@ -36,14 +36,14 @@ internal class CreateGameImpl(
      */
     private suspend fun createEmpty(name: String): Game {
         return Game(
-            gameId = DbId.PLACEHOLDER,
+            id = Game.Id(DbId.PLACEHOLDER),
             name = name,
             creationTimestamp = Instant.now().toEpochMilli(),
             turn = 0,
             players = PlayerContainer()
         ).let {
             val gameId = gameInsert.execute(it)
-            it.copy(gameId = gameId)
+            it.copy(id = Game.Id(gameId))
         }
     }
 

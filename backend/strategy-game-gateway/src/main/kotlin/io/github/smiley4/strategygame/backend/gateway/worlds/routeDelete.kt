@@ -5,6 +5,7 @@ import io.github.smiley4.strategygame.backend.common.logging.mdcGameId
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
+import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
 import io.github.smiley4.strategygame.backend.worlds.edge.DeleteGame
 import io.ktor.http.HttpStatusCode
@@ -30,7 +31,7 @@ internal object RouteDelete {
         val gameId = call.parameters["gameId"]!!
         val userId = call.getUserIdOrThrow()
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
-            deleteGame.perform(gameId)
+            deleteGame.perform(Game.Id(gameId))
             call.respond(HttpStatusCode.OK, Unit)
         }
     }

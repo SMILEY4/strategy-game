@@ -10,10 +10,10 @@ import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
 internal class TilePOVBuilder(private val povCache: POVCache, private val gameValidations: GameValidations) {
 
     fun build(tile: Tile, game: GameExtended): JsonType {
-        val visibility = povCache.tileVisibility(tile.tileId)
+        val visibility = povCache.tileVisibility(tile.id)
         return obj {
             "identifier" to obj {
-                "id" to tile.tileId
+                "id" to tile.id.value
                 "q" to tile.position.q
                 "r" to tile.position.r
             }
@@ -29,9 +29,9 @@ internal class TilePOVBuilder(private val povCache: POVCache, private val gameVa
                 obj {
                     "controlledBy" to tile.dataPolitical.controlledBy?.let {
                         obj {
-                            "country" to it.countryId
-                            "province" to it.provinceId
-                            "settlement" to it.settlementId
+                            "country" to it.country.value
+                            "province" to it.province.value
+                            "settlement" to it.settlement.value
                         }
                     }
                 }

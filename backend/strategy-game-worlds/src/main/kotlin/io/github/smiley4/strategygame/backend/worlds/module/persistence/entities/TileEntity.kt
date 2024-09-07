@@ -1,13 +1,13 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
+import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
+import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileOwner
-import io.github.smiley4.strategygame.backend.commondata.TilePoliticalData
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
-import io.github.smiley4.strategygame.backend.commondata.TileWorldData
 
 
 internal class TileEntity(
@@ -20,7 +20,7 @@ internal class TileEntity(
 
     companion object {
         fun of(serviceModel: Tile, gameId: String) = TileEntity(
-            key = DbId.asDbId(serviceModel.tileId),
+            key = DbId.asDbId(serviceModel.id.value),
             gameId = gameId,
             position = TilePositionEntity.of(serviceModel.position),
             dataWorld = TileWorldDataEntity.of(serviceModel.dataWorld),
@@ -29,7 +29,7 @@ internal class TileEntity(
     }
 
     fun asServiceModel() = Tile(
-        tileId = this.getKeyOrThrow(),
+        id = Tile.Id(this.getKeyOrThrow()),
         position = this.position.asServiceModel(),
         dataWorld = this.dataWorld.asServiceModel(),
         dataPolitical = this.dataPolitical.asServiceModel()
@@ -45,14 +45,14 @@ internal class TileWorldDataEntity(
 ) {
 
     companion object {
-        fun of(serviceModel: TileWorldData) = TileWorldDataEntity(
+        fun of(serviceModel: Tile.WorldData) = TileWorldDataEntity(
             terrainType = serviceModel.terrainType,
             resourceType = serviceModel.resourceType,
             height = serviceModel.height
         )
     }
 
-    fun asServiceModel() = TileWorldData(
+    fun asServiceModel() = Tile.WorldData(
         terrainType = this.terrainType,
         resourceType = this.resourceType,
         height = this.height
@@ -67,16 +67,16 @@ internal class TilePoliticalDataEntity(
 ) {
 
     companion object {
-        fun of(serviceModel: TilePoliticalData) = TilePoliticalDataEntity(
+        fun of(serviceModel: Tile.PoliticalData) = TilePoliticalDataEntity(
             influences = serviceModel.influences.map { TileInfluenceEntity.of(it) },
-            discoveredByCountries = serviceModel.discoveredByCountries,
+            discoveredByCountries = serviceModel.discoveredByCountries.map { it.value }.toSet(),
             controlledBy = serviceModel.controlledBy?.let { TileOwnerEntity.of(it) }
         )
     }
 
-    fun asServiceModel() = TilePoliticalData(
+    fun asServiceModel() = Tile.PoliticalData(
         influences = this.influences.map { it.asServiceModel() }.toMutableList(),
-        discoveredByCountries = this.discoveredByCountries.toMutableSet(),
+        discoveredByCountries = this.discoveredByCountries.map { Country.Id(it) }.toMutableSet(),
         controlledBy = this.controlledBy?.asServiceModel()
     )
 }
@@ -88,17 +88,17 @@ internal data class TileOwnerEntity(
 ) {
 
     companion object {
-        fun of(serviceModel: TileOwner) = TileOwnerEntity(
-            countryId = serviceModel.countryId,
-            provinceId = serviceModel.provinceId,
-            settlementId = serviceModel.settlementId
+        fun of(serviceModel: Tile.Owner) = TileOwnerEntity(
+            countryId = serviceModel.country.value,
+            provinceId = serviceModel.province.value,
+            settlementId = serviceModel.settlement.value
         )
     }
 
-    fun asServiceModel() = TileOwner(
-        countryId = this.countryId,
-        provinceId = this.provinceId,
-        settlementId = this.settlementId
+    fun asServiceModel() = Tile.Owner(
+        country = Country.Id(this.countryId),
+        province = Province.Id(this.provinceId),
+        settlement = Settlement.Id(this.settlementId)
     )
 
 }

@@ -1,10 +1,9 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.utils.Id
+import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Command
-import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectCommandData
-import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
+import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.RGBColor
@@ -15,65 +14,76 @@ import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
 internal class ResolveCommandCreateSettlement(private val gameValidations: GameValidations) : Logging {
 
     @JvmName("resolveWithSettler")
-    fun resolve(game: GameExtended, command: Command<CreateSettlementWithSettlerCommandData>) {
-        log().debug("Resolving create settlement with settler command for object ${command.data.worldObjectId} with name ${command.data.name}")
+    fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementWithSettler>) {
+        log().debug("Resolving create settlement with world-object command for object ${command.data.worldObject} with name ${command.data.name}")
 
-        val country = game.findCountryByUser(command.userId)
-        val settler = game.findWorldObject(command.data.worldObjectId)
-        val tile = game.findTile(settler.tile)
+        val country = game.findCountryByUser(command.user)
+        val worldObject = game.findWorldObject(command.data.worldObject)
+        val tile = game.findTile(worldObject.tile)
 
+        gameValidations.validateSettlementSettler(worldObject)
         gameValidations.validateSettlementName(command.data.name)
-        gameValidations.validateSettlementLocationSettler(game, tile, country.countryId)
+        gameValidations.validateSettlementLocationSettler(game, tile, country.id)
 
         val settlement = Settlement(
-            settlementId = Id.gen(),
-            countryId = country.countryId,
-            tile = settler.tile,
-            name = command.data.name,
-            viewDistance = 1,
-            color = RGBColor.random(),
-            productionQueue = mutableListOf()
+            id = Settlement.Id.gen(),
+            country = country.id,
+            tile = worldObject.tile,
+            attributes = Settlement.Attributes(
+                name = command.data.name,
+                color = RGBColor.random(),
+                viewDistance = 1,
+            ),
+            infrastructure = Settlement.Infrastructure(
+                productionQueue = mutableListOf(),
+                buildings = mutableListOf(),
+            ),
         )
 
         val province = Province(
-            provinceId = Id.gen(),
-            settlementIds = mutableSetOf(settlement.settlementId),
+            id = Province.Id.gen(),
+            settlements = mutableSetOf(settlement.id),
             color = RGBColor.random()
         )
 
         game.settlements.add(settlement)
         game.provinces.add(province)
-        game.worldObjects.remove(settler)
+        game.worldObjects.remove(worldObject)
     }
 
 
     @JvmName("resolveDirect")
-    fun resolve(game: GameExtended, command: Command<CreateSettlementDirectCommandData>) {
+    fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementDirect>) {
         log().debug("Resolving create settlement direct command at tile ${command.data.tile} with name ${command.data.name}")
 
-        val country = game.findCountryByUser(command.userId)
+        val country = game.findCountryByUser(command.user)
         val tile = game.findTile(command.data.tile)
 
         gameValidations.validateSettlementName(command.data.name)
-        gameValidations.validateSettlementLocationDirect(game, tile, country.countryId)
+        gameValidations.validateSettlementLocationDirect(game, tile, country.id)
 
         val settlement = Settlement(
-            settlementId = Id.gen(),
-            countryId = country.countryId,
+            id = Settlement.Id.gen(),
+            country = country.id,
             tile = tile.ref(),
-            name = command.data.name,
-            viewDistance = 1,
-            color = RGBColor.random(),
-            productionQueue = mutableListOf()
+            attributes = Settlement.Attributes(
+                name = command.data.name,
+                color = RGBColor.random(),
+                viewDistance = 1,
+            ),
+            infrastructure = Settlement.Infrastructure(
+                productionQueue = mutableListOf(),
+                buildings = mutableListOf(),
+            ),
         )
 
-        val province = tile.dataPolitical.controlledBy?.provinceId?.let { game.findProvince(it) }
+        val province = tile.dataPolitical.controlledBy?.province?.let { game.findProvince(it) }
 
-        if (province == null || tile.dataPolitical.controlledBy?.countryId != country.countryId) {
+        if (province == null || tile.dataPolitical.controlledBy?.country != country.id) {
             throw Exception("Can not create direct settlement on tile not owned by country.")
         }
 
-        province.settlementIds.add(settlement.settlementId)
+        province.settlements.add(settlement.id)
         game.settlements.add(settlement)
     }
 

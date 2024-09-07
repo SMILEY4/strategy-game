@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.backend.worlds.module.core
 
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
+import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.MovementTarget
 import io.github.smiley4.strategygame.backend.commondata.Tile
@@ -17,7 +18,7 @@ internal class GameServiceImpl(
     private val nameGenerator: NameGenerator
 ) : GameService {
 
-    override suspend fun getAvailableMovementPositions(gameId: String, worldObjectId: String, tileId: String, currentCost: Int): List<MovementTarget> {
+    override suspend fun getAvailableMovementPositions(gameId: Game.Id, worldObjectId: WorldObject.Id, tileId: Tile.Id, currentCost: Int): List<MovementTarget> {
         val game = getGame(gameId)
         val worldObject = getWorldObject(game, worldObjectId)
         val tile = getTile(game, tileId)
@@ -28,7 +29,7 @@ internal class GameServiceImpl(
         return nameGenerator.generateSettlementName()
     }
 
-    private suspend fun getGame(gameId: String): GameExtended {
+    private suspend fun getGame(gameId: Game.Id): GameExtended {
         try {
             return gameQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
@@ -36,11 +37,11 @@ internal class GameServiceImpl(
         }
     }
 
-    private fun getWorldObject(game: GameExtended, worldObjectId: String): WorldObject {
+    private fun getWorldObject(game: GameExtended, worldObjectId: WorldObject.Id): WorldObject {
         return game.findWorldObjectOrNull(worldObjectId) ?: throw GameService.WorldObjectNotFoundError()
     }
 
-    private fun getTile(game: GameExtended, tileId: String): Tile {
+    private fun getTile(game: GameExtended, tileId: Tile.Id): Tile {
         return game.findTileOrNull(tileId) ?: throw GameService.TileNotFoundError()
     }
 

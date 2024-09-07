@@ -1,11 +1,11 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.utils.Id
+import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.Settlement
-import io.github.smiley4.strategygame.backend.commondata.SettlerWorldObject
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWorldEvent
@@ -15,7 +15,7 @@ internal class UpdateProductionQueues : GameEventNode<UpdateWorldEvent>, Logging
     override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
         log().info("Updating production queues.")
         event.game.settlements.forEach { settlement ->
-            settlement.productionQueue.firstOrNull()?.let { currentEntry ->
+            settlement.infrastructure.productionQueue.firstOrNull()?.let { currentEntry ->
                 update(event.game, settlement, currentEntry)
             }
         }
@@ -29,13 +29,13 @@ internal class UpdateProductionQueues : GameEventNode<UpdateWorldEvent>, Logging
     }
 
     private fun complete(game: GameExtended, settlement: Settlement, entry: ProductionQueueEntry) {
-        settlement.productionQueue.remove(entry)
+        settlement.infrastructure.productionQueue.remove(entry)
         when (entry) {
             is ProductionQueueEntry.Settler -> game.worldObjects.add(
-                SettlerWorldObject(
-                    id = Id.gen(),
+                WorldObject.Settler(
+                    id = WorldObject.Id.gen(),
                     tile = settlement.tile,
-                    country = settlement.countryId,
+                    country = settlement.country,
                     maxMovement = 3,
                     viewDistance = 1
                 )

@@ -2,13 +2,18 @@ package io.github.smiley4.strategygame.backend.commondata
 
 
 sealed class ProductionQueueEntry(
-    val entryId: String,
+    val id: Id,
     var progress: Float,
 ) {
 
+    @JvmInline
+    value class Id(val value: String) {
+        companion object
+    }
+
     class Settler(
-        entryId: String,
+        id: Id,
         progress: Float
-    ) : ProductionQueueEntry(entryId, progress)
+    ) : ProductionQueueEntry(id, progress)
 
 }

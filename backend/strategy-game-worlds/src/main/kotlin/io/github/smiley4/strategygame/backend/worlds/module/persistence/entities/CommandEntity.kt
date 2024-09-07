@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
-import io.github.smiley4.strategygame.backend.commondata.CreateSettlementDirectCommandData
-import io.github.smiley4.strategygame.backend.commondata.CreateSettlementWithSettlerCommandData
 import io.github.smiley4.strategygame.backend.commondata.DbId
-import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueAddEntryCommandData
-import io.github.smiley4.strategygame.backend.commondata.ProductionQueueRemoveEntryCommandData
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.commondata.User
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 internal class CommandEntity<T : CommandEntityData>(
     val userId: String,
@@ -22,33 +22,33 @@ internal class CommandEntity<T : CommandEntityData>(
     companion object {
 
         fun of(serviceModel: Command<*>) = CommandEntity(
-            key = DbId.asDbId(serviceModel.commandId),
-            userId = serviceModel.userId,
-            gameId = serviceModel.gameId,
+            key = DbId.asDbId(serviceModel.id.value),
+            userId = serviceModel.user.value,
+            gameId = serviceModel.game.value,
             turn = serviceModel.turn,
             data = of(serviceModel.data)
         )
 
         private fun of(serviceModel: CommandData): CommandEntityData {
             return when (serviceModel) {
-                is MoveCommandData -> MoveCommandEntityData(
-                    worldObjectId = serviceModel.worldObjectId,
+                is CommandData.Move -> MoveCommandEntityData(
+                    worldObjectId = serviceModel.worldObject.value,
                     path = serviceModel.path.map { TileRefEntity.of(it) },
                 )
-                is CreateSettlementDirectCommandData -> CreateSettlementDirectCommandEntityData(
+                is CommandData.CreateSettlementDirect -> CreateSettlementDirectCommandEntityData(
                     name = serviceModel.name,
                     tile = TileRefEntity.of(serviceModel.tile)
                 )
-                is CreateSettlementWithSettlerCommandData -> CreateSettlementWithSettlerCommandEntityData(
+                is CommandData.CreateSettlementWithSettler -> CreateSettlementWithSettlerCommandEntityData(
                     name = serviceModel.name,
-                    worldObjectId = serviceModel.worldObjectId
+                    worldObjectId = serviceModel.worldObject.value
                 )
-                is ProductionQueueRemoveEntryCommandData -> ProductionQueueRemoveEntryCommandEntityData(
-                    entryId = serviceModel.entryId,
-                    settlementId = serviceModel.settlementId
+                is CommandData.ProductionQueueRemoveEntry -> ProductionQueueRemoveEntryCommandEntityData(
+                    entryId = serviceModel.entry.value,
+                    settlementId = serviceModel.settlement.value
                 )
-                is ProductionQueueAddEntryCommandData.Settler -> ProductionQueueAddSettlerCommandEntityData(
-                    settlementId = serviceModel.settlementId
+                is CommandData.ProductionQueueAddEntry.Settler -> ProductionQueueAddSettlerCommandEntityData(
+                    settlementId = serviceModel.settlement.value
                 )
             }
         }
@@ -56,33 +56,33 @@ internal class CommandEntity<T : CommandEntityData>(
     }
 
     fun asServiceModel() = Command(
-        commandId = this.getKeyOrThrow(),
-        userId = this.userId,
-        gameId = this.gameId,
+        id = Command.Id(this.getKeyOrThrow()),
+        user = User.Id(this.userId),
+        game = Game.Id(this.gameId),
         turn = this.turn,
         data = asServiceModel(this.data)
     )
 
     private fun asServiceModel(entity: CommandEntityData): CommandData {
         return when (entity) {
-            is MoveCommandEntityData -> MoveCommandData(
-                worldObjectId = entity.worldObjectId,
+            is MoveCommandEntityData -> CommandData.Move(
+                worldObject = WorldObject.Id(entity.worldObjectId),
                 path = entity.path.map { it.asServiceModel() },
             )
-            is CreateSettlementDirectCommandEntityData -> CreateSettlementDirectCommandData(
+            is CreateSettlementDirectCommandEntityData -> CommandData.CreateSettlementDirect(
                 name = entity.name,
                 tile = entity.tile.asServiceModel()
             )
-            is CreateSettlementWithSettlerCommandEntityData -> CreateSettlementWithSettlerCommandData(
+            is CreateSettlementWithSettlerCommandEntityData -> CommandData.CreateSettlementWithSettler(
                 name = entity.name,
-                worldObjectId = entity.worldObjectId,
+                worldObject = WorldObject.Id(entity.worldObjectId),
             )
-            is ProductionQueueRemoveEntryCommandEntityData -> ProductionQueueRemoveEntryCommandData(
-                entryId = entity.entryId,
-                settlementId = entity.settlementId
+            is ProductionQueueRemoveEntryCommandEntityData -> CommandData.ProductionQueueRemoveEntry(
+                entry = ProductionQueueEntry.Id(entity.entryId),
+                settlement = Settlement.Id(entity.settlementId)
             )
-            is ProductionQueueAddSettlerCommandEntityData -> ProductionQueueAddEntryCommandData.Settler(
-                settlementId = entity.settlementId
+            is ProductionQueueAddSettlerCommandEntityData -> CommandData.ProductionQueueAddEntry.Settler(
+                settlement = Settlement.Id(entity.settlementId)
             )
         }
     }

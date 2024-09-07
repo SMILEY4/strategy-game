@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 
 import io.github.smiley4.strategygame.backend.commondata.Player
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.commondata.User
 
 internal class PlayerEntity(
     val userId: String,
@@ -11,7 +12,7 @@ internal class PlayerEntity(
 
     companion object {
         fun of(serviceModel: Player) = PlayerEntity(
-            userId = serviceModel.userId,
+            userId = serviceModel.user.value,
             connectionId = serviceModel.connectionId,
             state = when (serviceModel.state) {
                 PlayerState.PLAYING -> "playing"
@@ -21,7 +22,7 @@ internal class PlayerEntity(
     }
 
     fun asServiceModel() = Player(
-        userId = this.userId,
+        user = User.Id(this.userId),
         connectionId = this.connectionId,
         state = when (this.state) {
             "playing" -> PlayerState.PLAYING

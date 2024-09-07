@@ -17,7 +17,7 @@ internal class BuildingEntity(
     companion object {
         fun of(serviceModel: Building) = BuildingEntity(
             type = serviceModel.type,
-            tile = serviceModel.tile?.let { TileRefEntity.of(it) },
+            tile = serviceModel.workedTile?.let { TileRefEntity.of(it) },
             active = serviceModel.active,
             details = serviceModel.details.getDetails().map { DetailLogEntryEntity.of(it) }
         )
@@ -25,7 +25,7 @@ internal class BuildingEntity(
 
     fun asServiceModel() = Building(
         type = this.type,
-        tile = this.tile?.asServiceModel(),
+        workedTile = this.tile?.asServiceModel(),
         active = this.active,
         details = DetailLog(this.details.mapMutable { it.asServiceModel() })
     )

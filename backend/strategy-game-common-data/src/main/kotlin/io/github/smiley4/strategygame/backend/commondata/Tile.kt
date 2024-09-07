@@ -1,26 +1,38 @@
 package io.github.smiley4.strategygame.backend.commondata
 
 data class Tile(
-    val tileId: String,
+    val id: Id,
     val position: TilePosition,
-    val dataWorld: TileWorldData,
-    val dataPolitical: TilePoliticalData,
-)
+    val dataWorld: WorldData,
+    val dataPolitical: PoliticalData,
+) {
 
-data class TileWorldData(
-    var terrainType: TerrainType,
-    var resourceType: TileResourceType,
-    var height: Float,
-)
+    @JvmInline
+    value class Id(val value: String)
 
-data class TilePoliticalData(
-    val influences: MutableList<TileInfluence>,
-    val discoveredByCountries: MutableSet<String>,
-    var controlledBy: TileOwner?
-)
+    data class WorldData(
+        var terrainType: TerrainType,
+        var resourceType: TileResourceType,
+        var height: Float,
+    )
 
-data class TileOwner(
-    val countryId: String,
-    val provinceId: String,
-    val settlementId: String
-)
+    data class PoliticalData(
+        val influences: MutableList<Influence>,
+        val discoveredByCountries: MutableSet<Country.Id>,
+        var controlledBy: Owner?
+    )
+
+    data class Owner(
+        val country: Country.Id,
+        val province: Province.Id,
+        val settlement: Settlement.Id
+    )
+
+    data class Influence(
+        val country: Country.Id,
+        val province: Province.Id,
+        val settlement: Settlement.Id,
+        val amount: Double
+    )
+
+}

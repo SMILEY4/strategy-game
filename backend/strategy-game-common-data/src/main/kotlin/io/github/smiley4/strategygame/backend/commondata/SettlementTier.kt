@@ -27,10 +27,10 @@ enum class SettlementTier(
 }
 
 fun SettlementTier.previousTier(): SettlementTier? {
-    return SettlementTier.values().findLast { it.level < this.level }
+    return SettlementTier.entries.toTypedArray().findLast { it.level < this.level }
 }
 
 fun SettlementTier.nextTier(): SettlementTier? {
-    return SettlementTier.values().firstOrNull { it.level > this.level }
+    return SettlementTier.entries.firstOrNull { it.level > this.level }
 }
 

@@ -18,12 +18,12 @@ import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {CgClose} from "react-icons/cg";
 import "./settlementWindow.less"
 
-export interface WorldObjectWindowProps {
+export interface SettlementWindowProps {
 	windowId: string;
 	identifier: string | null;
 }
 
-export function SettlementWindow(props: WorldObjectWindowProps): ReactElement {
+export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
 	const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.identifier);
 

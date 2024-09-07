@@ -1,10 +1,9 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileInfluence
-import io.github.smiley4.strategygame.backend.commondata.TileOwner
 import io.github.smiley4.strategygame.backend.engine.module.GameConfig
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
@@ -30,46 +29,46 @@ internal class UpdateInfluenceStep(private val influenceCalculator: InfluenceCal
     private fun setControlledBy(tile: Tile) {
 
         // find country with most total influence and total  influence above threshold
-        val controllingCountry = tile.dataPolitical.influences
-            .groupBy { it.countryId }
+        val controllingCountry: Country.Id? = tile.dataPolitical.influences
+            .groupBy { it.country }
             .filter { (_, totalInfluence) -> totalInfluence >= GameConfig.influenceThresholdTileControl }
             .maxByOrNull { (_, totalInfluence) -> totalInfluence }
             ?.first
 
-        if(controllingCountry == null)  {
+        if (controllingCountry == null) {
             tile.dataPolitical.controlledBy = null
             return
         }
 
         // determine controlling province
         val controllerProvince = tile.dataPolitical.influences
-            .filter { it.countryId == controllingCountry }
-            .groupBy { it.provinceId }
+            .filter { it.country == controllingCountry }
+            .groupBy { it.province }
             .maxBy { (_, totalInfluence) -> totalInfluence }
             .first
 
         // determine controlling settlement
         val controllerSettlement = tile.dataPolitical.influences
-            .filter { it.countryId == controllingCountry && it.provinceId == controllerProvince }
-            .groupBy { it.settlementId }
+            .filter { it.country == controllingCountry && it.province == controllerProvince }
+            .groupBy { it.settlement }
             .maxBy { (_, totalInfluence) -> totalInfluence }
             .first
 
-        tile.dataPolitical.controlledBy = TileOwner(
-            countryId = controllingCountry,
-            provinceId = controllerProvince,
-            settlementId = controllerSettlement
+        tile.dataPolitical.controlledBy = Tile.Owner(
+            country = controllingCountry,
+            province = controllerProvince,
+            settlement = controllerSettlement
         )
     }
 
     private fun updateDiscoveredBy(tile: Tile) {
         tile.dataPolitical.influences.forEach { influence ->
-            tile.dataPolitical.discoveredByCountries.add(influence.countryId)
+            tile.dataPolitical.discoveredByCountries.add(influence.country)
         }
     }
 
-    private fun Collection<TileInfluence>.groupBy(keyProvider: (influence: TileInfluence) -> String): List<Pair<String, Double>> {
-        val sums = mutableMapOf<String, Double>()
+    private fun <K> Collection<Tile.Influence>.groupBy(keyProvider: (influence: Tile.Influence) -> K): List<Pair<K, Double>> {
+        val sums = mutableMapOf<K, Double>()
         this.forEach { influence ->
             sums[keyProvider(influence)] = (sums[keyProvider(influence)] ?: 0.0) + influence.amount
         }

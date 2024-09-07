@@ -17,7 +17,7 @@ internal sealed class ProductionQueueEntryEntity(
         fun of(serviceModel: ProductionQueueEntry) =
             when (serviceModel) {
                 is ProductionQueueEntry.Settler -> SettlerProductionQueueEntryEntity(
-                    entryId = serviceModel.entryId,
+                    entryId = serviceModel.id.value,
                     progress = serviceModel.progress
                 )
             }
@@ -26,7 +26,7 @@ internal sealed class ProductionQueueEntryEntity(
     fun asServiceModel(): ProductionQueueEntry =
         when (this) {
             is SettlerProductionQueueEntryEntity -> ProductionQueueEntry.Settler(
-                entryId = this.entryId,
+                id = ProductionQueueEntry.Id(this.entryId),
                 progress = this.progress
             )
         }

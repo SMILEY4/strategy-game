@@ -9,6 +9,7 @@ import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.worlds.edge.TurnEnd
 import io.github.smiley4.strategygame.backend.worlds.edge.TurnSubmit
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.CommandsInsert
@@ -25,7 +26,7 @@ internal class TurnSubmitImpl(
 
     private val metricId = MetricId.action(TurnSubmit::class)
 
-    override suspend fun perform(userId: String, gameId: String, commands: Collection<CommandData>) {
+    override suspend fun perform(userId: User.Id, gameId: Game.Id, commands: Collection<CommandData>) {
         return time(metricId) {
             log().info("user $userId submits ${commands.size} commands for game $gameId")
             val game = getGame(gameId)
@@ -39,7 +40,7 @@ internal class TurnSubmitImpl(
     /**
      * Fetch the game with the given id. Since we already found a player, we can assume the game exists
      */
-    private suspend fun getGame(gameId: String): Game {
+    private suspend fun getGame(gameId: Game.Id): Game {
         try {
             return gameQuery.execute(gameId)
         } catch (e: EntityNotFoundError) {
@@ -51,7 +52,7 @@ internal class TurnSubmitImpl(
     /**
      * Set the state of the given player to "submitted"
      */
-    private suspend fun updatePlayerState(game: Game, userId: String) {
+    private suspend fun updatePlayerState(game: Game, userId: User.Id) {
         val player = game.players.findByUserId(userId)
         if (player != null) {
             player.state = PlayerState.SUBMITTED
@@ -65,12 +66,12 @@ internal class TurnSubmitImpl(
     /**
      * save the given commands at the given game
      */
-    private suspend fun saveCommands(game: Game, userId: String, commandData: Collection<CommandData>) {
+    private suspend fun saveCommands(game: Game, userId: User.Id, commandData: Collection<CommandData>) {
         val commands = commandData.map { data ->
             Command(
-                commandId = DbId.PLACEHOLDER,
-                userId = userId,
-                gameId = game.gameId,
+                id = Command.Id(DbId.PLACEHOLDER),
+                user = userId,
+                game = game.id,
                 turn = game.turn,
                 data = data
             )
@@ -86,7 +87,7 @@ internal class TurnSubmitImpl(
         val countPlaying = game.players.count { it.state == PlayerState.PLAYING && it.connectionId != null }
         if (countPlaying == 0) {
             try {
-                actionEndTurn.perform(game.gameId)
+                actionEndTurn.perform(game.id)
             } catch (e: TurnEnd.TurnEndError) {
                 when (e) {
                     is TurnEnd.GameNotFoundError -> throw TurnSubmit.EndTurnError(e)

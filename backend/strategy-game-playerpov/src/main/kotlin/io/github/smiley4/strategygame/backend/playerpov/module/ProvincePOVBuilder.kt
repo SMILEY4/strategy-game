@@ -8,12 +8,14 @@ import io.github.smiley4.strategygame.backend.commondata.Province
 internal class ProvincePOVBuilder(private val povCache: POVCache) {
 
     fun build(province: Province): JsonType? {
-        val knownSettlements = province.settlementIds.filter { povCache.settlementVisibility(it).isAtLeast(TileVisibilityDTO.DISCOVERED) }
+        val knownSettlements = province.settlements
+            .filter { povCache.settlementVisibility(it).isAtLeast(TileVisibilityDTO.DISCOVERED) }
+            .map { it.value }
         if(knownSettlements.isEmpty()) {
             return null
         }
         return obj {
-            "id" to province.provinceId
+            "id" to province.id.value
             "color" to obj {
                 "red" to province.color.red
                 "green" to province.color.green

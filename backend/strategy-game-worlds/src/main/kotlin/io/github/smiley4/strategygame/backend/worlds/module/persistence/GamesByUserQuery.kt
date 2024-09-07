@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.GameEntity
 
 
@@ -11,7 +12,7 @@ internal class GamesByUserQuery(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GamesByUserQuery::class)
 
-    suspend fun execute(userId: String): List<Game> {
+    suspend fun execute(userId: User.Id): List<Game> {
         return time(metricId) {
             database.assertCollections(Collections.GAMES)
             database.query(
@@ -21,7 +22,7 @@ internal class GamesByUserQuery(private val database: ArangoDatabase) {
 					FILTER game.players[*].userId ANY == @userId
 					RETURN game
                 """.trimIndent(),
-                mapOf("userId" to userId),
+                mapOf("userId" to userId.value),
                 GameEntity::class.java
             ).map { it.asServiceModel() }
         }

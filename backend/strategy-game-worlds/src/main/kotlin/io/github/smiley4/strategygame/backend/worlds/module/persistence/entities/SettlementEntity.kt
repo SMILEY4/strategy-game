@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
+import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 
@@ -18,25 +19,30 @@ internal class SettlementEntity(
 
     companion object {
         fun of(serviceModel: Settlement, gameId: String) = SettlementEntity(
-            key = DbId.asDbId(serviceModel.settlementId),
+            key = DbId.asDbId(serviceModel.id.value),
             gameId = gameId,
-            countryId = serviceModel.countryId,
+            countryId = serviceModel.country.value,
             tile = TileRefEntity.of(serviceModel.tile),
-            name = serviceModel.name,
-            viewDistance = serviceModel.viewDistance,
-            color = ColorEntity.of(serviceModel.color),
-            productionQueue = serviceModel.productionQueue.map { ProductionQueueEntryEntity.of(it) },
+            name = serviceModel.attributes.name,
+            viewDistance = serviceModel.attributes.viewDistance,
+            color = ColorEntity.of(serviceModel.attributes.color),
+            productionQueue = serviceModel.infrastructure.productionQueue.map { ProductionQueueEntryEntity.of(it) },
         )
     }
 
     fun asServiceModel() = Settlement(
-        settlementId = this.getKeyOrThrow(),
-        countryId = this.countryId,
+        id = Settlement.Id(this.getKeyOrThrow()),
+        country = Country.Id(this.countryId),
         tile = this.tile.asServiceModel(),
-        name = this.name,
-        viewDistance = this.viewDistance,
-        color = this.color.toRGBColor(),
-        productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList()
+        attributes = Settlement.Attributes(
+            name = this.name,
+            viewDistance = this.viewDistance,
+            color = this.color.toRGBColor(),
+        ),
+        infrastructure = Settlement.Infrastructure(
+            productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList(),
+            buildings = mutableListOf(), // todo
+        ),
     )
 
 }

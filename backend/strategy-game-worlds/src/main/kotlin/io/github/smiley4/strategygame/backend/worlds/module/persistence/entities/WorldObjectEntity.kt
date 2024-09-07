@@ -2,9 +2,8 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
+import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
-import io.github.smiley4.strategygame.backend.commondata.ScoutWorldObject
-import io.github.smiley4.strategygame.backend.commondata.SettlerWorldObject
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 @JsonTypeInfo(
@@ -15,7 +14,7 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObject
 internal sealed class WorldObjectEntity(
     val gameId: String,
     val tile: TileRefEntity,
-    val country: String,
+    val countryId: String,
     val maxMovement: Int,
     val viewDistance: Int,
     key: String? = null
@@ -24,19 +23,19 @@ internal sealed class WorldObjectEntity(
     companion object {
         fun of(serviceModel: WorldObject, gameId: String): WorldObjectEntity {
             return when (serviceModel) {
-                is ScoutWorldObject -> ScoutWorldObjectEntity(
+                is WorldObject.Scout -> ScoutWorldObjectEntity(
                     gameId = gameId,
-                    key = DbId.asDbId(serviceModel.id),
+                    key = DbId.asDbId(serviceModel.id.value),
                     tile = TileRefEntity.of(serviceModel.tile),
-                    country = serviceModel.country,
+                    countryId = serviceModel.country.value,
                     maxMovement = serviceModel.maxMovement,
                     viewDistance = serviceModel.viewDistance
                 )
-                is SettlerWorldObject -> SettlerWorldObjectEntity(
+                is WorldObject.Settler -> SettlerWorldObjectEntity(
                     gameId = gameId,
-                    key = DbId.asDbId(serviceModel.id),
+                    key = DbId.asDbId(serviceModel.id.value),
                     tile = TileRefEntity.of(serviceModel.tile),
-                    country = serviceModel.country,
+                    countryId = serviceModel.country.value,
                     maxMovement = serviceModel.maxMovement,
                     viewDistance = serviceModel.viewDistance
                 )
@@ -46,17 +45,17 @@ internal sealed class WorldObjectEntity(
 
     fun asServiceModel(): WorldObject {
         return when (this) {
-            is ScoutWorldObjectEntity -> ScoutWorldObject(
-                id = this.getKeyOrThrow(),
+            is ScoutWorldObjectEntity -> WorldObject.Scout(
+                id = WorldObject.Id(this.getKeyOrThrow()),
                 tile = this.tile.asServiceModel(),
-                country = this.country,
+                country = Country.Id(this.countryId),
                 maxMovement = this.maxMovement,
                 viewDistance = this.viewDistance
             )
-            is SettlerWorldObjectEntity -> SettlerWorldObject(
-                id = this.getKeyOrThrow(),
+            is SettlerWorldObjectEntity -> WorldObject.Settler(
+                id = WorldObject.Id(this.getKeyOrThrow()),
                 tile = this.tile.asServiceModel(),
-                country = this.country,
+                country = Country.Id(this.countryId),
                 maxMovement = this.maxMovement,
                 viewDistance = this.viewDistance
             )
@@ -70,13 +69,13 @@ internal class ScoutWorldObjectEntity(
     key: String?,
     gameId: String,
     tile: TileRefEntity,
-    country: String,
+    countryId: String,
     maxMovement: Int,
     viewDistance: Int,
 ) : WorldObjectEntity(
     gameId = gameId,
     tile = tile,
-    country = country,
+    countryId = countryId,
     maxMovement = maxMovement,
     viewDistance = viewDistance,
     key = key
@@ -87,13 +86,13 @@ internal class SettlerWorldObjectEntity(
     key: String?,
     gameId: String,
     tile: TileRefEntity,
-    country: String,
+    countryId: String,
     maxMovement: Int,
     viewDistance: Int,
 ) : WorldObjectEntity(
     gameId = gameId,
     tile = tile,
-    country = country,
+    countryId = countryId,
     maxMovement = maxMovement,
     viewDistance = viewDistance,
     key = key

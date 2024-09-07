@@ -2,53 +2,30 @@ package io.github.smiley4.strategygame.backend.commondata
 
 
 class Settlement(
-    val settlementId: String,
-    val countryId: String,
+    val id: Id,
+    val country: Country.Id,
     val tile: TileRef,
-    val name: String,
-    val viewDistance: Int,
-    val color: RGBColor,
-    val productionQueue: MutableList<ProductionQueueEntry>
-//    var tier: SettlementTier,
-//    val meta: CityMetadata,
-//    val infrastructure: CityInfrastructure,
-//    val population: CityPopulation,
+    val attributes: Attributes,
+    val infrastructure: Infrastructure,
 ) {
 
-//    fun findCountry(game: GameExtended): Country = game.findCountry(countryId)
-//
-    fun findProvince(game: GameExtended): Province = game.findProvinceBySettlement(settlementId)
-//
-//    fun findTile(game: GameExtended): Tile = game.findTile(tile.id)
-//
-//    fun findProductionQueueEntry(entryId: String): ProductionQueueEntry = infrastructure.productionQueue.find { it.entryId == entryId }
-//        ?: throw Exception("Could not find production-queue-entry $entryId in city $settlementId")
+    @JvmInline
+    value class Id(val value: String) {
+        companion object {}
+    }
+
+
+    class Infrastructure(
+        val productionQueue: MutableList<ProductionQueueEntry>,
+        val buildings: MutableList<Building>,
+    )
+
+    class Attributes(
+        val name: String,
+        val color: RGBColor,
+        val viewDistance: Int,
+    )
+
+    fun findProvince(game: GameExtended): Province = game.findProvinceBySettlement(id)
 
 }
-
-//class CityMetadata(
-//    val name: String,
-//    val color: RGBColor,
-//    val isProvinceCapital: Boolean,
-//)
-//
-//class CityInfrastructure(
-//    val buildings: MutableList<Building>,
-//    val productionQueue: MutableList<ProductionQueueEntry>,
-//)
-//
-//class CityPopulation(
-//    var size: Int,
-//    var consumedFood: Float = 0f,
-//    var growthProgress: Float,
-//    var growthConsumedFood: Boolean = false,
-//    var growthDetailLog: DetailLog<CityPopulationGrowthDetailType> = DetailLog()
-//)
-//
-//enum class CityPopulationGrowthDetailType {
-//    MORE_FOOD_AVAILABLE,
-//    NOT_ENOUGH_FOOD,
-//    STARVING,
-//    PROVINCE_CAPITAL,
-//    MAX_SIZE_REACHED,
-//}

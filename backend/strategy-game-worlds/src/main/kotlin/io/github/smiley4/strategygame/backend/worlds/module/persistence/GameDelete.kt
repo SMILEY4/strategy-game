@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.parallelIO
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
+import io.github.smiley4.strategygame.backend.commondata.Game
 import org.intellij.lang.annotations.Language
 
 
@@ -11,7 +12,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GameDelete::class)
 
-    suspend fun execute(gameId: String) {
+    suspend fun execute(gameId: Game.Id) {
         time(metricId) {
             database.assertCollections(
                 Collections.GAMES,
@@ -36,11 +37,11 @@ internal class GameDelete(private val database: ArangoDatabase) {
         }
     }
 
-    private suspend fun deleteGame(gameId: String) {
-        database.deleteDocument(Collections.GAMES, gameId)
+    private suspend fun deleteGame(gameId: Game.Id) {
+        database.deleteDocument(Collections.GAMES, gameId.value)
     }
 
-    private suspend fun deleteCountries(gameId: String) {
+    private suspend fun deleteCountries(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
@@ -48,11 +49,11 @@ internal class GameDelete(private val database: ArangoDatabase) {
 					FILTER country.gameId == @gameId
                     REMOVE country in ${Collections.COUNTRIES}
             """.trimIndent(),
-            mapOf("gameId" to gameId)
+            mapOf("gameId" to gameId.value)
         )
     }
 
-    private suspend fun deleteTiles(gameId: String) {
+    private suspend fun deleteTiles(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
@@ -60,11 +61,11 @@ internal class GameDelete(private val database: ArangoDatabase) {
                     FILTER tile.gameId == @gameId
                     REMOVE tile in ${Collections.TILES}
             """.trimIndent(),
-            mapOf("gameId" to gameId)
+            mapOf("gameId" to gameId.value)
         )
     }
 
-    private suspend fun deleteWorldObjects(gameId: String) {
+    private suspend fun deleteWorldObjects(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
@@ -72,11 +73,11 @@ internal class GameDelete(private val database: ArangoDatabase) {
 					FILTER worldObject.gameId == @gameId
                     REMOVE worldObject in ${Collections.WORLD_OBJECTS}
             """.trimIndent(),
-            mapOf("gameId" to gameId)
+            mapOf("gameId" to gameId.value)
         )
     }
 
-    private suspend fun deleteCities(gameId: String) {
+    private suspend fun deleteCities(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
@@ -84,11 +85,11 @@ internal class GameDelete(private val database: ArangoDatabase) {
 					FILTER city.gameId == @gameId
                     REMOVE city in ${Collections.CITIES}
             """.trimIndent(),
-            mapOf("gameId" to gameId)
+            mapOf("gameId" to gameId.value)
         )
     }
 
-    private suspend fun deleteCommands(gameId: String) {
+    private suspend fun deleteCommands(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
@@ -96,11 +97,11 @@ internal class GameDelete(private val database: ArangoDatabase) {
 					FILTER command.gameId == @gameId
                     REMOVE command in ${Collections.COMMANDS}
             """.trimIndent(),
-            mapOf("gameId" to gameId)
+            mapOf("gameId" to gameId.value)
         )
     }
 
-    private suspend fun deleteProvinces(gameId: String) {
+    private suspend fun deleteProvinces(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
@@ -108,11 +109,11 @@ internal class GameDelete(private val database: ArangoDatabase) {
 					FILTER province.gameId == @gameId
                     REMOVE province in ${Collections.PROVINCES}
             """.trimIndent(),
-            mapOf("gameId" to gameId)
+            mapOf("gameId" to gameId.value)
         )
     }
 
-    private suspend fun deleteRoutes(gameId: String) {
+    private suspend fun deleteRoutes(gameId: Game.Id) {
         database.execute(
             //language=aql
             """
@@ -120,7 +121,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 					FILTER route.gameId == @gameId
                     REMOVE route in ${Collections.ROUTES}
             """.trimIndent(),
-            mapOf("gameId" to gameId)
+            mapOf("gameId" to gameId.value)
         )
     }
 

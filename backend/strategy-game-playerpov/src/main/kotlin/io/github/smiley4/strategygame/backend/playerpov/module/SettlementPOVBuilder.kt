@@ -9,30 +9,30 @@ import io.github.smiley4.strategygame.backend.commondata.Settlement
 internal class SettlementPOVBuilder(private val povCache: POVCache) {
 
     fun build(settlement: Settlement): JsonType? {
-        val visibility = povCache.settlementVisibility(settlement.settlementId)
+        val visibility = povCache.settlementVisibility(settlement.id)
         if (visibility.isLessThan(TileVisibilityDTO.DISCOVERED)) {
             return null
         }
         return obj {
-            "id" to settlement.settlementId
+            "id" to settlement.id.value
             "color" to obj {
-                "red" to settlement.color.red
-                "green" to settlement.color.green
-                "blue" to settlement.color.blue
+                "red" to settlement.attributes.color.red
+                "green" to settlement.attributes.color.green
+                "blue" to settlement.attributes.color.blue
             }
-            "name" to settlement.name
-            "country" to settlement.countryId
+            "name" to settlement.attributes.name
+            "country" to settlement.country.value
             "tile" to obj {
-                "id" to settlement.tile.id
+                "id" to settlement.tile.id.value
                 "q" to settlement.tile.q
                 "r" to settlement.tile.r
             }
             "productionQueue" to objHidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
-                settlement.productionQueue.map {
+                settlement.infrastructure.productionQueue.map {
                     when (it) {
                         is ProductionQueueEntry.Settler -> obj {
                             "type" to "settler"
-                            "entryId" to it.entryId
+                            "entryId" to it.id.value
                             "progress" to it.progress
                         }
                     }

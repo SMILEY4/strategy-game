@@ -18,7 +18,7 @@ internal class GameEntity(
     companion object {
         fun of(serviceModel: Game) =
             GameEntity(
-                key = DbId.asDbId(serviceModel.gameId),
+                key = DbId.asDbId(serviceModel.id.value),
                 name = serviceModel.name,
                 creationTimestamp = serviceModel.creationTimestamp,
                 turn = serviceModel.turn,
@@ -27,7 +27,7 @@ internal class GameEntity(
 
         fun of(serviceModel: GameMeta, game: GameEntity) =
             GameEntity(
-                key = DbId.asDbId(serviceModel.gameId),
+                key = DbId.asDbId(serviceModel.id.value),
                 turn = serviceModel.turn,
                 name = game.name,
                 creationTimestamp = game.creationTimestamp,
@@ -37,7 +37,7 @@ internal class GameEntity(
 
 
     fun asServiceModel() = Game(
-        gameId = this.getKeyOrThrow(),
+        id = Game.Id(this.getKeyOrThrow()),
         name = this.name,
         creationTimestamp = this.creationTimestamp,
         turn = this.turn,
