@@ -3,7 +3,8 @@ package io.github.smiley4.strategygame.backend.commondata
 
 sealed class ProductionQueueEntry(
     val id: Id,
-    var progress: Float,
+    val requiredResources: ResourceCollection,
+    val collectedResources: ResourceCollection
 ) {
 
     @JvmInline
@@ -13,7 +14,7 @@ sealed class ProductionQueueEntry(
 
     class Settler(
         id: Id,
-        progress: Float
-    ) : ProductionQueueEntry(id, progress)
+        collectedResources: ResourceCollection
+    ) : ProductionQueueEntry(id, ResourceCollection.basic(ResourceType.WOOD.amount(5f)), collectedResources)
 
 }

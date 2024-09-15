@@ -6,6 +6,7 @@ import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 
 internal class ResolveCommandProductionQueue : Logging {
 
@@ -26,7 +27,7 @@ internal class ResolveCommandProductionQueue : Logging {
                 settlement.infrastructure.productionQueue.add(
                     ProductionQueueEntry.Settler(
                         id = ProductionQueueEntry.Id.gen(),
-                        progress = 0f
+                        collectedResources = ResourceCollection.empty()
                     )
                 )
             }

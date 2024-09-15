@@ -20,7 +20,7 @@ import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCo
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.RootUpdateStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateEconomyStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateInfluenceStep
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateProductionQueues
+import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateProductionQueueStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateWorldStep
 import io.github.smiley4.strategygame.backend.engine.module.tools.GameValidationsImpl
 import io.github.smiley4.strategygame.backend.engine.module.tools.InfluenceCalculator
@@ -45,7 +45,7 @@ fun Module.dependenciesEngine() {
             it.register(RootUpdateStep())
             it.register(ResolveCommandsStep(get(), get(), get()))
             it.register(UpdateWorldStep())
-            it.register(UpdateProductionQueues())
+            it.register(UpdateProductionQueueStep())
             it.register(UpdateEconomyStep(get(), get()))
             it.register(UpdateInfluenceStep(get()))
         }

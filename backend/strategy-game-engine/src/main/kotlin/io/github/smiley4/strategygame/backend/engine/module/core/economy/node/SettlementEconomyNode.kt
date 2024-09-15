@@ -18,9 +18,11 @@ class SettlementEconomyNode(val settlement: Settlement) : GameEconomyNode {
     override val entities: Collection<EconomyEntity> = buildList {
         add(PopulationBaseEconomyEntity(this@SettlementEconomyNode))
         add(PopulationGrowthEconomyEntity(this@SettlementEconomyNode))
-        add(ProductionQueueEconomyEntity(this@SettlementEconomyNode))
         settlement.infrastructure.buildings.forEach { building ->
             add(BuildingEconomyEntity(this@SettlementEconomyNode, building))
+        }
+        settlement.infrastructure.productionQueue.firstOrNull()?.also { entry ->
+            add(ProductionQueueEconomyEntity(this@SettlementEconomyNode, entry))
         }
     }
 

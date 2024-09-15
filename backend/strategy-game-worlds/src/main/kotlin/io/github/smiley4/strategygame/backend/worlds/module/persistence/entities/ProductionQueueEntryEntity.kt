@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.MINIMAL_CLASS,
@@ -10,7 +11,7 @@ import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 )
 internal sealed class ProductionQueueEntryEntity(
     val entryId: String,
-    val progress: Float,
+    val collectedResources: List<ResourceStackEntity>
 ) {
 
     companion object {
@@ -18,7 +19,7 @@ internal sealed class ProductionQueueEntryEntity(
             when (serviceModel) {
                 is ProductionQueueEntry.Settler -> SettlerProductionQueueEntryEntity(
                     entryId = serviceModel.id.value,
-                    progress = serviceModel.progress
+                    collectedResources = serviceModel.collectedResources.toStacks().map { ResourceStackEntity.of(it) }
                 )
             }
     }
@@ -27,7 +28,7 @@ internal sealed class ProductionQueueEntryEntity(
         when (this) {
             is SettlerProductionQueueEntryEntity -> ProductionQueueEntry.Settler(
                 id = ProductionQueueEntry.Id(this.entryId),
-                progress = this.progress
+                collectedResources = this.collectedResources.map { it.asServiceModel() }.let { ResourceCollection.basic(it) }
             )
         }
 
@@ -35,5 +36,5 @@ internal sealed class ProductionQueueEntryEntity(
 
 internal class SettlerProductionQueueEntryEntity(
     entryId: String,
-    progress: Float
-) : ProductionQueueEntryEntity(entryId, progress)
+    collectedResources: List<ResourceStackEntity>
+) : ProductionQueueEntryEntity(entryId, collectedResources)

@@ -33,7 +33,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache) {
                         is ProductionQueueEntry.Settler -> obj {
                             "type" to "settler"
                             "entryId" to it.id.value
-                            "progress" to it.progress
+                            "progress" to calculateProgress(it)
                         }
                     }
                 }
@@ -48,5 +48,12 @@ internal class SettlementPOVBuilder(private val povCache: POVCache) {
             }
         }
     }
+
+    private fun calculateProgress(queueEntry: ProductionQueueEntry): Float {
+        val totalRequired = queueEntry.requiredResources.toList().map { (_, amount) -> amount }.sum()
+        val totalCollected = queueEntry.collectedResources.toList().map { (_, amount) -> amount }.sum()
+        return (totalCollected / totalRequired).coerceIn(0f, 1f)
+    }
+
 
 }

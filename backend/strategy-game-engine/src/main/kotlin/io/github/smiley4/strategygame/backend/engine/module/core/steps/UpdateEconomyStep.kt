@@ -11,12 +11,14 @@ import io.github.smiley4.strategygame.backend.ecosim.edge.record
 import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
+import io.github.smiley4.strategygame.backend.engine.module.core.common.send
 import io.github.smiley4.strategygame.backend.engine.module.core.economy.node.CountryEconomyNode
 import io.github.smiley4.strategygame.backend.engine.module.core.economy.node.GameEconomyNode
 import io.github.smiley4.strategygame.backend.engine.module.core.economy.node.ProvinceEconomyNode
 import io.github.smiley4.strategygame.backend.engine.module.core.economy.node.SettlementEconomyNode
 import io.github.smiley4.strategygame.backend.engine.module.core.economy.node.WorldEconomyNode
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWorldEvent
+import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdatedEconomyEvent
 
 internal class UpdateEconomyStep(
     private val economyService: EconomyService,
@@ -28,6 +30,7 @@ internal class UpdateEconomyStep(
         val node = setup(event.game)
         val report = simulate(node)
         updateLedgers(node, report)
+        publisher.send(UpdatedEconomyEvent(event.game, report))
     }
 
 
@@ -44,14 +47,14 @@ internal class UpdateEconomyStep(
     private fun updateLedgers(root: EconomyNode, report: EconomyReport) {
         root.collectNodes().filterIsInstance<GameEconomyNode>().forEach { node ->
             when (node) {
-                is WorldEconomyNode -> Unit
-                is CountryEconomyNode -> Unit
-                is ProvinceEconomyNode -> Unit
                 is SettlementEconomyNode -> {
                     node.settlement.resourceLedger = ResourceLedger.build {
                         record(report, node, resourceLedgerDetailBuilder)
                     }
                 }
+                is WorldEconomyNode -> Unit
+                is CountryEconomyNode -> Unit
+                is ProvinceEconomyNode -> Unit
             }
         }
     }

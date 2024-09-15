@@ -10,7 +10,7 @@ sealed interface WorldObject {
 
     @JvmInline
     value class Id(val value: String) {
-        companion object {}
+        companion object
     }
 
     class Scout(
