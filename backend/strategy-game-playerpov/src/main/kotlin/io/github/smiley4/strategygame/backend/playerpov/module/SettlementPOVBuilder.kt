@@ -38,6 +38,14 @@ internal class SettlementPOVBuilder(private val povCache: POVCache) {
                     }
                 }
             }
+            "buildings" to objHidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
+                settlement.infrastructure.buildings.map {
+                    obj {
+                        "type" to it.type.name
+                        // todo ...
+                    }
+                }
+            }
         }
     }
 

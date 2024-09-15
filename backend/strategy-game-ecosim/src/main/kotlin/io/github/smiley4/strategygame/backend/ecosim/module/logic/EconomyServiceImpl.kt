@@ -20,7 +20,7 @@ internal class EconomyServiceImpl(
         return report
     }
 
-    private fun reportMissingResources(root: EconomyNode, report: EconomyReportImpl) {
+    private fun reportMissingResources(root: EconomyNode, report: EconomyReport) {
         root.collectEntities()
             .filter { it.config.isActive }
             .filter { it.state.state == EconomyUpdateState.CONSUME }

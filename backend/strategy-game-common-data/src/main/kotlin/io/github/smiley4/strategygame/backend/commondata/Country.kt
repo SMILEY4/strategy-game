@@ -8,6 +8,6 @@ data class Country(
 ) {
     @JvmInline
     value class Id(val value: String) {
-        companion object {}
+        companion object
     }
 }

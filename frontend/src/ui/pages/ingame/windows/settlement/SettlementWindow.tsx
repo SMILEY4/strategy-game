@@ -16,7 +16,13 @@ import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary
 import {FiPlus} from "react-icons/fi";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {CgClose} from "react-icons/cg";
-import "./settlementWindow.less"
+import "./settlementWindow.less";
+import {Building} from "../../../../../models/primitives/building";
+import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
+import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
+import {Header4} from "../../../../components/header/Header";
+import {SimpleDivider} from "../../../../components/divider/SimpleDivider";
+import {joinClassNames} from "../../../../components/utils";
 
 export interface SettlementWindowProps {
 	windowId: string;
@@ -71,8 +77,16 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 					</InsetPanel>
 				</WindowSection>
 
-				<WindowSection title={"Buildings"}>
+				<Spacer size="m"/>
+
+				<WindowSection title={"Production"}>
 					<ProductionQueueSection {...data}/>
+				</WindowSection>
+
+				<Spacer size="m"/>
+
+				<WindowSection title={"Buildings"}>
+					<BuildingList {...data}/>
 				</WindowSection>
 
 			</DefaultDecoratedWindowWithBanner>
@@ -88,7 +102,7 @@ function ProductionQueueSection(props: UseSettlementWindow.Data) {
 			<ProductionQueueProgressBar {...props}/>
 			<ProductionQueueCancelButton {...props}/>
 		</HBox>
-	)
+	);
 }
 
 function ProductionQueueAddButton(props: UseSettlementWindow.Data): ReactElement {
@@ -102,7 +116,7 @@ function ProductionQueueAddButton(props: UseSettlementWindow.Data): ReactElement
 function ProductionQueueProgressBar(props: UseSettlementWindow.Data): ReactElement {
 	return (
 		<ProgressBar
-			progress={props.productionQueue.activeEntry=== null ? 0 : props.productionQueue.activeEntry.progress}
+			progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
 			onClick={props.productionQueue.open}
 			className="production_queue__progress"
 		>
@@ -121,3 +135,62 @@ function ProductionQueueCancelButton(props: UseSettlementWindow.Data): ReactElem
 	);
 }
 
+function BuildingList(props: UseSettlementWindow.Data): ReactElement {
+	return (
+		<>
+			<HBox gap_s centerVertical left>
+				<Text>{"Building-Slots: " + props.settlement.buildings.length + "/" + "?"}</Text>
+			</HBox>
+			<HBox gap_s top left wrap>
+				{props.settlement.buildings.map((building, index) => (
+					<BuildingEntry key={index} data={props} building={building}/>
+				))}
+			</HBox>
+		</>
+	);
+}
+
+function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Building }): ReactElement {
+	return (
+		<BuildingInfoTooltip building={props.building}>
+			<div
+				className={joinClassNames(["settlement-content-box", props.building.active ? null : "settlement-content-box--disabled"])}
+				style={{
+					backgroundImage: "url('" + "icons/buildings/farm.png" + "')", // todo icon	
+				}}
+			/>
+		</BuildingInfoTooltip>
+	);
+}
+
+export function BuildingInfoTooltip(props: { building: Building, children?: any }) {
+	return (
+		<TooltipContext>
+			<TooltipTrigger>
+				{props.children}
+			</TooltipTrigger>
+			<TooltipContent>
+				<TooltipPanel>
+
+					<VBox padding_m gap_s fillParent>
+						<Header4>{props.building.type}</Header4>
+						<SimpleDivider/>
+						{
+							<>
+								<HBox gap_xs>
+									<Text>Test 1:</Text>
+									<Text type={"positive"}>{"Yes"}</Text>
+								</HBox>
+								<HBox gap_xs>
+									<Text>Test 2:</Text>
+									<Text>{"Hello World"}</Text>
+								</HBox>
+							</>
+						}
+					</VBox>
+
+				</TooltipPanel>
+			</TooltipContent>
+		</TooltipContext>
+	);
+}

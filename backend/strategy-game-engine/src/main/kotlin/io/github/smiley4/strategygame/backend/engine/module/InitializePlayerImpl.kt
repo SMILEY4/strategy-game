@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.COUNTRY_COLORS
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.commondata.TileRef
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
@@ -36,7 +37,7 @@ internal class InitializePlayerImpl : InitializePlayer {
         return Country(
             id = Country.Id.gen(),
             user = userId,
-            color = COUNTRY_COLORS[game.countries.size % COUNTRY_COLORS.size]
+            color = COUNTRY_COLORS[game.countries.size % COUNTRY_COLORS.size],
         ).also { game.countries.add(it) }.id
     }
 

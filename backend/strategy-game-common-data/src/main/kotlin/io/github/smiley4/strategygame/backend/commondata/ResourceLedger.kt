@@ -2,6 +2,12 @@ package io.github.smiley4.strategygame.backend.commondata
 
 interface ResourceLedger {
 
+    companion object {
+        fun empty() = ResourceLedgerImpl()
+        fun of(entries: List<ResourceLedgerEntry>) = ResourceLedgerImpl().also { it.setEntries(entries) }
+        fun build(builder: ResourceLedgerImpl.() -> Unit) = ResourceLedgerImpl().apply(builder)
+    }
+
     /**
      * Replaces all entries with the given entries
      */

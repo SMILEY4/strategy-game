@@ -6,11 +6,12 @@ import io.github.smiley4.strategygame.backend.ecosim.module.prebuilt.EconomyNode
 import io.github.smiley4.strategygame.backend.ecosim.module.prebuilt.NoOpEconomyNodeStorageImpl
 
 /**
- * stores and manages resources or [EconomyNode]s
+ * Stores and manages resources or [EconomyNode]s
  */
 interface EconomyNodeStorage {
 
     companion object {
+        fun empty(): EconomyNodeStorage = EconomyNodeStorageImpl(ResourceCollection.empty())
         fun build(initialResources: ResourceCollection): EconomyNodeStorage = EconomyNodeStorageImpl(initialResources)
         fun noOp(): EconomyNodeStorage = NoOpEconomyNodeStorageImpl()
     }

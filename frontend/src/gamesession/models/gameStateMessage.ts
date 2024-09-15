@@ -79,6 +79,9 @@ export interface SettlementMessage {
 		type: "settler"
 		entryId: string
 		progress: number
+	})[]>,
+	buildings: HiddenType<({
+		type: string
 	})[]>
 }
 

@@ -93,11 +93,11 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
     }
 
     private suspend fun fetchCities(gameId: Game.Id): List<Settlement> {
-        database.assertCollections(Collections.CITIES)
+        database.assertCollections(Collections.SETTLEMENTS)
         return database.query(
             //language=aql
             """
-				FOR city IN ${Collections.CITIES}
+				FOR city IN ${Collections.SETTLEMENTS}
 					FILTER city._documentType != "reservation"
 					FILTER city.gameId == @gameId
 					RETURN city

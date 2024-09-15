@@ -2,6 +2,7 @@ import {CountryIdentifier} from "../primitives/country";
 import {TileIdentifier} from "../primitives/tile";
 import {SettlementIdentifier} from "../primitives/Settlement";
 import {ProductionOptionType} from "../primitives/productionOptionType";
+import {Building} from "../primitives/building";
 
 export interface SettlementAggregate {
 	identifier: SettlementIdentifier,
@@ -10,7 +11,8 @@ export interface SettlementAggregate {
 	production: {
 		options: ProductionOptionAggregate[],
 		queue: ProductionQueueEntryAggregate[],
-	}
+	},
+	buildings: Building[]
 }
 
 export interface ProductionQueueEntryAggregate {

@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.backend.commondata
 
 enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) {
+    DEV_FACTORY(0, BuildingTemplateDataDevFactory()),
     FARM(10, BuildingTemplateDataFarm()),
     FISHERS_HUT(10, BuildingTemplateDataFishersHut()),
     MINE(10, BuildingTemplateDataMine()),
@@ -25,6 +26,16 @@ abstract class BuildingTemplateData(
     val requires: ResourceCollection = ResourceCollection.empty(),
     val produces: ResourceCollection = ResourceCollection.empty(),
     val requiredTileResource: TileResourceType? = null
+)
+
+class BuildingTemplateDataDevFactory : BuildingTemplateData(
+    constructionCost = ResourceCollection.empty(),
+    produces = ResourceCollection.basic(
+        ResourceType.FOOD.amount(1f),
+        ResourceType.WOOD.amount(1f),
+        ResourceType.STONE.amount(1f),
+        ResourceType.METAL.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataFarm : BuildingTemplateData(

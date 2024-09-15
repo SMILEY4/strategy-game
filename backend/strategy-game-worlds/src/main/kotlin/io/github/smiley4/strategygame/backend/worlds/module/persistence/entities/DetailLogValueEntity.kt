@@ -9,6 +9,7 @@ import io.github.smiley4.strategygame.backend.commondata.FloatDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.IntDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourcesDetailLogValue
+import io.github.smiley4.strategygame.backend.commondata.TextDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
 
 @JsonTypeInfo(
@@ -20,6 +21,7 @@ internal sealed interface DetailLogValueEntity {
     companion object {
 
         fun of(serviceModel: DetailLogValue) = when (serviceModel) {
+            is TextDetailLogValue -> TextDetailLogValueEntity(serviceModel.value)
             is BooleanDetailLogValue -> BooleanDetailLogValueEntity(serviceModel.value)
             is FloatDetailLogValue -> FloatDetailLogValueEntity(serviceModel.value)
             is BuildingTypeDetailLogValue -> BuildingTypeDetailLogValueEntity(serviceModel.value)
@@ -31,6 +33,7 @@ internal sealed interface DetailLogValueEntity {
     }
 
     fun asServiceModel() = when (this) {
+        is TextDetailLogValueEntity -> TextDetailLogValue(this.value)
         is BooleanDetailLogValueEntity -> BooleanDetailLogValue(this.value)
         is FloatDetailLogValueEntity -> FloatDetailLogValue(this.value)
         is BuildingTypeDetailLogValueEntity -> BuildingTypeDetailLogValue(this.value)
@@ -40,6 +43,8 @@ internal sealed interface DetailLogValueEntity {
     }
 
 }
+
+internal class TextDetailLogValueEntity(var value: String) : DetailLogValueEntity
 
 internal class BooleanDetailLogValueEntity(var value: Boolean) : DetailLogValueEntity
 

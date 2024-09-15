@@ -16,7 +16,7 @@ internal class EconomyReportImpl : EconomyReport {
 
     override fun getEntries(): List<EconomyReportEntry> = entries
 
-    fun addConsumption(entity: EconomyEntity, fromNode: EconomyNode, resources: ResourceCollection) {
+    override fun addConsumption(entity: EconomyEntity, fromNode: EconomyNode, resources: ResourceCollection) {
         add(
             ConsumptionReportEntry(
                 entity = entity,
@@ -26,7 +26,7 @@ internal class EconomyReportImpl : EconomyReport {
         )
     }
 
-    fun addProduction(entity: EconomyEntity, inNode: EconomyNode, resources: ResourceCollection) {
+    override fun addProduction(entity: EconomyEntity, inNode: EconomyNode, resources: ResourceCollection) {
         add(
             ProductionReportEntry(
                 entity = entity,
@@ -36,7 +36,7 @@ internal class EconomyReportImpl : EconomyReport {
         )
     }
 
-    fun addMissingResources(entity: EconomyEntity, resources: ResourceCollection) {
+    override fun addMissingResources(entity: EconomyEntity, resources: ResourceCollection) {
         add(
             MissingResourcesReportEntry(
                 entity = entity,

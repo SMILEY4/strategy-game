@@ -70,11 +70,11 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
     }
 
     private suspend fun updateCities(cities: Collection<Settlement>, gameId: String) {
-        database.insertOrReplaceDocuments(Collections.CITIES, cities.map { SettlementEntity.of(it, gameId) })
+        database.insertOrReplaceDocuments(Collections.SETTLEMENTS, cities.map { SettlementEntity.of(it, gameId) })
     }
 
     private suspend fun deleteCities(cities: Set<Settlement>, gameId: String) {
-        database.deleteDocuments(Collections.CITIES, cities.map { SettlementEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+        database.deleteDocuments(Collections.SETTLEMENTS, cities.map { SettlementEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
     private suspend fun updateProvinces(provinces: Collection<Province>, gameId: String) {

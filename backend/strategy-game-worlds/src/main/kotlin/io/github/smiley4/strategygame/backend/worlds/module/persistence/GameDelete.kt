@@ -5,7 +5,6 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.parallelIO
 import io.github.smiley4.strategygame.backend.commonarangodb.ArangoDatabase
 import io.github.smiley4.strategygame.backend.commondata.Game
-import org.intellij.lang.annotations.Language
 
 
 internal class GameDelete(private val database: ArangoDatabase) {
@@ -19,7 +18,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
                 Collections.COUNTRIES,
                 Collections.TILES,
                 Collections.WORLD_OBJECTS,
-                Collections.CITIES,
+                Collections.SETTLEMENTS,
                 Collections.COMMANDS,
                 Collections.PROVINCES,
                 Collections.ROUTES,
@@ -81,9 +80,9 @@ internal class GameDelete(private val database: ArangoDatabase) {
         database.execute(
             //language=aql
             """
-				FOR city IN ${Collections.CITIES}
+				FOR city IN ${Collections.SETTLEMENTS}
 					FILTER city.gameId == @gameId
-                    REMOVE city in ${Collections.CITIES}
+                    REMOVE city in ${Collections.SETTLEMENTS}
             """.trimIndent(),
             mapOf("gameId" to gameId.value)
         )

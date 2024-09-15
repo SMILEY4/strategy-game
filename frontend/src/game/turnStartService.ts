@@ -158,7 +158,11 @@ export class TurnStartService {
 				productionOptions: visible([ // todo
 					ProductionOptionType.SETTLER,
 					ProductionOptionType.TOOL_WORKSHOP
-				])
+				]),
+				buildings: mapHidden(settlementMsg.buildings, buildingsMsg => buildingsMsg.map(buildingMsg => ({
+					type: buildingMsg.type,
+					active: false, // todo
+				})))
 			};
 		});
 	}

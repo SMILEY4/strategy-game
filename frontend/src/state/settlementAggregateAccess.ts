@@ -10,6 +10,7 @@ import {CommandDatabase} from "./database/commandDatabase";
 import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/primitives/command";
 import {ProductionQueueEntry} from "../models/primitives/Settlement";
 import {ProductionOptionType} from "../models/primitives/productionOptionType";
+import {getHiddenOrDefault, mapHiddenOrDefault} from "../models/common/hiddenType";
 
 export namespace SettlementAggregateAccess {
 
@@ -32,8 +33,8 @@ export namespace SettlementAggregateAccess {
 			.map(it => it as ProductionQueueCancelCommand)
 			.filter(it => it.settlement.id === settlementId);
 
-		const productionQueue = buildQueueEntries((settlement.productionQueue.visible ? settlement.productionQueue.value : []), addProductionQueueCommands, cancelProductionQueueCommands);
-		const productionOptions = buildOptions((settlement.productionOptions.visible ? settlement.productionOptions.value : []), productionQueue);
+		const productionQueue = buildQueueEntries(getHiddenOrDefault(settlement.productionQueue, []), addProductionQueueCommands, cancelProductionQueueCommands);
+		const productionOptions = buildOptions(getHiddenOrDefault(settlement.productionOptions, []), productionQueue);
 
 		return {
 			identifier: settlement.identifier,
@@ -43,6 +44,7 @@ export namespace SettlementAggregateAccess {
 				options: productionOptions,
 				queue: productionQueue,
 			},
+			buildings: getHiddenOrDefault(settlement.buildings, [])
 		};
 
 		function buildQueueEntries(

@@ -6,6 +6,11 @@ sealed interface DetailLogValue {
     fun merge(other: DetailLogValue)
 }
 
+class TextDetailLogValue(var value: String) : DetailLogValue {
+    override fun merge(other: DetailLogValue) = Unit
+    override fun toString() = "TextDetailLogValue(value='$value')"
+}
+
 class BooleanDetailLogValue(var value: Boolean) : DetailLogValue {
     override fun merge(other: DetailLogValue) = Unit
     override fun toString() = "BooleanDetailLogValue(value=$value)"

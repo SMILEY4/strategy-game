@@ -5,6 +5,9 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.contains
 import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
 
+/**
+ * Record all reported changes.
+ */
 fun ResourceLedger.record(report: EconomyReport, root: EconomyNode, detailBuilder: ResourceLedgerDetailBuilder) {
     report.getEntries().forEach { entry ->
         when (entry) {
@@ -40,7 +43,7 @@ fun ResourceLedger.record(report: EconomyReport, root: EconomyNode, detailBuilde
 }
 
 /**
- * Record resources being produced and added to this node
+ * Record resources being produced and added to this node.
  */
 fun ResourceLedger.recordProduce(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
     resources.forEach(false) { type, amount ->
@@ -51,7 +54,7 @@ fun ResourceLedger.recordProduce(resources: ResourceCollection, entity: EconomyE
 
 
 /**
- * Record resources being consumed and removed from this node
+ * Record resources being consumed and removed from this node.
  */
 fun ResourceLedger.recordConsume(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
     resources.forEach(false) { type, amount ->
@@ -62,7 +65,8 @@ fun ResourceLedger.recordConsume(resources: ResourceCollection, entity: EconomyE
 
 
 /**
- * Record resources being given to another node and removed from this node
+ * Record resources being given to another node and removed from this node.
+ * Triggered by a resource consumption by an entity from a node that is not its direct owner.
  */
 fun ResourceLedger.recordGiveShare(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
     resources.forEach(false) { type, amount ->
@@ -73,7 +77,8 @@ fun ResourceLedger.recordGiveShare(resources: ResourceCollection, entity: Econom
 
 
 /**
- * Record resources being taken from another node and added to this node
+ * Record resources being taken from another node and added to this node.
+ * Triggered by a resource consumption by an entity from a node that is not its direct owner.
  */
 fun ResourceLedger.recordTakeShare(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
     resources.forEach(false) { type, amount ->
@@ -84,7 +89,7 @@ fun ResourceLedger.recordTakeShare(resources: ResourceCollection, entity: Econom
 
 
 /**
- * Record required resources missing in this node
+ * Record required resources missing in this node.
  */
 fun ResourceLedger.recordMissing(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
     resources.forEach(false) { type, amount ->

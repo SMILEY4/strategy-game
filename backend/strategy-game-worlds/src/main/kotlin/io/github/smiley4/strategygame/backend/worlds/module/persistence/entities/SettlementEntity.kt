@@ -4,6 +4,7 @@ import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.worlds.module.persistence.entities.ResourceLedgerEntity.Companion.asServiceModel
 
 
 internal class SettlementEntity(
@@ -14,6 +15,8 @@ internal class SettlementEntity(
     val viewDistance: Int,
     val color: ColorEntity,
     val productionQueue: List<ProductionQueueEntryEntity>,
+    val buildings: List<BuildingEntity>,
+    val resourceLedger: ResourceLedgerEntity,
     key: String? = null,
 ) : DbEntity(key) {
 
@@ -27,6 +30,8 @@ internal class SettlementEntity(
             viewDistance = serviceModel.attributes.viewDistance,
             color = ColorEntity.of(serviceModel.attributes.color),
             productionQueue = serviceModel.infrastructure.productionQueue.map { ProductionQueueEntryEntity.of(it) },
+            buildings = serviceModel.infrastructure.buildings.map { BuildingEntity.of(it) },
+            resourceLedger = ResourceLedgerEntity.of(serviceModel.resourceLedger)
         )
     }
 
@@ -41,8 +46,9 @@ internal class SettlementEntity(
         ),
         infrastructure = Settlement.Infrastructure(
             productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList(),
-            buildings = mutableListOf(), // todo
+            buildings = this.buildings.map { it.asServiceModel() }.toMutableList()
         ),
+        resourceLedger = this.resourceLedger.asServiceModel()
     )
 
 }

@@ -2,11 +2,15 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
+import io.github.smiley4.strategygame.backend.commondata.Building
+import io.github.smiley4.strategygame.backend.commondata.BuildingType
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.DetailLog
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
@@ -36,14 +40,23 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
-                buildings = mutableListOf(),
+                buildings = mutableListOf<Building>().also {
+                    it.add(Building(
+                        type = BuildingType.DEV_FACTORY,
+                        workedTile = null,
+                        active = true,
+                        details = DetailLog()
+                    ))
+                },
             ),
+            resourceLedger = ResourceLedger.empty()
         )
 
         val province = Province(
             id = Province.Id.gen(),
+            country = country.id,
             settlements = mutableSetOf(settlement.id),
-            color = RGBColor.random()
+            color = RGBColor.random(),
         )
 
         game.settlements.add(settlement)
@@ -73,8 +86,16 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
-                buildings = mutableListOf(),
+                buildings = mutableListOf<Building>().also {
+                    it.add(Building(
+                        type = BuildingType.DEV_FACTORY,
+                        workedTile = null,
+                        active = true,
+                        details = DetailLog()
+                    ))
+                },
             ),
+            resourceLedger = ResourceLedger.empty()
         )
 
         val province = tile.dataPolitical.controlledBy?.province?.let { game.findProvince(it) }
@@ -86,5 +107,4 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
         province.settlements.add(settlement.id)
         game.settlements.add(settlement)
     }
-
 }

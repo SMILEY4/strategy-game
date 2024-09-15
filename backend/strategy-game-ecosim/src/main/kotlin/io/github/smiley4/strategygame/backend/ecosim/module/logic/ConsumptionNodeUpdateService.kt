@@ -1,20 +1,21 @@
 package io.github.smiley4.strategygame.backend.ecosim.module.logic
 
+import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.collectEntities
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyUpdateState
-import io.github.smiley4.strategygame.backend.ecosim.module.report.EconomyReportImpl
 
 
-internal class ConsumptionNodeUpdateService(private val consumptionEntityUpdateService: ConsumptionEntityUpdateService) {
+internal class ConsumptionNodeUpdateService(private val consumptionEntityUpdateService: ConsumptionEntityUpdateService) : Logging {
 
-    fun update(node: EconomyNode, report: EconomyReportImpl) {
+    fun update(node: EconomyNode, report: EconomyReport) {
         updateChildren(node, report)
         updateNodeStorage(node)
         updateEntities(node, report)
     }
 
-    private fun updateChildren(node: EconomyNode, report: EconomyReportImpl) {
+    private fun updateChildren(node: EconomyNode, report: EconomyReport) {
         node.children.forEach { update(it, report) }
     }
 
@@ -23,7 +24,8 @@ internal class ConsumptionNodeUpdateService(private val consumptionEntityUpdateS
         node.children.forEach { node.storage.merge(it.storage) }
     }
 
-    private fun updateEntities(node: EconomyNode, report: EconomyReportImpl) {
+    private fun updateEntities(node: EconomyNode, report: EconomyReport) {
+        log().debug("Updating entity consumption in node $node")
         node.collectEntities()
             .filter { it.config.isActive }
             .filter { it.state.state == EconomyUpdateState.CONSUME }

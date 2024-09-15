@@ -9,7 +9,7 @@ import {MapUniqueSupportingStorage} from "../../shared/db/storage/supporting/map
 import {Province} from "../../models/primitives/province";
 
 function provideId(e: Province): string {
-	return e.identifier;
+	return e.identifier.id;
 }
 
 interface ProvinceStorageConfig extends DatabaseStorageConfig<Province, string> {
@@ -53,7 +53,6 @@ export namespace ProvinceDatabase {
 
 	export const QUERY_BY_SETTLEMENT_ID: ProvinceQuery<string | null> = {
 		run(storage: ProvinceStorage, args: string): Province | null {
-			console.log("search provinces by settlement", args, storage.config.supporting.array.getAll())
 			if (args === null) {
 				return null;
 			}
