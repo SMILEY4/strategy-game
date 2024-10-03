@@ -10,7 +10,7 @@ import {CommandDatabase} from "./database/commandDatabase";
 import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/primitives/command";
 import {ProductionQueueEntry} from "../models/primitives/Settlement";
 import {ProductionOptionType} from "../models/primitives/productionOptionType";
-import {getHiddenOrDefault, mapHiddenOrDefault} from "../models/common/hiddenType";
+import {getHiddenOrDefault} from "../models/common/hiddenType";
 
 export namespace SettlementAggregateAccess {
 
@@ -56,15 +56,15 @@ export namespace SettlementAggregateAccess {
 				...productionQueue
 					.filter(entry => !isCancelled(entry, cancelProductionQueueCommands))
 					.map(entry => ({
-						id: entry.entryId,
-						optionType: ProductionOptionType.fromId(entry.option.id),
+						type: entry.type,
+						entryId: entry.entryId,
 						progress: entry.progress,
 						isCommand: false,
 					})),
 				...addProductionQueueCommands
 					.map(command => ({
-						id: command.id,
-						optionType: command.entry.optionType,
+						type: command.entry.type,
+						entryId: command.id,
 						progress: 0,
 						isCommand: true,
 					})),
@@ -72,7 +72,7 @@ export namespace SettlementAggregateAccess {
 		}
 
 		function isCancelled(entry: ProductionQueueEntry, cancelProductionQueueCommands: ProductionQueueCancelCommand[]): boolean {
-			return cancelProductionQueueCommands.some(it => it.entry.id === entry.entryId);
+			return cancelProductionQueueCommands.some(it => it.entry.entryId === entry.entryId);
 		}
 
 
@@ -92,7 +92,7 @@ export namespace SettlementAggregateAccess {
 			let commandCount = 0;
 
 			for (let queueEntry of productionQueue) {
-				if (queueEntry.optionType.id === option.id) {
+				if (queueEntry.type === option.type) {
 					if (queueEntry.isCommand) {
 						commandCount++;
 					} else {
@@ -102,8 +102,7 @@ export namespace SettlementAggregateAccess {
 			}
 
 			return {
-				type: option,
-				available: true,
+				type: option.type,
 				queueCount: queueCount,
 				commandCount: commandCount,
 			};

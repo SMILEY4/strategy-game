@@ -151,14 +151,11 @@ export class TurnStartService {
 				},
 				tile: settlementMsg.tile,
 				productionQueue: mapHidden(settlementMsg.productionQueue, productionQueueMsg => productionQueueMsg.map(entryMsg => ({
-					option: ProductionOptionType.fromId(entryMsg.type),
+					type: entryMsg.type,
 					entryId: entryMsg.entryId,
 					progress: entryMsg.progress,
 				}))),
-				productionOptions: visible([ // todo
-					ProductionOptionType.SETTLER,
-					ProductionOptionType.TOOL_WORKSHOP
-				]),
+				productionOptions: mapHidden(settlementMsg.productionOptions, optionType => optionType),
 				buildings: mapHidden(settlementMsg.buildings, buildingsMsg => buildingsMsg.map(buildingMsg => ({
 					type: buildingMsg.type,
 					active: false, // todo

@@ -21,7 +21,7 @@ export interface SettlementIdentifier {
 }
 
 export interface ProductionQueueEntry {
-	option: ProductionOptionType
+	type: string,
 	entryId: string,
 	progress: number
 }

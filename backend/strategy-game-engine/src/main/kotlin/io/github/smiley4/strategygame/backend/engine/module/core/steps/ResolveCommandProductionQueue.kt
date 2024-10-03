@@ -22,13 +22,23 @@ internal class ResolveCommandProductionQueue : Logging {
     fun resolve(game: GameExtended, command: Command<CommandData.ProductionQueueAddEntry>) {
         log().debug("Resolving add production queue entry in settlement ${command.data.settlement}")
         val settlement = game.findSettlement(command.data.settlement)
-        when (command.data) {
+        val queueEntry = createProductionQueueEntry(command.data)
+        settlement.infrastructure.productionQueue.add(queueEntry)
+    }
+
+    private fun createProductionQueueEntry(data: CommandData.ProductionQueueAddEntry): ProductionQueueEntry {
+        return when (data) {
             is CommandData.ProductionQueueAddEntry.Settler -> {
-                settlement.infrastructure.productionQueue.add(
-                    ProductionQueueEntry.Settler(
-                        id = ProductionQueueEntry.Id.gen(),
-                        collectedResources = ResourceCollection.empty()
-                    )
+                ProductionQueueEntry.Settler(
+                    id = ProductionQueueEntry.Id.gen(),
+                    collectedResources = ResourceCollection.empty()
+                )
+            }
+            is CommandData.ProductionQueueAddEntry.Building -> {
+                ProductionQueueEntry.Building(
+                    id = ProductionQueueEntry.Id.gen(),
+                    collectedResources = ResourceCollection.empty(),
+                    building = data.building
                 )
             }
         }

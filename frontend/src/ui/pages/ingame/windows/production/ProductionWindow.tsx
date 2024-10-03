@@ -25,7 +25,7 @@ export function ProductionWindow(props: ProductionWindowProps): ReactElement {
 				<VBox top stretch gap_xs padding_s scrollable fillParent>
 					{data.entries.map(entry => (
 						<ProductionListEntry
-							key={entry.type.id}
+							key={entry.type}
 							data={data}
 							entry={entry}
 						/>
@@ -43,18 +43,18 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
 			simpleBorder paddingSmall blue
 			className={joinClassNames([
 				"production-entry",
-				props.entry.available ? null : "production-entry--disabled",
+				// props.entry.available ? null : "production-entry--disabled",
 			])}
 			background={
 				<div
 					className="production-entry-background"
-					style={{backgroundImage: "url('" + props.entry.type.image + "')"}}
+					style={{backgroundImage: "url('" + "icons/production/" + props.entry.type + ".png')"}}
 				/>
 			}
 		>
 			<HBox centerVertical gap_s>
 				<Text className="production-entry__name">
-					{props.entry.type.name}
+					{props.entry.type}
 				</Text>
 				<ChangeInfoText
 					className={"production-entry__count"}
@@ -64,7 +64,7 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
 				<ButtonPrimary
 					blue small
 					className={"production-entry__button"}
-					disabled={!props.entry.available}
+					// disabled={!props.entry.available}
 					onClick={() => props.data.produce(props.entry)}
 				>
 					Add

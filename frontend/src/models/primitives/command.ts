@@ -5,10 +5,10 @@ import {ProductionQueueEntryAggregate} from "../aggregates/SettlementAggregate";
 export class CommandType {
 
 	public static readonly MOVE = new CommandType("move")
-	public static readonly CREATE_SETTLEMENT_WITH_SETTLER = new CommandType("create-settlement-settler")
 	public static readonly CREATE_SETTLEMENT_DIRECT = new CommandType("create-settlement-direct")
-	public static readonly PRODUCTION_QUEUE_ADD = new CommandType("production-queue.add.settler") // todo: id naming
-	public static readonly PRODUCTION_QUEUE_CANCEL = new CommandType("production-queue.remove-entry") // todo: id naming
+	public static readonly CREATE_SETTLEMENT_WITH_SETTLER = new CommandType("create-settlement-settler")
+	public static readonly PRODUCTION_QUEUE_ADD = new CommandType("production-queue.add")
+	public static readonly PRODUCTION_QUEUE_CANCEL = new CommandType("production-queue.remove-entry")
 
 
 	readonly id: string;

@@ -41,6 +41,8 @@ sealed class CommandData {
 
         class Settler(settlement: Settlement.Id) : ProductionQueueAddEntry(settlement)
 
+        class Building(settlement: Settlement.Id, val   building: BuildingType) : ProductionQueueAddEntry(settlement)
+
     }
 
 }

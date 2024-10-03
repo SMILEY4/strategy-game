@@ -65,7 +65,7 @@ export class CommandService {
 		this.addCommand(command);
 	}
 
-	public addProductionQueueEntry(settlementId: SettlementIdentifier, type: ProductionOptionType) {
+	public addProductionQueueEntry(settlementId: SettlementIdentifier, type: string) {
 		const cmdId = UID.generate()
 		const command: ProductionQueueAddCommand = {
 			id: cmdId,
@@ -73,10 +73,10 @@ export class CommandService {
 			worldObjectId: null,
 			settlement: settlementId,
 			entry: {
-				id: cmdId,
-				optionType: type,
+				type: type,
+				entryId: cmdId,
 				progress: 0,
-				isCommand: true
+				isCommand: true,
 			}
 		};
 		this.addCommand(command);

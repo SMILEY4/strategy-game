@@ -2,6 +2,8 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
+import io.github.smiley4.strategygame.backend.commondata.Building
+import io.github.smiley4.strategygame.backend.commondata.DetailLog
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.Settlement
@@ -50,6 +52,16 @@ internal class UpdateProductionQueueStep() : GameEventNode<UpdatedEconomyEvent>,
                         country = settlement.country,
                         maxMovement = 3,
                         viewDistance = 1
+                    )
+                )
+            }
+            is ProductionQueueEntry.Building -> {
+                settlement.infrastructure.buildings.add(
+                    Building(
+                        type = queueEntry.building,
+                        workedTile = null, // todo
+                        active = true,
+                        details = DetailLog()
                     )
                 )
             }

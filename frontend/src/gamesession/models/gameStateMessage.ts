@@ -76,12 +76,16 @@ export interface SettlementMessage {
 		r: number
 	},
 	productionQueue: HiddenType<({
-		type: "settler"
+		type: string
 		entryId: string
 		progress: number
 	})[]>,
+	productionOptions: HiddenType<({
+		type: string
+	})[]>,
 	buildings: HiddenType<({
 		type: string
+		// todo
 	})[]>
 }
 

@@ -39,7 +39,7 @@ export class SettlementService {
 		this.commandService.addCreateSettlementWithSettlerCommand(worldObjectId, tile.identifier, name);
 	}
 
-	public addProductionQueue(settlement: SettlementIdentifier, type: ProductionOptionType) {
+	public addProductionQueue(settlement: SettlementIdentifier, type: string) {
 		this.commandService.addProductionQueueEntry(settlement, type);
 	}
 
@@ -47,8 +47,7 @@ export class SettlementService {
 		const commands = this.repository.getCommands()
 			.filter(it => it.type === CommandType.PRODUCTION_QUEUE_ADD)
 			.map(it => it as ProductionQueueAddCommand)
-			.filter(it => it.entry.id === entry.id);
-		console.log("cancel", entry, "commands:", this.repository.getCommands())
+			.filter(it => it.entry.entryId === entry.entryId);
 		if (commands.length > 0) {
 			this.commandService.cancelCommand(commands[0].id);
 		} else {

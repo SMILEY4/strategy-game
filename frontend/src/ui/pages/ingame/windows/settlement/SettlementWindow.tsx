@@ -121,7 +121,7 @@ function ProductionQueueProgressBar(props: UseSettlementWindow.Data): ReactEleme
 			className="production_queue__progress"
 		>
 			<Text relative>
-				{props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.optionType.name}
+				{props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
 			</Text>
 		</ProgressBar>
 	);
@@ -156,7 +156,7 @@ function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Buildi
 			<div
 				className={joinClassNames(["settlement-content-box", props.building.active ? null : "settlement-content-box--disabled"])}
 				style={{
-					backgroundImage: "url('" + "icons/buildings/farm.png" + "')", // todo icon	
+					backgroundImage: "url('" + "icons/production/" + props.building.type + ".png')",
 				}}
 			/>
 		</BuildingInfoTooltip>

@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.gateway.worlds.models
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.ProductionIds
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.TileRef
@@ -66,11 +67,21 @@ internal class ProductionQueueRemoveEntryCommandMsg(
 }
 
 
-@JsonTypeName("production-queue.add.settler")
-internal class ProductionQueueAddSettlerCommandMsg(
+@JsonTypeName("production-queue.add")
+internal class ProductionQueueAddCommandMsg(
+    val entryType: String,
     val settlementId: String,
 ) : PlayerCommandMsg() {
-    override fun asCommandData() = CommandData.ProductionQueueAddEntry.Settler(
-        settlement = Settlement.Id(this.settlementId)
-    )
+    override fun asCommandData(): CommandData {
+        return when {
+            ProductionIds.isSettler(entryType) -> CommandData.ProductionQueueAddEntry.Settler(
+                settlement = Settlement.Id(settlementId),
+            )
+            ProductionIds.isBuilding(entryType) -> CommandData.ProductionQueueAddEntry.Building(
+                settlement = Settlement.Id(settlementId),
+                building = ProductionIds.extractBuilding(entryType)
+            )
+            else -> throw UnsupportedOperationException("unexpected production-type: '$entryType'")
+        }
+    }
 }

@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
+import io.github.smiley4.strategygame.backend.commondata.BuildingType
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.DbId
@@ -50,6 +51,10 @@ internal class CommandEntity<T : CommandEntityData>(
                 is CommandData.ProductionQueueAddEntry.Settler -> ProductionQueueAddSettlerCommandEntityData(
                     settlementId = serviceModel.settlement.value
                 )
+                is CommandData.ProductionQueueAddEntry.Building -> ProductionQueueAddBuildingCommandEntityData(
+                    settlementId = serviceModel.settlement.value,
+                    building = serviceModel.building.name
+                )
             }
         }
 
@@ -83,6 +88,10 @@ internal class CommandEntity<T : CommandEntityData>(
             )
             is ProductionQueueAddSettlerCommandEntityData -> CommandData.ProductionQueueAddEntry.Settler(
                 settlement = Settlement.Id(entity.settlementId)
+            )
+            is ProductionQueueAddBuildingCommandEntityData -> CommandData.ProductionQueueAddEntry.Building(
+                settlement = Settlement.Id(entity.settlementId),
+                building = BuildingType.valueOf(entity.building)
             )
         }
     }
@@ -121,4 +130,9 @@ internal class ProductionQueueRemoveEntryCommandEntityData(
 
 internal class ProductionQueueAddSettlerCommandEntityData(
     val settlementId: String
+) : CommandEntityData()
+
+internal class ProductionQueueAddBuildingCommandEntityData(
+    val settlementId: String,
+    val building: String
 ) : CommandEntityData()
