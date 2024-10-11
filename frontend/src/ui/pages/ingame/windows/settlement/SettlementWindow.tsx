@@ -178,12 +178,12 @@ export function BuildingInfoTooltip(props: { building: Building, children?: any 
 						{
 							<>
 								<HBox gap_xs>
-									<Text>Test 1:</Text>
-									<Text type={"positive"}>{"Yes"}</Text>
+									<Text>Active:</Text>
+									<Text type={props.building.active ? "positive" : "negative"}>{props.building.active ? "Yes" : "No"}</Text>
 								</HBox>
 								<HBox gap_xs>
-									<Text>Test 2:</Text>
-									<Text>{"Hello World"}</Text>
+									<Text>Works Tile:</Text>
+									<Text>{props.building.workedTile ? props.building.workedTile.q + "," + props.building.workedTile.r : "-"}</Text>
 								</HBox>
 							</>
 						}

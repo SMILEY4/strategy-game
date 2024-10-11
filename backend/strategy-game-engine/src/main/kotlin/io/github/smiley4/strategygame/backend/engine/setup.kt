@@ -1,12 +1,12 @@
 package io.github.smiley4.strategygame.backend.engine
 
-import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyService
 import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
 import io.github.smiley4.strategygame.backend.engine.edge.GameStep
 import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
 import io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer
 import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
 import io.github.smiley4.strategygame.backend.engine.edge.MovementService
+import io.github.smiley4.strategygame.backend.engine.edge.SettlementUtilities
 import io.github.smiley4.strategygame.backend.engine.module.GameStepImpl
 import io.github.smiley4.strategygame.backend.engine.module.InitializePlayerImpl
 import io.github.smiley4.strategygame.backend.engine.module.InitializeWorldImpl
@@ -24,6 +24,7 @@ import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdatePro
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateWorldStep
 import io.github.smiley4.strategygame.backend.engine.module.tools.GameValidationsImpl
 import io.github.smiley4.strategygame.backend.engine.module.tools.InfluenceCalculator
+import io.github.smiley4.strategygame.backend.engine.module.tools.SettlementUtilitiesImpl
 import org.koin.core.module.Module
 
 fun Module.dependenciesEngine() {
@@ -33,6 +34,7 @@ fun Module.dependenciesEngine() {
     single<MovementService> { MovementServiceImpl() }
 
     single<GameValidations> { GameValidationsImpl() }
+    single<SettlementUtilities> { SettlementUtilitiesImpl() }
     single<InfluenceCalculator> { InfluenceCalculator() }
     single<ResourceLedgerDetailBuilder> { ResourceLedgerDetailBuilderImpl() }
 
@@ -45,7 +47,7 @@ fun Module.dependenciesEngine() {
             it.register(RootUpdateStep())
             it.register(ResolveCommandsStep(get(), get(), get()))
             it.register(UpdateWorldStep())
-            it.register(UpdateProductionQueueStep())
+            it.register(UpdateProductionQueueStep(get()))
             it.register(UpdateEconomyStep(get(), get()))
             it.register(UpdateInfluenceStep(get()))
         }

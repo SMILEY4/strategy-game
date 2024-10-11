@@ -81,11 +81,17 @@ export interface SettlementMessage {
 		progress: number
 	})[]>,
 	productionOptions: HiddenType<({
-		type: string
+		type: string,
+		availableTiles: number | null
 	})[]>,
 	buildings: HiddenType<({
-		type: string
-		// todo
+		type: string,
+		workedTile: null | {
+			id: string,
+			q: number,
+			r: number
+		},
+		active: boolean
 	})[]>
 }
 

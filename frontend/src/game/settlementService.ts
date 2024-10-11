@@ -5,7 +5,7 @@ import {ProductionOptionAggregate, ProductionQueueEntryAggregate} from "../model
 import {SettlementIdentifier} from "../models/primitives/Settlement";
 import {GameRepository} from "./gameRepository";
 import {CommandType, ProductionQueueAddCommand} from "../models/primitives/command";
-import {ProductionOptionType} from "../models/primitives/productionOptionType";
+import {ProductionOption} from "../models/primitives/productionOption";
 
 export class SettlementService {
 

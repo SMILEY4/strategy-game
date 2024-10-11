@@ -9,7 +9,7 @@ import {SettlementDatabase} from "./database/settlementDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
 import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/primitives/command";
 import {ProductionQueueEntry} from "../models/primitives/Settlement";
-import {ProductionOptionType} from "../models/primitives/productionOptionType";
+import {ProductionOption} from "../models/primitives/productionOption";
 import {getHiddenOrDefault} from "../models/common/hiddenType";
 
 export namespace SettlementAggregateAccess {
@@ -77,14 +77,14 @@ export namespace SettlementAggregateAccess {
 
 
 		function buildOptions(
-			options: ProductionOptionType[],
+			options: ProductionOption[],
 			productionQueue: ProductionQueueEntryAggregate[],
 		): ProductionOptionAggregate[] {
 			return options.map(it => buildOption(it, productionQueue));
 		}
 
 		function buildOption(
-			option: ProductionOptionType,
+			option: ProductionOption,
 			productionQueue: ProductionQueueEntryAggregate[],
 		): ProductionOptionAggregate {
 
@@ -101,10 +101,16 @@ export namespace SettlementAggregateAccess {
 				}
 			}
 
+			let available = true
+			if(option.requiresTile && option.availableTiles <= queueCount + commandCount) {
+				available = false
+			}
+
 			return {
 				type: option.type,
 				queueCount: queueCount,
 				commandCount: commandCount,
+				available: available
 			};
 		}
 

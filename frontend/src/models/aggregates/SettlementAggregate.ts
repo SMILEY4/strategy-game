@@ -23,6 +23,7 @@ export interface ProductionQueueEntryAggregate {
 
 export interface ProductionOptionAggregate {
 	type: string,
+	available: boolean,
 	queueCount: number,
 	commandCount: number,
 }

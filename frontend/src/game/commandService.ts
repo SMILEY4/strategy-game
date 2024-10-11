@@ -11,7 +11,7 @@ import {AudioService, AudioType} from "../shared/audioService";
 import {TileIdentifier} from "../models/primitives/tile";
 import {SettlementIdentifier} from "../models/primitives/Settlement";
 import {ProductionOptionAggregate, ProductionQueueEntryAggregate} from "../models/aggregates/SettlementAggregate";
-import {ProductionOptionType} from "../models/primitives/productionOptionType";
+import {ProductionOption} from "../models/primitives/productionOption";
 
 export class CommandService {
 

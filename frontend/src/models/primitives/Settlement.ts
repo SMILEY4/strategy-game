@@ -2,7 +2,7 @@ import {TileIdentifier} from "./tile";
 import {CountryIdentifier} from "./country";
 import {Color} from "./color";
 import {HiddenType} from "../common/hiddenType";
-import {ProductionOptionType} from "./productionOptionType";
+import {ProductionOption} from "./productionOption";
 import {Building} from "./building";
 
 export interface Settlement {
@@ -10,7 +10,7 @@ export interface Settlement {
 	country: CountryIdentifier
 	tile: TileIdentifier,
 	productionQueue: HiddenType<ProductionQueueEntry[]>,
-	productionOptions: HiddenType<ProductionOptionType[]>,
+	productionOptions: HiddenType<ProductionOption[]>,
 	buildings: HiddenType<Building[]>
 }
 

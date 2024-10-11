@@ -7,9 +7,10 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
+import io.github.smiley4.strategygame.backend.engine.edge.SettlementUtilities
 
 
-internal class GameExtendedPOVBuilder(private val gameValidations: GameValidations) {
+internal class GameExtendedPOVBuilder(private val gameValidations: GameValidations, private val settlementUtilities: SettlementUtilities) {
 
     private val metricId = MetricId.action(GameExtendedPOVBuilder::class)
 
@@ -22,7 +23,7 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
             val tileBuilder = TilePOVBuilder(povCache, gameValidations)
             val worldObjectBuilder = WorldObjectPOVBuilder(povCache)
             val countryBuilder = CountryPOVBuilder()
-            val settlementBuilder = SettlementPOVBuilder(povCache)
+            val settlementBuilder = SettlementPOVBuilder(povCache, settlementUtilities)
             val provinceBuilder = ProvincePOVBuilder(povCache)
 
             obj {
@@ -32,7 +33,7 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
                 "tiles" to game.tiles.mapNotNull { tileBuilder.build(it, game) }
                 "countries" to game.countries.map { countryBuilder.build(it, userId) }
                 "worldObjects" to game.worldObjects.mapNotNull { worldObjectBuilder.build(it) }
-                "settlements" to game.settlements.mapNotNull { settlementBuilder.build(it) }
+                "settlements" to game.settlements.mapNotNull { settlementBuilder.build(game, it) }
                 "provinces" to game.provinces.mapNotNull { provinceBuilder.build(it) }
             }
         }

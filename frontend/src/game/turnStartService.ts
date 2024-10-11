@@ -20,7 +20,7 @@ import {Province} from "../models/primitives/province";
 import {mapValue} from "../shared/utils";
 import hidden = HiddenType.hidden;
 import visible = HiddenType.visible;
-import {ProductionOptionType} from "../models/primitives/productionOptionType";
+import {ProductionOption} from "../models/primitives/productionOption";
 
 /**
  * Service to handle the start of a new turn
@@ -155,10 +155,15 @@ export class TurnStartService {
 					entryId: entryMsg.entryId,
 					progress: entryMsg.progress,
 				}))),
-				productionOptions: mapHidden(settlementMsg.productionOptions, optionType => optionType),
+				productionOptions: mapHidden(settlementMsg.productionOptions, optionsMsg => optionsMsg.map(optionMsg => ({
+					type: optionMsg.type,
+					availableTiles: optionMsg.availableTiles === null ? 0 : optionMsg.availableTiles,
+					requiresTile: optionMsg.availableTiles !== null
+				}))),
 				buildings: mapHidden(settlementMsg.buildings, buildingsMsg => buildingsMsg.map(buildingMsg => ({
 					type: buildingMsg.type,
-					active: false, // todo
+					active: buildingMsg.active,
+					workedTile: buildingMsg.workedTile,
 				})))
 			};
 		});

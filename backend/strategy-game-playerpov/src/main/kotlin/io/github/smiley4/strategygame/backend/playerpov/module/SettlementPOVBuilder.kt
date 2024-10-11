@@ -3,14 +3,17 @@ package io.github.smiley4.strategygame.backend.playerpov.module
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
 import io.github.smiley4.strategygame.backend.commondata.BuildingType
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.ProductionIds
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.commondata.requiresTile
+import io.github.smiley4.strategygame.backend.engine.edge.SettlementUtilities
 
 
-internal class SettlementPOVBuilder(private val povCache: POVCache) {
+internal class SettlementPOVBuilder(private val povCache: POVCache, private val settlementUtilities: SettlementUtilities) {
 
-    fun build(settlement: Settlement): JsonType? {
+    fun build(game: GameExtended, settlement: Settlement): JsonType? {
 
         val visibility = povCache.settlementVisibility(settlement.id)
         if (visibility.isLessThan(TileVisibilityDTO.DISCOVERED)) {
@@ -51,10 +54,12 @@ internal class SettlementPOVBuilder(private val povCache: POVCache) {
                 buildList<JsonType> {
                     add(obj {
                         "type" to ProductionIds.settler()
+                        "availableTiles" to null
                     })
                     BuildingType.entries.forEach { buildingType ->
                         add(obj {
                             "type" to ProductionIds.building(buildingType)
+                            "availableTiles" to countWorkTile(game, settlement, buildingType)
                         })
                     }
                 }
@@ -82,6 +87,14 @@ internal class SettlementPOVBuilder(private val povCache: POVCache) {
         val totalRequired = queueEntry.requiredResources.toList().map { (_, amount) -> amount }.sum()
         val totalCollected = queueEntry.collectedResources.toList().map { (_, amount) -> amount }.sum()
         return (totalCollected / totalRequired).coerceIn(0f, 1f)
+    }
+
+    private fun countWorkTile(game: GameExtended, settlement: Settlement, building: BuildingType): Int? {
+        return if (building.templateData.requiresTile()) {
+            settlementUtilities.getPossibleWorkTiles(game, settlement, building).count()
+        } else {
+            null
+        }
     }
 
 }

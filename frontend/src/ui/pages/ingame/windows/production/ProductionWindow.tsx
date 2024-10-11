@@ -43,7 +43,7 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
 			simpleBorder paddingSmall blue
 			className={joinClassNames([
 				"production-entry",
-				// props.entry.available ? null : "production-entry--disabled",
+				props.entry.available ? null : "production-entry--disabled",
 			])}
 			background={
 				<div
@@ -64,7 +64,7 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
 				<ButtonPrimary
 					blue small
 					className={"production-entry__button"}
-					// disabled={!props.entry.available}
+					disabled={!props.entry.available}
 					onClick={() => props.data.produce(props.entry)}
 				>
 					Add
