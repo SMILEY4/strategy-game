@@ -1,4 +1,6 @@
 import {HiddenType} from "../../models/common/hiddenType";
+import {TileIdentifier} from "../../models/primitives/tile";
+import {DetailsLogValue} from "../../models/primitives/detailLog";
 
 export interface GameStateMessage {
 	meta: {
@@ -91,8 +93,10 @@ export interface SettlementMessage {
 			q: number,
 			r: number
 		},
-		active: boolean
-	})[]>
+		active: boolean,
+		details: DetailsLogEntryMessage[]
+	})[]>,
+	resources: HiddenType<ResourceLedgerEntryMessage[]>
 }
 
 export interface WorldObjectMessage {
@@ -105,4 +109,57 @@ export interface WorldObjectMessage {
 		r: number
 	},
 	maxMovement: number,
+}
+
+export interface ResourceLedgerEntryMessage {
+	type: string,
+	produced: number,
+	consumed: number,
+	amount: number,
+	missing: number,
+	details: DetailsLogEntryMessage[]
+}
+
+export interface DetailsLogEntryMessage {
+	id: string,
+	data: DetailsLogValueMessage[]
+}
+
+export interface DetailsLogValueMessage {
+	key: string,
+	type: string
+}
+
+export interface BooleanDetailsLogValueMessage extends DetailsLogValueMessage{
+	type: "boolean"
+	value: boolean
+}
+
+export interface NumberDetailsLogValueMessage extends DetailsLogValueMessage{
+	type: "number"
+	value: number
+}
+
+export interface TextDetailsLogValueMessage extends DetailsLogValueMessage{
+	type: "text"
+	value: string
+}
+
+export interface TileDetailsLogValueMessage extends DetailsLogValueMessage{
+	type: "tile"
+	value: {
+		id: string
+		q: number,
+		r: number,
+	}
+}
+
+export interface BuildingDetailsLogValueMessage extends DetailsLogValueMessage{
+	type: "building"
+	value: string
+}
+
+export interface ResourcesDetailsLogValueMessage extends DetailsLogValueMessage{
+	type: "resources"
+	value: ({type: string, amount: number})[]
 }

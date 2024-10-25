@@ -9,7 +9,8 @@ class EconomyEntityUpdateState(input: ResourceCollection) {
         private set
 
     private val requiredResources = input.copy()
-
+    private val consumedResources = ResourceCollection.empty()
+    private val producedResources = ResourceCollection.empty()
 
     /**
      * @return the currently required resources (i.e. initial - provided) for consumption
@@ -20,10 +21,26 @@ class EconomyEntityUpdateState(input: ResourceCollection) {
 
 
     /**
+     * @return the already consumed resources
+     */
+    fun getConsumedResources(): ResourceCollection {
+        return consumedResources
+    }
+
+    /**
+     * @return the already produced resources
+     */
+    fun getProducedResources(): ResourceCollection {
+        return producedResources
+    }
+
+
+    /**
      * Provide the given  resources to this entity
      */
     fun consume(resources: ResourceCollection) {
         if (state == EconomyUpdateState.CONSUME) {
+            consumedResources.add(resources)
             requiredResources.sub(resources)
             if (requiredResources.isEmpty()) {
                 state = EconomyUpdateState.PRODUCE
@@ -35,7 +52,8 @@ class EconomyEntityUpdateState(input: ResourceCollection) {
     /**
      * Mark the entity as "has produced"
      */
-    fun produce() {
+    fun produce(resources: ResourceCollection) {
+        producedResources.add(resources)
         state = EconomyUpdateState.DONE
     }
 

@@ -164,7 +164,9 @@ export class TurnStartService {
 					type: buildingMsg.type,
 					active: buildingMsg.active,
 					workedTile: buildingMsg.workedTile,
-				})))
+					details: buildingMsg.details
+				}))),
+				resources: mapHidden(settlementMsg.resources, resourcesMsg => resourcesMsg)
 			};
 		});
 	}

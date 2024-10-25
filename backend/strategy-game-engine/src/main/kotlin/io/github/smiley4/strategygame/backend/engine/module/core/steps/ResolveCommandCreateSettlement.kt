@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Building
+import io.github.smiley4.strategygame.backend.commondata.BuildingRequirements
 import io.github.smiley4.strategygame.backend.commondata.BuildingType
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
@@ -44,7 +45,10 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
                     it.add(Building(
                         type = BuildingType.DEV_FACTORY,
                         workedTile = null,
-                        active = true,
+                        requirements = BuildingRequirements(
+                            fulfillsTile = true,
+                            fulfillsInputResources = true
+                        ),
                         details = DetailLog()
                     ))
                 },
@@ -90,7 +94,10 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
                     it.add(Building(
                         type = BuildingType.DEV_FACTORY,
                         workedTile = null,
-                        active = true,
+                        requirements = BuildingRequirements(
+                            fulfillsTile = true,
+                            fulfillsInputResources = true
+                        ),
                         details = DetailLog()
                     ))
                 },

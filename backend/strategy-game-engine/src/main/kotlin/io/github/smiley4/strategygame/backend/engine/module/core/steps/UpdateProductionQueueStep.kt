@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Building
+import io.github.smiley4.strategygame.backend.commondata.BuildingRequirements
 import io.github.smiley4.strategygame.backend.commondata.BuildingType
 import io.github.smiley4.strategygame.backend.commondata.DetailLog
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
@@ -90,7 +91,10 @@ internal class UpdateProductionQueueStep : GameEventNode<UpdatedEconomyEvent>,
         val building = Building(
             type = buildingType,
             workedTile = null,
-            active = false,
+            requirements = BuildingRequirements(
+                fulfillsTile = false,
+                fulfillsInputResources = false
+            ),
             details = DetailLog()
         )
         settlement.infrastructure.buildings.add(building)

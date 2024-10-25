@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.
 import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
 
 /**
- * Record all reported changes.
+ * Record all reported changes associated with the given root node.
  */
 fun ResourceLedger.record(report: EconomyReport, root: EconomyNode, detailBuilder: ResourceLedgerDetailBuilder) {
     report.getEntries().forEach { entry ->

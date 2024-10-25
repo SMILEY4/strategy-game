@@ -2,11 +2,18 @@ package io.github.smiley4.strategygame.backend.playerpov.module
 
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
 import io.github.smiley4.strategygame.backend.common.jsondsl.obj
+import io.github.smiley4.strategygame.backend.commondata.BooleanDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.BuildingType
+import io.github.smiley4.strategygame.backend.commondata.BuildingTypeDetailLogValue
+import io.github.smiley4.strategygame.backend.commondata.FloatDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
+import io.github.smiley4.strategygame.backend.commondata.IntDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.ProductionIds
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.ResourcesDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.commondata.TextDetailLogValue
+import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.requiresTile
 import io.github.smiley4.strategygame.backend.engine.edge.SettlementUtilities
 
@@ -75,8 +82,92 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                                 "r" to workedTile.r
                             }
                         }
-                        "active" to it.active
-                        "details" to null // todo
+                        "active" to (it.requirements.fulfillsTile && it.requirements.fulfillsInputResources)
+                        "details" to it.details.getDetails().map { detail -> // todo: mapping as shared code -> see DetailLogPOVBuilder
+                            obj {
+                                "id" to detail.id
+                                "data" to detail.data.map { (key, value) ->
+                                    obj {
+                                        "key" to key
+                                        "type" to when(value) {
+                                            is BooleanDetailLogValue -> "boolean"
+                                            is FloatDetailLogValue -> "number"
+                                            is IntDetailLogValue -> "number"
+                                            is TextDetailLogValue -> "text"
+                                            is TileRefDetailLogValue -> "tile"
+                                            is BuildingTypeDetailLogValue -> "building"
+                                            is ResourcesDetailLogValue -> "resources"
+                                        }
+                                        "value" to when(value) {
+                                            is BooleanDetailLogValue -> value.value
+                                            is FloatDetailLogValue -> value.value
+                                            is IntDetailLogValue -> value.value
+                                            is TextDetailLogValue -> value.value
+                                            is TileRefDetailLogValue -> obj {
+                                                "id" to value.value.id.value
+                                                "q" to value.value.q
+                                                "r" to value.value.r
+                                            }
+                                            is BuildingTypeDetailLogValue -> value.value.name
+                                            is ResourcesDetailLogValue -> value.value.toStacks().map { stack ->
+                                                obj {
+                                                    "type" to stack.type.name
+                                                    "amount" to stack.amount
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            "resources" to objHidden(povCache.povCountryId == settlement.country) {
+                settlement.resourceLedger.getEntries().map { entry ->
+                    obj { // todo: mapping as shared code -> see DetailLogPOVBuilder
+                        "type" to entry.resourceType
+                        "produced" to entry.produced
+                        "consumed" to entry.consumed
+                        "amount" to entry.produced - entry.consumed
+                        "missing" to entry.missing
+                        "details" to entry.getDetails().map { detail ->
+                            obj {
+                                "id" to detail.id
+                                "data" to detail.data.map { (key, value) ->
+                                    obj {
+                                        "key" to key
+                                        "type" to when(value) {
+                                            is BooleanDetailLogValue -> "boolean"
+                                            is FloatDetailLogValue -> "number"
+                                            is IntDetailLogValue -> "number"
+                                            is TextDetailLogValue -> "text"
+                                            is TileRefDetailLogValue -> "tile"
+                                            is BuildingTypeDetailLogValue -> "building"
+                                            is ResourcesDetailLogValue -> "resources"
+                                        }
+                                        "value" to when(value) {
+                                            is BooleanDetailLogValue -> value.value
+                                            is FloatDetailLogValue -> value.value
+                                            is IntDetailLogValue -> value.value
+                                            is TextDetailLogValue -> value.value
+                                            is TileRefDetailLogValue -> obj {
+                                                "id" to value.value.id.value
+                                                "q" to value.value.q
+                                                "r" to value.value.r
+                                            }
+                                            is BuildingTypeDetailLogValue -> value.value.name
+                                            is ResourcesDetailLogValue -> value.value.toStacks().map { stack ->
+                                                obj {
+                                                    "type" to stack.type.name
+                                                    "amount" to stack.amount
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

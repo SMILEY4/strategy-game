@@ -9,7 +9,7 @@ internal class ProductionEntityUpdateService : Logging {
 
     fun update(entity: EconomyEntity, report: EconomyReport) {
         entity.owner.storage.add(entity.config.output)
-        entity.state.produce()
+        entity.state.produce(entity.config.output)
         report.addProduction(
             entity = entity,
             inNode = entity.owner,

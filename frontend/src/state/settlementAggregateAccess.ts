@@ -1,6 +1,7 @@
 import {
+	BuildingAggregate,
 	ProductionOptionAggregate,
-	ProductionQueueEntryAggregate,
+	ProductionQueueEntryAggregate, ResourceLedgerEntryAggregate,
 	SettlementAggregate,
 } from "../models/aggregates/SettlementAggregate";
 import {AppCtx} from "../appContext";
@@ -8,9 +9,18 @@ import {useQueryMultiple, useQuerySingle} from "../shared/db/adapters/databaseHo
 import {SettlementDatabase} from "./database/settlementDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
 import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/primitives/command";
-import {ProductionQueueEntry} from "../models/primitives/Settlement";
+import {ProductionQueueEntry, ResourceLedgerEntry} from "../models/primitives/Settlement";
 import {ProductionOption} from "../models/primitives/productionOption";
 import {getHiddenOrDefault} from "../models/common/hiddenType";
+import {
+	BooleanDetailsLogValue,
+	DetailsLogEntry,
+	NumberDetailsLogValue,
+	ResourcesDetailsLogValue,
+	TextDetailsLogValue,
+} from "../models/primitives/detailLog";
+import {Building} from "../models/primitives/building";
+import {getOffset} from "recharts/types/util/DOMUtils";
 
 export namespace SettlementAggregateAccess {
 
@@ -34,7 +44,7 @@ export namespace SettlementAggregateAccess {
 			.filter(it => it.settlement.id === settlementId);
 
 		const productionQueue = buildQueueEntries(getHiddenOrDefault(settlement.productionQueue, []), addProductionQueueCommands, cancelProductionQueueCommands);
-		const productionOptions = buildOptions(getHiddenOrDefault(settlement.productionOptions, []), productionQueue);
+		const productionOptions = buildProductionOptions(getHiddenOrDefault(settlement.productionOptions, []), productionQueue);
 
 		return {
 			identifier: settlement.identifier,
@@ -44,7 +54,8 @@ export namespace SettlementAggregateAccess {
 				options: productionOptions,
 				queue: productionQueue,
 			},
-			buildings: getHiddenOrDefault(settlement.buildings, [])
+			buildings: getHiddenOrDefault(settlement.buildings, []).map(buildBuilding),
+			resources: getHiddenOrDefault(settlement.resources, []).map(buildResourceEntry)
 		};
 
 		function buildQueueEntries(
@@ -76,14 +87,14 @@ export namespace SettlementAggregateAccess {
 		}
 
 
-		function buildOptions(
+		function buildProductionOptions(
 			options: ProductionOption[],
 			productionQueue: ProductionQueueEntryAggregate[],
 		): ProductionOptionAggregate[] {
-			return options.map(it => buildOption(it, productionQueue));
+			return options.map(it => buildProductionOption(it, productionQueue));
 		}
 
-		function buildOption(
+		function buildProductionOption(
 			option: ProductionOption,
 			productionQueue: ProductionQueueEntryAggregate[],
 		): ProductionOptionAggregate {
@@ -112,6 +123,106 @@ export namespace SettlementAggregateAccess {
 				commandCount: commandCount,
 				available: available
 			};
+		}
+
+		function buildBuilding(building: Building): BuildingAggregate {
+
+			function getConsumed(building: Building): ({type: string, amount: number})[] {
+				const detail = building.details.find(it => it.id === "CONSUMED")
+				if(!detail) {
+					return []
+				}
+				const resources = detail.data.find(it => it.key === "resources") as ResourcesDetailsLogValue
+				return resources.value
+			}
+
+			function getProduced(building: Building): ({type: string, amount: number})[] {
+				const detail = building.details.find(it => it.id === "PRODUCED")
+				if(!detail) {
+					return []
+				}
+				const resources = detail.data.find(it => it.key === "resources") as ResourcesDetailsLogValue
+				return resources.value
+			}
+
+			function getMissing(building: Building): ({type: string, amount: number})[] {
+				const detail = building.details.find(it => it.id === "MISSING")
+				if(!detail) {
+					return []
+				}
+				const resources = detail.data.find(it => it.key === "resources") as ResourcesDetailsLogValue
+				return resources.value
+			}
+
+			function isMissingWorkTile(building: Building): boolean {
+				const detail = building.details.find(it => it.id === "WORK_TILE")
+				if(!detail) {
+					return false
+				}
+				const required = (detail.data.find(it => it.key === "required") as BooleanDetailsLogValue).value
+				if(required) {
+					return building.workedTile == null
+				} else {
+					return false
+				}
+			}
+
+			return {
+				type: building.type,
+				active: building.active,
+				workedTile: building.workedTile,
+				missingWorkTile: isMissingWorkTile(building),
+				consumed: getConsumed(building),
+				produced: getProduced(building),
+				missing: getMissing(building),
+			}
+		}
+
+		function buildResourceEntry(entry: ResourceLedgerEntry): ResourceLedgerEntryAggregate {
+
+			function hasGroup(entry: DetailsLogEntry, group: string): boolean {
+				return entry.data.some(d => d.key === "group" && (d as TextDetailsLogValue).value === group)
+			}
+
+			function getAmount(entry: DetailsLogEntry): number {
+				return (entry.data.find(d => d.key === "amount") as NumberDetailsLogValue).value
+			}
+
+			function getKey(entry: DetailsLogEntry): string {
+				return (entry.data.find(d => d.key === "key") as TextDetailsLogValue).value
+			}
+
+			return {
+				type: entry.type,
+				amount: entry.missing > 0 ? -entry.missing : entry.amount,
+				produced: {
+					amount: entry.produced,
+					details: entry.details
+						.filter(it => hasGroup(it, "produce"))
+						.map(it => ({
+							amount: getAmount(it),
+							key: getKey(it),
+						}))
+				},
+				consumed: {
+					amount: entry.consumed,
+					details: entry.details
+						.filter(it => hasGroup(it, "consume"))
+						.map(it => ({
+							amount: getAmount(it),
+							key: getKey(it),
+						}))
+				},
+				missing: {
+					amount: entry.missing,
+					details: entry.details
+						.filter(it => hasGroup(it, "missing"))
+						.map(it => ({
+							amount: getAmount(it),
+							key: getKey(it),
+						}))
+				},
+			}
 		}
 
 

@@ -8,12 +8,12 @@ sealed interface DetailLogValue {
 
 class TextDetailLogValue(var value: String) : DetailLogValue {
     override fun merge(other: DetailLogValue) = Unit
-    override fun toString() = "TextDetailLogValue(value='$value')"
+    override fun toString() = "${this::class.simpleName}(value='$value')"
 }
 
 class BooleanDetailLogValue(var value: Boolean) : DetailLogValue {
     override fun merge(other: DetailLogValue) = Unit
-    override fun toString() = "BooleanDetailLogValue(value=$value)"
+    override fun toString() = "${this::class.simpleName}(value=$value)"
 }
 
 class FloatDetailLogValue(var value: Float) : DetailLogValue {
@@ -22,7 +22,7 @@ class FloatDetailLogValue(var value: Float) : DetailLogValue {
             value += other.value
         }
     }
-    override fun toString() = "FloatDetailLogValue(value=$value)"
+    override fun toString() = "${this::class.simpleName}(value=$value)"
 }
 
 class IntDetailLogValue(var value: Int) : DetailLogValue {
@@ -31,7 +31,7 @@ class IntDetailLogValue(var value: Int) : DetailLogValue {
             value += other.value
         }
     }
-    override fun toString() = "IntDetailLogValue(value=$value)"
+    override fun toString() = "${this::class.simpleName}(value=$value)"
 }
 
 class ResourcesDetailLogValue(var value: ResourceCollection) : DetailLogValue {
@@ -40,15 +40,15 @@ class ResourcesDetailLogValue(var value: ResourceCollection) : DetailLogValue {
             value.add(other.value)
         }
     }
-    override fun toString() = "ResourcesDetailLogValue(value=$value)"
+    override fun toString() = "${this::class.simpleName}(value=$value)"
 }
 
 class BuildingTypeDetailLogValue(var value: BuildingType) : DetailLogValue {
     override fun merge(other: DetailLogValue) = Unit
-    override fun toString() = "BuildingTypeDetailLogValue(value=$value)"
+    override fun toString() = "${this::class.simpleName}(value=$value)"
 }
 
 class TileRefDetailLogValue(var value: TileRef) : DetailLogValue {
     override fun merge(other: DetailLogValue) = Unit
-    override fun toString() = "TileRefDetailLogValue(value=$value)"
+    override fun toString() = "${this::class.simpleName}(value=$value)"
 }

@@ -1,11 +1,15 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.common.utils.buildMutableMap
 import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
+import io.github.smiley4.strategygame.backend.commondata.BooleanDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.Building
+import io.github.smiley4.strategygame.backend.commondata.BuildingDetailType
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.commondata.requiresTile
@@ -17,11 +21,12 @@ import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWo
 
 internal abstract class UpdateBuildingsStep(private val settlementUtilities: SettlementUtilities) {
 
-    class OnCreation(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities),
+    class OnCreation(settlementUtilities: SettlementUtilities) :
+        UpdateBuildingsStep(settlementUtilities),
         GameEventNode<ProducedBuildingEvent>, Logging {
         override fun handle(event: ProducedBuildingEvent, publisher: GameEventPublisher) {
             log().info("Updating building.")
-            prepareBuilding(event.building)
+            clearWorkTile(event.building)
             update(event.game, event.settlement, event.building)
         }
     }
@@ -32,7 +37,7 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
             log().info("Updating buildings.")
             event.game.settlements.forEach { settlement ->
                 settlement.infrastructure.buildings.forEach { building ->
-                    prepareBuilding(building)
+                    clearWorkTile(building)
                 }
                 settlement.infrastructure.buildings.forEach { building ->
                     update(event.game, settlement, building)
@@ -41,9 +46,9 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
         }
     }
 
-    protected fun prepareBuilding(building: Building) {
+    protected fun clearWorkTile(building: Building) {
         building.workedTile = null
-        building.active = false
+        building.details.clear(BuildingDetailType.WORK_TILE)
     }
 
     protected fun update(game: GameExtended, settlement: Settlement, building: Building) {
@@ -67,11 +72,19 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
             workTile = availablePreferredTiles.randomOrNull() ?: availablePossibleTiles.randomOrNull()
 
             building.workedTile = workTile?.ref()
+            building.details.replaceDetail(
+                BuildingDetailType.WORK_TILE, buildMutableMap {
+                    this["required"] = BooleanDetailLogValue(building.type.templateData.requiresTile())
+                    building.workedTile?.also {
+                        this["tile"] = TileRefDetailLogValue(it)
+                    }
+                }
+            )
         }
     }
 
     private fun recalculateActiveState(building: Building) {
-        building.active = if (building.type.templateData.requiresTile()) building.workedTile != null else true
+        building.requirements.fulfillsTile = if (building.type.templateData.requiresTile()) building.workedTile != null else true
     }
 
 }

@@ -23,6 +23,9 @@ import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {Header4} from "../../../../components/header/Header";
 import {SimpleDivider} from "../../../../components/divider/SimpleDivider";
 import {joinClassNames} from "../../../../components/utils";
+import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
+import {If, Then} from "react-if";
+import {BuildingAggregate} from "../../../../../models/aggregates/SettlementAggregate";
 
 export interface SettlementWindowProps {
 	windowId: string;
@@ -79,6 +82,12 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
 				<Spacer size="m"/>
 
+				<WindowSection title={"Resources"}>
+					<ResourcesSection {...data}/>
+				</WindowSection>
+
+				<Spacer size="m"/>
+
 				<WindowSection title={"Production"}>
 					<ProductionQueueSection {...data}/>
 				</WindowSection>
@@ -93,6 +102,93 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 		);
 	}
 
+}
+
+function ResourcesSection(props: UseSettlementWindow.Data) {
+	return (
+		<InsetPanel>
+			<HBox fillParent gap_s left wrap>
+				{props.settlement.resources.map(res => (
+					<TooltipContext>
+
+						<TooltipTrigger>
+							<InsetPanel className="resource-box">
+								<div
+									className="resource-box__icon"
+									style={{backgroundImage: "url('/icons/resources/" + res.type + ".png')"}}
+								/>
+								<EnrichedText>
+									<ETNumber>{res.amount}</ETNumber>
+								</EnrichedText>
+							</InsetPanel>
+						</TooltipTrigger>
+
+						<TooltipContent>
+							<TooltipPanel>
+								<VBox padding_m gap_xs fillParent>
+
+									<Header4>{res.type}</Header4>
+
+									<EnrichedText>
+										<ETNumber typeAuto signed>{res.produced.amount}</ETNumber> Produced
+									</EnrichedText>
+									<If condition={res.produced.details.length > 0}>
+										<Then>
+											<InsetPanel>
+												<VBox padding_xs gap_xs>
+													{res.produced.details.map(detail => (
+														<EnrichedText>
+															<ETNumber type="pos" signed>{detail.amount}</ETNumber> {detail.key}
+														</EnrichedText>
+													))}
+												</VBox>
+											</InsetPanel>
+										</Then>
+									</If>
+
+									<EnrichedText>
+										<ETNumber typeAuto signed>{-res.consumed.amount}</ETNumber> Consumed
+									</EnrichedText>
+									<If condition={res.consumed.details.length > 0}>
+										<Then>
+											<InsetPanel>
+												<VBox padding_xs gap_xs>
+													{res.consumed.details.map(detail => (
+														<EnrichedText>
+															<ETNumber type="neg" signed>{-detail.amount}</ETNumber> {detail.key}
+														</EnrichedText>
+													))}
+												</VBox>
+											</InsetPanel>
+										</Then>
+									</If>
+
+									<EnrichedText>
+										<ETNumber typeAutoInv unsigned>{res.missing.amount}</ETNumber> Missing
+									</EnrichedText>
+									<If condition={res.missing.details.length > 0}>
+										<Then>
+											<InsetPanel>
+												<VBox padding_xs gap_xs>
+													{res.missing.details.map(detail => (
+														<EnrichedText>
+															<ETNumber type="neg" unsigned>{detail.amount}</ETNumber> {detail.key}
+														</EnrichedText>
+													))}
+												</VBox>
+											</InsetPanel>
+										</Then>
+									</If>
+
+								</VBox>
+							</TooltipPanel>
+						</TooltipContent>
+
+					</TooltipContext>
+				))}
+			</HBox>
+		</InsetPanel>
+	);
 }
 
 function ProductionQueueSection(props: UseSettlementWindow.Data) {
@@ -150,7 +246,7 @@ function BuildingList(props: UseSettlementWindow.Data): ReactElement {
 	);
 }
 
-function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Building }): ReactElement {
+function BuildingEntry(props: { data: UseSettlementWindow.Data, building: BuildingAggregate }): ReactElement {
 	return (
 		<BuildingInfoTooltip building={props.building}>
 			<div
@@ -163,7 +259,7 @@ function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Buildi
 	);
 }
 
-export function BuildingInfoTooltip(props: { building: Building, children?: any }) {
+export function BuildingInfoTooltip(props: { building: BuildingAggregate, children?: any }) {
 	return (
 		<TooltipContext>
 			<TooltipTrigger>
@@ -171,24 +267,51 @@ export function BuildingInfoTooltip(props: { building: Building, children?: any 
 			</TooltipTrigger>
 			<TooltipContent>
 				<TooltipPanel>
-
 					<VBox padding_m gap_s fillParent>
-						<Header4>{props.building.type}</Header4>
-						<SimpleDivider/>
-						{
-							<>
-								<HBox gap_xs>
-									<Text>Active:</Text>
-									<Text type={props.building.active ? "positive" : "negative"}>{props.building.active ? "Yes" : "No"}</Text>
-								</HBox>
-								<HBox gap_xs>
-									<Text>Works Tile:</Text>
-									<Text>{props.building.workedTile ? props.building.workedTile.q + "," + props.building.workedTile.r : "-"}</Text>
-								</HBox>
-							</>
-						}
-					</VBox>
 
+						<Header4>{props.building.type}</Header4>
+
+						<If condition={props.building.consumed.length > 0}>
+							<Then>
+								{props.building.consumed.map(entry => (
+									<EnrichedText>
+										<ETNumber typeAuto signed>{-entry.amount}</ETNumber> {entry.type}
+									</EnrichedText>
+								))}
+							</Then>
+						</If>
+
+						<If condition={props.building.produced.length > 0}>
+							<Then>
+								{props.building.produced.map(entry => (
+									<EnrichedText>
+										<ETNumber typeAuto signed>{entry.amount}</ETNumber> {entry.type}
+									</EnrichedText>
+								))}
+							</Then>
+						</If>
+
+
+						<If condition={props.building.missing.length > 0 || props.building.missingWorkTile}>
+							<Then>
+								<Spacer size="s"/>
+								<EnrichedText>
+									Missing:
+								</EnrichedText>
+								{props.building.missingWorkTile && (
+									<EnrichedText style={{color: "hsl(0, 87%, 65%)"}}>
+										Tile to work on
+									</EnrichedText>
+								)}
+								{props.building.missing.map(entry => (
+									<EnrichedText>
+										<ETNumber neg unsigned>{entry.amount}</ETNumber> {entry.type}
+									</EnrichedText>
+								))}
+							</Then>
+						</If>
+
+					</VBox>
 				</TooltipPanel>
 			</TooltipContent>
 		</TooltipContext>

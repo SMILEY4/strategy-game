@@ -22,7 +22,6 @@ import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateBui
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateEconomyStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateInfluenceStep
 import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateProductionQueueStep
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateWorldStep
 import io.github.smiley4.strategygame.backend.engine.module.tools.GameValidationsImpl
 import io.github.smiley4.strategygame.backend.engine.module.tools.InfluenceCalculator
 import io.github.smiley4.strategygame.backend.engine.module.tools.SettlementUtilitiesImpl
@@ -47,7 +46,6 @@ fun Module.dependenciesEngine() {
         GameEventSystem().also {
             it.register(RootUpdateStep())
             it.register(ResolveCommandsStep(get(), get(), get()))
-            it.register(UpdateWorldStep())
             it.register(UpdateProductionQueueStep())
             it.register(UpdateEconomyStep(get(), get()))
             it.register(UpdateInfluenceStep(get()))

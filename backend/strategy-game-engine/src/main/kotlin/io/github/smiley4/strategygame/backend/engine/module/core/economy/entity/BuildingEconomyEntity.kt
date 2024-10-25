@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.engine.module.core.economy.entity
 
 import io.github.smiley4.strategygame.backend.commondata.Building
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
+import io.github.smiley4.strategygame.backend.commondata.requiresTile
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyConsumptionType
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyEntityConfig
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyEntityUpdateState
@@ -14,7 +15,7 @@ class BuildingEconomyEntity(override val owner: EconomyNode, val building: Build
         output = ResourceCollection.basic(building.type.templateData.produces),
         consumptionType = EconomyConsumptionType.COMPLETE,
         priority = 1f,
-        isActive = true
+        isActive = !building.type.templateData.requiresTile() || (building.type.templateData.requiresTile() && building.workedTile != null)
     )
 
     override val state: EconomyEntityUpdateState = EconomyEntityUpdateState(config.input)
