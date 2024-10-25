@@ -16,7 +16,7 @@ interface JsonType {
                 is RGBColor -> ColorType(value)
                 is Enum<*> -> TextType(value.name)
                 is Collection<*> -> ArrayType().apply { value.forEach { items.add(from(it)) } }
-                else -> UnknownType(value)
+                else -> throw Exception("unknown type for json")//UnknownType(value)
             }
         }
 

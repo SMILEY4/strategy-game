@@ -9,6 +9,7 @@ import io.github.smiley4.strategygame.backend.commondata.DetailLogEntry
 import io.github.smiley4.strategygame.backend.commondata.FloatDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.IntDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.ResourcesDetailLogValue
+import io.github.smiley4.strategygame.backend.commondata.TextDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
 
 
@@ -25,6 +26,10 @@ internal class  DetailLogPOVBuilder {
                 detail.data.forEach { (key, value) ->
                     key to obj {
                         when (value) {
+                            is TextDetailLogValue -> {
+                                "type" to "text"
+                                "value" to value.value
+                            }
                             is BooleanDetailLogValue -> {
                                 "type" to "boolean"
                                 "value" to value.value

@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.backend.worlds.module.persistence.entities
 
+import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileRef
 
 
@@ -11,14 +12,14 @@ internal class TileRefEntity(
 
     companion object {
         fun of(serviceModel: TileRef) = TileRefEntity(
-            tileId = serviceModel.id,
+            tileId = serviceModel.id.value,
             q = serviceModel.q,
             r = serviceModel.r
         )
     }
 
     fun asServiceModel() = TileRef(
-        id = this.tileId,
+        id = Tile.Id(this.tileId),
         q = this.q,
         r = this.r
     )

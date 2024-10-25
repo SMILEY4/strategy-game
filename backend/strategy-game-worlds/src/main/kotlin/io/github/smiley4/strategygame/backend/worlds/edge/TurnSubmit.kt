@@ -1,6 +1,8 @@
 package io.github.smiley4.strategygame.backend.worlds.edge
 
 import io.github.smiley4.strategygame.backend.commondata.CommandData
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.User
 
 
 interface TurnSubmit {
@@ -14,6 +16,6 @@ interface TurnSubmit {
      * Submits the given commands of the given player for the given game
      * @throws TurnSubmitActionError
      */
-    suspend fun perform(userId: String, gameId: String, commands: Collection<CommandData>)
+    suspend fun perform(userId: User.Id, gameId: Game.Id, commands: Collection<CommandData>)
 
 }

@@ -5,7 +5,7 @@ internal object Collections {
     const val GAMES = "games"
     const val COUNTRIES = "countries"
     const val TILES = "tiles"
-    const val CITIES = "cities"
+    const val SETTLEMENTS = "settlements"
     const val COMMANDS = "commands"
     const val PROVINCES = "provinces"
     const val ROUTES = "routes"
@@ -16,7 +16,7 @@ internal object Collections {
         GAMES,
         COUNTRIES,
         TILES,
-        CITIES,
+        SETTLEMENTS,
         COMMANDS,
         PROVINCES,
         ROUTES,

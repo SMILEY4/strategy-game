@@ -24,6 +24,7 @@ data class DetailLogEntry<T: Enum<*>>(
         return otherData.filter { this.data.containsKey(it.key) }.all { (key, value) ->
             val baseValue = this.data[key]
             when(value) {
+                is TextDetailLogValue -> (baseValue as TextDetailLogValue).value == value.value
                 is BooleanDetailLogValue -> (baseValue as BooleanDetailLogValue).value == value.value
                 is BuildingTypeDetailLogValue -> (baseValue as BuildingTypeDetailLogValue).value == value.value
                 is FloatDetailLogValue -> true

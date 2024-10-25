@@ -26,6 +26,8 @@ open class DetailLog<T : Enum<*>>(private val details: MutableList<DetailLogEntr
         details.add(DetailLogEntry(id, data))
     }
 
+    fun clear(vararg ids: T): Unit = this.clear(ids.toSet())
+
     fun clear(ids: Set<T>): Unit = this.details.removeIf { ids.contains(it.id) }.let { }
 
     fun clear(id: T): Unit = this.details.removeIf { id == it.id }.let { }

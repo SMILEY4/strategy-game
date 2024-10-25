@@ -2,14 +2,18 @@ import {TileIdentifier} from "./tile";
 import {CountryIdentifier} from "./country";
 import {Color} from "./color";
 import {HiddenType} from "../common/hiddenType";
-import {ProductionOptionType} from "./productionOptionType";
+import {ProductionOption} from "./productionOption";
+import {Building} from "./building";
+import {DetailsLogEntry} from "./detailLog";
 
 export interface Settlement {
 	identifier: SettlementIdentifier,
 	country: CountryIdentifier
 	tile: TileIdentifier,
 	productionQueue: HiddenType<ProductionQueueEntry[]>,
-	productionOptions: HiddenType<ProductionOptionType[]>,
+	productionOptions: HiddenType<ProductionOption[]>,
+	buildings: HiddenType<Building[]>
+	resources: HiddenType<ResourceLedgerEntry[]>
 }
 
 export interface SettlementIdentifier {
@@ -19,7 +23,16 @@ export interface SettlementIdentifier {
 }
 
 export interface ProductionQueueEntry {
-	option: ProductionOptionType
+	type: string,
 	entryId: string,
 	progress: number
+}
+
+export interface ResourceLedgerEntry {
+	type: string,
+	produced: number,
+	consumed: number,
+	amount: number,
+	missing: number,
+	details: DetailsLogEntry[]
 }

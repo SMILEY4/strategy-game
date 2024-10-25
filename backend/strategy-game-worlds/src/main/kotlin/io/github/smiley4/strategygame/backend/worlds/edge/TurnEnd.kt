@@ -1,5 +1,7 @@
 package io.github.smiley4.strategygame.backend.worlds.edge
 
+import io.github.smiley4.strategygame.backend.commondata.Game
+
 interface TurnEnd {
 
 	sealed class TurnEndError(message: String, cause: Throwable? = null) : Exception(message, cause)
@@ -11,6 +13,6 @@ interface TurnEnd {
 	 * Ends the current turn of the given game
 	 * @throws TurnEndError
 	 */
-	suspend fun perform(gameId: String)
+	suspend fun perform(gameId: Game.Id)
 
 }

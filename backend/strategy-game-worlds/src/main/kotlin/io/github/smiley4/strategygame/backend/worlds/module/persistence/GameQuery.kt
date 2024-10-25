@@ -13,10 +13,10 @@ internal class GameQuery(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GameQuery::class)
 
-    suspend fun execute(gameId: String): Game {
+    suspend fun execute(game: Game.Id): Game {
         return time(metricId) {
             try {
-                database.getDocument(Collections.GAMES, gameId, GameEntity::class.java).asServiceModel()
+                database.getDocument(Collections.GAMES, game.value, GameEntity::class.java).asServiceModel()
             } catch (e: DocumentNotFoundError) {
                 throw EntityNotFoundError()
             }

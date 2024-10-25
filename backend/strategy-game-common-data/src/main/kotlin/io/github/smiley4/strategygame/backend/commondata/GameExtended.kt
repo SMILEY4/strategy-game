@@ -11,14 +11,14 @@ data class GameExtended(
 ) {
 
     fun findTile(q: Int, r: Int): Tile = tiles.get(q, r)
-        ?: throw Exception("Could not find tile at $q,$r in game ${meta.gameId}")
+        ?: throw Exception("Could not find tile at $q,$r in game ${meta.id}")
 
     fun findTileOrNull(q: Int, r: Int): Tile? = tiles.get(q, r)
 
-    fun findTile(tileId: String): Tile = findTileOrNull(tileId)
-        ?: throw Exception("Could not find tile $tileId in game ${meta.gameId}")
+    fun findTile(tileId: Tile.Id): Tile = findTileOrNull(tileId)
+        ?: throw Exception("Could not find tile $tileId in game ${meta.id}")
 
-    fun findTileOrNull(tileId: String): Tile? = tiles.get(tileId)
+    fun findTileOrNull(tileId: Tile.Id): Tile? = tiles.get(tileId)
 
     fun findTile(pos: TilePosition): Tile = findTile(pos.q, pos.r)
 
@@ -27,36 +27,36 @@ data class GameExtended(
     fun findTile(ref: TileRef): Tile = findTile(ref.id)
 
 
-    fun findWorldObject(worldObjectId: String): WorldObject = findWorldObjectOrNull(worldObjectId)
-        ?: throw Exception("Could not find world-object $worldObjectId in game ${meta.gameId}")
+    fun findWorldObject(worldObjectId: WorldObject.Id): WorldObject = findWorldObjectOrNull(worldObjectId)
+        ?: throw Exception("Could not find world-object $worldObjectId in game ${meta.id}")
 
-    fun findWorldObjectOrNull(worldObjectId: String): WorldObject? = worldObjects.find { it.id == worldObjectId }
-
-
-    fun findCountry(countryId: String): Country = countries.firstOrNull { it.countryId == countryId }
-        ?: throw Exception("Could not find country $countryId in game ${meta.gameId}")
-
-    fun findCountryByUser(userId: String): Country = countries.firstOrNull { it.userId == userId }
-        ?: throw Exception("Could not find country for user $userId in game ${meta.gameId}")
+    fun findWorldObjectOrNull(worldObjectId: WorldObject.Id): WorldObject? = worldObjects.find { it.id == worldObjectId }
 
 
+    fun findCountry(countryId: Country.Id): Country = countries.firstOrNull { it.id == countryId }
+        ?: throw Exception("Could not find country $countryId in game ${meta.id}")
 
-    fun findProvince(provinceId: String): Province = provinces.firstOrNull { it.provinceId == provinceId }
-        ?: throw Exception("Could not find province $provinceId in game ${meta.gameId}")
+    fun findCountryByUser(userId: User.Id): Country = countries.firstOrNull { it.user == userId }
+        ?: throw Exception("Could not find country for user $userId in game ${meta.id}")
 
 
-    fun findProvinceBySettlementOrNull(settlementId: String): Province? {
-        return provinces.find { it.settlementIds.contains(settlementId) }
+
+    fun findProvince(provinceId: Province.Id): Province = provinces.firstOrNull { it.id == provinceId }
+        ?: throw Exception("Could not find province $provinceId in game ${meta.id}")
+
+
+    fun findProvinceBySettlementOrNull(settlementId: Settlement.Id): Province? {
+        return provinces.find { it.settlements.contains(settlementId) }
     }
 
-    fun findProvinceBySettlement(settlementId: String) = findProvinceBySettlementOrNull(settlementId)
-        ?: throw Exception("Could not find province for settlement $settlementId in game ${meta.gameId}")
+    fun findProvinceBySettlement(settlementId: Settlement.Id) = findProvinceBySettlementOrNull(settlementId)
+        ?: throw Exception("Could not find province for settlement $settlementId in game ${meta.id}")
 
 
-    fun findSettlementOrNull(settlementId: String): Settlement? {
-        return settlements.find { it.settlementId == settlementId }
+    fun findSettlementOrNull(settlementId: Settlement.Id): Settlement? {
+        return settlements.find { it.id == settlementId }
     }
 
-    fun findSettlement(settlementId: String) = findSettlementOrNull(settlementId)
-        ?: throw Exception("Could not find settlement with id $settlementId in game ${meta.gameId}")
+    fun findSettlement(settlementId: Settlement.Id) = findSettlementOrNull(settlementId)
+        ?: throw Exception("Could not find settlement with id $settlementId in game ${meta.id}")
 }

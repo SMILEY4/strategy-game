@@ -6,6 +6,8 @@ import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
 import io.github.smiley4.strategygame.backend.common.utils.Json
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.routing.webSocketExt
@@ -60,7 +62,7 @@ internal object RouteWebsocket {
             val gameId = call.parameters[WebsocketConstants.GAME_ID]!!.also { data[WebsocketConstants.GAME_ID] = it }
             withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
                 try {
-                    requestConnection.perform(userId, gameId)
+                    requestConnection.perform(User.Id(userId), Game.Id(gameId))
                 } catch (e: RequestConnectionToGame.GameRequestConnectionActionError) {
                     when (e) {
                         is RequestConnectionToGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
@@ -76,7 +78,7 @@ internal object RouteWebsocket {
             val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
             val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
             withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
-                connectAction.perform(userId, gameId, connection.getId())
+                connectAction.perform(User.Id(userId), Game.Id(gameId), connection.getId())
             }
         }
 
@@ -96,7 +98,7 @@ internal object RouteWebsocket {
             val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
             val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
             withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
-                disconnectAction.perform(userId)
+                disconnectAction.perform(User.Id(userId))
             }
         }
     }

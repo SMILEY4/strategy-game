@@ -146,6 +146,7 @@ export class GameSessionService implements WebsocketMessageHandler {
 						const cmd = it as ProductionQueueAddCommand;
 						const cmdMsg: ProductionQueueAddCommandMessage = {
 							type: cmd.type.id,
+							entryType: cmd.entry.type,
 							settlementId: cmd.settlement.id,
 						};
 						return cmdMsg;
@@ -155,7 +156,7 @@ export class GameSessionService implements WebsocketMessageHandler {
 						const cmd = it as ProductionQueueCancelCommand;
 						const cmdMsg: ProductionQueueCancelCommandMessage = {
 							type: cmd.type.id,
-							entryId: cmd.entry.id,
+							entryId: cmd.entry.entryId,
 							settlementId: cmd.settlement.id
 						};
 						return cmdMsg;

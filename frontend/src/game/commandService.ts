@@ -11,7 +11,7 @@ import {AudioService, AudioType} from "../shared/audioService";
 import {TileIdentifier} from "../models/primitives/tile";
 import {SettlementIdentifier} from "../models/primitives/Settlement";
 import {ProductionOptionAggregate, ProductionQueueEntryAggregate} from "../models/aggregates/SettlementAggregate";
-import {ProductionOptionType} from "../models/primitives/productionOptionType";
+import {ProductionOption} from "../models/primitives/productionOption";
 
 export class CommandService {
 
@@ -65,7 +65,7 @@ export class CommandService {
 		this.addCommand(command);
 	}
 
-	public addProductionQueueEntry(settlementId: SettlementIdentifier, type: ProductionOptionType) {
+	public addProductionQueueEntry(settlementId: SettlementIdentifier, type: string) {
 		const cmdId = UID.generate()
 		const command: ProductionQueueAddCommand = {
 			id: cmdId,
@@ -73,10 +73,10 @@ export class CommandService {
 			worldObjectId: null,
 			settlement: settlementId,
 			entry: {
-				id: cmdId,
-				optionType: type,
+				type: type,
+				entryId: cmdId,
 				progress: 0,
-				isCommand: true
+				isCommand: true,
 			}
 		};
 		this.addCommand(command);

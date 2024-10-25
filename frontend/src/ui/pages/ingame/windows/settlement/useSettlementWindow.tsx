@@ -66,7 +66,6 @@ export namespace UseSettlementWindow {
 		const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
 
 		if (settlement && province) {
-
 			return {
 				settlement: settlement,
 				province: province,

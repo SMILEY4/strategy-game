@@ -1,5 +1,8 @@
 package io.github.smiley4.strategygame.backend.worlds.edge
 
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.User
+
 /**
  * Connect a user to a game
  */
@@ -10,11 +13,11 @@ interface ConnectToGame {
     class InvalidPlayerState(cause: Throwable? = null) : GameConnectActionError("The player is in an invalid connection-state", cause)
 
     /**
-     * @param userId the id of the user to connect
-     * @param gameId the id of the game to connect to
+     * @param user the id of the user to connect
+     * @param game the id of the game to connect to
      * @param connectionId the id of the open connection to the user
      * @throws GameConnectActionError
      */
-    suspend fun perform(userId: String, gameId: String, connectionId: Long)
+    suspend fun perform(user: User.Id, game: Game.Id, connectionId: Long)
 
 }

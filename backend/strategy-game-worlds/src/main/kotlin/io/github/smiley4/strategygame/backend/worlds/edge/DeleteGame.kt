@@ -1,13 +1,15 @@
 package io.github.smiley4.strategygame.backend.worlds.edge
 
+import io.github.smiley4.strategygame.backend.commondata.Game
+
 /**
  * Delete a given game
  */
 interface DeleteGame {
 
     /**
-     * @param gameId the id of the game to delete
+     * @param game the id of the game to delete
      */
-    suspend fun perform(gameId: String)
+    suspend fun perform(game: Game.Id)
 
 }

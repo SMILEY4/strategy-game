@@ -2,13 +2,26 @@ package io.github.smiley4.strategygame.backend.commondata
 
 
 sealed class ProductionQueueEntry(
-    val entryId: String,
-    var progress: Float,
+    val id: Id,
+    val requiredResources: ResourceCollection,
+    val collectedResources: ResourceCollection
 ) {
 
+    @JvmInline
+    value class Id(val value: String) {
+        companion object
+    }
+
     class Settler(
-        entryId: String,
-        progress: Float
-    ) : ProductionQueueEntry(entryId, progress)
+        id: Id,
+        collectedResources: ResourceCollection
+    ) : ProductionQueueEntry(id, ResourceCollection.basic(ResourceType.WOOD.amount(5f)), collectedResources)
+
+    class Building(
+        id: Id,
+        collectedResources: ResourceCollection,
+        val building: BuildingType
+    ) : ProductionQueueEntry(id, ResourceCollection.basic(ResourceType.WOOD.amount(5f)), collectedResources)
+
 
 }

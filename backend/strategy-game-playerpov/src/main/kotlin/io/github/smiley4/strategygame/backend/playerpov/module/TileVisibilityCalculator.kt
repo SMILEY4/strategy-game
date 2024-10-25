@@ -1,13 +1,14 @@
 package io.github.smiley4.strategygame.backend.playerpov.module
 
 import io.github.smiley4.strategygame.backend.common.utils.distance
+import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.engine.module.GameConfig
 
 internal class TileVisibilityCalculator {
 
-    fun calculateVisibility(game: GameExtended, povCountryId: String, tile: Tile): TileVisibilityDTO {
+    fun calculateVisibility(game: GameExtended, povCountryId: Country.Id, tile: Tile): TileVisibilityDTO {
         if (!tile.dataPolitical.discoveredByCountries.contains(povCountryId)) {
             return TileVisibilityDTO.UNKNOWN
         }
@@ -18,7 +19,7 @@ internal class TileVisibilityCalculator {
     }
 
 
-    private fun hasLineOfSight(game: GameExtended, povCountryId: String, tile: Tile): Boolean {
+    private fun hasLineOfSight(game: GameExtended, povCountryId: Country.Id, tile: Tile): Boolean {
 
         val losWorldObject = game.worldObjects
             .asSequence()
@@ -30,8 +31,8 @@ internal class TileVisibilityCalculator {
 
         val losSettlement = game.settlements
             .asSequence()
-            .filter { it.countryId == povCountryId }
-            .any { settlement -> tile.position.distance(settlement.tile) <= settlement.viewDistance }
+            .filter { it.country == povCountryId }
+            .any { settlement -> tile.position.distance(settlement.tile) <= settlement.attributes.viewDistance }
         if (losSettlement) {
             return true
         }
@@ -39,9 +40,9 @@ internal class TileVisibilityCalculator {
         return false
     }
 
-    private fun hasInfluenceVision(povCountryId: String, tile: Tile): Boolean {
+    private fun hasInfluenceVision(povCountryId: Country.Id, tile: Tile): Boolean {
         val totalInfluence = tile.dataPolitical.influences
-            .filter { it.countryId == povCountryId }
+            .filter { it.country == povCountryId }
             .sumOf { it.amount }
         return totalInfluence >= GameConfig.influenceThresholdVision
     }

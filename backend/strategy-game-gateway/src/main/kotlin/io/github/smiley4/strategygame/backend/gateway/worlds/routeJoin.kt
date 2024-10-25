@@ -5,6 +5,8 @@ import io.github.smiley4.strategygame.backend.common.logging.mdcGameId
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
@@ -58,7 +60,7 @@ internal object RouteJoin {
         val userId = call.getUserIdOrThrow()
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
             try {
-                joinGame.perform(userId, gameId)
+                joinGame.perform(User.Id(userId), Game.Id(gameId))
                 call.respond(HttpStatusCode.OK, Unit)
             } catch (e: JoinGame.GameJoinActionErrors) {
                 when (e) {

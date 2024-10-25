@@ -9,8 +9,8 @@ import {CommandType, MoveCommand} from "../../../../../models/primitives/command
 import {CommandDatabase} from "../../../../../state/database/commandDatabase";
 import {useQueryMultiple, useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
 import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
-import {App} from "../../../App";
 import {TileDatabase} from "../../../../../state/database/tileDatabase";
+import {WorldObjectType} from "../../../../../models/primitives/worldObjectType";
 
 export namespace UseWorldObjectWindow {
 
@@ -81,7 +81,7 @@ export namespace UseWorldObjectWindow {
 					cancel: () => cancelMovementCommand(worldObject),
 				},
 				settlement: {
-					possible: worldObject.ownedByPlayer,
+					possible: worldObject.ownedByPlayer && worldObject.type === WorldObjectType.SETTLER,
 					enabled: !hasCommand && tile?.createSettlement.settler!,
 					start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
 				}

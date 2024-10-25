@@ -11,9 +11,7 @@ import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TilePoliticalData
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
-import io.github.smiley4.strategygame.backend.commondata.TileWorldData
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
@@ -34,14 +32,14 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
     private fun buildTiles(worldSettings: WorldGenSettings): List<Tile> {
         return worldGenerator.buildTiles(worldSettings).map {
             Tile(
-                tileId = DbId.PLACEHOLDER,
+                id = Tile.Id(DbId.PLACEHOLDER),
                 position = TilePosition(it.q, it.r),
-                dataWorld = TileWorldData(
+                dataWorld = Tile.WorldData(
                     terrainType = it.type,
                     resourceType = it.resource,
                     height = it.height,
                 ),
-                dataPolitical = TilePoliticalData(
+                dataPolitical = Tile.PoliticalData(
                     influences = mutableListOf(),
                     discoveredByCountries = mutableSetOf(),
                     controlledBy = null
@@ -53,7 +51,7 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
     private fun buildGameExtended(game: Game, tiles: List<Tile>): GameExtended {
         return GameExtended(
             meta = GameMeta(
-                gameId = game.gameId,
+                id = game.id,
                 turn = game.turn
             ),
             tiles = TileContainer(tiles),

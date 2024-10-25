@@ -1,6 +1,8 @@
 package io.github.smiley4.strategygame.backend.gateway.worlds
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.github.smiley4.strategygame.backend.commondata.Game
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.SubmitTurnMessage
 import io.github.smiley4.strategygame.backend.worlds.edge.TurnSubmit
@@ -26,7 +28,11 @@ internal class GatewayGameMessageHandler(
     }
 
     private suspend fun handleSubmitTurn(message: SubmitTurnMessage) {
-        turnSubmitAction.perform(message.meta!!.userId, message.meta!!.gameId, message.payload.commands.map { it.asCommandData() })
+        turnSubmitAction.perform(
+            User.Id(message.meta!!.userId),
+            Game.Id(message.meta!!.gameId),
+            message.payload.commands.map { it.asCommandData() }
+        )
     }
 
 }

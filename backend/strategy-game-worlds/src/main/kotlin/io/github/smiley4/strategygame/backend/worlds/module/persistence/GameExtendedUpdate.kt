@@ -29,7 +29,7 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
 
     suspend fun execute(game: GameExtended) {
         return time(metricId) {
-            val gameId = game.meta.gameId
+            val gameId = game.meta.id.value
             updateGame(game.meta)
             parallelIO(
                 { updateTiles(game.tiles, gameId) },
@@ -49,7 +49,7 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
 
     private suspend fun updateGame(gameMeta: GameMeta) {
         try {
-            val game = database.getDocument(Collections.GAMES, gameMeta.gameId, GameEntity::class.java)
+            val game = database.getDocument(Collections.GAMES, gameMeta.id.value, GameEntity::class.java)
             val entity = GameEntity.of(gameMeta, game)
             database.updateDocument(Collections.GAMES, entity.getKeyOrThrow(), entity)
         } catch (e: DocumentNotFoundError) {
@@ -70,11 +70,11 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
     }
 
     private suspend fun updateCities(cities: Collection<Settlement>, gameId: String) {
-        database.insertOrReplaceDocuments(Collections.CITIES, cities.map { SettlementEntity.of(it, gameId) })
+        database.insertOrReplaceDocuments(Collections.SETTLEMENTS, cities.map { SettlementEntity.of(it, gameId) })
     }
 
     private suspend fun deleteCities(cities: Set<Settlement>, gameId: String) {
-        database.deleteDocuments(Collections.CITIES, cities.map { SettlementEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
+        database.deleteDocuments(Collections.SETTLEMENTS, cities.map { SettlementEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
     private suspend fun updateProvinces(provinces: Collection<Province>, gameId: String) {

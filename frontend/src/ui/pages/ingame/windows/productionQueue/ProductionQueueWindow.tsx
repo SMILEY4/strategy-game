@@ -29,7 +29,7 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
 				<VBox top stretch gap_xs padding_s scrollable fillParent>
 					{data.entries.map((entry, index) => (
 						<QueueEntry
-							key={entry.id}
+							key={entry.entryId}
 							data={data}
 							entry={entry}
 							position={index + 1}
@@ -54,13 +54,13 @@ function QueueEntry(props: {
 			background={
 				<div
 					className={"queue-entry-background"}
-					style={{backgroundImage: "url('" + props.entry.optionType.image + "')"}}
+					style={{backgroundImage: "url('" + "icons/production/" + props.entry.type + ".png')"}}
 				/>
 			}
 			simpleBorder paddingSmall blue
 		>
 			<HBox centerVertical spaceBetween gap_s>
-				<Text className="queue-entry__name">{props.position + ". " + props.entry.optionType.name}</Text>
+				<Text className="queue-entry__name">{props.position + ". " + props.entry.type}</Text>
 				{!props.entry.isCommand && props.position === 1 && (
 					<ProgressBar progress={props.entry.progress} className="production_queue__progress"/>)}
 				<ButtonPrimary

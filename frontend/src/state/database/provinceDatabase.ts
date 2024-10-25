@@ -3,13 +3,10 @@ import {AbstractDatabase} from "../../shared/db/database/abstractDatabase";
 import {Query} from "../../shared/db/query/query";
 import {DatabaseStorage, DatabaseStorageConfig} from "../../shared/db/storage/databaseStorage";
 import {ArraySupportingStorage} from "../../shared/db/storage/supporting/arraySupportingStorage";
-import {Settlement} from "../../models/primitives/Settlement";
-import {WorldObject} from "../../models/primitives/worldObject";
-import {MapUniqueSupportingStorage} from "../../shared/db/storage/supporting/mapUniqueSupportingStorage";
 import {Province} from "../../models/primitives/province";
 
 function provideId(e: Province): string {
-	return e.identifier;
+	return e.identifier.id;
 }
 
 interface ProvinceStorageConfig extends DatabaseStorageConfig<Province, string> {
@@ -53,7 +50,6 @@ export namespace ProvinceDatabase {
 
 	export const QUERY_BY_SETTLEMENT_ID: ProvinceQuery<string | null> = {
 		run(storage: ProvinceStorage, args: string): Province | null {
-			console.log("search provinces by settlement", args, storage.config.supporting.array.getAll())
 			if (args === null) {
 				return null;
 			}

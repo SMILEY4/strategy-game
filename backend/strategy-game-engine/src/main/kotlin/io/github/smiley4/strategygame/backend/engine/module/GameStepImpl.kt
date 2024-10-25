@@ -18,7 +18,7 @@ internal class GameStepImpl(
 
     override suspend fun perform(game: GameExtended, commands: Collection<Command<*>>) {
         return time(metricId) {
-            log().info("Performing game step for game ${game.meta.gameId} and turn ${game.meta.turn}")
+            log().info("Performing game step for game ${game.meta.id} and turn ${game.meta.turn}")
             updateState(game, commands)
             prepareNextTurn(game)
         }

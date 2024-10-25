@@ -22,7 +22,7 @@ export interface CreateSettlementWithSettlerCommandMessage extends CommandMessag
 
 export interface ProductionQueueAddCommandMessage extends CommandMessage {
 	settlementId: string,
-	// todo: generalize to all types (currently just settler supported by backend
+	entryType: string
 }
 
 export interface ProductionQueueCancelCommandMessage extends CommandMessage {

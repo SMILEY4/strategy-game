@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.backend.commonarangodb.DocumentNotFoundErr
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Country
+import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
 import io.github.smiley4.strategygame.backend.commondata.Province
@@ -28,7 +29,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GameExtendedQuery::class)
 
-    suspend fun execute(gameId: String): GameExtended {
+    suspend fun execute(gameId: Game.Id): GameExtended {
         return time(metricId) {
             val game = fetchGame(gameId)
             parZip(
@@ -41,7 +42,7 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
             ) { countries, tiles, worldObjects, cities, provinces, routes ->
                 GameExtended(
                     meta = GameMeta(
-                        gameId = gameId,
+                        id = gameId,
                         turn = game.turn
                     ),
                     countries = countries.tracking(),
@@ -55,45 +56,48 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
         }
     }
 
-    private suspend fun fetchGame(gameId: String): GameEntity {
+    private suspend fun fetchGame(gameId: Game.Id): GameEntity {
         try {
-            return database.getDocument(Collections.GAMES, gameId, GameEntity::class.java)
+            return database.getDocument(Collections.GAMES, gameId.value, GameEntity::class.java)
         } catch (e: DocumentNotFoundError) {
             throw EntityNotFoundError()
         }
     }
 
-    private suspend fun fetchCountries(gameId: String): List<Country> {
+    private suspend fun fetchCountries(gameId: Game.Id): List<Country> {
         database.assertCollections(Collections.COUNTRIES)
         return database.query(
+            //language=aql
             """
 				FOR country IN ${Collections.COUNTRIES}
 					FILTER country.gameId == @gameId
 					RETURN country
 			""".trimIndent(),
-            mapOf("gameId" to gameId),
+            mapOf("gameId" to gameId.value),
             CountryEntity::class.java
         ).map { it.asServiceModel() }
     }
 
-    private suspend fun fetchTiles(gameId: String): List<Tile> {
+    private suspend fun fetchTiles(gameId: Game.Id): List<Tile> {
         database.assertCollections(Collections.TILES)
         return database.query(
+            //language=aql
             """
 				FOR tile IN ${Collections.TILES}
 					FILTER tile.gameId == @gameId
 					RETURN tile
 			""".trimIndent(),
-            mapOf("gameId" to gameId),
+            mapOf("gameId" to gameId.value),
             TileEntity::class.java
         ).map { it.asServiceModel() }
     }
 
-    private suspend fun fetchCities(gameId: String): List<Settlement> {
-        database.assertCollections(Collections.CITIES)
+    private suspend fun fetchCities(gameId: Game.Id): List<Settlement> {
+        database.assertCollections(Collections.SETTLEMENTS)
         return database.query(
+            //language=aql
             """
-				FOR city IN ${Collections.CITIES}
+				FOR city IN ${Collections.SETTLEMENTS}
 					FILTER city._documentType != "reservation"
 					FILTER city.gameId == @gameId
 					RETURN city
@@ -103,44 +107,47 @@ internal class GameExtendedQuery(private val database: ArangoDatabase) {
         ).map { it.asServiceModel() }
     }
 
-    private suspend fun fetchProvinces(gameId: String): List<Province> {
+    private suspend fun fetchProvinces(gameId: Game.Id): List<Province> {
         database.assertCollections(Collections.PROVINCES)
         return database.query(
+            //language=aql
             """
 				FOR province IN ${Collections.PROVINCES}
 					FILTER province._documentType != "reservation"
 					FILTER province.gameId == @gameId
 					RETURN province
 			""".trimIndent(),
-            mapOf("gameId" to gameId),
+            mapOf("gameId" to gameId.value),
             ProvinceEntity::class.java
         ).map { it.asServiceModel() }
     }
 
-    private suspend fun fetchRoutes(gameId: String): List<Route> {
+    private suspend fun fetchRoutes(gameId: Game.Id): List<Route> {
         database.assertCollections(Collections.ROUTES)
         return database.query(
+            //language=aql
             """
 				FOR route IN ${Collections.ROUTES}
 					FILTER route._documentType != "reservation"
 					FILTER route.gameId == @gameId
 					RETURN route
 			""".trimIndent(),
-            mapOf("gameId" to gameId),
+            mapOf("gameId" to gameId.value),
             RouteEntity::class.java
         ).map { it.asServiceModel() }
     }
 
-    private suspend fun fetchWorldObjects(gameId: String): List<WorldObject> {
+    private suspend fun fetchWorldObjects(gameId: Game.Id): List<WorldObject> {
         database.assertCollections(Collections.WORLD_OBJECTS)
         return database.query(
+            //language=aql
             """
 				FOR worldObject IN ${Collections.WORLD_OBJECTS}
 					FILTER worldObject._documentType != "reservation"
 					FILTER worldObject.gameId == @gameId
 					RETURN worldObject
 			""".trimIndent(),
-            mapOf("gameId" to gameId),
+            mapOf("gameId" to gameId.value),
             WorldObjectEntity::class.java
         ).map { it.asServiceModel() }
     }

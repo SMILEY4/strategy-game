@@ -4,7 +4,10 @@ import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
+import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.MovementTarget
+import io.github.smiley4.strategygame.backend.commondata.Tile
+import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
@@ -79,10 +82,10 @@ internal object RouteMovementAvailablePositions {
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
             val gameId = call.parameters["gameId"]!!
             val worldObjectId = call.parameters["worldObjectId"]!!
-            val position = call.parameters["pos"]!!
+            val tileId = call.parameters["pos"]!!
             val points = call.parameters["points"]!!.toInt()
             try {
-                val targets = service.getAvailableMovementPositions(gameId, worldObjectId, position, points)
+                val targets = service.getAvailableMovementPositions(Game.Id(gameId), WorldObject.Id(worldObjectId), Tile.Id(tileId), points)
                 call.respond(HttpStatusCode.OK, targets)
             } catch (e: GameService.GameServiceError) {
                 when(e) {

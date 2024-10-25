@@ -5,7 +5,9 @@ import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
 import io.github.smiley4.strategygame.backend.commondata.GameSessionData
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
+import io.github.smiley4.strategygame.backend.gateway.worlds.models.GameSessionDto
 import io.github.smiley4.strategygame.backend.worlds.edge.ListGames
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -26,7 +28,16 @@ internal object RouteList {
     }) {
         val userId = call.getUserIdOrThrow()
         withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
-            val games = listGames.perform(userId)
+            val games = listGames.perform(User.Id(userId))
+                .map {
+                    GameSessionDto(
+                        id = it.game.value,
+                        name = it.name,
+                        creationTimestamp = it.creationTimestamp,
+                        players = it.players,
+                        currentTurn = it.currentTurn,
+                    )
+                }
             call.respond(HttpStatusCode.OK, games)
         }
     }

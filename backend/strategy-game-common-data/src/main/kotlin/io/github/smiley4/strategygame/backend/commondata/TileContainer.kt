@@ -4,18 +4,18 @@ package io.github.smiley4.strategygame.backend.commondata
 class TileContainer() : Collection<Tile> {
 
     private val tilesList = mutableListOf<Tile>()
-    private val tilesById = mutableMapOf<String, Tile>()
+    private val tilesById = mutableMapOf<Tile.Id, Tile>()
     private val tilesByPos = mutableMapOf<Int, Tile>()
 
     constructor(collection: Collection<Tile>) : this() {
         this.tilesList.addAll(collection)
         collection.forEach {
-            tilesById[it.tileId] = it
+            tilesById[it.id] = it
             tilesByPos[toKey(it.position, tilesList.size)] = it
         }
     }
 
-    fun get(tileId: String): Tile? {
+    fun get(tileId: Tile.Id): Tile? {
         return tilesById[tileId]
     }
 

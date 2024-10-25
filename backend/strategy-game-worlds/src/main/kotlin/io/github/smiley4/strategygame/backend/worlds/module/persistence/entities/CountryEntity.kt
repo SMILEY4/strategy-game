@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.worlds.module.persistence.entitie
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Country
+import io.github.smiley4.strategygame.backend.commondata.User
 
 
 internal class CountryEntity(
@@ -14,16 +15,16 @@ internal class CountryEntity(
 
     companion object {
         fun of(serviceModel: Country, gameId: String) = CountryEntity(
-            key = DbId.asDbId(serviceModel.countryId),
+            key = DbId.asDbId(serviceModel.id.value),
             gameId = gameId,
-            userId = serviceModel.userId,
+            userId = serviceModel.user.value,
             color = ColorEntity.of(serviceModel.color),
         )
     }
 
     fun asServiceModel() = Country(
-        countryId = this.getKeyOrThrow(),
-        userId = this.userId,
+        id = Country.Id(this.getKeyOrThrow()),
+        user = User.Id(this.userId),
         color = this.color.toRGBColor(),
     )
 

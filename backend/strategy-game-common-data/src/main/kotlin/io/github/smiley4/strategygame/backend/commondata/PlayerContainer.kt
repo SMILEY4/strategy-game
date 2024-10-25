@@ -4,12 +4,12 @@ package io.github.smiley4.strategygame.backend.commondata
 class PlayerContainer() : Collection<Player> {
 
     private val playerList = mutableListOf<Player>()
-    private val playerMapByUserId = mutableMapOf<String, Player>()
+    private val playerMapByUserId = mutableMapOf<User.Id, Player>()
 
 
     constructor(collection: Collection<Player>) : this() {
         this.playerList.addAll(collection)
-        collection.forEach { playerMapByUserId[it.userId] = it }
+        collection.forEach { playerMapByUserId[it.user] = it }
     }
 
 
@@ -18,12 +18,12 @@ class PlayerContainer() : Collection<Player> {
     }
 
 
-    fun findByUserId(userId: String): Player? {
+    fun findByUserId(userId: User.Id): Player? {
         return playerMapByUserId[userId]
     }
 
 
-    fun existsByUserId(userId: String): Boolean {
+    fun existsByUserId(userId: User.Id): Boolean {
         return playerMapByUserId.containsKey(userId)
     }
 

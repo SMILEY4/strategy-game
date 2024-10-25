@@ -3,8 +3,8 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle
 import io.github.smiley4.strategygame.backend.commondata.Command
+import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.MoveCommandData
 import io.github.smiley4.strategygame.backend.commondata.MovementTarget
 import io.github.smiley4.strategygame.backend.commondata.TileRef
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
@@ -12,11 +12,11 @@ import io.github.smiley4.strategygame.backend.engine.edge.MovementService
 
 internal class ResolveCommandMove(private val movementService: MovementService) : Logging {
 
-    fun resolve(game: GameExtended, command: Command<MoveCommandData>) {
-        log().debug("Resolving move command for object ${command.data.worldObjectId} with path size ${command.data.path.size}")
+    fun resolve(game: GameExtended, command: Command<CommandData.Move>) {
+        log().debug("Resolving move command for object ${command.data.worldObject} with path size ${command.data.path.size}")
 
-        val worldObject = game.worldObjects.find { it.id == command.data.worldObjectId }
-            ?: throw Exception("Could not find world object ${command.data.worldObjectId}")
+        val worldObject = game.worldObjects.find { it.id == command.data.worldObject }
+            ?: throw Exception("Could not find world object ${command.data.worldObject}")
 
         // skip empty paths
         if (command.data.path.isEmpty() || command.data.path.size == 1) {

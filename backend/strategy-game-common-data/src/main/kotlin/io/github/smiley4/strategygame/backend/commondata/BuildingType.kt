@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.backend.commondata
 
 enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) {
+    DEV_FACTORY(0, BuildingTemplateDataDevFactory()),
     FARM(10, BuildingTemplateDataFarm()),
     FISHERS_HUT(10, BuildingTemplateDataFishersHut()),
     MINE(10, BuildingTemplateDataMine()),
@@ -24,7 +25,18 @@ abstract class BuildingTemplateData(
     val constructionCost: ResourceCollection = ResourceCollection.empty(),
     val requires: ResourceCollection = ResourceCollection.empty(),
     val produces: ResourceCollection = ResourceCollection.empty(),
-    val requiredTileResource: TileResourceType? = null
+    val requiredTileTerrain: TerrainType? = null,
+    val requiredTileResource: TileResourceType? = null,
+)
+
+class BuildingTemplateDataDevFactory : BuildingTemplateData(
+    constructionCost = ResourceCollection.empty(),
+    produces = ResourceCollection.basic(
+        ResourceType.FOOD.amount(1f),
+        ResourceType.WOOD.amount(1f),
+        ResourceType.STONE.amount(1f),
+        ResourceType.METAL.amount(1f)
+    ),
 )
 
 class BuildingTemplateDataFarm : BuildingTemplateData(
@@ -35,6 +47,7 @@ class BuildingTemplateDataFarm : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.FOOD.amount(1f)
     ),
+    requiredTileTerrain = TerrainType.LAND,
 )
 
 class BuildingTemplateDataFishersHut : BuildingTemplateData(
@@ -157,6 +170,7 @@ class BuildingTemplateDataCattleFarm : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.FOOD.amount(2f)
     ),
+    requiredTileTerrain = TerrainType.LAND
 )
 
 class BuildingTemplateDataWinery : BuildingTemplateData(
@@ -170,6 +184,7 @@ class BuildingTemplateDataWinery : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.WINE.amount(1f)
     ),
+    requiredTileTerrain = TerrainType.LAND
 )
 
 class BuildingTemplateDataMarket : BuildingTemplateData(
@@ -206,6 +221,7 @@ class BuildingTemplateDataSheepFarm : BuildingTemplateData(
     produces = ResourceCollection.basic(
         ResourceType.HIDE.amount(1f)
     ),
+    requiredTileTerrain = TerrainType.LAND
 )
 
 class BuildingTemplateDataTailorsWorkshop : BuildingTemplateData(
@@ -233,3 +249,19 @@ class BuildingTemplateDataParchmentersWorkshop : BuildingTemplateData(
         ResourceType.PARCHMENT.amount(1f)
     ),
 )
+
+
+fun BuildingTemplateData.requiresTile(): Boolean {
+    return this.requiredTileTerrain != null || this.requiredTileResource != null
+}
+
+
+fun BuildingTemplateData.checkTile(tile: Tile): Boolean {
+    if (this.requiredTileTerrain != null && this.requiredTileTerrain != tile.dataWorld.terrainType) {
+        return false
+    }
+    if (this.requiredTileResource != null && this.requiredTileResource != tile.dataWorld.resourceType) {
+        return false
+    }
+    return true
+}
