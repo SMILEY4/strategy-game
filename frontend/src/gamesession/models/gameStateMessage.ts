@@ -88,13 +88,33 @@ export interface SettlementMessage {
 	})[]>,
 	buildings: HiddenType<({
 		type: string,
-		workedTile: null | {
-			id: string,
-			q: number,
-			r: number
+		workTile: {
+			requiredTerrain: string | null,
+			requiredResource: string | null,
+			tile: null | {
+				id: string,
+				q: number,
+				r: number
+			},
 		},
-		active: boolean,
-		details: DetailsLogEntryMessage[]
+		validity: {
+			workTile: boolean,
+			inputResources: boolean
+		},
+		activity: {
+			consumed: ({
+				type: string,
+				amount: number
+			})[],
+			produced: ({
+				type: string,
+				amount: number
+			})[],
+			missing: ({
+				type: string,
+				amount: number
+			})[],
+		}
 	})[]>,
 	resources: HiddenType<ResourceLedgerEntryMessage[]>
 }

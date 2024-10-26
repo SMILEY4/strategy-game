@@ -75,48 +75,38 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                 settlement.infrastructure.buildings.map {
                     obj {
                         "type" to ProductionIds.building(it.type)
-                        "workedTile" to it.workedTile?.let { workedTile ->
-                            obj {
-                                "id" to workedTile.id.value
-                                "q" to workedTile.q
-                                "r" to workedTile.r
+                        "workTile" to obj {
+                            "requiredTerrain" to it.type.templateData.requiredTileTerrain
+                            "requiredResource" to it.type.templateData.requiredTileResource
+                            "tile" to it.workedTile?.let { workedTile ->
+                                obj {
+                                    "id" to workedTile.id.value
+                                    "q" to workedTile.q
+                                    "r" to workedTile.r
+                                }
                             }
                         }
-                        "active" to (it.requirements.fulfillsTile && it.requirements.fulfillsInputResources)
-                        "details" to it.details.getDetails().map { detail -> // todo: mapping as shared code -> see DetailLogPOVBuilder
-                            obj {
-                                "id" to detail.id
-                                "data" to detail.data.map { (key, value) ->
-                                    obj {
-                                        "key" to key
-                                        "type" to when(value) {
-                                            is BooleanDetailLogValue -> "boolean"
-                                            is FloatDetailLogValue -> "number"
-                                            is IntDetailLogValue -> "number"
-                                            is TextDetailLogValue -> "text"
-                                            is TileRefDetailLogValue -> "tile"
-                                            is BuildingTypeDetailLogValue -> "building"
-                                            is ResourcesDetailLogValue -> "resources"
-                                        }
-                                        "value" to when(value) {
-                                            is BooleanDetailLogValue -> value.value
-                                            is FloatDetailLogValue -> value.value
-                                            is IntDetailLogValue -> value.value
-                                            is TextDetailLogValue -> value.value
-                                            is TileRefDetailLogValue -> obj {
-                                                "id" to value.value.id.value
-                                                "q" to value.value.q
-                                                "r" to value.value.r
-                                            }
-                                            is BuildingTypeDetailLogValue -> value.value.name
-                                            is ResourcesDetailLogValue -> value.value.toStacks().map { stack ->
-                                                obj {
-                                                    "type" to stack.type.name
-                                                    "amount" to stack.amount
-                                                }
-                                            }
-                                        }
-                                    }
+                        "validity" to obj {
+                            "workTile" to it.validity.workTile
+                            "inputResources" to it.validity.inputResources
+                        }
+                        "activity" to obj {
+                            "consumed" to it.activity.consumed.toStacks(false).map {
+                                obj {
+                                    "type" to it.type
+                                    "amount" to it.amount
+                                }
+                            }
+                            "produced" to it.activity.produced.toStacks(false).map {
+                                obj {
+                                    "type" to it.type
+                                    "amount" to it.amount
+                                }
+                            }
+                            "missing" to it.activity.missing.toStacks(false).map {
+                                obj {
+                                    "type" to it.type
+                                    "amount" to it.amount
                                 }
                             }
                         }
@@ -137,7 +127,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                                 "data" to detail.data.map { (key, value) ->
                                     obj {
                                         "key" to key
-                                        "type" to when(value) {
+                                        "type" to when (value) {
                                             is BooleanDetailLogValue -> "boolean"
                                             is FloatDetailLogValue -> "number"
                                             is IntDetailLogValue -> "number"
@@ -146,7 +136,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                                             is BuildingTypeDetailLogValue -> "building"
                                             is ResourcesDetailLogValue -> "resources"
                                         }
-                                        "value" to when(value) {
+                                        "value" to when (value) {
                                             is BooleanDetailLogValue -> value.value
                                             is FloatDetailLogValue -> value.value
                                             is IntDetailLogValue -> value.value

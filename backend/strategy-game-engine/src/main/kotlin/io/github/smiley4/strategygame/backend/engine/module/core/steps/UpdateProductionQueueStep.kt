@@ -3,11 +3,12 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Building
-import io.github.smiley4.strategygame.backend.commondata.BuildingRequirements
+import io.github.smiley4.strategygame.backend.commondata.BuildingActivity
 import io.github.smiley4.strategygame.backend.commondata.BuildingType
-import io.github.smiley4.strategygame.backend.commondata.DetailLog
+import io.github.smiley4.strategygame.backend.commondata.BuildingValidity
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
+import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.ecosim.edge.ConsumptionReportEntry
@@ -91,11 +92,15 @@ internal class UpdateProductionQueueStep : GameEventNode<UpdatedEconomyEvent>,
         val building = Building(
             type = buildingType,
             workedTile = null,
-            requirements = BuildingRequirements(
-                fulfillsTile = false,
-                fulfillsInputResources = false
+            validity = BuildingValidity(
+                workTile = false,
+                inputResources = false
             ),
-            details = DetailLog()
+            activity = BuildingActivity(
+                consumed = ResourceCollection.empty(),
+                produced = ResourceCollection.empty(),
+                missing = ResourceCollection.empty()
+            )
         )
         settlement.infrastructure.buildings.add(building)
         publisher.send(ProducedBuildingEvent(game, settlement, building))

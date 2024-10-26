@@ -3,14 +3,15 @@ package io.github.smiley4.strategygame.backend.engine.module.core.steps
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Building
-import io.github.smiley4.strategygame.backend.commondata.BuildingRequirements
+import io.github.smiley4.strategygame.backend.commondata.BuildingActivity
 import io.github.smiley4.strategygame.backend.commondata.BuildingType
+import io.github.smiley4.strategygame.backend.commondata.BuildingValidity
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
-import io.github.smiley4.strategygame.backend.commondata.DetailLog
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.RGBColor
+import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.ref
@@ -42,15 +43,21 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
                 buildings = mutableListOf<Building>().also {
-                    it.add(Building(
-                        type = BuildingType.DEV_FACTORY,
-                        workedTile = null,
-                        requirements = BuildingRequirements(
-                            fulfillsTile = true,
-                            fulfillsInputResources = true
-                        ),
-                        details = DetailLog()
-                    ))
+                    it.add(
+                        Building(
+                            type = BuildingType.DEV_FACTORY,
+                            workedTile = null,
+                            validity = BuildingValidity(
+                                workTile = true,
+                                inputResources = true
+                            ),
+                            activity = BuildingActivity(
+                                consumed = ResourceCollection.empty(),
+                                produced = ResourceCollection.empty(),
+                                missing = ResourceCollection.empty()
+                            )
+                        )
+                    )
                 },
             ),
             resourceLedger = ResourceLedger.empty()
@@ -91,15 +98,21 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
                 buildings = mutableListOf<Building>().also {
-                    it.add(Building(
-                        type = BuildingType.DEV_FACTORY,
-                        workedTile = null,
-                        requirements = BuildingRequirements(
-                            fulfillsTile = true,
-                            fulfillsInputResources = true
-                        ),
-                        details = DetailLog()
-                    ))
+                    it.add(
+                        Building(
+                            type = BuildingType.DEV_FACTORY,
+                            workedTile = null,
+                            validity = BuildingValidity(
+                                workTile = true,
+                                inputResources = true
+                            ),
+                            activity = BuildingActivity(
+                                consumed = ResourceCollection.empty(),
+                                produced = ResourceCollection.empty(),
+                                missing = ResourceCollection.empty()
+                            )
+                        )
+                    )
                 },
             ),
             resourceLedger = ResourceLedger.empty()

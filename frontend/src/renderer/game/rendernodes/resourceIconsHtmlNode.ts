@@ -94,6 +94,6 @@ function render(camera: Camera, element: ResourceIconElement, html: HTMLElement)
 	html.className = "world-ui__icon";
 	html.style.left = pos.x + "px";
 	html.style.top = pos.y + "px";
-	html.style.backgroundImage = "url('" + element.type.icon + "')";
+	html.style.backgroundImage = "url('" + element.type.getIconPath() + "')";
 	html.textContent = "";
 }
