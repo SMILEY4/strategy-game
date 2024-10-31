@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
 import io.github.smiley4.strategygame.backend.commondata.User
-import io.github.smiley4.strategygame.backend.playerpov.edge.PlayerViewCreator
+import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsByGameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery

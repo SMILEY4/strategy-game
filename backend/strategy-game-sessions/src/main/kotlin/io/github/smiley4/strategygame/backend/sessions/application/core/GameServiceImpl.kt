@@ -10,7 +10,7 @@ import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedQuery
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameService
 import io.github.smiley4.strategygame.backend.sessions.ports.required.MovementService
-import io.github.smiley4.strategygame.backend.worldgen.ports.provided.NameGenerator
+import io.github.smiley4.strategygame.backend.worldgen.lib.NameGenerator
 
 internal class GameServiceImpl(
     private val movementService: MovementService,

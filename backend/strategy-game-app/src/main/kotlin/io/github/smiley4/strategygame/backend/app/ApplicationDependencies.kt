@@ -8,9 +8,8 @@ import io.github.smiley4.strategygame.backend.users.dependenciesUsers
 import io.github.smiley4.strategygame.backend.worldgen.dependenciesWorldGen
 import io.github.smiley4.strategygame.backend.ecosim.dependenciesEcoSim
 import io.github.smiley4.strategygame.backend.engine.dependenciesEngine
-import io.github.smiley4.strategygame.backend.pathfinding.dependenciesPathfinding
 import io.github.smiley4.strategygame.backend.playerpov.dependenciesPlayerPoV
-import io.github.smiley4.strategygame.backend.worlds.dependenciesWorlds
+import io.github.smiley4.strategygame.backend.sessions.dependenciesWorlds
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.koin.core.module.dsl.createdAtStart
@@ -21,7 +20,6 @@ val applicationDependencies = module {
     dependenciesEcoSim()
     dependenciesEngine()
     dependenciesGateway()
-    dependenciesPathfinding()
     dependenciesPlayerPoV()
     dependenciesUsers()
     dependenciesWorldGen()

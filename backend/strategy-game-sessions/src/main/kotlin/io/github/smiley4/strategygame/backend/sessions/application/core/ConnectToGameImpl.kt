@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.User
-import io.github.smiley4.strategygame.backend.playerpov.edge.PlayerViewCreator
+import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExtendedQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameUpdate

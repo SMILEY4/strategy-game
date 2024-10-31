@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.users.application.iam.AwsCognitoSe
 import io.github.smiley4.strategygame.backend.users.application.iam.DummyUserIdentityService
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
-internal interface UserIdentityService {
+interface UserIdentityService {
 
     sealed class UserIdentityError(message: String, cause: Throwable? = null) : Exception(message, cause)
     class UserAlreadyExistsError(cause: Throwable? = null) : UserIdentityError("The user already exists", cause)

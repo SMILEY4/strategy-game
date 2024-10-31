@@ -3,19 +3,24 @@ package io.github.smiley4.strategygame.backend.sessions.application.engine
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.sessions.ports.required.InitializePlayer
+import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer as EngineInitializePlayer
 
-internal class InitializePlayerAdapter(
-    private val engineService: io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer
-) : InitializePlayer {
+internal class InitializePlayerAdapter(private val impl: EngineInitializePlayer) : InitializePlayer {
 
+    sealed class InitializePlayerError(message: String, cause: Throwable? = null) : Exception(message, cause)
+    class GameNotFoundError(cause: Throwable? = null) : InitializePlayerError("No matching game could be found", cause)
+
+    /**
+     * Initializes the player
+     * @throws InitializePlayerError
+     */
     override suspend fun perform(game: GameExtended, userId: User.Id) {
         try {
-            return engineService.perform(game, userId)
-        } catch (e: io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer.InitializePlayerError) {
+            return impl.perform(game, userId)
+        } catch (e: EngineInitializePlayer.InitializePlayerError) {
             throw when (e) {
-                is io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer.GameNotFoundError -> InitializePlayer.GameNotFoundError()
+                is EngineInitializePlayer.GameNotFoundError -> InitializePlayer.GameNotFoundError(e)
             }
         }
     }
-
 }

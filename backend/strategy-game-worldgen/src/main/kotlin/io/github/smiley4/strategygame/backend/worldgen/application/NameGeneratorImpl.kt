@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.worldgen.application
 
-import io.github.smiley4.strategygame.backend.worldgen.ports.provided.NameGenerator
+import io.github.smiley4.strategygame.backend.worldgen.lib.NameGenerator
 
 internal class NameGeneratorImpl : NameGenerator {
 

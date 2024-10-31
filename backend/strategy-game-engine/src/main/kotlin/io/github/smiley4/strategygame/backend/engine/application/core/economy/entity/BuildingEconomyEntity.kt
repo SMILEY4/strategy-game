@@ -1,0 +1,27 @@
+package io.github.smiley4.strategygame.backend.engine.application.core.economy.entity
+
+import io.github.smiley4.strategygame.backend.commondata.Building
+import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
+import io.github.smiley4.strategygame.backend.commondata.requiresTile
+import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyConsumptionType
+import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyEntityConfig
+import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyEntityUpdateState
+import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyNode
+
+class BuildingEconomyEntity(override val owner: EconomyNode, val building: Building) : GameEconomyEntity {
+
+    override val config: EconomyEntityConfig = EconomyEntityConfig(
+        input = ResourceCollection.basic(building.type.templateData.requires),
+        output = ResourceCollection.basic(building.type.templateData.produces),
+        consumptionType = EconomyConsumptionType.COMPLETE,
+        priority = 1f,
+        isActive = !building.type.templateData.requiresTile() || (building.type.templateData.requiresTile() && building.workedTile != null)
+    )
+
+    override val state: EconomyEntityUpdateState = EconomyEntityUpdateState(config.input)
+
+    override fun detailKey() = "building-${building.type.name}"
+
+    override fun toString() = "${BuildingEconomyEntity::class.simpleName}(building=${building.type.name})"
+
+}

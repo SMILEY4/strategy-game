@@ -93,9 +93,9 @@ fun Module.dependenciesWorlds() {
     single<UsersConnectedToGamesQuery> { UsersConnectedToGamesQuery(get()) }
 
     // engine
-    single<InitializeWorld> { InitializeWorldAdapter(get()) }
-    single<InitializePlayer> { InitializePlayerAdapter(get()) }
     single<GameStep> { GameStepAdapter(get()) }
+    single<InitializePlayer> { InitializePlayerAdapter(get()) }
+    single<InitializeWorld> { InitializeWorldAdapter(get()) }
     single<MovementService> { MovementServiceAdapter(get()) }
 
 }

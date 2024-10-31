@@ -4,9 +4,9 @@ import io.github.smiley4.strategygame.backend.common.utils.WeightedCollection
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
-import io.github.smiley4.strategygame.backend.worldgen.ports.provided.WorldGenerator
-import io.github.smiley4.strategygame.backend.worldgen.ports.WorldGenSettings
-import io.github.smiley4.strategygame.backend.worldgen.ports.WorldGenTile
+import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenerator
+import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.lib.WorldGenTile
 import kotlin.random.Random
 
 internal class WorldGeneratorImpl : WorldGenerator {
