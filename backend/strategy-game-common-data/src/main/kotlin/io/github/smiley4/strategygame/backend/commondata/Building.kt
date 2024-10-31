@@ -4,11 +4,17 @@ package io.github.smiley4.strategygame.backend.commondata
 class Building(
     val type: BuildingType,
     var workedTile: TileRef?,
-    var requirements: BuildingRequirements,
-    val details: DetailLog<BuildingDetailType>
+    var validity: BuildingValidity,
+    val activity: BuildingActivity
 )
 
-class BuildingRequirements(
-    var fulfillsTile: Boolean,
-    var fulfillsInputResources: Boolean,
+class BuildingValidity(
+    var workTile: Boolean,
+    var inputResources: Boolean,
+)
+
+class BuildingActivity(
+    val consumed: ResourceCollection,
+    val produced: ResourceCollection,
+    val missing: ResourceCollection
 )

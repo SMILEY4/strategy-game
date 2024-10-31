@@ -4,7 +4,6 @@ import {Color} from "./color";
 import {HiddenType} from "../common/hiddenType";
 import {ProductionOption} from "./productionOption";
 import {Building} from "./building";
-import {DetailsLogEntry} from "./detailLog";
 
 export interface Settlement {
 	identifier: SettlementIdentifier,
@@ -30,9 +29,17 @@ export interface ProductionQueueEntry {
 
 export interface ResourceLedgerEntry {
 	type: string,
-	produced: number,
-	consumed: number,
 	amount: number,
-	missing: number,
-	details: DetailsLogEntry[]
+	produced: {
+		amount: number,
+		details: ({ key: string, amount: number })[]
+	},
+	consumed: {
+		amount: number,
+		details: ({ key: string, amount: number })[]
+	},
+	missing: {
+		amount: number,
+		details: ({ key: string, amount: number })[]
+	},
 }

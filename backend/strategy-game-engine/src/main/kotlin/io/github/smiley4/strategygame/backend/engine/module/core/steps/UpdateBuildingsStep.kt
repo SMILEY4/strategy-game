@@ -1,15 +1,11 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.common.utils.buildMutableMap
 import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
-import io.github.smiley4.strategygame.backend.commondata.BooleanDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.Building
-import io.github.smiley4.strategygame.backend.commondata.BuildingDetailType
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.commondata.TileRefDetailLogValue
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.commondata.requiresTile
@@ -48,7 +44,7 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
 
     protected fun clearWorkTile(building: Building) {
         building.workedTile = null
-        building.details.clear(BuildingDetailType.WORK_TILE)
+//        building.details.clear(BuildingDetailType.WORK_TILE) todo
     }
 
     protected fun update(game: GameExtended, settlement: Settlement, building: Building) {
@@ -72,19 +68,19 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
             workTile = availablePreferredTiles.randomOrNull() ?: availablePossibleTiles.randomOrNull()
 
             building.workedTile = workTile?.ref()
-            building.details.replaceDetail(
-                BuildingDetailType.WORK_TILE, buildMutableMap {
-                    this["required"] = BooleanDetailLogValue(building.type.templateData.requiresTile())
-                    building.workedTile?.also {
-                        this["tile"] = TileRefDetailLogValue(it)
-                    }
-                }
-            )
+//            building.details.replaceDetail( todo
+//                BuildingDetailType.WORK_TILE, buildMutableMap {
+//                    this["required"] = BooleanDetailLogValue(building.type.templateData.requiresTile())
+//                    building.workedTile?.also {
+//                        this["tile"] = TileRefDetailLogValue(it)
+//                    }
+//                }
+//            )
         }
     }
 
     private fun recalculateActiveState(building: Building) {
-        building.requirements.fulfillsTile = if (building.type.templateData.requiresTile()) building.workedTile != null else true
+        building.validity.workTile = if (building.type.templateData.requiresTile()) building.workedTile != null else true
     }
 
 }

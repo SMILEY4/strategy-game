@@ -1,22 +1,15 @@
 package io.github.smiley4.strategygame.backend.engine.module.core.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
-import io.github.smiley4.strategygame.backend.commondata.BuildingDetailType
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
-import io.github.smiley4.strategygame.backend.commondata.ResourcesDetailLogValue
-import io.github.smiley4.strategygame.backend.commondata.TextDetailLogValue
-import io.github.smiley4.strategygame.backend.ecosim.edge.ConsumptionReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.collectEntities
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.collectNodes
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyService
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyUpdateState
-import io.github.smiley4.strategygame.backend.ecosim.edge.MissingResourcesReportEntry
-import io.github.smiley4.strategygame.backend.ecosim.edge.ProductionReportEntry
-import io.github.smiley4.strategygame.backend.ecosim.edge.record
-import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
+import io.github.smiley4.strategygame.backend.engine.module.core.economy.record
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
 import io.github.smiley4.strategygame.backend.engine.module.core.common.send
@@ -33,10 +26,7 @@ import io.github.smiley4.strategygame.backend.engine.module.core.economy.node.Wo
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWorldEvent
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdatedEconomyEvent
 
-internal class UpdateEconomyStep(
-    private val economyService: EconomyService,
-    private val resourceLedgerDetailBuilder: ResourceLedgerDetailBuilder
-) : GameEventNode<UpdateWorldEvent>, Logging {
+internal class UpdateEconomyStep(private val economyService: EconomyService) : GameEventNode<UpdateWorldEvent>, Logging {
 
     override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
         log().info("Updating economy.")
@@ -62,7 +52,7 @@ internal class UpdateEconomyStep(
             when (node) {
                 is SettlementEconomyNode -> {
                     node.settlement.resourceLedger = ResourceLedger.build {
-                        record(report, node, resourceLedgerDetailBuilder)
+                        record(report, node)
                     }
                 }
                 is WorldEconomyNode -> Unit
@@ -74,23 +64,19 @@ internal class UpdateEconomyStep(
             when (entity) {
                 is BuildingEconomyEntity -> {
                     entity.building.also { building ->
-                        building.requirements.fulfillsInputResources = entity.state.state == EconomyUpdateState.DONE
-                        building.details.clear(BuildingDetailType.CONSUMED, BuildingDetailType.PRODUCED, BuildingDetailType.MISSING)
-                        building.details.replaceDetail(
-                            BuildingDetailType.CONSUMED, mutableMapOf(
-                                "resources" to ResourcesDetailLogValue(entity.state.getConsumedResources().copy())
-                            )
-                        )
-                        building.details.replaceDetail(
-                            BuildingDetailType.PRODUCED, mutableMapOf(
-                                "resources" to ResourcesDetailLogValue(entity.state.getProducedResources().copy())
-                            )
-                        )
-                        building.details.replaceDetail(
-                            BuildingDetailType.MISSING, mutableMapOf(
-                                "resources" to ResourcesDetailLogValue(entity.state.getRemainingRequired().copy())
-                            )
-                        )
+                        building.validity.inputResources = entity.state.state == EconomyUpdateState.DONE
+                        building.activity.consumed.also {
+                            it.clear()
+                            it.add(entity.state.getConsumedResources())
+                        }
+                        building.activity.produced.also {
+                            it.clear()
+                            it.add(entity.state.getProducedResources())
+                        }
+                        building.activity.missing.also {
+                            it.clear()
+                            it.add(entity.state.getRemainingRequired())
+                        }
                     }
                 }
                 is PopulationBaseEconomyEntity -> Unit

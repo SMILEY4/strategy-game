@@ -17,15 +17,13 @@ import {FiPlus} from "react-icons/fi";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {CgClose} from "react-icons/cg";
 import "./settlementWindow.less";
-import {Building} from "../../../../../models/primitives/building";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {Header4} from "../../../../components/header/Header";
-import {SimpleDivider} from "../../../../components/divider/SimpleDivider";
 import {joinClassNames} from "../../../../components/utils";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {If, Then} from "react-if";
-import {BuildingAggregate} from "../../../../../models/aggregates/SettlementAggregate";
+import {Building} from "../../../../../models/primitives/building";
 
 export interface SettlementWindowProps {
 	windowId: string;
@@ -138,7 +136,8 @@ function ResourcesSection(props: UseSettlementWindow.Data) {
 												<VBox padding_xs gap_xs>
 													{res.produced.details.map(detail => (
 														<EnrichedText>
-															<ETNumber type="pos" signed>{detail.amount}</ETNumber> {detail.key}
+															<ETNumber type="pos"
+																	  signed>{detail.amount}</ETNumber> {detail.key}
 														</EnrichedText>
 													))}
 												</VBox>
@@ -155,7 +154,8 @@ function ResourcesSection(props: UseSettlementWindow.Data) {
 												<VBox padding_xs gap_xs>
 													{res.consumed.details.map(detail => (
 														<EnrichedText>
-															<ETNumber type="neg" signed>{-detail.amount}</ETNumber> {detail.key}
+															<ETNumber type="neg"
+																	  signed>{-detail.amount}</ETNumber> {detail.key}
 														</EnrichedText>
 													))}
 												</VBox>
@@ -172,7 +172,8 @@ function ResourcesSection(props: UseSettlementWindow.Data) {
 												<VBox padding_xs gap_xs>
 													{res.missing.details.map(detail => (
 														<EnrichedText>
-															<ETNumber type="neg" unsigned>{detail.amount}</ETNumber> {detail.key}
+															<ETNumber type="neg"
+																	  unsigned>{detail.amount}</ETNumber> {detail.key}
 														</EnrichedText>
 													))}
 												</VBox>
@@ -246,11 +247,14 @@ function BuildingList(props: UseSettlementWindow.Data): ReactElement {
 	);
 }
 
-function BuildingEntry(props: { data: UseSettlementWindow.Data, building: BuildingAggregate }): ReactElement {
+function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Building }): ReactElement {
 	return (
 		<BuildingInfoTooltip building={props.building}>
 			<div
-				className={joinClassNames(["settlement-content-box", props.building.active ? null : "settlement-content-box--disabled"])}
+				className={joinClassNames([
+					"settlement-content-box",
+					(props.building.validity.workTile && props.building.validity.inputResources) ? null : "settlement-content-box--disabled",
+				])}
 				style={{
 					backgroundImage: "url('" + "icons/production/" + props.building.type + ".png')",
 				}}
@@ -259,7 +263,7 @@ function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Buildi
 	);
 }
 
-export function BuildingInfoTooltip(props: { building: BuildingAggregate, children?: any }) {
+export function BuildingInfoTooltip(props: { building: Building, children?: any }) {
 	return (
 		<TooltipContext>
 			<TooltipTrigger>
@@ -271,9 +275,9 @@ export function BuildingInfoTooltip(props: { building: BuildingAggregate, childr
 
 						<Header4>{props.building.type}</Header4>
 
-						<If condition={props.building.consumed.length > 0}>
+						<If condition={props.building.activity.consumed.length > 0}>
 							<Then>
-								{props.building.consumed.map(entry => (
+								{props.building.activity.consumed.map(entry => (
 									<EnrichedText>
 										<ETNumber typeAuto signed>{-entry.amount}</ETNumber> {entry.type}
 									</EnrichedText>
@@ -281,9 +285,9 @@ export function BuildingInfoTooltip(props: { building: BuildingAggregate, childr
 							</Then>
 						</If>
 
-						<If condition={props.building.produced.length > 0}>
+						<If condition={props.building.activity.produced.length > 0}>
 							<Then>
-								{props.building.produced.map(entry => (
+								{props.building.activity.produced.map(entry => (
 									<EnrichedText>
 										<ETNumber typeAuto signed>{entry.amount}</ETNumber> {entry.type}
 									</EnrichedText>
@@ -292,18 +296,18 @@ export function BuildingInfoTooltip(props: { building: BuildingAggregate, childr
 						</If>
 
 
-						<If condition={props.building.missing.length > 0 || props.building.missingWorkTile}>
+						<If condition={props.building.activity.missing.length > 0 || !props.building.validity.workTile}>
 							<Then>
 								<Spacer size="s"/>
 								<EnrichedText>
 									Missing:
 								</EnrichedText>
-								{props.building.missingWorkTile && (
+								{!props.building.validity.workTile && (
 									<EnrichedText style={{color: "hsl(0, 87%, 65%)"}}>
-										Tile to work on
+										{"Tile to work on: " + props.building.workTile.requiredTerrain?.id + " " + props.building.workTile.requiredResource?.id}
 									</EnrichedText>
 								)}
-								{props.building.missing.map(entry => (
+								{props.building.activity.missing.map(entry => (
 									<EnrichedText>
 										<ETNumber neg unsigned>{entry.amount}</ETNumber> {entry.type}
 									</EnrichedText>

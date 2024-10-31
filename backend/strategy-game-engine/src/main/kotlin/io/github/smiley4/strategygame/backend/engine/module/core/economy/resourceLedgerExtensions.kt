@@ -1,19 +1,25 @@
-package io.github.smiley4.strategygame.backend.ecosim.edge
+package io.github.smiley4.strategygame.backend.engine.module.core.economy
 
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
+import io.github.smiley4.strategygame.backend.ecosim.edge.ConsumptionReportEntry
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyEntity
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.contains
-import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
+import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyReport
+import io.github.smiley4.strategygame.backend.ecosim.edge.MissingResourcesReportEntry
+import io.github.smiley4.strategygame.backend.ecosim.edge.ProductionReportEntry
+import io.github.smiley4.strategygame.backend.engine.module.core.economy.entity.GameEconomyEntity
 
 /**
  * Record all reported changes associated with the given root node.
  */
-fun ResourceLedger.record(report: EconomyReport, root: EconomyNode, detailBuilder: ResourceLedgerDetailBuilder) {
+fun ResourceLedger.record(report: EconomyReport, root: EconomyNode) {
     report.getEntries().forEach { entry ->
         when (entry) {
             is ProductionReportEntry -> {
                 if (entry.resources.isNotZero() && root.contains(entry.inNode)) {
-                    this.recordProduce(entry.resources, entry.entity, detailBuilder)
+                    this.recordProduce(entry.resources, entry.entity)
                 }
             }
             is ConsumptionReportEntry -> {
@@ -21,34 +27,34 @@ fun ResourceLedger.record(report: EconomyReport, root: EconomyNode, detailBuilde
                     val containsFrom = root.contains(entry.fromNode)
                     val containsOwner = root.contains(entry.entity.owner)
                     if (containsOwner) {
-                        this.recordConsume(entry.resources, entry.entity, detailBuilder)
+                        this.recordConsume(entry.resources, entry.entity)
                     }
                     if (entry.fromNode != entry.entity.owner && containsFrom != containsOwner) {
                         if (containsFrom) {
-                            this.recordGiveShare(entry.resources, entry.entity, detailBuilder)
+                            this.recordGiveShare(entry.resources, entry.entity)
                         }
                         if (containsOwner) {
-                            this.recordTakeShare(entry.resources, entry.entity, detailBuilder)
+                            this.recordTakeShare(entry.resources, entry.entity)
                         }
                     }
                 }
             }
             is MissingResourcesReportEntry -> {
                 if (entry.resources.isNotZero() && root.contains(entry.entity.owner)) {
-                    this.recordMissing(entry.resources, entry.entity, detailBuilder)
+                    this.recordMissing(entry.resources, entry.entity)
                 }
             }
         }
     }
 }
 
+
 /**
  * Record resources being produced and added to this node.
  */
-fun ResourceLedger.recordProduce(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
+fun ResourceLedger.recordProduce(resources: ResourceCollection, entity: EconomyEntity) {
     resources.forEach(false) { type, amount ->
-        val (id, data) = detailBuilder.produce(amount, entity)
-        getEntry(type).addProduced(id, amount, data)
+        getEntry(type).produced.add(getDetailKey(entity), amount)
     }
 }
 
@@ -56,10 +62,9 @@ fun ResourceLedger.recordProduce(resources: ResourceCollection, entity: EconomyE
 /**
  * Record resources being consumed and removed from this node.
  */
-fun ResourceLedger.recordConsume(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
+fun ResourceLedger.recordConsume(resources: ResourceCollection, entity: EconomyEntity) {
     resources.forEach(false) { type, amount ->
-        val (id, data) = detailBuilder.consume(amount, entity)
-        getEntry(type).addConsumed(id, amount, data)
+        getEntry(type).consumed.add(getDetailKey(entity), amount)
     }
 }
 
@@ -68,10 +73,9 @@ fun ResourceLedger.recordConsume(resources: ResourceCollection, entity: EconomyE
  * Record resources being given to another node and removed from this node.
  * Triggered by a resource consumption by an entity from a node that is not its direct owner.
  */
-fun ResourceLedger.recordGiveShare(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
+fun ResourceLedger.recordGiveShare(resources: ResourceCollection, entity: EconomyEntity) {
     resources.forEach(false) { type, amount ->
-        val (id, data) = detailBuilder.giveShare(amount, entity)
-        getEntry(type).addConsumed(id, 0f, data)
+        getEntry(type).consumed.add(getDetailKey(entity), 0f) // todo -> amount?
     }
 }
 
@@ -80,10 +84,9 @@ fun ResourceLedger.recordGiveShare(resources: ResourceCollection, entity: Econom
  * Record resources being taken from another node and added to this node.
  * Triggered by a resource consumption by an entity from a node that is not its direct owner.
  */
-fun ResourceLedger.recordTakeShare(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
+fun ResourceLedger.recordTakeShare(resources: ResourceCollection, entity: EconomyEntity) {
     resources.forEach(false) { type, amount ->
-        val (id, data) = detailBuilder.takeShare(amount, entity)
-        getEntry(type).addProduced(id, 0f, data)
+        getEntry(type).produced.add(getDetailKey(entity), 0f) // todo -> amount?
     }
 }
 
@@ -91,9 +94,15 @@ fun ResourceLedger.recordTakeShare(resources: ResourceCollection, entity: Econom
 /**
  * Record required resources missing in this node.
  */
-fun ResourceLedger.recordMissing(resources: ResourceCollection, entity: EconomyEntity, detailBuilder: ResourceLedgerDetailBuilder) {
+fun ResourceLedger.recordMissing(resources: ResourceCollection, entity: EconomyEntity) {
     resources.forEach(false) { type, amount ->
-        val (id, data) = detailBuilder.missing(amount, entity)
-        getEntry(type).addMissing(id, amount, data)
+        getEntry(type).missing.add(getDetailKey(entity), amount)
+    }
+}
+
+private fun getDetailKey(entity: EconomyEntity): String {
+    return when (entity) {
+        is GameEconomyEntity -> entity.detailKey()
+        else -> "unknown"
     }
 }

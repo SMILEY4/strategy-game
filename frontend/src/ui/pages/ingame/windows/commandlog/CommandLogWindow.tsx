@@ -94,7 +94,7 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: Com
 				<>
 					<Header4 onLight>{"Add Production Queue"}</Header4>
 					<Spacer size="s"/>
-					<Text onLight>{"produce " + cmd.entry.optionType.name}</Text>
+					<Text onLight>{"produce " + "todo"}</Text>
 					<Text onLight>{"in settlement " + cmd.settlement.name}</Text>
 				</>
 			)
@@ -105,7 +105,7 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: Com
 				<>
 					<Header4 onLight>{"Cancel Production Queue"}</Header4>
 					<Spacer size="s"/>
-					<Text onLight>{"cancel " + cmd.entry.optionType.name}</Text>
+					<Text onLight>{"cancel " + "todo"}</Text>
 					<Text onLight>{"in settlement " + cmd.settlement.name}</Text>
 				</>
 			)
