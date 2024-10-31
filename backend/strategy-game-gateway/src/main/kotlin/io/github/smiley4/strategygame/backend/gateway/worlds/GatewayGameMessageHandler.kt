@@ -5,7 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.SubmitTurnMessage
-import io.github.smiley4.strategygame.backend.worlds.edge.TurnSubmit
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.TurnSubmit
 
 
 /**

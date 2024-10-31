@@ -15,7 +15,7 @@ import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
-import io.github.smiley4.strategygame.backend.worldgen.domain.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.ports.WorldGenSettings
 import io.github.smiley4.strategygame.backend.worldgen.ports.provided.WorldGenerator
 
 internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) : InitializeWorld {

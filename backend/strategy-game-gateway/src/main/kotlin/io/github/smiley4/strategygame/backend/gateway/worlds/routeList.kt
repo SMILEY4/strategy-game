@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.GameSessionData
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.GameSessionDto
-import io.github.smiley4.strategygame.backend.worlds.edge.ListGames
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.ListGames
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond

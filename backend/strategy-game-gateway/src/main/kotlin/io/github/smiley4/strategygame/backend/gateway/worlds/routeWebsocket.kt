@@ -14,9 +14,9 @@ import io.github.smiley4.strategygame.backend.gateway.websocket.routing.webSocke
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
 import io.github.smiley4.strategygame.backend.gateway.worlds.models.MessageMetadata
-import io.github.smiley4.strategygame.backend.worlds.edge.ConnectToGame
-import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectPlayer
-import io.github.smiley4.strategygame.backend.worlds.edge.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.ConnectToGame
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.DisconnectPlayer
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.RequestConnectionToGame
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import kotlin.collections.set

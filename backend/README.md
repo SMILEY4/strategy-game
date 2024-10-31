@@ -81,7 +81,7 @@ Most sub-modules are structured according to hexagonal architecture and director
       - infrastructure
       - remoteclient
       - ...
-   - domain
+   - setup.kt
 ```
 
 - `ports.provided` contains interfaces and models for functionality that is provided by this module
@@ -89,3 +89,6 @@ Most sub-modules are structured according to hexagonal architecture and director
 - `application` contains the implementations
 - `application.core` contains the implementations of the core functionality of this module, i.e. of the interfaces in `ports.provided`
 - `application.infrastructure`, `application.remoteclient`, ... (examples) contains implementations or adapters of functionality used by the core of this module, i.e. of the interfaces in `ports.required`
+- `setup.kt` source code file that configures the module, (e.g. register services for dependency injection)
+
+All classes except those in `ports.provided` (and shared classes in `ports`) should be marked as "internal" and should not be accessible by other modules.

@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.gateway.worlds
 
 import io.github.smiley4.ktorswaggerui.dsl.post
-import io.github.smiley4.strategygame.backend.worlds.edge.DisconnectAllPlayers
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.DisconnectAllPlayers
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond

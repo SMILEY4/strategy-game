@@ -6,8 +6,6 @@ import io.github.smiley4.strategygame.backend.commondata.GameExtended
 
 interface InitializeWorld {
 
-    sealed class InitializeWorldError(message: String?) : Exception(message)
-
     /**
      * Initializes the given empty game world
      * @throws InitializeWorldError

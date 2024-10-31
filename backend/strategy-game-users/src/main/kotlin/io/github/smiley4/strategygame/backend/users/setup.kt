@@ -17,13 +17,16 @@ import org.koin.core.module.dsl.withOptions
 
 fun Module.dependenciesUsers() {
 
+    // config
     single<UserIdentityServiceConfig> { Config.get().identityService }
 
+    // core
     single<CreateUser> { CreateUserImpl(get()) }
     single<DeleteUser> { DeleteUserImpl(get()) }
     single<LoginUser> { LoginUserImpl(get()) }
     single<RefreshUserToken> { RefreshUserTokenImpl(get()) }
 
+    // iam
     single<UserIdentityService> { UserIdentityService.createFromConfig(get()) } withOptions { createdAtStart() }
 
 }

@@ -5,8 +5,8 @@ import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
 import io.github.smiley4.strategygame.backend.worldgen.ports.provided.WorldGenerator
-import io.github.smiley4.strategygame.backend.worldgen.domain.WorldGenSettings
-import io.github.smiley4.strategygame.backend.worldgen.domain.WorldGenTile
+import io.github.smiley4.strategygame.backend.worldgen.ports.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.ports.WorldGenTile
 import kotlin.random.Random
 
 internal class WorldGeneratorImpl : WorldGenerator {

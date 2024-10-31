@@ -8,8 +8,8 @@ import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
-import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
-import io.github.smiley4.strategygame.backend.worlds.edge.JoinGame
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.CreateGame
+import io.github.smiley4.strategygame.backend.worlds.ports.provided.JoinGame
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
