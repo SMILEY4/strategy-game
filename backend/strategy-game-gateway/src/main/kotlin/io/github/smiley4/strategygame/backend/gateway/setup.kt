@@ -29,11 +29,11 @@ import io.github.smiley4.strategygame.backend.gateway.worlds.RouteJoin.routeJoin
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteList.routeList
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteWebsocket.routeWebsocket
 import io.github.smiley4.strategygame.backend.gateway.worlds.RouteWebsocketTicket.routeWebsocketTicket
-import io.github.smiley4.strategygame.backend.users.edge.CreateUser
-import io.github.smiley4.strategygame.backend.users.edge.DeleteUser
-import io.github.smiley4.strategygame.backend.users.edge.LoginUser
-import io.github.smiley4.strategygame.backend.users.edge.RefreshUserToken
-import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.ports.provided.CreateUser
+import io.github.smiley4.strategygame.backend.users.ports.provided.DeleteUser
+import io.github.smiley4.strategygame.backend.users.ports.provided.LoginUser
+import io.github.smiley4.strategygame.backend.users.ports.provided.RefreshUserToken
+import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
 import io.github.smiley4.strategygame.backend.worlds.edge.ConnectToGame
 import io.github.smiley4.strategygame.backend.worlds.edge.CreateGame
 import io.github.smiley4.strategygame.backend.worlds.edge.DeleteGame

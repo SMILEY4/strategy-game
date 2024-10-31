@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.users.edge.models
+package io.github.smiley4.strategygame.backend.users.domain
 
 data class CreateUserData(
     val email: String,

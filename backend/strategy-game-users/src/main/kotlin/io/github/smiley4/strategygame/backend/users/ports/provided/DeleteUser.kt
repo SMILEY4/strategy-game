@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.users.edge
+package io.github.smiley4.strategygame.backend.users.ports.provided
 
 interface DeleteUser {
 

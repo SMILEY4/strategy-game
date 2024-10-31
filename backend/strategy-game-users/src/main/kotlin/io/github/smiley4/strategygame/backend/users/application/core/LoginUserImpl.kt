@@ -1,8 +1,8 @@
-package io.github.smiley4.strategygame.backend.users.module.core
+package io.github.smiley4.strategygame.backend.users.application.core
 
-import io.github.smiley4.strategygame.backend.users.edge.LoginUser
-import io.github.smiley4.strategygame.backend.users.edge.models.AuthDataExtended
-import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.ports.provided.LoginUser
+import io.github.smiley4.strategygame.backend.users.domain.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
 
 
 internal class LoginUserImpl(private val userIdentity: UserIdentityService): LoginUser {

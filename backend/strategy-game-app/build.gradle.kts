@@ -30,7 +30,7 @@ dependencies {
     implementation(project(":strategy-game-playerpov"))
     implementation(project(":strategy-game-users"))
     implementation(project(":strategy-game-worldgen"))
-    implementation(project(":strategy-game-worlds"))
+    implementation(project(":strategy-game-sessions"))
 
     val versionKtor: String by project
     implementation("io.ktor:ktor-server-core-jvm:$versionKtor")

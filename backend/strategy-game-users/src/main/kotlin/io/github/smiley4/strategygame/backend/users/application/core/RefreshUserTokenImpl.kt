@@ -1,8 +1,8 @@
-package io.github.smiley4.strategygame.backend.users.module.core
+package io.github.smiley4.strategygame.backend.users.application.core
 
-import io.github.smiley4.strategygame.backend.users.edge.RefreshUserToken
-import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
-import io.github.smiley4.strategygame.backend.users.edge.UserIdentityService
+import io.github.smiley4.strategygame.backend.users.ports.provided.RefreshUserToken
+import io.github.smiley4.strategygame.backend.users.domain.AuthData
+import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
 
 
 internal class RefreshUserTokenImpl(private val userIdentity: UserIdentityService) : RefreshUserToken {

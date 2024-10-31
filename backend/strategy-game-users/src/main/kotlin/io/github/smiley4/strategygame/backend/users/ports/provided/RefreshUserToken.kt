@@ -1,6 +1,6 @@
-package io.github.smiley4.strategygame.backend.users.edge
+package io.github.smiley4.strategygame.backend.users.ports.provided
 
-import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
+import io.github.smiley4.strategygame.backend.users.domain.AuthData
 
 interface RefreshUserToken {
 

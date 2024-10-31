@@ -5,8 +5,8 @@ import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
-import io.github.smiley4.strategygame.backend.users.edge.RefreshUserToken
-import io.github.smiley4.strategygame.backend.users.edge.models.AuthData
+import io.github.smiley4.strategygame.backend.users.ports.provided.RefreshUserToken
+import io.github.smiley4.strategygame.backend.users.domain.AuthData
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
