@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.users.ports.provided
 
-import io.github.smiley4.strategygame.backend.users.domain.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.ports.AuthDataExtended
 
 interface LoginUser {
 

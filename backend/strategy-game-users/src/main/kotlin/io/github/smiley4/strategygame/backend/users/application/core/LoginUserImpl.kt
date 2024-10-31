@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.users.application.core
 
 import io.github.smiley4.strategygame.backend.users.ports.provided.LoginUser
-import io.github.smiley4.strategygame.backend.users.domain.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.ports.AuthDataExtended
 import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
 
 

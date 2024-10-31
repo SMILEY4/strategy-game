@@ -2,8 +2,8 @@ package io.github.smiley4.strategygame.backend.users.ports.required
 
 import io.github.smiley4.strategygame.backend.common.UserIdentityProvider
 import io.github.smiley4.strategygame.backend.common.UserIdentityServiceConfig
-import io.github.smiley4.strategygame.backend.users.domain.AuthData
-import io.github.smiley4.strategygame.backend.users.domain.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.ports.AuthData
+import io.github.smiley4.strategygame.backend.users.ports.AuthDataExtended
 import io.github.smiley4.strategygame.backend.users.application.iam.AwsCognitoService
 import io.github.smiley4.strategygame.backend.users.application.iam.DummyUserIdentityService
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider

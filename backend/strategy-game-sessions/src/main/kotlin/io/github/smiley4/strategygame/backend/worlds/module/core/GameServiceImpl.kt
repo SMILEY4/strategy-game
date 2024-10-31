@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.engine.edge.MovementService
-import io.github.smiley4.strategygame.backend.worldgen.edge.NameGenerator
+import io.github.smiley4.strategygame.backend.worldgen.ports.provided.NameGenerator
 import io.github.smiley4.strategygame.backend.worlds.edge.GameService
 import io.github.smiley4.strategygame.backend.worlds.module.persistence.GameExtendedQuery
 

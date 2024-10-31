@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextA
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.users.ports.provided.CreateUser
-import io.github.smiley4.strategygame.backend.users.domain.CreateUserData
+import io.github.smiley4.strategygame.backend.users.ports.CreateUserData
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive

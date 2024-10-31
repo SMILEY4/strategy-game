@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.users.application.core
 
 import io.github.smiley4.strategygame.backend.users.ports.provided.RefreshUserToken
-import io.github.smiley4.strategygame.backend.users.domain.AuthData
+import io.github.smiley4.strategygame.backend.users.ports.AuthData
 import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
 
 

@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.worldgen.edge
+package io.github.smiley4.strategygame.backend.worldgen.domain
 
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import java.util.Random

@@ -1,12 +1,12 @@
-package io.github.smiley4.strategygame.backend.worldgen.module
+package io.github.smiley4.strategygame.backend.worldgen.application
 
 import io.github.smiley4.strategygame.backend.common.utils.WeightedCollection
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
-import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenerator
-import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenSettings
-import io.github.smiley4.strategygame.backend.worldgen.edge.WorldGenTile
+import io.github.smiley4.strategygame.backend.worldgen.ports.provided.WorldGenerator
+import io.github.smiley4.strategygame.backend.worldgen.domain.WorldGenSettings
+import io.github.smiley4.strategygame.backend.worldgen.domain.WorldGenTile
 import kotlin.random.Random
 
 internal class WorldGeneratorImpl : WorldGenerator {

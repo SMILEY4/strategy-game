@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.worldgen.edge
+package io.github.smiley4.strategygame.backend.worldgen.ports.provided
 
 interface NameGenerator {
 

@@ -6,8 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.users.ports.required.UserIdentityService
-import io.github.smiley4.strategygame.backend.users.domain.AuthData
-import io.github.smiley4.strategygame.backend.users.domain.AuthDataExtended
+import io.github.smiley4.strategygame.backend.users.ports.AuthData
+import io.github.smiley4.strategygame.backend.users.ports.AuthDataExtended
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 import io.ktor.server.auth.jwt.JWTCredential
 import io.ktor.server.auth.jwt.JWTPrincipal

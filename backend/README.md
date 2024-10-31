@@ -66,3 +66,26 @@ Creates a runnable .jar
 ```
 
 The created jar can be found in `./build/libs/backend-x.y-all.jar`
+
+
+## Architecture Guidelines
+
+Most sub-modules are structured according to hexagonal architecture and directory structure should roughly adhere to the following structure:
+```
+- root
+   - ports
+      - provided
+      - required
+   - application
+      - core
+      - infrastructure
+      - remoteclient
+      - ...
+   - domain
+```
+
+- `ports.provided` contains interfaces and models for functionality that is provided by this module
+- `ports.required` contains interfaces and models for functionality that is required by this module
+- `application` contains the implementations
+- `application.core` contains the implementations of the core functionality of this module, i.e. of the interfaces in `ports.provided`
+- `application.infrastructure`, `application.remoteclient`, ... (examples) contains implementations or adapters of functionality used by the core of this module, i.e. of the interfaces in `ports.required`

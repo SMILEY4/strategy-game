@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.worldgen.module
+package io.github.smiley4.strategygame.backend.worldgen.application
 
 import kotlin.math.sqrt
 
