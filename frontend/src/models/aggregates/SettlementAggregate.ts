@@ -34,23 +34,14 @@ export interface ResourceLedgerEntryAggregate {
 	amount: number,
 	produced: {
 		amount: number,
-		details: ({
-			key: string
-			amount: number,
-		})[]
+		details: ({ key: string, amount: number })[]
 	},
 	consumed: {
 		amount: number,
-		details: ({
-			key: string
-			amount: number,
-		})[]
+		details: ({ key: string, amount: number })[]
 	},
 	missing: {
 		amount: number,
-		details: ({
-			key: string
-			amount: number,
-		})[]
+		details: ({ key: string, amount: number })[]
 	},
 }

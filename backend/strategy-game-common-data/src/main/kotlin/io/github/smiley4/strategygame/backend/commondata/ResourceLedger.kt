@@ -42,22 +42,4 @@ interface ResourceLedger {
      */
     fun getMissing(): ResourceCollection
 
-
-    /**
-     * Record a consumption, i.e. record resources as removed
-     */
-    fun recordConsume(
-        resources: ResourceCollection,
-        detail: (type: ResourceType, amount: Float) -> Pair<ResourceLedgerDetailType, MutableMap<String, DetailLogValue>>
-    )
-
-
-    /**
-     * Record a production, i.e. record resources as added
-     */
-    fun recordProduce(
-        resources: ResourceCollection,
-        detail: (type: ResourceType, amount: Float) -> Pair<ResourceLedgerDetailType, MutableMap<String, DetailLogValue>>
-    )
-
 }

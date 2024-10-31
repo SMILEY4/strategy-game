@@ -19,16 +19,16 @@ class ResourceLedgerImpl : ResourceLedger {
             .find { it.resourceType == type }
             ?: ResourceLedgerEntry(
                 resourceType = type,
-                consumed = 0f,
-                produced = 0f,
-                missing = 0f,
+                consumed = ResourceLedgerEntry.Value(0f),
+                produced = ResourceLedgerEntry.Value(0f),
+                missing = ResourceLedgerEntry.Value(0f),
             ).also { entries.add(it) }
     }
 
     override fun getConsumed(): ResourceCollection {
         return ResourceCollection.basic().also { balance ->
             entries.forEach { entry ->
-                balance.add(entry.resourceType, entry.consumed)
+                balance.add(entry.resourceType, entry.consumed.amount)
             }
         }
     }
@@ -36,7 +36,7 @@ class ResourceLedgerImpl : ResourceLedger {
     override fun getProduced(): ResourceCollection {
         return ResourceCollection.basic().also { balance ->
             entries.forEach { entry ->
-                balance.add(entry.resourceType, entry.produced)
+                balance.add(entry.resourceType, entry.produced.amount)
             }
         }
     }
@@ -44,28 +44,8 @@ class ResourceLedgerImpl : ResourceLedger {
     override fun getMissing(): ResourceCollection {
         return ResourceCollection.basic().also { balance ->
             entries.forEach { entry ->
-                balance.add(entry.resourceType, entry.missing)
+                balance.add(entry.resourceType, entry.missing.amount)
             }
-        }
-    }
-
-    override fun recordConsume(
-        resources: ResourceCollection,
-        detail: (type: ResourceType, amount: Float) -> Pair<ResourceLedgerDetailType, MutableMap<String, DetailLogValue>>
-    ) {
-        resources.forEach(false) { type, amount ->
-            val (id, data) = detail(type, amount)
-            getEntry(type).addConsumed(id, amount, data)
-        }
-    }
-
-    override fun recordProduce(
-        resources: ResourceCollection,
-        detail: (type: ResourceType, amount: Float) -> Pair<ResourceLedgerDetailType, MutableMap<String, DetailLogValue>>
-    ) {
-        resources.forEach(false) { type, amount ->
-            val (id, data) = detail(type, amount)
-            getEntry(type).addProduced(id, amount, data)
         }
     }
 

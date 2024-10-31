@@ -9,8 +9,7 @@ import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyNode.Companion.
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyService
 import io.github.smiley4.strategygame.backend.ecosim.edge.EconomyUpdateState
-import io.github.smiley4.strategygame.backend.ecosim.edge.record
-import io.github.smiley4.strategygame.backend.ecosim.module.ledger.ResourceLedgerDetailBuilder
+import io.github.smiley4.strategygame.backend.engine.module.core.economy.record
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventNode
 import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventPublisher
 import io.github.smiley4.strategygame.backend.engine.module.core.common.send
@@ -27,10 +26,7 @@ import io.github.smiley4.strategygame.backend.engine.module.core.economy.node.Wo
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdateWorldEvent
 import io.github.smiley4.strategygame.backend.engine.module.core.events.UpdatedEconomyEvent
 
-internal class UpdateEconomyStep(
-    private val economyService: EconomyService,
-    private val resourceLedgerDetailBuilder: ResourceLedgerDetailBuilder
-) : GameEventNode<UpdateWorldEvent>, Logging {
+internal class UpdateEconomyStep(private val economyService: EconomyService) : GameEventNode<UpdateWorldEvent>, Logging {
 
     override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
         log().info("Updating economy.")
@@ -56,7 +52,7 @@ internal class UpdateEconomyStep(
             when (node) {
                 is SettlementEconomyNode -> {
                     node.settlement.resourceLedger = ResourceLedger.build {
-                        record(report, node, resourceLedgerDetailBuilder)
+                        record(report, node)
                     }
                 }
                 is WorldEconomyNode -> Unit

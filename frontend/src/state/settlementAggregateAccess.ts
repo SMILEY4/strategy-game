@@ -1,7 +1,6 @@
 import {
 	ProductionOptionAggregate,
 	ProductionQueueEntryAggregate,
-	ResourceLedgerEntryAggregate,
 	SettlementAggregate,
 } from "../models/aggregates/SettlementAggregate";
 import {AppCtx} from "../appContext";
@@ -9,10 +8,9 @@ import {useQueryMultiple, useQuerySingle} from "../shared/db/adapters/databaseHo
 import {SettlementDatabase} from "./database/settlementDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
 import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/primitives/command";
-import {ProductionQueueEntry, ResourceLedgerEntry} from "../models/primitives/Settlement";
+import {ProductionQueueEntry} from "../models/primitives/Settlement";
 import {ProductionOption} from "../models/primitives/productionOption";
 import {getHiddenOrDefault} from "../models/common/hiddenType";
-import {DetailsLogEntry, NumberDetailsLogValue, TextDetailsLogValue} from "../models/primitives/detailLog";
 
 export namespace SettlementAggregateAccess {
 
@@ -47,7 +45,7 @@ export namespace SettlementAggregateAccess {
 				queue: productionQueue,
 			},
 			buildings: getHiddenOrDefault(settlement.buildings, []),
-			resources: getHiddenOrDefault(settlement.resources, []).map(buildResourceEntry),
+			resources: getHiddenOrDefault(settlement.resources, []),
 		};
 
 		function buildQueueEntries(
@@ -116,54 +114,6 @@ export namespace SettlementAggregateAccess {
 				available: available,
 			};
 		}
-
-		function buildResourceEntry(entry: ResourceLedgerEntry): ResourceLedgerEntryAggregate {
-
-			function hasGroup(entry: DetailsLogEntry, group: string): boolean {
-				return entry.data.some(d => d.key === "group" && (d as TextDetailsLogValue).value === group);
-			}
-
-			function getAmount(entry: DetailsLogEntry): number {
-				return (entry.data.find(d => d.key === "amount") as NumberDetailsLogValue).value;
-			}
-
-			function getKey(entry: DetailsLogEntry): string {
-				return (entry.data.find(d => d.key === "key") as TextDetailsLogValue).value;
-			}
-
-			return {
-				type: entry.type,
-				amount: entry.missing > 0 ? -entry.missing : entry.amount,
-				produced: {
-					amount: entry.produced,
-					details: entry.details
-						.filter(it => hasGroup(it, "produce"))
-						.map(it => ({
-							amount: getAmount(it),
-							key: getKey(it),
-						})),
-				},
-				consumed: {
-					amount: entry.consumed,
-					details: entry.details
-						.filter(it => hasGroup(it, "consume"))
-						.map(it => ({
-							amount: getAmount(it),
-							key: getKey(it),
-						})),
-				},
-				missing: {
-					amount: entry.missing,
-					details: entry.details
-						.filter(it => hasGroup(it, "missing"))
-						.map(it => ({
-							amount: getAmount(it),
-							key: getKey(it),
-						})),
-				},
-			};
-		}
-
 
 	}
 
