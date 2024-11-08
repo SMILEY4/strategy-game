@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.github.smiley4.ktorswaggerui.SwaggerUI
-import io.github.smiley4.ktorswaggerui.dsl.AuthScheme
-import io.github.smiley4.ktorswaggerui.dsl.AuthType
+import io.github.smiley4.ktorswaggerui.data.AuthScheme
+import io.github.smiley4.ktorswaggerui.data.AuthType
+import io.github.smiley4.ktorswaggerui.routing.openApiSpec
+import io.github.smiley4.ktorswaggerui.routing.swaggerUI
 import io.github.smiley4.strategygame.backend.common.Config
 import io.github.smiley4.strategygame.backend.gateway.game.RouteMovementAvailablePositions.routeMovementAvailablePositions
 import io.github.smiley4.strategygame.backend.gateway.game.RouteSettlementName.routeSettlementName
@@ -55,7 +57,7 @@ import io.ktor.server.auth.UserIdPrincipal
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.basic
 import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -65,19 +67,18 @@ import io.ktor.server.request.uri
 import io.ktor.server.request.userAgent
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.Routing
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.pingPeriod
 import io.ktor.server.websocket.timeout
-import io.micrometer.prometheus.PrometheusMeterRegistry
-import mu.KotlinLogging
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import mu.two.KotlinLogging
 import org.koin.core.module.Module
 import org.koin.ktor.ext.inject
 import org.slf4j.event.Level
-import java.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.seconds
 
 fun Module.dependenciesGateway() {
     single<WebsocketTicketAuthManager> { WebsocketTicketAuthManagerImpl(12.hours) }
@@ -88,10 +89,9 @@ fun Module.dependenciesGateway() {
 }
 
 fun Application.ktorGateway() {
-    install(Routing)
     install(WebSockets) {
-        pingPeriod = Duration.ofSeconds(15)
-        timeout = Duration.ofSeconds(15)
+        pingPeriod = 15.seconds
+        timeout = 15.seconds
         maxFrameSize = Long.MAX_VALUE
         masking = false
     }
@@ -165,11 +165,6 @@ fun Application.ktorGateway() {
         }
     }
     install(SwaggerUI) {
-        swagger {
-            forwardRoot = false
-            swaggerUrl = "/swagger-ui"
-            authentication = "auth-technical-user"
-        }
         info {
             title = "Strategy Game API"
             description = "API of the strategy game"
@@ -179,19 +174,29 @@ fun Application.ktorGateway() {
             url = "http://localhost:8080"
             description = "default development server"
         }
-        securityScheme("Auth") {
-            type = AuthType.HTTP
-            scheme = AuthScheme.BEARER
-            bearerFormat = "jwt"
+        security {
+            securityScheme("Auth") {
+                type = AuthType.HTTP
+                scheme = AuthScheme.BEARER
+                bearerFormat = "jwt"
+            }
+            defaultSecuritySchemeNames("Auth")
+            defaultUnauthorizedResponse {
+                bodyErrorResponse(ErrorResponse.unauthorized())
+            }
         }
-        generateTags { url -> listOf(url.getOrNull(1)) }
+        tags {
+            tagGenerator = { url -> listOf(url.getOrNull(1)) }
+        }
         pathFilter = { _, url -> !(url.lastOrNull()?.let { it.endsWith(".js") || it.endsWith(".css") } ?: false) }
-        defaultSecuritySchemeName = "Auth"
-        defaultUnauthorizedResponse {
-            bodyErrorResponse(ErrorResponse.unauthorized())
-        }
     }
     routing {
+        route("swagger") {
+            swaggerUI("/api.json")
+        }
+        route("api.json") {
+            openApiSpec()
+        }
         routingGateway()
     }
 }

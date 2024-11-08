@@ -12,7 +12,7 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readBytes
 import io.ktor.websocket.readText
-import mu.KotlinLogging
+import mu.two.KotlinLogging
 
 internal class WebsocketExtendedHandler(
     private val config: WebsocketExtendedRouteConfig,

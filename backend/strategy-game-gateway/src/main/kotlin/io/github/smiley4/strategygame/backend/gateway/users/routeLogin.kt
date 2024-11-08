@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.gateway.users
 
-import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
@@ -9,7 +9,6 @@ import io.github.smiley4.strategygame.backend.users.ports.provided.LoginUser
 import io.github.smiley4.strategygame.backend.users.ports.AuthData
 import io.github.smiley4.strategygame.backend.users.ports.LoginData
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -41,7 +40,9 @@ internal object RouteLogin {
         description = "Log-in as an existing user, i.e. request a new authentication token."
         request {
             body<LoginData> {
-                example("LoginData", LoginData("email@example.com", "password123"))
+                example("LoginData") {
+                    value = LoginData("email@example.com", "password123")
+                }
             }
         }
         response {

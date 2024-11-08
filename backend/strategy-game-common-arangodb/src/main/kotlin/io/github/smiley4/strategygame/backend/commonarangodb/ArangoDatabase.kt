@@ -1,13 +1,14 @@
 package io.github.smiley4.strategygame.backend.commonarangodb
 
+import com.arangodb.ArangoCollectionAsync
+import com.arangodb.ArangoDB
+import com.arangodb.ArangoDBAsync
 import com.arangodb.ArangoDBException
-import com.arangodb.DbName
-import com.arangodb.async.ArangoCollectionAsync
-import com.arangodb.async.ArangoDBAsync
-import com.arangodb.async.ArangoDatabaseAsync
-import com.arangodb.mapping.ArangoJack
+import com.arangodb.ArangoDatabaseAsync
+import com.arangodb.ContentType
 import com.arangodb.model.DocumentCreateOptions
 import com.arangodb.model.OverwriteMode
+import com.arangodb.serde.jackson.JacksonSerde
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.future.await
 
@@ -21,7 +22,7 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
          */
         suspend fun create(host: String, port: Int, username: String?, password: String?, name: String): ArangoDatabase {
             val arango = getArango(host, port, username, password)
-            val database = arango.db(DbName.of(name))
+            val database = arango.db(name)
             if (!database.exists().await()) {
                 database.create().await()
             }
@@ -34,16 +35,18 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
          */
         suspend fun delete(host: String, port: Int, username: String?, password: String?, name: String) {
             val arango = getArango(host, port, username, password)
-            val database = arango.db(DbName.of(name))
+            val database = arango.db(name)
             if (database.exists().await()) {
                 database.drop().await()
             }
         }
 
         private fun getArango(host: String, port: Int, username: String?, password: String?): ArangoDBAsync {
-            return ArangoDBAsync.Builder()
-                .serializer(ArangoJack().apply {
-                    configure { it.registerModule(KotlinModule.Builder().build()) }
+            return ArangoDB.Builder()
+                .serde(JacksonSerde.of(ContentType.JSON).apply {
+                    configure {
+                        it.registerModule(KotlinModule.Builder().build())
+                    }
                 })
                 .host(host, port)
                 .let {
@@ -52,7 +55,9 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
                     } else {
                         it
                     }
-                }.build()
+                }
+                .build()
+                .async()
         }
 
         private val INSERT_OPTIONS = DocumentCreateOptions().also {
@@ -113,13 +118,13 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * @return a [DocumentHandle]s for each successfully inserted document.
      */
     suspend fun <T> insertDocuments(collection: String, values: Collection<T>): List<DocumentHandle> {
-        if (values.isNotEmpty()) {
-            return getCollection(collection)
+        return if (values.isNotEmpty()) {
+            getCollection(collection)
                 .insertDocuments(values, INSERT_OPTIONS)
                 .await()
                 .let { result -> result.documents.map { DocumentHandle(id = it.id, key = it.key, rev = it.rev) } }
         } else {
-            return emptyList()
+            emptyList()
         }
     }
 
@@ -141,13 +146,13 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * @return the [DocumentHandle]s for each successfully inserted or replaced document.
      */
     suspend fun <T> insertOrReplaceDocuments(collection: String, values: Collection<T>): List<DocumentHandle> {
-        if (values.isNotEmpty()) {
-            return getCollection(collection)
+        return if (values.isNotEmpty()) {
+            getCollection(collection)
                 .insertDocuments(values, INSERT_OR_REPLACE_OPTIONS)
                 .await()
                 .let { result -> result.documents.map { DocumentHandle(id = it.id, key = it.key, rev = it.rev) } }
         } else {
-            return emptyList()
+            emptyList()
         }
     }
 
@@ -291,7 +296,7 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * @return all results as a list
      */
     suspend fun <T> query(query: String, type: Class<T>): List<T> {
-        return database.query(query, type).await().toList()
+        return database.query(query, type).await().result
     }
 
 
@@ -300,7 +305,7 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * @return all results as a list
      */
     suspend fun <T> query(query: String, bindVars: Map<String, Any>, type: Class<T>): List<T> {
-        return database.query(query, bindVars, type).await().toList()
+        return database.query(query, type, bindVars).await().result
     }
 
 
@@ -352,7 +357,7 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * Execute the given query/operation with the given bind-vars, expect nothing in return.
      */
     suspend fun execute(query: String, bindVars: Map<String, Any>) {
-        database.query(query, bindVars, Unit.javaClass).await()
+        database.query(query, Unit.javaClass, bindVars).await()
     }
 
 }

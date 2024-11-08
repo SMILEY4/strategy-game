@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.backend.commonarangodb
 
 import com.arangodb.ArangoDBException
 import kotlinx.coroutines.delay
-import mu.KotlinLogging
+import mu.two.KotlinLogging
 import java.util.concurrent.CompletionException
 import kotlin.time.Duration
 

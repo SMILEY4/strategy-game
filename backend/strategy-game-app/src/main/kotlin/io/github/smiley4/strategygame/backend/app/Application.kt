@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.app
 
-import io.github.smiley4.strategygame.backend.app.engine.CustomNettyEngineMain
 import io.github.smiley4.strategygame.backend.common.logging.Logging
+import io.ktor.server.netty.EngineMain
 
 object ApplicationMode {
     const val DEV = "dev"
@@ -17,7 +17,15 @@ var APPLICATION_MODE = ApplicationMode.DEFAULT
 fun main(args: Array<String>) {
     APPLICATION_MODE = getMode(args)
     Logging.create().info("Starting application in $APPLICATION_MODE mode.")
-    CustomNettyEngineMain.main(APPLICATION_MODE, args)
+    EngineMain.main(
+        args
+            .toMutableSet()
+            .also {
+                it.add("-config=application.conf")
+                it.add("-config=application.$APPLICATION_MODE.conf")
+            }
+            .toTypedArray()
+    )
 }
 
 

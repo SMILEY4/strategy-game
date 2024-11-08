@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.gateway.websocket.session
 
 import io.ktor.websocket.DefaultWebSocketSession
-import mu.KotlinLogging
+import mu.two.KotlinLogging
 import java.util.Collections
 
 /**
