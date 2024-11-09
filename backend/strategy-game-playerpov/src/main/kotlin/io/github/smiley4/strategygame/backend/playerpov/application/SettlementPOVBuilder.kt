@@ -122,7 +122,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                         }
                         "consumed" to obj {
                             "amount" to entry.consumed.amount
-                            "details" to entry.produced.details.map {
+                            "details" to entry.consumed.details.map {
                                 obj {
                                     "key" to it.key
                                     "amount" to it.value
@@ -131,7 +131,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                         }
                         "missing" to obj {
                             "amount" to entry.missing.amount
-                            "details" to entry.produced.details.map {
+                            "details" to entry.missing.details.map {
                                 obj {
                                     "key" to it.key
                                     "amount" to it.value
