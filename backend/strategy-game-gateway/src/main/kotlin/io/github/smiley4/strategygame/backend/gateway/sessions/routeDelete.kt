@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds
+package io.github.smiley4.strategygame.backend.gateway.sessions
 
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.strategygame.backend.common.logging.mdcGameId

@@ -11,7 +11,7 @@ internal class GameDelete(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GameDelete::class)
 
-    suspend fun execute(gameId: Game.Id) {
+    suspend fun execute(game: Game.Id) {
         time(metricId) {
             database.assertCollections(
                 DbCollections.GAMES,
@@ -24,14 +24,14 @@ internal class GameDelete(private val database: ArangoDatabase) {
                 DbCollections.ROUTES,
             )
             parallelIO(
-                { deleteGame(gameId) },
-                { deleteCountries(gameId) },
-                { deleteTiles(gameId) },
-                { deleteWorldObjects(gameId) },
-                { deleteCities(gameId) },
-                { deleteCommands(gameId) },
-                { deleteProvinces(gameId) },
-                { deleteRoutes(gameId) }
+                { deleteGame(game) },
+                { deleteCountries(game) },
+                { deleteTiles(game) },
+                { deleteWorldObjects(game) },
+                { deleteCities(game) },
+                { deleteCommands(game) },
+                { deleteProvinces(game) },
+                { deleteRoutes(game) }
             )
         }
     }

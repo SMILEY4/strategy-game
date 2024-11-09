@@ -1,10 +1,10 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds.models
+package io.github.smiley4.strategygame.backend.gateway.sessions.models
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.lectra.koson.obj
 import com.lectra.koson.rawJson
 import io.github.smiley4.strategygame.backend.common.jsondsl.JsonType
-import io.github.smiley4.strategygame.backend.gateway.worlds.models.GameStateMessage.Companion.GameStatePayload
+import io.github.smiley4.strategygame.backend.gateway.sessions.models.GameStateMessage.Companion.GameStatePayload
 
 
 @JsonTypeName(GameStateMessage.TYPE)

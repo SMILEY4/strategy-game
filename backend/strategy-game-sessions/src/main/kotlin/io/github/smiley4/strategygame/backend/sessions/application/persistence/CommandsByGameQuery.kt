@@ -12,7 +12,7 @@ internal class CommandsByGameQuery(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(CommandsByGameQuery::class)
 
-    suspend fun execute(gameId: Game.Id, turn: Int): List<Command<*>> {
+    suspend fun execute(game: Game.Id, turn: Int): List<Command<*>> {
         database.assertCollections(DbCollections.COMMANDS)
         return time(metricId) {
             database.query(
@@ -22,7 +22,7 @@ internal class CommandsByGameQuery(private val database: ArangoDatabase) {
 					FILTER command.gameId == @gameId AND command.turn == @turn
 					RETURN command
                 """.trimIndent(),
-                mapOf("gameId" to gameId.value, "turn" to turn),
+                mapOf("gameId" to game.value, "turn" to turn),
                 CommandEntity::class.java
             ).map { it.asServiceModel() }
         }

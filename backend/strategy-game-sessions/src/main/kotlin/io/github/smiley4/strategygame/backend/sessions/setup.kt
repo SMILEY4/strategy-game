@@ -48,7 +48,7 @@ import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
 import kotlin.time.Duration.Companion.seconds
 
-fun Module.dependenciesWorlds() {
+fun Module.dependenciesSessions() {
 
     // core
     single<ConnectToGame> { ConnectToGameImpl(get(), get(), get(), get(), get()) }

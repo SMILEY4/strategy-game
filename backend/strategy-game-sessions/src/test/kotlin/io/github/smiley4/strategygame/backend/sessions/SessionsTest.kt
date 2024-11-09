@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.worlds
+package io.github.smiley4.strategygame.backend.sessions
 
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring
 import io.github.smiley4.strategygame.backend.common.monitoring.MonitoringService
@@ -13,16 +13,26 @@ import io.github.smiley4.strategygame.backend.commondata.GameMeta
 import io.github.smiley4.strategygame.backend.commondata.PlayerState
 import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
+import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.commondata.tracking
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
 import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
 import io.github.smiley4.strategygame.backend.playerpov.lib.PlayerViewCreator
+import io.github.smiley4.strategygame.backend.sessions.application.persistence.CommandsByGameQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameExistsQuery
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.GameQuery
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.ConnectToGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DeleteGame
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectAllPlayers
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.GameMessageProducer
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.ListGames
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.TurnSubmit
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldHaveSize
@@ -39,7 +49,7 @@ import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 import kotlin.time.Duration.Companion.seconds
 
-class WorldsTest : FreeSpec({
+class SessionsTest : FreeSpec({
 
     beforeEach {
         val koin = createKoin()
@@ -63,7 +73,7 @@ class WorldsTest : FreeSpec({
             coVerify(exactly = 1) { koin.get<InitializeWorld>().perform(any(), any()) }
 
             koin.get<GameQuery>().execute(gameId).also { game ->
-                game.gameId shouldBe gameId
+                game.id.value shouldBe gameId
                 game.name shouldBe "test-game"
                 game.creationTimestamp shouldBeGreaterThan 0
                 game.turn shouldBe 0
@@ -97,7 +107,7 @@ class WorldsTest : FreeSpec({
             val gameId1 = createGame.perform("test-game-1", null)
             val gameId2 = createGame.perform("test-game-2", null)
 
-            deleteGame.perform("different-game")
+            deleteGame.perform(Game.Id("different-game"))
 
             koin.get<GameExistsQuery>().perform(gameId1) shouldBe true
             koin.get<GameExistsQuery>().perform(gameId2) shouldBe true
@@ -114,14 +124,14 @@ class WorldsTest : FreeSpec({
 
             val gameId = createGame.perform("test-game", null)
 
-            joinGame.perform("test-user", gameId)
+            joinGame.perform(User.Id("test-user"), gameId)
 
             coVerify(exactly = 1) { koin.get<InitializePlayer>().perform(any(), any()) }
 
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.players shouldHaveSize 1
                 game.players.first().also { player ->
-                    player.userId shouldBe "test-user"
+                    player.user.value shouldBe "test-user"
                     player.connectionId shouldBe null
                     player.state shouldBe PlayerState.PLAYING
                 }
@@ -136,7 +146,7 @@ class WorldsTest : FreeSpec({
             val gameId = createGame.perform("test-game", null)
 
             shouldThrow<JoinGame.GameNotFoundError> {
-                joinGame.perform("test-user", "different-$gameId")
+                joinGame.perform(User.Id("test-user"), Game.Id("different-$gameId"))
             }
 
             coVerify(exactly = 0) { koin.get<InitializePlayer>().perform(any(), any()) }
@@ -148,10 +158,10 @@ class WorldsTest : FreeSpec({
             val joinGame = koin.get<JoinGame>()
 
             val gameId = createGame.perform("test-game", null)
-            joinGame.perform("test-user", gameId)
+            joinGame.perform(User.Id("test-user"), gameId)
 
             shouldThrow<JoinGame.UserAlreadyJoinedError> {
-                joinGame.perform("test-user", gameId)
+                joinGame.perform(User.Id("test-user"), gameId)
             }
 
             coVerify(exactly = 1) { koin.get<InitializePlayer>().perform(any(), any()) }
@@ -159,7 +169,7 @@ class WorldsTest : FreeSpec({
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.players shouldHaveSize 1
                 game.players.first().also { player ->
-                    player.userId shouldBe "test-user"
+                    player.user.value shouldBe "test-user"
                     player.connectionId shouldBe null
                     player.state shouldBe PlayerState.PLAYING
                 }
@@ -178,9 +188,9 @@ class WorldsTest : FreeSpec({
             val requestConnection = koin.get<RequestConnectionToGame>()
 
             val gameId = createGame.perform("test-game", null)
-            joinGame.perform("test-user", gameId)
+            joinGame.perform(User.Id("test-user"), gameId)
 
-            requestConnection.perform("test-user", gameId)
+            requestConnection.perform(User.Id("test-user"), gameId)
         }
 
         "game does not exist, expect error" {
@@ -190,10 +200,10 @@ class WorldsTest : FreeSpec({
             val requestConnection = koin.get<RequestConnectionToGame>()
 
             val gameId = createGame.perform("test-game", null)
-            joinGame.perform("test-user", gameId)
+            joinGame.perform(User.Id("test-user"), gameId)
 
             shouldThrow<RequestConnectionToGame.GameNotFoundError> {
-                requestConnection.perform("test-user", "different-$gameId")
+                requestConnection.perform(User.Id("test-user"), Game.Id("different-$gameId"))
             }
         }
 
@@ -205,7 +215,7 @@ class WorldsTest : FreeSpec({
             val gameId = createGame.perform("test-game", null)
 
             shouldThrow<RequestConnectionToGame.NotParticipantError> {
-                requestConnection.perform("test-user", gameId)
+                requestConnection.perform(User.Id("test-user"), gameId)
             }
         }
 
@@ -217,11 +227,11 @@ class WorldsTest : FreeSpec({
             val requestConnection = koin.get<RequestConnectionToGame>()
 
             val gameId = createGame.perform("test-game", null)
-            joinGame.perform("test-user", gameId)
-            connectGame.perform("test-user", gameId, 1)
+            joinGame.perform(User.Id("test-user"), gameId)
+            connectGame.perform(User.Id("test-user"), gameId, 1)
 
             shouldThrow<RequestConnectionToGame.AlreadyConnectedError> {
-                requestConnection.perform("test-user", gameId)
+                requestConnection.perform(User.Id("test-user"), gameId)
             }
         }
 
@@ -236,14 +246,14 @@ class WorldsTest : FreeSpec({
             val connectGame = koin.get<ConnectToGame>()
 
             val gameId = createGame.perform("test-game", null)
-            joinGame.perform("test-user", gameId)
+            joinGame.perform(User.Id("test-user"), gameId)
 
-            connectGame.perform("test-user", gameId, 42)
+            connectGame.perform(User.Id("test-user"), gameId, 42)
 
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.players shouldHaveSize 1
                 game.players.first().also { player ->
-                    player.userId shouldBe "test-user"
+                    player.user.value shouldBe "test-user"
                     player.connectionId shouldBe 42
                     player.state shouldBe PlayerState.PLAYING
                 }
@@ -265,20 +275,20 @@ class WorldsTest : FreeSpec({
 
             val gameId = createGame.perform("test-game", null)
 
-            joinGame.perform("test-user-1", gameId)
-            connectGame.perform("test-user-1", gameId, 42)
+            joinGame.perform(User.Id("test-user-1"), gameId)
+            connectGame.perform(User.Id("test-user-1"), gameId, 42)
 
-            joinGame.perform("test-user-2", gameId)
-            connectGame.perform("test-user-2", gameId, 43)
+            joinGame.perform(User.Id("test-user-2"), gameId)
+            connectGame.perform(User.Id("test-user-2"), gameId, 43)
 
             disconnectAll.perform()
 
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.players shouldHaveSize 2
-                game.players.find { it.userId == "test-user-1" }!!.also { player ->
+                game.players.find { it.user.value == "test-user-1" }!!.also { player ->
                     player.connectionId shouldBe null
                 }
-                game.players.find { it.userId == "test-user-2" }!!.also { player ->
+                game.players.find { it.user.value == "test-user-2" }!!.also { player ->
                     player.connectionId shouldBe null
                 }
             }
@@ -293,20 +303,20 @@ class WorldsTest : FreeSpec({
 
             val gameId = createGame.perform("test-game", null)
 
-            joinGame.perform("test-user-1", gameId)
-            connectGame.perform("test-user-1", gameId, 42)
+            joinGame.perform(User.Id("test-user-1"), gameId)
+            connectGame.perform(User.Id("test-user-1"), gameId, 42)
 
-            joinGame.perform("test-user-2", gameId)
-            connectGame.perform("test-user-2", gameId, 43)
+            joinGame.perform(User.Id("test-user-2"), gameId)
+            connectGame.perform(User.Id("test-user-2"), gameId, 43)
 
-            disconnectPlayer.perform("test-user-1")
+            disconnectPlayer.perform(User.Id("test-user-1"))
 
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.players shouldHaveSize 2
-                game.players.find { it.userId == "test-user-1" }!!.also { player ->
+                game.players.find { it.user.value == "test-user-1" }!!.also { player ->
                     player.connectionId shouldBe null
                 }
-                game.players.find { it.userId == "test-user-2" }!!.also { player ->
+                game.players.find { it.user.value == "test-user-2" }!!.also { player ->
                     player.connectionId shouldBe 43
                 }
             }
@@ -320,14 +330,14 @@ class WorldsTest : FreeSpec({
             val disconnectPlayer = koin.get<DisconnectPlayer>()
 
             val gameId = createGame.perform("test-game", null)
-            joinGame.perform("test-user", gameId)
-            connectGame.perform("test-user", gameId, 42)
+            joinGame.perform(User.Id("test-user"), gameId)
+            connectGame.perform(User.Id("test-user"), gameId, 42)
 
-            disconnectPlayer.perform("different-test-user")
+            disconnectPlayer.perform(User.Id("different-test-user"))
 
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.players shouldHaveSize 1
-                game.players.find { it.userId == "test-user" }!!.also { player ->
+                game.players.find { it.user.value == "test-user" }!!.also { player ->
                     player.connectionId shouldBe 42
                 }
             }
@@ -347,23 +357,23 @@ class WorldsTest : FreeSpec({
             val gameId2 = createGame.perform("test-game-2", null)
             val gameId3 = createGame.perform("test-game-3", null)
 
-            joinGame.perform("test-user-1", gameId1)
-            joinGame.perform("test-user-1", gameId2)
+            joinGame.perform(User.Id("test-user-1"), gameId1)
+            joinGame.perform(User.Id("test-user-1"), gameId2)
 
-            joinGame.perform("test-user-2", gameId2)
-            joinGame.perform("test-user-2", gameId3)
+            joinGame.perform(User.Id("test-user-2"), gameId2)
+            joinGame.perform(User.Id("test-user-2"), gameId3)
 
-            listGames.perform("test-user-1").also { games ->
+            listGames.perform(User.Id("test-user-1")).also { games ->
                 games shouldHaveSize 2
-                games.find { it.id == gameId1 }!!.also { game ->
-                    game.id shouldBe gameId1
+                games.find { it.game == gameId1 }!!.also { game ->
+                    game.game shouldBe gameId1
                     game.name shouldBe "test-game-1"
                     game.creationTimestamp shouldBeGreaterThan 0
                     game.players shouldBe 1
                     game.currentTurn shouldBe 0
                 }
-                games.find { it.id == gameId2 }!!.also { game ->
-                    game.id shouldBe gameId2
+                games.find { it.game == gameId2 }!!.also { game ->
+                    game.game shouldBe gameId2
                     game.name shouldBe "test-game-2"
                     game.creationTimestamp shouldBeGreaterThan 0
                     game.players shouldBe 2
@@ -380,9 +390,9 @@ class WorldsTest : FreeSpec({
             val listGames = koin.get<ListGames>()
 
             val gameId = createGame.perform("test-game", null)
-            joinGame.perform("test-user", gameId)
+            joinGame.perform(User.Id("test-user"), gameId)
 
-            listGames.perform("different-test-user").also { games ->
+            listGames.perform(User.Id("different-test-user")).also { games ->
                 games shouldHaveSize 0
             }
         }
@@ -459,15 +469,15 @@ class WorldsTest : FreeSpec({
 
             val gameId = createGame.perform("test-game", null)
 
-            joinGame.perform("test-user-1", gameId)
-            connectGame.perform("test-user-1", gameId, 42)
+            joinGame.perform(User.Id("test-user-1"), gameId)
+            connectGame.perform(User.Id("test-user-1"), gameId, 42)
 
-            joinGame.perform("test-user-2", gameId)
-            connectGame.perform("test-user-2", gameId, 43)
+            joinGame.perform(User.Id("test-user-2"), gameId)
+            connectGame.perform(User.Id("test-user-2"), gameId, 43)
 
             clearMocks(koin.get<GameMessageProducer>())
 
-            submitTurn.perform("test-user-1", gameId, emptyList())
+            submitTurn.perform(User.Id("test-user-1"), gameId, emptyList())
 
             coVerify(exactly = 0) { koin.get<GameStep>().perform(any(), any()) }
             coVerify(exactly = 0) { koin.get<GameMessageProducer>().sendGameState(eq(42), any()) }
@@ -475,10 +485,10 @@ class WorldsTest : FreeSpec({
 
             koin.get<GameQuery>().execute(gameId).also { game ->
                 game.turn shouldBe 0
-                game.players.find { it.userId == "test-user-1" }!!.also { player ->
+                game.players.find { it.user.value == "test-user-1" }!!.also { player ->
                     player.state shouldBe PlayerState.SUBMITTED
                 }
-                game.players.find { it.userId == "test-user-2" }!!.also { player ->
+                game.players.find { it.user.value == "test-user-2" }!!.also { player ->
                     player.state shouldBe PlayerState.PLAYING
                 }
             }
@@ -548,8 +558,8 @@ class WorldsTest : FreeSpec({
 //            val submitTurn = koin.get<TurnSubmit>()
 //
 //            val gameId = createGame.perform("test-game", null)
-//            joinGame.perform("test-user", gameId)
-//            connectGame.perform("test-user", gameId, 42)
+//            joinGame.perform(User.Id("test-user"), gameId)
+//            connectGame.perform(User.Id("test-user"), gameId, 42)
 //
 //            clearMocks(koin.get<GameMessageProducer>())
 //
@@ -627,7 +637,7 @@ class WorldsTest : FreeSpec({
         private fun createKoin(): Koin {
             return koinApplication {
                 modules(
-                    module { dependenciesWorlds() },
+                    module { dependenciesSessions() },
                     module {
                         single<DatabaseProvider.Config> {
                             DatabaseProvider.Config(
@@ -646,7 +656,7 @@ class WorldsTest : FreeSpec({
                                     val game = firstArg<Game>()
                                     GameExtended(
                                         meta = GameMeta(
-                                            gameId = game.gameId,
+                                            id = game.id,
                                             turn = game.turn
                                         ),
                                         tiles = TileContainer(emptyList()),

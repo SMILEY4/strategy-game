@@ -1,28 +1,34 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds
+package io.github.smiley4.strategygame.backend.gateway.sessions
 
 import io.github.smiley4.ktorswaggerui.dsl.post
-import io.github.smiley4.strategygame.backend.common.logging.mdcGameId
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
-import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
+import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
-internal object RouteJoin {
+internal object RouteCreate {
 
     private object GameNotFoundResponse : ErrorResponse(
         status = 404,
         title = "Game not found",
         errorCode = "GAME_NOT_FOUND",
         detail = "Game could not be found when trying to join it.",
+    )
+
+    private object WorldInitErrorResponse : ErrorResponse(
+        status = 500,
+        title = "Failed to initialize world",
+        errorCode = "WORLD_INIT_ERROR",
+        detail = "Failed to initialize game world."
     )
 
     private object UserAlreadyPlayerResponse : ErrorResponse(
@@ -39,15 +45,23 @@ internal object RouteJoin {
         detail = "Failed to initialize the new player."
     )
 
-    fun Route.routeJoin(joinGame: JoinGame) = post("join/{gameId}", {
-        description = "Join a game as a participant."
+
+    fun Route.routeCreate(createGame: CreateGame, joinGame: JoinGame) = post("create", {
+        description = "Create and join a new game. Other players can join this game via the returned game-id"
         request {
-            pathParameter("gameId", String::class) {
-                description = "the id of the game to join"
+            queryParameter<String>("name") {
+                description = "the name of the game"
+                required = true
+            }
+            queryParameter<String>("seed") {
+                description = "the seed for the random-world-generation"
+                required = false
             }
         }
         response {
-            HttpStatusCode.OK to {}
+            HttpStatusCode.OK to {
+                body<String>()
+            }
             HttpStatusCode.NotFound to {
                 bodyErrorResponse(GameNotFoundResponse)
             }
@@ -56,12 +70,16 @@ internal object RouteJoin {
             }
         }
     }) {
-        val gameId = call.parameters["gameId"]!!
         val userId = call.getUserIdOrThrow()
-        withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
+        withLoggingContextAsync(mdcTraceId(), mdcUserId(userId)) {
+            val name: String = call.request.queryParameters["name"]!!
+            val seed: String? = call.request.queryParameters["seed"]
             try {
-                joinGame.perform(User.Id(userId), Game.Id(gameId))
-                call.respond(HttpStatusCode.OK, Unit)
+                val gameId = createGame.perform(name, seed?.hashCode())
+                joinGame.perform(User.Id(userId), gameId)
+                call.respond(HttpStatusCode.OK, gameId)
+            } catch (e: CreateGame.CreateGameError) {
+                // do nothing
             } catch (e: JoinGame.GameJoinActionErrors) {
                 when (e) {
                     is JoinGame.GameNotFoundError -> call.respond(GameNotFoundResponse)

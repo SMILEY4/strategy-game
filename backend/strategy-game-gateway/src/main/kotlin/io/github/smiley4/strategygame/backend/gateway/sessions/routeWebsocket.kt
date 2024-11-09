@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds
+package io.github.smiley4.strategygame.backend.gateway.sessions
 
 import io.github.smiley4.strategygame.backend.common.logging.mdcConnectionId
 import io.github.smiley4.strategygame.backend.common.logging.mdcGameId
@@ -12,8 +12,8 @@ import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.routing.webSocketExt
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
-import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
-import io.github.smiley4.strategygame.backend.gateway.worlds.models.MessageMetadata
+import io.github.smiley4.strategygame.backend.gateway.sessions.models.Message
+import io.github.smiley4.strategygame.backend.gateway.sessions.models.MessageMetadata
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.ConnectToGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.DisconnectPlayer
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.RequestConnectionToGame

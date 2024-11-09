@@ -1,10 +1,10 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds
+package io.github.smiley4.strategygame.backend.gateway.sessions
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.User
-import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
-import io.github.smiley4.strategygame.backend.gateway.worlds.models.SubmitTurnMessage
+import io.github.smiley4.strategygame.backend.gateway.sessions.models.Message
+import io.github.smiley4.strategygame.backend.gateway.sessions.models.SubmitTurnMessage
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.TurnSubmit
 
 

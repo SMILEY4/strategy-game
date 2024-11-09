@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds
+package io.github.smiley4.strategygame.backend.gateway.sessions
 
 internal object WebsocketConstants {
     const val GAME_ID = "gameId"

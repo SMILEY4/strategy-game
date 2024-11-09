@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.worlds
+package io.github.smiley4.strategygame.backend.sessions
 
 import io.kotest.core.config.AbstractProjectConfig
 import org.slf4j.LoggerFactory

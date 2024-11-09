@@ -12,7 +12,7 @@ internal class GamesByUserQuery(private val database: ArangoDatabase) {
 
     private val metricId = MetricId.query(GamesByUserQuery::class)
 
-    suspend fun execute(userId: User.Id): List<Game> {
+    suspend fun execute(user: User.Id): List<Game> {
         return time(metricId) {
             database.assertCollections(DbCollections.GAMES)
             database.query(
@@ -22,7 +22,7 @@ internal class GamesByUserQuery(private val database: ArangoDatabase) {
 					FILTER game.players[*].userId ANY == @userId
 					RETURN game
                 """.trimIndent(),
-                mapOf("userId" to userId.value),
+                mapOf("userId" to user.value),
                 GameEntity::class.java
             ).map { it.asServiceModel() }
         }

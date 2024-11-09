@@ -1,8 +1,8 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds
+package io.github.smiley4.strategygame.backend.gateway.sessions
 
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.routing.webSocketTicket
-import io.github.smiley4.strategygame.backend.gateway.worlds.WebsocketConstants.USER_ID
+import io.github.smiley4.strategygame.backend.gateway.sessions.WebsocketConstants.USER_ID
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.routing.Route

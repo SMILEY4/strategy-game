@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.gateway.worlds.models
+package io.github.smiley4.strategygame.backend.gateway.sessions.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonTypeInfo
