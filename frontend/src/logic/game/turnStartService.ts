@@ -7,33 +7,37 @@ import {
 import {ValueHistory} from "../../common/valueHistory";
 import {MonitoringRepository} from "../../state/database/monitoringRepository";
 import {Tile} from "../../models/base/tile";
-import {GameRepository} from "./gameRepository";
 import {TerrainType} from "../../models/base/TerrainType";
 import {TileResourceType} from "../../models/base/TileResourceType";
 import {WorldObjectType} from "../../models/base/worldObjectType";
 import {WorldObject} from "../../models/base/worldObject";
 import {Country} from "../../models/base/country";
 import {Visibility} from "../../models/base/visibility";
-import {HiddenType, mapHidden} from "../../common/hiddenType";
+import {mapHidden} from "../../common/hiddenType";
 import {Settlement} from "../../models/base/Settlement";
 import {Province} from "../../models/base/province";
 import {mapValue} from "../../common/utils";
+import {TurnRepository} from "../../state/repository/turnRepository";
+import {CommandRepository} from "../../state/repository/commandRepository";
 
 /**
  * Service to handle the start of a new turn
  */
 export class TurnStartService {
 
-	private readonly gameRepository: GameRepository;
 	private readonly monitoringRepository: MonitoringRepository;
 	private readonly durationHistory = new ValueHistory(10);
+	private readonly turnRepository: TurnRepository;
+	private readonly commandRepository: CommandRepository;
 
 	constructor(
-		gameRepository: GameRepository,
 		monitoringRepository: MonitoringRepository,
+		turnRepository: TurnRepository,
+		commandRepository: CommandRepository,
 	) {
-		this.gameRepository = gameRepository;
+		this.turnRepository = turnRepository;
 		this.monitoringRepository = monitoringRepository;
+		this.commandRepository = commandRepository;
 	}
 
 	/**
@@ -41,13 +45,13 @@ export class TurnStartService {
 	 */
 	public setGameState(gameState: GameStateMessage) {
 		this.monitorSetGameState(() => {
-			this.gameRepository.transactionForStartTurn(() => {
-				this.gameRepository.clearCommands();
-				this.gameRepository.replaceTiles(this.buildTiles(gameState));
-				this.gameRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
-				this.gameRepository.replaceCountries(this.buildCountries(gameState));
-				this.gameRepository.replaceProvinces(this.buildProvinces(gameState));
-				this.gameRepository.replaceSettlements(this.buildSettlements(gameState));
+			this.turnRepository.transactionForStartTurn(() => {
+				this.commandRepository.clear();
+				this.turnRepository.replaceTiles(this.buildTiles(gameState));
+				this.turnRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
+				this.turnRepository.replaceCountries(this.buildCountries(gameState));
+				this.turnRepository.replaceProvinces(this.buildProvinces(gameState));
+				this.turnRepository.replaceSettlements(this.buildSettlements(gameState));
 			});
 		});
 	}

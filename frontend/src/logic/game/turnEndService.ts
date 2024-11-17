@@ -1,6 +1,6 @@
 import {GameSessionService} from "../gamesession/gameSessionService";
 import {MovementService} from "./movementService";
-import {GameRepository} from "./gameRepository";
+import {CommandRepository} from "../../state/repository/commandRepository";
 
 /**
  * Service to handle the end of the current turn (for this player)
@@ -8,23 +8,27 @@ import {GameRepository} from "./gameRepository";
 export class TurnEndService {
 
 	private readonly gameSessionService: GameSessionService;
-	private readonly gameRepository: GameRepository;
 	private readonly movementService: MovementService;
+	private readonly commandRepository: CommandRepository;
 
 
-	constructor(gameSessionService: GameSessionService, gameRepository: GameRepository, movementService: MovementService) {
+	constructor(
+		gameSessionService: GameSessionService,
+		movementService: MovementService,
+		commandRepository: CommandRepository,
+	) {
 		this.gameSessionService = gameSessionService;
-		this.gameRepository = gameRepository;
 		this.movementService = movementService;
+		this.commandRepository = commandRepository;
 	}
 
 	/**
 	 * End the current turn
 	 */
 	public endTurn() {
-		this.movementService.cancelMovement()
-		this.gameSessionService.submitTurn(this.gameRepository.getCommands())
-		this.gameRepository.clearCommands()
+		this.movementService.cancelMovement();
+		this.gameSessionService.submitTurn(this.commandRepository.getAll());
+		this.commandRepository.clear();
 	}
 
 }

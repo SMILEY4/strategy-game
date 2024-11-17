@@ -55,5 +55,4 @@ export class DIContext {
             throw new Error("No definition for qualifier " + qualifier);
         }
     }
-
 }

@@ -1,28 +1,37 @@
 import {Tile} from "../../models/base/tile";
 import {CommandService} from "./commandService";
 import {GameClient} from "./gameClient";
-import {ProductionOptionAggregate, ProductionQueueEntryAggregate} from "../../models/aggregates/SettlementAggregate";
+import {ProductionQueueEntryAggregate} from "../../models/aggregates/SettlementAggregate";
 import {SettlementIdentifier} from "../../models/base/Settlement";
-import {GameRepository} from "./gameRepository";
 import {CommandType, ProductionQueueAddCommand} from "../../models/base/command";
-import {ProductionOption} from "../../models/base/productionOption";
+import {CommandRepository} from "../../state/repository/commandRepository";
 
 export class SettlementService {
 
 	private readonly commandService: CommandService;
-	private readonly repository: GameRepository;
+	private readonly commandRepository: CommandRepository;
 	private readonly client: GameClient;
 
-	constructor(commandService: CommandService, repository: GameRepository, client: GameClient) {
+	constructor(
+		commandService: CommandService,
+		client: GameClient,
+		commandRepository: CommandRepository,
+	) {
 		this.commandService = commandService;
-		this.repository = repository;
 		this.client = client;
+		this.commandRepository = commandRepository;
 	}
 
+	/**
+	 * Get a random name for a settlement
+	 */
 	public getRandomName(): Promise<string> {
 		return this.client.getRandomSettlementName().then(it => it.name);
 	}
 
+	/**
+	 * Check whether the given settlement can be created
+	 */
 	public validateFounding(tile: Tile, name: string | null): string[] {
 		const failureReasons: string[] = [];
 		if (!name) {
@@ -31,22 +40,33 @@ export class SettlementService {
 		return failureReasons;
 	}
 
+	/**
+	 * Create a new settlement
+	 */
 	public createSettlementDirect(tile: Tile, name: string) {
 		this.commandService.addCreateSettlementDirectCommand(tile.identifier, name);
 	}
 
+	/**
+	 * Create a new settlement using the settler
+	 */
 	public createSettlementWithSettler(worldObjectId: string, tile: Tile, name: string) {
 		this.commandService.addCreateSettlementWithSettlerCommand(worldObjectId, tile.identifier, name);
 	}
 
+	/**
+	 * Add a new entry into the given settlement production queue
+	 */
 	public addProductionQueue(settlement: SettlementIdentifier, type: string) {
 		this.commandService.addProductionQueueEntry(settlement, type);
 	}
 
+	/**
+	 * Cancel the given production queue entry
+	 */
 	public cancelProductionQueue(settlement: SettlementIdentifier, entry: ProductionQueueEntryAggregate) {
-		const commands = this.repository.getCommands()
-			.filter(it => it.type === CommandType.PRODUCTION_QUEUE_ADD)
-			.map(it => it as ProductionQueueAddCommand)
+		const commands = this.commandRepository
+			.getAllByType<ProductionQueueAddCommand>(CommandType.PRODUCTION_QUEUE_ADD)
 			.filter(it => it.entry.entryId === entry.entryId);
 		if (commands.length > 0) {
 			this.commandService.cancelCommand(commands[0].id);

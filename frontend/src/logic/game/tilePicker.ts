@@ -2,23 +2,29 @@ import {Camera} from "../../common/webgl/camera";
 import {Tile} from "../../models/base/tile";
 import {CanvasHandle} from "../../common/webgl/canvasHandle";
 import {Projections} from "../../common/webgl/projections";
-import {GameRepository} from "./gameRepository";
+import {TileRepository} from "../../state/repository/tileRepository";
+import {CameraRepository} from "../../state/repository/cameraRepository";
 
 export class TilePicker {
 
-	private readonly gameRepository: GameRepository;
+	private readonly tileRepository: TileRepository;
+	private readonly cameraRepository: CameraRepository;
 
-	constructor(gameRepository: GameRepository) {
-		this.gameRepository = gameRepository;
+	constructor(tileRepository: TileRepository, cameraRepository: CameraRepository) {
+		this.tileRepository = tileRepository;
+		this.cameraRepository = cameraRepository;
 	}
 
-	public tileAt(x: number, y: number, canvasHandle: CanvasHandle): Tile | null {
-		const hexPos = Projections.screenToHex(this.camera(canvasHandle), x, y);
-		return this.gameRepository.getTileAt(hexPos.x, hexPos.y);
+	/**
+	 * Get the tile at the given screen coordinates
+	 */
+	public tileAt(screenX: number, screenY: number, canvasHandle: CanvasHandle): Tile | null {
+		const hexPos = Projections.screenToHex(this.camera(canvasHandle), screenX, screenY);
+		return this.tileRepository.getAt(hexPos.x, hexPos.y);
 	}
 
 	private camera(canvasHandle: CanvasHandle): Camera {
-		const cameraData = this.gameRepository.getCamera();
+		const cameraData = this.cameraRepository.get();
 		return Camera.create(
 			cameraData,
 			canvasHandle.getCanvasWidth(), canvasHandle.getCanvasHeight(),

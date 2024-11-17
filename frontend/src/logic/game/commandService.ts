@@ -1,38 +1,31 @@
-import {GameRepository} from "./gameRepository";
 import {
-	ProductionQueueAddCommand,
 	Command,
 	CommandType,
 	CreateSettlementWithSettlerCommand,
-	MoveCommand, ProductionQueueCancelCommand,
+	MoveCommand,
+	ProductionQueueAddCommand,
+	ProductionQueueCancelCommand,
 } from "../../models/base/command";
 import {UID} from "../../common/uid";
 import {AudioService, AudioType} from "../../common/audioService";
 import {TileIdentifier} from "../../models/base/tile";
 import {SettlementIdentifier} from "../../models/base/Settlement";
-import {ProductionOptionAggregate, ProductionQueueEntryAggregate} from "../../models/aggregates/SettlementAggregate";
-import {ProductionOption} from "../../models/base/productionOption";
+import {ProductionQueueEntryAggregate} from "../../models/aggregates/SettlementAggregate";
+import {CommandRepository} from "../../state/repository/commandRepository";
 
 export class CommandService {
 
-	private readonly repository: GameRepository;
+	private readonly commandRepository: CommandRepository;
 	private readonly audioService: AudioService;
 
-	constructor(repository: GameRepository, audioService: AudioService) {
-		this.repository = repository;
+	constructor(audioService: AudioService, commandRepository: CommandRepository) {
 		this.audioService = audioService;
+		this.commandRepository = commandRepository;
 	}
 
-	public cancelCommand(commandId: string) {
-		this.repository.deleteCommand(commandId);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
-	public addCommand(command: Command) {
-		this.repository.addCommand(command);
-		AudioType.WRITING_ON_PAPER.play(this.audioService);
-	}
-
+	/**
+	 * Add a new command to move the given world object along the given path
+	 */
 	public addMovementCommand(worldObjectId: string, path: TileIdentifier[]) {
 		const command: MoveCommand = {
 			id: UID.generate(),
@@ -43,30 +36,39 @@ export class CommandService {
 		this.addCommand(command);
 	}
 
+	/**
+	 * Add a new command to create a new settlement
+	 */
 	public addCreateSettlementDirectCommand(tile: TileIdentifier, name: string) {
 		const command: CreateSettlementWithSettlerCommand = {
 			id: UID.generate(),
 			type: CommandType.CREATE_SETTLEMENT_DIRECT,
 			worldObjectId: null,
 			tile: tile,
-			name: name
+			name: name,
 		};
 		this.addCommand(command);
 	}
 
+	/**
+	 * Add a new command to create a new settlement using the given settler
+	 */
 	public addCreateSettlementWithSettlerCommand(worldObjectId: string, tile: TileIdentifier, name: string) {
 		const command: CreateSettlementWithSettlerCommand = {
 			id: UID.generate(),
 			type: CommandType.CREATE_SETTLEMENT_WITH_SETTLER,
 			worldObjectId: worldObjectId,
 			tile: tile,
-			name: name
+			name: name,
 		};
 		this.addCommand(command);
 	}
 
+	/**
+	 * Add a new command to queue a new production queue entry
+	 */
 	public addProductionQueueEntry(settlementId: SettlementIdentifier, type: string) {
-		const cmdId = UID.generate()
+		const cmdId = UID.generate();
 		const command: ProductionQueueAddCommand = {
 			id: cmdId,
 			type: CommandType.PRODUCTION_QUEUE_ADD,
@@ -77,20 +79,36 @@ export class CommandService {
 				entryId: cmdId,
 				progress: 0,
 				isCommand: true,
-			}
+			},
 		};
 		this.addCommand(command);
 	}
 
+	/**
+	 * Add a new command to cancel the given entry in the production queue
+	 */
 	public cancelProductionQueueEntry(settlementId: SettlementIdentifier, entry: ProductionQueueEntryAggregate) {
 		const command: ProductionQueueCancelCommand = {
 			id: UID.generate(),
 			type: CommandType.PRODUCTION_QUEUE_CANCEL,
 			worldObjectId: null,
 			settlement: settlementId,
-			entry: entry
+			entry: entry,
 		};
 		this.addCommand(command);
+	}
+
+	/**
+	 * Cancel the given command
+	 */
+	public cancelCommand(commandId: string) {
+		this.commandRepository.remove(commandId);
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
+	}
+
+	private addCommand(command: Command) {
+		this.commandRepository.add(command);
+		AudioType.WRITING_ON_PAPER.play(this.audioService);
 	}
 
 }

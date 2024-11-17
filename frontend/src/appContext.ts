@@ -17,7 +17,6 @@ import {TileDatabase} from "./state/database/tileDatabase";
 import {MonitoringRepository} from "./state/database/monitoringRepository";
 import {UserRepository} from "./logic/user/userRepository";
 import {GameRenderer} from "./renderer/game/gameRenderer";
-import {GameRepository} from "./logic/game/gameRepository";
 import {GameSessionRepository} from "./logic/gamesession/gameSessionRepository";
 import {TurnEndService} from "./logic/game/turnEndService";
 import {RenderRepository} from "./renderer/game/renderRepository";
@@ -31,6 +30,12 @@ import {CountryDatabase} from "./state/database/countryDatabase";
 import {SettlementService} from "./logic/game/settlementService";
 import {SettlementDatabase} from "./state/database/settlementDatabase";
 import {ProvinceDatabase} from "./state/database/provinceDatabase";
+import {CameraRepository} from "./state/repository/cameraRepository";
+import {CommandRepository} from "./state/repository/commandRepository";
+import {SettlementRepository} from "./state/repository/settlementRepository";
+import {TileRepository} from "./state/repository/tileRepository";
+import {TurnRepository} from "./state/repository/turnRepository";
+import {WorldObjectRepository} from "./state/repository/worldObjectRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -56,7 +61,6 @@ interface AppCtxDef {
 	GameLoopService: () => GameLoopService,
 	MovementService: () => MovementService,
 	CommandService: () => CommandService,
-	GameRepository: () => GameRepository,
 	GameClient: () => GameClient,
 	GameIdProvider: () => GameIdProvider,
 	SettlementService: () => SettlementService,
@@ -67,6 +71,13 @@ interface AppCtxDef {
 	MonitoringRepository: () => MonitoringRepository,
 	WebGLMonitor: () => WebGLMonitor,
 
+	CameraRepository: () => CameraRepository,
+	CommandRepository: () => CommandRepository,
+	SettlementRepository: () => SettlementRepository,
+	TileRepository: () => TileRepository,
+	TurnRepository: () => TurnRepository,
+	WorldObjectRepository: () => WorldObjectRepository,
+
 	CameraDatabase: () => CameraDatabase,
 	GameSessionDatabase: () => GameSessionDatabase,
 	CommandDatabase: () => CommandDatabase,
@@ -75,19 +86,19 @@ interface AppCtxDef {
 	ProvinceDatabase: () => ProvinceDatabase,
 	SettlementDatabase: () => SettlementDatabase,
 	WorldObjectDatabase: () => WorldObjectDatabase,
-
 }
+
 
 const diContext = new DIContext();
 
 export const AppCtx: AppCtxDef = {
 
 	HttpClient: diContext.register(
-		"HttpClient",
+		HttpClient.name,
 		() => new HttpClient(API_BASE_URL),
 	),
 	WebsocketClient: diContext.register(
-		"WebsocketClient",
+		WebsocketClient.name,
 		() => new WebsocketClient(API_WS_BASE_URL),
 	),
 	AudioService: diContext.register(
@@ -101,167 +112,224 @@ export const AppCtx: AppCtxDef = {
 
 
 	GameSessionClient: diContext.register(
-		"GameSessionClient",
-		() => new GameSessionClient(AppCtx.AuthProvider(), AppCtx.HttpClient(), AppCtx.WebsocketClient()),
+		GameSessionClient.name,
+		ctx => new GameSessionClient(
+			ctx.get<AuthProvider>(AuthProvider.name),
+			ctx.get<HttpClient>(HttpClient.name),
+			ctx.get<WebsocketClient>(WebsocketClient.name),
+		),
 	),
 	GameSessionService: diContext.register(
-		"GameSessionService",
-		() => new GameSessionService(AppCtx.GameSessionClient(), AppCtx.GameSessionRepository(), AppCtx.TurnStartService()),
+		GameSessionService.name,
+		ctx => new GameSessionService(
+			ctx.get<GameSessionClient>(GameSessionClient.name),
+			ctx.get<GameSessionRepository>(GameSessionRepository.name),
+			ctx.get<TurnStartService>(TurnStartService.name)
+		),
 	),
 	GameSessionRepository: diContext.register(
-		"GameSessionRepository",
-		() => new GameSessionRepository(AppCtx.GameSessionDatabase()),
+		GameSessionRepository.name,
+		ctx => new GameSessionRepository(
+			ctx.get<GameSessionDatabase>(GameSessionDatabase.name)
+		),
 	),
 
 
 	AuthProvider: diContext.register(
-		"AuthProvider",
-		() => new AuthProvider(AppCtx.UserRepository()),
+		AuthProvider.name,
+		ctx => new AuthProvider(
+			ctx.get<UserRepository>(UserRepository.name)
+		),
 	),
 	UserClient: diContext.register(
-		"UserClient",
-		() => new UserClient(AppCtx.AuthProvider(), AppCtx.HttpClient()),
+		UserClient.name,
+		ctx => new UserClient(
+			ctx.get<AuthProvider>(AuthProvider.name),
+			ctx.get<HttpClient>(HttpClient.name)
+		),
 	),
 	UserService: diContext.register(
-		"UserService",
-		() => new UserService(AppCtx.UserClient(), AppCtx.UserRepository()),
+		UserService.name,
+		ctx => new UserService(
+			ctx.get<UserClient>(UserClient.name),
+			ctx.get<UserRepository>(UserRepository.name)
+		),
 	),
 
 
 	TurnStartService: diContext.register(
-		"TurnStartService",
-		() => new TurnStartService(
-			AppCtx.GameRepository(),
-			AppCtx.MonitoringRepository(),
+		TurnStartService.name,
+		ctx => new TurnStartService(
+			ctx.get<MonitoringRepository>(MonitoringRepository.name),
+			ctx.get<TurnRepository>(TurnRepository.name),
+			ctx.get<CommandRepository>(CommandRepository.name),
 		),
 	),
 	TurnEndService: diContext.register(
-		"EndTurnService",
-		() => new TurnEndService(
-			AppCtx.GameSessionService(),
-			AppCtx.GameRepository(),
-			AppCtx.MovementService(),
+		TurnEndService.name,
+		ctx => new TurnEndService(
+			ctx.get<GameSessionService>(GameSessionService.name),
+			ctx.get<MovementService>(MovementService.name),
+			ctx.get<CommandRepository>(CommandRepository.name),
 		),
 	),
 	GameLoopService: diContext.register(
-		"GameLoopService",
-		() => new GameLoopService(
-			AppCtx.MovementService(),
-			new TilePicker(AppCtx.GameRepository()),
-			AppCtx.GameRepository(),
-			AppCtx.GameRenderer(),
-			AppCtx.AudioService(),
+		GameLoopService.name,
+		ctx => new GameLoopService(
+			ctx.get<MovementService>(MovementService.name),
+			new TilePicker(
+				ctx.get<TileRepository>(TileRepository.name),
+				ctx.get<CameraRepository>(CameraRepository.name)
+			),
+			ctx.get<GameRenderer>(GameRenderer.name),
+			ctx.get<AudioService>(AudioService.name),
+			ctx.get<TileRepository>(TileRepository.name),
+			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
+			ctx.get<SettlementRepository>(SettlementRepository.name),
+			ctx.get<CameraRepository>(CameraRepository.name),
 		),
 	),
 	MovementService: diContext.register(
-		"MovementService",
-		() => new MovementService(
-			AppCtx.CommandService(),
-			AppCtx.GameClient(),
-			AppCtx.GameRepository(),
+		MovementService.name,
+		ctx => new MovementService(
+			ctx.get<CommandService>(CommandService.name),
+			ctx.get<GameClient>(GameClient.name),
+			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
 		),
 	),
 	CommandService: diContext.register(
-		"CommandService",
-		() => new CommandService(
-			AppCtx.GameRepository(),
-			AppCtx.AudioService(),
+		CommandService.name,
+		ctx => new CommandService(
+			ctx.get<AudioService>(AudioService.name),
+			ctx.get<CommandRepository>(CommandRepository.name),
 		),
 	),
 	GameClient: diContext.register(
-		"GameClient",
-		() => new GameClient(
-			AppCtx.AuthProvider(),
-			AppCtx.GameIdProvider(),
-			AppCtx.HttpClient(),
+		GameClient.name,
+		ctx => new GameClient(
+			ctx.get<AuthProvider>(AuthProvider.name),
+			ctx.get<GameIdProvider>(GameIdProvider.name),
+			ctx.get<HttpClient>(HttpClient.name),
 		),
 	),
 	GameIdProvider: diContext.register(
-		"GameIdProvider",
+		GameIdProvider.name,
 		() => new GameIdProvider(),
 	),
 	SettlementService: diContext.register(
-		"SettlementService",
-		() => new SettlementService(
-			AppCtx.CommandService(),
-			AppCtx.GameRepository(),
-			AppCtx.GameClient(),
+		SettlementService.name,
+		ctx => new SettlementService(
+			ctx.get<CommandService>(CommandService.name),
+			ctx.get<GameClient>(GameClient.name),
+			ctx.get<CommandRepository>(CommandRepository.name),
 		),
 	),
 
 	WebGLMonitor: diContext.register(
-		"WebGLMonitor",
+		WebGLMonitor.name,
 		() => new WebGLMonitor(),
 	),
 	GameRenderer: diContext.register(
-		"GameRenderer",
-		() => new GameRenderer(
-			AppCtx.RenderRepository(),
+		GameRenderer.name,
+		ctx => new GameRenderer(
+			ctx.get<RenderRepository>(RenderRepository.name),
 		),
 	),
 	RenderRepository: diContext.register(
-		"RenderRepository",
-		() => new RenderRepository(
-			AppCtx.GameSessionDatabase(),
-			AppCtx.CameraDatabase(),
-			AppCtx.TileDatabase(),
-			AppCtx.WorldObjectDatabase(),
-			AppCtx.SettlementDatabase(),
-			AppCtx.CommandDatabase(),
-		),
-	),
-
-	GameRepository: diContext.register(
-		"GameRepository",
-		() => new GameRepository(
-			AppCtx.GameSessionDatabase(),
-			AppCtx.CameraDatabase(),
-			AppCtx.TileDatabase(),
-			AppCtx.WorldObjectDatabase(),
-			AppCtx.CommandDatabase(),
-			AppCtx.CountryDatabase(),
-			AppCtx.ProvinceDatabase(),
-			AppCtx.SettlementDatabase(),
+		RenderRepository.name,
+		ctx => new RenderRepository(
+			ctx.get<GameSessionDatabase>(GameSessionDatabase.name),
+			ctx.get<CameraDatabase>(CameraDatabase.name),
+			ctx.get<TileDatabase>(TileDatabase.name),
+			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name),
+			ctx.get<SettlementDatabase>(SettlementDatabase.name),
+			ctx.get<CommandDatabase>(CommandDatabase.name),
 		),
 	),
 	MonitoringRepository: diContext.register(
-		"MonitoringRepository",
+		MonitoringRepository.name,
 		() => new MonitoringRepository(),
 	),
 	UserRepository: diContext.register(
-		"UserRepository",
+		UserRepository.name,
 		() => new UserRepository(),
 	),
+
+
+	CameraRepository: diContext.register(
+		CameraRepository.name,
+		ctx => new CameraRepository(
+			ctx.get<CameraDatabase>(CameraDatabase.name),
+		),
+	),
+	CommandRepository: diContext.register(
+		CommandRepository.name,
+		ctx => new CommandRepository(
+			ctx.get<CommandDatabase>(CommandDatabase.name),
+		),
+	),
+	SettlementRepository: diContext.register(
+		SettlementRepository.name,
+		ctx => new SettlementRepository(
+			ctx.get<SettlementDatabase>(SettlementDatabase.name),
+		),
+	),
+	TileRepository: diContext.register(
+		TileRepository.name,
+		ctx => new TileRepository(
+			ctx.get<GameSessionDatabase>(GameSessionDatabase.name),
+			ctx.get<TileDatabase>(TileDatabase.name),
+		),
+	),
+	TurnRepository: diContext.register(
+		TurnRepository.name,
+		ctx => new TurnRepository(
+			ctx.get<TileDatabase>(TileDatabase.name),
+			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name),
+			ctx.get<CommandDatabase>(CommandDatabase.name),
+			ctx.get<CountryDatabase>(CountryDatabase.name),
+			ctx.get<ProvinceDatabase>(ProvinceDatabase.name),
+			ctx.get<SettlementDatabase>(SettlementDatabase.name),
+		),
+	),
+	WorldObjectRepository: diContext.register(
+		WorldObjectRepository.name,
+		ctx => new WorldObjectRepository(
+			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name)
+		),
+	),
+
+
 	CameraDatabase: diContext.register(
-		"CameraRepository",
+		CameraRepository.name,
 		() => new CameraDatabase(),
 	),
 	GameSessionDatabase: diContext.register(
-		"GameSessionDatabase",
+		GameSessionDatabase.name,
 		() => new GameSessionDatabase(),
 	),
 	TileDatabase: diContext.register(
-		"TileDatabase",
+		TileDatabase.name,
 		() => new TileDatabase(),
 	),
 	WorldObjectDatabase: diContext.register(
-		"WorldObjectDatabase",
+		WorldObjectDatabase.name,
 		() => new WorldObjectDatabase(),
 	),
 	CommandDatabase: diContext.register(
-		"CommandDatabase",
-		() => new CommandDatabase(),
+		CommandDatabase.name,
+		()=> new CommandDatabase(),
 	),
 	CountryDatabase: diContext.register(
-		"CountryDatabase",
+		CountryDatabase.name,
 		() => new CountryDatabase(),
 	),
 	SettlementDatabase: diContext.register(
-		"SettlementDatabase",
+		SettlementDatabase.name,
 		() => new SettlementDatabase(),
 	),
 	ProvinceDatabase: diContext.register(
-		"ProvinceDatabase",
+		ProvinceDatabase.name,
 		() => new ProvinceDatabase(),
 	),
 };
