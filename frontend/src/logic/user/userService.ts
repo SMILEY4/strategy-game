@@ -1,6 +1,6 @@
 import {UserClient} from "./userClient";
 import jwt_decode from "jwt-decode";
-import {UserRepository} from "./userRepository";
+import {UserRepository} from "../../state/repository/userRepository";
 
 /**
  * User specific service logic

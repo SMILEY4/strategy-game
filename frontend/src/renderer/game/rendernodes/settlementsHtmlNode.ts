@@ -5,19 +5,19 @@ import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
-import {RenderRepository} from "../renderRepository";
+import {SettlementRepository} from "../../../state/repository/settlementRepository";
 
 export class SettlementsHtmlNode extends HtmlRenderNode {
 
 	public static readonly ID = "htmlnode.settlements";
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly repository: RenderRepository;
+	private readonly settlementRepository: SettlementRepository;
 	private readonly camera: () => Camera;
 
 	constructor(
 		changeProvider: ChangeProvider,
-		renderRepository: RenderRepository,
+		settlementRepository: SettlementRepository,
 		camera: () => Camera,
 	) {
 		super({
@@ -34,7 +34,7 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 			],
 		});
 		this.changeProvider = changeProvider;
-		this.repository = renderRepository;
+		this.settlementRepository = settlementRepository;
 		this.camera = camera;
 	}
 
@@ -45,7 +45,7 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 
 		const elements: SettlementsElement[] = [];
 
-		const settlements = this.repository.getSettlements();
+		const settlements = this.settlementRepository.getAll();
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
 			if (this.isVisible(settlement.tile, 0)) {

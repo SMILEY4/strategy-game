@@ -5,8 +5,8 @@ import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
-import {RenderRepository} from "../renderRepository";
 import {WorldObjectType} from "../../../models/base/worldObjectType";
+import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
 
 var dirty = true;
 
@@ -15,12 +15,12 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 	public static readonly ID = "htmlnode.worldobjects";
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly repository: RenderRepository;
+	private readonly worldObjectRepository: WorldObjectRepository;
 	private readonly camera: () => Camera;
 
 	constructor(
 		changeProvider: ChangeProvider,
-		renderRepository: RenderRepository,
+		worldObjectRepository: WorldObjectRepository,
 		camera: () => Camera,
 	) {
 		super({
@@ -37,7 +37,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 			],
 		});
 		this.changeProvider = changeProvider;
-		this.repository = renderRepository;
+		this.worldObjectRepository = worldObjectRepository;
 		this.camera = camera;
 	}
 
@@ -49,7 +49,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 
 		const elements: WorldObjectIconElement[] = [];
 
-		const worldObjects = this.repository.getWorldObjects();
+		const worldObjects = this.worldObjectRepository.getAll();
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
 			if (this.isVisible(worldObject.tile, 0)) {

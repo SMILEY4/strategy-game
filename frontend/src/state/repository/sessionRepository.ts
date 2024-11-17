@@ -1,6 +1,7 @@
-import {GameSessionDatabase} from "../../state/database/gameSessionDatabase";
+import {GameSessionDatabase} from "../database/gameSessionDatabase";
+import {MapMode} from "../../models/base/mapMode";
 
-export class GameSessionRepository {
+export class SessionRepository {
 
 	private readonly database: GameSessionDatabase;
 
@@ -24,12 +25,16 @@ export class GameSessionRepository {
 		}));
 	}
 
-	public getTurnState(): "playing" | "waiting" {
-		return this.database.get().turnState;
-	}
-
 	public setTurn(turn: number) {
 		this.database.setTurn(turn);
+	}
+
+	public getTurn(): number {
+		return this.database.get().turn;
+	}
+
+	public getMapMode(): MapMode {
+		return this.database.getMapMode();
 	}
 
 }

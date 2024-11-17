@@ -35,4 +35,8 @@ export class TileRepository {
 		return this.tileDb.querySingle(TileDatabase.QUERY_BY_POSITION, [q, r]);
 	}
 
+	public getAll(): Tile[] {
+		return this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
+	}
+
 }

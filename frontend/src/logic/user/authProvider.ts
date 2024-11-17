@@ -1,4 +1,4 @@
-import {UserRepository} from "./userRepository";
+import {UserRepository} from "../../state/repository/userRepository";
 
 /**
  * Service prodding authentication information of the current user

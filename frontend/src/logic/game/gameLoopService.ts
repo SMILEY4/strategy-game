@@ -10,6 +10,7 @@ import {TileRepository} from "../../state/repository/tileRepository";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
 import {CameraRepository} from "../../state/repository/cameraRepository";
 import {SettlementRepository} from "../../state/repository/settlementRepository";
+import {SessionRepository} from "../../state/repository/sessionRepository";
 
 /**
  * Service to handle logic for the continuous game loop.
@@ -43,8 +44,7 @@ export class GameLoopService {
 		this.audioService = audioService;
 		this.tileRepository = tileRepository;
 		this.worldObjectRepository = worldObjectRepository;
-		this.worldObjectRepository = worldObjectRepository;
-		this.settlementRepository= settlementRepository;
+		this.settlementRepository = settlementRepository;
 		this.cameraRepository = cameraRepository;
 		this.canvasHandle = new CanvasHandle();
 	}
@@ -54,7 +54,7 @@ export class GameLoopService {
 	 */
 	public initialize(canvas: HTMLCanvasElement) {
 		this.canvasHandle.set(canvas);
-		this.gameRenderer.initialize(this.canvasHandle);
+		this.gameRenderer.initialize(this.canvasHandle,);
 	}
 
 	/**

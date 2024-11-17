@@ -3,7 +3,7 @@ import {handleResponseError} from "../../common/httpClient";
 import {UnauthorizedError} from "../../common/UnauthorizedError";
 import {GameSessionMeta} from "../../models/base/gameSessionMeta";
 import {RenderGraphPreloader} from "../../renderer/common/graph/renderGraphPreloader";
-import {GameSessionRepository} from "./gameSessionRepository";
+import {SessionRepository} from "../../state/repository/sessionRepository";
 import {TurnStartService} from "../game/turnStartService";
 import {GameStateMessage} from "./models/gameStateMessage";
 import {WebsocketMessageHandler} from "../../common/websocketMessageHandler";
@@ -26,10 +26,10 @@ import {
 export class GameSessionService implements WebsocketMessageHandler {
 
 	private readonly client: GameSessionClient;
-	private readonly repository: GameSessionRepository;
+	private readonly repository: SessionRepository;
 	private readonly turnStartService: TurnStartService;
 
-	constructor(client: GameSessionClient, gameSessionRepository: GameSessionRepository, turnStartService: TurnStartService) {
+	constructor(client: GameSessionClient, gameSessionRepository: SessionRepository, turnStartService: TurnStartService) {
 		this.client = client;
 		this.repository = gameSessionRepository;
 		this.turnStartService = turnStartService;

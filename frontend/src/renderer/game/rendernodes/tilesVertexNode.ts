@@ -8,14 +8,14 @@ import {NodeOutput} from "../../common/graph/nodeOutput";
 import {GameRenderConfig} from "../gameRenderConfig";
 import {ChangeProvider} from "../changeProvider";
 import {shuffleArray} from "../../../common/utils";
-import {RenderRepository} from "../renderRepository";
 import {TerrainType} from "../../../models/base/TerrainType";
 import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
-import VertexBuffer = NodeOutput.VertexBuffer;
-import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {Visibility} from "../../../models/base/visibility";
 import {mapHiddenOrNull} from "../../../common/hiddenType";
+import {TileRepository} from "../../../state/repository/tileRepository";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
 
 export class TilesVertexNode extends VertexRenderNode {
 
@@ -58,13 +58,13 @@ export class TilesVertexNode extends VertexRenderNode {
 	];
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly repository: RenderRepository;
+	private readonly tileRepository: TileRepository;
 	private readonly renderConfig: () => GameRenderConfig;
 
 	private tileIndices: number[] = [];
 
 
-	constructor(changeProvider: ChangeProvider, renderConfig: () => GameRenderConfig, renderRepository: RenderRepository) {
+	constructor(changeProvider: ChangeProvider, renderConfig: () => GameRenderConfig, tileRepository: TileRepository) {
 		super({
 			id: TilesVertexNode.ID,
 			input: [],
@@ -177,8 +177,8 @@ export class TilesVertexNode extends VertexRenderNode {
 				}),
 			],
 		});
+		this.tileRepository = tileRepository;
 		this.changeProvider = changeProvider;
-		this.repository = renderRepository;
 		this.renderConfig = renderConfig;
 	}
 
@@ -196,7 +196,7 @@ export class TilesVertexNode extends VertexRenderNode {
 		// tile instances
 		if (this.changeProvider.hasChange(this.id)) {
 
-			const tiles = this.repository.getTilesAll();
+			const tiles = this.tileRepository.getAll();
 			const tileCounts = this.countTileTypes(tiles);
 
 			if (this.tileIndices.length !== tiles.length) {
@@ -329,7 +329,7 @@ export class TilesVertexNode extends VertexRenderNode {
 		cursor.append(center[1]);
 
 		// visibility
-		cursor.append(tile.visibility.renderId)
+		cursor.append(tile.visibility.renderId);
 
 	}
 
@@ -353,9 +353,9 @@ export class TilesVertexNode extends VertexRenderNode {
 		cursor.append(1 - this.clamp(0, (tile.base.value.height + 1) * 2 + heightJitter, 1));
 
 		// water border mask
-		const border = BorderBuilder.build(tile, this.repository, false, (ta, tb) => {
-			const a = mapHiddenOrNull(ta.base, it => it.terrainType)
-			const b = mapHiddenOrNull(tb.base, it => it.terrainType)
+		const border = BorderBuilder.build(tile, this.tileRepository, false, (ta, tb) => {
+			const a = mapHiddenOrNull(ta.base, it => it.terrainType);
+			const b = mapHiddenOrNull(tb.base, it => it.terrainType);
 			return (!a && !b) ? false : a === TerrainType.WATER && b !== null && a !== b;
 		});
 		const borderPacked = packBorder(border);

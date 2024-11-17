@@ -15,11 +15,10 @@ import {CameraDatabase} from "./state/database/cameraDatabase";
 import {GameSessionDatabase} from "./state/database/gameSessionDatabase";
 import {TileDatabase} from "./state/database/tileDatabase";
 import {MonitoringRepository} from "./state/database/monitoringRepository";
-import {UserRepository} from "./logic/user/userRepository";
+import {UserRepository} from "./state/repository/userRepository";
 import {GameRenderer} from "./renderer/game/gameRenderer";
-import {GameSessionRepository} from "./logic/gamesession/gameSessionRepository";
+import {SessionRepository} from "./state/repository/sessionRepository";
 import {TurnEndService} from "./logic/game/turnEndService";
-import {RenderRepository} from "./renderer/game/renderRepository";
 import {WorldObjectDatabase} from "./state/database/objectDatabase";
 import {MovementService} from "./logic/game/movementService";
 import {CommandService} from "./logic/game/commandService";
@@ -36,6 +35,7 @@ import {SettlementRepository} from "./state/repository/settlementRepository";
 import {TileRepository} from "./state/repository/tileRepository";
 import {TurnRepository} from "./state/repository/turnRepository";
 import {WorldObjectRepository} from "./state/repository/worldObjectRepository";
+import {ChangeProvider} from "./renderer/game/changeProvider";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -49,7 +49,6 @@ interface AppCtxDef {
 
 	GameSessionClient: () => GameSessionClient,
 	GameSessionService: () => GameSessionService,
-	GameSessionRepository: () => GameSessionRepository,
 
 	UserClient: () => UserClient,
 	UserService: () => UserService,
@@ -66,7 +65,7 @@ interface AppCtxDef {
 	SettlementService: () => SettlementService,
 
 	GameRenderer: () => GameRenderer,
-	RenderRepository: () => RenderRepository,
+	ChangeProvider: () => ChangeProvider,
 
 	MonitoringRepository: () => MonitoringRepository,
 	WebGLMonitor: () => WebGLMonitor,
@@ -77,6 +76,7 @@ interface AppCtxDef {
 	TileRepository: () => TileRepository,
 	TurnRepository: () => TurnRepository,
 	WorldObjectRepository: () => WorldObjectRepository,
+	SessionRepository: () => SessionRepository,
 
 	CameraDatabase: () => CameraDatabase,
 	GameSessionDatabase: () => GameSessionDatabase,
@@ -123,36 +123,29 @@ export const AppCtx: AppCtxDef = {
 		GameSessionService.name,
 		ctx => new GameSessionService(
 			ctx.get<GameSessionClient>(GameSessionClient.name),
-			ctx.get<GameSessionRepository>(GameSessionRepository.name),
-			ctx.get<TurnStartService>(TurnStartService.name)
+			ctx.get<SessionRepository>(SessionRepository.name),
+			ctx.get<TurnStartService>(TurnStartService.name),
 		),
 	),
-	GameSessionRepository: diContext.register(
-		GameSessionRepository.name,
-		ctx => new GameSessionRepository(
-			ctx.get<GameSessionDatabase>(GameSessionDatabase.name)
-		),
-	),
-
 
 	AuthProvider: diContext.register(
 		AuthProvider.name,
 		ctx => new AuthProvider(
-			ctx.get<UserRepository>(UserRepository.name)
+			ctx.get<UserRepository>(UserRepository.name),
 		),
 	),
 	UserClient: diContext.register(
 		UserClient.name,
 		ctx => new UserClient(
 			ctx.get<AuthProvider>(AuthProvider.name),
-			ctx.get<HttpClient>(HttpClient.name)
+			ctx.get<HttpClient>(HttpClient.name),
 		),
 	),
 	UserService: diContext.register(
 		UserService.name,
 		ctx => new UserService(
 			ctx.get<UserClient>(UserClient.name),
-			ctx.get<UserRepository>(UserRepository.name)
+			ctx.get<UserRepository>(UserRepository.name),
 		),
 	),
 
@@ -179,7 +172,7 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<MovementService>(MovementService.name),
 			new TilePicker(
 				ctx.get<TileRepository>(TileRepository.name),
-				ctx.get<CameraRepository>(CameraRepository.name)
+				ctx.get<CameraRepository>(CameraRepository.name),
 			),
 			ctx.get<GameRenderer>(GameRenderer.name),
 			ctx.get<AudioService>(AudioService.name),
@@ -232,20 +225,22 @@ export const AppCtx: AppCtxDef = {
 	GameRenderer: diContext.register(
 		GameRenderer.name,
 		ctx => new GameRenderer(
-			ctx.get<RenderRepository>(RenderRepository.name),
+			ctx.get<ChangeProvider>(ChangeProvider.name),
+			ctx.get<CameraRepository>(CameraRepository.name),
+			ctx.get<TileRepository>(CameraRepository.name),
+			ctx.get<SessionRepository>(CameraRepository.name),
+			ctx.get<WorldObjectRepository>(CameraRepository.name),
+			ctx.get<SettlementRepository>(CameraRepository.name),
 		),
 	),
-	RenderRepository: diContext.register(
-		RenderRepository.name,
-		ctx => new RenderRepository(
-			ctx.get<GameSessionDatabase>(GameSessionDatabase.name),
-			ctx.get<CameraDatabase>(CameraDatabase.name),
-			ctx.get<TileDatabase>(TileDatabase.name),
-			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name),
-			ctx.get<SettlementDatabase>(SettlementDatabase.name),
-			ctx.get<CommandDatabase>(CommandDatabase.name),
+	ChangeProvider: diContext.register(
+		ChangeProvider.name,
+		ctx => new ChangeProvider(
+			ctx.get<SessionRepository>(SessionRepository.name),
+			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
 		),
 	),
+
 	MonitoringRepository: diContext.register(
 		MonitoringRepository.name,
 		() => new MonitoringRepository(),
@@ -295,7 +290,14 @@ export const AppCtx: AppCtxDef = {
 	WorldObjectRepository: diContext.register(
 		WorldObjectRepository.name,
 		ctx => new WorldObjectRepository(
-			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name)
+			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name),
+			ctx.get<CommandDatabase>(CommandDatabase.name),
+		),
+	),
+	SessionRepository: diContext.register(
+		SessionRepository.name,
+		ctx => new SessionRepository(
+			ctx.get<GameSessionDatabase>(GameSessionDatabase.name),
 		),
 	),
 
@@ -318,7 +320,7 @@ export const AppCtx: AppCtxDef = {
 	),
 	CommandDatabase: diContext.register(
 		CommandDatabase.name,
-		()=> new CommandDatabase(),
+		() => new CommandDatabase(),
 	),
 	CountryDatabase: diContext.register(
 		CountryDatabase.name,

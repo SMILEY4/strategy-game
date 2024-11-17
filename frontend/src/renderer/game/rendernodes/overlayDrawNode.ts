@@ -2,16 +2,16 @@ import {DrawRenderNode} from "../../common/graph/drawRenderNode";
 import {GLUniformType} from "../../../common/webgl/glTypes";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {NodeOutput} from "../../common/graph/nodeOutput";
-import {RenderRepository} from "../renderRepository";
+import {TileRepository} from "../../../state/repository/tileRepository";
 
 export class OverlayDrawNode extends DrawRenderNode {
 
 	public static readonly ID = "drawnode.tilesoverlay";
 
-	private readonly repository: RenderRepository;
+	private readonly tileRepository: TileRepository;
 
 	constructor(
-		renderRepository: RenderRepository,
+		tileRepository: TileRepository,
 		vpMatrixProvider: () => Float32Array,
 	) {
 		super({
@@ -55,7 +55,7 @@ export class OverlayDrawNode extends DrawRenderNode {
 					type: GLUniformType.INT_VEC2,
 					valueConstant: null,
 					valueProvider: () => {
-						const tile = this.repository.getHoverTile();
+						const tile = this.tileRepository.getHover();
 						if (tile) {
 							return [tile.q, tile.r];
 						} else {
@@ -79,7 +79,7 @@ export class OverlayDrawNode extends DrawRenderNode {
 					type: GLUniformType.INT_VEC2,
 					valueConstant: null,
 					valueProvider: () => {
-						const tile = this.repository.getSelectedTile();
+						const tile = this.tileRepository.getSelected();
 						if (tile) {
 							return [tile.q, tile.r];
 						} else {
@@ -106,6 +106,6 @@ export class OverlayDrawNode extends DrawRenderNode {
 				}),
 			],
 		});
-		this.repository = renderRepository;
+		this.tileRepository = tileRepository;
 	}
 }

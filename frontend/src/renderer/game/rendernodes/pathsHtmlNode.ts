@@ -4,21 +4,20 @@ import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
-import {RenderRepository} from "../renderRepository";
 import {TilePosition} from "../../../models/base/tilePosition";
-import {Simulate} from "react-dom/test-utils";
+import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
 
 export class PathsHtmlNode extends HtmlRenderNode {
 
 	public static readonly ID = "htmlnode.paths";
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly repository: RenderRepository;
+	private readonly worldObjectRepository: WorldObjectRepository;
 	private readonly camera: () => Camera;
 
 	constructor(
 		changeProvider: ChangeProvider,
-		renderRepository: RenderRepository,
+		worldObjectRepository: WorldObjectRepository,
 		camera: () => Camera,
 	) {
 		super({
@@ -35,7 +34,7 @@ export class PathsHtmlNode extends HtmlRenderNode {
 			],
 		});
 		this.changeProvider = changeProvider;
-		this.repository = renderRepository;
+		this.worldObjectRepository = worldObjectRepository;
 		this.camera = camera;
 	}
 
@@ -46,11 +45,11 @@ export class PathsHtmlNode extends HtmlRenderNode {
 
 		const elements: PathsElement[] = [];
 
-		const paths = this.repository.getMovementPaths();
+		const paths = this.worldObjectRepository.getMovementPaths();
 		for (let i = 0, n = paths.length; i < n; i++) {
 			elements.push({
 				path: paths[i].positions,
-				pending: paths[i].pending
+				pending: paths[i].pending,
 			});
 		}
 
@@ -95,7 +94,7 @@ function render(camera: Camera, element: PathsElement, html: HTMLElement): void 
 		svgMarker.appendChild(svgMarkerPath);
 
 		const svgPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-		svgPath.setAttribute("d", path)
+		svgPath.setAttribute("d", path);
 		svgPath.setAttribute("marker-end", "url(#movement-arrow)");
 
 		const svgDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
