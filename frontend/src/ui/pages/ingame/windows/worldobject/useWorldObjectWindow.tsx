@@ -1,16 +1,16 @@
 import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {WorldObjectWindow} from "./WorldObjectWindow";
-import {AppCtx} from "../../../../../appContext";
+import {useDI} from "../../../../../appContext";
 import {WorldObject} from "../../../../../models/base/worldObject";
-import {WorldObjectDatabase} from "../../../../../state/database/objectDatabase";
 import {UseMoveWindow} from "../move/useWorldObjectWindow";
 import {CommandType, MoveCommand} from "../../../../../models/base/command";
-import {CommandDatabase} from "../../../../../state/database/commandDatabase";
-import {useQueryMultiple, useQuerySingle} from "../../../../../common/db/adapters/databaseHooks";
 import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
-import {TileDatabase} from "../../../../../state/database/tileDatabase";
 import {WorldObjectType} from "../../../../../models/base/worldObjectType";
+import {WorldObjectRepository} from "../../../../../state/repository/worldObjectRepository";
+import {TileRepository} from "../../../../../state/repository/tileRepository";
+import {CommandRepository} from "../../../../../state/repository/commandRepository";
+import {CommandService} from "../../../../../logic/game/commandService";
 
 export namespace UseWorldObjectWindow {
 
@@ -56,19 +56,19 @@ export namespace UseWorldObjectWindow {
 			possible: boolean
 			enabled: boolean,
 			start: () => void,
-		}
+		};
 	}
 
 	export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
 
-		const worldObject = useQuerySingle(AppCtx.WorldObjectDatabase(), WorldObjectDatabase.QUERY_BY_ID, identifier);
-		const tile = useQuerySingle(AppCtx.TileDatabase(), TileDatabase.QUERY_BY_ID, worldObject?.tile.id)
+		const worldObject = WorldObjectRepository.useById(identifier);
+		const tile = TileRepository.useById(worldObject?.tile);
 
-		const hasCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.worldObjectId === identifier);
-		const hasMoveCommand = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null).some(it => it.type === CommandType.MOVE && (it as MoveCommand).worldObjectId === identifier);
+		const hasCommand = CommandRepository.useAll().some(it => it.worldObjectId === identifier);
+		const hasMoveCommand = CommandRepository.useAllByType<MoveCommand>(CommandType.MOVE).some(it => it.worldObjectId === identifier);
 
 		const openMoveWindow = UseMoveWindow.useOpen();
-		const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen()
+		const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen();
 
 		if (worldObject) {
 			return {
@@ -84,7 +84,7 @@ export namespace UseWorldObjectWindow {
 					possible: worldObject.ownedByPlayer && worldObject.type === WorldObjectType.SETTLER,
 					enabled: !hasCommand && tile?.createSettlement.settler!,
 					start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
-				}
+				},
 			};
 		} else {
 			return null;
@@ -92,11 +92,11 @@ export namespace UseWorldObjectWindow {
 	}
 
 	function cancelMovementCommand(worldObject: WorldObject) {
-		const command = AppCtx.CommandDatabase()
-			.queryMany(CommandDatabase.QUERY_ALL, null)
-			.find(it => it.type == CommandType.MOVE && (it as MoveCommand).worldObjectId === worldObject.id);
+		const command = CommandRepository
+			.useAllByType<MoveCommand>(CommandType.MOVE)
+			.find(it => it.worldObjectId === worldObject.id);
 		if (command) {
-			AppCtx.CommandService().cancelCommand(command.id);
+			useDI<CommandService>(CommandService.name).cancelCommand(command.id);
 		}
 	}
 

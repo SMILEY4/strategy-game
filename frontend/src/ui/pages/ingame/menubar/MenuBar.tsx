@@ -5,69 +5,70 @@ import {Spacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";
 import {FiHexagon, FiMap} from "react-icons/fi";
 import "./menubar.scoped.less";
-import {AppCtx} from "../../../../appContext";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseTileWindow} from "../windows/tile/useTileWindow";
-import {GameSessionDatabase} from "../../../../state/database/gameSessionDatabase";
 import {PiScrollBold} from "react-icons/pi";
 import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
 import {isBlockingWindowOpen} from "../../../components/headless/useWindowData";
+import {useDI} from "../../../../appContext";
+import {TurnEndService} from "../../../../logic/game/turnEndService";
+import {SessionRepository} from "../../../../state/repository/sessionRepository";
 
 export function MenuBar(): ReactElement {
 
-    const openDevMenu = UseDevWindow.useOpen();
-    const openMapMenu = UseMapWindow.useOpen();
-    const openCommandLogMenu = UseCommandLogWindow.useOpen();
-    const openTileMenu = UseTileWindow.useOpen();
-    const currentTurn = GameSessionDatabase.useTurn()
-    const [endTurnDisabled, endTurn] = useEndTurn();
+	const openDevMenu = UseDevWindow.useOpen();
+	const openMapMenu = UseMapWindow.useOpen();
+	const openCommandLogMenu = UseCommandLogWindow.useOpen();
+	const openTileMenu = UseTileWindow.useOpen();
+	const currentTurn = SessionRepository.useTurn();
+	const [endTurnDisabled, endTurn] = useEndTurn();
 
-    return (
-        <div className="menubar">
-            <div className="menubar__inner">
-                <HBox padding_xs gap_xs fillParent className="menubar__content">
+	return (
+		<div className="menubar">
+			<div className="menubar__inner">
+				<HBox padding_xs gap_xs fillParent className="menubar__content">
 
-                    <ButtonPrimary blue round onClick={openDevMenu}>
-                        <CgDebug/>
-                    </ButtonPrimary>
+					<ButtonPrimary blue round onClick={openDevMenu}>
+						<CgDebug/>
+					</ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={openMapMenu}>
-                        <FiMap/>
-                    </ButtonPrimary>
+					<ButtonPrimary blue round onClick={openMapMenu}>
+						<FiMap/>
+					</ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={openCommandLogMenu}>
-                        <PiScrollBold/>
-                    </ButtonPrimary>
+					<ButtonPrimary blue round onClick={openCommandLogMenu}>
+						<PiScrollBold/>
+					</ButtonPrimary>
 
-                    <ButtonPrimary blue round onClick={() => openTileMenu(null)}>
-                        <FiHexagon/>
-                    </ButtonPrimary>
+					<ButtonPrimary blue round onClick={() => openTileMenu(null)}>
+						<FiHexagon/>
+					</ButtonPrimary>
 
-                    <Spacer size="fill"/>
+					<Spacer size="fill"/>
 
-                    <ButtonPrimary green disabled={endTurnDisabled} onClick={endTurn}>
-                        {"End Turn " + currentTurn}
-                    </ButtonPrimary>
-                </HBox>
-            </div>
-        </div>
-    );
+					<ButtonPrimary green disabled={endTurnDisabled} onClick={endTurn}>
+						{"End Turn " + currentTurn}
+					</ButtonPrimary>
+				</HBox>
+			</div>
+		</div>
+	);
 
 }
 
 function useEndTurn(): [boolean, () => void] {
-    const isBlocked = isBlockingWindowOpen()
-    const isWaiting = GameSessionDatabase.useGameTurnState() === "waiting";
-    const setTurnState = GameSessionDatabase.useSetGameTurnState();
-    const isDisabled = isBlocked || isWaiting
+	const isBlocked = isBlockingWindowOpen();
+	const isWaiting = SessionRepository.useGameTurnState() === "waiting";
+	const setTurnState = SessionRepository.useSetGameTurnState();
+	const isDisabled = isBlocked || isWaiting;
 
-    const endTurnService = AppCtx.TurnEndService();
+	const endTurnService = useDI<TurnEndService>(TurnEndService.name);
 
-    function endTurn() {
-        endTurnService.endTurn();
-        setTurnState("waiting");
-    }
+	function endTurn() {
+		endTurnService.endTurn();
+		setTurnState("waiting");
+	}
 
-    return [isDisabled, endTurn];
+	return [isDisabled, endTurn];
 }

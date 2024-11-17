@@ -2,8 +2,9 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import React from "react";
 import {ProductionWindow} from "./ProductionWindow";
 import {ProductionOptionAggregate} from "../../../../../models/aggregates/SettlementAggregate";
-import {AppCtx} from "../../../../../appContext";
+import {useDI} from "../../../../../appContext";
 import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
+import {SettlementService} from "../../../../../logic/game/settlementService";
 
 export namespace UseProductionWindow {
 
@@ -44,7 +45,7 @@ export namespace UseProductionWindow {
 
 	export function useData(settlementId: string): UseProductionWindow.Data {
 		const settlement = SettlementAggregateAccess.useSettlementAggregate(settlementId)!;
-		const service = AppCtx.SettlementService();
+		const service = useDI<SettlementService>(SettlementService.name);
 		return {
 			entries: settlement.production.options,
 			produce: (entry: ProductionOptionAggregate) => service.addProductionQueue(settlement.identifier, entry.type),

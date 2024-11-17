@@ -5,7 +5,7 @@ import {
 	SettlementMessage,
 } from "../gamesession/models/gameStateMessage";
 import {ValueHistory} from "../../common/valueHistory";
-import {MonitoringRepository} from "../../state/database/monitoringRepository";
+import {MonitoringRepository} from "../../state/repository/monitoringRepository";
 import {Tile} from "../../models/base/tile";
 import {TerrainType} from "../../models/base/TerrainType";
 import {TileResourceType} from "../../models/base/TileResourceType";

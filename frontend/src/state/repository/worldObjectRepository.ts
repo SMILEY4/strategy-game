@@ -6,6 +6,8 @@ import {MovementModeState} from "../database/movementModeState";
 import {TilePosition} from "../../models/base/tilePosition";
 import {CommandDatabase} from "../database/commandDatabase";
 import {CommandType, MoveCommand} from "../../models/base/command";
+import {useDI} from "../../appContext";
+import {useQuerySingle} from "../../common/db/adapters/databaseHooks";
 
 export class WorldObjectRepository {
 
@@ -62,6 +64,20 @@ export class WorldObjectRepository {
 
 	public getMovementTargets(): MovementTarget[] {
 		return MovementModeState.useState.getState().availableTargets;
+	}
+
+}
+
+export namespace WorldObjectRepository {
+
+
+	export function useById(worldObjectId: string | null): WorldObject | null {
+		const db = useDI<WorldObjectDatabase>(WorldObjectDatabase.name);
+		return useQuerySingle(db, WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
+	}
+
+	export function useCurrentMovementPath(): MovementTarget[] {
+		return MovementModeState.useState(state => state.path);
 	}
 
 }

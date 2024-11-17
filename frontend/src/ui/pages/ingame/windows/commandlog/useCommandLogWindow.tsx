@@ -1,10 +1,10 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
-import {AppCtx} from "../../../../../appContext";
+import {useDI} from "../../../../../appContext";
 import {Command} from "../../../../../models/base/command";
 import React from "react";
 import {CommandLogWindow} from "./CommandLogWindow";
-import {useQueryMultiple, useQuerySingleOrThrow} from "../../../../../common/db/adapters/databaseHooks";
-import {CommandDatabase} from "../../../../../state/database/commandDatabase";
+import {CommandRepository} from "../../../../../state/repository/commandRepository";
+import {CommandService} from "../../../../../logic/game/commandService";
 
 export namespace UseCommandLogWindow {
 
@@ -34,25 +34,18 @@ export namespace UseCommandLogWindow {
 	}
 
 	export function useData(): UseCommandLogWindow.Data {
-		const entries: CommandLogEntry[] = useCommands().map(cmd => ({command: cmd}));
-		const cancel = useCommandCancel();
+		const entries: CommandLogEntry[] = CommandRepository.useAll().map(cmd => ({command: cmd}));
+		const cancel = useCancel();
 		return {
 			entries: entries,
 			cancel: cancel,
 		};
 	}
 
-	function useCommandCancel() {
-		const commandService = AppCtx.CommandService();
+	function useCancel() {
+		const commandService = useDI<CommandService>(CommandService.name);
 		return (entry: CommandLogEntry) => commandService.cancelCommand(entry.command.id);
 	}
 
-	function useCommands(): Command[] {
-		return useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null);
-	}
-
-	function useCommandById(commandId: string): Command {
-		return useQuerySingleOrThrow(AppCtx.CommandDatabase(), CommandDatabase.QUERY_BY_ID, commandId);
-	}
 
 }

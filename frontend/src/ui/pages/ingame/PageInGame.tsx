@@ -8,67 +8,67 @@ import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../components/text/Text";
 import {useConnectGameSession} from "../../hooks/gameSessions";
 import "./pageInGame.scoped.less";
-import {GameSessionDatabase} from "../../../state/database/gameSessionDatabase";
+import {SessionRepository} from "../../../state/repository/sessionRepository";
 
 const USE_DUMMY_CANVAS = false;
 
 export function PageInGame(): ReactElement {
-    const currentState = GameSessionDatabase.useGameSessionState();
-    const loadGame = useLoadGame();
+	const currentState = SessionRepository.useGameSessionState();
+	const loadGame = useLoadGame();
 
-    useEffect(() => {
-        loadGame();
-    }, []);
+	useEffect(() => {
+		loadGame();
+	}, []);
 
-    if (currentState === "loading") {
-        return <GameLoading/>;
-    } else if (currentState === "playing") {
-        return <GamePlaying/>;
-    } else {
-        return <GameError/>;
-    }
+	if (currentState === "loading") {
+		return <GameLoading/>;
+	} else if (currentState === "playing") {
+		return <GamePlaying/>;
+	} else {
+		return <GameError/>;
+	}
 }
 
 function GameLoading(): ReactElement {
-    return (
-        <BackgroundPanel fillParent centerContent>
-            <DecoratedPanel>
-                <Text>Loading ...</Text>
-            </DecoratedPanel>
-        </BackgroundPanel>
-    );
+	return (
+		<BackgroundPanel fillParent centerContent>
+			<DecoratedPanel>
+				<Text>Loading ...</Text>
+			</DecoratedPanel>
+		</BackgroundPanel>
+	);
 }
 
 function GameError(): ReactElement {
-    return (
-        <BackgroundPanel fillParent centerContent>
-            <DecoratedPanel>
-                <Text>An unexpected error occurred.</Text>
-            </DecoratedPanel>
-        </BackgroundPanel>
-    );
+	return (
+		<BackgroundPanel fillParent centerContent>
+			<DecoratedPanel>
+				<Text>An unexpected error occurred.</Text>
+			</DecoratedPanel>
+		</BackgroundPanel>
+	);
 }
 
 function GamePlaying(): ReactElement {
-    return (
-        <div className="page-ingame page-ingame--playing">
-            {
-                USE_DUMMY_CANVAS
-                    ? <div className="dummy-canvas"/>
-                    : <Canvas/>
-            }
-            <MenuBar/>
-            <WindowStack/>
-        </div>
-    );
+	return (
+		<div className="page-ingame page-ingame--playing">
+			{
+				USE_DUMMY_CANVAS
+					? <div className="dummy-canvas"/>
+					: <Canvas/>
+			}
+			<MenuBar/>
+			<WindowStack/>
+		</div>
+	);
 }
 
 
 function useLoadGame() {
-    const connect = useConnectGameSession();
-    const queryParams = useQuery();
-    return () => {
-        const paramGameId = queryParams.get("id")!!;
-        connect(paramGameId);
-    };
+	const connect = useConnectGameSession();
+	const queryParams = useQuery();
+	return () => {
+		const paramGameId = queryParams.get("id")!!;
+		connect(paramGameId);
+	};
 }

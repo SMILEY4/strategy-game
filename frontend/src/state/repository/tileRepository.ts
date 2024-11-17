@@ -1,6 +1,8 @@
 import {GameSessionDatabase} from "../database/gameSessionDatabase";
 import {TileDatabase} from "../database/tileDatabase";
 import {Tile, TileIdentifier} from "../../models/base/tile";
+import {usePartialSingletonEntity, useQuerySingle, useQuerySingleOrThrow} from "../../common/db/adapters/databaseHooks";
+import {useDI} from "../../appContext";
 
 export class TileRepository {
 
@@ -37,6 +39,25 @@ export class TileRepository {
 
 	public getAll(): Tile[] {
 		return this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
+	}
+
+}
+
+export namespace TileRepository {
+
+	export function useByIdOrThrow(tileIdentifier: TileIdentifier): Tile {
+		const db = useDI<TileDatabase>(TileDatabase.name);
+		return useQuerySingleOrThrow(db, TileDatabase.QUERY_BY_ID, tileIdentifier.id);
+	}
+
+	export function useById(tileIdentifier: TileIdentifier | null | undefined): Tile | null {
+		const db = useDI<TileDatabase>(TileDatabase.name);
+		return useQuerySingle(db, TileDatabase.QUERY_BY_ID, tileIdentifier?.id);
+	}
+
+	export function useSelected(): TileIdentifier | null {
+		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
+		return usePartialSingletonEntity(db, e => e.selectedTile)
 	}
 
 }

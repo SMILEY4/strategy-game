@@ -14,7 +14,7 @@ import {WebGLMonitor} from "./common/webgl/monitor/webGLMonitor";
 import {CameraDatabase} from "./state/database/cameraDatabase";
 import {GameSessionDatabase} from "./state/database/gameSessionDatabase";
 import {TileDatabase} from "./state/database/tileDatabase";
-import {MonitoringRepository} from "./state/database/monitoringRepository";
+import {MonitoringRepository} from "./state/repository/monitoringRepository";
 import {UserRepository} from "./state/repository/userRepository";
 import {GameRenderer} from "./renderer/game/gameRenderer";
 import {SessionRepository} from "./state/repository/sessionRepository";
@@ -36,6 +36,7 @@ import {TileRepository} from "./state/repository/tileRepository";
 import {TurnRepository} from "./state/repository/turnRepository";
 import {WorldObjectRepository} from "./state/repository/worldObjectRepository";
 import {ChangeProvider} from "./renderer/game/changeProvider";
+import {ProvinceRepository} from "./state/repository/provinceRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -77,6 +78,7 @@ interface AppCtxDef {
 	TurnRepository: () => TurnRepository,
 	WorldObjectRepository: () => WorldObjectRepository,
 	SessionRepository: () => SessionRepository,
+	ProvinceRepository: () => ProvinceRepository,
 
 	CameraDatabase: () => CameraDatabase,
 	GameSessionDatabase: () => GameSessionDatabase,
@@ -227,10 +229,10 @@ export const AppCtx: AppCtxDef = {
 		ctx => new GameRenderer(
 			ctx.get<ChangeProvider>(ChangeProvider.name),
 			ctx.get<CameraRepository>(CameraRepository.name),
-			ctx.get<TileRepository>(CameraRepository.name),
-			ctx.get<SessionRepository>(CameraRepository.name),
-			ctx.get<WorldObjectRepository>(CameraRepository.name),
-			ctx.get<SettlementRepository>(CameraRepository.name),
+			ctx.get<TileRepository>(TileRepository.name),
+			ctx.get<SessionRepository>(SessionRepository.name),
+			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
+			ctx.get<SettlementRepository>(SettlementRepository.name),
 		),
 	),
 	ChangeProvider: diContext.register(
@@ -300,6 +302,12 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<GameSessionDatabase>(GameSessionDatabase.name),
 		),
 	),
+	ProvinceRepository: diContext.register(
+		ProvinceRepository.name,
+		ctx => new ProvinceRepository(
+			ctx.get<ProvinceDatabase>(ProvinceDatabase.name),
+		)
+	),
 
 
 	CameraDatabase: diContext.register(
@@ -337,3 +345,8 @@ export const AppCtx: AppCtxDef = {
 };
 
 diContext.initialize();
+
+
+export function useDI<T>(qualifier: string): T {
+	return diContext.get<T>(qualifier)
+}

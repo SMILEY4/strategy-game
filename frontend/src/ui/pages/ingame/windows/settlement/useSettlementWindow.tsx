@@ -1,10 +1,8 @@
 import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
-import {AppCtx} from "../../../../../appContext";
-import {useQuerySingle} from "../../../../../common/db/adapters/databaseHooks";
+import {useDI} from "../../../../../appContext";
 import {Province} from "../../../../../models/base/province";
-import {ProvinceDatabase} from "../../../../../state/database/provinceDatabase";
 import {UseProductionWindow} from "../production/useProductionWindow";
 import {
 	ProductionQueueEntryAggregate,
@@ -12,6 +10,8 @@ import {
 } from "../../../../../models/aggregates/SettlementAggregate";
 import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
+import {SettlementService} from "../../../../../logic/game/settlementService";
+import {ProvinceRepository} from "../../../../../state/repository/provinceRepository";
 
 export namespace UseSettlementWindow {
 
@@ -58,9 +58,9 @@ export namespace UseSettlementWindow {
 	export function useData(identifier: string | null): UseSettlementWindow.Data | null {
 
 		const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
-		const province = useQuerySingle(AppCtx.ProvinceDatabase(), ProvinceDatabase.QUERY_BY_SETTLEMENT_ID, settlement?.identifier.id);
+		const province = ProvinceRepository.useBySettlementId(settlement?.identifier);
 
-		const service = AppCtx.SettlementService();
+		const service = useDI<SettlementService>(SettlementService.name);
 
 		const openProductionWindow = UseProductionWindow.useOpen();
 		const openProductionQueueWindow = UseProductionQueueWindow.useOpen();

@@ -1,5 +1,7 @@
 import {CommandDatabase} from "../database/commandDatabase";
 import {Command, CommandType} from "../../models/base/command";
+import {useQueryMultiple, useQuerySingleOrThrow} from "../../common/db/adapters/databaseHooks";
+import {useDI} from "../../appContext";
 
 export class CommandRepository {
 
@@ -15,8 +17,8 @@ export class CommandRepository {
 
 	public getAllByType<T extends Command>(type: CommandType): T[] {
 		return this.getAll()
-			.filter(it => it.type === CommandType.PRODUCTION_QUEUE_ADD)
-			.map(it => it as T)
+			.filter(it => it.type === type)
+			.map(it => it as T);
 	}
 
 	public add(command: Command) {
@@ -29,6 +31,27 @@ export class CommandRepository {
 
 	public clear() {
 		this.commandDb.deleteAll();
+	}
+
+}
+
+export namespace CommandRepository {
+
+	export function useAll(): Command[] {
+		const db = useDI<CommandDatabase>(CommandDatabase.name);
+		return useQueryMultiple(db, CommandDatabase.QUERY_ALL, null);
+	}
+
+	export function useAllByType<T extends Command>(type: CommandType): T[] {
+		const db = useDI<CommandDatabase>(CommandDatabase.name);
+		return useQueryMultiple(db, CommandDatabase.QUERY_ALL, null)
+			.filter(it => it.type === type)
+			.map(it => it as T);
+	}
+
+	export function useById(commandId: string): Command {
+		const db = useDI<CommandDatabase>(CommandDatabase.name);
+		return useQuerySingleOrThrow(db, CommandDatabase.QUERY_BY_ID, commandId);
 	}
 
 }

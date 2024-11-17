@@ -20,10 +20,10 @@ import {NodeInput} from "./nodeInput";
 export namespace RenderGraphPreloader {
 
     export function tempLoad() {
-        return preload([ // todo: temporary
+        return preload([
             new VertexFullQuadNode(),
             new TilesVertexNode(null as any, null as any, null as any),
-            new OverlayVertexNode(null as any, null as any),
+            new OverlayVertexNode(null as any, null as any, null as any, null as any),
             new EntitiesVertexNode(null as any, null as any),
             new DetailsVertexNode(null as any),
             new RoutesVertexNode(null as any),

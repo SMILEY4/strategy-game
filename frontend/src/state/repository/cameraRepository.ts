@@ -1,11 +1,13 @@
 import {CameraDatabase} from "../database/cameraDatabase";
 import {CameraData} from "../../models/base/cameraData";
+import {useSingletonEntity} from "../../common/db/adapters/databaseHooks";
+import {useDI} from "../../appContext";
 
 export class CameraRepository {
 
 	private readonly cameraDb: CameraDatabase;
 
-	constructor(cameraDb: CameraDatabase,) {
+	constructor(cameraDb: CameraDatabase) {
 		this.cameraDb = cameraDb;
 	}
 
@@ -18,3 +20,13 @@ export class CameraRepository {
 	}
 
 }
+
+export namespace CameraRepository {
+
+	export function useCamera(): CameraData {
+		const db = useDI<CameraDatabase>(CameraDatabase.name);
+		return useSingletonEntity(db);
+	}
+
+}
+

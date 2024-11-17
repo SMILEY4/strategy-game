@@ -1,10 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import {useHandleUnauthorized} from "./authentication";
 import {UnauthorizedError} from "../../common/UnauthorizedError";
-import {AppCtx} from "../../appContext";
+import {AppCtx, useDI} from "../../appContext";
+import {GameSessionService} from "../../logic/gamesession/gameSessionService";
 
 export function useLoadGameSessions() {
-    const gameSessionService = AppCtx.GameSessionService();
+    const gameSessionService = useDI<GameSessionService>(GameSessionService.name);
     const handleUnauthorized = useHandleUnauthorized();
     return () => {
         return gameSessionService.listSessions()
@@ -16,7 +17,7 @@ export function useLoadGameSessions() {
 }
 
 export function useCreateGameSession() {
-    const gameSessionService = AppCtx.GameSessionService()
+    const gameSessionService = useDI<GameSessionService>(GameSessionService.name)
     const handleUnauthorized = useHandleUnauthorized();
     return (name: string, seed: string | null) => {
         return gameSessionService.createSession(name, seed)
@@ -27,7 +28,7 @@ export function useCreateGameSession() {
 }
 
 export function useJoinGameSession() {
-    const gameSessionService = AppCtx.GameSessionService()
+    const gameSessionService = useDI<GameSessionService>(GameSessionService.name)
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
         return gameSessionService.joinSession(gameId)
@@ -39,7 +40,7 @@ export function useJoinGameSession() {
 }
 
 export function useDeleteGameSession() {
-    const gameSessionService = AppCtx.GameSessionService()
+    const gameSessionService = useDI<GameSessionService>(GameSessionService.name)
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
         return gameSessionService.deleteSession(gameId)
@@ -56,7 +57,7 @@ export function useStartGameSession() {
 
 
 export function useConnectGameSession() {
-    const gameSessionService = AppCtx.GameSessionService()
+    const gameSessionService = useDI<GameSessionService>(GameSessionService.name)
     const handleUnauthorized = useHandleUnauthorized();
     return (gameId: string) => {
         gameSessionService.connectSession(gameId)

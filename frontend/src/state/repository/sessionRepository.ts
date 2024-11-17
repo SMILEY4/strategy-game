@@ -1,5 +1,11 @@
 import {GameSessionDatabase} from "../database/gameSessionDatabase";
 import {MapMode} from "../../models/base/mapMode";
+import {usePartialSingletonEntity} from "../../common/db/adapters/databaseHooks";
+import {GameSessionState} from "../../models/base/gameSessionState";
+import {GameTurnState} from "../../models/base/gameTurnState";
+import {TileIdentifier} from "../../models/base/tile";
+import {useDI} from "../../appContext";
+import {WorldObjectDatabase} from "../database/objectDatabase";
 
 export class SessionRepository {
 
@@ -35,6 +41,41 @@ export class SessionRepository {
 
 	public getMapMode(): MapMode {
 		return this.database.getMapMode();
+	}
+
+}
+
+export namespace SessionRepository {
+
+	export function useTurn(): number {
+		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
+		return usePartialSingletonEntity(db, e => e.turn);
+	}
+
+	export function useGameSessionState(): GameSessionState {
+		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
+		return usePartialSingletonEntity(db, e => e.sessionState);
+	}
+
+	export function useGameTurnState(): GameTurnState {
+		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
+		return usePartialSingletonEntity(db, e => e.turnState);
+	}
+
+	export function useSetGameTurnState(): (state: GameTurnState) => void {
+		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
+		return (state: GameTurnState) => {
+			db.setTurnState(state);
+		};
+	}
+
+	export function useMapMode(): [MapMode, (mode: MapMode) => void] {
+		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
+		const mapMode = usePartialSingletonEntity(db, e => e.mapMode);
+		return [
+			mapMode,
+			(m: MapMode) => db.setMapMode(m),
+		];
 	}
 
 }
