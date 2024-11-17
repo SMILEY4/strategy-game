@@ -1,6 +1,6 @@
-import {AbstractSingletonDatabase} from "../../shared/db/database/abstractSingletonDatabase";
-import {CameraData} from "../../models/primitives/cameraData";
-import {useSingletonEntity} from "../../shared/db/adapters/databaseHooks";
+import {AbstractSingletonDatabase} from "../../common/db/database/abstractSingletonDatabase";
+import {CameraData} from "../../models/base/cameraData";
+import {useSingletonEntity} from "../../common/db/adapters/databaseHooks";
 import {AppCtx} from "../../appContext";
 
 export class CameraDatabase extends AbstractSingletonDatabase<CameraData> {

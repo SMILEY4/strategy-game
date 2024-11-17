@@ -1,12 +1,12 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../core/graph/htmlRenderNode";
-import {NodeOutput} from "../../core/graph/nodeOutput";
-import {Camera} from "../../../shared/webgl/camera";
+import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {NodeOutput} from "../../common/graph/nodeOutput";
+import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
-import {buildMap} from "../../../shared/utils";
-import {TileIdentifier} from "../../../models/primitives/tile";
-import {Projections} from "../../../shared/webgl/projections";
+import {buildMap} from "../../../common/utils";
+import {TileIdentifier} from "../../../models/base/tile";
+import {Projections} from "../../../common/webgl/projections";
 import {RenderRepository} from "../renderRepository";
-import {WorldObjectType} from "../../../models/primitives/worldObjectType";
+import {WorldObjectType} from "../../../models/base/worldObjectType";
 
 var dirty = true;
 

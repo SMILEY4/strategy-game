@@ -7,7 +7,7 @@ import {
 	CreateSettlementDirectCommand,
 	CreateSettlementWithSettlerCommand,
 	MoveCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
-} from "../../../../../models/primitives/command";
+} from "../../../../../models/base/command";
 import {Text} from "../../../../components/text/Text";
 import {Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";

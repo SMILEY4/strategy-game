@@ -1,21 +1,21 @@
-import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
-import {GLAttributeType} from "../../../shared/webgl/glTypes";
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../../shared/tilemapUtils";
-import {Tile} from "../../../models/primitives/tile";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
+import {GLAttributeType} from "../../../common/webgl/glTypes";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
+import {TilemapUtils} from "../../../common/tilemapUtils";
+import {Tile} from "../../../models/base/tile";
 import seedrandom from "seedrandom";
-import {NodeOutput} from "../../core/graph/nodeOutput";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import {GameRenderConfig} from "../gameRenderConfig";
 import {ChangeProvider} from "../changeProvider";
-import {shuffleArray} from "../../../shared/utils";
+import {shuffleArray} from "../../../common/utils";
 import {RenderRepository} from "../renderRepository";
-import {TerrainType} from "../../../models/primitives/TerrainType";
+import {TerrainType} from "../../../models/base/TerrainType";
 import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
-import {Visibility} from "../../../models/primitives/visibility";
-import {mapHiddenOrNull} from "../../../models/common/hiddenType";
+import {Visibility} from "../../../models/base/visibility";
+import {mapHiddenOrNull} from "../../../common/hiddenType";
 
 export class TilesVertexNode extends VertexRenderNode {
 

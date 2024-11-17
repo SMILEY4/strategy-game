@@ -1,4 +1,4 @@
-import {Tile} from "../../../models/primitives/tile";
+import {Tile} from "../../../models/base/tile";
 import {RenderRepository} from "../renderRepository";
 
 export namespace BorderBuilder {

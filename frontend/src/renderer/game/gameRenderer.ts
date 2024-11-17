@@ -1,5 +1,5 @@
-import {CanvasHandle} from "../../shared/webgl/canvasHandle";
-import {Camera} from "../../shared/webgl/camera";
+import {CanvasHandle} from "../../common/webgl/canvasHandle";
+import {Camera} from "../../common/webgl/camera";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
 import {RenderRepository} from "./renderRepository";

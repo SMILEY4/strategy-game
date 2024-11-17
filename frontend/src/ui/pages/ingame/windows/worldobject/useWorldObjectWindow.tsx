@@ -2,15 +2,15 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import React from "react";
 import {WorldObjectWindow} from "./WorldObjectWindow";
 import {AppCtx} from "../../../../../appContext";
-import {WorldObject} from "../../../../../models/primitives/worldObject";
+import {WorldObject} from "../../../../../models/base/worldObject";
 import {WorldObjectDatabase} from "../../../../../state/database/objectDatabase";
 import {UseMoveWindow} from "../move/useWorldObjectWindow";
-import {CommandType, MoveCommand} from "../../../../../models/primitives/command";
+import {CommandType, MoveCommand} from "../../../../../models/base/command";
 import {CommandDatabase} from "../../../../../state/database/commandDatabase";
-import {useQueryMultiple, useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
+import {useQueryMultiple, useQuerySingle} from "../../../../../common/db/adapters/databaseHooks";
 import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
 import {TileDatabase} from "../../../../../state/database/tileDatabase";
-import {WorldObjectType} from "../../../../../models/primitives/worldObjectType";
+import {WorldObjectType} from "../../../../../models/base/worldObjectType";
 
 export namespace UseWorldObjectWindow {
 

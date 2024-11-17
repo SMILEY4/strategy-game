@@ -1,5 +1,5 @@
-import {WebGLMonitor} from "../../shared/webgl/monitor/webGLMonitor";
-import {SetState} from "../../shared/zustandUtils";
+import {WebGLMonitor} from "../../common/webgl/monitor/webGLMonitor";
+import {SetState} from "../../common/zustandUtils";
 import create from "zustand";
 
 export class MonitoringRepository {

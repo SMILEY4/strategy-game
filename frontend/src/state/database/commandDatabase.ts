@@ -1,9 +1,9 @@
-import {MapPrimaryStorage} from "../../shared/db/storage/primary/mapPrimaryStorage";
-import {AbstractDatabase} from "../../shared/db/database/abstractDatabase";
-import {Query} from "../../shared/db/query/query";
-import {DatabaseStorage, DatabaseStorageConfig} from "../../shared/db/storage/databaseStorage";
-import {ArraySupportingStorage} from "../../shared/db/storage/supporting/arraySupportingStorage";
-import {Command} from "../../models/primitives/command";
+import {MapPrimaryStorage} from "../../common/db/storage/primary/mapPrimaryStorage";
+import {AbstractDatabase} from "../../common/db/database/abstractDatabase";
+import {Query} from "../../common/db/query/query";
+import {DatabaseStorage, DatabaseStorageConfig} from "../../common/db/storage/databaseStorage";
+import {ArraySupportingStorage} from "../../common/db/storage/supporting/arraySupportingStorage";
+import {Command} from "../../models/base/command";
 
 function provideId(e: Command): string {
     return e.id;

@@ -3,15 +3,15 @@ import {
     VertexBufferResource,
     VertexDataResource,
     VertexRenderNode,
-} from "../../core/graph/vertexRenderNode";
-import {MixedArrayBuffer, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {GLAttributeType} from "../../../shared/webgl/glTypes";
-import {LineMesh} from "../../../shared/webgl/lines/lineMesh";
-import {LineMeshCreator} from "../../../shared/webgl/lines/lineMeshCreator";
-import {LineCapsButt} from "../../../shared/webgl/lines/lineCapsButt";
-import {LineJoinMiter} from "../../../shared/webgl/lines/lineJoinMitter";
-import {buildMap} from "../../../shared/utils";
-import {NodeOutput} from "../../core/graph/nodeOutput";
+} from "../../common/graph/vertexRenderNode";
+import {MixedArrayBuffer, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
+import {GLAttributeType} from "../../../common/webgl/glTypes";
+import {LineMesh} from "../../../common/webgl/lines/lineMesh";
+import {LineMeshCreator} from "../../../common/webgl/lines/lineMeshCreator";
+import {LineCapsButt} from "../../../common/webgl/lines/lineCapsButt";
+import {LineJoinMiter} from "../../../common/webgl/lines/lineJoinMitter";
+import {buildMap} from "../../../common/utils";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {ChangeProvider} from "../changeProvider";

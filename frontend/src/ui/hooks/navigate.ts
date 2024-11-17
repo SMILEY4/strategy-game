@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useQuery} from "../components/headless/useQuery";
-import {optional} from "../../shared/optional";
-import {Base64} from "../../shared/base64";
+import {optional} from "../../common/optional";
+import {Base64} from "../../common/base64";
 
 export function useGotoLogin() {
     const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import {useCloseWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
-import {Tile, TileIdentifier} from "../../../../../models/primitives/tile";
+import {Tile, TileIdentifier} from "../../../../../models/base/tile";
 import {FoundSettlementWindow} from "./FoundSettlementWindow";
-import {useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";
+import {useQuerySingleOrThrow} from "../../../../../common/db/adapters/databaseHooks";
 import {AppCtx} from "../../../../../appContext";
 import {TileDatabase} from "../../../../../state/database/tileDatabase";
 import {useEffect, useState} from "react";

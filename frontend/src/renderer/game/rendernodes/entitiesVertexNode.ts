@@ -3,12 +3,12 @@ import {
     VertexBufferResource,
     VertexDataResource,
     VertexRenderNode,
-} from "../../core/graph/vertexRenderNode";
-import {GLAttributeType} from "../../../shared/webgl/glTypes";
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../../shared/tilemapUtils";
-import {buildMap} from "../../../shared/utils";
-import {NodeOutput} from "../../core/graph/nodeOutput";
+} from "../../common/graph/vertexRenderNode";
+import {GLAttributeType} from "../../../common/webgl/glTypes";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
+import {TilemapUtils} from "../../../common/tilemapUtils";
+import {buildMap} from "../../../common/utils";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import {ChangeProvider} from "../changeProvider";

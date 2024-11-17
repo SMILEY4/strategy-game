@@ -1,11 +1,11 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../core/graph/htmlRenderNode";
-import {NodeOutput} from "../../core/graph/nodeOutput";
-import {Camera} from "../../../shared/webgl/camera";
+import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {NodeOutput} from "../../common/graph/nodeOutput";
+import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
-import {buildMap} from "../../../shared/utils";
-import {Projections} from "../../../shared/webgl/projections";
+import {buildMap} from "../../../common/utils";
+import {Projections} from "../../../common/webgl/projections";
 import {RenderRepository} from "../renderRepository";
-import {TilePosition} from "../../../models/primitives/tilePosition";
+import {TilePosition} from "../../../models/base/tilePosition";
 import {Simulate} from "react-dom/test-utils";
 
 export class PathsHtmlNode extends HtmlRenderNode {

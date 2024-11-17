@@ -1,7 +1,7 @@
-import {CountryIdentifier} from "../primitives/country";
-import {TileIdentifier} from "../primitives/tile";
-import {SettlementIdentifier} from "../primitives/Settlement";
-import {Building} from "../primitives/building";
+import {CountryIdentifier} from "../base/country";
+import {TileIdentifier} from "../base/tile";
+import {SettlementIdentifier} from "../base/Settlement";
+import {Building} from "../base/building";
 
 export interface SettlementAggregate {
 	identifier: SettlementIdentifier,

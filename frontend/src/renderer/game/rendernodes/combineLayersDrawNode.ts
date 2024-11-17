@@ -1,10 +1,10 @@
-import {DrawRenderNode} from "../../core/graph/drawRenderNode";
-import {VertexFullQuadNode} from "../../core/prebuilt/vertexFullquadNode";
-import {NodeOutput} from "../../core/graph/nodeOutput";
-import {NodeInput} from "../../core/graph/nodeInput";
-import {GLUniformType} from "../../../shared/webgl/glTypes";
-import {Camera} from "../../../shared/webgl/camera";
-import {mat3} from "../../../shared/webgl/mat3";
+import {DrawRenderNode} from "../../common/graph/drawRenderNode";
+import {VertexFullQuadNode} from "../../common/prebuilt/vertexFullquadNode";
+import {NodeOutput} from "../../common/graph/nodeOutput";
+import {NodeInput} from "../../common/graph/nodeInput";
+import {GLUniformType} from "../../../common/webgl/glTypes";
+import {Camera} from "../../../common/webgl/camera";
+import {mat3} from "../../../common/webgl/mat3";
 import {RenderRepository} from "../renderRepository";
 
 /**

@@ -5,7 +5,7 @@ import {joinClassNames} from "../../utils";
 import {ButtonPrimary} from "../../button/primary/ButtonPrimary";
 import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less";
-import {AudioType} from "../../../../shared/audioService";
+import {AudioType} from "../../../../common/audioService";
 import {VBox} from "../../layout/vbox/VBox";
 import {HeaderBanner} from "../../banner/Banner";
 import {Header} from "../../header/Header";

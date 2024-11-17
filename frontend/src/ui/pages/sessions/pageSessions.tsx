@@ -10,9 +10,9 @@ import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
 import {Spacer} from "../../components/spacer/Spacer";
 import "./pageSessions.less";
-import {AudioType} from "../../../shared/audioService";
+import {AudioType} from "../../../common/audioService";
 import {Text} from "../../components/text/Text";
-import {GameSessionMeta} from "../../../models/primitives/gameSessionMeta";
+import {GameSessionMeta} from "../../../models/base/gameSessionMeta";
 
 
 export function PageSessions(): ReactElement {

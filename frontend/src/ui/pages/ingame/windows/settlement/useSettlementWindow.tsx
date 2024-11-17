@@ -2,8 +2,8 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
 import {AppCtx} from "../../../../../appContext";
-import {useQuerySingle} from "../../../../../shared/db/adapters/databaseHooks";
-import {Province} from "../../../../../models/primitives/province";
+import {useQuerySingle} from "../../../../../common/db/adapters/databaseHooks";
+import {Province} from "../../../../../models/base/province";
 import {ProvinceDatabase} from "../../../../../state/database/provinceDatabase";
 import {UseProductionWindow} from "../production/useProductionWindow";
 import {

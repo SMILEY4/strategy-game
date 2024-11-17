@@ -1,5 +1,5 @@
-import {ChangeDetector} from "../../shared/changeDetector";
-import {Camera} from "../../shared/webgl/camera";
+import {ChangeDetector} from "../../common/changeDetector";
+import {Camera} from "../../common/webgl/camera";
 import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
 import {RenderRepository} from "./renderRepository";
 import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";

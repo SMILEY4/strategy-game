@@ -23,7 +23,7 @@ import {Header4} from "../../../../components/header/Header";
 import {joinClassNames} from "../../../../components/utils";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {If, Then} from "react-if";
-import {Building} from "../../../../../models/primitives/building";
+import {Building} from "../../../../../models/base/building";
 
 export interface SettlementWindowProps {
 	windowId: string;
