@@ -1,5 +1,4 @@
 import React, {ReactElement, useEffect, useState} from "react";
-import * as gameSession from "../../hooks/gameSessions";
 import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
@@ -13,6 +12,7 @@ import "./pageSessions.less";
 import {AudioType} from "../../../common/audioService";
 import {Text} from "../../components/text/Text";
 import {GameSessionMeta} from "../../../models/base/gameSessionMeta";
+import {SessionHooks} from "./sessions";
 
 
 export function PageSessions(): ReactElement {
@@ -237,7 +237,7 @@ function ModalCreateGame(props: {
 
 function useSessionData() {
     const [sessions, setSessions] = useState<GameSessionMeta[]>([]);
-    const loadGameSessions = gameSession.useLoadGameSessions();
+    const loadGameSessions = SessionHooks.useLoadGameSessions();
 
     return {
         sessions: sessions,
@@ -248,7 +248,7 @@ function useSessionData() {
 }
 
 function useCreateSession(reloadSessions: () => void) {
-    const createGameSession = gameSession.useCreateGameSession();
+    const createGameSession = SessionHooks.useCreateGameSession();
     const [show, setShow] = useState(false);
     const [seed, setSeed] = useState("");
     const [name, setName] = useState("New Game");
@@ -288,7 +288,7 @@ function useCreateSession(reloadSessions: () => void) {
 }
 
 function useJoinSession(reloadSessions: () => void) {
-    const joinGameSession = gameSession.useJoinGameSession();
+    const joinGameSession = SessionHooks.useJoinGameSession();
     const [show, setShow] = useState(false);
     const [sessionId, setSessionId] = useState("");
 
@@ -315,7 +315,7 @@ function useJoinSession(reloadSessions: () => void) {
 }
 
 function useDeleteSession(reloadSessions: () => void) {
-    const deleteGameSession = gameSession.useDeleteGameSession();
+    const deleteGameSession = SessionHooks.useDeleteGameSession();
     return (id: string) => {
         deleteGameSession(id)
             .then(() => reloadSessions())
@@ -324,7 +324,7 @@ function useDeleteSession(reloadSessions: () => void) {
 }
 
 function useStartSession() {
-    const startGameSession = gameSession.useStartGameSession();
+    const startGameSession = SessionHooks.useStartGameSession();
     return (id: string) => {
         startGameSession(id);
     };

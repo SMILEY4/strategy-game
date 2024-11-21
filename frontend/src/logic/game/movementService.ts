@@ -4,6 +4,8 @@ import {WorldObject} from "../../models/base/worldObject";
 import {GameClient} from "./gameClient";
 import {MovementTarget} from "../../models/base/movementTarget";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
+import {CommandRepository} from "../../state/repository/commandRepository";
+import {CommandType, MoveCommand} from "../../models/base/command";
 
 /**
  * Logic for handling movement of world objects
@@ -13,15 +15,18 @@ export class MovementService {
 	private readonly commandService: CommandService;
 	private readonly gameClient: GameClient;
 	private readonly worldObjectRepository: WorldObjectRepository;
+	private readonly commandRepository: CommandRepository;
 
 	constructor(
 		commandService: CommandService,
 		gameClient: GameClient,
-		worldObjectRepository: WorldObjectRepository
+		worldObjectRepository: WorldObjectRepository,
+		commandRepository: CommandRepository,
 	) {
 		this.commandService = commandService;
 		this.gameClient = gameClient;
 		this.worldObjectRepository = worldObjectRepository;
+		this.commandRepository = commandRepository;
 	}
 
 	/**
@@ -77,10 +82,10 @@ export class MovementService {
 			return false;
 		}
 
-		const target = current.availableTargets.find(it => it.tile.q == tileId.q && it.tile.r == tileId.r)
+		const target = current.availableTargets.find(it => it.tile.q == tileId.q && it.tile.r == tileId.r);
 		if (target) {
 			const newPath = [...current.path, target];
-			const newTotalCost = newPath.sum(0, it => it.cost)
+			const newTotalCost = newPath.sum(0, it => it.cost);
 			this.worldObjectRepository.setCurrentMovementModeState(current.worldObjectId, newPath, await this.getAvailableTargets(newPath[newPath.length - 1].tile, worldObject, newTotalCost));
 			return true;
 		}
@@ -91,7 +96,7 @@ export class MovementService {
 	 * Get the cost of the current path
 	 */
 	public getPathCost(): number {
-		return this.worldObjectRepository.getCurrentMovementModeState().path.sum(0, it => it.cost)
+		return this.worldObjectRepository.getCurrentMovementModeState().path.sum(0, it => it.cost);
 	}
 
 	/**
@@ -106,6 +111,20 @@ export class MovementService {
 			return await this.gameClient.getAvailableMovementPositions(worldObject.id, tile, points);
 		} catch (e) {
 			return [];
+		}
+	}
+
+	/**
+	 * Cancel an already commanded movement of the given world object
+	 */
+	public cancelMovementCommand(worldObject: WorldObject) {
+		this.worldObjectRepository.setCurrentMovementModeState(null, [], []);
+
+		const command = this.commandRepository.getAllByType<MoveCommand>(CommandType.MOVE)
+			.find(it => it.worldObjectId === worldObject.id);
+
+		if (command) {
+			this.commandService.cancelCommand(command.id);
 		}
 	}
 

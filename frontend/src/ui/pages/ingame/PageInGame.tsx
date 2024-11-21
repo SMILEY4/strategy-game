@@ -6,9 +6,9 @@ import {WindowStack} from "../../components/windows/stack/WindowStack";
 import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {Text} from "../../components/text/Text";
-import {useConnectGameSession} from "../../hooks/gameSessions";
 import "./pageInGame.scoped.less";
 import {SessionRepository} from "../../../state/repository/sessionRepository";
+import {SessionHooks} from "../sessions/sessions";
 
 const USE_DUMMY_CANVAS = false;
 
@@ -65,7 +65,7 @@ function GamePlaying(): ReactElement {
 
 
 function useLoadGame() {
-	const connect = useConnectGameSession();
+	const connect = SessionHooks.useConnectGameSession();
 	const queryParams = useQuery();
 	return () => {
 		const paramGameId = queryParams.get("id")!!;

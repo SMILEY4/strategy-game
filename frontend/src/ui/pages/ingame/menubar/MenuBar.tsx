@@ -60,14 +60,12 @@ export function MenuBar(): ReactElement {
 function useEndTurn(): [boolean, () => void] {
 	const isBlocked = isBlockingWindowOpen();
 	const isWaiting = SessionRepository.useGameTurnState() === "waiting";
-	const setTurnState = SessionRepository.useSetGameTurnState();
 	const isDisabled = isBlocked || isWaiting;
 
 	const endTurnService = useDI<TurnEndService>(TurnEndService.name);
 
 	function endTurn() {
 		endTurnService.endTurn();
-		setTurnState("waiting");
 	}
 
 	return [isDisabled, endTurn];

@@ -8,6 +8,9 @@ import {CommandService} from "../../../../../logic/game/commandService";
 
 export namespace UseCommandLogWindow {
 
+	/**
+	 * Returns a function to open the command log window
+	 */
 	export function useOpen() {
 		const WINDOW_ID = "menubar-window";
 		const addWindow = useOpenWindow();
@@ -24,28 +27,32 @@ export namespace UseCommandLogWindow {
 		};
 	}
 
+	/**
+	 * The data and functions required by the window
+	 */
 	export interface Data {
-		entries: CommandLogEntry[];
-		cancel: (entry: CommandLogEntry) => void;
+		commands: Command[];
+		cancel: (command: Command) => void;
 	}
 
-	export interface CommandLogEntry {
-		command: Command,
-	}
-
+	/**
+	 * Provides the data and functions required by the window
+	 */
 	export function useData(): UseCommandLogWindow.Data {
-		const entries: CommandLogEntry[] = CommandRepository.useAll().map(cmd => ({command: cmd}));
+		const commands = CommandRepository.useAll();
 		const cancel = useCancel();
 		return {
-			entries: entries,
+			commands: commands,
 			cancel: cancel,
 		};
 	}
 
+	/**
+	 * Returns a function to cancel a given command
+	 */
 	function useCancel() {
 		const commandService = useDI<CommandService>(CommandService.name);
-		return (entry: CommandLogEntry) => commandService.cancelCommand(entry.command.id);
+		return (command: Command) => commandService.cancelCommand(command.id);
 	}
-
 
 }

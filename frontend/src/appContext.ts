@@ -37,6 +37,7 @@ import {TurnRepository} from "./state/repository/turnRepository";
 import {WorldObjectRepository} from "./state/repository/worldObjectRepository";
 import {ChangeProvider} from "./renderer/game/changeProvider";
 import {ProvinceRepository} from "./state/repository/provinceRepository";
+import {MapService} from "./logic/game/mapService";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -64,6 +65,7 @@ interface AppCtxDef {
 	GameClient: () => GameClient,
 	GameIdProvider: () => GameIdProvider,
 	SettlementService: () => SettlementService,
+	MapService: () => MapService,
 
 	GameRenderer: () => GameRenderer,
 	ChangeProvider: () => ChangeProvider,
@@ -166,6 +168,7 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<GameSessionService>(GameSessionService.name),
 			ctx.get<MovementService>(MovementService.name),
 			ctx.get<CommandRepository>(CommandRepository.name),
+			ctx.get<SessionRepository>(SessionRepository.name),
 		),
 	),
 	GameLoopService: diContext.register(
@@ -190,6 +193,7 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<CommandService>(CommandService.name),
 			ctx.get<GameClient>(GameClient.name),
 			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
+			ctx.get<CommandRepository>(CommandRepository.name),
 		),
 	),
 	CommandService: diContext.register(
@@ -218,6 +222,12 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<GameClient>(GameClient.name),
 			ctx.get<CommandRepository>(CommandRepository.name),
 		),
+	),
+	MapService: diContext.register(
+		MapService.name,
+		ctx => new MapService(
+			ctx.get<SessionRepository>(SessionRepository.name),
+		)
 	),
 
 	WebGLMonitor: diContext.register(

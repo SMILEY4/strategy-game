@@ -155,6 +155,7 @@ export class TurnStartService {
 					type: entryMsg.type,
 					entryId: entryMsg.entryId,
 					progress: entryMsg.progress,
+					isCommand: false,
 				}))),
 				productionOptions: mapHidden(settlementMsg.productionOptions, optionsMsg => optionsMsg.map(optionMsg => ({
 					type: optionMsg.type,

@@ -8,7 +8,9 @@ import {TileRepository} from "../../../../../state/repository/tileRepository";
 
 export namespace UseFoundSettlementWindow {
 
-
+	/**
+	 * Returns a function to open the "found settlement" dialog window
+	 */
 	export function useOpen() {
 		const WINDOW_ID = "found-settlement-window";
 		const addWindow = useOpenWindow();
@@ -25,6 +27,9 @@ export namespace UseFoundSettlementWindow {
 		};
 	}
 
+	/**
+	 * The data and functions required by the "found settlement" window
+	 */
 	export interface Data {
 		input: {
 			valid: boolean,
@@ -39,11 +44,15 @@ export namespace UseFoundSettlementWindow {
 		create: () => void;
 	}
 
+	/**
+	 * Provides the data and functions required by the "found settlement" window
+	 */
 	export function useData(windowId: string, tileIdentifier: TileIdentifier, worldObjectId: string | null): UseFoundSettlementWindow.Data {
 
 		const tile = TileRepository.useByIdOrThrow(tileIdentifier);
 
 		const closeWindow = useCloseWindow();
+
 		const [name, setName] = useState("");
 		const [valid, failedValidations, create] = worldObjectId ? useCreateSettlementWithSettler(worldObjectId, tile, name) : useCreateSettlementDirect(tile, name);
 
@@ -74,6 +83,12 @@ export namespace UseFoundSettlementWindow {
 		service.getRandomName().then(set);
 	}
 
+	/**
+	 * Returns
+	 * - whether the given data is valid and a settlement can be created
+	 * - a list of validation errors
+	 * - a function to create the settlement
+	 */
 	function useCreateSettlementDirect(tile: Tile, name: string | null): [boolean, string[], () => void] {
 		const settlementService = useDI<SettlementService>(SettlementService.name);
 		const [possible, reasons] = useValidateCreateSettlement(tile, name);
@@ -85,6 +100,12 @@ export namespace UseFoundSettlementWindow {
 		return [possible, reasons, perform];
 	}
 
+	/**
+	 * Returns
+	 * - whether the given data is valid and a settlement can be created using a settler
+	 * - a list of validation errors
+	 * - a function to create the settlement
+	 */
 	function useCreateSettlementWithSettler(worldObjectId: string, tile: Tile, name: string | null): [boolean, string[], () => void] {
 		const settlementService = useDI<SettlementService>(SettlementService.name);
 		const [possible, reasons] = useValidateCreateSettlement(tile, name);
@@ -96,6 +117,11 @@ export namespace UseFoundSettlementWindow {
 		return [possible, reasons, perform];
 	}
 
+	/**
+	 * Returns
+	 * - whether the settlement to found with the given data is valid
+	 * - a list of validation errors
+	 */
 	function useValidateCreateSettlement(tile: Tile | null, name: string | null): [boolean, string[]] {
 		if (tile) {
 			const settlementService = useDI<SettlementService>(SettlementService.name);

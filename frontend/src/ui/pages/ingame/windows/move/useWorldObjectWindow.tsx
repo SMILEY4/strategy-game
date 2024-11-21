@@ -8,6 +8,9 @@ import {MovementService} from "../../../../../logic/game/movementService";
 
 export namespace UseMoveWindow {
 
+	/**
+	 * Returns a function to open the move world-object window
+	 */
 	export function useOpen() {
 		const WINDOW_ID = "move-command";
 		const openWindow = useOpenWindow();
@@ -26,6 +29,9 @@ export namespace UseMoveWindow {
 		};
 	}
 
+	/**
+	 * Opens the move world-object window
+	 */
 	export function open(worldObjectId: string) {
 		const WINDOW_ID = "move-command";
 		openWindow({
@@ -41,6 +47,9 @@ export namespace UseMoveWindow {
 		});
 	}
 
+	/**
+	 * The data and functions required by the window
+	 */
 	export interface Data {
 		worldObject: WorldObject,
 		remainingPoints: number,
@@ -49,9 +58,12 @@ export namespace UseMoveWindow {
 		accept: () => void
 	}
 
+	/**
+	 * Provides the data and functions required by the window
+	 */
 	export function useData(worldObjectId: string | null): UseMoveWindow.Data | null {
 
-		const _ = WorldObjectRepository.useCurrentMovementPath(); // force re-render on changes
+		useRerenderOnPathChange();
 
 		const worldObject = WorldObjectRepository.useById(worldObjectId);
 		const movementService = useDI<MovementService>(MovementService.name);
@@ -80,6 +92,10 @@ export namespace UseMoveWindow {
 		} else {
 			return null;
 		}
+	}
+
+	function useRerenderOnPathChange() {
+		const _ = WorldObjectRepository.useCurrentMovementPath(); // force re-render on changes
 	}
 
 }

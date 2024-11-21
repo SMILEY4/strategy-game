@@ -1,6 +1,5 @@
 import {
 	ProductionOptionAggregate,
-	ProductionQueueEntryAggregate,
 	SettlementAggregate,
 } from "../models/aggregates/SettlementAggregate";
 import {AppCtx} from "../appContext";
@@ -52,7 +51,7 @@ export namespace SettlementAggregateAccess {
 			productionQueue: ProductionQueueEntry[],
 			addProductionQueueCommands: ProductionQueueAddCommand[],
 			cancelProductionQueueCommands: ProductionQueueCancelCommand[],
-		): ProductionQueueEntryAggregate[] {
+		): ProductionQueueEntry[] {
 			return [
 				...productionQueue
 					.filter(entry => !isCancelled(entry, cancelProductionQueueCommands))
@@ -79,14 +78,14 @@ export namespace SettlementAggregateAccess {
 
 		function buildProductionOptions(
 			options: ProductionOption[],
-			productionQueue: ProductionQueueEntryAggregate[],
+			productionQueue: ProductionQueueEntry[],
 		): ProductionOptionAggregate[] {
 			return options.map(it => buildProductionOption(it, productionQueue));
 		}
 
 		function buildProductionOption(
 			option: ProductionOption,
-			productionQueue: ProductionQueueEntryAggregate[],
+			productionQueue: ProductionQueueEntry[],
 		): ProductionOptionAggregate {
 
 			let queueCount = 0;

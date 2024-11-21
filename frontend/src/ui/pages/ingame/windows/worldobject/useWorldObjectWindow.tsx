@@ -11,6 +11,7 @@ import {WorldObjectRepository} from "../../../../../state/repository/worldObject
 import {TileRepository} from "../../../../../state/repository/tileRepository";
 import {CommandRepository} from "../../../../../state/repository/commandRepository";
 import {CommandService} from "../../../../../logic/game/commandService";
+import {MovementService} from "../../../../../logic/game/movementService";
 
 export namespace UseWorldObjectWindow {
 
@@ -92,12 +93,8 @@ export namespace UseWorldObjectWindow {
 	}
 
 	function cancelMovementCommand(worldObject: WorldObject) {
-		const command = CommandRepository
-			.useAllByType<MoveCommand>(CommandType.MOVE)
-			.find(it => it.worldObjectId === worldObject.id);
-		if (command) {
-			useDI<CommandService>(CommandService.name).cancelCommand(command.id);
-		}
+		const movementService = useDI<MovementService>(MovementService.name);
+		movementService.cancelMovementCommand(worldObject)
 	}
 
 }

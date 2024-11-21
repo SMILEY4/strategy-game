@@ -24,7 +24,8 @@ export interface SettlementIdentifier {
 export interface ProductionQueueEntry {
 	type: string,
 	entryId: string,
-	progress: number
+	progress: number,
+	isCommand: boolean
 }
 
 export interface ResourceLedgerEntry {

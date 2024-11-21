@@ -41,6 +41,10 @@ export class SessionRepository {
 		return this.database.getMapMode();
 	}
 
+	public setMapMode(mode: MapMode): void {
+		this.database.setMapMode(mode);
+	}
+
 }
 
 export namespace SessionRepository {
@@ -60,20 +64,9 @@ export namespace SessionRepository {
 		return usePartialSingletonEntity(db, e => e.turnState);
 	}
 
-	export function useSetGameTurnState(): (state: GameTurnState) => void {
+	export function useMapMode(): MapMode {
 		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
-		return (state: GameTurnState) => {
-			db.setTurnState(state);
-		};
-	}
-
-	export function useMapMode(): [MapMode, (mode: MapMode) => void] {
-		const db = useDI<GameSessionDatabase>(GameSessionDatabase.name)
-		const mapMode = usePartialSingletonEntity(db, e => e.mapMode);
-		return [
-			mapMode,
-			(m: MapMode) => db.setMapMode(m),
-		];
+		return usePartialSingletonEntity(db, e => e.mapMode);
 	}
 
 }
