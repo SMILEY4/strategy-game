@@ -1,4 +1,4 @@
-import {GameSessionService} from "../gamesession/gameSessionService";
+import {GameSessionService} from "../session/gameSessionService";
 import {MovementService} from "./movementService";
 import {CommandRepository} from "../../state/repository/commandRepository";
 

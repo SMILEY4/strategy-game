@@ -3,7 +3,7 @@ import {
 	GameStateMessage,
 	ProvinceMessage,
 	SettlementMessage,
-} from "../gamesession/models/gameStateMessage";
+} from "../session/models/gameStateMessage";
 import {ValueHistory} from "../../common/valueHistory";
 import {MonitoringRepository} from "../../state/repository/monitoringRepository";
 import {Tile} from "../../models/base/tile";

@@ -2,7 +2,7 @@ import {useNavigate} from "react-router-dom";
 import {useHandleUnauthorized} from "./authentication";
 import {UnauthorizedError} from "../../common/UnauthorizedError";
 import {AppCtx, useDI} from "../../appContext";
-import {GameSessionService} from "../../logic/gamesession/gameSessionService";
+import {GameSessionService} from "../../logic/session/gameSessionService";
 
 export function useLoadGameSessions() {
     const gameSessionService = useDI<GameSessionService>(GameSessionService.name);

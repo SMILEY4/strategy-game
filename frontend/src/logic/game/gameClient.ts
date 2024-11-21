@@ -1,7 +1,7 @@
 import {AuthProvider} from "../user/authProvider";
 import {HttpClient} from "../../common/httpClient";
 import {TileIdentifier} from "../../models/base/tile";
-import {GameIdProvider} from "../gamesession/gameIdProvider";
+import {GameIdProvider} from "../session/gameIdProvider";
 import {MovementTarget} from "../../models/base/movementTarget";
 
 /**
