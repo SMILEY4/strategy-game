@@ -9,7 +9,7 @@ import {Text} from "../../../../components/text/Text";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
-import {AudioType} from "../../../../../shared/audioService";
+import {AudioType} from "../../../../../common/audioService";
 import {CgClose} from "react-icons/cg";
 import {ProductionQueueEntryAggregate} from "../../../../../models/aggregates/SettlementAggregate";
 import "./productionQueueWindow.less";

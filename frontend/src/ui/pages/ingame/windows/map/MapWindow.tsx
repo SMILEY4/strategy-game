@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {MapMode} from "../../../../../models/primitives/mapMode";
+import {MapMode} from "../../../../../models/base/mapMode";
 import {UseMapWindow} from "./useMapWindow";
 
 export interface MapWindowProps {

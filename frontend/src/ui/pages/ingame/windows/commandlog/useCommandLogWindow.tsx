@@ -1,13 +1,16 @@
 import {useOpenWindow} from "../../../../components/headless/useWindowData";
-import {AppCtx} from "../../../../../appContext";
-import {Command} from "../../../../../models/primitives/command";
+import {useDI} from "../../../../../appContext";
+import {Command} from "../../../../../models/base/command";
 import React from "react";
 import {CommandLogWindow} from "./CommandLogWindow";
-import {useQueryMultiple, useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";
-import {CommandDatabase} from "../../../../../state/database/commandDatabase";
+import {CommandRepository} from "../../../../../state/repository/commandRepository";
+import {CommandService} from "../../../../../logic/game/commandService";
 
 export namespace UseCommandLogWindow {
 
+	/**
+	 * Returns a function to open the command log window
+	 */
 	export function useOpen() {
 		const WINDOW_ID = "menubar-window";
 		const addWindow = useOpenWindow();
@@ -24,35 +27,32 @@ export namespace UseCommandLogWindow {
 		};
 	}
 
+	/**
+	 * The data and functions required by the window
+	 */
 	export interface Data {
-		entries: CommandLogEntry[];
-		cancel: (entry: CommandLogEntry) => void;
+		commands: Command[];
+		cancel: (command: Command) => void;
 	}
 
-	export interface CommandLogEntry {
-		command: Command,
-	}
-
+	/**
+	 * Provides the data and functions required by the window
+	 */
 	export function useData(): UseCommandLogWindow.Data {
-		const entries: CommandLogEntry[] = useCommands().map(cmd => ({command: cmd}));
-		const cancel = useCommandCancel();
+		const commands = CommandRepository.useAll();
+		const cancel = useCancel();
 		return {
-			entries: entries,
+			commands: commands,
 			cancel: cancel,
 		};
 	}
 
-	function useCommandCancel() {
-		const commandService = AppCtx.CommandService();
-		return (entry: CommandLogEntry) => commandService.cancelCommand(entry.command.id);
-	}
-
-	function useCommands(): Command[] {
-		return useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null);
-	}
-
-	function useCommandById(commandId: string): Command {
-		return useQuerySingleOrThrow(AppCtx.CommandDatabase(), CommandDatabase.QUERY_BY_ID, commandId);
+	/**
+	 * Returns a function to cancel a given command
+	 */
+	function useCancel() {
+		const commandService = useDI<CommandService>(CommandService.name);
+		return (command: Command) => commandService.cancelCommand(command.id);
 	}
 
 }

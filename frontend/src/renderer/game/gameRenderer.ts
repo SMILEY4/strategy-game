@@ -1,35 +1,61 @@
-import {CanvasHandle} from "../../shared/webgl/canvasHandle";
-import {Camera} from "../../shared/webgl/camera";
+import {CanvasHandle} from "../../common/webgl/canvasHandle";
+import {Camera} from "../../common/webgl/camera";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {ChangeProvider} from "./changeProvider";
-import {RenderRepository} from "./renderRepository";
 import {GameRenderGraph} from "./gameRenderGraph";
+import {CameraRepository} from "../../state/repository/cameraRepository";
+import {TileRepository} from "../../state/repository/tileRepository";
+import {SessionRepository} from "../../state/repository/sessionRepository";
+import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
+import {SettlementRepository} from "../../state/repository/settlementRepository";
 
 /**
  * Renderer
  */
 export class GameRenderer {
 
-	private readonly changeProvider;
-	private readonly repository: RenderRepository;
+	private readonly changeProvider: ChangeProvider;
+	private readonly cameraRepository: CameraRepository;
+	private readonly tileRepository: TileRepository;
+	private readonly sessionRepository: SessionRepository;
+	private readonly worldObjectRepository: WorldObjectRepository;
+	private readonly settlementRepository: SettlementRepository;
 
 	private renderConfig: GameRenderConfig | null = null;
 	private renderGraph: GameRenderGraph | null = null;
 
 	constructor(
-		renderRepository: RenderRepository,
+		changeProvider: ChangeProvider,
+		cameraRepository: CameraRepository,
+		tileRepository: TileRepository,
+		sessionRepository: SessionRepository,
+		worldObjectRepository: WorldObjectRepository,
+		settlementRepository: SettlementRepository,
 	) {
-		this.repository = renderRepository;
-		this.changeProvider = new ChangeProvider(renderRepository);
+		this.changeProvider = changeProvider;
+		this.cameraRepository = cameraRepository;
+		this.tileRepository = tileRepository;
+		this.sessionRepository = sessionRepository;
+		this.worldObjectRepository = worldObjectRepository;
+		this.settlementRepository = settlementRepository;
 	}
 
 	/**
 	 * Initialize the renderer for the given canvas
 	 */
-	public initialize(canvasHandle: CanvasHandle): void {
+	public initialize(
+		canvasHandle: CanvasHandle,
+	): void {
 		GameRenderConfig.initialize();
-		this.renderGraph = new GameRenderGraph(this.changeProvider, this.repository, canvasHandle.getGL(), () => this.renderConfig!)
-		this.renderGraph.initialize()
+		this.renderGraph = new GameRenderGraph(
+			this.changeProvider,
+			canvasHandle.getGL(), () => this.renderConfig!,
+			this.tileRepository,
+			this.sessionRepository,
+			this.worldObjectRepository,
+			this.settlementRepository,
+		);
+		this.renderGraph.initialize();
 	}
 
 	/**
@@ -40,8 +66,8 @@ export class GameRenderer {
 		this.changeProvider.prepareFrame(camera);
 		this.renderConfig = GameRenderConfig.load();
 
-		this.renderGraph?.updateCamera(camera)
-		this.renderGraph?.execute()
+		this.renderGraph?.updateCamera(camera);
+		this.renderGraph?.execute();
 	}
 
 	/**
@@ -53,7 +79,7 @@ export class GameRenderer {
 	}
 
 	private getRenderCamera(canvasHandle: CanvasHandle): Camera {
-		const data = this.repository.getCamera();
+		const data = this.cameraRepository.get();
 		return Camera.create(
 			data,
 			canvasHandle.getCanvasWidth(),

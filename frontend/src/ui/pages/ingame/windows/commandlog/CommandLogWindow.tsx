@@ -7,11 +7,10 @@ import {
 	CreateSettlementDirectCommand,
 	CreateSettlementWithSettlerCommand,
 	MoveCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
-} from "../../../../../models/primitives/command";
+} from "../../../../../models/base/command";
 import {Text} from "../../../../components/text/Text";
 import {Header4} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import CommandLogEntry = UseCommandLogWindow.CommandLogEntry;
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {VBox} from "../../../../components/layout/vbox/VBox";
@@ -22,31 +21,36 @@ export interface CommandLogWindowProps {
 	windowId: string;
 }
 
+/**
+ * Windows showing a list of all currently pending commands of this turn
+ */
 export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 
 	const data: UseCommandLogWindow.Data = UseCommandLogWindow.useData();
 
 	return (
 		<DefaultDecoratedWindowWithHeader windowId={props.windowId} title="Commands">
-			{data.entries.map(commandEntry => (
-				<CommandEntry data={data} entry={commandEntry} key={commandEntry.command.id}/>
+			{data.commands.map(command => (
+				<CommandEntry data={data} command={command} key={command.id}/>
 			))}
 		</DefaultDecoratedWindowWithHeader>
 	);
 }
 
 
-
-export function CommandEntry(props: { data: UseCommandLogWindow.Data, entry: CommandLogEntry }): ReactElement {
+/**
+ * A single issued and pending command
+ */
+export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: Command }): ReactElement {
 	return (
 		<DecoratedPanel paper simpleBorder>
 			<HBox centerVertical spaceBetween>
 				<VBox stretch>
-					{renderCommand(props.entry.command)}
+					{renderCommand(props.command)}
 				</VBox>
 				<ButtonPrimary
 					red round small
-					onClick={() => props.data.cancel(props.entry)}	>
+					onClick={() => props.data.cancel(props.command)}	>
 					<CgClose/>
 				</ButtonPrimary>
 			</HBox>

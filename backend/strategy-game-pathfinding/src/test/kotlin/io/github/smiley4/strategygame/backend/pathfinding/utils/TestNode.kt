@@ -1,7 +1,7 @@
 package io.github.smiley4.strategygame.backend.pathfinding.utils
 
 import io.github.smiley4.strategygame.backend.commondata.Tile
-import io.github.smiley4.strategygame.backend.pathfinding.edge.Node
+import io.github.smiley4.strategygame.backend.pathfinding.Node
 
 class TestNode(
     val tile: Tile,

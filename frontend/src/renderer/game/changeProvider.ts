@@ -1,7 +1,6 @@
-import {ChangeDetector} from "../../shared/changeDetector";
-import {Camera} from "../../shared/webgl/camera";
+import {ChangeDetector} from "../../common/changeDetector";
+import {Camera} from "../../common/webgl/camera";
 import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
-import {RenderRepository} from "./renderRepository";
 import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
@@ -10,6 +9,8 @@ import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
+import {SessionRepository} from "../../state/repository/sessionRepository";
+import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
 
 interface Changes {
     initFrame: boolean,
@@ -24,7 +25,8 @@ interface Changes {
  */
 export class ChangeProvider {
 
-    private readonly repository: RenderRepository;
+    private readonly sessionRepository: SessionRepository;
+    private readonly worldObjectRepository: WorldObjectRepository;
 
     private readonly detectorCamera = new ChangeDetector();
     private readonly detectorCurrentTurn = new ChangeDetector();
@@ -40,8 +42,12 @@ export class ChangeProvider {
         movementPaths: true,
     }
 
-    constructor(renderRepository: RenderRepository,) {
-        this.repository = renderRepository;
+    constructor(
+        sessionRepository: SessionRepository,
+        worldObjectRepository: WorldObjectRepository
+    ) {
+        this.sessionRepository = sessionRepository;
+        this.worldObjectRepository = worldObjectRepository;
     }
 
     /**
@@ -54,10 +60,10 @@ export class ChangeProvider {
             this.changes.initFrame = true
             this.frame ++;
         }
-        this.changes.turn = this.detectorCurrentTurn.check(this.repository.getTurn());
-        this.changes.mapMode = this.detectorMapMode.check(this.repository.getMapMode())
+        this.changes.turn = this.detectorCurrentTurn.check(this.sessionRepository.getTurn());
+        this.changes.mapMode = this.detectorMapMode.check(this.sessionRepository.getMapMode())
         this.changes.camera = this.detectorCamera.check(camera.getHash())
-        this.changes.movementPaths = this.detectorMovementPaths.check(this.repository.getMovementPathsCheckId())
+        this.changes.movementPaths = this.detectorMovementPaths.check(this.getMovementPathsCheckId())
     }
 
     /**
@@ -95,6 +101,17 @@ export class ChangeProvider {
             return this.changes.turn || this.changes.camera
         }
         return true;
+    }
+
+    private getMovementPathsCheckId(): string {
+        let str = "";
+        this.worldObjectRepository.getMovementPaths().forEach(path => {
+            path.positions.forEach(pos => {
+                str += pos.q + "," + pos.r + "/";
+            });
+            str += path.pending + "/"
+        });
+        return str;
     }
 
 }

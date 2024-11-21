@@ -1,7 +1,7 @@
-import {DrawRenderNode} from "../../core/graph/drawRenderNode";
-import {GLUniformType} from "../../../shared/webgl/glTypes";
-import {NodeOutput} from "../../core/graph/nodeOutput";
-import {NodeInput} from "../../core/graph/nodeInput";
+import {DrawRenderNode} from "../../common/graph/drawRenderNode";
+import {GLUniformType} from "../../../common/webgl/glTypes";
+import {NodeOutput} from "../../common/graph/nodeOutput";
+import {NodeInput} from "../../common/graph/nodeInput";
 
 export class EntitiesDrawNode extends DrawRenderNode {
 

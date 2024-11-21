@@ -1,5 +1,5 @@
-import {Tile} from "../../../models/primitives/tile";
-import {RenderRepository} from "../renderRepository";
+import {Tile} from "../../../models/base/tile";
+import {TileRepository} from "../../../state/repository/tileRepository";
 
 export namespace BorderBuilder {
 
@@ -12,9 +12,9 @@ export namespace BorderBuilder {
 		[+1, -1], // bottom right
 	];
 
-	export function build(tile: Tile, repository: RenderRepository, defaultValue: boolean, isBorder: (a: Tile, b: Tile) => boolean): boolean[] {
+	export function build(tile: Tile, repository: TileRepository, defaultValue: boolean, isBorder: (a: Tile, b: Tile) => boolean): boolean[] {
 		return NEIGHBOUR_OFFSETS.map(offset => {
-			const neighbour = repository.getTileAt(tile.identifier.q + offset[0], tile.identifier.r + offset[1]);
+			const neighbour = repository.getAt(tile.identifier.q + offset[0], tile.identifier.r + offset[1]);
 			if (neighbour) {
 				return isBorder(tile, neighbour);
 			} else {

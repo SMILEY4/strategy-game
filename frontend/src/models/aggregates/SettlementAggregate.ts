@@ -1,7 +1,7 @@
-import {CountryIdentifier} from "../primitives/country";
-import {TileIdentifier} from "../primitives/tile";
-import {SettlementIdentifier} from "../primitives/Settlement";
-import {Building} from "../primitives/building";
+import {CountryIdentifier} from "../base/country";
+import {TileIdentifier} from "../base/tile";
+import {ProductionQueueEntry, ResourceLedgerEntry, SettlementIdentifier} from "../base/Settlement";
+import {Building} from "../base/building";
 
 export interface SettlementAggregate {
 	identifier: SettlementIdentifier,
@@ -9,39 +9,16 @@ export interface SettlementAggregate {
 	tile: TileIdentifier,
 	production: {
 		options: ProductionOptionAggregate[],
-		queue: ProductionQueueEntryAggregate[],
+		queue: ProductionQueueEntry[],
 	},
 	buildings: Building[],
-	resources: ResourceLedgerEntryAggregate[]
+	resources: ResourceLedgerEntry[]
 }
 
-export interface ProductionQueueEntryAggregate {
-	type: string,
-	entryId: string,
-	progress: number
-	isCommand: boolean
-}
 
 export interface ProductionOptionAggregate {
 	type: string,
 	available: boolean,
 	queueCount: number,
 	commandCount: number,
-}
-
-export interface ResourceLedgerEntryAggregate {
-	type: string,
-	amount: number,
-	produced: {
-		amount: number,
-		details: ({ key: string, amount: number })[]
-	},
-	consumed: {
-		amount: number,
-		details: ({ key: string, amount: number })[]
-	},
-	missing: {
-		amount: number,
-		details: ({ key: string, amount: number })[]
-	},
 }

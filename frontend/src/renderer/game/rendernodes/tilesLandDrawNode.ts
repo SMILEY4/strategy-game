@@ -1,7 +1,7 @@
-import {GLUniformType} from "../../../shared/webgl/glTypes";
-import {DrawRenderNode} from "../../core/graph/drawRenderNode";
-import {NodeInput} from "../../core/graph/nodeInput";
-import {NodeOutput} from "../../core/graph/nodeOutput";
+import {GLUniformType} from "../../../common/webgl/glTypes";
+import {DrawRenderNode} from "../../common/graph/drawRenderNode";
+import {NodeInput} from "../../common/graph/nodeInput";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 
 export class TilesLandDrawNode extends DrawRenderNode {
 

@@ -1,5 +1,5 @@
 import create from "zustand";
-import {SetState} from "../../../shared/zustandUtils";
+import {SetState} from "../../../common/zustandUtils";
 
 export interface WindowData {
     id: string,

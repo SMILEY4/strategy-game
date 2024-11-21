@@ -8,9 +8,9 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
 import io.github.smiley4.strategygame.backend.commondata.TileData
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
-import io.github.smiley4.strategygame.backend.pathfinding.edge.NeighbourProvider
-import io.github.smiley4.strategygame.backend.pathfinding.edge.ScoreCalculator
-import io.github.smiley4.strategygame.backend.pathfinding.module.algorithms.astar.AStarPathfinder
+import io.github.smiley4.strategygame.backend.pathfinding.algorithms.astar.AStarPathfinder
+import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
+import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
 import io.github.smiley4.strategygame.backend.pathfinding.utils.TestNode
 import io.github.smiley4.strategygame.backend.pathfinding.utils.node
 import io.kotest.core.spec.style.StringSpec

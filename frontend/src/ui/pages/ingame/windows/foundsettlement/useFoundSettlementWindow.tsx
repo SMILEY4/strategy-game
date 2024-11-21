@@ -1,14 +1,16 @@
 import {useCloseWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
-import {Tile, TileIdentifier} from "../../../../../models/primitives/tile";
+import {Tile, TileIdentifier} from "../../../../../models/base/tile";
 import {FoundSettlementWindow} from "./FoundSettlementWindow";
-import {useQuerySingleOrThrow} from "../../../../../shared/db/adapters/databaseHooks";
-import {AppCtx} from "../../../../../appContext";
-import {TileDatabase} from "../../../../../state/database/tileDatabase";
+import {useDI} from "../../../../../appContext";
 import {useEffect, useState} from "react";
+import {SettlementService} from "../../../../../logic/game/settlementService";
+import {TileRepository} from "../../../../../state/repository/tileRepository";
 
 export namespace UseFoundSettlementWindow {
 
-
+	/**
+	 * Returns a function to open the "found settlement" dialog window
+	 */
 	export function useOpen() {
 		const WINDOW_ID = "found-settlement-window";
 		const addWindow = useOpenWindow();
@@ -25,6 +27,9 @@ export namespace UseFoundSettlementWindow {
 		};
 	}
 
+	/**
+	 * The data and functions required by the "found settlement" window
+	 */
 	export interface Data {
 		input: {
 			valid: boolean,
@@ -39,16 +44,20 @@ export namespace UseFoundSettlementWindow {
 		create: () => void;
 	}
 
+	/**
+	 * Provides the data and functions required by the "found settlement" window
+	 */
 	export function useData(windowId: string, tileIdentifier: TileIdentifier, worldObjectId: string | null): UseFoundSettlementWindow.Data {
 
-		const tile = useQuerySingleOrThrow(AppCtx.TileDatabase(), TileDatabase.QUERY_BY_ID, tileIdentifier.id);
+		const tile = TileRepository.useByIdOrThrow(tileIdentifier);
 
 		const closeWindow = useCloseWindow();
+
 		const [name, setName] = useState("");
 		const [valid, failedValidations, create] = worldObjectId ? useCreateSettlementWithSettler(worldObjectId, tile, name) : useCreateSettlementDirect(tile, name);
 
 		useEffect(() => {
-			setRandomName(setName)
+			setRandomName(setName);
 		}, []);
 
 		return {
@@ -70,34 +79,52 @@ export namespace UseFoundSettlementWindow {
 	}
 
 	function setRandomName(set: (name: string) => void) {
-		AppCtx.SettlementService().getRandomName().then(set)
+		const service = useDI<SettlementService>(SettlementService.name);
+		service.getRandomName().then(set);
 	}
 
+	/**
+	 * Returns
+	 * - whether the given data is valid and a settlement can be created
+	 * - a list of validation errors
+	 * - a function to create the settlement
+	 */
 	function useCreateSettlementDirect(tile: Tile, name: string | null): [boolean, string[], () => void] {
-		const settlementService = AppCtx.SettlementService();
+		const settlementService = useDI<SettlementService>(SettlementService.name);
 		const [possible, reasons] = useValidateCreateSettlement(tile, name);
 
 		function perform() {
-			settlementService.createSettlementDirect(tile, name!)
+			settlementService.createSettlementDirect(tile, name!);
 		}
 
 		return [possible, reasons, perform];
 	}
 
+	/**
+	 * Returns
+	 * - whether the given data is valid and a settlement can be created using a settler
+	 * - a list of validation errors
+	 * - a function to create the settlement
+	 */
 	function useCreateSettlementWithSettler(worldObjectId: string, tile: Tile, name: string | null): [boolean, string[], () => void] {
-		const settlementService = AppCtx.SettlementService();
+		const settlementService = useDI<SettlementService>(SettlementService.name);
 		const [possible, reasons] = useValidateCreateSettlement(tile, name);
 
 		function perform() {
-			settlementService.createSettlementWithSettler(worldObjectId, tile, name!)
+			settlementService.createSettlementWithSettler(worldObjectId, tile, name!);
 		}
 
 		return [possible, reasons, perform];
 	}
 
+	/**
+	 * Returns
+	 * - whether the settlement to found with the given data is valid
+	 * - a list of validation errors
+	 */
 	function useValidateCreateSettlement(tile: Tile | null, name: string | null): [boolean, string[]] {
 		if (tile) {
-			const settlementService = AppCtx.SettlementService();
+			const settlementService = useDI<SettlementService>(SettlementService.name);
 			const result = settlementService.validateFounding(tile, name);
 			return [result.length === 0, result];
 		} else {

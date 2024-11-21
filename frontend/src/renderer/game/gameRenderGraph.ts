@@ -1,13 +1,12 @@
-import {RenderGraph} from "../core/graph/renderGraph";
-import {WebGLRenderCommand} from "../core/webgl/webGLRenderCommand";
-import {HtmlRenderCommand} from "../core/html/htmlRenderCommand";
+import {RenderGraph} from "../common/graph/renderGraph";
+import {WebGLRenderCommand} from "../common/webgl/webGLRenderCommand";
+import {HtmlRenderCommand} from "../common/html/htmlRenderCommand";
 import {ChangeProvider} from "./changeProvider";
-import {RenderRepository} from "./renderRepository";
-import {WebGLRenderGraphSorter} from "../core/webgl/webGLRenderGraphSorter";
-import {WebGLResourceManager} from "../core/webgl/webGLResourceManager";
+import {WebGLRenderGraphSorter} from "../common/webgl/webGLRenderGraphSorter";
+import {WebGLResourceManager} from "../common/webgl/webGLResourceManager";
 import {GameShaderSourceManager} from "./shaders/gameShaderSourceManager";
-import {WebGLRenderGraphCompiler} from "../core/webgl/webGLRenderGraphCompiler";
-import {VertexFullQuadNode} from "../core/prebuilt/vertexFullquadNode";
+import {WebGLRenderGraphCompiler} from "../common/webgl/webGLRenderGraphCompiler";
+import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";
@@ -22,15 +21,19 @@ import {DetailsDrawNode} from "./rendernodes/detailsDrawNode";
 import {RoutesDrawNode} from "./rendernodes/routesDrawNode";
 import {CombineLayersDrawNode} from "./rendernodes/combineLayersDrawNode";
 import {GameRenderConfig} from "./gameRenderConfig";
-import {Camera} from "../../shared/webgl/camera";
-import {BaseRenderer} from "../../shared/webgl/baseRenderer";
-import {NoOpRenderGraphSorter} from "../core/prebuilt/NoOpRenderGraphSorter";
-import {HtmlResourceManager} from "../core/html/htmlResourceManager";
-import {HtmlRenderGraphCompiler} from "../core/html/htmlRenderGraphCompiler";
+import {Camera} from "../../common/webgl/camera";
+import {BaseRenderer} from "../../common/webgl/baseRenderer";
+import {NoOpRenderGraphSorter} from "../common/prebuilt/NoOpRenderGraphSorter";
+import {HtmlResourceManager} from "../common/html/htmlResourceManager";
+import {HtmlRenderGraphCompiler} from "../common/html/htmlRenderGraphCompiler";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
+import {TileRepository} from "../../state/repository/tileRepository";
+import {SessionRepository} from "../../state/repository/sessionRepository";
+import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
+import {SettlementRepository} from "../../state/repository/settlementRepository";
 
 export class GameRenderGraph {
 
@@ -44,9 +47,12 @@ export class GameRenderGraph {
 
 	constructor(
 		changeProvider: ChangeProvider,
-		renderRepository: RenderRepository,
 		gl: WebGL2RenderingContext,
 		renderConfig: () => GameRenderConfig,
+		tileRepository: TileRepository,
+		sessionRepository: SessionRepository,
+		worldObjectRepository: WorldObjectRepository,
+		settlementRepository: SettlementRepository,
 	) {
 
 		this.gl = gl;
@@ -58,19 +64,19 @@ export class GameRenderGraph {
 			compiler: new WebGLRenderGraphCompiler(),
 			nodes: [
 				new VertexFullQuadNode(),
-				new TilesVertexNode(changeProvider, renderConfig, renderRepository),
-				new OverlayVertexNode(changeProvider, renderRepository),
-				new EntitiesVertexNode(changeProvider, renderRepository),
+				new TilesVertexNode(changeProvider, renderConfig, tileRepository),
+				new OverlayVertexNode(changeProvider, tileRepository, sessionRepository, worldObjectRepository),
+				new EntitiesVertexNode(changeProvider, settlementRepository),
 				new DetailsVertexNode(changeProvider),
 				new RoutesVertexNode(changeProvider),
 				new TilesWaterDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
 				new TilesLandDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
 				new TilesFogDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-				new OverlayDrawNode(renderRepository, () => this.camera.getViewProjectionMatrixOrThrow()),
+				new OverlayDrawNode(tileRepository, () => this.camera.getViewProjectionMatrixOrThrow()),
 				new EntitiesDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
 				new DetailsDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
 				new RoutesDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
-				new CombineLayersDrawNode(renderRepository, () => this.camera),
+				new CombineLayersDrawNode(sessionRepository, () => this.camera),
 			],
 		});
 
@@ -79,10 +85,10 @@ export class GameRenderGraph {
 			resourceManager: new HtmlResourceManager(),
 			compiler: new HtmlRenderGraphCompiler(),
 			nodes: [
-				new PathsHtmlNode(changeProvider, renderRepository, () => this.camera,),
-				new ResourceIconsHtmlNode(changeProvider, renderRepository, () => this.camera,),
-				new WorldObjectsHtmlNode(changeProvider, renderRepository, () => this.camera,),
-				new SettlementsHtmlNode(changeProvider, renderRepository, () => this.camera,),
+				new PathsHtmlNode(changeProvider, worldObjectRepository, () => this.camera),
+				new ResourceIconsHtmlNode(changeProvider, tileRepository, sessionRepository, () => this.camera),
+				new WorldObjectsHtmlNode(changeProvider, worldObjectRepository, () => this.camera),
+				new SettlementsHtmlNode(changeProvider, settlementRepository, () => this.camera),
 			],
 		});
 	}
@@ -103,8 +109,8 @@ export class GameRenderGraph {
 	 * Dispose this render graphs and free all resources
 	 */
 	public dispose() {
-		this.renderGraphWebGl.dispose()
-		this.renderGraphWebGl.dispose()
+		this.renderGraphWebGl.dispose();
+		this.renderGraphWebGl.dispose();
 	}
 
 	/**

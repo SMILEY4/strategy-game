@@ -1,25 +1,28 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../core/graph/htmlRenderNode";
-import {NodeOutput} from "../../core/graph/nodeOutput";
-import {Camera} from "../../../shared/webgl/camera";
+import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {NodeOutput} from "../../common/graph/nodeOutput";
+import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
-import {buildMap} from "../../../shared/utils";
-import {MapMode} from "../../../models/primitives/mapMode";
-import {Tile, TileIdentifier} from "../../../models/primitives/tile";
-import {Projections} from "../../../shared/webgl/projections";
-import {RenderRepository} from "../renderRepository";
-import {TileResourceType} from "../../../models/primitives/TileResourceType";
+import {buildMap} from "../../../common/utils";
+import {MapMode} from "../../../models/base/mapMode";
+import {Tile, TileIdentifier} from "../../../models/base/tile";
+import {Projections} from "../../../common/webgl/projections";
+import {TileResourceType} from "../../../models/base/TileResourceType";
+import {TileRepository} from "../../../state/repository/tileRepository";
+import {SessionRepository} from "../../../state/repository/sessionRepository";
 
 export class ResourceIconsHtmlNode extends HtmlRenderNode {
 
-	public static readonly ID = "htmlnode.resourceicons"
+	public static readonly ID = "htmlnode.resourceicons";
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly repository: RenderRepository;
+	private readonly tileRepository: TileRepository;
+	private readonly sessionRepository: SessionRepository;
 	private readonly camera: () => Camera;
 
 	constructor(
 		changeProvider: ChangeProvider,
-		renderRepository: RenderRepository,
+		tileRepository: TileRepository,
+		sessionRepository: SessionRepository,
 		camera: () => Camera,
 	) {
 		super({
@@ -36,7 +39,8 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode {
 			],
 		});
 		this.changeProvider = changeProvider;
-		this.repository = renderRepository;
+		this.tileRepository = tileRepository;
+		this.sessionRepository = sessionRepository;
 		this.camera = camera;
 	}
 
@@ -48,11 +52,11 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode {
 		const elements: ResourceIconElement[] = [];
 
 		if (this.camera().getZoom() > 3) {
-			if(this.repository.getMapMode() == MapMode.RESOURCES) {
-				const tiles = this.repository.getTilesAll();
+			if (this.sessionRepository.getMapMode() == MapMode.RESOURCES) {
+				const tiles = this.tileRepository.getAll();
 				for (let i = 0, n = tiles.length; i < n; i++) {
 					const tile = tiles[i];
-					if(!tile.base.visible) {
+					if (!tile.base.visible) {
 						continue;
 					}
 					if (tile.base.value.resourceType !== TileResourceType.NONE && this.isVisible(tile, 0)) {

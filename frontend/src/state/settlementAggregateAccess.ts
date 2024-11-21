@@ -1,16 +1,15 @@
 import {
 	ProductionOptionAggregate,
-	ProductionQueueEntryAggregate,
 	SettlementAggregate,
 } from "../models/aggregates/SettlementAggregate";
 import {AppCtx} from "../appContext";
-import {useQueryMultiple, useQuerySingle} from "../shared/db/adapters/databaseHooks";
+import {useQueryMultiple, useQuerySingle} from "../common/db/adapters/databaseHooks";
 import {SettlementDatabase} from "./database/settlementDatabase";
 import {CommandDatabase} from "./database/commandDatabase";
-import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/primitives/command";
-import {ProductionQueueEntry} from "../models/primitives/Settlement";
-import {ProductionOption} from "../models/primitives/productionOption";
-import {getHiddenOrDefault} from "../models/common/hiddenType";
+import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} from "../models/base/command";
+import {ProductionQueueEntry} from "../models/base/Settlement";
+import {ProductionOption} from "../models/base/productionOption";
+import {getHiddenOrDefault} from "../common/hiddenType";
 
 export namespace SettlementAggregateAccess {
 
@@ -52,7 +51,7 @@ export namespace SettlementAggregateAccess {
 			productionQueue: ProductionQueueEntry[],
 			addProductionQueueCommands: ProductionQueueAddCommand[],
 			cancelProductionQueueCommands: ProductionQueueCancelCommand[],
-		): ProductionQueueEntryAggregate[] {
+		): ProductionQueueEntry[] {
 			return [
 				...productionQueue
 					.filter(entry => !isCancelled(entry, cancelProductionQueueCommands))
@@ -79,14 +78,14 @@ export namespace SettlementAggregateAccess {
 
 		function buildProductionOptions(
 			options: ProductionOption[],
-			productionQueue: ProductionQueueEntryAggregate[],
+			productionQueue: ProductionQueueEntry[],
 		): ProductionOptionAggregate[] {
 			return options.map(it => buildProductionOption(it, productionQueue));
 		}
 
 		function buildProductionOption(
 			option: ProductionOption,
-			productionQueue: ProductionQueueEntryAggregate[],
+			productionQueue: ProductionQueueEntry[],
 		): ProductionOptionAggregate {
 
 			let queueCount = 0;

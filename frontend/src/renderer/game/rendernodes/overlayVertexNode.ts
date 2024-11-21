@@ -1,14 +1,16 @@
-import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../core/graph/vertexRenderNode";
-import {GLAttributeType} from "../../../shared/webgl/glTypes";
-import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../shared/webgl/mixedArrayBuffer";
-import {TilemapUtils} from "../../../shared/tilemapUtils";
-import {Tile} from "../../../models/primitives/tile";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
+import {GLAttributeType} from "../../../common/webgl/glTypes";
+import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
+import {TilemapUtils} from "../../../common/tilemapUtils";
+import {Tile} from "../../../models/base/tile";
 import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
-import {MapMode} from "../../../models/primitives/mapMode";
-import {NodeOutput} from "../../core/graph/nodeOutput";
+import {MapMode} from "../../../models/base/mapMode";
+import {NodeOutput} from "../../common/graph/nodeOutput";
 import {ChangeProvider} from "../changeProvider";
-import {RenderRepository} from "../renderRepository";
+import {TileRepository} from "../../../state/repository/tileRepository";
+import {SessionRepository} from "../../../state/repository/sessionRepository";
+import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 
@@ -51,9 +53,16 @@ export class OverlayVertexNode extends VertexRenderNode {
 	];
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly repository: RenderRepository;
+	private readonly tileRepository: TileRepository;
+	private readonly sessionRepository: SessionRepository;
+	private readonly worldObjectRepository: WorldObjectRepository;
 
-	constructor(changeProvider: ChangeProvider, renderRepository: RenderRepository) {
+	constructor(
+		changeProvider: ChangeProvider,
+		tileRepository: TileRepository,
+		sessionRepository: SessionRepository,
+		worldObjectRepository: WorldObjectRepository,
+	) {
 		super({
 			id: OverlayVertexNode.ID,
 			input: [],
@@ -147,7 +156,9 @@ export class OverlayVertexNode extends VertexRenderNode {
 			],
 		});
 		this.changeProvider = changeProvider;
-		this.repository = renderRepository;
+		this.tileRepository = tileRepository;
+		this.sessionRepository = sessionRepository;
+		this.worldObjectRepository = worldObjectRepository;
 	}
 
 	public execute(): VertexDataResource {
@@ -164,14 +175,14 @@ export class OverlayVertexNode extends VertexRenderNode {
 		if (this.changeProvider.hasChange(this.id)) {
 
 			// tile instances
-			const tiles = this.repository.getTilesAll();
+			const tiles = this.tileRepository.getAll();
 			const tileCounts = this.countTiles(tiles);
 
 			const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, OverlayVertexNode.INSTANCE_PATTERN);
 
-			const mapMode = this.repository.getMapMode();
+			const mapMode = this.sessionRepository.getMapMode();
 			const mapModeContext = mapMode.renderData.context(tiles);
-			const highlightMovementTiles = this.repository.getHighlightMovementTileIds();
+			const highlightMovementTiles = new Set<string>(this.worldObjectRepository.getMovementTargets().map(it => it.tile.q + "/" + it.tile.r));
 
 			for (let i = 0, n = tiles.length; i < n; i++) {
 				const tile = tiles[i];
@@ -246,7 +257,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 		cursor.append(r);
 
 		// primary border mask
-		const borderData = BorderBuilder.build(tile, this.repository, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
+		const borderData = BorderBuilder.build(tile, this.tileRepository, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
 		const borderPacked = packBorder(borderData);
 		cursor.append(borderPacked);
 
@@ -256,10 +267,10 @@ export class OverlayVertexNode extends VertexRenderNode {
 
 
 		// highlight border mask & border color & fill color
-		if(highlightMovementTiles.has(tile.identifier.q + "/" + tile.identifier.r)) {
+		if (highlightMovementTiles.has(tile.identifier.q + "/" + tile.identifier.r)) {
 			cursor.append(0);
 			cursor.append([0, 0, 0, 0]);
-			cursor.append([0.941, 0.921, 0.686, 0.9]); // todo: find color
+			cursor.append([0.941, 0.921, 0.686, 0.9]);
 		} else {
 			cursor.append(0);
 			cursor.append([0, 0, 0, 0]);

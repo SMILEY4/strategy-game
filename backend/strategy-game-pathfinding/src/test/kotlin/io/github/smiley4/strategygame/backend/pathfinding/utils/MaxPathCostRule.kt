@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.pathfinding.utils
 
-import io.github.smiley4.strategygame.backend.pathfinding.edge.ScoreCalculator
+import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
 
 /**
  * The total cost of the path can not be greater than the given max-cost

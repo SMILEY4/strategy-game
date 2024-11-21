@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {App} from "./ui/pages/App";
-import {ArrayExtensions} from "./shared/extensions";
+import {ArrayExtensions} from "./common/extensions";
 
 ArrayExtensions.setup()
 

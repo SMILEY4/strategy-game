@@ -2,7 +2,7 @@ package io.github.smiley4.strategygame.backend.gateway.websocket.messages
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
-import io.github.smiley4.strategygame.backend.gateway.worlds.models.Message
+import io.github.smiley4.strategygame.backend.gateway.sessions.models.Message
 
 /**
  * A message-producer sending messages via a websocket

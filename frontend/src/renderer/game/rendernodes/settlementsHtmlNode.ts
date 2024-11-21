@@ -1,23 +1,23 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../core/graph/htmlRenderNode";
-import {NodeOutput} from "../../core/graph/nodeOutput";
-import {Camera} from "../../../shared/webgl/camera";
+import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {NodeOutput} from "../../common/graph/nodeOutput";
+import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../changeProvider";
-import {buildMap} from "../../../shared/utils";
-import {TileIdentifier} from "../../../models/primitives/tile";
-import {Projections} from "../../../shared/webgl/projections";
-import {RenderRepository} from "../renderRepository";
+import {buildMap} from "../../../common/utils";
+import {TileIdentifier} from "../../../models/base/tile";
+import {Projections} from "../../../common/webgl/projections";
+import {SettlementRepository} from "../../../state/repository/settlementRepository";
 
 export class SettlementsHtmlNode extends HtmlRenderNode {
 
 	public static readonly ID = "htmlnode.settlements";
 
 	private readonly changeProvider: ChangeProvider;
-	private readonly repository: RenderRepository;
+	private readonly settlementRepository: SettlementRepository;
 	private readonly camera: () => Camera;
 
 	constructor(
 		changeProvider: ChangeProvider,
-		renderRepository: RenderRepository,
+		settlementRepository: SettlementRepository,
 		camera: () => Camera,
 	) {
 		super({
@@ -34,7 +34,7 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 			],
 		});
 		this.changeProvider = changeProvider;
-		this.repository = renderRepository;
+		this.settlementRepository = settlementRepository;
 		this.camera = camera;
 	}
 
@@ -45,7 +45,7 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 
 		const elements: SettlementsElement[] = [];
 
-		const settlements = this.repository.getSettlements();
+		const settlements = this.settlementRepository.getAll();
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
 			if (this.isVisible(settlement.tile, 0)) {

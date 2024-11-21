@@ -1,28 +1,26 @@
 package io.github.smiley4.strategygame.backend.engine
 
-import io.github.smiley4.strategygame.backend.engine.edge.GameStep
-import io.github.smiley4.strategygame.backend.engine.edge.GameValidations
-import io.github.smiley4.strategygame.backend.engine.edge.InitializePlayer
-import io.github.smiley4.strategygame.backend.engine.edge.InitializeWorld
-import io.github.smiley4.strategygame.backend.engine.edge.MovementService
-import io.github.smiley4.strategygame.backend.engine.edge.SettlementUtilities
-import io.github.smiley4.strategygame.backend.engine.module.GameStepImpl
-import io.github.smiley4.strategygame.backend.engine.module.InitializePlayerImpl
-import io.github.smiley4.strategygame.backend.engine.module.InitializeWorldImpl
-import io.github.smiley4.strategygame.backend.engine.module.ingame.MovementServiceImpl
-import io.github.smiley4.strategygame.backend.engine.module.core.common.GameEventSystem
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandCreateSettlement
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandMove
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandProductionQueue
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.ResolveCommandsStep
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.RootUpdateStep
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateBuildingsStep
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateEconomyStep
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateInfluenceStep
-import io.github.smiley4.strategygame.backend.engine.module.core.steps.UpdateProductionQueueStep
-import io.github.smiley4.strategygame.backend.engine.module.tools.GameValidationsImpl
-import io.github.smiley4.strategygame.backend.engine.module.tools.InfluenceCalculator
-import io.github.smiley4.strategygame.backend.engine.module.tools.SettlementUtilitiesImpl
+import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
+import io.github.smiley4.strategygame.backend.engine.ports.provided.GameValidations
+import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializePlayer
+import io.github.smiley4.strategygame.backend.engine.ports.provided.InitializeWorld
+import io.github.smiley4.strategygame.backend.engine.ports.provided.MovementService
+import io.github.smiley4.strategygame.backend.engine.ports.provided.SettlementUtilities
+import io.github.smiley4.strategygame.backend.engine.application.core.GameStepImpl
+import io.github.smiley4.strategygame.backend.engine.application.core.InitializePlayerImpl
+import io.github.smiley4.strategygame.backend.engine.application.core.InitializeWorldImpl
+import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventSystem
+import io.github.smiley4.strategygame.backend.engine.application.core.ingame.MovementServiceImpl
+import io.github.smiley4.strategygame.backend.engine.application.core.steps.ResolveCommandCreateSettlement
+import io.github.smiley4.strategygame.backend.engine.application.core.steps.ResolveCommandMove
+import io.github.smiley4.strategygame.backend.engine.application.core.steps.RootUpdateStep
+import io.github.smiley4.strategygame.backend.engine.application.core.steps.UpdateBuildingsStep
+import io.github.smiley4.strategygame.backend.engine.application.core.steps.UpdateEconomyStep
+import io.github.smiley4.strategygame.backend.engine.application.core.steps.UpdateInfluenceStep
+import io.github.smiley4.strategygame.backend.engine.application.core.steps.UpdateProductionQueueStep
+import io.github.smiley4.strategygame.backend.engine.application.core.tools.GameValidationsImpl
+import io.github.smiley4.strategygame.backend.engine.application.core.tools.InfluenceCalculator
+import io.github.smiley4.strategygame.backend.engine.application.core.tools.SettlementUtilitiesImpl
 import org.koin.core.module.Module
 
 fun Module.dependenciesEngine() {
@@ -37,12 +35,12 @@ fun Module.dependenciesEngine() {
 
     single<ResolveCommandMove> { ResolveCommandMove(get()) }
     single<ResolveCommandCreateSettlement> { ResolveCommandCreateSettlement(get()) }
-    single<ResolveCommandProductionQueue> { ResolveCommandProductionQueue() }
+    single<io.github.smiley4.strategygame.backend.engine.application.core.steps.ResolveCommandProductionQueue> { io.github.smiley4.strategygame.backend.engine.application.core.steps.ResolveCommandProductionQueue() }
 
     single<GameEventSystem> {
         GameEventSystem().also {
             it.register(RootUpdateStep())
-            it.register(ResolveCommandsStep(get(), get(), get()))
+            it.register(io.github.smiley4.strategygame.backend.engine.application.core.steps.ResolveCommandsStep(get(), get(), get()))
             it.register(UpdateProductionQueueStep())
             it.register(UpdateEconomyStep(get()))
             it.register(UpdateInfluenceStep(get()))
