@@ -15,9 +15,14 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.ref
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedSettlementEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameValidations
 
-internal class ResolveCommandCreateSettlement(private val gameValidations: GameValidations) : Logging {
+internal class ResolveCommandCreateSettlement(
+    private val gameValidations: GameValidations,
+    private val publisher: ProcessEventPublisher
+) : Logging {
 
     @JvmName("resolveWithSettler")
     fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementWithSettler>) {
@@ -73,6 +78,8 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
         game.settlements.add(settlement)
         game.provinces.add(province)
         game.worldObjects.remove(worldObject)
+
+        publisher.publish(CreatedSettlementEvent(game, settlement))
     }
 
 

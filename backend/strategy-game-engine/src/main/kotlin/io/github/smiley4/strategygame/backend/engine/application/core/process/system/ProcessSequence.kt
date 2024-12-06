@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.application.core.processsystem
+package io.github.smiley4.strategygame.backend.engine.application.core.process.system
 
 import kotlin.reflect.KType
 

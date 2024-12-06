@@ -17,16 +17,15 @@ import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReportEntry
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.ProductionQueueEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedBuildingEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.EconomyUpdatedEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
 
 internal class UpdateProductionQueueStep(
     private val publisher: ProcessEventPublisher
 ) : ProcessStep<EconomyUpdatedEvent>,
     Logging {
 
-    override fun run(event: EconomyUpdatedEvent) {
-        log().info("Updating production queues.")
+    override suspend fun run(event: EconomyUpdatedEvent) {
         event.game.settlements.forEach { settlement ->
             settlement.infrastructure.productionQueue.firstOrNull()?.also { queueEntry ->
                 update(event.game, event.report, settlement, queueEntry)

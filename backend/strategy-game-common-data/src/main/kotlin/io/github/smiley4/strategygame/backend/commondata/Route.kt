@@ -7,5 +7,7 @@ data class Route(
     val path: List<TileRef>
 ) {
     @JvmInline
-    value class Id(val value: String)
+    value class Id(val value: String) {
+        companion object
+    }
 }

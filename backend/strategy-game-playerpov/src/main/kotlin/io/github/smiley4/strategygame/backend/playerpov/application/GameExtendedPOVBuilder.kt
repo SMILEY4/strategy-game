@@ -25,6 +25,7 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
             val countryBuilder = CountryPOVBuilder()
             val settlementBuilder = SettlementPOVBuilder(povCache, settlementUtilities)
             val provinceBuilder = ProvincePOVBuilder(povCache)
+            val routeBuilder = RoutePOVBuilder(povCache)
 
             obj {
                 "meta" to obj {
@@ -35,6 +36,7 @@ internal class GameExtendedPOVBuilder(private val gameValidations: GameValidatio
                 "worldObjects" to game.worldObjects.mapNotNull { worldObjectBuilder.build(it) }
                 "settlements" to game.settlements.mapNotNull { settlementBuilder.build(game, it) }
                 "provinces" to game.provinces.mapNotNull { provinceBuilder.build(it) }
+                "routes" to game.routes.mapNotNull { routeBuilder.build(it) }
             }
         }
     }

@@ -11,22 +11,24 @@ import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.commondata.requiresTile
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedBuildingEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
 import io.github.smiley4.strategygame.backend.engine.ports.provided.SettlementUtilities
 
 internal abstract class UpdateBuildingsStep(private val settlementUtilities: SettlementUtilities) {
 
-    class OnCreation(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities), ProcessStep<CreatedBuildingEvent>, Logging {
-        override fun run(event: CreatedBuildingEvent) {
-            log().info("Updating building.")
+    class OnCreation(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities),
+        ProcessStep<CreatedBuildingEvent>, Logging {
+
+        override suspend fun run(event: CreatedBuildingEvent) {
             clearWorkTile(event.building)
             update(event.game, event.settlement, event.building)
         }
     }
 
-    class OnUpdate(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities), ProcessStep<OnUpdateWorldEvent>, Logging {
-        override fun run(event: OnUpdateWorldEvent) {
-            log().info("Updating buildings.")
+    class OnUpdate(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities), ProcessStep<OnUpdateWorldEvent>,
+        Logging {
+
+        override suspend fun run(event: OnUpdateWorldEvent) {
             event.game.settlements.forEach { settlement ->
                 settlement.infrastructure.buildings.forEach { building ->
                     clearWorkTile(building)

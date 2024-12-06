@@ -10,3 +10,5 @@ data class TileRef(
 }
 
 fun Tile.ref() = TileRef(this.id, this.position.q, this.position.r)
+
+fun TileRef.position() = TilePosition(this)

@@ -8,6 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
 import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
@@ -59,6 +60,7 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
             countries = emptyList<Country>().tracking(),
             settlements = emptyList<Settlement>().tracking(),
             provinces = emptyList<Province>().tracking(),
+            routes = emptyList<Route>().tracking()
         )
     }
 

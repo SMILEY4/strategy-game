@@ -6,13 +6,12 @@ import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.engine.application.core.GameConfig
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.InfluenceCalculator
 
 internal class UpdateInfluenceStep(private val influenceCalculator: InfluenceCalculator) : ProcessStep<OnUpdateWorldEvent>, Logging {
 
-    override fun run(event: OnUpdateWorldEvent) {
-        log().info("Updating all tile influences")
+    override suspend fun run(event: OnUpdateWorldEvent) {
         event.game.tiles.forEach { tile ->
             setInfluences(tile, event.game)
             setControlledBy(tile)

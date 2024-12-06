@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.common.utils
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.Province
+import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import kotlin.random.Random
@@ -26,3 +27,5 @@ fun Settlement.Id.Companion.gen() = Settlement.Id(Id.gen())
 fun Province.Id.Companion.gen() = Province.Id(Id.gen())
 
 fun ProductionQueueEntry.Id.Companion.gen() = ProductionQueueEntry.Id(Id.gen())
+
+fun Route.Id.Companion.gen() = Route.Id(Id.gen())

@@ -21,16 +21,15 @@ import io.github.smiley4.strategygame.backend.engine.application.core.economy.no
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.record
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.EconomyUpdatedEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
 
 internal class EconomyStep(
     private val economyService: EconomyService,
     private val publisher: ProcessEventPublisher
 ) : ProcessStep<OnUpdateWorldEvent>, Logging {
 
-    override fun run(event: OnUpdateWorldEvent) {
-        log().info("Updating economy.")
+    override suspend fun run(event: OnUpdateWorldEvent) {
         val node = setup(event.game)
         val report = simulate(node)
         writeBack(node, report)
