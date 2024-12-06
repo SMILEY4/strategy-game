@@ -8,7 +8,7 @@ import io.github.smiley4.strategygame.backend.commondata.TerrainType
 class BlockingTilesRule(private val blockingTiles: Set<TerrainType>) : NextNodeRule<TestNode> {
 
     override fun evaluate(prev: TestNode, next: TestNode): Boolean {
-        return !blockingTiles.contains(next.tile.data.terrainType)
+        return !blockingTiles.contains(next.tile.dataWorld.terrainType)
     }
 
 }

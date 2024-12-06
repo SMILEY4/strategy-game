@@ -1,19 +1,21 @@
-package io.github.smiley4.strategygame.backend.engine.application.core.steps
+package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventNode
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.events.ResolveCommandsEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnResolveCommandsEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandCreateSettlement
+import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandMove
+import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandProductionQueue
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
 
 internal class ResolveCommandsStep(
     private val resolveMove: ResolveCommandMove,
     private val resolveCreateSettlement: ResolveCommandCreateSettlement,
     private val resolveProductionQueue: ResolveCommandProductionQueue
-) : GameEventNode<ResolveCommandsEvent>, Logging {
+) : ProcessStep<OnResolveCommandsEvent>, Logging {
 
-    override fun handle(event: ResolveCommandsEvent, publisher: GameEventPublisher) {
+    override fun run(event: OnResolveCommandsEvent) {
         log().info("Resolving ${event.commands.size} commands for game ${event.game.meta.id}")
         event.commands.forEach {
             try {

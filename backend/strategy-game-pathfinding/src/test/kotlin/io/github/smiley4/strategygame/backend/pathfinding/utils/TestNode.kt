@@ -21,7 +21,7 @@ fun Tile?.node(): TestNode {
     return TestNode(
         tile = this!!,
         pathLength = 1,
-        visitedProvinces = this.owner?.provinceId?.let { setOf(it) } ?: setOf(),
+        visitedProvinces = this.dataPolitical.controlledBy?.province?.let { setOf(it.value) } ?: setOf(),
         prevNode = null
     )
 }

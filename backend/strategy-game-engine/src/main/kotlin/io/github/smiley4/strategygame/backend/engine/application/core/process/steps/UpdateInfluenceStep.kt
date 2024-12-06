@@ -1,18 +1,17 @@
-package io.github.smiley4.strategygame.backend.engine.application.core.steps
+package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.engine.application.core.GameConfig
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventNode
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.events.UpdateWorldEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.InfluenceCalculator
 
-internal class UpdateInfluenceStep(private val influenceCalculator: InfluenceCalculator) : GameEventNode<UpdateWorldEvent>, Logging {
+internal class UpdateInfluenceStep(private val influenceCalculator: InfluenceCalculator) : ProcessStep<OnUpdateWorldEvent>, Logging {
 
-    override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
+    override fun run(event: OnUpdateWorldEvent) {
         log().info("Updating all tile influences")
         event.game.tiles.forEach { tile ->
             setInfluences(tile, event.game)

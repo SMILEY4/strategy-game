@@ -5,12 +5,13 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventSystem
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.RootEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 
 
 internal class GameStepImpl(
-    private var eventSystem: GameEventSystem
+    private var publisher: ProcessEventPublisher,
 ) : GameStep, Logging {
 
     private val metricId = MetricId.action(GameStep::class)
@@ -24,7 +25,7 @@ internal class GameStepImpl(
     }
 
     private fun updateState(game: GameExtended, commands: Collection<Command<*>>) {
-        eventSystem.publish(io.github.smiley4.strategygame.backend.engine.application.core.events.RootStepEvent(game, commands))
+        publisher.publish(RootEvent(game, commands))
     }
 
     private fun prepareNextTurn(game: GameExtended) {

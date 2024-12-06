@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.application.core.steps
+package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.notContainedIn
@@ -9,27 +9,23 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.commondata.requiresTile
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventNode
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.events.ProducedBuildingEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.events.UpdateWorldEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedBuildingEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
 import io.github.smiley4.strategygame.backend.engine.ports.provided.SettlementUtilities
 
 internal abstract class UpdateBuildingsStep(private val settlementUtilities: SettlementUtilities) {
 
-    class OnCreation(settlementUtilities: SettlementUtilities) :
-        UpdateBuildingsStep(settlementUtilities),
-        GameEventNode<ProducedBuildingEvent>, Logging {
-        override fun handle(event: ProducedBuildingEvent, publisher: GameEventPublisher) {
+    class OnCreation(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities), ProcessStep<CreatedBuildingEvent>, Logging {
+        override fun run(event: CreatedBuildingEvent) {
             log().info("Updating building.")
             clearWorkTile(event.building)
             update(event.game, event.settlement, event.building)
         }
     }
 
-    class OnUpdate(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities), GameEventNode<UpdateWorldEvent>,
-        Logging {
-        override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
+    class OnUpdate(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities), ProcessStep<OnUpdateWorldEvent>, Logging {
+        override fun run(event: OnUpdateWorldEvent) {
             log().info("Updating buildings.")
             event.game.settlements.forEach { settlement ->
                 settlement.infrastructure.buildings.forEach { building ->
@@ -44,7 +40,6 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
 
     protected fun clearWorkTile(building: Building) {
         building.workedTile = null
-//        building.details.clear(BuildingDetailType.WORK_TILE) todo
     }
 
     protected fun update(game: GameExtended, settlement: Settlement, building: Building) {
@@ -68,19 +63,13 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
             workTile = availablePreferredTiles.randomOrNull() ?: availablePossibleTiles.randomOrNull()
 
             building.workedTile = workTile?.ref()
-//            building.details.replaceDetail( todo
-//                BuildingDetailType.WORK_TILE, buildMutableMap {
-//                    this["required"] = BooleanDetailLogValue(building.type.templateData.requiresTile())
-//                    building.workedTile?.also {
-//                        this["tile"] = TileRefDetailLogValue(it)
-//                    }
-//                }
-//            )
         }
     }
 
     private fun recalculateActiveState(building: Building) {
-        building.validity.workTile = if (building.type.templateData.requiresTile()) building.workedTile != null else true
+        building.validity.workTile =
+            if (building.type.templateData.requiresTile()) building.workedTile != null
+            else true
     }
 
 }

@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.application.core.steps
+package io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.positionsCircle

@@ -6,8 +6,8 @@ package io.github.smiley4.strategygame.backend.pathfinding.utils
 class MaxProvincesRule(private val maxProvinces: Int) : NextNodeRule<TestNode> {
 
     override fun evaluate(prev: TestNode, next: TestNode): Boolean {
-        val enterNewProvince = next.tile.owner?.provinceId
-            ?.let { !prev.visitedProvinces.contains(it) }
+        val enterNewProvince = next.tile.dataPolitical.controlledBy?.province
+            ?.let { !prev.visitedProvinces.contains(it.value) }
             ?: false
         return if(enterNewProvince) {
             prev.visitedProvinces.size+1 <= maxProvinces

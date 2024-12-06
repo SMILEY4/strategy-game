@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.application.core.steps
+package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
@@ -9,9 +9,6 @@ import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyNode.Companion.c
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyService
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyUpdateState
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventNode
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.common.send
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.GameEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationBaseEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationGrowthEconomyEntity
@@ -22,17 +19,22 @@ import io.github.smiley4.strategygame.backend.engine.application.core.economy.no
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.SettlementEconomyNode
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.WorldEconomyNode
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.record
-import io.github.smiley4.strategygame.backend.engine.application.core.events.UpdateWorldEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.events.UpdatedEconomyEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.EconomyUpdatedEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
 
-internal class UpdateEconomyStep(private val economyService: EconomyService) : GameEventNode<UpdateWorldEvent>, Logging {
+internal class EconomyStep(
+    private val economyService: EconomyService,
+    private val publisher: ProcessEventPublisher
+) : ProcessStep<OnUpdateWorldEvent>, Logging {
 
-    override fun handle(event: UpdateWorldEvent, publisher: GameEventPublisher) {
+    override fun run(event: OnUpdateWorldEvent) {
         log().info("Updating economy.")
         val node = setup(event.game)
         val report = simulate(node)
         writeBack(node, report)
-        publisher.send(UpdatedEconomyEvent(event.game, report))
+        publisher.publish(EconomyUpdatedEvent(event.game, report))
     }
 
 
@@ -84,5 +86,4 @@ internal class UpdateEconomyStep(private val economyService: EconomyService) : G
             }
         }
     }
-
 }

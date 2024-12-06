@@ -2,12 +2,11 @@ package io.github.smiley4.strategygame.backend.pathfinding
 
 import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
-import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TileData
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.backtracking.BacktrackingPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
 import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
@@ -135,11 +134,13 @@ class BacktrackingPathfindingTest : StringSpec({
             AdvancedNeighbourProvider(tiles).withRules(
                 BlockingTilesRule(setOf(TerrainType.WATER))
             ),
-            AdvancedScoreCalculator(mapOf(
-                TerrainType.WATER to 9999f,
-                TerrainType.MOUNTAIN to 2f,
-                TerrainType.LAND to 1f
-            ))
+            AdvancedScoreCalculator(
+                mapOf(
+                    TerrainType.WATER to 9999f,
+                    TerrainType.MOUNTAIN to 2f,
+                    TerrainType.LAND to 1f
+                )
+            )
         )
         val path = pathfinder.find(
             tiles.get(1, 0).node(),
@@ -154,7 +155,6 @@ class BacktrackingPathfindingTest : StringSpec({
         )
         path.nodes.last().g.shouldBeWithinPercentageOf(5.0f, 0.1)
     }
-
 
 }) {
 
@@ -180,7 +180,11 @@ class BacktrackingPathfindingTest : StringSpec({
                     if (neighbourTile != null) {
                         val neighbourNode = TestNode(neighbourTile,
                             pathLength = current.pathLength + 1,
-                            visitedProvinces = current.visitedProvinces + (neighbourTile.owner?.provinceId?.let { setOf(it) } ?: setOf()),
+                            visitedProvinces = current.visitedProvinces + (neighbourTile.dataPolitical.controlledBy?.province?.let {
+                                setOf(
+                                    it.value
+                                )
+                            } ?: setOf()),
                             prevNode = current
                         )
                         if (allRulesApply(current, neighbourNode)) {
@@ -207,7 +211,7 @@ class BacktrackingPathfindingTest : StringSpec({
             }
 
             private fun movementCost(tile: Tile): Float {
-                return movementCosts[tile.data.terrainType] ?: 1f
+                return movementCosts[tile.dataWorld.terrainType] ?: 1f
             }
 
         }
@@ -219,20 +223,22 @@ class BacktrackingPathfindingTest : StringSpec({
                 qIds.forEachIndexed { q, id ->
                     tiles.add(
                         Tile(
-                            tileId = "$q/$r",
+                            id = Tile.Id("$q/$r"),
                             position = TilePosition(q, r),
-                            data = TileData(
-                                terrainType = when(id) {
+                            dataWorld = Tile.WorldData(
+                                terrainType = when (id) {
                                     1 -> TerrainType.WATER
                                     2 -> TerrainType.MOUNTAIN
                                     else -> TerrainType.LAND
                                 },
-                                resourceType = TileResourceType.NONE
+                                resourceType = TileResourceType.NONE,
+                                height = 1f
                             ),
-                            influences = mutableListOf(),
-                            owner = null,
-                            discoveredByCountries = mutableListOf(),
-                            objects = mutableListOf(),
+                            dataPolitical = Tile.PoliticalData(
+                                influences = mutableListOf(),
+                                discoveredByCountries = mutableSetOf(),
+                                controlledBy = null,
+                            ),
                         )
                     )
                 }

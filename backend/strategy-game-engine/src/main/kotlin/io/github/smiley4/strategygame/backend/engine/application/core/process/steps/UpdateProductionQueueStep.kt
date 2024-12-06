@@ -1,4 +1,4 @@
-package io.github.smiley4.strategygame.backend.engine.application.core.steps
+package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
@@ -14,22 +14,22 @@ import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.ecosim.lib.ConsumptionReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReportEntry
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventNode
-import io.github.smiley4.strategygame.backend.engine.application.core.common.GameEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.common.send
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.ProductionQueueEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.application.core.events.ProducedBuildingEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.events.ProducedSettlerEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.events.UpdatedEconomyEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedBuildingEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.EconomyUpdatedEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
+import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
 
-internal class UpdateProductionQueueStep : GameEventNode<UpdatedEconomyEvent>,
+internal class UpdateProductionQueueStep(
+    private val publisher: ProcessEventPublisher
+) : ProcessStep<EconomyUpdatedEvent>,
     Logging {
 
-    override fun handle(event: UpdatedEconomyEvent, publisher: GameEventPublisher) {
+    override fun run(event: EconomyUpdatedEvent) {
         log().info("Updating production queues.")
         event.game.settlements.forEach { settlement ->
             settlement.infrastructure.productionQueue.firstOrNull()?.also { queueEntry ->
-                update(event.game, event.report, settlement, queueEntry, publisher)
+                update(event.game, event.report, settlement, queueEntry)
             }
         }
     }
@@ -39,11 +39,10 @@ internal class UpdateProductionQueueStep : GameEventNode<UpdatedEconomyEvent>,
         report: EconomyReport,
         settlement: Settlement,
         queueEntry: ProductionQueueEntry,
-        publisher: GameEventPublisher
     ) {
         updateCollectedResources(report, queueEntry)
         if (isCompleted(queueEntry)) {
-            completeEntry(game, settlement, queueEntry, publisher)
+            completeEntry(game, settlement, queueEntry)
         }
     }
 
@@ -67,16 +66,16 @@ internal class UpdateProductionQueueStep : GameEventNode<UpdatedEconomyEvent>,
         }
     }
 
-    private fun completeEntry(game: GameExtended, settlement: Settlement, queueEntry: ProductionQueueEntry, publisher: GameEventPublisher) {
+    private fun completeEntry(game: GameExtended, settlement: Settlement, queueEntry: ProductionQueueEntry) {
         log().info("Completing production queue entry ${queueEntry.id} in ${settlement.id}.")
         settlement.infrastructure.productionQueue.remove(queueEntry)
         when (queueEntry) {
-            is ProductionQueueEntry.Settler -> completeSettler(game, settlement, publisher)
-            is ProductionQueueEntry.Building -> completeBuilding(game, settlement, queueEntry.building, publisher)
+            is ProductionQueueEntry.Settler -> completeSettler(game, settlement)
+            is ProductionQueueEntry.Building -> completeBuilding(game, settlement, queueEntry.building)
         }
     }
 
-    private fun completeSettler(game: GameExtended, settlement: Settlement, publisher: GameEventPublisher) {
+    private fun completeSettler(game: GameExtended, settlement: Settlement) {
         val settler = WorldObject.Settler(
             id = WorldObject.Id.gen(),
             tile = settlement.tile,
@@ -85,10 +84,9 @@ internal class UpdateProductionQueueStep : GameEventNode<UpdatedEconomyEvent>,
             viewDistance = 1
         )
         game.worldObjects.add(settler)
-        publisher.send(ProducedSettlerEvent(game, settlement, settler))
     }
 
-    private fun completeBuilding(game: GameExtended, settlement: Settlement, buildingType: BuildingType, publisher: GameEventPublisher) {
+    private fun completeBuilding(game: GameExtended, settlement: Settlement, buildingType: BuildingType) {
         val building = Building(
             type = buildingType,
             workedTile = null,
@@ -103,7 +101,7 @@ internal class UpdateProductionQueueStep : GameEventNode<UpdatedEconomyEvent>,
             )
         )
         settlement.infrastructure.buildings.add(building)
-        publisher.send(ProducedBuildingEvent(game, settlement, building))
+        publisher.publish(CreatedBuildingEvent(game, settlement, building))
     }
 
 }
