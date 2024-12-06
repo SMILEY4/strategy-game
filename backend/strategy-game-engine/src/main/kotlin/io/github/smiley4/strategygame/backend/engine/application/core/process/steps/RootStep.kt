@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.ev
 import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
 
-class RootStep(private val publisher: ProcessEventPublisher) : ProcessStep<RootEvent> {
+internal class RootStep(private val publisher: ProcessEventPublisher) : ProcessStep<RootEvent> {
 
     override fun run(event: RootEvent) {
         publisher.publish(OnResolveCommandsEvent(event.game, event.commands))

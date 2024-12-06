@@ -37,7 +37,7 @@ class ProcessSystemSequenceDsl<T: ProcessEvent>(private val name: String, privat
     }
 
     fun build(): ProcessSequence<T> {
-        return ProcessSequence(eventType, name, emptyList())
+        return ProcessSequence(eventType, name, steps)
     }
 
 }
