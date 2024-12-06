@@ -2,12 +2,11 @@ package io.github.smiley4.strategygame.backend.pathfinding
 
 import io.github.smiley4.strategygame.backend.common.utils.distance
 import io.github.smiley4.strategygame.backend.common.utils.positionsNeighbours
-import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.TileContainer
-import io.github.smiley4.strategygame.backend.commondata.TileData
 import io.github.smiley4.strategygame.backend.commondata.TilePosition
+import io.github.smiley4.strategygame.backend.commondata.TileResourceType
 import io.github.smiley4.strategygame.backend.pathfinding.algorithms.astar.AStarPathfinder
 import io.github.smiley4.strategygame.backend.pathfinding.neighbours.NeighbourProvider
 import io.github.smiley4.strategygame.backend.pathfinding.score.ScoreCalculator
@@ -62,8 +61,8 @@ class AStarPathfindingTest : StringSpec({
             BasicScoreCalculator(),
         )
         val path = pathfinder.find(
-           tiles.get(0, 0).node(),
-           tiles.get(1, 2).node(),
+            tiles.get(0, 0).node(),
+            tiles.get(1, 2).node(),
         )
         path.nodes.map { it.tile.position }.shouldBeEmpty()
 
@@ -148,7 +147,7 @@ class AStarPathfindingTest : StringSpec({
             override fun getNeighbours(current: TestNode, consumer: (neighbour: TestNode) -> Unit) {
                 positionsNeighbours(current.tile.position) { q, r ->
                     val neighbour = tiles.get(q, r)
-                    if (neighbour != null && neighbour.data.terrainType != TerrainType.WATER) {
+                    if (neighbour != null && neighbour.dataWorld.terrainType != TerrainType.WATER) {
                         consumer(
                             TestNode(
                                 tile = neighbour,
@@ -192,7 +191,7 @@ class AStarPathfindingTest : StringSpec({
             }
 
             private fun movementCost(tile: Tile): Float {
-                return when (tile.data.terrainType) {
+                return when (tile.dataWorld.terrainType) {
                     TerrainType.LAND -> 1f
                     TerrainType.WATER -> 99999f
                     TerrainType.MOUNTAIN -> 2f
@@ -206,20 +205,22 @@ class AStarPathfindingTest : StringSpec({
                 qIds.forEachIndexed { q, id ->
                     tiles.add(
                         Tile(
-                            tileId = "$q/$r",
+                            id = Tile.Id("$q/$r"),
                             position = TilePosition(q, r),
-                            data = TileData(
+                            dataWorld = Tile.WorldData(
                                 terrainType = when (id) {
                                     1 -> TerrainType.WATER
                                     2 -> TerrainType.MOUNTAIN
                                     else -> TerrainType.LAND
                                 },
-                                resourceType = TileResourceType.NONE
+                                resourceType = TileResourceType.NONE,
+                                height = 1f
                             ),
-                            influences = mutableListOf(),
-                            owner = null,
-                            discoveredByCountries = mutableListOf(),
-                            objects = mutableListOf(),
+                            dataPolitical = Tile.PoliticalData(
+                                influences = mutableListOf(),
+                                discoveredByCountries = mutableSetOf(),
+                                controlledBy = null,
+                            ),
                         )
                     )
                 }

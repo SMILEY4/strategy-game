@@ -20,11 +20,11 @@ class SwitchFromToWaterViaPointsRule(private val switchingPoints: Collection<Til
     }
 
     private fun isWater(tile: Tile): Boolean {
-        return tile.data.terrainType == TerrainType.WATER
+        return tile.dataWorld.terrainType == TerrainType.WATER
     }
 
     private fun isLand(tile: Tile): Boolean {
-        return tile.data.terrainType != TerrainType.WATER
+        return tile.dataWorld.terrainType != TerrainType.WATER
     }
 
     private fun isSwitchingPoint(tile: Tile): Boolean {
