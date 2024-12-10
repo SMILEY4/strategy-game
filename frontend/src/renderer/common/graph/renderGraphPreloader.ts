@@ -26,7 +26,7 @@ export namespace RenderGraphPreloader {
             new OverlayVertexNode(null as any, null as any, null as any, null as any),
             new EntitiesVertexNode(null as any, null as any),
             new DetailsVertexNode(null as any),
-            new RoutesVertexNode(null as any),
+            new RoutesVertexNode(null as any, null as any),
             new TilesWaterDrawNode(null as any),
             new TilesLandDrawNode(null as any),
             new TilesFogDrawNode(null as any),

@@ -34,6 +34,7 @@ import {TileRepository} from "../../state/repository/tileRepository";
 import {SessionRepository} from "../../state/repository/sessionRepository";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
 import {SettlementRepository} from "../../state/repository/settlementRepository";
+import {RouteRepository} from "../../state/repository/routeRepository";
 
 export class GameRenderGraph {
 
@@ -53,6 +54,7 @@ export class GameRenderGraph {
 		sessionRepository: SessionRepository,
 		worldObjectRepository: WorldObjectRepository,
 		settlementRepository: SettlementRepository,
+		routeRepository: RouteRepository
 	) {
 
 		this.gl = gl;
@@ -68,7 +70,7 @@ export class GameRenderGraph {
 				new OverlayVertexNode(changeProvider, tileRepository, sessionRepository, worldObjectRepository),
 				new EntitiesVertexNode(changeProvider, settlementRepository),
 				new DetailsVertexNode(changeProvider),
-				new RoutesVertexNode(changeProvider),
+				new RoutesVertexNode(changeProvider, routeRepository),
 				new TilesWaterDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
 				new TilesLandDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),
 				new TilesFogDrawNode(() => this.camera.getViewProjectionMatrixOrThrow()),

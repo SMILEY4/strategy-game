@@ -39,6 +39,7 @@ import {ProvinceRepository} from "./state/repository/provinceRepository";
 import {MapService} from "./logic/game/mapService";
 import {RouteDatabase} from "./state/database/routeDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
+import {RouteRepository} from "./state/repository/routeRepository";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -82,6 +83,7 @@ interface AppCtxDef {
 	WorldObjectRepository: () => WorldObjectRepository,
 	SessionRepository: () => SessionRepository,
 	ProvinceRepository: () => ProvinceRepository,
+	RouteRepository: () => RouteRepository,
 
 	CameraDatabase: () => CameraDatabase,
 	GameSessionDatabase: () => GameSessionDatabase,
@@ -245,6 +247,7 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<SessionRepository>(SessionRepository.name),
 			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
 			ctx.get<SettlementRepository>(SettlementRepository.name),
+			ctx.get<RouteRepository>(RouteRepository.name)
 		),
 	),
 	ChangeProvider: diContext.register(
@@ -321,7 +324,12 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<ProvinceDatabase>(ProvinceDatabase.name),
 		),
 	),
-
+	RouteRepository: diContext.register(
+		RouteRepository.name,
+		ctx => new RouteRepository(
+			ctx.get<RouteDatabase>(RouteDatabase.name),
+		),
+	),
 
 	CameraDatabase: diContext.register(
 		CameraRepository.name,
