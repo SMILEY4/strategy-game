@@ -25,7 +25,7 @@ internal class ResolveCommandCreateSettlement(
 ) : Logging {
 
     @JvmName("resolveWithSettler")
-    fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementWithSettler>) {
+    suspend fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementWithSettler>) {
         log().debug("Resolving create settlement with world-object command for object ${command.data.worldObject} with name ${command.data.name}")
 
         val country = game.findCountryByUser(command.user)
@@ -84,7 +84,7 @@ internal class ResolveCommandCreateSettlement(
 
 
     @JvmName("resolveDirect")
-    fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementDirect>) {
+    suspend fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementDirect>) {
         log().debug("Resolving create settlement direct command at tile ${command.data.tile} with name ${command.data.name}")
 
         val country = game.findCountryByUser(command.user)
@@ -133,5 +133,7 @@ internal class ResolveCommandCreateSettlement(
 
         province.settlements.add(settlement.id)
         game.settlements.add(settlement)
+
+        publisher.publish(CreatedSettlementEvent(game, settlement))
     }
 }

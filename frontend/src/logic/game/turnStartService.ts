@@ -19,6 +19,7 @@ import {Province} from "../../models/base/province";
 import {mapValue} from "../../common/utils";
 import {TurnRepository} from "../../state/repository/turnRepository";
 import {CommandRepository} from "../../state/repository/commandRepository";
+import {Route} from "../../models/base/Route";
 
 /**
  * Service to handle the start of a new turn
@@ -48,10 +49,11 @@ export class TurnStartService {
 			this.turnRepository.transactionForStartTurn(() => {
 				this.commandRepository.clear();
 				this.turnRepository.replaceTiles(this.buildTiles(gameState));
-				this.turnRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
 				this.turnRepository.replaceCountries(this.buildCountries(gameState));
 				this.turnRepository.replaceProvinces(this.buildProvinces(gameState));
 				this.turnRepository.replaceSettlements(this.buildSettlements(gameState));
+				this.turnRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
+				this.turnRepository.replaceRoutes(this.buildRoutes(gameState))
 			});
 		});
 	}
@@ -210,6 +212,19 @@ export class TurnStartService {
 			}
 			return null;
 		}).filterDefined();
+	}
+
+	private buildRoutes(game: GameStateMessage): Route[] {
+		return game.routes.map(routeMsg => {
+			const settlementA = this.findSettlementById(game, routeMsg.settlementA)
+			const settlementB = this.findSettlementById(game, routeMsg.settlementB)
+			return {
+				id: routeMsg.id,
+				settlementA: settlementA,
+				settlementB: settlementB,
+				path: routeMsg.path
+			}
+		});
 	}
 
 	private findCountryById(game: GameStateMessage, id: string): CountryMessage {

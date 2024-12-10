@@ -19,7 +19,6 @@ import {UserRepository} from "./state/repository/userRepository";
 import {GameRenderer} from "./renderer/game/gameRenderer";
 import {SessionRepository} from "./state/repository/sessionRepository";
 import {TurnEndService} from "./logic/game/turnEndService";
-import {WorldObjectDatabase} from "./state/database/objectDatabase";
 import {MovementService} from "./logic/game/movementService";
 import {CommandService} from "./logic/game/commandService";
 import {CommandDatabase} from "./state/database/commandDatabase";
@@ -38,6 +37,8 @@ import {WorldObjectRepository} from "./state/repository/worldObjectRepository";
 import {ChangeProvider} from "./renderer/game/changeProvider";
 import {ProvinceRepository} from "./state/repository/provinceRepository";
 import {MapService} from "./logic/game/mapService";
+import {RouteDatabase} from "./state/database/routeDatabase";
+import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
 
 
 const API_BASE_URL = import.meta.env.PUB_BACKEND_URL;
@@ -90,6 +91,7 @@ interface AppCtxDef {
 	ProvinceDatabase: () => ProvinceDatabase,
 	SettlementDatabase: () => SettlementDatabase,
 	WorldObjectDatabase: () => WorldObjectDatabase,
+	RouteDatabase: () => RouteDatabase,
 }
 
 
@@ -227,7 +229,7 @@ export const AppCtx: AppCtxDef = {
 		MapService.name,
 		ctx => new MapService(
 			ctx.get<SessionRepository>(SessionRepository.name),
-		)
+		),
 	),
 
 	WebGLMonitor: diContext.register(
@@ -292,11 +294,12 @@ export const AppCtx: AppCtxDef = {
 		TurnRepository.name,
 		ctx => new TurnRepository(
 			ctx.get<TileDatabase>(TileDatabase.name),
-			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name),
 			ctx.get<CommandDatabase>(CommandDatabase.name),
 			ctx.get<CountryDatabase>(CountryDatabase.name),
 			ctx.get<ProvinceDatabase>(ProvinceDatabase.name),
 			ctx.get<SettlementDatabase>(SettlementDatabase.name),
+			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name),
+			ctx.get<RouteDatabase>(RouteDatabase.name),
 		),
 	),
 	WorldObjectRepository: diContext.register(
@@ -316,7 +319,7 @@ export const AppCtx: AppCtxDef = {
 		ProvinceRepository.name,
 		ctx => new ProvinceRepository(
 			ctx.get<ProvinceDatabase>(ProvinceDatabase.name),
-		)
+		),
 	),
 
 
@@ -352,11 +355,15 @@ export const AppCtx: AppCtxDef = {
 		ProvinceDatabase.name,
 		() => new ProvinceDatabase(),
 	),
+	RouteDatabase: diContext.register(
+		RouteDatabase.name,
+		() => new RouteDatabase(),
+	),
 };
 
 diContext.initialize();
 
 
 export function useDI<T>(qualifier: string): T {
-	return diContext.get<T>(qualifier)
+	return diContext.get<T>(qualifier);
 }

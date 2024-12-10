@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useReducer, useState} from "react";
 import {UID} from "../../uid";
 import {PrimaryDatabaseStorage} from "../storage/primary/primaryDatabaseStorage";
 import {Database} from "../database/database";
@@ -7,19 +7,24 @@ import {Query} from "../query/query";
 import {SingletonDatabase} from "../database/singletonDatabase";
 
 /**
- * Stores the state and forces a re-render on every set (independent of value)
+ * Stores the state and forces a re-render on every set (independent of actual/new value)
  * @param initial the initial value
  * @return array of ["current value", "setter"]
  */
 function useForceRepaintState<T>(initial: T): [T, (item: T) => void] {
-    const [data, setData] = useState<{ refId: string, item: T }>({refId: UID.generate(), item: initial});
-    useEffect(() => {
-        setData({refId: UID.generate(), item: initial})
-    }, [initial]);
+    const [data, setData] = useState<T>(initial);
+    const [_, forceUpdate] = useReducer((x) => x+1, 0)
+
+    useEffect(() => setData(initial), [initial]);
+
     return [
-        data.item,
-        (item: T) => setData({refId: UID.generate(), item: item}),
-    ];
+        data,
+        (item: T) => {
+            setData(item);
+            forceUpdate();
+        }
+    ]
+
 }
 
 /**

@@ -1,10 +1,10 @@
 import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {ProductionQueueWindow} from "./ProductionQueueWindow";
-import {ProductionQueueEntryAggregate} from "../../../../../models/aggregates/SettlementAggregate";
 import {useDI} from "../../../../../appContext";
 import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {SettlementService} from "../../../../../logic/game/settlementService";
+import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 
 export namespace UseProductionQueueWindow {
 
@@ -38,8 +38,8 @@ export namespace UseProductionQueueWindow {
 	}
 
 	export interface Data {
-		entries: ProductionQueueEntryAggregate[],
-		cancel: (entry: ProductionQueueEntryAggregate) => void
+		entries: ProductionQueueEntry[],
+		cancel: (entry: ProductionQueueEntry) => void
 	}
 
 
@@ -48,7 +48,7 @@ export namespace UseProductionQueueWindow {
 		const service = useDI<SettlementService>(SettlementService.name);
 		return {
 			entries: settlement.production.queue,
-			cancel: (entry: ProductionQueueEntryAggregate) => service.cancelProductionQueue(settlement.identifier, entry),
+			cancel: (entry: ProductionQueueEntry) => service.cancelProductionQueue(settlement.identifier, entry),
 		};
 	}
 

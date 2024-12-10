@@ -33,7 +33,7 @@ internal class UpdateProductionQueueStep(
         }
     }
 
-    private fun update(
+    private suspend fun update(
         game: GameExtended,
         report: EconomyReport,
         settlement: Settlement,
@@ -65,7 +65,7 @@ internal class UpdateProductionQueueStep(
         }
     }
 
-    private fun completeEntry(game: GameExtended, settlement: Settlement, queueEntry: ProductionQueueEntry) {
+    private suspend fun completeEntry(game: GameExtended, settlement: Settlement, queueEntry: ProductionQueueEntry) {
         log().info("Completing production queue entry ${queueEntry.id} in ${settlement.id}.")
         settlement.infrastructure.productionQueue.remove(queueEntry)
         when (queueEntry) {
@@ -85,7 +85,7 @@ internal class UpdateProductionQueueStep(
         game.worldObjects.add(settler)
     }
 
-    private fun completeBuilding(game: GameExtended, settlement: Settlement, buildingType: BuildingType) {
+    private suspend fun completeBuilding(game: GameExtended, settlement: Settlement, buildingType: BuildingType) {
         val building = Building(
             type = buildingType,
             workedTile = null,

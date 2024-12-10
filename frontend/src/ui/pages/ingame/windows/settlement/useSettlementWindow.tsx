@@ -5,13 +5,14 @@ import {useDI} from "../../../../../appContext";
 import {Province} from "../../../../../models/base/province";
 import {UseProductionWindow} from "../production/useProductionWindow";
 import {
-	ProductionQueueEntryAggregate,
 	SettlementAggregate,
 } from "../../../../../models/aggregates/SettlementAggregate";
 import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
 import {SettlementService} from "../../../../../logic/game/settlementService";
 import {ProvinceRepository} from "../../../../../state/repository/provinceRepository";
+import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
+import {Color} from "../../../../../models/base/color";
 
 export namespace UseSettlementWindow {
 
@@ -48,7 +49,7 @@ export namespace UseSettlementWindow {
 		settlement: SettlementAggregate;
 		province: Province;
 		productionQueue: {
-			activeEntry: ProductionQueueEntryAggregate | null
+			activeEntry: ProductionQueueEntry | null
 			add: () => void
 			open: () => void,
 			cancel: () => void,

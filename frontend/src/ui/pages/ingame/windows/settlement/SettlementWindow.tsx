@@ -73,8 +73,20 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 				<WindowSection title="Province Settlements">
 					<InsetPanel>
 						{data.province.settlements.map(settlement => (
-							<EnrichedText>{settlement.name}</EnrichedText>
+							<EnrichedText key={settlement.id}>{settlement.name}</EnrichedText>
 						))}
+					</InsetPanel>
+				</WindowSection>
+
+				<Spacer size="m"/>
+
+				<WindowSection title="Routes">
+					<InsetPanel>
+						{data.settlement.routes.map(route => {
+							return route.settlementA.id === data.settlement.identifier.id
+								? <EnrichedText key={route.id}>{"-> " + route.settlementB.name}</EnrichedText>
+								: <EnrichedText key={route.id}>{"-> " + route.settlementA.name}</EnrichedText>;
+						})}
 					</InsetPanel>
 				</WindowSection>
 
@@ -107,7 +119,7 @@ function ResourcesSection(props: UseSettlementWindow.Data) {
 		<InsetPanel>
 			<HBox fillParent gap_s left wrap>
 				{props.settlement.resources.map(res => (
-					<TooltipContext>
+					<TooltipContext key={res.type}>
 
 						<TooltipTrigger>
 							<InsetPanel className="resource-box">
@@ -135,7 +147,7 @@ function ResourcesSection(props: UseSettlementWindow.Data) {
 											<InsetPanel>
 												<VBox padding_xs gap_xs>
 													{res.produced.details.map(detail => (
-														<EnrichedText>
+														<EnrichedText key={detail.key}>
 															<ETNumber type="pos"
 																	  signed>{detail.amount}</ETNumber> {detail.key}
 														</EnrichedText>
@@ -153,7 +165,7 @@ function ResourcesSection(props: UseSettlementWindow.Data) {
 											<InsetPanel>
 												<VBox padding_xs gap_xs>
 													{res.consumed.details.map(detail => (
-														<EnrichedText>
+														<EnrichedText key={detail.key}>
 															<ETNumber type="neg"
 																	  signed>{-detail.amount}</ETNumber> {detail.key}
 														</EnrichedText>
@@ -171,7 +183,7 @@ function ResourcesSection(props: UseSettlementWindow.Data) {
 											<InsetPanel>
 												<VBox padding_xs gap_xs>
 													{res.missing.details.map(detail => (
-														<EnrichedText>
+														<EnrichedText key={detail.key}>
 															<ETNumber type="neg"
 																	  unsigned>{detail.amount}</ETNumber> {detail.key}
 														</EnrichedText>
@@ -278,7 +290,7 @@ export function BuildingInfoTooltip(props: { building: Building, children?: any 
 						<If condition={props.building.activity.consumed.length > 0}>
 							<Then>
 								{props.building.activity.consumed.map(entry => (
-									<EnrichedText>
+									<EnrichedText key={entry.type}>
 										<ETNumber typeAuto signed>{-entry.amount}</ETNumber> {entry.type}
 									</EnrichedText>
 								))}
@@ -288,7 +300,7 @@ export function BuildingInfoTooltip(props: { building: Building, children?: any 
 						<If condition={props.building.activity.produced.length > 0}>
 							<Then>
 								{props.building.activity.produced.map(entry => (
-									<EnrichedText>
+									<EnrichedText key={entry.type}>
 										<ETNumber typeAuto signed>{entry.amount}</ETNumber> {entry.type}
 									</EnrichedText>
 								))}
@@ -308,7 +320,7 @@ export function BuildingInfoTooltip(props: { building: Building, children?: any 
 									</EnrichedText>
 								)}
 								{props.building.activity.missing.map(entry => (
-									<EnrichedText>
+									<EnrichedText key={entry.type}>
 										<ETNumber neg unsigned>{entry.amount}</ETNumber> {entry.type}
 									</EnrichedText>
 								))}

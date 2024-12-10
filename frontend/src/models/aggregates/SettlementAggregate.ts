@@ -2,6 +2,7 @@ import {CountryIdentifier} from "../base/country";
 import {TileIdentifier} from "../base/tile";
 import {ProductionQueueEntry, ResourceLedgerEntry, SettlementIdentifier} from "../base/Settlement";
 import {Building} from "../base/building";
+import {Route} from "../base/route";
 
 export interface SettlementAggregate {
 	identifier: SettlementIdentifier,
@@ -12,7 +13,8 @@ export interface SettlementAggregate {
 		queue: ProductionQueueEntry[],
 	},
 	buildings: Building[],
-	resources: ResourceLedgerEntry[]
+	resources: ResourceLedgerEntry[],
+	routes: Route[]
 }
 
 
