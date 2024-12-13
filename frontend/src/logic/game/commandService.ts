@@ -9,8 +9,7 @@ import {
 import {UID} from "../../common/uid";
 import {AudioService, AudioType} from "../../common/audioService";
 import {TileIdentifier} from "../../models/base/tile";
-import {SettlementIdentifier} from "../../models/base/Settlement";
-import {ProductionQueueEntryAggregate} from "../../models/aggregates/SettlementAggregate";
+import {ProductionQueueEntry, SettlementIdentifier} from "../../models/base/Settlement";
 import {CommandRepository} from "../../state/repository/commandRepository";
 
 export class CommandService {
@@ -87,7 +86,7 @@ export class CommandService {
 	/**
 	 * Add a new command to cancel the given entry in the production queue
 	 */
-	public cancelProductionQueueEntry(settlementId: SettlementIdentifier, entry: ProductionQueueEntryAggregate) {
+	public cancelProductionQueueEntry(settlementId: SettlementIdentifier, entry: ProductionQueueEntry) {
 		const command: ProductionQueueCancelCommand = {
 			id: UID.generate(),
 			type: CommandType.PRODUCTION_QUEUE_CANCEL,

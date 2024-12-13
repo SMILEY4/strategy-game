@@ -11,8 +11,8 @@ import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {AudioType} from "../../../../../common/audioService";
 import {CgClose} from "react-icons/cg";
-import {ProductionQueueEntryAggregate} from "../../../../../models/aggregates/SettlementAggregate";
 import "./productionQueueWindow.less";
+import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 
 export interface ProductionQueueWindowProps {
 	windowId: string;
@@ -45,7 +45,7 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
 
 function QueueEntry(props: {
 	data: UseProductionQueueWindow.Data,
-	entry: ProductionQueueEntryAggregate,
+	entry: ProductionQueueEntry,
 	position: number
 }): ReactElement {
 	return (

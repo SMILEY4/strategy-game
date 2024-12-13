@@ -20,6 +20,10 @@ inline fun <E> buildMutableList(builderAction: MutableList<E>.() -> Unit): Mutab
     return mutableListOf<E>().apply(builderAction)
 }
 
+inline fun <E> buildMutableSet(builderAction: MutableSet<E>.() -> Unit): MutableSet<E> {
+    return mutableSetOf<E>().apply(builderAction)
+}
+
 inline fun <T, R> Iterable<T>.mapMutable(transform: (T) -> R): MutableList<R> {
     return this.map(transform).toMutableList()
 }

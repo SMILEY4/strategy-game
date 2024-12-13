@@ -10,6 +10,7 @@ import {CommandType, ProductionQueueAddCommand, ProductionQueueCancelCommand} fr
 import {ProductionQueueEntry} from "../models/base/Settlement";
 import {ProductionOption} from "../models/base/productionOption";
 import {getHiddenOrDefault} from "../common/hiddenType";
+import {RouteDatabase} from "./database/routeDatabase";
 
 export namespace SettlementAggregateAccess {
 
@@ -17,6 +18,7 @@ export namespace SettlementAggregateAccess {
 
 		const settlement = useQuerySingle(AppCtx.SettlementDatabase(), SettlementDatabase.QUERY_BY_ID, settlementId);
 		const commands = useQueryMultiple(AppCtx.CommandDatabase(), CommandDatabase.QUERY_ALL, null);
+		const routes = useQueryMultiple(AppCtx.RouteDatabase(), RouteDatabase.QUERY_BY_SETTLEMENT, settlementId)
 
 		if (settlementId == null || settlement == null) {
 			return null;
@@ -45,6 +47,7 @@ export namespace SettlementAggregateAccess {
 			},
 			buildings: getHiddenOrDefault(settlement.buildings, []),
 			resources: getHiddenOrDefault(settlement.resources, []),
+			routes: routes,
 		};
 
 		function buildQueueEntries(

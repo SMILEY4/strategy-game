@@ -26,16 +26,22 @@ fun ResourceLedger.record(report: EconomyReport, root: EconomyNode) {
                 if (entry.resources.isNotZero()) {
                     val containsFrom = root.contains(entry.fromNode)
                     val containsOwner = root.contains(entry.entity.owner)
-                    if (containsOwner) {
+                    val isShared = entry.fromNode != entry.entity.owner
+                    if (containsFrom && containsOwner) {
+                        // The node the resources were taken from and the node that owns the entity are
+                        // both either the current node or children of the current node.
+                        // Count the resources as being consumed from this node by this node
                         this.recordConsume(entry.resources, entry.entity)
                     }
-                    if (entry.fromNode != entry.entity.owner && containsFrom != containsOwner) {
-                        if (containsFrom) {
-                            this.recordGiveShare(entry.resources, entry.entity)
-                        }
-                        if (containsOwner) {
-                            this.recordTakeShare(entry.resources, entry.entity)
-                        }
+                    if (isShared && containsFrom && !containsOwner) {
+                        // The resources were taken from the current subtree but the consumer of the consumer is not part of this subtree.
+                        // Count the resources as actually being consumed somewhere else but taken from the storage of the current node.
+                        this.recordGiveShare(entry.resources, entry.entity)
+                    }
+                    if (isShared && containsOwner && !containsFrom) {
+                        // The consumer is part of the current subtree but the resources were taken from a node that is NOT part of the current subtree.
+                        // Count the resources as being consumed here but taken from somewhere else.
+                        this.recordTakeShare(entry.resources, entry.entity)
                     }
                 }
             }
@@ -75,7 +81,7 @@ fun ResourceLedger.recordConsume(resources: ResourceCollection, entity: EconomyE
  */
 fun ResourceLedger.recordGiveShare(resources: ResourceCollection, entity: EconomyEntity) {
     resources.forEach(false) { type, amount ->
-        getEntry(type).consumed.add(getDetailKey(entity), 0f) // todo -> amount?
+        getEntry(type).consumed.add("trade:${getDetailKey(entity)}", amount)
     }
 }
 
@@ -86,7 +92,7 @@ fun ResourceLedger.recordGiveShare(resources: ResourceCollection, entity: Econom
  */
 fun ResourceLedger.recordTakeShare(resources: ResourceCollection, entity: EconomyEntity) {
     resources.forEach(false) { type, amount ->
-        getEntry(type).produced.add(getDetailKey(entity), 0f) // todo -> amount?
+        getEntry(type).produced.add("trade:${getDetailKey(entity)}", amount)
     }
 }
 

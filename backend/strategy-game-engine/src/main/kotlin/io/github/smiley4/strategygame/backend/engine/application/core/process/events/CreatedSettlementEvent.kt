@@ -1,10 +1,10 @@
 package io.github.smiley4.strategygame.backend.engine.application.core.process.events
 
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReport
+import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEvent
 
-class EconomyUpdatedEvent(
+class CreatedSettlementEvent(
     val game: GameExtended,
-    val report: EconomyReport
+    val settlement: Settlement,
 ) : ProcessEvent

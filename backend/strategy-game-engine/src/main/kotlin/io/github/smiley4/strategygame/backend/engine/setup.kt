@@ -5,6 +5,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.Initialize
 import io.github.smiley4.strategygame.backend.engine.application.core.InitializeWorldImpl
 import io.github.smiley4.strategygame.backend.engine.application.core.ingame.MovementServiceImpl
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedBuildingEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedSettlementEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.EconomyUpdatedEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnResolveCommandsEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
@@ -15,11 +16,12 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.st
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.UpdateBuildingsStep
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.UpdateInfluenceStep
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.UpdateProductionQueueStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.UpdateRoutesStep
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandCreateSettlement
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandMove
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandProductionQueue
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessSystem
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessSystem
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.GameValidationsImpl
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.InfluenceCalculator
 import io.github.smiley4.strategygame.backend.engine.application.core.tools.SettlementUtilitiesImpl
@@ -45,7 +47,7 @@ fun Module.dependenciesEngine() {
     single<InfluenceCalculator> { InfluenceCalculator() }
 
     single<ResolveCommandMove> { ResolveCommandMove(get()) }
-    single<ResolveCommandCreateSettlement> { ResolveCommandCreateSettlement(get()) }
+    single<ResolveCommandCreateSettlement> { ResolveCommandCreateSettlement(get(), get()) }
     single<ResolveCommandProductionQueue> { ResolveCommandProductionQueue() }
 
     single<EconomyStep> { EconomyStep(get(), get()) }
@@ -55,6 +57,7 @@ fun Module.dependenciesEngine() {
     single<UpdateBuildingsStep.OnUpdate> { UpdateBuildingsStep.OnUpdate(get()) }
     single<UpdateInfluenceStep> { UpdateInfluenceStep(get()) }
     single<UpdateProductionQueueStep> { UpdateProductionQueueStep(get()) }
+    single<UpdateRoutesStep> { UpdateRoutesStep() }
 
     single<ProcessEventPublisher> { ProcessEventPublisher() }
 
@@ -62,12 +65,6 @@ fun Module.dependenciesEngine() {
         ProcessSystem {
             processSequence<RootEvent>("root") {
                 processStep(get<RootStep>())
-            }
-            processSequence<CreatedBuildingEvent>("created-building") {
-                processStep(get<UpdateBuildingsStep.OnCreation>())
-            }
-            processSequence<EconomyUpdatedEvent>("economy-updated") {
-                processStep(get<UpdateProductionQueueStep>())
             }
             processSequence<OnResolveCommandsEvent>("resolve-commands") {
                 processStep(get<ResolveCommandsStep>())
@@ -77,7 +74,16 @@ fun Module.dependenciesEngine() {
                 processStep(get<UpdateBuildingsStep.OnUpdate>())
                 processStep(get<UpdateInfluenceStep>())
             }
+            processSequence<EconomyUpdatedEvent>("economy-updated") {
+                processStep(get<UpdateProductionQueueStep>())
+            }
+            processSequence<CreatedBuildingEvent>("created-building") {
+                processStep(get<UpdateBuildingsStep.OnCreation>())
+            }
+            processSequence<CreatedSettlementEvent>("created-settlement") {
+                processStep(get<UpdateRoutesStep>())
+            }
         }.also { get<ProcessEventPublisher>().initialize(it) }
-    }  withOptions { createdAtStart() }
+    } withOptions { createdAtStart() }
 
 }

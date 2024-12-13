@@ -1,8 +1,7 @@
 import {Tile} from "../../models/base/tile";
 import {CommandService} from "./commandService";
 import {GameClient} from "./gameClient";
-import {ProductionQueueEntryAggregate} from "../../models/aggregates/SettlementAggregate";
-import {SettlementIdentifier} from "../../models/base/Settlement";
+import {ProductionQueueEntry, SettlementIdentifier} from "../../models/base/Settlement";
 import {CommandType, ProductionQueueAddCommand} from "../../models/base/command";
 import {CommandRepository} from "../../state/repository/commandRepository";
 
@@ -64,7 +63,7 @@ export class SettlementService {
 	/**
 	 * Cancel the given production queue entry
 	 */
-	public cancelProductionQueue(settlement: SettlementIdentifier, entry: ProductionQueueEntryAggregate) {
+	public cancelProductionQueue(settlement: SettlementIdentifier, entry: ProductionQueueEntry) {
 		const commands = this.commandRepository
 			.getAllByType<ProductionQueueAddCommand>(CommandType.PRODUCTION_QUEUE_ADD)
 			.filter(it => it.entry.entryId === entry.entryId);

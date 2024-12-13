@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.RootEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameStep
 
 
@@ -24,7 +24,7 @@ internal class GameStepImpl(
         }
     }
 
-    private fun updateState(game: GameExtended, commands: Collection<Command<*>>) {
+    private suspend fun updateState(game: GameExtended, commands: Collection<Command<*>>) {
         publisher.publish(RootEvent(game, commands))
     }
 

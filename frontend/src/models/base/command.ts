@@ -1,6 +1,5 @@
 import {TileIdentifier} from "./tile";
-import {SettlementIdentifier} from "./Settlement";
-import {ProductionQueueEntryAggregate} from "../aggregates/SettlementAggregate";
+import {ProductionQueueEntry, SettlementIdentifier} from "./Settlement";
 
 export class CommandType {
 
@@ -40,10 +39,10 @@ export interface CreateSettlementDirectCommand extends Command {
 
 export interface ProductionQueueAddCommand extends Command {
 	settlement: SettlementIdentifier,
-	entry: ProductionQueueEntryAggregate,
+	entry: ProductionQueueEntry,
 }
 
 export interface ProductionQueueCancelCommand extends Command {
 	settlement: SettlementIdentifier,
-	entry: ProductionQueueEntryAggregate,
+	entry: ProductionQueueEntry,
 }

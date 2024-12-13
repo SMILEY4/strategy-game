@@ -15,12 +15,17 @@ import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.ref
+import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedSettlementEvent
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameValidations
 
-internal class ResolveCommandCreateSettlement(private val gameValidations: GameValidations) : Logging {
+internal class ResolveCommandCreateSettlement(
+    private val gameValidations: GameValidations,
+    private val publisher: ProcessEventPublisher
+) : Logging {
 
     @JvmName("resolveWithSettler")
-    fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementWithSettler>) {
+    suspend fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementWithSettler>) {
         log().debug("Resolving create settlement with world-object command for object ${command.data.worldObject} with name ${command.data.name}")
 
         val country = game.findCountryByUser(command.user)
@@ -42,23 +47,7 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
-                buildings = mutableListOf<Building>().also {
-                    it.add(
-                        Building(
-                            type = BuildingType.DEV_FACTORY,
-                            workedTile = null,
-                            validity = BuildingValidity(
-                                workTile = true,
-                                inputResources = true
-                            ),
-                            activity = BuildingActivity(
-                                consumed = ResourceCollection.empty(),
-                                produced = ResourceCollection.empty(),
-                                missing = ResourceCollection.empty()
-                            )
-                        )
-                    )
-                },
+                buildings = mutableListOf(),
             ),
             resourceLedger = ResourceLedger.empty()
         )
@@ -73,11 +62,13 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
         game.settlements.add(settlement)
         game.provinces.add(province)
         game.worldObjects.remove(worldObject)
+
+        publisher.publish(CreatedSettlementEvent(game, settlement))
     }
 
 
     @JvmName("resolveDirect")
-    fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementDirect>) {
+    suspend fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementDirect>) {
         log().debug("Resolving create settlement direct command at tile ${command.data.tile} with name ${command.data.name}")
 
         val country = game.findCountryByUser(command.user)
@@ -97,23 +88,7 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
             ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
-                buildings = mutableListOf<Building>().also {
-                    it.add(
-                        Building(
-                            type = BuildingType.DEV_FACTORY,
-                            workedTile = null,
-                            validity = BuildingValidity(
-                                workTile = true,
-                                inputResources = true
-                            ),
-                            activity = BuildingActivity(
-                                consumed = ResourceCollection.empty(),
-                                produced = ResourceCollection.empty(),
-                                missing = ResourceCollection.empty()
-                            )
-                        )
-                    )
-                },
+                buildings = mutableListOf(),
             ),
             resourceLedger = ResourceLedger.empty()
         )
@@ -126,5 +101,7 @@ internal class ResolveCommandCreateSettlement(private val gameValidations: GameV
 
         province.settlements.add(settlement.id)
         game.settlements.add(settlement)
+
+        publisher.publish(CreatedSettlementEvent(game, settlement))
     }
 }

@@ -1,4 +1,4 @@
-import {WorldObjectDatabase} from "../database/objectDatabase";
+import {WorldObjectDatabase} from "../database/worldObjectDatabase";
 import {TileIdentifier} from "../../models/base/tile";
 import {WorldObject} from "../../models/base/worldObject";
 import {MovementTarget} from "../../models/base/movementTarget";

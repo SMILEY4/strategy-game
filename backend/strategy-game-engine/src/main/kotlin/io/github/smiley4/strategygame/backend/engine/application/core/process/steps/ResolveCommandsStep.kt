@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.ev
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandCreateSettlement
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandMove
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.resolvecommand.ResolveCommandProductionQueue
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
 
 internal class ResolveCommandsStep(
     private val resolveMove: ResolveCommandMove,
@@ -15,7 +15,7 @@ internal class ResolveCommandsStep(
     private val resolveProductionQueue: ResolveCommandProductionQueue
 ) : ProcessStep<OnResolveCommandsEvent>, Logging {
 
-    override fun run(event: OnResolveCommandsEvent) {
+    override suspend fun run(event: OnResolveCommandsEvent) {
         log().info("Resolving ${event.commands.size} commands for game ${event.game.meta.id}")
         event.commands.forEach {
             try {

@@ -9,6 +9,7 @@ export interface GameStateMessage {
 	provinces: ProvinceMessage[]
 	settlements: SettlementMessage[],
 	worldObjects: WorldObjectMessage[],
+	routes: RouteMessage[],
 }
 
 export interface TileMessage {
@@ -144,4 +145,15 @@ export interface ResourceLedgerEntryMessage {
 		amount: number,
 		details: ({ key: string, amount: number })[]
 	},
+}
+
+export interface RouteMessage {
+	id: string,
+	settlementA: string,
+	settlementB: string,
+	path: ({
+		id: string,
+		q: number,
+		r: number,
+	})[]
 }

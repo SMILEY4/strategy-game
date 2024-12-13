@@ -17,16 +17,15 @@ import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReportEntry
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.ProductionQueueEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedBuildingEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.EconomyUpdatedEvent
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessEventPublisher
-import io.github.smiley4.strategygame.backend.engine.application.core.processsystem.ProcessStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
+import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
 
 internal class UpdateProductionQueueStep(
     private val publisher: ProcessEventPublisher
 ) : ProcessStep<EconomyUpdatedEvent>,
     Logging {
 
-    override fun run(event: EconomyUpdatedEvent) {
-        log().info("Updating production queues.")
+    override suspend fun run(event: EconomyUpdatedEvent) {
         event.game.settlements.forEach { settlement ->
             settlement.infrastructure.productionQueue.firstOrNull()?.also { queueEntry ->
                 update(event.game, event.report, settlement, queueEntry)
@@ -34,7 +33,7 @@ internal class UpdateProductionQueueStep(
         }
     }
 
-    private fun update(
+    private suspend fun update(
         game: GameExtended,
         report: EconomyReport,
         settlement: Settlement,
@@ -66,7 +65,7 @@ internal class UpdateProductionQueueStep(
         }
     }
 
-    private fun completeEntry(game: GameExtended, settlement: Settlement, queueEntry: ProductionQueueEntry) {
+    private suspend fun completeEntry(game: GameExtended, settlement: Settlement, queueEntry: ProductionQueueEntry) {
         log().info("Completing production queue entry ${queueEntry.id} in ${settlement.id}.")
         settlement.infrastructure.productionQueue.remove(queueEntry)
         when (queueEntry) {
@@ -86,7 +85,7 @@ internal class UpdateProductionQueueStep(
         game.worldObjects.add(settler)
     }
 
-    private fun completeBuilding(game: GameExtended, settlement: Settlement, buildingType: BuildingType) {
+    private suspend fun completeBuilding(game: GameExtended, settlement: Settlement, buildingType: BuildingType) {
         val building = Building(
             type = buildingType,
             workedTile = null,
