@@ -54,7 +54,7 @@ dependencies {
 
     val versionKoin: String by project
     implementation("io.insert-koin:koin-core:$versionKoin")
-    implementation("io.insert-koin:koin-ktor:$versionKoin")
+    implementation("io.insert-koin:koin-ktor3:$versionKoin")
     testImplementation("io.insert-koin:koin-test:$versionKoin") {
         exclude("org.jetbrains.kotlin", "kotlin-test-junit")
     }
