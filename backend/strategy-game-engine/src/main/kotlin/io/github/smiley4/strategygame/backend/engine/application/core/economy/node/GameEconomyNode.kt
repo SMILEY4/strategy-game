@@ -2,4 +2,4 @@ package io.github.smiley4.strategygame.backend.engine.application.core.economy.n
 
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyNode
 
-sealed interface GameEconomyNode : EconomyNode
+internal sealed interface GameEconomyNode : EconomyNode

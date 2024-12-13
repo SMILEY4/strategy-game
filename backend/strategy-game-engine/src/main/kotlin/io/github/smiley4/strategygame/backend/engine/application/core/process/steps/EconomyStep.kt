@@ -13,9 +13,8 @@ import io.github.smiley4.strategygame.backend.engine.application.core.economy.en
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationBaseEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationGrowthEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.ProductionQueueEconomyEntity
-import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.CountryEconomyNode
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.GameEconomyNode
-import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.ProvinceEconomyNode
+import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.NetworkEconomyNode
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.SettlementEconomyNode
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.WorldEconomyNode
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.record
@@ -23,6 +22,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.ev
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessStep
+import io.github.smiley4.strategygame.backend.engine.application.core.tools.SettlementNetworkBuilder
 
 internal class EconomyStep(
     private val economyService: EconomyService,
@@ -38,7 +38,7 @@ internal class EconomyStep(
 
 
     private fun setup(game: GameExtended): EconomyNode {
-        return WorldEconomyNode(game)
+        return WorldEconomyNode(game, SettlementNetworkBuilder().build(game.settlements.map { it.id }, game.routes))
     }
 
 
@@ -50,14 +50,13 @@ internal class EconomyStep(
     private fun writeBack(root: EconomyNode, report: EconomyReport) {
         root.collectNodes().filterIsInstance<GameEconomyNode>().forEach { node ->
             when (node) {
+                is WorldEconomyNode -> Unit
+                is NetworkEconomyNode -> Unit
                 is SettlementEconomyNode -> {
                     node.settlement.resourceLedger = ResourceLedger.build {
                         record(report, node)
                     }
                 }
-                is WorldEconomyNode -> Unit
-                is CountryEconomyNode -> Unit
-                is ProvinceEconomyNode -> Unit
             }
         }
         root.collectEntities().filterIsInstance<GameEconomyEntity>().forEach { entity ->

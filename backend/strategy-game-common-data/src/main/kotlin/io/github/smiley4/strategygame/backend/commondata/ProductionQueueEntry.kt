@@ -21,7 +21,6 @@ sealed class ProductionQueueEntry(
         id: Id,
         collectedResources: ResourceCollection,
         val building: BuildingType
-    ) : ProductionQueueEntry(id, ResourceCollection.basic(ResourceType.WOOD.amount(5f)), collectedResources)
-
+    ) : ProductionQueueEntry(id, building.templateData.constructionCost, collectedResources)
 
 }

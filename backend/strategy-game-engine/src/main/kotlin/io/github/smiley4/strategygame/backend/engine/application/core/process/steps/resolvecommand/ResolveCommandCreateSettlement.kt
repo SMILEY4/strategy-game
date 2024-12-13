@@ -47,23 +47,7 @@ internal class ResolveCommandCreateSettlement(
             ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
-                buildings = mutableListOf<Building>().also {
-                    it.add(
-                        Building(
-                            type = BuildingType.DEV_FACTORY,
-                            workedTile = null,
-                            validity = BuildingValidity(
-                                workTile = true,
-                                inputResources = true
-                            ),
-                            activity = BuildingActivity(
-                                consumed = ResourceCollection.empty(),
-                                produced = ResourceCollection.empty(),
-                                missing = ResourceCollection.empty()
-                            )
-                        )
-                    )
-                },
+                buildings = mutableListOf(),
             ),
             resourceLedger = ResourceLedger.empty()
         )
@@ -104,23 +88,7 @@ internal class ResolveCommandCreateSettlement(
             ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
-                buildings = mutableListOf<Building>().also {
-                    it.add(
-                        Building(
-                            type = BuildingType.DEV_FACTORY,
-                            workedTile = null,
-                            validity = BuildingValidity(
-                                workTile = true,
-                                inputResources = true
-                            ),
-                            activity = BuildingActivity(
-                                consumed = ResourceCollection.empty(),
-                                produced = ResourceCollection.empty(),
-                                missing = ResourceCollection.empty()
-                            )
-                        )
-                    )
-                },
+                buildings = mutableListOf(),
             ),
             resourceLedger = ResourceLedger.empty()
         )

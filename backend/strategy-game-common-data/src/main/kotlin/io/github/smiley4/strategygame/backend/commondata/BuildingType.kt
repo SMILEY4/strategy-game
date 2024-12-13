@@ -1,24 +1,24 @@
 package io.github.smiley4.strategygame.backend.commondata
 
-enum class BuildingType(val order: Int, val templateData: BuildingTemplateData) {
-    DEV_FACTORY(0, BuildingTemplateDataDevFactory()),
-    FARM(10, BuildingTemplateDataFarm()),
-    FISHERS_HUT(10, BuildingTemplateDataFishersHut()),
-    MINE(10, BuildingTemplateDataMine()),
-    QUARRY(10, BuildingTemplateDataQuarry()),
-    WOODCUTTER(10, BuildingTemplateDataWoodcutter()),
-    CATTLE_FARM(15, BuildingTemplateDataCattleFarm()),
-    ARMOR_SMITH(20, BuildingTemplateDataArmorSmith()),
-    COOPER(20, BuildingTemplateDataCooper()),
-    JEWELLER(20, BuildingTemplateDataJeweller()),
-    SHEEP_FARM(20, BuildingTemplateDataSheepFarm()),
-    STABLES(20, BuildingTemplateDataStables()),
-    TOOLMAKER(20, BuildingTemplateDataToolMarker()),
-    WEAPON_SMITH(20, BuildingTemplateDataWeaponSmith()),
-    MARKET(30, BuildingTemplateDataMarket()),
-    PARCHMENTERS_WORKSHOP(30, BuildingTemplateDataParchmentersWorkshop()),
-    TAILORS_WORKSHOP(30, BuildingTemplateDataTailorsWorkshop()),
-    WINERY(30, BuildingTemplateDataWinery()),
+enum class BuildingType(val templateData: BuildingTemplateData) {
+    DEV_FACTORY(BuildingTemplateDataDevFactory()),
+    FARM(BuildingTemplateDataFarm()),
+    FISHERS_HUT(BuildingTemplateDataFishersHut()),
+    MINE(BuildingTemplateDataMine()),
+    QUARRY(BuildingTemplateDataQuarry()),
+    WOODCUTTER(BuildingTemplateDataWoodcutter()),
+    CATTLE_FARM(BuildingTemplateDataCattleFarm()),
+    ARMOR_SMITH(BuildingTemplateDataArmorSmith()),
+    COOPER(BuildingTemplateDataCooper()),
+    JEWELLER(BuildingTemplateDataJeweller()),
+    SHEEP_FARM(BuildingTemplateDataSheepFarm()),
+    STABLES(BuildingTemplateDataStables()),
+    TOOLMAKER(BuildingTemplateDataToolMarker()),
+    WEAPON_SMITH(BuildingTemplateDataWeaponSmith()),
+    MARKET(BuildingTemplateDataMarket()),
+    PARCHMENTERS_WORKSHOP(BuildingTemplateDataParchmentersWorkshop()),
+    TAILORS_WORKSHOP(BuildingTemplateDataTailorsWorkshop()),
+    WINERY(BuildingTemplateDataWinery()),
 }
 
 abstract class BuildingTemplateData(
