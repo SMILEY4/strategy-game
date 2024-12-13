@@ -10,8 +10,8 @@ import io.github.smiley4.strategygame.backend.ecosim.dependenciesEcoSim
 import io.github.smiley4.strategygame.backend.engine.dependenciesEngine
 import io.github.smiley4.strategygame.backend.playerpov.dependenciesPlayerPoV
 import io.github.smiley4.strategygame.backend.sessions.dependenciesSessions
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.withOptions
 import org.koin.dsl.module

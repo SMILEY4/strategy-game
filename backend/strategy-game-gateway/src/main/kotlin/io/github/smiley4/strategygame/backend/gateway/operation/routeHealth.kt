@@ -1,8 +1,7 @@
 package io.github.smiley4.strategygame.backend.gateway.operation
 
-import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.routing.get
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
@@ -12,7 +11,9 @@ fun Route.routeHealth() = get("health", {
         HttpStatusCode.OK to {
             description = "Indicates a 'healthy' application."
             body<String> {
-                example("Response", "Healthy 1678225417")
+                example("Response") {
+                    value = "Healthy 1678225417"
+                }
             }
         }
     }

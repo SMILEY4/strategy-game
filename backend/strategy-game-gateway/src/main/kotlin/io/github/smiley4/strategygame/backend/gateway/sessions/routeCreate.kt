@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.gateway.sessions
 
-import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
 import io.github.smiley4.strategygame.backend.common.logging.withLoggingContextAsync
@@ -11,7 +11,6 @@ import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.CreateGame
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 

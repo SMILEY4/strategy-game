@@ -34,7 +34,7 @@ dependencies {
 
     val versionKoin: String by project
     implementation("io.insert-koin:koin-core:$versionKoin")
-    implementation("io.insert-koin:koin-ktor:$versionKoin")
+    implementation("io.insert-koin:koin-ktor3:$versionKoin")
 
     val versionKotest: String by project
     val versionKotestExtensionTestContainers: String by project

@@ -56,11 +56,6 @@ object Config {
         }
     }
 
-    /**
-     * @return the base [com.typesafe.config.Config] or null
-     */
-    fun getBaseTypesafeConfig() = baseConfig
-
 }
 
 

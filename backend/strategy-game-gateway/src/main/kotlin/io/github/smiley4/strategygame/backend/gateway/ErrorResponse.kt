@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.gateway
 
-import io.github.smiley4.ktorswaggerui.dsl.OpenApiResponse
+import io.github.smiley4.ktorswaggerui.dsl.routes.OpenApiResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.response.respond
@@ -57,9 +57,10 @@ internal fun OpenApiResponse.bodyErrorResponse() {
     this.body<ErrorResponse>()
 }
 
-internal fun <T : ErrorResponse> OpenApiResponse.bodyErrorResponse(response: T) {
-    this.body(response::class) {
-        example(response.title, response) {
+internal inline fun <reified T : ErrorResponse> OpenApiResponse.bodyErrorResponse(response: T) {
+    this.body<T> {
+        example(response.title) {
+            value = response
             description = response.detail
         }
     }
@@ -68,7 +69,8 @@ internal fun <T : ErrorResponse> OpenApiResponse.bodyErrorResponse(response: T) 
 internal fun OpenApiResponse.bodyErrorResponse(vararg responses: ErrorResponse) {
     this.body<ErrorResponse> {
         responses.forEach { response ->
-            example(response.title, response) {
+            example(response.title) {
+                value = response
                 description = response.detail
             }
         }

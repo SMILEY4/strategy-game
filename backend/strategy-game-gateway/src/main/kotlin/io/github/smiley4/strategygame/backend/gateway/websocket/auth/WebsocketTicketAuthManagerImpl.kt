@@ -2,8 +2,7 @@ package io.github.smiley4.strategygame.backend.gateway.websocket.auth
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
-import mu.KotlinLogging
+import mu.two.KotlinLogging
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.Base64

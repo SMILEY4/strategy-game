@@ -5,7 +5,7 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.DistributionSummary
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Timer
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import java.util.concurrent.TimeUnit
 
 class MicrometerMonitoringService(private val registry: PrometheusMeterRegistry) : MonitoringService {

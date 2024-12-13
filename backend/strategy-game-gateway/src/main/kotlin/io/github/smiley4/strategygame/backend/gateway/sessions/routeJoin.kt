@@ -1,6 +1,6 @@
 package io.github.smiley4.strategygame.backend.gateway.sessions
 
-import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.github.smiley4.strategygame.backend.common.logging.mdcGameId
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
 import io.github.smiley4.strategygame.backend.common.logging.mdcUserId
@@ -12,7 +12,6 @@ import io.github.smiley4.strategygame.backend.gateway.bodyErrorResponse
 import io.github.smiley4.strategygame.backend.gateway.getUserIdOrThrow
 import io.github.smiley4.strategygame.backend.sessions.ports.provided.JoinGame
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 
@@ -42,7 +41,7 @@ internal object RouteJoin {
     fun Route.routeJoin(joinGame: JoinGame) = post("join/{gameId}", {
         description = "Join a game as a participant."
         request {
-            pathParameter("gameId", String::class) {
+            pathParameter<String>("gameId") {
                 description = "the id of the game to join"
             }
         }
