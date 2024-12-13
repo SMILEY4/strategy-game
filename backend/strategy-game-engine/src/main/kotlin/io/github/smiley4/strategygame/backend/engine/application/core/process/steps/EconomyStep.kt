@@ -9,6 +9,8 @@ import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyNode.Companion.c
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyService
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyUpdateState
+import io.github.smiley4.strategygame.backend.engine.application.core.economy.drawGraph
+import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.BuildingEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.GameEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationBaseEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationGrowthEconomyEntity
@@ -61,7 +63,7 @@ internal class EconomyStep(
         }
         root.collectEntities().filterIsInstance<GameEconomyEntity>().forEach { entity ->
             when (entity) {
-                is io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.BuildingEconomyEntity -> {
+                is BuildingEconomyEntity -> {
                     entity.building.also { building ->
                         building.validity.inputResources = entity.state.state == EconomyUpdateState.DONE
                         building.activity.consumed.also {

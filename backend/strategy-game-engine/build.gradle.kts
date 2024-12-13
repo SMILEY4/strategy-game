@@ -33,6 +33,8 @@ dependencies {
 
     val versionMockk: String by project
     testImplementation("io.mockk:mockk:${versionMockk}")
+
+    implementation("io.github.rchowell:dotlin:1.0.2")
 }
 
 kotlin {

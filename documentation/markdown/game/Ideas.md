@@ -1723,3 +1723,33 @@ the way to gain extra benefits
 # "Occupying" / Taking Cities in Medieval Times
 
 - https://worldbuilding.stackexchange.com/questions/195071/what-are-some-good-example-cases-of-how-middle-ages-medieval-period-armies-occ
+
+
+# Forming Trade Networks and Routes
+
+Background:
+
+- trade in medieval age was a lot more personal, often placing family members in other cities to as friendly trade partners
+- monarchs and rules had little influence on trade
+  - sometimes collecting tax
+  - some special agreements existed
+
+Ingame:
+
+- resources are shared between all nodes in a network, ordered by priority
+- only variable to control: how network forms / what nodes are connected
+  - node connects to other node if “trade friendliness” score is high enough
+    - by default high in nodes of same country
+    - for nodes in other countries depending on public relations and technology
+    - connections from node to nodes in other countries can be regulated by ruler (special agreements)
+    - conditions/options for creating connection from node to other nodes:
+      - options ruler can control
+        - never connect to foreign nodes (default)
+        - always connect to foreign nodes (no control of ruler, still depends in trade friendlyness)
+        - never connect, except if contract between countries exists
+        - never connect, except if node has center for foreign trade
+      - conditions that must be true
+        - never connect if trade friendliness score is not high enough
+        - never connect if nodes are too far away
+        - never connect if route would pass through territory of third party
+
