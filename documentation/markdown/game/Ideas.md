@@ -1752,4 +1752,5 @@ Ingame:
         - never connect if trade friendliness score is not high enough
         - never connect if nodes are too far away
         - never connect if route would pass through territory of third party
+    - trade power of a node determines priority in economy simulation step -> higher priority -> higher chance of recieving resources 
 

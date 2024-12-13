@@ -7,7 +7,7 @@ data class GameExtended(
     val provinces: TrackingList<Province>,
     val settlements: TrackingList<Settlement>,
     val worldObjects: TrackingList<WorldObject>,
-    val routes: TrackingList<Route>, // todo: persist and handle routes
+    val routes: TrackingList<Route>,
 ) {
 
     fun findTile(q: Int, r: Int): Tile = tiles.get(q, r)

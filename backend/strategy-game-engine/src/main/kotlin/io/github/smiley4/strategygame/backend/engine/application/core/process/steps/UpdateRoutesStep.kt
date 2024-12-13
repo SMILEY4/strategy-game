@@ -26,14 +26,16 @@ class UpdateRoutesStep : ProcessStep<CreatedSettlementEvent> {
         val pathfinder = RouteNetworkPathfinder.build(game)
         return game.settlements
             .asSequence()
-            .filter { isPotentialRoute(origin, it) }
+            .filter { isPotentialRoute(game, origin, it) }
             .mapParallel { findPath(pathfinder, game, origin, it) }
             .filter { (origin, destination, path) -> isValidPath(origin, destination, path, game.routes) }
             .map { (origin, destination, path) -> createRoute(origin, destination, path) }
     }
 
-    private fun isPotentialRoute(origin: Settlement, destination: Settlement): Boolean {
-        return origin != destination && origin.tile.distance(destination.tile) <= RouteNetworkPathfinder.MAX_PATH_LENGTH
+    private fun isPotentialRoute(game: GameExtended, origin: Settlement, destination: Settlement): Boolean {
+        return origin != destination
+                && origin.tile.distance(destination.tile) <= RouteNetworkPathfinder.MAX_PATH_LENGTH
+                && discoveredEachOther(game, origin, destination)
     }
 
     private fun findPath(
@@ -70,14 +72,18 @@ class UpdateRoutesStep : ProcessStep<CreatedSettlementEvent> {
         )
     }
 
-
-
     private fun Route.isEqualIgnoreDirection(other: Route): Boolean {
         return (this.settlementA == other.settlementA && this.settlementB == other.settlementB) || this.settlementA == other.settlementB && this.settlementB == other.settlementA
     }
 
-    private fun Route.isEqualIgnoreDirection(settlementA: Settlement.Id, settlementB: Settlement.Id, ): Boolean {
+    private fun Route.isEqualIgnoreDirection(settlementA: Settlement.Id, settlementB: Settlement.Id): Boolean {
         return (this.settlementA == settlementA && this.settlementB == settlementB) || this.settlementA == settlementB && this.settlementB == settlementA
+    }
+
+    private fun discoveredEachOther(game: GameExtended, settlementA: Settlement, settlementB: Settlement): Boolean {
+        val aDiscoveredB = game.findTile(settlementA.tile).dataPolitical.discoveredByCountries.contains(settlementA.country)
+        val bDiscoveredA = game.findTile(settlementB.tile).dataPolitical.discoveredByCountries.contains(settlementB.country)
+        return aDiscoveredB && bDiscoveredA
     }
 
 }
