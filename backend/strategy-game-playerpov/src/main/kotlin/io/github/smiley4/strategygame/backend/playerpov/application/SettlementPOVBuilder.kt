@@ -161,6 +161,9 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
     private fun calculateProgress(queueEntry: ProductionQueueEntry): Float {
         val totalRequired = queueEntry.requiredResources.toList().map { (_, amount) -> amount }.sum()
         val totalCollected = queueEntry.collectedResources.toList().map { (_, amount) -> amount }.sum()
+        if (totalRequired == 0f) {
+            return 1f
+        }
         return (totalCollected / totalRequired).coerceIn(0f, 1f)
     }
 

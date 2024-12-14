@@ -1,10 +1,10 @@
 package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
+import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.ecosim.lib.ConsumptionReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyEntity
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReport
-import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyUpdateState
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationBaseEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.entity.PopulationGrowthEconomyEntity
 import io.github.smiley4.strategygame.backend.engine.application.core.economy.node.SettlementEconomyNode
@@ -14,41 +14,52 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.sy
 class PopulationStep : ProcessStep<EconomyUpdatedEvent> {
 
     override suspend fun run(event: EconomyUpdatedEvent) {
-        event.game.settlements.forEach { update(event.report, it) }
+        val toAbandon = mutableListOf<Settlement>()
+        event.game.settlements.forEach { settlement ->
+            updateSize(settlement)
+            updateProgress(event.report, settlement)
+            if (settlement.population.size <= 0) {
+                toAbandon.add(settlement)
+            }
+        }
+        toAbandon.forEach { abandon(event.game, it) }
     }
 
-    private fun update(report: EconomyReport, settlement: Settlement) {
-
-        if(settlement.population.growthProgress >= 1f) {
+    private fun updateSize(settlement: Settlement) {
+        if (settlement.population.growthProgress >= 1f) {
             settlement.population.size += 1
             settlement.population.growthProgress = 0f
         }
-
-        if(settlement.population.growthProgress <= -1f) {
+        if (settlement.population.growthProgress <= -1f) {
             settlement.population.size -= 1
             settlement.population.growthProgress = 0f
         }
+    }
 
+    private fun updateProgress(report: EconomyReport, settlement: Settlement) {
         settlement.population.growthDetails.clear()
-
         settlement.population.growthProgress +=
             if (hasConsumedBase(report, settlement)) {
                 settlement.population.growthDetails["base"] = 0.05f
                 0.05f
-            }
-            else {
+            } else {
                 settlement.population.growthDetails["base"] = -0.2f
                 -0.2f
             }
-
         settlement.population.growthProgress +=
             if (hasConsumedGrowth(report, settlement)) {
                 settlement.population.growthDetails["growth"] = 0.15f
                 0.15f
-            }
-            else {
+            } else {
                 0f
             }
+    }
+
+    private fun abandon(game: GameExtended, settlement: Settlement) {
+        game.settlements.remove(settlement)
+        game.routes.removeIf { it.settlementA == settlement.id || it.settlementB == settlement.id }
+        game.provinces.forEach { it.settlements.remove(settlement.id) }
+        game.provinces.removeIf { it.settlements.isEmpty() }
     }
 
     private fun hasConsumedBase(report: EconomyReport, settlement: Settlement): Boolean {
@@ -62,14 +73,14 @@ class PopulationStep : ProcessStep<EconomyUpdatedEvent> {
     private fun findBaseConsumptionEntry(report: EconomyReport, settlement: Settlement): ConsumptionReportEntry? {
         return report.getEntries()
             .filterIsInstance<ConsumptionReportEntry>()
-            .filter { it.entity is PopulationBaseEconomyEntity}
+            .filter { it.entity is PopulationBaseEconomyEntity }
             .find { (it.entity as PopulationBaseEconomyEntity).isOwnedBy(settlement) }
     }
 
     private fun findGrowthConsumptionEntry(report: EconomyReport, settlement: Settlement): ConsumptionReportEntry? {
         return report.getEntries()
             .filterIsInstance<ConsumptionReportEntry>()
-            .filter { it.entity is PopulationGrowthEconomyEntity}
+            .filter { it.entity is PopulationGrowthEconomyEntity }
             .find { (it.entity as PopulationGrowthEconomyEntity).isOwnedBy(settlement) }
     }
 
