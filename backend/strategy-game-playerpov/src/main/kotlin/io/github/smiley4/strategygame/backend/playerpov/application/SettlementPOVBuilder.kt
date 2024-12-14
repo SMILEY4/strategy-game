@@ -34,7 +34,19 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                 "q" to settlement.tile.q
                 "r" to settlement.tile.r
             }
-            "productionQueue" to objHidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
+            "population" to obj {
+                "size" to settlement.population.size
+                "growth" to hidden(povCache.povCountryId == settlement.country) {
+                    "progress" to settlement.population.growthProgress
+                    "details" to settlement.population.growthDetails.map {
+                        obj {
+                            "key" to it.key
+                            "amount" to it.value
+                        }
+                    }
+                }
+            }
+            "productionQueue" to hidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
                 settlement.infrastructure.productionQueue.map {
                     when (it) {
                         is ProductionQueueEntry.Settler -> obj {
@@ -50,7 +62,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                     }
                 }
             }
-            "productionOptions" to objHidden(povCache.povCountryId == settlement.country) {
+            "productionOptions" to hidden(povCache.povCountryId == settlement.country) {
                 buildList<JsonType> {
                     add(obj {
                         "type" to ProductionIds.settler()
@@ -64,7 +76,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                     }
                 }
             }
-            "buildings" to objHidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
+            "buildings" to hidden(visibility.isAtLeast(TileVisibilityDTO.VISIBLE)) {
                 settlement.infrastructure.buildings.map {
                     obj {
                         "type" to ProductionIds.building(it.type)
@@ -106,7 +118,7 @@ internal class SettlementPOVBuilder(private val povCache: POVCache, private val 
                     }
                 }
             }
-            "resources" to objHidden(povCache.povCountryId == settlement.country) {
+            "resources" to hidden(povCache.povCountryId == settlement.country) {
                 settlement.resourceLedger.getEntries().map { entry ->
                     obj {
                         "type" to entry.resourceType

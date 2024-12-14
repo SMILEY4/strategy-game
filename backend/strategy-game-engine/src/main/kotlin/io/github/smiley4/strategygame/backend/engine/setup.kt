@@ -11,6 +11,7 @@ import io.github.smiley4.strategygame.backend.engine.application.core.process.ev
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.OnUpdateWorldEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.RootEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.EconomyStep
+import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.PopulationStep
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.ResolveCommandsStep
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.RootStep
 import io.github.smiley4.strategygame.backend.engine.application.core.process.steps.UpdateBuildingsStep
@@ -58,6 +59,7 @@ fun Module.dependenciesEngine() {
     single<UpdateInfluenceStep> { UpdateInfluenceStep(get()) }
     single<UpdateProductionQueueStep> { UpdateProductionQueueStep(get()) }
     single<UpdateRoutesStep> { UpdateRoutesStep() }
+    single<PopulationStep> { PopulationStep() }
 
     single<ProcessEventPublisher> { ProcessEventPublisher() }
 
@@ -76,6 +78,7 @@ fun Module.dependenciesEngine() {
             }
             processSequence<EconomyUpdatedEvent>("economy-updated") {
                 processStep(get<UpdateProductionQueueStep>())
+                processStep(get<PopulationStep>())
             }
             processSequence<CreatedBuildingEvent>("created-building") {
                 processStep(get<UpdateBuildingsStep.OnCreation>())

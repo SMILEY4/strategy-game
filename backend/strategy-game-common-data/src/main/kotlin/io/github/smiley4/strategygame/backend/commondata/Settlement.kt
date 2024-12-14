@@ -7,6 +7,7 @@ class Settlement(
     val tile: TileRef,
     val attributes: Attributes,
     val infrastructure: Infrastructure,
+    val population: Population,
     var resourceLedger: ResourceLedger
 ) {
 
@@ -24,6 +25,12 @@ class Settlement(
     class Infrastructure(
         val productionQueue: MutableList<ProductionQueueEntry>,
         val buildings: MutableList<Building>,
+    )
+
+    class Population(
+        var size: Int,
+        var growthProgress: Float,
+        val growthDetails: MutableMap<String, Float> = mutableMapOf(),
     )
 
     fun findProvince(game: GameExtended): Province = game.findProvinceBySettlement(id)

@@ -37,6 +37,10 @@ export interface ETNumberProps {
     */
     int?: boolean,
     /*
+     * whether the value should be formatted as percentage (input 0.0 => 0%, 1.0 => 100%)
+     */
+    percentage?: boolean,
+    /*
     shortcut for "typeNone", "unsigned"
      */
     unstyled?: boolean,
@@ -50,13 +54,14 @@ export function ETNumber(props: ETNumberProps): ReactElement {
     const format = getFormat(props);
     const type = getType(props, format, props.children);
     const decPlaces = getDecimalPlaces(props);
+    const isPercentage = getIsPercentage(props)
     return (
         <span className={joinClassNames([
             "et-element",
             "et-number",
             "et-number--type-" + type,
         ])}>
-            {formatValue(format, props.children, decPlaces)}
+            {formatValue(format, isPercentage, props.children, decPlaces)}
         </span>
     );
 
@@ -127,7 +132,17 @@ export function ETNumber(props: ETNumberProps): ReactElement {
         }
     }
 
-    function formatValue(format: "signed" | "signed-0p" | "signed-0n" | "unsigned", value: number, decPlaces: number): string {
+    function getIsPercentage(props: ETNumberProps): boolean {
+        return !!props.percentage;
+    }
+
+    function formatValue(format: "signed" | "signed-0p" | "signed-0n" | "unsigned", percentage: boolean, value: number, decPlaces: number): string {
+        const strNumber = formatNumber(format, percentage ? value * 100 : value, decPlaces)
+        return percentage ? strNumber + "%" : strNumber;
+    }
+
+
+    function formatNumber(format: "signed" | "signed-0p" | "signed-0n" | "unsigned", value: number, decPlaces: number): string {
         const d = Math.pow(10, decPlaces);
         const formattedValue = Math.round(value * d) / d;
         const absFormattedValue = Math.abs(formattedValue);
@@ -151,7 +166,7 @@ export function ETNumber(props: ETNumberProps): ReactElement {
             if (formattedValue < 0) return "-" + absFormattedValue;
             return "0";
         }
-        return "err";
+        return "err:unknown-format";
     }
 
 

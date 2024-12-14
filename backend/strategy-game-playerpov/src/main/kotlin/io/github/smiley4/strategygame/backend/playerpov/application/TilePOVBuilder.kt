@@ -18,14 +18,14 @@ internal class TilePOVBuilder(private val povCache: POVCache, private val gameVa
                 "r" to tile.position.r
             }
             "visibility" to visibility
-            "base" to objHidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
+            "base" to hidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
                 obj {
                     "terrainType" to tile.dataWorld.terrainType
                     "resourceType" to tile.dataWorld.resourceType
                     "height" to tile.dataWorld.height
                 }
             }
-            "political" to objHidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
+            "political" to hidden(visibility.isAtLeast(TileVisibilityDTO.DISCOVERED)) {
                 obj {
                     "controlledBy" to tile.dataPolitical.controlledBy?.let {
                         obj {

@@ -16,6 +16,9 @@ internal class SettlementEntity(
     val color: ColorEntity,
     val productionQueue: List<ProductionQueueEntryEntity>,
     val buildings: List<BuildingEntity>,
+    val populationSize: Int,
+    val populationGrowthProgress: Float,
+    val populationGrowthDetails: Map<String, Float>,
     val resourceLedger: ResourceLedgerEntity,
     key: String? = null,
 ) : DbEntity(key) {
@@ -31,7 +34,10 @@ internal class SettlementEntity(
             color = ColorEntity.of(serviceModel.attributes.color),
             productionQueue = serviceModel.infrastructure.productionQueue.map { ProductionQueueEntryEntity.of(it) },
             buildings = serviceModel.infrastructure.buildings.map { BuildingEntity.of(it) },
-            resourceLedger = ResourceLedgerEntity.of(serviceModel.resourceLedger)
+            resourceLedger = ResourceLedgerEntity.of(serviceModel.resourceLedger),
+            populationSize = serviceModel.population.size,
+            populationGrowthProgress = serviceModel.population.growthProgress,
+            populationGrowthDetails = serviceModel.population.growthDetails
         )
     }
 
@@ -47,6 +53,11 @@ internal class SettlementEntity(
         infrastructure = Settlement.Infrastructure(
             productionQueue = this.productionQueue.map { it.asServiceModel() }.toMutableList(),
             buildings = this.buildings.map { it.asServiceModel() }.toMutableList()
+        ),
+        population = Settlement.Population(
+            size = this.populationSize,
+            growthProgress = this.populationGrowthProgress,
+            growthDetails = this.populationGrowthDetails.toMutableMap()
         ),
         resourceLedger = this.resourceLedger.asServiceModel()
     )

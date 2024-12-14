@@ -45,6 +45,11 @@ internal class ResolveCommandCreateSettlement(
                 color = RGBColor.random(),
                 viewDistance = 1,
             ),
+            population = Settlement.Population(
+                size = 1,
+                growthProgress = 0f,
+                growthDetails = mutableMapOf()
+            ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
                 buildings = mutableListOf(),
@@ -85,6 +90,11 @@ internal class ResolveCommandCreateSettlement(
                 name = command.data.name,
                 color = RGBColor.random(),
                 viewDistance = 1,
+            ),
+            population = Settlement.Population(
+                size = 1,
+                growthProgress = 0f,
+                growthDetails = mutableMapOf()
             ),
             infrastructure = Settlement.Infrastructure(
                 productionQueue = mutableListOf(),
