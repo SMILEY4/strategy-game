@@ -22,8 +22,7 @@ internal class ResolveCommandsStep(
                 @Suppress("UNCHECKED_CAST")
                 when (it.data) {
                     is CommandData.Move -> resolveMove.resolve(event.game, it as Command<CommandData.Move>)
-                    is CommandData.CreateSettlementWithSettler -> resolveCreateSettlement.resolve(event.game, it as Command<CommandData.CreateSettlementWithSettler>)
-                    is CommandData.CreateSettlementDirect -> resolveCreateSettlement.resolve(event.game, it as Command<CommandData.CreateSettlementDirect>)
+                    is CommandData.CreateSettlement -> resolveCreateSettlement.resolve(event.game, it as Command<CommandData.CreateSettlement>)
                     is CommandData.ProductionQueueAddEntry -> resolveProductionQueue.resolve(event.game, it as Command<CommandData.ProductionQueueAddEntry>)
                     is CommandData.ProductionQueueRemoveEntry -> resolveProductionQueue.resolve(event.game, it as Command<CommandData.ProductionQueueRemoveEntry>)
                 }

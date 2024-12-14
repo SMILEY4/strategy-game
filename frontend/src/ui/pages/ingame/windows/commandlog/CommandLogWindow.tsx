@@ -4,8 +4,7 @@ import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/d
 import {
 	Command,
 	CommandType,
-	CreateSettlementDirectCommand,
-	CreateSettlementWithSettlerCommand,
+	CreateSettlement,
 	MoveCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
 } from "../../../../../models/base/command";
 import {Text} from "../../../../components/text/Text";
@@ -69,19 +68,8 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 				</>
 			)
 		}
-		if(command.type == CommandType.CREATE_SETTLEMENT_DIRECT) {
-			const cmd = command as CreateSettlementDirectCommand
-			return (
-				<>
-					<Header4 onLight>{"Found Settlement"}</Header4>
-					<Spacer size="s"/>
-					<Text onLight>{"with name " + cmd.name}</Text>
-					<Text onLight>{"at " + cmd.tile.q + "," + cmd.tile.r}</Text>
-				</>
-			)
-		}
-		if(command.type == CommandType.CREATE_SETTLEMENT_WITH_SETTLER) {
-			const cmd = command as CreateSettlementWithSettlerCommand
+		if(command.type == CommandType.CREATE_SETTLEMENT) {
+			const cmd = command as CreateSettlement
 			return (
 				<>
 					<Header4 onLight>{"Found Settlement"}</Header4>

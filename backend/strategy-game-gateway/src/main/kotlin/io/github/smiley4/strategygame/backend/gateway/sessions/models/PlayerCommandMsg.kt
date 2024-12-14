@@ -30,25 +30,12 @@ internal class MoveCommandMsg(
     )
 }
 
-
-@JsonTypeName("create-settlement-direct")
-internal class CreateSettlementDirectCommandMsg(
-    val name: String,
-    val tile: TileRef
-) : PlayerCommandMsg() {
-    override fun asCommandData() = CommandData.CreateSettlementDirect(
-        name = this.name,
-        tile = this.tile
-    )
-}
-
-
-@JsonTypeName("create-settlement-settler")
-internal class CreateSettlementWithSettlerCommandMsg(
+@JsonTypeName("create-settlement")
+internal class CreateSettlementCommandMsg(
     val name: String,
     val worldObjectId: String
 ) : PlayerCommandMsg() {
-    override fun asCommandData() = CommandData.CreateSettlementWithSettler(
+    override fun asCommandData() = CommandData.CreateSettlement(
         name = this.name,
         worldObject = WorldObject.Id(this.worldObjectId)
     )

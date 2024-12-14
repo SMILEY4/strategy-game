@@ -9,13 +9,7 @@ export interface MoveCommandMessage extends CommandMessage {
 	path: TileIdentifier[]
 }
 
-
-export interface CreateSettlementDirectCommandMessage extends CommandMessage {
-	name: string;
-	tile: TileIdentifier;
-}
-
-export interface CreateSettlementWithSettlerCommandMessage extends CommandMessage {
+export interface CreateSettlementCommandMessage extends CommandMessage {
 	name: string;
 	worldObjectId: string;
 }

@@ -8,7 +8,6 @@ import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.RGBColor
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.commondata.Settlement
-import io.github.smiley4.strategygame.backend.commondata.ref
 import io.github.smiley4.strategygame.backend.engine.application.core.process.events.CreatedSettlementEvent
 import io.github.smiley4.strategygame.backend.engine.application.core.process.system.ProcessEventPublisher
 import io.github.smiley4.strategygame.backend.engine.ports.provided.GameValidations
@@ -18,8 +17,7 @@ internal class ResolveCommandCreateSettlement(
     private val publisher: ProcessEventPublisher
 ) : Logging {
 
-    @JvmName("resolveWithSettler")
-    suspend fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementWithSettler>) {
+    suspend fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlement>) {
         log().debug("Resolving create settlement with world-object command for object ${command.data.worldObject} with name ${command.data.name}")
 
         val country = game.findCountryByUser(command.user)
@@ -57,40 +55,4 @@ internal class ResolveCommandCreateSettlement(
         publisher.publish(CreatedSettlementEvent(game, settlement))
     }
 
-
-    @JvmName("resolveDirect")
-    suspend fun resolve(game: GameExtended, command: Command<CommandData.CreateSettlementDirect>) {
-        log().debug("Resolving create settlement direct command at tile ${command.data.tile} with name ${command.data.name}")
-
-        val country = game.findCountryByUser(command.user)
-        val tile = game.findTile(command.data.tile)
-
-        gameValidations.validateSettlementName(command.data.name)
-        gameValidations.validateSettlementLocationDirect(game, tile, country.id)
-
-        val settlement = Settlement(
-            id = Settlement.Id.gen(),
-            country = country.id,
-            tile = tile.ref(),
-            attributes = Settlement.Attributes(
-                name = command.data.name,
-                color = RGBColor.random(),
-                viewDistance = 1,
-            ),
-            population = Settlement.Population(
-                size = 1,
-                growthProgress = 0f,
-                growthDetails = mutableMapOf()
-            ),
-            infrastructure = Settlement.Infrastructure(
-                productionQueue = mutableListOf(),
-                buildings = mutableListOf(),
-            ),
-            resourceLedger = ResourceLedger.empty()
-        )
-
-        game.settlements.add(settlement)
-
-        publisher.publish(CreatedSettlementEvent(game, settlement))
-    }
 }

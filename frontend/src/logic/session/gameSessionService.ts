@@ -10,13 +10,11 @@ import {WebsocketMessageHandler} from "../../common/websocketMessageHandler";
 import {
 	Command,
 	CommandType,
-	CreateSettlementDirectCommand,
-	CreateSettlementWithSettlerCommand,
+	CreateSettlement,
 	MoveCommand, ProductionQueueAddCommand, ProductionQueueCancelCommand,
 } from "../../models/base/command";
 import {
-	CreateSettlementDirectCommandMessage,
-	CreateSettlementWithSettlerCommandMessage,
+	CreateSettlementCommandMessage,
 	MoveCommandMessage, ProductionQueueAddCommandMessage, ProductionQueueCancelCommandMessage,
 } from "./models/commandMessage";
 
@@ -122,19 +120,9 @@ export class GameSessionService implements WebsocketMessageHandler {
 						return cmdMsg;
 					}
 
-					if (it.type === CommandType.CREATE_SETTLEMENT_DIRECT) {
-						const cmd = it as CreateSettlementDirectCommand;
-						const cmdMsg: CreateSettlementDirectCommandMessage = {
-							type: cmd.type.id,
-							name: cmd.name,
-							tile: cmd.tile
-						};
-						return cmdMsg;
-					}
-
-					if (it.type === CommandType.CREATE_SETTLEMENT_WITH_SETTLER) {
-						const cmd = it as CreateSettlementWithSettlerCommand;
-						const cmdMsg: CreateSettlementWithSettlerCommandMessage = {
+					if (it.type === CommandType.CREATE_SETTLEMENT) {
+						const cmd = it as CreateSettlement;
+						const cmdMsg: CreateSettlementCommandMessage = {
 							type: cmd.type.id,
 							name: cmd.name,
 							worldObjectId: cmd.worldObjectId!

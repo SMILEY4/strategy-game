@@ -1,7 +1,7 @@
 import {
 	Command,
 	CommandType,
-	CreateSettlementWithSettlerCommand,
+	CreateSettlement,
 	MoveCommand,
 	ProductionQueueAddCommand,
 	ProductionQueueCancelCommand,
@@ -36,26 +36,12 @@ export class CommandService {
 	}
 
 	/**
-	 * Add a new command to create a new settlement
-	 */
-	public addCreateSettlementDirectCommand(tile: TileIdentifier, name: string) {
-		const command: CreateSettlementWithSettlerCommand = {
-			id: UID.generate(),
-			type: CommandType.CREATE_SETTLEMENT_DIRECT,
-			worldObjectId: null,
-			tile: tile,
-			name: name,
-		};
-		this.addCommand(command);
-	}
-
-	/**
 	 * Add a new command to create a new settlement using the given settler
 	 */
 	public addCreateSettlementWithSettlerCommand(worldObjectId: string, tile: TileIdentifier, name: string) {
-		const command: CreateSettlementWithSettlerCommand = {
+		const command: CreateSettlement = {
 			id: UID.generate(),
-			type: CommandType.CREATE_SETTLEMENT_WITH_SETTLER,
+			type: CommandType.CREATE_SETTLEMENT,
 			worldObjectId: worldObjectId,
 			tile: tile,
 			name: name,

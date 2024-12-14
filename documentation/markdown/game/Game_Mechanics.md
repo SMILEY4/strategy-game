@@ -27,8 +27,6 @@ title: Game Mechanics
 
 # Creating Settlements
 
-## Using Settlers
-
 - settlers can be created in settlements
 
 - settlers can create a settlement at their current location
@@ -37,14 +35,6 @@ title: Game Mechanics
   - the terrain is land
   - the tile is not already occupied by another settlement
   - the tile is not owned by any country (own or foreign)
-
-## Without Settlers
-
-- settlements can be directly created without using a settler
-- settlement can be created on a tile when the following conditions are true
-  - the terrain is land
-  - the tile is not already occupied by another settlement
-  - the tile is already owned by the player
 
 
 
@@ -91,6 +81,19 @@ title: Game Mechanics
 
 
 
+## Buildings
+
+- buildings can be constructed in settlements
+
+- building usually produce resources after consuming required resources
+- some buildings require a specific tile to work
+  - the tile must be a direct neighbor of the settlement
+  - the tile must not be worked by another building
+  - the tile must have a valid type or the required raw resource
+- if a building does not have the required tile to work on or the required resources to consume, it will deactivate and not produce any resources
+
+
+
 # Settlement Population Size, Growth and Decline
 
 - every settlement starts with 1 "population"
@@ -99,5 +102,5 @@ title: Game Mechanics
   - if it reaches -100%, the settlement looses -1 population
 - if the settlement reaches 0 population, it is abandoned and removed from the game
 - the increase/decrease in progress each turn is determined by
-  - whether enough food is available to fullfill the base requirements (yes = minor increase, no = major decrease)
+  - whether enough food is available to fulfill the base requirements (yes = minor increase, no = major decrease)
   - whether more than enough food is available (yes = major increase, no = no change)
