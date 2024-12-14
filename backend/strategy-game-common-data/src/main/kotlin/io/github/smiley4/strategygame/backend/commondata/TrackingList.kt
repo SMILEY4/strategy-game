@@ -8,7 +8,7 @@ fun <T> Collection<T>.tracking() = TrackingList(this)
 
 class TrackingList<T>(elements: Collection<T>) : MutableList<T> {
 
-    private val list = mutableListOf<T>().apply { addAll(elements) }
+    private val backingList = mutableListOf<T>().apply { addAll(elements) }
     private val originalElements = mutableListOf<T>().apply { addAll(elements) }
     private val removedElements = mutableSetOf<T>()
     private val addedElements = mutableSetOf<T>()
@@ -20,63 +20,58 @@ class TrackingList<T>(elements: Collection<T>) : MutableList<T> {
 
     fun getAddedElements(): Set<T> = addedElements
 
-    override val size = list.size
+    override val size: Int get() = backingList.size
 
     override fun clear() {
-        removedElements.addAll(list)
+        removedElements.addAll(backingList)
         addedElements.clear()
-        list.clear()
+        backingList.clear()
     }
 
     override fun addAll(elements: Collection<T>): Boolean {
         addedElements.addAll(elements)
         removedElements.removeAll(elements.toSet())
-        return list.addAll(elements)
+        return backingList.addAll(elements)
     }
 
     override fun addAll(index: Int, elements: Collection<T>): Boolean {
         addedElements.addAll(elements)
         removedElements.removeAll(elements.toSet())
-        return list.addAll(index, elements)
+        return backingList.addAll(index, elements)
     }
 
     override fun add(index: Int, element: T) {
-        addedElements.add(element)
-        removedElements.remove(element)
-        return list.add(index, element)
+        markAdded(element)
+        return backingList.add(index, element)
     }
 
     override fun add(element: T): Boolean {
-        addedElements.add(element)
-        removedElements.remove(element)
-        return list.add(element)
+        markAdded(element)
+        return backingList.add(element)
     }
 
-    override fun get(index: Int) = list[index]
+    override fun get(index: Int) = backingList[index]
 
-    override fun isEmpty() = list.isEmpty()
+    override fun isEmpty() = backingList.isEmpty()
 
-    override fun iterator() = list.iterator()
+    override fun iterator() = MutableIterator(this)
 
-    override fun listIterator() = list.listIterator()
+    override fun listIterator() = MutableListIterator(0, this)
 
-    override fun listIterator(index: Int) = list.listIterator(index)
+    override fun listIterator(index: Int) = MutableListIterator(index, this)
 
     override fun removeAt(index: Int): T {
-        return list.removeAt(index).also {
-            removedElements.add(it)
-            addedElements.remove(it)
+        return backingList.removeAt(index).also {
+            markRemoved(it)
         }
     }
 
-    override fun subList(fromIndex: Int, toIndex: Int) = list.subList(fromIndex, toIndex)
+    override fun subList(fromIndex: Int, toIndex: Int) = backingList.subList(fromIndex, toIndex)
 
     override fun set(index: Int, element: T): T {
-        return list.set(index, element).also {
-            removedElements.add(it)
-            addedElements.remove(it)
-            removedElements.remove(element)
-            addedElements.add(element)
+        return backingList.set(index, element).also {
+            markRemoved(it)
+            markAdded(element)
         }
     }
 
@@ -85,24 +80,104 @@ class TrackingList<T>(elements: Collection<T>) : MutableList<T> {
     }
 
     override fun removeAll(elements: Collection<T>): Boolean {
-        throw UnsupportedOperationException()
-
+        return elements.map { remove(it) }.any()
     }
 
     override fun remove(element: T): Boolean {
-        return list.remove(element).also {
+        return backingList.remove(element).also {
             if (it) {
-                removedElements.add(element)
-                addedElements.remove(element)
+                markRemoved(element)
             }
         }
     }
 
-    override fun lastIndexOf(element: T) = list.lastIndexOf(element)
+    override fun lastIndexOf(element: T) = backingList.lastIndexOf(element)
 
-    override fun indexOf(element: T) = list.indexOf(element)
+    override fun indexOf(element: T) = backingList.indexOf(element)
 
-    override fun containsAll(elements: Collection<T>) = list.containsAll(elements)
+    override fun containsAll(elements: Collection<T>) = backingList.containsAll(elements)
 
-    override fun contains(element: T) = list.contains(element)
+    override fun contains(element: T) = backingList.contains(element)
+
+    private fun markRemoved(element: T) {
+        removedElements.add(element)
+        addedElements.remove(element)
+    }
+
+    private fun markAdded(element: T) {
+        addedElements.add(element)
+        removedElements.remove(element)
+    }
+
+    class MutableIterator<T>(private val list: TrackingList<T>) : kotlin.collections.MutableIterator<T> {
+
+        private val iterator = list.backingList.iterator()
+        private var currentElement: T? = null
+
+        override fun hasNext(): Boolean {
+            return iterator.hasNext()
+        }
+
+        override fun next(): T {
+            return iterator.next()
+                .also { currentElement = it }
+        }
+
+        override fun remove() {
+            iterator.remove()
+            currentElement?.also { list.markRemoved(it) }
+        }
+
+    }
+
+    class MutableListIterator<T>(index: Int, private val list: TrackingList<T>) : kotlin.collections.MutableListIterator<T> {
+
+        private val iterator = list.backingList.listIterator(index)
+        private var currentElement: T? = null
+
+        override fun add(element: T) {
+            iterator.add(element)
+            list.markAdded(element)
+        }
+
+        override fun hasNext(): Boolean {
+            return iterator.hasNext()
+        }
+
+        override fun hasPrevious(): Boolean {
+            return iterator.hasPrevious()
+        }
+
+        override fun next(): T {
+            return iterator.next()
+                .also { currentElement = it }
+        }
+
+        override fun nextIndex(): Int {
+            return iterator.nextIndex()
+        }
+
+        override fun previous(): T {
+            return iterator.previous()
+                .also { currentElement = it }
+        }
+
+        override fun previousIndex(): Int {
+            return iterator.nextIndex()
+        }
+
+        override fun remove() {
+            iterator.remove()
+            currentElement?.also { list.markRemoved(it) }
+        }
+
+        override fun set(element: T) {
+            iterator.set(element)
+            currentElement?.also {
+                list.markRemoved(it)
+                list.markAdded(element)
+            }
+        }
+
+    }
 }
