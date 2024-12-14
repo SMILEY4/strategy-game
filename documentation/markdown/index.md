@@ -12,13 +12,7 @@
   - [Resources and useful Links](./technical/usefulresources.md)
 - Gameplay and Systems
   - [Ideas/Brainstorming](./game/ideas.md)
-  - [Turn Resolution](./game/turnResolution.md)
-  - [Cities and Towns](./game/cities.md)
-  - [Borders](./game/borders.md)
-  - [Fog-of-War and Visibility](./game/fogOfWar.md)
-    - Scouting
-    - Discovered Countries
-  - [Resource Handling](./game/ResourceHandling.md)
+  - [Game Mechanics](./game/Game_Mechanics.md)
   
 - [Changelog](./changelog/changelog.md)
 - Milestone-Plans/Roadmap
