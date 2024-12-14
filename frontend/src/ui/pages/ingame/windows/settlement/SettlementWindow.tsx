@@ -102,12 +102,12 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 							<If condition={data.settlement.population.growth.visible}>
 								<Then>
 									<EnrichedText>Growth Progress</EnrichedText>
-									<EnrichedText><ETNumber>{data.settlement.population.growth.value.progress}</ETNumber></EnrichedText>
+									<EnrichedText><ETNumber percentage>{data.settlement.population.growth.value.progress}</ETNumber></EnrichedText>
 
 									<EnrichedText>Details</EnrichedText>
 									<ul>
 										{data.settlement.population.growth.value.details.map(detail => (
-											<li><EnrichedText>{detail.key} <ETNumber>{detail.amount}</ETNumber></EnrichedText></li>
+											<li><EnrichedText>{detail.key} <ETNumber percentage>{detail.amount}</ETNumber></EnrichedText></li>
 										))}
 									</ul>
 

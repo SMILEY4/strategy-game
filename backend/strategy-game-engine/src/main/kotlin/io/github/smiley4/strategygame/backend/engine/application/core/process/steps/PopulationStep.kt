@@ -1,6 +1,7 @@
 package io.github.smiley4.strategygame.backend.engine.application.core.process.steps
 
 import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.ecosim.lib.ConsumptionReportEntry
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyEntity
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyReport
 import io.github.smiley4.strategygame.backend.ecosim.lib.EconomyUpdateState
@@ -51,33 +52,25 @@ class PopulationStep : ProcessStep<EconomyUpdatedEvent> {
     }
 
     private fun hasConsumedBase(report: EconomyReport, settlement: Settlement): Boolean {
-        val entity = findPopulationBaseEconomyEntity(report, settlement)
-        return if (entity != null) {
-            entity.state.state == EconomyUpdateState.DONE
-        } else {
-            false
-        }
+        return findBaseConsumptionEntry(report, settlement) != null
     }
 
     private fun hasConsumedGrowth(report: EconomyReport, settlement: Settlement): Boolean {
-        val entity = findPopulationGrowthEconomyEntity(report, settlement)
-        return if (entity != null) {
-            entity.state.state == EconomyUpdateState.DONE
-        } else {
-            false
-        }
+        return findGrowthConsumptionEntry(report, settlement) != null
     }
 
-    private fun findPopulationBaseEconomyEntity(report: EconomyReport, settlement: Settlement): PopulationBaseEconomyEntity? {
+    private fun findBaseConsumptionEntry(report: EconomyReport, settlement: Settlement): ConsumptionReportEntry? {
         return report.getEntries()
-            .filterIsInstance<PopulationBaseEconomyEntity>()
-            .find { it.isOwnedBy(settlement) }
+            .filterIsInstance<ConsumptionReportEntry>()
+            .filter { it.entity is PopulationBaseEconomyEntity}
+            .find { (it.entity as PopulationBaseEconomyEntity).isOwnedBy(settlement) }
     }
 
-    private fun findPopulationGrowthEconomyEntity(report: EconomyReport, settlement: Settlement): PopulationGrowthEconomyEntity? {
+    private fun findGrowthConsumptionEntry(report: EconomyReport, settlement: Settlement): ConsumptionReportEntry? {
         return report.getEntries()
-            .filterIsInstance<PopulationGrowthEconomyEntity>()
-            .find { it.isOwnedBy(settlement) }
+            .filterIsInstance<ConsumptionReportEntry>()
+            .filter { it.entity is PopulationGrowthEconomyEntity}
+            .find { (it.entity as PopulationGrowthEconomyEntity).isOwnedBy(settlement) }
     }
 
     private fun EconomyEntity.isOwnedBy(settlement: Settlement): Boolean {
