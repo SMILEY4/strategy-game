@@ -26,7 +26,7 @@ internal class UpdateInfluenceStep(private val influenceCalculator: InfluenceCal
 
     private fun setControlledBy(tile: Tile) {
 
-        // find country with most total influence and total  influence above threshold
+        // find country with most total influence and total influence above threshold
         val controllingCountry: Country.Id? = tile.dataPolitical.influences
             .groupBy { it.country }
             .filter { (_, totalInfluence) -> totalInfluence >= GameConfig.influenceThresholdTileControl }

@@ -15,7 +15,7 @@ class PopulationBaseEconomyEntity(override val owner: EconomyNode) : GameEconomy
             ResourceType.FOOD.amount(1f)
         ),
         output = ResourceCollection.empty(),
-        consumptionType = EconomyConsumptionType.DISTRIBUTED,
+        consumptionType = EconomyConsumptionType.COMPLETE,
         priority = 2f,
         isActive = true
     )
