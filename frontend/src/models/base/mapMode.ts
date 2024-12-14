@@ -83,27 +83,6 @@ export class MapMode {
 		borderDefault: true,
 	});
 
-	public static readonly PROVINCES = new MapMode(2, "Provinces", {
-		grayscale: true,
-		context: () => null,
-		fillColor: tile => tile.political.visible && tile.political.value.controlledBy != null
-			? MapMode.toColor(tile.political.value.controlledBy.province.color)
-			: MapMode.NO_COLOR,
-		borderColor: tile => tile.political.visible && tile.political.value.controlledBy != null
-			? MapMode.toColor(tile.political.value.controlledBy.province.color)
-			: MapMode.NO_COLOR,
-		borderCheck: (ta: Tile, tb: Tile) => {
-			const provinceA = ta.political.visible && ta.political.value.controlledBy != null
-				? ta.political.value.controlledBy.province.id
-				: null;
-			const provinceB = tb.political.visible && tb.political.value.controlledBy != null
-				? tb.political.value.controlledBy.province.id
-				: null;
-			return provinceA !== provinceB
-		},
-		borderDefault: true,
-	});
-
 	public static readonly SETTLEMENTS = new MapMode(3, "Settlements", {
 		grayscale: true,
 		context: () => null,
@@ -148,7 +127,6 @@ export class MapMode {
 		MapMode.DEFAULT,
 		MapMode.RESOURCES,
 		MapMode.COUNTRIES,
-		MapMode.PROVINCES,
 		MapMode.SETTLEMENTS,
 		MapMode.TERRAIN,
 	];

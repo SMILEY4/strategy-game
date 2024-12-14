@@ -3,7 +3,6 @@ import {Visibility} from "./visibility";
 import {TerrainType} from "./TerrainType";
 import {TileResourceType} from "./TileResourceType";
 import {CountryIdentifier} from "./country";
-import {ProvinceIdentifier} from "./province";
 import {SettlementIdentifier} from "./Settlement";
 
 export interface TileIdentifier {
@@ -23,7 +22,6 @@ export interface Tile {
 	political: HiddenType<{
 		controlledBy: null | {
 			country: CountryIdentifier,
-			province: ProvinceIdentifier,
 			settlement: SettlementIdentifier
 		}
 	}>,

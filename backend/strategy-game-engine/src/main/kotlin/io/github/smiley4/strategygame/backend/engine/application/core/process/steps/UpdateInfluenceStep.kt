@@ -38,23 +38,15 @@ internal class UpdateInfluenceStep(private val influenceCalculator: InfluenceCal
             return
         }
 
-        // determine controlling province
-        val controllerProvince = tile.dataPolitical.influences
-            .filter { it.country == controllingCountry }
-            .groupBy { it.province }
-            .maxBy { (_, totalInfluence) -> totalInfluence }
-            .first
-
         // determine controlling settlement
         val controllerSettlement = tile.dataPolitical.influences
-            .filter { it.country == controllingCountry && it.province == controllerProvince }
+            .filter { it.country == controllingCountry }
             .groupBy { it.settlement }
             .maxBy { (_, totalInfluence) -> totalInfluence }
             .first
 
         tile.dataPolitical.controlledBy = Tile.Owner(
             country = controllingCountry,
-            province = controllerProvince,
             settlement = controllerSettlement
         )
     }

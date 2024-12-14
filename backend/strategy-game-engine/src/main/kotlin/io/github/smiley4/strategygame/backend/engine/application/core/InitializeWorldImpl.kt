@@ -4,11 +4,9 @@ import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
 import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Country
-import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
-import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Tile
@@ -60,7 +58,6 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
             worldObjects = emptyList<WorldObject>().tracking(),
             countries = emptyList<Country>().tracking(),
             settlements = emptyList<Settlement>().tracking(),
-            provinces = emptyList<Province>().tracking(),
             routes = emptyList<Route>().tracking()
         )
     }

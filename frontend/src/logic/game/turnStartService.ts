@@ -1,7 +1,6 @@
 import {
 	CountryMessage,
 	GameStateMessage,
-	ProvinceMessage,
 	SettlementMessage,
 } from "../session/models/gameStateMessage";
 import {ValueHistory} from "../../common/valueHistory";
@@ -15,7 +14,6 @@ import {Country} from "../../models/base/country";
 import {Visibility} from "../../models/base/visibility";
 import {mapHidden} from "../../common/hiddenType";
 import {Settlement} from "../../models/base/Settlement";
-import {Province} from "../../models/base/province";
 import {mapValue} from "../../common/utils";
 import {TurnRepository} from "../../state/repository/turnRepository";
 import {CommandRepository} from "../../state/repository/commandRepository";
@@ -50,7 +48,6 @@ export class TurnStartService {
 				this.commandRepository.clear();
 				this.turnRepository.replaceTiles(this.buildTiles(gameState));
 				this.turnRepository.replaceCountries(this.buildCountries(gameState));
-				this.turnRepository.replaceProvinces(this.buildProvinces(gameState));
 				this.turnRepository.replaceSettlements(this.buildSettlements(gameState));
 				this.turnRepository.replaceWorldObjects(this.buildWorldObjects(gameState));
 				this.turnRepository.replaceRoutes(this.buildRoutes(gameState));
@@ -84,10 +81,6 @@ export class TurnStartService {
 						name: country.name,
 						color: country.color,
 					})),
-					province: mapValue(this.findProvinceById(game, politicalMsg.controlledBy.province), province => ({
-						id: province.id,
-						color: province.color,
-					})),
 					settlement: mapValue(this.findSettlementById(game, politicalMsg.controlledBy.settlement), settlement => ({
 						id: settlement.id,
 						name: settlement.name,
@@ -116,25 +109,6 @@ export class TurnStartService {
 			},
 			ownedByPlayer: countryMsg.ownedByUser,
 		}));
-	}
-
-	private buildProvinces(game: GameStateMessage): Province[] {
-		return game.provinces.map(provinceMsg => {
-			return {
-				identifier: {
-					id: provinceMsg.id,
-					color: provinceMsg.color,
-				},
-				color: provinceMsg.color,
-				settlements: provinceMsg.settlements
-					.map(settlementId => game.settlements.find(settlementMsg => settlementMsg.id == settlementId)!)
-					.map(settlementMsg => ({
-						id: settlementMsg.id,
-						name: settlementMsg.name,
-						color: settlementMsg.color,
-					})),
-			};
-		});
 	}
 
 	private buildSettlements(game: GameStateMessage): Settlement[] {
@@ -235,14 +209,6 @@ export class TurnStartService {
 		const result = game.countries.find(it => it.id === id);
 		if (!result) {
 			throw new Error("Could not find country with id '" + id + "'");
-		}
-		return result;
-	}
-
-	private findProvinceById(game: GameStateMessage, id: string): ProvinceMessage {
-		const result = game.provinces.find(it => it.id === id);
-		if (!result) {
-			throw new Error("Could not find province with id '" + id + "'");
 		}
 		return result;
 	}

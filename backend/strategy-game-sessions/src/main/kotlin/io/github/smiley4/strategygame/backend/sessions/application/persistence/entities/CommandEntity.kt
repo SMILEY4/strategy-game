@@ -36,11 +36,7 @@ internal class CommandEntity<T : CommandEntityData>(
                     worldObjectId = serviceModel.worldObject.value,
                     path = serviceModel.path.map { TileRefEntity.of(it) },
                 )
-                is CommandData.CreateSettlementDirect -> CreateSettlementDirectCommandEntityData(
-                    name = serviceModel.name,
-                    tile = TileRefEntity.of(serviceModel.tile)
-                )
-                is CommandData.CreateSettlementWithSettler -> CreateSettlementWithSettlerCommandEntityData(
+                is CommandData.CreateSettlement -> CreateSettlementCommandEntityData(
                     name = serviceModel.name,
                     worldObjectId = serviceModel.worldObject.value
                 )
@@ -74,11 +70,7 @@ internal class CommandEntity<T : CommandEntityData>(
                 worldObject = WorldObject.Id(entity.worldObjectId),
                 path = entity.path.map { it.asServiceModel() },
             )
-            is CreateSettlementDirectCommandEntityData -> CommandData.CreateSettlementDirect(
-                name = entity.name,
-                tile = entity.tile.asServiceModel()
-            )
-            is CreateSettlementWithSettlerCommandEntityData -> CommandData.CreateSettlementWithSettler(
+            is CreateSettlementCommandEntityData -> CommandData.CreateSettlement(
                 name = entity.name,
                 worldObject = WorldObject.Id(entity.worldObjectId),
             )
@@ -111,12 +103,7 @@ internal class MoveCommandEntityData(
     val path: List<TileRefEntity>,
 ) : CommandEntityData()
 
-internal class CreateSettlementDirectCommandEntityData(
-    val name: String,
-    val tile: TileRefEntity
-) : CommandEntityData()
-
-internal class CreateSettlementWithSettlerCommandEntityData(
+internal class CreateSettlementCommandEntityData(
     val name: String,
     val worldObjectId: String
 ) : CommandEntityData()

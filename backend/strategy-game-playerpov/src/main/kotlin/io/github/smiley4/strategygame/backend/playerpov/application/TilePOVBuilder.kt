@@ -30,7 +30,6 @@ internal class TilePOVBuilder(private val povCache: POVCache, private val gameVa
                     "controlledBy" to tile.dataPolitical.controlledBy?.let {
                         obj {
                             "country" to it.country.value
-                            "province" to it.province.value
                             "settlement" to it.settlement.value
                         }
                     }

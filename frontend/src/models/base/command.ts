@@ -4,8 +4,7 @@ import {ProductionQueueEntry, SettlementIdentifier} from "./Settlement";
 export class CommandType {
 
 	public static readonly MOVE = new CommandType("move")
-	public static readonly CREATE_SETTLEMENT_DIRECT = new CommandType("create-settlement-direct")
-	public static readonly CREATE_SETTLEMENT_WITH_SETTLER = new CommandType("create-settlement-settler")
+	public static readonly CREATE_SETTLEMENT = new CommandType("create-settlement")
 	public static readonly PRODUCTION_QUEUE_ADD = new CommandType("production-queue.add")
 	public static readonly PRODUCTION_QUEUE_CANCEL = new CommandType("production-queue.remove-entry")
 
@@ -27,12 +26,7 @@ export interface MoveCommand extends Command {
 	path: TileIdentifier[]
 }
 
-export interface CreateSettlementWithSettlerCommand extends Command {
-	name: string
-	tile: TileIdentifier
-}
-
-export interface CreateSettlementDirectCommand extends Command {
+export interface CreateSettlement extends Command {
 	name: string
 	tile: TileIdentifier
 }

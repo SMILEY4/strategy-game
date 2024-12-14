@@ -2,7 +2,6 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import {Tile, TileIdentifier} from "../../../../../models/base/tile";
 import React from "react";
 import {TileWindow} from "./TileWindow";
-import {UseFoundSettlementWindow} from "../foundsettlement/useFoundSettlementWindow";
 import {TileRepository} from "../../../../../state/repository/tileRepository";
 
 export namespace UseTileWindow {
@@ -38,25 +37,16 @@ export namespace UseTileWindow {
 
 	export interface Data {
 		tile: Tile;
-		settlement: {
-			valid: boolean,
-			found: () => void
-		};
 	}
 
 	export function useData(overwriteTile: TileIdentifier | null): UseTileWindow.Data | null {
 
 		const selectedTileIdentifier = TileRepository.useSelected();
 		const tile = TileRepository.useById((overwriteTile ?? selectedTileIdentifier) ?? null);
-		const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen();
 
 		if (tile) {
 			return {
 				tile: tile,
-				settlement: {
-					valid: tile.createSettlement.direct,
-					found: () => openFoundSettlementWindow(tile.identifier, null),
-				},
 			};
 		} else {
 			return null;

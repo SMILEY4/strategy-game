@@ -16,8 +16,8 @@ import io.github.smiley4.strategygame.backend.engine.ports.provided.SettlementUt
 
 internal abstract class UpdateBuildingsStep(private val settlementUtilities: SettlementUtilities) {
 
-    class OnCreation(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities),
-        ProcessStep<CreatedBuildingEvent>, Logging {
+    class OnCreation(settlementUtilities: SettlementUtilities)
+        : UpdateBuildingsStep(settlementUtilities), ProcessStep<CreatedBuildingEvent>, Logging {
 
         override suspend fun run(event: CreatedBuildingEvent) {
             clearWorkTile(event.building)
@@ -25,8 +25,8 @@ internal abstract class UpdateBuildingsStep(private val settlementUtilities: Set
         }
     }
 
-    class OnUpdate(settlementUtilities: SettlementUtilities) : UpdateBuildingsStep(settlementUtilities), ProcessStep<OnUpdateWorldEvent>,
-        Logging {
+    class OnUpdate(settlementUtilities: SettlementUtilities)
+        : UpdateBuildingsStep(settlementUtilities), ProcessStep<OnUpdateWorldEvent>, Logging {
 
         override suspend fun run(event: OnUpdateWorldEvent) {
             event.game.settlements.forEach { settlement ->

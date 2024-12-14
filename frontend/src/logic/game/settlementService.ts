@@ -40,16 +40,9 @@ export class SettlementService {
 	}
 
 	/**
-	 * Create a new settlement
+	 * Create a new settlement using the given settler
 	 */
-	public createSettlementDirect(tile: Tile, name: string) {
-		this.commandService.addCreateSettlementDirectCommand(tile.identifier, name);
-	}
-
-	/**
-	 * Create a new settlement using the settler
-	 */
-	public createSettlementWithSettler(worldObjectId: string, tile: Tile, name: string) {
+	public createSettlementWith(worldObjectId: string, tile: Tile, name: string) {
 		this.commandService.addCreateSettlementWithSettlerCommand(worldObjectId, tile.identifier, name);
 	}
 

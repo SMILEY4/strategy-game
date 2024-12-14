@@ -20,12 +20,7 @@ sealed class CommandData {
         val path: List<TileRef>
     ) : CommandData()
 
-    class CreateSettlementDirect(
-        val name: String,
-        val tile: TileRef
-    ) : CommandData()
-
-    class CreateSettlementWithSettler(
+    class CreateSettlement(
         val name: String,
         val worldObject: WorldObject.Id
     ) : CommandData()

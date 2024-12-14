@@ -8,10 +8,10 @@ import io.github.smiley4.strategygame.backend.commondata.Tile
 internal class InfluenceCalculator {
 
     fun calculate(game: GameExtended, tile: Tile): List<Tile.Influence> {
-        return game.settlements.mapNotNull { calculate(game, tile, it) }
+        return game.settlements.mapNotNull { calculate(tile, it) }
     }
 
-    private fun calculate(game: GameExtended, tile: Tile, settlement: Settlement): Tile.Influence? {
+    private fun calculate(tile: Tile, settlement: Settlement): Tile.Influence? {
         val maxInfluence = 10.0
         val spreadDistance = 4.0
 
@@ -21,7 +21,6 @@ internal class InfluenceCalculator {
         return if (influence > 0) {
             Tile.Influence(
                 country = settlement.country,
-                province = settlement.findProvince(game).id,
                 settlement = settlement.id,
                 amount = influence
             )

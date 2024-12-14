@@ -6,7 +6,6 @@ export interface GameStateMessage {
 	},
 	tiles: TileMessage[],
 	countries: CountryMessage[],
-	provinces: ProvinceMessage[]
 	settlements: SettlementMessage[],
 	worldObjects: WorldObjectMessage[],
 	routes: RouteMessage[],
@@ -27,7 +26,6 @@ export interface TileMessage {
 	political: HiddenType<{
 		controlledBy: null | {
 			country: string,
-			province: string,
 			settlement: string
 		}
 	}>,
@@ -50,16 +48,6 @@ export interface CountryMessage {
 		name: string
 	},
 	ownedByUser: boolean
-}
-
-export interface ProvinceMessage {
-	id: string,
-	color: {
-		red: number,
-		green: number,
-		blue: number,
-	},
-	settlements: string[]
 }
 
 export interface SettlementMessage {

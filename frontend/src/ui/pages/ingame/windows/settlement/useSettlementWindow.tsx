@@ -2,7 +2,6 @@ import {openWindow, useOpenWindow} from "../../../../components/headless/useWind
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
 import {useDI} from "../../../../../appContext";
-import {Province} from "../../../../../models/base/province";
 import {UseProductionWindow} from "../production/useProductionWindow";
 import {
 	SettlementAggregate,
@@ -10,9 +9,7 @@ import {
 import {SettlementAggregateAccess} from "../../../../../state/settlementAggregateAccess";
 import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
 import {SettlementService} from "../../../../../logic/game/settlementService";
-import {ProvinceRepository} from "../../../../../state/repository/provinceRepository";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
-import {Color} from "../../../../../models/base/color";
 
 export namespace UseSettlementWindow {
 
@@ -47,7 +44,6 @@ export namespace UseSettlementWindow {
 
 	export interface Data {
 		settlement: SettlementAggregate;
-		province: Province;
 		productionQueue: {
 			activeEntry: ProductionQueueEntry | null
 			add: () => void
@@ -59,17 +55,15 @@ export namespace UseSettlementWindow {
 	export function useData(identifier: string | null): UseSettlementWindow.Data | null {
 
 		const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
-		const province = ProvinceRepository.useBySettlementId(settlement?.identifier);
 
 		const service = useDI<SettlementService>(SettlementService.name);
 
 		const openProductionWindow = UseProductionWindow.useOpen();
 		const openProductionQueueWindow = UseProductionQueueWindow.useOpen();
 
-		if (settlement && province) {
+		if (settlement) {
 			return {
 				settlement: settlement,
-				province: province,
 				productionQueue: {
 					activeEntry: settlement.production.queue.length === 0 ? null : settlement.production.queue[0],
 					add: () => openProductionWindow(identifier!),

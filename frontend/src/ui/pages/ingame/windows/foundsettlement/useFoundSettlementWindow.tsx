@@ -47,14 +47,14 @@ export namespace UseFoundSettlementWindow {
 	/**
 	 * Provides the data and functions required by the "found settlement" window
 	 */
-	export function useData(windowId: string, tileIdentifier: TileIdentifier, worldObjectId: string | null): UseFoundSettlementWindow.Data {
+	export function useData(windowId: string, tileIdentifier: TileIdentifier, worldObjectId: string): UseFoundSettlementWindow.Data {
 
 		const tile = TileRepository.useByIdOrThrow(tileIdentifier);
 
 		const closeWindow = useCloseWindow();
 
 		const [name, setName] = useState("");
-		const [valid, failedValidations, create] = worldObjectId ? useCreateSettlementWithSettler(worldObjectId, tile, name) : useCreateSettlementDirect(tile, name);
+		const [valid, failedValidations, create] = useCreateSettlement(worldObjectId, tile, name);
 
 		useEffect(() => {
 			setRandomName(setName);
@@ -85,33 +85,16 @@ export namespace UseFoundSettlementWindow {
 
 	/**
 	 * Returns
-	 * - whether the given data is valid and a settlement can be created
-	 * - a list of validation errors
-	 * - a function to create the settlement
-	 */
-	function useCreateSettlementDirect(tile: Tile, name: string | null): [boolean, string[], () => void] {
-		const settlementService = useDI<SettlementService>(SettlementService.name);
-		const [possible, reasons] = useValidateCreateSettlement(tile, name);
-
-		function perform() {
-			settlementService.createSettlementDirect(tile, name!);
-		}
-
-		return [possible, reasons, perform];
-	}
-
-	/**
-	 * Returns
 	 * - whether the given data is valid and a settlement can be created using a settler
 	 * - a list of validation errors
 	 * - a function to create the settlement
 	 */
-	function useCreateSettlementWithSettler(worldObjectId: string, tile: Tile, name: string | null): [boolean, string[], () => void] {
+	function useCreateSettlement(worldObjectId: string, tile: Tile, name: string | null): [boolean, string[], () => void] {
 		const settlementService = useDI<SettlementService>(SettlementService.name);
 		const [possible, reasons] = useValidateCreateSettlement(tile, name);
 
 		function perform() {
-			settlementService.createSettlementWithSettler(worldObjectId, tile, name!);
+			settlementService.createSettlementWith(worldObjectId, tile, name!);
 		}
 
 		return [possible, reasons, perform];
