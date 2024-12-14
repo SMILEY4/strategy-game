@@ -5,6 +5,7 @@ import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Settlement
+import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import kotlin.random.Random
 
@@ -17,6 +18,8 @@ object Id {
 
 }
 
+
+fun Tile.Id.Companion.gen() = Tile.Id(Id.gen())
 
 fun Country.Id.Companion.gen() = Country.Id(Id.gen())
 

@@ -244,7 +244,9 @@ private fun Route.routingGateway() {
             authenticate("auth-technical-user") {
                 routeDisconnectAll(disconnectAll)
             }
-            routeWebsocket(wsTicketManager, wsConnectionHandler, messageHandler, disconnectAction, requestConnection, connectAction)
+            route("connect") {
+                routeWebsocket(wsTicketManager, wsConnectionHandler, messageHandler, disconnectAction, requestConnection, connectAction)
+            }
         }
 
         val gameService by inject<GameService>()

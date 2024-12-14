@@ -12,6 +12,10 @@ import kotlin.time.Duration.Companion.seconds
 
 class ArangoDatabaseTest : FreeSpec({
 
+    beforeSpec {
+        TestContainers.arangoDbPort = ArangoDbContainer.start().getMappedPort(8529)
+    }
+
     beforeEach {
         deleteDatabase()
     }
@@ -91,6 +95,24 @@ class ArangoDatabaseTest : FreeSpec({
                         it.key shouldNotBe null
                     }
                 }
+            }
+        }
+
+        "more documents than max batch size" {
+            withDatabase { db ->
+
+                val n = 1500 // max batch size is 1000
+                val documents = (1..n).map { testEntity("test$it", it) }
+
+                db.insertOrReplaceDocuments(TEST_COLLECTION, documents).also {
+                    it shouldHaveSize n
+                }
+
+                db.count(TEST_COLLECTION) shouldBe n
+                db.getAllDocuments(TEST_COLLECTION, TestEntity::class.java).let { result ->
+                    result shouldHaveSize n
+                }
+
             }
         }
 

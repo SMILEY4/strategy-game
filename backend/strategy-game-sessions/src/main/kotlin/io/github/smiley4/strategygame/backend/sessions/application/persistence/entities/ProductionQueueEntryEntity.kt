@@ -6,7 +6,7 @@ import io.github.smiley4.strategygame.backend.commondata.ProductionQueueEntry
 import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.MINIMAL_CLASS,
+    use = JsonTypeInfo.Id.SIMPLE_NAME,
     include = JsonTypeInfo.As.PROPERTY,
     property = "type"
 )

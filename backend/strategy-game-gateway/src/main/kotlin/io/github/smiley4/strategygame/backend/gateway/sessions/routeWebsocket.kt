@@ -58,8 +58,11 @@ internal object RouteWebsocket {
 
         // handle incoming connection, return non 2xx to not accept the connection
         onConnect { call, data ->
-            val userId = data[WebsocketConstants.USER_ID]!! as String
-            val gameId = call.parameters[WebsocketConstants.GAME_ID]!!.also { data[WebsocketConstants.GAME_ID] = it }
+            if(data == null) {
+                throw Exception("No websocket connection data found.")
+            }
+            val userId = data.data[WebsocketConstants.USER_ID]!! as String
+            val gameId = call.parameters[WebsocketConstants.GAME_ID]!!.also { data.data[WebsocketConstants.GAME_ID] = it }
             withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId)) {
                 try {
                     requestConnection.perform(User.Id(userId), Game.Id(gameId))
@@ -75,19 +78,19 @@ internal object RouteWebsocket {
 
         // handle established connection
         onOpen { connection ->
-            val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
-            val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
-            withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
-                connectAction.perform(User.Id(userId), Game.Id(gameId), connection.getId())
+            val userId = connection.data.data[WebsocketConstants.USER_ID]!! as String
+            val gameId = connection.data.data[WebsocketConstants.GAME_ID]!! as String
+            withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.id)) {
+                connectAction.perform(User.Id(userId), Game.Id(gameId), connection.id)
             }
         }
 
         // handle each incoming websocket message
         onEachText { connection, strMessage ->
-            val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
-            val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
-            withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
-                buildMessage<Message<*>>(connection.getId(), userId, gameId, strMessage).let {
+            val userId = connection.data.data[WebsocketConstants.USER_ID]!! as String
+            val gameId = connection.data.data[WebsocketConstants.GAME_ID]!! as String
+            withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.id)) {
+                buildMessage<Message<*>>(connection.id, userId, gameId, strMessage).let {
                     messageHandler.onMessage(it)
                 }
             }
@@ -95,9 +98,9 @@ internal object RouteWebsocket {
 
         // handle a closed connection
         onClose { connection ->
-            val userId = connection.getData<String>(WebsocketConstants.USER_ID)!!
-            val gameId = connection.getData<String>(WebsocketConstants.GAME_ID)!!
-            withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.getId())) {
+            val userId = connection.data.data[WebsocketConstants.USER_ID]!! as String
+            val gameId = connection.data.data[WebsocketConstants.GAME_ID]!! as String
+            withLoggingContextAsync(mdcTraceId(), mdcUserId(userId), mdcGameId(gameId), mdcConnectionId(connection.id)) {
                 disconnectAction.perform(User.Id(userId))
             }
         }

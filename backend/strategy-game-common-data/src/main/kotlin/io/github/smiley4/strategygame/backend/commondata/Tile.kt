@@ -8,7 +8,9 @@ data class Tile(
 ) {
 
     @JvmInline
-    value class Id(val value: String)
+    value class Id(val value: String) {
+        companion object
+    }
 
     data class WorldData(
         var terrainType: TerrainType,

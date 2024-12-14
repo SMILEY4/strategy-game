@@ -1,5 +1,7 @@
 package io.github.smiley4.strategygame.backend.gateway.websocket.auth
 
+import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebsocketConnectionData
+
 /**
  * Handles tickets used for authenticating websocket requests.
  * Authentication Process:
@@ -25,6 +27,6 @@ interface WebsocketTicketAuthManager {
     /**
      * Extract the additional data from the given valid ticket
      */
-    fun extractData(ticket: String): Map<String,Any?>
+    fun extractData(ticket: String): WebsocketConnectionData
 
 }

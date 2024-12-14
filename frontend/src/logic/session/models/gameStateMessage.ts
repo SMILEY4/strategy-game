@@ -76,6 +76,16 @@ export interface SettlementMessage {
 		q: number,
 		r: number
 	},
+	population: {
+		size: number,
+		growth: HiddenType<({
+			progress: number,
+			details: ({
+				key: string,
+				amount: number
+			})[]
+		})>,
+	},
 	productionQueue: HiddenType<({
 		type: string
 		entryId: string

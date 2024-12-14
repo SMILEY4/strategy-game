@@ -22,7 +22,7 @@ import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {Header4} from "../../../../components/header/Header";
 import {joinClassNames} from "../../../../components/utils";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
-import {If, Then} from "react-if";
+import {Else, If, Then} from "react-if";
 import {Building} from "../../../../../models/base/building";
 
 export interface SettlementWindowProps {
@@ -87,6 +87,35 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 								? <EnrichedText key={route.id}>{"-> " + route.settlementB.name}</EnrichedText>
 								: <EnrichedText key={route.id}>{"-> " + route.settlementA.name}</EnrichedText>;
 						})}
+					</InsetPanel>
+				</WindowSection>
+
+				<Spacer size="m"/>
+
+				<WindowSection title={"Population"}>
+					<InsetPanel>
+						<InsetKeyValueGrid>
+
+							<EnrichedText>Size</EnrichedText>
+							<EnrichedText>{data.settlement.population.size}</EnrichedText>
+
+							<If condition={data.settlement.population.growth.visible}>
+								<Then>
+									<EnrichedText>Growth Progress</EnrichedText>
+									<EnrichedText><ETNumber percentage>{data.settlement.population.growth.value.progress}</ETNumber></EnrichedText>
+
+									<EnrichedText>Details</EnrichedText>
+									<ul>
+										{data.settlement.population.growth.value.details.map(detail => (
+											<li><EnrichedText>{detail.key} <ETNumber percentage>{detail.amount}</ETNumber></EnrichedText></li>
+										))}
+									</ul>
+
+
+								</Then>
+							</If>
+
+						</InsetKeyValueGrid>
 					</InsetPanel>
 				</WindowSection>
 

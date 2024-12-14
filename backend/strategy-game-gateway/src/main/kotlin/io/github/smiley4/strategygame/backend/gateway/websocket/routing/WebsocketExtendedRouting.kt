@@ -3,6 +3,7 @@ package io.github.smiley4.strategygame.backend.gateway.websocket.routing
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.routingconfig.WebsocketExtendedRouteConfig
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
+import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebsocketConnectionData
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.PipelineCall
 import io.ktor.server.application.createRouteScopedPlugin
@@ -10,7 +11,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.websocket.webSocket
-import java.util.Collections
+import io.ktor.util.AttributeKey
 
 /**
  * Creates a route providing tickets for authenticating websocket-connections.
@@ -25,6 +26,8 @@ internal fun Route.webSocketTicket(
     }
 }
 
+private val authDataAttributeKey = AttributeKey<WebsocketConnectionData>("wsext.authdata")
+
 
 /**
  * See [webSocket]
@@ -37,15 +40,15 @@ internal fun Route.webSocketExt(
     config: WebsocketExtendedRouteConfig.() -> Unit
 ) {
     val handler = WebsocketExtendedHandler(WebsocketExtendedRouteConfig().apply(config), connectionHandler)
-    val callDataCache = Collections.synchronizedMap(mutableMapOf<ApplicationCall, MutableMap<String, Any?>>())
     interceptWebsocketRequest(
         interceptor = { call ->
-            callDataCache[call] = handler.handleBefore(ticketManager, call, authenticate)
+            handler.handleBefore(ticketManager, call, authenticate)?.also {
+                call.attributes.put(authDataAttributeKey, it)
+            }
         })
     {
         webSocket(protocol) {
-            val data = callDataCache.getOrDefault(this.call, mapOf())
-            handler.handleSession(this, data)
+            handler.handleSession(this, call.attributes[authDataAttributeKey])
         }
     }
 }
@@ -63,15 +66,15 @@ internal fun Route.webSocketExt(
     config: WebsocketExtendedRouteConfig.() -> Unit
 ) {
     val handler = WebsocketExtendedHandler(WebsocketExtendedRouteConfig().apply(config), connectionHandler)
-    val callDataCache = Collections.synchronizedMap(mutableMapOf<ApplicationCall, MutableMap<String, Any?>>())
     interceptWebsocketRequest(
         interceptor = { call ->
-            callDataCache[call] = handler.handleBefore(ticketManager, call, authenticate)
+            handler.handleBefore(ticketManager, call, authenticate)?.also {
+                call.attributes.put(authDataAttributeKey, it)
+            }
         }
     ) {
         webSocket(path, protocol) {
-            val data = callDataCache.getOrDefault(this.call, mapOf())
-            handler.handleSession(this, data)
+            handler.handleSession(this, call.attributes[authDataAttributeKey])
         }
     }
 }

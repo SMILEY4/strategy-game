@@ -9,6 +9,7 @@ export interface Settlement {
 	identifier: SettlementIdentifier,
 	country: CountryIdentifier
 	tile: TileIdentifier,
+	population: SettlementPopulation,
 	productionQueue: HiddenType<ProductionQueueEntry[]>,
 	productionOptions: HiddenType<ProductionOption[]>,
 	buildings: HiddenType<Building[]>
@@ -19,6 +20,17 @@ export interface SettlementIdentifier {
 	id: string,
 	name: string
 	color: Color,
+}
+
+export interface SettlementPopulation {
+	size: number,
+	growth: HiddenType<({
+		progress: number,
+		details: ({
+			key: string,
+			amount: number
+		})[]
+	})>,
 }
 
 export interface ProductionQueueEntry {

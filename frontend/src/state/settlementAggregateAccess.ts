@@ -41,6 +41,7 @@ export namespace SettlementAggregateAccess {
 			identifier: settlement.identifier,
 			country: settlement.country,
 			tile: settlement.tile,
+			population: settlement.population,
 			production: {
 				options: productionOptions,
 				queue: productionQueue,

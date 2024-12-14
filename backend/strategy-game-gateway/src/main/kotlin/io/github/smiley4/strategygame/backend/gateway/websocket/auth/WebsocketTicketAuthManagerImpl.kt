@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.gateway.websocket.auth
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebsocketConnectionData
 import mu.two.KotlinLogging
 import java.security.SecureRandom
 import java.time.Instant
@@ -51,7 +52,7 @@ internal class WebsocketTicketAuthManagerImpl(private val ticketTTL: Duration) :
             if (!validTickets.contains(ticket)) {
                 return false
             }
-            return extractData(ticket)[KEY_VALID_UNTIL]
+            return extractData(ticket).data[KEY_VALID_UNTIL]
                 ?.let { it as Long }
                 ?.let { it >= Instant.now().toEpochMilli() }
                 ?: false
@@ -64,8 +65,8 @@ internal class WebsocketTicketAuthManagerImpl(private val ticketTTL: Duration) :
     }
 
 
-    override fun extractData(ticket: String): Map<String, Any?> {
-        return json.readValue(String(Base64.getUrlDecoder().decode(ticket)), object : TypeReference<HashMap<String, Any?>>() {})
+    override fun extractData(ticket: String): WebsocketConnectionData {
+        return WebsocketConnectionData(json.readValue(String(Base64.getUrlDecoder().decode(ticket)), object : TypeReference<HashMap<String, Any?>>() {}))
     }
 
 }

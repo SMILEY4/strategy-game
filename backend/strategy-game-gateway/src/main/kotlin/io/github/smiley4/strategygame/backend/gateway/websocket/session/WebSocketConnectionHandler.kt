@@ -18,10 +18,10 @@ internal class WebSocketConnectionHandler {
      * @param data initial data of this websocket connection
      * @return the connection
      */
-    fun open(session: DefaultWebSocketSession, data: Map<String, Any?>): WebSocketConnection {
+    fun open(session: DefaultWebSocketSession, data: WebsocketConnectionData): WebSocketConnection {
         val connection = WebSocketConnection(session, data)
-        connections[connection.getId()] = connection
-        logger.debug("Added new websocket-connection with id ${connection.getId()}")
+        connections[connection.id] = connection
+        logger.debug("Added new websocket-connection with id ${connection.id}")
         return connection
     }
 
@@ -30,9 +30,9 @@ internal class WebSocketConnectionHandler {
      * @param connection the connection to close
      */
     fun close(connection: WebSocketConnection) {
-        val removed = connections.remove(connection.getId()) != null
+        val removed = connections.remove(connection.id) != null
         if (removed) {
-            logger.debug("Removed websocket-connection with id ${connection.getId()}")
+            logger.debug("Removed websocket-connection with id ${connection.id}")
         }
     }
 
