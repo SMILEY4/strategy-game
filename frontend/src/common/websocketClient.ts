@@ -10,7 +10,8 @@ export class WebsocketClient {
 
     open(url: string, ticket: string, consumer: (msg: WebsocketMessage) => void): Promise<void> {
         if (this.isOpen()) {
-            return Promise.reject("Websocket is already open");
+            this.close();
+            // return Promise.reject("Websocket is already open");
         }
         return new Promise((resolve, reject) => {
             try {

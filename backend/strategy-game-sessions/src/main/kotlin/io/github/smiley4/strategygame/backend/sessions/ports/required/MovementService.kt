@@ -12,7 +12,14 @@ internal interface MovementService {
      * @param worldObject the world object that wants to move
      * @param tile the current position of the world object. May be different from [WorldObject.tile], e.g. if it is mid-movement
      * @param currentPoints the already used movement points of the world object to get to its current position
+     * @param respectPoV whether the pov of the moving game object should be respected in. If true, tiles not discovered always count as valid next positions
      * @return the list of available tiles to move to and how much it would cost
      */
-    fun getAvailablePositions(game: GameExtended, worldObject: WorldObject, tile: TileRef, currentPoints: Int): List<MovementTarget>
+    fun getAvailablePositions(
+        game: GameExtended,
+        worldObject: WorldObject,
+        tile: TileRef,
+        currentPoints: Int,
+        respectPoV: Boolean
+    ): List<MovementTarget>
 }

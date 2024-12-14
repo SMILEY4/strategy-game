@@ -64,8 +64,9 @@ internal class ResolveCommandMove(private val movementService: MovementService) 
         game: GameExtended,
         worldObject: WorldObject
     ): MovementTarget? {
-        val availableTargets = movementService.getAvailablePositions(game, worldObject, current, currentCost)
-        return availableTargets.find { it.tile == destination && currentCost + it.cost <= worldObject.maxMovement }
+        return movementService
+            .getAvailablePositions(game, worldObject, current, currentCost, false)
+            .find { it.tile == destination && currentCost + it.cost <= worldObject.maxMovement }
     }
 
 }

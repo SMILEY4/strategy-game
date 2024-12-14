@@ -61,6 +61,7 @@ export class GameRenderGraph {
 		this.renderer = new BaseRenderer(this.gl);
 
 		this.renderGraphWebGl = new RenderGraph<WebGLRenderCommand.Context>({
+			name: "webgl",
 			sorter: new WebGLRenderGraphSorter(),
 			resourceManager: new WebGLResourceManager(gl, new GameShaderSourceManager()),
 			compiler: new WebGLRenderGraphCompiler(),
@@ -83,6 +84,7 @@ export class GameRenderGraph {
 		});
 
 		this.renderGraphHtml = new RenderGraph<HtmlRenderCommand.Context>({
+			name: "html",
 			sorter: new NoOpRenderGraphSorter(),
 			resourceManager: new HtmlResourceManager(),
 			compiler: new HtmlRenderGraphCompiler(),
@@ -112,7 +114,7 @@ export class GameRenderGraph {
 	 */
 	public dispose() {
 		this.renderGraphWebGl.dispose();
-		this.renderGraphWebGl.dispose();
+		this.renderGraphHtml.dispose();
 	}
 
 	/**

@@ -35,8 +35,9 @@ internal class WebsocketExtendedHandler(
             }
             val ticket = config.tickerProvider(call)
             if (ticket == null || !ticketManager.validateAndConsumeTicket(ticket)) {
-                call.respond(HttpStatusCode.Unauthorized)
-                return null
+//                call.respond(HttpStatusCode.Unauthorized)
+//                return null
+                throw Exception("Unauthorized") // todo: call.respond causes on-connect etc to be called again and cause infinite loop -> throw proper exception with status code handling in status-page-plugin
             } else {
                 return ticketManager.extractData(ticket).also {
                     config.onConnectHandler(call, it)

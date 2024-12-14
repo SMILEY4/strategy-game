@@ -22,7 +22,7 @@ internal class GameServiceImpl(
         val game = getGame(gameId)
         val worldObject = getWorldObject(game, worldObjectId)
         val tile = getTile(game, tileId)
-        return movementService.getAvailablePositions(game, worldObject, tile.ref(), currentCost)
+        return movementService.getAvailablePositions(game, worldObject, tile.ref(), currentCost, true)
     }
 
     override suspend fun getSettlementName(): String {

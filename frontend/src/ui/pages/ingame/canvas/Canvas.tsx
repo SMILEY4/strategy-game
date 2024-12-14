@@ -60,6 +60,7 @@ export function Canvas() {
 	}
 
 	function initialize(canvas: HTMLCanvasElement) {
+		console.log("Initializing canvas")
 		onInitialize(canvas);
 		renderLoop();
 
@@ -117,6 +118,7 @@ export function Canvas() {
 	}
 
 	function onDispose() {
+		console.log("Disposing canvas")
 		gameLoopService.dispose();
 	}
 

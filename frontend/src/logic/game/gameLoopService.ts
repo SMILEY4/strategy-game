@@ -60,8 +60,8 @@ export class GameLoopService {
 	 * Dispose this game loop
 	 */
 	public dispose() {
-		this.canvasHandle.set(null);
 		this.gameRenderer.dispose();
+		this.canvasHandle.set(null);
 	}
 
 	/**
