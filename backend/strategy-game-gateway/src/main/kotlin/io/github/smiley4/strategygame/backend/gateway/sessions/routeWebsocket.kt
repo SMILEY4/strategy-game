@@ -67,11 +67,12 @@ internal object RouteWebsocket {
                 try {
                     requestConnection.perform(User.Id(userId), Game.Id(gameId))
                 } catch (e: RequestConnectionToGame.GameRequestConnectionActionError) {
-                    when (e) {
-                        is RequestConnectionToGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
-                        is RequestConnectionToGame.NotParticipantError -> call.respond(NotParticipantResponse)
-                        is RequestConnectionToGame.AlreadyConnectedError -> call.respond(AlreadyConnectedResponse)
-                    }
+                    throw e // todo: call.respond causes on-connect etc to be called again and cause infinite loop -> throw proper exception with status code handling in status-page-plugin
+//                    when (e) {
+//                        is RequestConnectionToGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
+//                        is RequestConnectionToGame.NotParticipantError -> call.respond(NotParticipantResponse)
+//                        is RequestConnectionToGame.AlreadyConnectedError -> call.respond(AlreadyConnectedResponse)
+//                    }
                 }
             }
         }
