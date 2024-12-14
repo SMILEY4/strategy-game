@@ -1,12 +1,13 @@
 package io.github.smiley4.strategygame.backend.gateway.websocket.routingconfig
 
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnection
+import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebsocketConnectionData
 import io.ktor.server.application.ApplicationCall
 
 
 internal typealias TicketProvider = (call: ApplicationCall) -> String?
 
-internal typealias OnConnectHandler = suspend (call: ApplicationCall, data: MutableMap<String, Any?>) -> Unit
+internal typealias OnConnectHandler = suspend (call: ApplicationCall, data: WebsocketConnectionData?) -> Unit
 
 internal typealias OnOpenHandler = suspend (connection: WebSocketConnection) -> Unit
 

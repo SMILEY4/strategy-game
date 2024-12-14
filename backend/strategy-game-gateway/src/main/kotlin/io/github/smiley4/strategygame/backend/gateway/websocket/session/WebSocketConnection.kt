@@ -9,11 +9,9 @@ import java.util.concurrent.atomic.AtomicLong
  * @param session the ktor websocket session
  */
 internal class WebSocketConnection(
-    private val session: DefaultWebSocketSession,
-    private val initialData: Map<String, Any?>
+    val session: DefaultWebSocketSession,
+    val data: WebsocketConnectionData
 ) {
-
-    private val data = mutableMapOf<String, Any?>().also { it.putAll(initialData) }
 
     private companion object {
         var lastId = AtomicLong(0)
@@ -22,31 +20,7 @@ internal class WebSocketConnection(
     /**
      * The id of this connection (unique among the current connections).
      */
-    private val id: Long = lastId.getAndIncrement()
-
-    /**
-     * @return the id of this connection.
-     */
-    fun getId() = id
-
-    /**
-     * @return the session associated with this connection
-     */
-    fun getSession() = session
-
-
-    fun <T> setData(key: String, value: T?) {
-        data[key] = value
-    }
-
-    fun <T> getData(key: String): T? {
-        return try {
-            @Suppress("UNCHECKED_CAST")
-            data[key] as T
-        } catch (e: Exception) {
-            null
-        }
-    }
+    val id: Long = lastId.getAndIncrement()
 
     /**
      * Send a message to this connection

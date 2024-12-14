@@ -8,17 +8,24 @@ import org.testcontainers.containers.wait.strategy.HttpWaitStrategy
 import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 
-class TestContainers : AbstractProjectConfig() {
+//class TestContainers : AbstractProjectConfig() {
+//
+//    companion object {
+//        var arangoDbPort: Int? = null
+//    }
+//
+//    override suspend fun beforeProject() {
+//        arangoDbPort = ArangoDbContainer.start().getMappedPort(8529)
+//    }
+//}
+
+class TestContainers  {
 
     companion object {
         var arangoDbPort: Int? = null
     }
 
-    override suspend fun beforeProject() {
-        arangoDbPort = ArangoDbContainer.start().getMappedPort(8529)
-    }
 }
-
 
 internal object ArangoDbContainer {
 

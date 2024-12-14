@@ -2,6 +2,7 @@ package io.github.smiley4.strategygame.backend.engine.application.core
 
 import io.github.smiley4.strategygame.backend.common.monitoring.MetricId
 import io.github.smiley4.strategygame.backend.common.monitoring.Monitoring.time
+import io.github.smiley4.strategygame.backend.common.utils.gen
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.Game
@@ -33,7 +34,7 @@ internal class InitializeWorldImpl(private val worldGenerator: WorldGenerator) :
     private fun buildTiles(worldSettings: WorldGenSettings): List<Tile> {
         return worldGenerator.buildTiles(worldSettings).map {
             Tile(
-                id = Tile.Id(DbId.PLACEHOLDER),
+                id = Tile.Id.gen(),
                 position = TilePosition(it.q, it.r),
                 dataWorld = Tile.WorldData(
                     terrainType = it.type,

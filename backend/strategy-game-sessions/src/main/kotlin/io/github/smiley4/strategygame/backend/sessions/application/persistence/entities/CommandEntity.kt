@@ -100,7 +100,7 @@ internal class CommandEntity<T : CommandEntityData>(
 
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.MINIMAL_CLASS,
+    use = JsonTypeInfo.Id.SIMPLE_NAME,
     include = JsonTypeInfo.As.PROPERTY,
     property = "type"
 )

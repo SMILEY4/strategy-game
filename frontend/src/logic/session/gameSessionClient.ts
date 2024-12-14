@@ -69,7 +69,7 @@ export class GameSessionClient {
      */
     public connect(gameId: string, handler: WebsocketMessageHandler): Promise<void> {
         return this.getWebsocketTicket().then(ticket => {
-            return this.wsClient.open(`/api/session/${gameId}`, ticket, message => {
+            return this.wsClient.open(`/api/session/connect/${gameId}`, ticket, message => {
                 handler.onMessage(message.type, message.payload);
             });
         });

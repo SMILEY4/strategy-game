@@ -7,7 +7,7 @@ import io.github.smiley4.strategygame.backend.commondata.DbId
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.MINIMAL_CLASS,
+    use = JsonTypeInfo.Id.SIMPLE_NAME,
     include = JsonTypeInfo.As.PROPERTY,
     property = "type"
 )

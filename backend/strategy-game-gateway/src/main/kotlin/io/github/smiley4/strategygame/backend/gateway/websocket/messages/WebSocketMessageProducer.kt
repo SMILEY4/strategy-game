@@ -21,7 +21,7 @@ internal class WebSocketMessageProducer(private val connectionHandler: WebSocket
         log().info("Sending message '${message.type}' to connection $connectionId")
         val encoded = message.encode()
         connectionHandler.getAllConnections()
-            .filter { it.getId() == connectionId }
+            .filter { it.id == connectionId }
             .forEach { it.send(encoded) }
     }
 
@@ -29,7 +29,7 @@ internal class WebSocketMessageProducer(private val connectionHandler: WebSocket
         log().info("Sending message '${message.type}' to connections $connectionIds")
         val encoded = message.encode()
         connectionHandler.getAllConnections()
-            .filter { connectionIds.contains(it.getId()) }
+            .filter { connectionIds.contains(it.id) }
             .forEach { it.send(encoded) }
     }
 
@@ -37,7 +37,7 @@ internal class WebSocketMessageProducer(private val connectionHandler: WebSocket
         log().info("Sending message '${message.type}' to all except connection $excludedConnectionId")
         val encoded = message.encode()
         connectionHandler.getAllConnections()
-            .filter { it.getId() != excludedConnectionId }
+            .filter { it.id != excludedConnectionId }
             .forEach { it.send(encoded) }
     }
 

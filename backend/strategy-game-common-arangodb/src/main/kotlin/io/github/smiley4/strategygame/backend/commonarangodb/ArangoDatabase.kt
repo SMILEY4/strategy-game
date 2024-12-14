@@ -296,7 +296,17 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * @return all results as a list
      */
     suspend fun <T> query(query: String, type: Class<T>): List<T> {
-        return database.query(query, type).await().result
+        val documents = mutableListOf<T>()
+
+        var cursor = database.query(query, type).await() // max batch size for cursor is 1000
+        documents.addAll(cursor.result)
+
+        while(cursor.hasMore()) {
+            cursor = cursor.nextBatch().await()
+            documents.addAll(cursor.result)
+        }
+
+        return documents
     }
 
 
@@ -305,9 +315,18 @@ class ArangoDatabase(val database: ArangoDatabaseAsync) {
      * @return all results as a list
      */
     suspend fun <T> query(query: String, bindVars: Map<String, Any>, type: Class<T>): List<T> {
-        return database.query(query, type, bindVars).await().result
-    }
+        val documents = mutableListOf<T>()
 
+        var cursor = database.query(query, type, bindVars).await() // max batch size for cursor is 1000
+        documents.addAll(cursor.result)
+
+        while(cursor.hasMore()) {
+            cursor = cursor.nextBatch().await()
+            documents.addAll(cursor.result)
+        }
+
+        return documents
+    }
 
     /**
      * Execute the given query.
