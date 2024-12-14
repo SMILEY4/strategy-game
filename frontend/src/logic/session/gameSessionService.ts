@@ -82,7 +82,10 @@ export class GameSessionService implements WebsocketMessageHandler {
 			.then(() => this.repository.setSessionState("loading"))
 			.then(() => RenderGraphPreloader.tempLoad())
 			.then(() => this.client.connect(gameId, this))
-			.catch(() => this.repository.setSessionState("error"));
+			.catch(e => {
+				console.error(e)
+				this.repository.setSessionState("error")
+			});
 	}
 
 	public onMessage(type: string, payload: any): void {

@@ -9,6 +9,7 @@ import {RenderCommand} from "./renderCommand";
  */
 export class RenderGraph<TContext> {
 
+    private readonly name: string;
     private readonly sorter: RenderGraphSorter;
     private readonly resourceManager: ResourceManager;
     private readonly compiler: RenderGraphCompiler<any>;
@@ -17,11 +18,13 @@ export class RenderGraph<TContext> {
     private context: TContext | null = null;
 
     constructor(props: {
+        name: string,
         sorter: RenderGraphSorter,
         resourceManager: ResourceManager,
         compiler: RenderGraphCompiler<any>,
         nodes: AbstractRenderNode[]
     }) {
+        this.name = props.name;
         this.sorter = props.sorter;
         this.resourceManager = props.resourceManager;
         this.compiler = props.compiler;
@@ -29,7 +32,7 @@ export class RenderGraph<TContext> {
     }
 
     public initialize(context: TContext) {
-        console.log("Initialize render graph");
+        console.log("Initialize render graph", this.name);
         this.context = context;
         const sortedNodes = this.sorter.sort(this.nodes);
         this.resourceManager.initialize(sortedNodes);
@@ -38,7 +41,7 @@ export class RenderGraph<TContext> {
 
     public execute() {
         if (this.context === null) {
-            throw new Error("Render graph not initialized.");
+            throw new Error("Render graph not initialized " + this.name);
         }
         const commands = this.commands;
         const context = this.context;
@@ -50,7 +53,7 @@ export class RenderGraph<TContext> {
     }
 
     public dispose() {
-        console.log("Dispose render graph");
+        console.log("Dispose render graph", this.name);
         this.resourceManager.dispose();
         this.commands = [];
         this.context = null;

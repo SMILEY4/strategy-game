@@ -33,7 +33,7 @@ export class GameRenderer {
 		sessionRepository: SessionRepository,
 		worldObjectRepository: WorldObjectRepository,
 		settlementRepository: SettlementRepository,
-		routeRepository: RouteRepository
+		routeRepository: RouteRepository,
 	) {
 		this.changeProvider = changeProvider;
 		this.cameraRepository = cameraRepository;
@@ -47,9 +47,7 @@ export class GameRenderer {
 	/**
 	 * Initialize the renderer for the given canvas
 	 */
-	public initialize(
-		canvasHandle: CanvasHandle,
-	): void {
+	public initialize(canvasHandle: CanvasHandle,): void {
 		GameRenderConfig.initialize();
 		this.renderGraph = new GameRenderGraph(
 			this.changeProvider,
@@ -58,7 +56,7 @@ export class GameRenderer {
 			this.sessionRepository,
 			this.worldObjectRepository,
 			this.settlementRepository,
-			this.routeRepository
+			this.routeRepository,
 		);
 		this.renderGraph.initialize();
 	}
@@ -67,6 +65,9 @@ export class GameRenderer {
 	 * Render a new frame
 	 */
 	public render(canvasHandle: CanvasHandle) {
+		if (!canvasHandle.isReady()) {
+			return;
+		}
 		const camera = this.getRenderCamera(canvasHandle);
 		this.changeProvider.prepareFrame(camera);
 		this.renderConfig = GameRenderConfig.load();

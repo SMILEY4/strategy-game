@@ -4,6 +4,10 @@ export class CanvasHandle {
     private gl: WebGL2RenderingContext | null = null;
     private extLooseContext: WEBGL_lose_context | null = null;
 
+    public isReady(): boolean {
+        return this.canvas != null && this.gl != null;
+    }
+
     public set(canvas: HTMLCanvasElement | null): void {
         this.canvas = canvas;
         if (canvas) {
