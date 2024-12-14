@@ -3,7 +3,6 @@ package io.github.smiley4.strategygame.backend.sessions.application.persistence.
 import io.github.smiley4.strategygame.backend.commonarangodb.DbEntity
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.DbId
-import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.TerrainType
 import io.github.smiley4.strategygame.backend.commondata.Tile
@@ -83,21 +82,18 @@ internal class TilePoliticalDataEntity(
 
 internal data class TileOwnerEntity(
     val countryId: String,
-    val provinceId: String,
     val settlementId: String
 ) {
 
     companion object {
         fun of(serviceModel: Tile.Owner) = TileOwnerEntity(
             countryId = serviceModel.country.value,
-            provinceId = serviceModel.province.value,
             settlementId = serviceModel.settlement.value
         )
     }
 
     fun asServiceModel() = Tile.Owner(
         country = Country.Id(this.countryId),
-        province = Province.Id(this.provinceId),
         settlement = Settlement.Id(this.settlementId)
     )
 

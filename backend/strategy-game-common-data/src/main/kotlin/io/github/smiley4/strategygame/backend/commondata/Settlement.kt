@@ -33,6 +33,4 @@ class Settlement(
         val growthDetails: MutableMap<String, Float> = mutableMapOf(),
     )
 
-    fun findProvince(game: GameExtended): Province = game.findProvinceBySettlement(id)
-
 }

@@ -26,13 +26,11 @@ data class Tile(
 
     data class Owner(
         val country: Country.Id,
-        val province: Province.Id,
         val settlement: Settlement.Id
     )
 
     data class Influence(
         val country: Country.Id,
-        val province: Province.Id,
         val settlement: Settlement.Id,
         val amount: Double
     )

@@ -9,14 +9,12 @@ import io.github.smiley4.strategygame.backend.commonarangodb.EntityNotFoundError
 import io.github.smiley4.strategygame.backend.commondata.Country
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
 import io.github.smiley4.strategygame.backend.commondata.GameMeta
-import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.Route
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.Tile
 import io.github.smiley4.strategygame.backend.commondata.WorldObject
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.CountryEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.GameEntity
-import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.ProvinceEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.RouteEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.SettlementEntity
 import io.github.smiley4.strategygame.backend.sessions.application.persistence.entities.TileEntity
@@ -37,8 +35,6 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
                 { deleteCountries(game.countries.getRemovedElements(), gameId) },
                 { updateCities(game.settlements, gameId) },
                 { deleteCities(game.settlements.getRemovedElements(), gameId) },
-                { updateProvinces(game.provinces, gameId) },
-                { deleteProvinces(game.provinces.getRemovedElements(), gameId) },
                 { updateRoutes(game.routes, gameId) },
                 { deleteRoutes(game.routes.getRemovedElements(), gameId) },
                 { updateWorldObjects(game.worldObjects, gameId) },
@@ -75,14 +71,6 @@ internal class GameExtendedUpdate(private val database: ArangoDatabase) {
 
     private suspend fun deleteCities(cities: Set<Settlement>, gameId: String) {
         database.deleteDocuments(DbCollections.SETTLEMENTS, cities.map { SettlementEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
-    }
-
-    private suspend fun updateProvinces(provinces: Collection<Province>, gameId: String) {
-        database.insertOrReplaceDocuments(DbCollections.PROVINCES, provinces.map { ProvinceEntity.of(it, gameId) })
-    }
-
-    private suspend fun deleteProvinces(provinces: Set<Province>, gameId: String) {
-        database.deleteDocuments(DbCollections.PROVINCES, provinces.map { ProvinceEntity.of(it, gameId) }.map { it.getKeyOrThrow() })
     }
 
     private suspend fun updateRoutes(routes: Collection<Route>, gameId: String) {

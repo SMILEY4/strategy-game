@@ -22,7 +22,7 @@ import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {Header4} from "../../../../components/header/Header";
 import {joinClassNames} from "../../../../components/utils";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
-import {Else, If, Then} from "react-if";
+import {If, Then} from "react-if";
 import {Building} from "../../../../../models/base/building";
 
 export interface SettlementWindowProps {
@@ -62,20 +62,7 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 						<EnrichedText>Country</EnrichedText>
 						<EnrichedText>{data.settlement.country.name}</EnrichedText>
 
-						<EnrichedText>Province</EnrichedText>
-						<EnrichedText>{data.province.identifier.id}</EnrichedText>
-
 					</InsetKeyValueGrid>
-				</WindowSection>
-
-				<Spacer size="m"/>
-
-				<WindowSection title="Province Settlements">
-					<InsetPanel>
-						{data.province.settlements.map(settlement => (
-							<EnrichedText key={settlement.id}>{settlement.name}</EnrichedText>
-						))}
-					</InsetPanel>
 				</WindowSection>
 
 				<Spacer size="m"/>

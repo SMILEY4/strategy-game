@@ -27,7 +27,6 @@ import {GameIdProvider} from "./logic/session/gameIdProvider";
 import {CountryDatabase} from "./state/database/countryDatabase";
 import {SettlementService} from "./logic/game/settlementService";
 import {SettlementDatabase} from "./state/database/settlementDatabase";
-import {ProvinceDatabase} from "./state/database/provinceDatabase";
 import {CameraRepository} from "./state/repository/cameraRepository";
 import {CommandRepository} from "./state/repository/commandRepository";
 import {SettlementRepository} from "./state/repository/settlementRepository";
@@ -35,7 +34,6 @@ import {TileRepository} from "./state/repository/tileRepository";
 import {TurnRepository} from "./state/repository/turnRepository";
 import {WorldObjectRepository} from "./state/repository/worldObjectRepository";
 import {ChangeProvider} from "./renderer/game/changeProvider";
-import {ProvinceRepository} from "./state/repository/provinceRepository";
 import {MapService} from "./logic/game/mapService";
 import {RouteDatabase} from "./state/database/routeDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
@@ -82,7 +80,6 @@ interface AppCtxDef {
 	TurnRepository: () => TurnRepository,
 	WorldObjectRepository: () => WorldObjectRepository,
 	SessionRepository: () => SessionRepository,
-	ProvinceRepository: () => ProvinceRepository,
 	RouteRepository: () => RouteRepository,
 
 	CameraDatabase: () => CameraDatabase,
@@ -90,7 +87,6 @@ interface AppCtxDef {
 	CommandDatabase: () => CommandDatabase,
 	TileDatabase: () => TileDatabase,
 	CountryDatabase: () => CountryDatabase,
-	ProvinceDatabase: () => ProvinceDatabase,
 	SettlementDatabase: () => SettlementDatabase,
 	WorldObjectDatabase: () => WorldObjectDatabase,
 	RouteDatabase: () => RouteDatabase,
@@ -299,7 +295,6 @@ export const AppCtx: AppCtxDef = {
 			ctx.get<TileDatabase>(TileDatabase.name),
 			ctx.get<CommandDatabase>(CommandDatabase.name),
 			ctx.get<CountryDatabase>(CountryDatabase.name),
-			ctx.get<ProvinceDatabase>(ProvinceDatabase.name),
 			ctx.get<SettlementDatabase>(SettlementDatabase.name),
 			ctx.get<WorldObjectDatabase>(WorldObjectDatabase.name),
 			ctx.get<RouteDatabase>(RouteDatabase.name),
@@ -316,12 +311,6 @@ export const AppCtx: AppCtxDef = {
 		SessionRepository.name,
 		ctx => new SessionRepository(
 			ctx.get<GameSessionDatabase>(GameSessionDatabase.name),
-		),
-	),
-	ProvinceRepository: diContext.register(
-		ProvinceRepository.name,
-		ctx => new ProvinceRepository(
-			ctx.get<ProvinceDatabase>(ProvinceDatabase.name),
 		),
 	),
 	RouteRepository: diContext.register(
@@ -358,10 +347,6 @@ export const AppCtx: AppCtxDef = {
 	SettlementDatabase: diContext.register(
 		SettlementDatabase.name,
 		() => new SettlementDatabase(),
-	),
-	ProvinceDatabase: diContext.register(
-		ProvinceDatabase.name,
-		() => new ProvinceDatabase(),
 	),
 	RouteDatabase: diContext.register(
 		RouteDatabase.name,

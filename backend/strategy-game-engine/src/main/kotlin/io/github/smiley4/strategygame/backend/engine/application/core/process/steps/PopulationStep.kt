@@ -58,8 +58,6 @@ class PopulationStep : ProcessStep<EconomyUpdatedEvent> {
     private fun abandon(game: GameExtended, settlement: Settlement) {
         game.settlements.remove(settlement)
         game.routes.removeIf { it.settlementA == settlement.id || it.settlementB == settlement.id }
-        game.provinces.forEach { it.settlements.remove(settlement.id) }
-        game.provinces.removeIf { it.settlements.isEmpty() }
     }
 
     private fun hasConsumedBase(report: EconomyReport, settlement: Settlement): Boolean {

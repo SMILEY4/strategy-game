@@ -2,16 +2,10 @@ package io.github.smiley4.strategygame.backend.engine.application.core.process.s
 
 import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.utils.gen
-import io.github.smiley4.strategygame.backend.commondata.Building
-import io.github.smiley4.strategygame.backend.commondata.BuildingActivity
-import io.github.smiley4.strategygame.backend.commondata.BuildingType
-import io.github.smiley4.strategygame.backend.commondata.BuildingValidity
 import io.github.smiley4.strategygame.backend.commondata.Command
 import io.github.smiley4.strategygame.backend.commondata.CommandData
 import io.github.smiley4.strategygame.backend.commondata.GameExtended
-import io.github.smiley4.strategygame.backend.commondata.Province
 import io.github.smiley4.strategygame.backend.commondata.RGBColor
-import io.github.smiley4.strategygame.backend.commondata.ResourceCollection
 import io.github.smiley4.strategygame.backend.commondata.ResourceLedger
 import io.github.smiley4.strategygame.backend.commondata.Settlement
 import io.github.smiley4.strategygame.backend.commondata.ref
@@ -57,15 +51,7 @@ internal class ResolveCommandCreateSettlement(
             resourceLedger = ResourceLedger.empty()
         )
 
-        val province = Province(
-            id = Province.Id.gen(),
-            country = country.id,
-            settlements = mutableSetOf(settlement.id),
-            color = RGBColor.random(),
-        )
-
         game.settlements.add(settlement)
-        game.provinces.add(province)
         game.worldObjects.remove(worldObject)
 
         publisher.publish(CreatedSettlementEvent(game, settlement))
@@ -103,13 +89,6 @@ internal class ResolveCommandCreateSettlement(
             resourceLedger = ResourceLedger.empty()
         )
 
-        val province = tile.dataPolitical.controlledBy?.province?.let { game.findProvince(it) }
-
-        if (province == null || tile.dataPolitical.controlledBy?.country != country.id) {
-            throw Exception("Can not create direct settlement on tile not owned by country.")
-        }
-
-        province.settlements.add(settlement.id)
         game.settlements.add(settlement)
 
         publisher.publish(CreatedSettlementEvent(game, settlement))
