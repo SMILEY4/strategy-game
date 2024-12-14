@@ -16,7 +16,17 @@ export class WebsocketClient {
             try {
                 const ws = new WebSocket(this.baseUrl + url + "?ticket=" + ticket);
                 ws.onopen = () => resolve();
-                ws.onmessage = (e: MessageEvent) => consumer(JSON.parse(e.data));
+                ws.onmessage = (e: MessageEvent) => {
+                    let data = null;
+                    try {
+                        data = JSON.parse(e.data)
+                    } catch (error) {
+                        console.error("Error when parsing message", error, e.data)
+                    }
+                    if(data) {
+                        consumer(data);
+                    }
+                }
                 ws.onclose = () => this.close();
                 ws.onerror = (e) => reject(e)
                 this.websocket = ws;

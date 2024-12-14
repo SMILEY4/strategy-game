@@ -88,3 +88,16 @@ title: Game Mechanics
 - each entry has a total resource requirement
 - the current entry in the production queue consumes as many resources as possible until the requirements are met
 - if all required resources have been consumed, the unit or building is created and the next entry in the queue is started
+
+
+
+# Settlement Population Size, Growth and Decline
+
+- every settlement starts with 1 "population"
+- each turn the growth progress goes towards +100% or -100%
+  - if it reaches +100%, the settlements gains +1 population
+  - if it reaches -100%, the settlement looses -1 population
+- if the settlement reaches 0 population, it is abandoned and removed from the game
+- the increase/decrease in progress each turn is determined by
+  - whether enough food is available to fullfill the base requirements (yes = minor increase, no = major decrease)
+  - whether more than enough food is available (yes = major increase, no = no change)

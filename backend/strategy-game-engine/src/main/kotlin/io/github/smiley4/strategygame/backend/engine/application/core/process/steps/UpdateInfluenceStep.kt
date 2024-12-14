@@ -13,18 +13,18 @@ internal class UpdateInfluenceStep(private val influenceCalculator: InfluenceCal
 
     override suspend fun run(event: OnUpdateWorldEvent) {
         event.game.tiles.forEach { tile ->
-            setInfluences(tile, event.game)
-            setControlledBy(tile)
+            recalculateInfluences(tile, event.game)
+            recalculateControlledBy(tile)
             updateDiscoveredBy(tile)
         }
     }
 
-    private fun setInfluences(tile: Tile, game: GameExtended) {
+    private fun recalculateInfluences(tile: Tile, game: GameExtended) {
         tile.dataPolitical.influences.clear()
         tile.dataPolitical.influences.addAll(influenceCalculator.calculate(game, tile))
     }
 
-    private fun setControlledBy(tile: Tile) {
+    private fun recalculateControlledBy(tile: Tile) {
 
         // find country with most total influence and total influence above threshold
         val controllingCountry: Country.Id? = tile.dataPolitical.influences
