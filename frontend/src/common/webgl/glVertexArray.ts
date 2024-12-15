@@ -115,7 +115,6 @@ export namespace GLVertexArray {
 
             // increment offset
             incrementOffset(offset, attribute.buffer, attribute.type.bytes * attribute.amountComponents)
-
         });
 
         // unbind vertex array

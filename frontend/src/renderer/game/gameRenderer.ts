@@ -48,6 +48,7 @@ export class GameRenderer {
 	 * Initialize the renderer for the given canvas
 	 */
 	public initialize(canvasHandle: CanvasHandle,): void {
+		this.changeProvider.reset()
 		GameRenderConfig.initialize();
 		this.renderGraph = new GameRenderGraph(
 			this.changeProvider,
@@ -68,12 +69,32 @@ export class GameRenderer {
 		if (!canvasHandle.isReady()) {
 			return;
 		}
+
 		const camera = this.getRenderCamera(canvasHandle);
 		this.changeProvider.prepareFrame(camera);
 		this.renderConfig = GameRenderConfig.load();
 
 		this.renderGraph?.updateCamera(camera);
 		this.renderGraph?.execute();
+
+		this.checkWebGLErrors(canvasHandle.getGL())
+	}
+
+	private checkWebGLErrors(gl: WebGL2RenderingContext) {
+		let error = gl.getError();
+		while(error !== gl.NO_ERROR) {
+			let strError = "" + error
+			if(error === gl.INVALID_ENUM) strError = "INVALID_ENUM"
+			if(error === gl.INVALID_VALUE) strError = "INVALID_VALUE"
+			if(error === gl.INVALID_OPERATION) strError = "INVALID_OPERATION"
+			if(error === gl.INVALID_FRAMEBUFFER_OPERATION) strError = "INVALID_FRAMEBUFFER_OPERATION"
+			if(error === gl.OUT_OF_MEMORY) strError = "OUT_OF_MEMORY"
+			if(error === gl.CONTEXT_LOST_WEBGL) strError = "CONTEXT_LOST_WEBGL"
+
+			console.error('Unhandled WebGL error', strError);
+
+			error = gl.getError();
+		}
 	}
 
 	/**
@@ -82,6 +103,7 @@ export class GameRenderer {
 	public dispose() {
 		this.renderGraph?.dispose();
 		this.renderGraph = null;
+		this.changeProvider.reset();
 	}
 
 	private getRenderCamera(canvasHandle: CanvasHandle): Camera {

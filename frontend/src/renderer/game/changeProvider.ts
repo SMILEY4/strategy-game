@@ -51,6 +51,20 @@ export class ChangeProvider {
     }
 
     /**
+     * Resets this change provider to an initial state
+     */
+    public reset() {
+        this.frame = 0;
+        this.changes = {
+            initFrame: true,
+            turn: true,
+            mapMode: true,
+            camera: true,
+            movementPaths: true,
+        };
+    }
+
+    /**
      * Detect changes for the current/upcoming frame
      */
     public prepareFrame(camera: Camera) {
@@ -70,6 +84,9 @@ export class ChangeProvider {
      * @return whether there are changes relevant to the action or render-node with the given id
      */
     public hasChange(name: string): boolean {
+        if(this.changes.initFrame) {
+            return true;
+        }
         if(name === "basemesh") {
             return this.changes.initFrame
         }

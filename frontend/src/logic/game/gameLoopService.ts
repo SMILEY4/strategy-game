@@ -10,6 +10,7 @@ import {TileRepository} from "../../state/repository/tileRepository";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
 import {CameraRepository} from "../../state/repository/cameraRepository";
 import {SettlementRepository} from "../../state/repository/settlementRepository";
+import { SessionRepository } from "../../state/repository/sessionRepository";
 
 /**
  * Service to handle logic for the continuous game loop.
@@ -21,6 +22,7 @@ export class GameLoopService {
 	private readonly gameRenderer: GameRenderer;
 	private readonly audioService: AudioService;
 	private readonly canvasHandle: CanvasHandle;
+	private readonly sessionRepository: SessionRepository;
 	private readonly tileRepository: TileRepository;
 	private readonly worldObjectRepository: WorldObjectRepository;
 	private readonly settlementRepository: SettlementRepository;
@@ -32,6 +34,7 @@ export class GameLoopService {
 		tilePicker: TilePicker,
 		gameRenderer: GameRenderer,
 		audioService: AudioService,
+		sessionRepository: SessionRepository,
 		tileRepository: TileRepository,
 		worldObjectRepository: WorldObjectRepository,
 		settlementRepository: SettlementRepository,
@@ -41,6 +44,7 @@ export class GameLoopService {
 		this.tilePicker = tilePicker;
 		this.gameRenderer = gameRenderer;
 		this.audioService = audioService;
+		this.sessionRepository = sessionRepository;
 		this.tileRepository = tileRepository;
 		this.worldObjectRepository = worldObjectRepository;
 		this.settlementRepository = settlementRepository;
@@ -48,18 +52,22 @@ export class GameLoopService {
 		this.canvasHandle = new CanvasHandle();
 	}
 
-	/**
-	 * Initialize this game loop for the given canvas
-	 */
-	public initialize(canvas: HTMLCanvasElement) {
-		this.canvasHandle.set(canvas);
-		this.gameRenderer.initialize(this.canvasHandle,);
+	public stopGame() {
+		this.sessionRepository.setSessionState("none")
 	}
 
 	/**
-	 * Dispose this game loop
+	 * Initialize this game loop canvas
 	 */
-	public dispose() {
+	public initializeCanvas(canvas: HTMLCanvasElement) {
+		this.canvasHandle.set(canvas);
+		this.gameRenderer.initialize(this.canvasHandle);
+	}
+
+	/**
+	 * Dispose this game loop canvas
+	 */
+	public disposeCanvas() {
 		this.gameRenderer.dispose();
 		this.canvasHandle.set(null);
 	}

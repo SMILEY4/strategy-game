@@ -56,7 +56,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         const textureBindingHandler = new TextureBindingHandler(16);
 
         for (let node of nodes) {
-            console.log("Compiling render graph node", node.id, node)
+            console.debug("Compiling render graph node", node.id, node)
 
             if (node instanceof VertexRenderNode) {
                 this.compileVertex(node, commands);
@@ -66,6 +66,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
             }
         }
 
+        console.debug("webgl render graph compilation result:", commands.map(it => it.getDebugData()))
         return commands;
     }
 

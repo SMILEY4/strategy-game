@@ -44,6 +44,9 @@ export class BaseRenderer {
 	}
 
 	public draw(vertexCount: number) {
+		if(vertexCount === 0){
+			console.warn("called draw with 0 vertexCount count")
+		}
 		this.gl.drawArrays(
 			this.gl.TRIANGLES,
 			0,
@@ -53,6 +56,9 @@ export class BaseRenderer {
 	}
 
 	public drawIndexed(indexCount: number) {
+		if(indexCount === 0){
+			console.warn("called drawIndexed with 0 indexCount count")
+		}
 		this.gl.drawElements(
 			this.gl.TRIANGLES,
 			indexCount,
@@ -63,6 +69,9 @@ export class BaseRenderer {
 	}
 
 	public drawInstanced(vertexCount: number, instanceCount: number) {
+		if(vertexCount === 0 || instanceCount === 0){
+			console.warn("called drawInstances with 0 vertex or instance count")
+		}
 		this.gl.drawArraysInstanced(
 			this.gl.TRIANGLES,
 			0,
@@ -71,6 +80,5 @@ export class BaseRenderer {
 		);
 		GLError.check(this.gl, "drawArraysInstanced", "drawing instanced");
 	}
-
 
 }
