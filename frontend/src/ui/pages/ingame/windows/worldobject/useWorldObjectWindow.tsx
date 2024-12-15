@@ -10,7 +10,6 @@ import {WorldObjectType} from "../../../../../models/base/worldObjectType";
 import {WorldObjectRepository} from "../../../../../state/repository/worldObjectRepository";
 import {TileRepository} from "../../../../../state/repository/tileRepository";
 import {CommandRepository} from "../../../../../state/repository/commandRepository";
-import {CommandService} from "../../../../../logic/game/commandService";
 import {MovementService} from "../../../../../logic/game/movementService";
 
 export namespace UseWorldObjectWindow {
@@ -83,7 +82,7 @@ export namespace UseWorldObjectWindow {
 				},
 				settlement: {
 					possible: worldObject.ownedByPlayer && worldObject.type === WorldObjectType.SETTLER,
-					enabled: !hasCommand && tile!.isValidSettlementLocation,
+					enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
 					start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
 				},
 			};
