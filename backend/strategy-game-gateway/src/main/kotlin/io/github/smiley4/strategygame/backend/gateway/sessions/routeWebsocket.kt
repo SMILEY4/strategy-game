@@ -9,6 +9,7 @@ import io.github.smiley4.strategygame.backend.common.utils.Json
 import io.github.smiley4.strategygame.backend.commondata.Game
 import io.github.smiley4.strategygame.backend.commondata.User
 import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
+import io.github.smiley4.strategygame.backend.gateway.ErrorResponseException
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.routing.webSocketExt
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnectionHandler
@@ -67,12 +68,11 @@ internal object RouteWebsocket {
                 try {
                     requestConnection.perform(User.Id(userId), Game.Id(gameId))
                 } catch (e: RequestConnectionToGame.GameRequestConnectionActionError) {
-                    throw e // todo: call.respond causes on-connect etc to be called again and cause infinite loop -> throw proper exception with status code handling in status-page-plugin
-//                    when (e) {
-//                        is RequestConnectionToGame.GameNotFoundError -> call.respond(GameNotFoundResponse)
-//                        is RequestConnectionToGame.NotParticipantError -> call.respond(NotParticipantResponse)
-//                        is RequestConnectionToGame.AlreadyConnectedError -> call.respond(AlreadyConnectedResponse)
-//                    }
+                    when (e) {
+                        is RequestConnectionToGame.GameNotFoundError -> throw ErrorResponseException(GameNotFoundResponse)
+                        is RequestConnectionToGame.NotParticipantError -> throw ErrorResponseException(NotParticipantResponse)
+                        is RequestConnectionToGame.AlreadyConnectedError -> throw ErrorResponseException(AlreadyConnectedResponse)
+                    }
                 }
             }
         }

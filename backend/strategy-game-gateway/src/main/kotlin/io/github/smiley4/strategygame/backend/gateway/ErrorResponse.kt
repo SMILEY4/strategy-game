@@ -34,20 +34,22 @@ internal open class ErrorResponse(
 
     companion object {
 
-        fun from(exception: Throwable) = ErrorResponse(
-            status = 500,
-            title = exception::class.simpleName ?: "Error",
-            errorCode = exception::class.qualifiedName ?: "ERROR",
-            detail = exception.message ?: "",
-        )
+        fun from(exception: Throwable) = when(exception) {
+            is ErrorResponseException -> exception.response
+            else -> ErrorResponse(
+                status = 500,
+                title = exception::class.simpleName ?: "Error",
+                errorCode = exception::class.qualifiedName ?: "ERROR",
+                detail = exception.message ?: "",
+            )
+        }
 
         fun unauthorized() = ErrorResponse(
             status = 401,
             title = "Unauthorized",
             errorCode = "UNAUTHORIZED",
-            detail = "THe provided credentials are not valid.",
+            detail = "The provided credentials are not valid.",
         )
-
 
     }
 
