@@ -1,5 +1,6 @@
 package io.github.smiley4.strategygame.backend.gateway.sessions
 
+import io.github.smiley4.strategygame.backend.common.logging.Logging
 import io.github.smiley4.strategygame.backend.common.logging.mdcConnectionId
 import io.github.smiley4.strategygame.backend.common.logging.mdcGameId
 import io.github.smiley4.strategygame.backend.common.logging.mdcTraceId
@@ -22,7 +23,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import kotlin.collections.set
 
-internal object RouteWebsocket {
+internal object RouteWebsocket : Logging {
 
     private object GameNotFoundResponse : ErrorResponse(
         status = 404,

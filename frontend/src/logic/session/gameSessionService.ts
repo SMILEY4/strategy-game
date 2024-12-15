@@ -88,6 +88,16 @@ export class GameSessionService implements WebsocketMessageHandler {
 			});
 	}
 
+	/**
+	 * Disconnect from the current session
+	 */
+	public disconnectSession(): Promise<void> {
+		return Promise.resolve()
+			.then(() => this.repository.setSessionState("none"))
+			.then(() => this.client.disconnect())
+			.catch(e => console.error(e))
+	}
+
 	public onMessage(type: string, payload: any): void {
 		console.log("received message", type, payload);
 		if (type === "game-state") {
