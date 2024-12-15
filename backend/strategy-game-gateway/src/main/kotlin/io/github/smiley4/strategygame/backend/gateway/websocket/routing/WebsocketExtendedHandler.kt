@@ -1,5 +1,7 @@
 package io.github.smiley4.strategygame.backend.gateway.websocket.routing
 
+import io.github.smiley4.strategygame.backend.gateway.ErrorResponse
+import io.github.smiley4.strategygame.backend.gateway.ErrorResponseException
 import io.github.smiley4.strategygame.backend.gateway.websocket.auth.WebsocketTicketAuthManager
 import io.github.smiley4.strategygame.backend.gateway.websocket.routingconfig.WebsocketExtendedRouteConfig
 import io.github.smiley4.strategygame.backend.gateway.websocket.session.WebSocketConnection
@@ -35,9 +37,7 @@ internal class WebsocketExtendedHandler(
             }
             val ticket = config.tickerProvider(call)
             if (ticket == null || !ticketManager.validateAndConsumeTicket(ticket)) {
-//                call.respond(HttpStatusCode.Unauthorized)
-//                return null
-                throw Exception("Unauthorized") // todo: call.respond causes on-connect etc to be called again and cause infinite loop -> throw proper exception with status code handling in status-page-plugin
+                throw ErrorResponseException(ErrorResponse.unauthorized())
             } else {
                 return ticketManager.extractData(ticket).also {
                     config.onConnectHandler(call, it)
