@@ -22,7 +22,6 @@ export class GameLoopService {
 	private readonly gameRenderer: GameRenderer;
 	private readonly audioService: AudioService;
 	private readonly canvasHandle: CanvasHandle;
-	private readonly sessionRepository: SessionRepository;
 	private readonly tileRepository: TileRepository;
 	private readonly worldObjectRepository: WorldObjectRepository;
 	private readonly settlementRepository: SettlementRepository;
@@ -34,7 +33,6 @@ export class GameLoopService {
 		tilePicker: TilePicker,
 		gameRenderer: GameRenderer,
 		audioService: AudioService,
-		sessionRepository: SessionRepository,
 		tileRepository: TileRepository,
 		worldObjectRepository: WorldObjectRepository,
 		settlementRepository: SettlementRepository,
@@ -44,16 +42,11 @@ export class GameLoopService {
 		this.tilePicker = tilePicker;
 		this.gameRenderer = gameRenderer;
 		this.audioService = audioService;
-		this.sessionRepository = sessionRepository;
 		this.tileRepository = tileRepository;
 		this.worldObjectRepository = worldObjectRepository;
 		this.settlementRepository = settlementRepository;
 		this.cameraRepository = cameraRepository;
 		this.canvasHandle = new CanvasHandle();
-	}
-
-	public stopGame() {
-		this.sessionRepository.setSessionState("none")
 	}
 
 	/**

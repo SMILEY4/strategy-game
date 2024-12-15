@@ -11,6 +11,7 @@ import {SessionRepository} from "../../../state/repository/sessionRepository";
 import {SessionHooks} from "../sessions/sessions";
 import {useDI} from "../../../appContext";
 import {GameLoopService} from "../../../logic/game/gameLoopService";
+import {GameSessionService} from "../../../logic/session/gameSessionService";
 
 const USE_DUMMY_CANVAS = false;
 
@@ -53,7 +54,7 @@ function GameError(): ReactElement {
 
 function GamePlaying(): ReactElement {
 
-	const gameLoopService = useDI<GameLoopService>(GameLoopService.name);
+	const sessionService = useDI<GameSessionService>(GameSessionService.name);
 
 	useEffect(() => {
 		window.onbeforeunload = endGamePlaying
@@ -66,7 +67,7 @@ function GamePlaying(): ReactElement {
 	}, []);
 
 	function endGamePlaying() {
-		gameLoopService.stopGame()
+		sessionService.disconnectSession().then(undefined)
 	}
 
 	return (

@@ -39,6 +39,7 @@ export class WebsocketClient {
 
 
     close() {
+        console.log("close websocket")
         if (this.isOpen() && this.websocket) {
             this.websocket.onclose = null;
             this.websocket.close();
