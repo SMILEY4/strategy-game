@@ -25,8 +25,5 @@ export interface Tile {
 			settlement: SettlementIdentifier
 		}
 	}>,
-	createSettlement: {
-		settler: boolean,
-		direct: boolean
-	}
+	isValidSettlementLocation: boolean
 }

@@ -83,7 +83,7 @@ export namespace UseWorldObjectWindow {
 				},
 				settlement: {
 					possible: worldObject.ownedByPlayer && worldObject.type === WorldObjectType.SETTLER,
-					enabled: !hasCommand && tile?.createSettlement.settler!,
+					enabled: !hasCommand && tile!.isValidSettlementLocation,
 					start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
 				},
 			};

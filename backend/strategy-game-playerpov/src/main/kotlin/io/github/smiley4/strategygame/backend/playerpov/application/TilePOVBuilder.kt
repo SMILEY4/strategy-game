@@ -35,31 +35,16 @@ internal class TilePOVBuilder(private val povCache: POVCache, private val gameVa
                     }
                 }
             }
-            "createSettlement" to obj {
-                "settler" to canCreateSettlementWithSettler(game, tile, visibility)
-                "direct" to canCreateSettlementDirect(game, tile, visibility)
-            }
+            "createSettlement" to canCreateSettlement(game, tile, visibility)
         }
     }
 
-    private fun canCreateSettlementWithSettler(game: GameExtended, tile: Tile, visibility: TileVisibilityDTO): Boolean {
+    private fun canCreateSettlement(game: GameExtended, tile: Tile, visibility: TileVisibilityDTO): Boolean {
         if(visibility.isLessThan(TileVisibilityDTO.DISCOVERED)) {
             return false
         }
         try {
-            gameValidations.validateSettlementLocationSettler(game, tile, povCache.povCountryId)
-            return true
-        } catch (e: Exception) {
-            return false
-        }
-    }
-
-    private fun canCreateSettlementDirect(game: GameExtended, tile: Tile, visibility: TileVisibilityDTO): Boolean {
-        if(visibility.isLessThan(TileVisibilityDTO.DISCOVERED)) {
-            return false
-        }
-        try {
-            gameValidations.validateSettlementLocationDirect(game, tile, povCache.povCountryId)
+            gameValidations.validateSettlementLocation(game, tile, povCache.povCountryId)
             return true
         } catch (e: Exception) {
             return false

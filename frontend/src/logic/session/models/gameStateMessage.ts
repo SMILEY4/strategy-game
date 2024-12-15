@@ -29,10 +29,7 @@ export interface TileMessage {
 			settlement: string
 		}
 	}>,
-	createSettlement: {
-		settler: boolean
-		direct: boolean
-	}
+	createSettlement: boolean
 }
 
 export interface CountryMessage {

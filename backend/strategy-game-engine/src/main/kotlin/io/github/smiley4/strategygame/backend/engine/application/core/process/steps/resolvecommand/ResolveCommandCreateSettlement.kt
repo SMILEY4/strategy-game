@@ -24,9 +24,9 @@ internal class ResolveCommandCreateSettlement(
         val worldObject = game.findWorldObject(command.data.worldObject)
         val tile = game.findTile(worldObject.tile)
 
-        gameValidations.validateSettlementSettler(worldObject)
+        gameValidations.validateSettler(worldObject)
         gameValidations.validateSettlementName(command.data.name)
-        gameValidations.validateSettlementLocationSettler(game, tile, country.id)
+        gameValidations.validateSettlementLocation(game, tile, country.id)
 
         val settlement = Settlement(
             id = Settlement.Id.gen(),
