@@ -18,6 +18,7 @@ export namespace WebGLRenderCommand {
      * base webgl command
      */
     export interface Base extends RenderCommand<WebGLResourceManager, Context> {
+        getDebugData(): any
     }
 
 
@@ -48,6 +49,13 @@ export namespace WebGLRenderCommand {
             }
         }
 
+        public getDebugData(): any {
+            return {
+                command: "UpdateVertexBufferData",
+                node: this.node.id,
+            }
+        }
+
     }
 
     /**
@@ -67,6 +75,13 @@ export namespace WebGLRenderCommand {
             framebuffer.bind();
             framebuffer.resize(context.camera.getWidth() * data.scale, context.camera.getHeight() * data.scale);
         }
+
+        public getDebugData(): any {
+            return {
+                command: "BindFramebuffer",
+                framebuffer: this.name,
+            }
+        }
     }
 
     /**
@@ -76,6 +91,12 @@ export namespace WebGLRenderCommand {
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             GLFramebuffer.unbind(context.gl);
+        }
+
+        public getDebugData(): any {
+            return {
+                command: "UnbindFramebuffer",
+            }
         }
     }
 
@@ -95,6 +116,14 @@ export namespace WebGLRenderCommand {
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             resourceManager.getTexture(this.name).texture.bind(this.textureUnit);
         }
+
+        public getDebugData(): any {
+            return {
+                command: "BindTexture",
+                texture: this.name,
+                textureUnit: this.textureUnit,
+            }
+        }
     }
 
     /**
@@ -112,6 +141,14 @@ export namespace WebGLRenderCommand {
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             resourceManager.getFramebuffer(this.name).framebuffer.bindTexture(this.textureUnit);
+        }
+
+        public getDebugData(): any {
+            return {
+                command: "BindFramebufferTexture",
+                framebuffer: this.name,
+                textureUnit: this.textureUnit,
+            }
         }
     }
 
@@ -134,6 +171,14 @@ export namespace WebGLRenderCommand {
             const programId = resourceManager.getProgramId(this.vertex, this.fragment);
             resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.bind();
         }
+
+        public getDebugData(): any {
+            return {
+                command: "BindVertexArray",
+                vertexShader: this.vertex,
+                fragmentShader: this.fragment,
+            }
+        }
     }
 
     /**
@@ -154,7 +199,14 @@ export namespace WebGLRenderCommand {
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             const programId = resourceManager.getProgramId(this.vertex, this.fragment);
             resourceManager.getVertexData(this.name).vertexArrays.get(programId)!.unbind();
+        }
 
+        public getDebugData(): any {
+            return {
+                command: "UnbindVertexArray",
+                vertexShader: this.vertex,
+                fragmentShader: this.fragment,
+            }
         }
     }
 
@@ -173,6 +225,14 @@ export namespace WebGLRenderCommand {
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             resourceManager.getProgram(this.vertex, this.fragment).program.use();
+        }
+
+        public getDebugData(): any {
+            return {
+                command: "UseShader",
+                vertexShader: this.vertex,
+                fragmentShader: this.fragment,
+            }
         }
     }
 
@@ -202,6 +262,15 @@ export namespace WebGLRenderCommand {
                 if (uniform.valueProvider !== null) {
                     program.setUniform(uniform.binding, uniform.type, uniform.valueProvider());
                 }
+            }
+        }
+
+        public getDebugData(): any {
+            return {
+                command: "SetUniforms",
+                uniforms: this.uniforms.map(it => it.binding),
+                vertexShader: this.vertex,
+                fragmentShader: this.fragment,
             }
         }
     }
@@ -240,6 +309,17 @@ export namespace WebGLRenderCommand {
                     context.renderer.drawInstanced(data.vertexCount, data.instanceCount);
                     break;
                 }
+            }
+        }
+
+        public getDebugData(): any {
+            return {
+                command: "Draw",
+                vertexData: this.vertexDataId,
+                clearColor: this.clearColor,
+                renderToTexture: this.renderToTexture,
+                renderScale: this.renderScale,
+                depth: this.depth,
             }
         }
     }

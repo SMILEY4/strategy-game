@@ -9,6 +9,8 @@ import {Text} from "../../components/text/Text";
 import "./pageInGame.scoped.less";
 import {SessionRepository} from "../../../state/repository/sessionRepository";
 import {SessionHooks} from "../sessions/sessions";
+import {useDI} from "../../../appContext";
+import {GameLoopService} from "../../../logic/game/gameLoopService";
 
 const USE_DUMMY_CANVAS = false;
 
@@ -50,6 +52,23 @@ function GameError(): ReactElement {
 }
 
 function GamePlaying(): ReactElement {
+
+	const gameLoopService = useDI<GameLoopService>(GameLoopService.name);
+
+	useEffect(() => {
+		window.onbeforeunload = endGamePlaying
+		window.onunload = endGamePlaying
+		return () => {
+			window.onbeforeunload = null
+			window.onunload = null
+			endGamePlaying()
+		}
+	}, []);
+
+	function endGamePlaying() {
+		gameLoopService.stopGame()
+	}
+
 	return (
 		<div className="page-ingame page-ingame--playing">
 			{

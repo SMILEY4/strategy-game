@@ -181,6 +181,7 @@ export const AppCtx: AppCtxDef = {
 			),
 			ctx.get<GameRenderer>(GameRenderer.name),
 			ctx.get<AudioService>(AudioService.name),
+			ctx.get<SessionRepository>(SessionRepository.name),
 			ctx.get<TileRepository>(TileRepository.name),
 			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
 			ctx.get<SettlementRepository>(SettlementRepository.name),

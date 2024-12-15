@@ -39,7 +39,7 @@ export class WebGLResourceManager implements ResourceManager {
 	public initialize(nodes: AbstractRenderNode[]): void {
 		console.log("Initializing webgl resources for render graph.");
 		nodes.forEach(node => {
-			console.log("Initializing webgl resources for node", node.id, node);
+			console.debug("Initializing webgl resources for node", node.id, node);
 			if (node instanceof VertexRenderNode) {
 				for (let output of node.config.output) {
 					if (output instanceof NodeOutput.VertexDescriptor) {
@@ -70,7 +70,7 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeVertexBuffer(id: string, node: VertexRenderNode): ManagedVertexBuffer {
-		console.log("Loading vertex-buffer with id", id);
+		console.debug("Loading vertex-buffer with id", id);
 
 		if (this.vertexBuffers.has(id)) {
 			return this.vertexBuffers.get(id)!;
@@ -89,7 +89,7 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode, nodes: AbstractRenderNode[]): ManagedVertexData {
-		console.log("initializing vertex descriptor", id, type, bufferIds);
+		console.debug("initializing vertex descriptor", id, type, bufferIds);
 
 		// already initialized
 		if (this.vertexData.has(id)) {
@@ -146,7 +146,7 @@ export class WebGLResourceManager implements ResourceManager {
 		// create vertex-arrays
 		const vertexArrays = new Map<string, GLVertexArray>();
 		for (const program of programs) {
-			console.log("create vertex array for descriptor", id, "and program", program.id);
+			console.debug("create vertex array for descriptor", id, "and program", program.id);
 			const vertexArray = GLVertexArray.create(
 				this.gl,
 				vertexAttributes
@@ -175,13 +175,13 @@ export class WebGLResourceManager implements ResourceManager {
 			vertexArrays: vertexArrays,
 		};
 		this.vertexData.set(managedVertexData.id, managedVertexData);
-		console.log("Loaded vertex-data with id", managedVertexData.id);
+		console.debug("Loaded vertex-data with id", managedVertexData.id);
 		return managedVertexData;
 
 	}
 
 	private initializeShaderProgram(vertex: string, fragment: string): ManagedProgram {
-		console.log("Loading shader program with", vertex, fragment);
+		console.debug("Loading shader program with", vertex, fragment);
 
 		const programId = this.getProgramId(vertex, fragment);
 		if (this.shaders.has(programId)) {
@@ -196,12 +196,12 @@ export class WebGLResourceManager implements ResourceManager {
 			program: GLProgram.create(this.gl, srcVertex, srcFragment),
 		};
 		this.shaders.set(managedProgram.id, managedProgram);
-		console.log("Loaded shader program with id", managedProgram.id);
+		console.debug("Loaded shader program with id", managedProgram.id);
 		return managedProgram;
 	}
 
 	private initializeTexture(path: string): ManagedTexture {
-		console.log("Loading texture", path);
+		console.debug("Loading texture", path);
 		if (this.textures.has(path)) {
 			return this.textures.get(path)!;
 		}
@@ -215,7 +215,7 @@ export class WebGLResourceManager implements ResourceManager {
 	}
 
 	private initializeFramebuffer(renderTargetId: string, depth: boolean, scale: number) {
-		console.log("Initializing framebuffer", renderTargetId, depth, scale);
+		console.debug("Initializing framebuffer", renderTargetId, depth, scale);
 		if (this.framebuffers.has(renderTargetId)) {
 			return this.framebuffers.get(renderTargetId)!;
 		}

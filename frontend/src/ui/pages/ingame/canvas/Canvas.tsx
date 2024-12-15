@@ -110,7 +110,7 @@ export function Canvas() {
 	}
 
 	function onInitialize(canvas: HTMLCanvasElement) {
-		gameLoopService.initialize(canvas);
+		gameLoopService.initializeCanvas(canvas);
 	}
 
 	function onRender() {
@@ -119,7 +119,8 @@ export function Canvas() {
 
 	function onDispose() {
 		console.log("Disposing canvas")
-		gameLoopService.dispose();
+		animationId.current && cancelAnimationFrame(animationId.current);
+		gameLoopService.disposeCanvas();
 	}
 
 	return (

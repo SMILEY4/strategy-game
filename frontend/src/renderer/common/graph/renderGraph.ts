@@ -15,7 +15,7 @@ export class RenderGraph<TContext> {
     private readonly compiler: RenderGraphCompiler<any>;
     private readonly nodes: AbstractRenderNode[];
     private commands: RenderCommand<any, any>[] = [];
-    private context: TContext | null = null;
+    public context: TContext | null = null;
 
     constructor(props: {
         name: string,

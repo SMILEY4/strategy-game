@@ -19,6 +19,8 @@ export class CanvasHandle {
             this.gl = gl;
             this.extLooseContext = gl.getExtension("WEBGL_lose_context");
         } else {
+            this.extLooseContext?.loseContext()
+            this.extLooseContext = null;
             this.gl = null;
         }
     }
