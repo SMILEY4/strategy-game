@@ -322,7 +322,7 @@ export const AppCtx: AppCtxDef = {
 	),
 
 	CameraDatabase: diContext.register(
-		CameraRepository.name,
+		CameraDatabase.name,
 		() => new CameraDatabase(),
 	),
 	GameSessionDatabase: diContext.register(
