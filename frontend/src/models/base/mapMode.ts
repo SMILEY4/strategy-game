@@ -104,8 +104,16 @@ export class MapMode {
 		borderDefault: true,
 	});
 
+	public static readonly SETTLEMENT_LOCATIONS = new MapMode(4, "Settlement Locations", {
+		grayscale: true,
+		context: () => null,
+		fillColor: tile => tile.isValidSettlementLocation ? [50/255, 194/255, 73/255, 0.9] : MapMode.NO_COLOR,
+		borderColor: () => MapMode.NO_COLOR,
+		borderCheck: () => false,
+		borderDefault: false,
+	});
 
-	public static readonly RESOURCES = new MapMode(4, "Resources", {
+	public static readonly RESOURCES = new MapMode(5, "Resources", {
 		grayscale: true,
 		context: () => null,
 		fillColor: tile => tile.base.visible ? MapMode.toColor(tile.base.value?.resourceType.color) : MapMode.NO_COLOR,
@@ -114,7 +122,7 @@ export class MapMode {
 		borderDefault: false,
 	});
 
-	public static readonly TERRAIN = new MapMode(5, "Terrain", {
+	public static readonly TERRAIN = new MapMode(6, "Terrain", {
 		grayscale: false,
 		context: () => null,
 		fillColor: () => MapMode.NO_COLOR,
@@ -128,6 +136,7 @@ export class MapMode {
 		MapMode.RESOURCES,
 		MapMode.COUNTRIES,
 		MapMode.SETTLEMENTS,
+		MapMode.SETTLEMENT_LOCATIONS,
 		MapMode.TERRAIN,
 	];
 

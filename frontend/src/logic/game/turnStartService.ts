@@ -88,10 +88,7 @@ export class TurnStartService {
 					})),
 				} : null,
 			})),
-			createSettlement: {
-				settler: tileMsg.createSettlement.settler,
-				direct: tileMsg.createSettlement.direct,
-			},
+			isValidSettlementLocation: tileMsg.createSettlement
 		}));
 	}
 
