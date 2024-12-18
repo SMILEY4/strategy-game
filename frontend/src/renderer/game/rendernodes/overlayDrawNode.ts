@@ -33,6 +33,16 @@ export class OverlayDrawNode extends DrawRenderNode {
 					valueConstant: null,
 					valueProvider: vpMatrixProvider,
 				}),
+				new NodeInput.Texture({
+					path: "/textures/noise_watercolor.png",
+					binding: "u_noise",
+				}),
+				new NodeInput.Property({
+					binding: "u_time",
+					type: GLUniformType.FLOAT,
+					valueConstant: null,
+					valueProvider: () => (Date.now() / 1000) % 10000,
+				}),
 				//==== OVERLAY =======================================
 				new NodeInput.Property({
 					binding: "u_overlay.borderThickness",
@@ -48,30 +58,6 @@ export class OverlayDrawNode extends DrawRenderNode {
 					binding: "u_overlay.fillOpacity",
 					type: GLUniformType.FLOAT,
 					valueConstant: 0.7,
-				}),
-				//==== MOUSE OVER ====================================
-				new NodeInput.Property({
-					binding: "u_tileMouseOver.position",
-					type: GLUniformType.INT_VEC2,
-					valueConstant: null,
-					valueProvider: () => {
-						const tile = this.tileRepository.getHover();
-						if (tile) {
-							return [tile.q, tile.r];
-						} else {
-							return [99999, 99999];
-						}
-					},
-				}),
-				new NodeInput.Property({
-					binding: "u_tileMouseOver.thickness",
-					type: GLUniformType.FLOAT,
-					valueConstant: 0.08,
-				}),
-				new NodeInput.Property({
-					binding: "u_tileMouseOver.color",
-					type: GLUniformType.VEC4,
-					valueConstant: [0.729, 0.184, 0.420, 1.0],
 				}),
 				//==== TILE SELECTION ================================
 				new NodeInput.Property({
@@ -90,12 +76,17 @@ export class OverlayDrawNode extends DrawRenderNode {
 				new NodeInput.Property({
 					binding: "u_tileSelection.thickness",
 					type: GLUniformType.FLOAT,
-					valueConstant: 0.15,
+					valueConstant: 0.1,
 				}),
 				new NodeInput.Property({
-					binding: "u_tileSelection.color",
+					binding: "u_tileSelection.color0",
 					type: GLUniformType.VEC4,
-					valueConstant: [0.741, 0.090, 0.251, 1.0],
+					valueConstant: [255/255,215/255,0/255, 1.0],
+				}),
+				new NodeInput.Property({
+					binding: "u_tileSelection.color1",
+					type: GLUniformType.VEC4,
+					valueConstant: [1.0, 1.0, 1.0, 1.0],
 				}),
 			],
 			output: [

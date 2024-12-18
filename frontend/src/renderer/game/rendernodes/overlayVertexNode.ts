@@ -270,7 +270,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 		if (highlightMovementTiles.has(tile.identifier.q + "/" + tile.identifier.r)) {
 			cursor.append(0);
 			cursor.append([0, 0, 0, 0]);
-			cursor.append([0.941, 0.921, 0.686, 0.9]);
+			cursor.append([0.941, 0.921, 0.686, 0.8]);
 		} else {
 			cursor.append(0);
 			cursor.append([0, 0, 0, 0]);

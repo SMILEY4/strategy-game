@@ -88,7 +88,9 @@ float border_combineMasksGradient(vec3 directionMask, vec3 gradientEdgeMask) {
 // ==================================//
 
 /*
-Returns wether the given current is inside a border area defined by the given mask and thickness
+Returns wether the given current is inside a border area defined by the given mask and thickness.
+This can produces a border only for specific edges/directions.
+Thickness is the percentage (from 0 to 1) the border takes up of the tile measured from the outside.
 */
 float border(vec3 cornerData, int edgeDirection, int mask, float thickness) {
     vec3 maskDirection = border_maskDirection(mask, edgeDirection);
@@ -97,10 +99,44 @@ float border(vec3 cornerData, int edgeDirection, int mask, float thickness) {
 }
 
 /*
-Return whether the current pixel is inside a border area defined only by the given thickness
+Returns wether the given current is inside a border area defined by the given mask and thickness.
+This can produces a border only for specific edges/directions.
+Thickness is the percentage (from 0 to 1) the border takes up of the tile measured from the outside.
+Note: "thicknessFrom" < "thicknessTo"
+*/
+float border_variableThickness(vec3 cornerData, int edgeDirection, int mask, float thicknessFrom, float thicknessTo) {
+    float borderOuter = border(cornerData, edgeDirection, mask, thicknessFrom);
+    float borderInner = border(cornerData, edgeDirection, mask, thicknessTo);
+    if(borderOuter > 0.1) {
+        return 0.0;
+    } else {
+        return borderInner;
+    }
+}
+
+/*
+Return whether the current pixel is inside a border area defined only by the given thickness.
+This produces a border full 360 degree border (which is simpler to calculate).
+Thickness is the percentage (from 0 to 1) the border takes up of the tile measured from the outside.
 */
 float border_full(vec3 cornerData, float thickness) {
     return step(cornerData.x, thickness);
+}
+
+/*
+Return whether the current pixel is inside a border area defined only by the given thickness.
+This produces a border full 360 degree border (which is simpler to calculate).
+Thickness is the percentage (from 0 to 1) the border takes up of the tile measured from the outside.
+Note: "thicknessFrom" < "thicknessTo"
+*/
+float border_full_variableThickness(vec3 cornerData, float thicknessFrom, float thicknessTo) {
+    float borderOuter = border_full(cornerData, thicknessFrom);
+    float borderInner = border_full(cornerData, thicknessTo);
+    if(borderOuter > 0.1) {
+        return 0.0;
+    } else {
+        return borderInner;
+    }
 }
 
 /*

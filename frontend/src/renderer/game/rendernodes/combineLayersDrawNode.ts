@@ -8,7 +8,7 @@ import {mat3} from "../../../common/webgl/mat3";
 import {SessionRepository} from "../../../state/repository/sessionRepository";
 
 /**
- * Combines all individual (non-html) layers into the final image.
+ * Combines all individual (non-html) layers into the "final" image.
  */
 export class CombineLayersDrawNode extends DrawRenderNode {
 
