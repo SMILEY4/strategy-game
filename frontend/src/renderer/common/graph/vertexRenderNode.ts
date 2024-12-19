@@ -30,7 +30,8 @@ export abstract class VertexRenderNode extends AbstractRenderNode {
  */
 export interface VertexRenderNodeConfig {
     id: string,
-    input: (unknown)[]
+    changeKey: string | null,
+    input: (NodeInput.VertexBuffer)[],
     output: (NodeOutput.VertexBuffer | NodeOutput.VertexDescriptor)[]
 }
 

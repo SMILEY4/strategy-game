@@ -11,6 +11,12 @@ import {NodeOutput} from "../graph/nodeOutput";
 
 export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRenderCommand.Base> {
 
+    private readonly changeProvider: ChangeProvider;
+
+    constructor(changeProvider: ChangeProvider) {
+        this.changeProvider = changeProvider;
+    }
+
     /**
      * VertexRenderNode
      * - must have at least one vertex output
@@ -71,7 +77,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
     }
 
     private compileVertex(node: VertexRenderNode, outCommands: WebGLRenderCommand.Base[]) {
-        outCommands.push(new WebGLRenderCommand.UpdateVertexBufferData(node));
+        outCommands.push(new WebGLRenderCommand.UpdateVertexBufferData(node, this.changeProvider));
     }
 
     private compileDraw(node: DrawRenderNode, textureBindingHandler: TextureBindingHandler, outCommands: WebGLRenderCommand.Base[]) {

@@ -12,7 +12,6 @@ import {NodeOutput} from "../../common/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import seedrandom from "seedrandom";
-import {ChangeProvider} from "../changeProvider";
 
 interface RenderDetail {
     tileId: string,
@@ -35,11 +34,10 @@ export class DetailsVertexNode extends VertexRenderNode {
         ...MixedArrayBufferType.VEC2,
     ];
 
-    private readonly changeProvider: ChangeProvider;
-
-    constructor(changeProvider: ChangeProvider) {
+    constructor() {
         super({
             id: DetailsVertexNode.ID,
+            changeKey: DetailsVertexNode.ID,
             input: [],
             output: [
                 new VertexBuffer({
@@ -64,13 +62,9 @@ export class DetailsVertexNode extends VertexRenderNode {
                 }),
             ],
         });
-        this.changeProvider = changeProvider;
     }
 
     public execute(): VertexDataResource {
-        if(!this.changeProvider.hasChange(this.id)) {
-            return EMPTY_VERTEX_DATA_RESOURCE;
-        }
 
         const renderDetails = this.collectDetails();
 

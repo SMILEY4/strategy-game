@@ -1,7 +1,6 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
-import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {MapMode} from "../../../models/base/mapMode";
 import {Tile, TileIdentifier} from "../../../models/base/tile";
@@ -14,19 +13,18 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode {
 
 	public static readonly ID = "htmlnode.resourceicons";
 
-	private readonly changeProvider: ChangeProvider;
 	private readonly tileRepository: TileRepository;
 	private readonly sessionRepository: SessionRepository;
 	private readonly camera: () => Camera;
 
 	constructor(
-		changeProvider: ChangeProvider,
 		tileRepository: TileRepository,
 		sessionRepository: SessionRepository,
 		camera: () => Camera,
 	) {
 		super({
 			id: ResourceIconsHtmlNode.ID,
+			changeKey: ResourceIconsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({
@@ -38,16 +36,12 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode {
 				}),
 			],
 		});
-		this.changeProvider = changeProvider;
 		this.tileRepository = tileRepository;
 		this.sessionRepository = sessionRepository;
 		this.camera = camera;
 	}
 
 	public execute(): HtmlDataResource {
-		if (!this.changeProvider.hasChange(this.id)) {
-			return EMPTY_HTML_DATA_RESOURCE;
-		}
 
 		const elements: ResourceIconElement[] = [];
 

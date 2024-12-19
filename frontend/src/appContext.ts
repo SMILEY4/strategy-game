@@ -33,7 +33,7 @@ import {SettlementRepository} from "./state/repository/settlementRepository";
 import {TileRepository} from "./state/repository/tileRepository";
 import {TurnRepository} from "./state/repository/turnRepository";
 import {WorldObjectRepository} from "./state/repository/worldObjectRepository";
-import {ChangeProvider} from "./renderer/game/changeProvider";
+import {GameChangeProvider} from "./renderer/game/gameChangeProvider";
 import {MapService} from "./logic/game/mapService";
 import {RouteDatabase} from "./state/database/routeDatabase";
 import {WorldObjectDatabase} from "./state/database/worldObjectDatabase";
@@ -68,7 +68,7 @@ interface AppCtxDef {
 	MapService: () => MapService,
 
 	GameRenderer: () => GameRenderer,
-	ChangeProvider: () => ChangeProvider,
+	ChangeProvider: () => GameChangeProvider,
 
 	MonitoringRepository: () => MonitoringRepository,
 	WebGLMonitor: () => WebGLMonitor,
@@ -237,7 +237,7 @@ export const AppCtx: AppCtxDef = {
 	GameRenderer: diContext.register(
 		GameRenderer.name,
 		ctx => new GameRenderer(
-			ctx.get<ChangeProvider>(ChangeProvider.name),
+			ctx.get<GameChangeProvider>(GameChangeProvider.name),
 			ctx.get<CameraRepository>(CameraRepository.name),
 			ctx.get<TileRepository>(TileRepository.name),
 			ctx.get<SessionRepository>(SessionRepository.name),
@@ -247,8 +247,8 @@ export const AppCtx: AppCtxDef = {
 		),
 	),
 	ChangeProvider: diContext.register(
-		ChangeProvider.name,
-		ctx => new ChangeProvider(
+		GameChangeProvider.name,
+		ctx => new GameChangeProvider(
 			ctx.get<SessionRepository>(SessionRepository.name),
 			ctx.get<WorldObjectRepository>(WorldObjectRepository.name),
 		),

@@ -23,6 +23,7 @@ export abstract class HtmlRenderNode extends AbstractRenderNode {
  */
 export interface HtmlRenderNodeConfig {
     id: string,
+    changeKey: string | null,
     input: never[],
     output: (NodeOutput.HtmlContainer | NodeOutput.HtmlData)[]
 }

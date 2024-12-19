@@ -6,33 +6,22 @@ import {Tile} from "../../../models/base/tile";
 import seedrandom from "seedrandom";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {GameRenderConfig} from "../gameRenderConfig";
-import {ChangeProvider} from "../changeProvider";
-import {shuffleArray} from "../../../common/utils";
+import {buildMap, shuffleArray} from "../../../common/utils";
 import {TerrainType} from "../../../models/base/TerrainType";
 import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
 import {Visibility} from "../../../models/base/visibility";
 import {mapHiddenOrNull} from "../../../common/hiddenType";
 import {TileRepository} from "../../../state/repository/tileRepository";
+import {ChangeProvider} from "../../common/graph/changeProvider";
+import {NodeInput} from "../../common/graph/nodeInput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {TilesBaseVertexNode} from "./tilesBaseVertexNode";
 
 export class TilesVertexNode extends VertexRenderNode {
 
 	public static readonly ID = "vertexnode.tiles";
-
-	private static readonly MESH_VERTEX_COUNT = 6 * 3;
-
-	private static readonly MESH_PATTERN = [
-		// vertex position
-		...MixedArrayBufferType.VEC2,
-		// texture coords
-		...MixedArrayBufferType.VEC2,
-		// corner data
-		...MixedArrayBufferType.VEC3,
-		// direction data
-		MixedArrayBufferType.INT,
-	];
 
 	private static readonly WATER_PATTERN = [
 		// world position (x,y)
@@ -57,43 +46,22 @@ export class TilesVertexNode extends VertexRenderNode {
 		MixedArrayBufferType.INT,
 	];
 
-	private readonly changeProvider: ChangeProvider;
 	private readonly tileRepository: TileRepository;
 	private readonly renderConfig: () => GameRenderConfig;
 
 	private tileIndices: number[] = [];
 
 
-	constructor(changeProvider: ChangeProvider, renderConfig: () => GameRenderConfig, tileRepository: TileRepository) {
+	constructor(renderConfig: () => GameRenderConfig, tileRepository: TileRepository) {
 		super({
 			id: TilesVertexNode.ID,
-			input: [],
-			output: [
-				new VertexBuffer({
+			changeKey: TilesVertexNode.ID,
+			input: [
+				new NodeInput.VertexBuffer({
 					name: "vertexbuffer.mesh.tile",
-					attributes: [
-						{
-							name: "in_vertexPosition",
-							type: GLAttributeType.FLOAT,
-							amountComponents: 2,
-						},
-						{
-							name: "in_textureCoordinates",
-							type: GLAttributeType.FLOAT,
-							amountComponents: 2,
-						},
-						{
-							name: "in_cornerData",
-							type: GLAttributeType.FLOAT,
-							amountComponents: 3,
-						},
-						{
-							name: "in_directionData",
-							type: GLAttributeType.INT,
-							amountComponents: 1,
-						},
-					],
 				}),
+			],
+			output: [
 				new VertexBuffer({
 					name: "vertexbuffer.instance.tilewater",
 					attributes: [
@@ -178,71 +146,57 @@ export class TilesVertexNode extends VertexRenderNode {
 			],
 		});
 		this.tileRepository = tileRepository;
-		this.changeProvider = changeProvider;
 		this.renderConfig = renderConfig;
 	}
 
 
 	public execute(): VertexDataResource {
-		const buffers = new Map<string, VertexBufferResource>();
-		const outputs = new Map<string, { vertexCount: number; instanceCount: number }>();
 
-		// base mesh + tile indices
-		if (this.changeProvider.hasChange("basemesh")) {
-			const [_, baseMeshData] = this.buildBaseMesh();
-			buffers.set("vertexbuffer.mesh.tile", new VertexBufferResource(baseMeshData));
+		const tiles = this.tileRepository.getAll();
+		const tileCounts = this.countTileTypes(tiles);
+
+		if (this.tileIndices.length !== tiles.length) {
+			this.tileIndices = this.buildTileIndices(tiles.length);
 		}
 
-		// tile instances
-		if (this.changeProvider.hasChange(this.id)) {
+		const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, TilesVertexNode.WATER_PATTERN);
+		const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, TilesVertexNode.LAND_PATTERN);
+		const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, TilesVertexNode.FOG_PATTERN);
 
-			const tiles = this.tileRepository.getAll();
-			const tileCounts = this.countTileTypes(tiles);
-
-			if (this.tileIndices.length !== tiles.length) {
-				this.tileIndices = this.buildTileIndices(tiles.length);
+		for (let i = 0, n = this.tileIndices.length; i < n; i++) {
+			const index = this.tileIndices[i];
+			const tile = tiles[index];
+			if (this.isFog(tile)) {
+				this.appendFogInstance(tile, cursorFog);
 			}
-
-			const [arrayBufferWater, cursorWater] = MixedArrayBuffer.createWithCursor(tileCounts.water, TilesVertexNode.WATER_PATTERN);
-			const [arrayBufferLand, cursorLand] = MixedArrayBuffer.createWithCursor(tileCounts.land, TilesVertexNode.LAND_PATTERN);
-			const [arrayBufferFog, cursorFog] = MixedArrayBuffer.createWithCursor(tileCounts.fog, TilesVertexNode.FOG_PATTERN);
-
-			for (let i = 0, n = this.tileIndices.length; i < n; i++) {
-				const index = this.tileIndices[i];
-				const tile = tiles[index];
-				if (this.isFog(tile)) {
-					this.appendFogInstance(tile, cursorFog);
-				}
-				if (this.isLand(tile)) {
-					this.appendLandInstance(tile, cursorLand);
-				}
-				if (this.isWater(tile)) {
-					this.appendWaterInstance(tile, cursorWater);
-				}
+			if (this.isLand(tile)) {
+				this.appendLandInstance(tile, cursorLand);
 			}
-
-			buffers.set("vertexbuffer.instance.tilewater", new VertexBufferResource(arrayBufferWater.getRawBuffer()));
-			buffers.set("vertexbuffer.instance.tileland", new VertexBufferResource(arrayBufferLand.getRawBuffer()));
-			buffers.set("vertexbuffer.instance.tilefog", new VertexBufferResource(arrayBufferFog.getRawBuffer()));
-
-			outputs.set("vertexdata.water", {
-				vertexCount: TilesVertexNode.MESH_VERTEX_COUNT,
-				instanceCount: tileCounts.water,
-			});
-			outputs.set("vertexdata.land", {
-				vertexCount: TilesVertexNode.MESH_VERTEX_COUNT,
-				instanceCount: tileCounts.land,
-			});
-			outputs.set("vertexdata.fog", {
-				vertexCount: TilesVertexNode.MESH_VERTEX_COUNT,
-				instanceCount: tileCounts.fog,
-			});
-
+			if (this.isWater(tile)) {
+				this.appendWaterInstance(tile, cursorWater);
+			}
 		}
 
 		return new VertexDataResource({
-			buffers: buffers,
-			outputs: outputs,
+			buffers: buildMap({
+				"vertexbuffer.instance.tilewater": new VertexBufferResource(arrayBufferWater.getRawBuffer()),
+				"vertexbuffer.instance.tileland": new VertexBufferResource(arrayBufferLand.getRawBuffer()),
+				"vertexbuffer.instance.tilefog": new VertexBufferResource(arrayBufferFog.getRawBuffer()),
+			}),
+			outputs: buildMap({
+				"vertexdata.water": {
+					vertexCount: TilesBaseVertexNode.MESH_VERTEX_COUNT,
+					instanceCount: tileCounts.water,
+				},
+				"vertexdata.land": {
+					vertexCount: TilesBaseVertexNode.MESH_VERTEX_COUNT,
+					instanceCount: tileCounts.land,
+				},
+				"vertexdata.fog": {
+					vertexCount: TilesBaseVertexNode.MESH_VERTEX_COUNT,
+					instanceCount: tileCounts.fog,
+				}
+			}),
 		});
 	}
 
@@ -250,41 +204,6 @@ export class TilesVertexNode extends VertexRenderNode {
 		const indices = [...Array(tileCount).keys()];
 		shuffleArray(indices);
 		return indices;
-	}
-
-	//===== BASE MESH ===============================================
-
-	private buildBaseMesh(): [number, ArrayBuffer] {
-		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(TilesVertexNode.MESH_VERTEX_COUNT, TilesVertexNode.MESH_PATTERN);
-		this.appendBaseMeshTriangle(cursor, 0, 1);
-		this.appendBaseMeshTriangle(cursor, 1, 2);
-		this.appendBaseMeshTriangle(cursor, 2, 3);
-		this.appendBaseMeshTriangle(cursor, 3, 4);
-		this.appendBaseMeshTriangle(cursor, 4, 5);
-		this.appendBaseMeshTriangle(cursor, 5, 0);
-		return [TilesVertexNode.MESH_VERTEX_COUNT, arrayBuffer.getRawBuffer()];
-	}
-
-	private appendBaseMeshTriangle(cursor: MixedArrayBufferCursor, cornerIndexA: number, cornerIndexB: number) {
-		const scale = 1.44;
-		// center
-		cursor.append(0);
-		cursor.append(0);
-		cursor.append(this.hexTextureCoordinates(-1));
-		cursor.append([1, 0, 0]);
-		cursor.append(cornerIndexA);
-		// corner a
-		cursor.append(this.hexCornerPointX(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(this.hexCornerPointY(cornerIndexA, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(this.hexTextureCoordinates(cornerIndexA));
-		cursor.append([0, 1, 0]);
-		cursor.append(cornerIndexA);
-		// corner b
-		cursor.append(this.hexCornerPointX(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(this.hexCornerPointY(cornerIndexB, TilemapUtils.DEFAULT_HEX_LAYOUT.size, scale));
-		cursor.append(this.hexTextureCoordinates(cornerIndexB));
-		cursor.append([0, 0, 1]);
-		cursor.append(cornerIndexA);
 	}
 
 	//===== INSTANCES ===============================================
@@ -385,47 +304,6 @@ export class TilesVertexNode extends VertexRenderNode {
 
 
 	//===== UTILITIES ===============================================
-
-	private hexCornerPointX(cornerIndex: number, size: [number, number], scale: number): number {
-		const angleDeg = 60 * cornerIndex - 30;
-		const angleRad = Math.PI / 180 * angleDeg;
-		return size[0] * Math.cos(angleRad) * scale;
-	}
-
-	private hexCornerPointY(cornerIndex: number, size: [number, number], scale: number): number {
-		const angleDeg = 60 * cornerIndex - 30;
-		const angleRad = Math.PI / 180 * angleDeg;
-		return size[1] * Math.sin(angleRad) * scale;
-	}
-
-	private hexTextureCoordinates(cornerIndex: number): [number, number] {
-		const xLeft = 0.065;
-		const xCenter = 0.5;
-		const xRight = 0.935;
-		const yBottom = 0;
-		const yCenterBottom = 0.25;
-		const yCenter = 0.5;
-		const yCenterTop = 0.75;
-		const yTop = 1;
-		switch (cornerIndex) {
-			case -1:
-				return [xCenter, yCenter];
-			case 0:
-				return [xRight, yCenterBottom];
-			case 1:
-				return [xRight, yCenterTop];
-			case 2:
-				return [xCenter, yTop];
-			case 3:
-				return [xLeft, yCenterTop];
-			case 4:
-				return [xLeft, yCenterBottom];
-			case 5:
-				return [xCenter, yBottom];
-			default:
-				return [0, 0];
-		}
-	}
 
 	private mix(x: [number, number, number], y: [number, number, number], a: number): [number, number, number] {
 		const clampedA = this.clamp(0, a, 1);

@@ -5,6 +5,7 @@ import {ProgramUniformEntry} from "./programUniformEntry";
 import {VertexRenderNode} from "../graph/vertexRenderNode";
 import {BaseRenderer} from "../../../common/webgl/baseRenderer";
 import {Camera} from "../../../common/webgl/camera";
+import {ChangeProvider} from "../graph/changeProvider";
 
 export namespace WebGLRenderCommand {
 
@@ -27,24 +28,28 @@ export namespace WebGLRenderCommand {
      */
     export class UpdateVertexBufferData implements Base {
         private readonly node: VertexRenderNode;
+        private readonly changeProvider: ChangeProvider;
 
-        constructor(node: VertexRenderNode) {
+        constructor(node: VertexRenderNode, changeProvider: ChangeProvider) {
             this.node = node;
+            this.changeProvider = changeProvider;
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
-            const modified = this.node.execute();
-            if (modified.buffers.size > 0) {
-                for (let [modifiedId, modifiedData] of modified.buffers) {
-                    const buffer = resourceManager.getVertexBuffer(modifiedId).buffer;
-                    buffer.setData(modifiedData.data, true);
+            if(this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
+                const modified = this.node.execute();
+                if (modified.buffers.size > 0) {
+                    for (let [modifiedId, modifiedData] of modified.buffers) {
+                        const buffer = resourceManager.getVertexBuffer(modifiedId).buffer;
+                        buffer.setData(modifiedData.data, true);
+                    }
                 }
-            }
-            if (modified.outputs.size > 0) {
-                for (let [modifiedId, modifiedData] of modified.outputs) {
-                    const data = resourceManager.getVertexData(modifiedId);
-                    data.vertexCount = modifiedData.vertexCount;
-                    data.instanceCount = modifiedData.instanceCount;
+                if (modified.outputs.size > 0) {
+                    for (let [modifiedId, modifiedData] of modified.outputs) {
+                        const data = resourceManager.getVertexData(modifiedId);
+                        data.vertexCount = modifiedData.vertexCount;
+                        data.instanceCount = modifiedData.instanceCount;
+                    }
                 }
             }
         }

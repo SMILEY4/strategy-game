@@ -6,6 +6,17 @@ import {GLUniformType, GLUniformValueType} from "../../../common/webgl/glTypes";
 export namespace NodeInput {
 
     /**
+     * Vertex buffer
+     */
+    export class VertexBuffer {
+        readonly name: string;
+
+        constructor(props: { name: string }) {
+            this.name = props.name;
+        }
+    }
+
+    /**
      * Vertex data
      */
     export class VertexDescriptor {

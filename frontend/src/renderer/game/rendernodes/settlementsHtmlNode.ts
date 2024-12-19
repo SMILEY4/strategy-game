@@ -1,7 +1,6 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
-import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
@@ -11,17 +10,16 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 
 	public static readonly ID = "htmlnode.settlements";
 
-	private readonly changeProvider: ChangeProvider;
 	private readonly settlementRepository: SettlementRepository;
 	private readonly camera: () => Camera;
 
 	constructor(
-		changeProvider: ChangeProvider,
 		settlementRepository: SettlementRepository,
 		camera: () => Camera,
 	) {
 		super({
 			id: SettlementsHtmlNode.ID,
+			changeKey: SettlementsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({
@@ -33,15 +31,11 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 				}),
 			],
 		});
-		this.changeProvider = changeProvider;
 		this.settlementRepository = settlementRepository;
 		this.camera = camera;
 	}
 
 	public execute(): HtmlDataResource {
-		if (!this.changeProvider.hasChange(this.id)) {
-			return EMPTY_HTML_DATA_RESOURCE;
-		}
 
 		const elements: SettlementsElement[] = [];
 

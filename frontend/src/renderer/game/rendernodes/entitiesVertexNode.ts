@@ -9,11 +9,9 @@ import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "..
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {buildMap} from "../../../common/utils";
 import {NodeOutput} from "../../common/graph/nodeOutput";
-import {ChangeProvider} from "../changeProvider";
 import {SettlementRepository} from "../../../state/repository/settlementRepository";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
-import {NodeInput} from "../../common/graph/nodeInput";
 
 interface RenderEntity {
 	q: number,
@@ -32,12 +30,12 @@ export class EntitiesVertexNode extends VertexRenderNode {
 		...MixedArrayBufferType.VEC2,
 	];
 
-	private readonly changeProvider: ChangeProvider;
 	private readonly settlementRepository: SettlementRepository;
 
-	constructor(changeProvider: ChangeProvider, settlementRepository: SettlementRepository) {
+	constructor(settlementRepository: SettlementRepository) {
 		super({
 			id: EntitiesVertexNode.ID,
+			changeKey: EntitiesVertexNode.ID,
 			input: [],
 			output: [
 				new VertexBuffer({
@@ -62,14 +60,10 @@ export class EntitiesVertexNode extends VertexRenderNode {
 				}),
 			],
 		});
-		this.changeProvider = changeProvider;
 		this.settlementRepository = settlementRepository;
 	}
 
 	public execute(): VertexDataResource {
-		if (!this.changeProvider.hasChange(this.id)) {
-			return EMPTY_VERTEX_DATA_RESOURCE;
-		}
 
 		const renderEntities = this.collectEntities();
 

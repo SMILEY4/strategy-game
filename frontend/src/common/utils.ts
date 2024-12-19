@@ -105,3 +105,7 @@ export function buildMap<K, V>(content: BuildMapContent<V>) {
     }
     return map;
 }
+
+export function emptyMap<K,V>() {
+    return new Map<string, V>();
+}

@@ -1,12 +1,12 @@
 import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
-import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {WorldObjectType} from "../../../models/base/worldObjectType";
 import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
+import {ChangeProvider} from "../../common/graph/changeProvider";
 
 var dirty = true;
 
@@ -25,6 +25,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 	) {
 		super({
 			id: WorldObjectsHtmlNode.ID,
+			changeKey: null,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({

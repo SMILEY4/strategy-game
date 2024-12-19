@@ -12,7 +12,6 @@ import {LineCapsButt} from "../../../common/webgl/lines/lineCapsButt";
 import {LineJoinMiter} from "../../../common/webgl/lines/lineJoinMitter";
 import {buildMap} from "../../../common/utils";
 import {NodeOutput} from "../../common/graph/nodeOutput";
-import {ChangeProvider} from "../changeProvider";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {Route} from "../../../models/base/route";
 import {RouteRepository} from "../../../state/repository/routeRepository";
@@ -34,12 +33,12 @@ export class RoutesVertexNode extends VertexRenderNode {
 		...MixedArrayBufferType.VEC2,
 	];
 
-	private readonly changeProvider: ChangeProvider;
 	private readonly routeRepository: RouteRepository;
 
-	constructor(changeProvider: ChangeProvider, routeRepository: RouteRepository) {
+	constructor(routeRepository: RouteRepository) {
 		super({
 			id: RoutesVertexNode.ID,
+			changeKey: RoutesVertexNode.ID,
 			input: [],
 			output: [
 				new VertexBuffer({
@@ -69,14 +68,10 @@ export class RoutesVertexNode extends VertexRenderNode {
 				}),
 			],
 		});
-		this.changeProvider = changeProvider;
 		this.routeRepository = routeRepository;
 	}
 
 	public execute(): VertexDataResource {
-		if (!this.changeProvider.hasChange(this.id)) {
-			return EMPTY_VERTEX_DATA_RESOURCE;
-		}
 
 		const lines: number[][][] = this.toLines(this.routeRepository.getAll());
 		const [triangleCount, _, lineMeshes] = this.buildLineMeshes(lines);

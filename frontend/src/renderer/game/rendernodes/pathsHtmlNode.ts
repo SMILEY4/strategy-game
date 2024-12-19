@@ -1,7 +1,6 @@
-import {EMPTY_HTML_DATA_RESOURCE, HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
+import {HtmlDataResource, HtmlRenderNode} from "../../common/graph/htmlRenderNode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {Camera} from "../../../common/webgl/camera";
-import {ChangeProvider} from "../changeProvider";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {TilePosition} from "../../../models/base/tilePosition";
@@ -11,17 +10,13 @@ export class PathsHtmlNode extends HtmlRenderNode {
 
 	public static readonly ID = "htmlnode.paths";
 
-	private readonly changeProvider: ChangeProvider;
 	private readonly worldObjectRepository: WorldObjectRepository;
 	private readonly camera: () => Camera;
 
-	constructor(
-		changeProvider: ChangeProvider,
-		worldObjectRepository: WorldObjectRepository,
-		camera: () => Camera,
-	) {
+	constructor(worldObjectRepository: WorldObjectRepository, camera: () => Camera) {
 		super({
 			id: PathsHtmlNode.ID,
+			changeKey: PathsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({
@@ -33,15 +28,11 @@ export class PathsHtmlNode extends HtmlRenderNode {
 				}),
 			],
 		});
-		this.changeProvider = changeProvider;
 		this.worldObjectRepository = worldObjectRepository;
 		this.camera = camera;
 	}
 
 	public execute(): HtmlDataResource {
-		if (!this.changeProvider.hasChange(this.id)) {
-			return EMPTY_HTML_DATA_RESOURCE;
-		}
 
 		const elements: PathsElement[] = [];
 
