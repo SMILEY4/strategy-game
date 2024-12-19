@@ -14,7 +14,7 @@ export class EntitiesDrawNode extends DrawRenderNode {
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],
                 }),
-                new NodeInput.Texture({
+                new NodeInput.TextureAtlas({
                     path: "/icons/tileset.png",
                     binding: "u_texture",
                 }),

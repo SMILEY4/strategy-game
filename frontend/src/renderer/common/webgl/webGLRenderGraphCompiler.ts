@@ -78,21 +78,6 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 
         // todo optimize commands
 
-        const inputTextureIds: string[] = node.config.input
-            .map(e => {
-                if (e instanceof NodeInput.Texture) {
-                    return e.path;
-                } else if (e instanceof NodeInput.RenderTarget) {
-                    return e.renderTargetId;
-                } else {
-                    return null;
-                }
-            })
-            .filterDefined();
-
-        const inputShader = node.config.input.find(e => e instanceof NodeInput.Shader)! as NodeInput.Shader;
-        const inputVertexData = node.config.input.find(e => e instanceof NodeInput.VertexDescriptor)! as NodeInput.VertexDescriptor;
-
         // bind framebuffer
         let renderToTexture = false;
         let renderScale = 1
@@ -107,11 +92,30 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         }
 
         // bind textures
+        const inputTextureIds: string[] = node.config.input
+            .map(e => {
+                if (e instanceof NodeInput.Texture) {
+                    return e.path;
+                } else if (e instanceof NodeInput.TextureAtlas) {
+                    return e.path;
+                } else if (e instanceof NodeInput.RenderTarget) {
+                    return e.renderTargetId;
+                } else {
+                    return null;
+                }
+            })
+            .filterDefined();
+
         for (let input of node.config.input) {
             if (input instanceof NodeInput.Texture) {
                 const textureId = input.path;
                 const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
                 outCommands.push(new WebGLRenderCommand.BindTexture(textureId, textureUnit));
+            }
+            if (input instanceof NodeInput.TextureAtlas) {
+                const textureId = input.path;
+                const textureUnit = textureBindingHandler.requestUnit(textureId, inputTextureIds);
+                outCommands.push(new WebGLRenderCommand.BindTextureAtlas(textureId, textureUnit));
             }
             if (input instanceof NodeInput.RenderTarget) {
                 const textureId = input.renderTargetId;
@@ -121,6 +125,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         }
 
         // use shader
+        const inputShader = node.config.input.find(e => e instanceof NodeInput.Shader)! as NodeInput.Shader;
         outCommands.push(new WebGLRenderCommand.UseShader(inputShader.vertexId, inputShader.fragmentId));
 
         // set uniforms
@@ -140,7 +145,16 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
                     valueConstant: null,
                     valueProvider: () => textureBindingHandler.getUnit(textureId)!,
                     binding: input.binding,
-                    type: GLUniformType.SAMPLER_CUBE,
+                    type: GLUniformType.SAMPLER_2D,
+                }));
+            }
+            if (input instanceof NodeInput.TextureAtlas) {
+                const textureId = input.path;
+                uniforms.push(new ProgramUniformEntry({
+                    valueConstant: null,
+                    valueProvider: () => textureBindingHandler.getUnit(textureId)!,
+                    binding: input.binding,
+                    type: GLUniformType.SAMPLER_2D,
                 }));
             }
             if (input instanceof NodeInput.RenderTarget) {
@@ -149,7 +163,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
                     valueConstant: null,
                     valueProvider: () => textureBindingHandler.getUnit(textureId)!,
                     binding: input.binding,
-                    type: GLUniformType.SAMPLER_CUBE,
+                    type: GLUniformType.SAMPLER_2D,
                 }));
             }
         }
@@ -158,6 +172,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
         }
 
         // bind vertex arrays
+        const inputVertexData = node.config.input.find(e => e instanceof NodeInput.VertexDescriptor)! as NodeInput.VertexDescriptor;
         outCommands.push(new WebGLRenderCommand.BindVertexArray(inputVertexData.vertexDataId, inputShader.vertexId, inputShader.fragmentId));
 
         // draw call

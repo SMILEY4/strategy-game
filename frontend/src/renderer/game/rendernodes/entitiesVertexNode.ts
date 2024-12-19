@@ -13,6 +13,7 @@ import {ChangeProvider} from "../changeProvider";
 import {SettlementRepository} from "../../../state/repository/settlementRepository";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {NodeInput} from "../../common/graph/nodeInput";
 
 interface RenderEntity {
 	q: number,
@@ -137,8 +138,8 @@ export class EntitiesVertexNode extends VertexRenderNode {
 	}
 
 	private texU(entity: RenderEntity): [number, number] {
-		const step = 1 / 8;
-		if (entity.type === "city") {
+		const step = 1 / 8; // todo: load from texture atlas
+		if (entity.type === "city") {	
 			return [step * 4, step * 5];
 		}
 		if (entity.type === "scout") {

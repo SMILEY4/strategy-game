@@ -43,6 +43,19 @@ export namespace NodeInput {
     }
 
     /**
+     * Texture Atlas
+     */
+    export class TextureAtlas {
+        readonly path: string;
+        readonly binding: string;
+
+        constructor(props: { path: string, binding: string }) {
+            this.path = props.path;
+            this.binding = props.binding;
+        }
+    }
+
+    /**
      * Render target (treated as texture)
      */
     export class RenderTarget {

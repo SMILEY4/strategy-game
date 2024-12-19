@@ -26,6 +26,6 @@ export class DrawRenderNode extends AbstractRenderNode {
  */
 export interface DrawRenderNodeConfig {
     id: string,
-    input: (NodeInput.VertexDescriptor | NodeInput.Shader | NodeInput.Texture | NodeInput.RenderTarget | NodeInput.Property | NodeInput.ClearColor | NodeInput.BlendMode)[]
+    input: (NodeInput.VertexDescriptor | NodeInput.Shader | NodeInput.Texture | NodeInput.TextureAtlas | NodeInput.RenderTarget | NodeInput.Property | NodeInput.ClearColor | NodeInput.BlendMode)[]
     output: (NodeOutput.RenderTarget | NodeOutput.Screen)[]
 }

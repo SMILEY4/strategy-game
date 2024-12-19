@@ -1,5 +1,6 @@
 import {AbstractRenderNode} from "./abstractRenderNode";
 import {NodeOutput} from "./nodeOutput";
+import {NodeInput} from "./nodeInput";
 
 /**
  * Node in a render graph that writes/updates vertex-data
