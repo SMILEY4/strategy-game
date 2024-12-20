@@ -6,22 +6,13 @@ import {MapMode} from "../../../models/base/mapMode";
 import {Tile, TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {TileResourceType} from "../../../models/base/TileResourceType";
-import {TileRepository} from "../../../state/repository/tileRepository";
-import {SessionRepository} from "../../../state/repository/sessionRepository";
+import {GameHtmlRenderContext} from "../renderGraphContext";
 
-export class ResourceIconsHtmlNode extends HtmlRenderNode {
+export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 	public static readonly ID = "htmlnode.resourceicons";
 
-	private readonly tileRepository: TileRepository;
-	private readonly sessionRepository: SessionRepository;
-	private readonly camera: () => Camera;
-
-	constructor(
-		tileRepository: TileRepository,
-		sessionRepository: SessionRepository,
-		camera: () => Camera,
-	) {
+	constructor() {
 		super({
 			id: ResourceIconsHtmlNode.ID,
 			changeKey: ResourceIconsHtmlNode.ID,
@@ -32,28 +23,25 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode {
 				}),
 				new NodeOutput.HtmlData({
 					name: "htmldata.resourceicons",
-					renderFunction: (element: any, html: HTMLElement) => render(this.camera(), element, html),
+					renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
 				}),
 			],
 		});
-		this.tileRepository = tileRepository;
-		this.sessionRepository = sessionRepository;
-		this.camera = camera;
 	}
 
-	public execute(): HtmlDataResource {
+	public execute(context: GameHtmlRenderContext): HtmlDataResource {
 
 		const elements: ResourceIconElement[] = [];
 
-		if (this.camera().getZoom() > 3) {
-			if (this.sessionRepository.getMapMode() == MapMode.RESOURCES) {
-				const tiles = this.tileRepository.getAll();
+		if (context.camera.getZoom() > 3) {
+			if (context.mapMode == MapMode.RESOURCES) {
+				const tiles = context.tiles;
 				for (let i = 0, n = tiles.length; i < n; i++) {
 					const tile = tiles[i];
 					if (!tile.base.visible) {
 						continue;
 					}
-					if (tile.base.value.resourceType !== TileResourceType.NONE && this.isVisible(tile, 0)) {
+					if (tile.base.value.resourceType !== TileResourceType.NONE && this.isVisible(tile, 0, context.camera)) {
 						elements.push({
 							tile: tile.identifier,
 							type: tile.base.value.resourceType,
@@ -70,8 +58,7 @@ export class ResourceIconsHtmlNode extends HtmlRenderNode {
 		});
 	}
 
-	private isVisible(tile: Tile, padding: number): boolean {
-		const camera = this.camera();
+	private isVisible(tile: Tile, padding: number, camera: Camera): boolean {
 		const cameraMin = Projections.screenToWorld(camera, 0, camera.getClientHeight());
 		const cameraMax = Projections.screenToWorld(camera, camera.getClientWidth(), 0);
 		const tilePos = Projections.hexToWorld(tile.identifier.q, tile.identifier.r);

@@ -5,20 +5,19 @@ import {TilemapUtils} from "../../../common/tilemapUtils";
 import {Tile} from "../../../models/base/tile";
 import seedrandom from "seedrandom";
 import {NodeOutput} from "../../common/graph/nodeOutput";
-import {GameRenderConfig} from "../gameRenderConfig";
 import {buildMap, shuffleArray} from "../../../common/utils";
 import {TerrainType} from "../../../models/base/TerrainType";
 import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
 import {Visibility} from "../../../models/base/visibility";
 import {mapHiddenOrNull} from "../../../common/hiddenType";
-import {TileRepository} from "../../../state/repository/tileRepository";
 import {NodeInput} from "../../common/graph/nodeInput";
+import {TilesBaseVertexNode} from "./tilesBaseVertexNode";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
-import {TilesBaseVertexNode} from "./tilesBaseVertexNode";
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
-export class TilesVertexNode extends VertexRenderNode {
+export class TilesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "vertexnode.tiles";
 
@@ -45,13 +44,9 @@ export class TilesVertexNode extends VertexRenderNode {
 		MixedArrayBufferType.INT,
 	];
 
-	private readonly tileRepository: TileRepository;
-	private readonly renderConfig: () => GameRenderConfig;
-
 	private tileIndices: number[] = [];
 
-
-	constructor(renderConfig: () => GameRenderConfig, tileRepository: TileRepository) {
+	constructor() {
 		super({
 			id: TilesVertexNode.ID,
 			changeKey: TilesVertexNode.ID,
@@ -144,14 +139,12 @@ export class TilesVertexNode extends VertexRenderNode {
 				}),
 			],
 		});
-		this.tileRepository = tileRepository;
-		this.renderConfig = renderConfig;
 	}
 
 
-	public execute(): VertexDataResource {
+	public execute(context: GameWebGLRenderContext): VertexDataResource {
 
-		const tiles = this.tileRepository.getAll();
+		const tiles = context.tiles;
 		const tileCounts = this.countTileTypes(tiles);
 
 		if (this.tileIndices.length !== tiles.length) {
@@ -169,10 +162,10 @@ export class TilesVertexNode extends VertexRenderNode {
 				this.appendFogInstance(tile, cursorFog);
 			}
 			if (this.isLand(tile)) {
-				this.appendLandInstance(tile, cursorLand);
+				this.appendLandInstance(tile, cursorLand, context);
 			}
 			if (this.isWater(tile)) {
-				this.appendWaterInstance(tile, cursorWater);
+				this.appendWaterInstance(tile, cursorWater, context);
 			}
 		}
 
@@ -194,7 +187,7 @@ export class TilesVertexNode extends VertexRenderNode {
 				"vertexdata.fog": {
 					vertexCount: TilesBaseVertexNode.MESH_VERTEX_COUNT,
 					instanceCount: tileCounts.fog,
-				}
+				},
 			}),
 		});
 	}
@@ -257,7 +250,7 @@ export class TilesVertexNode extends VertexRenderNode {
 		return tile.base.visible && tile.base.value.terrainType == TerrainType.WATER;
 	}
 
-	private appendWaterInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
+	private appendWaterInstance(tile: Tile, cursor: MixedArrayBufferCursor, context: GameWebGLRenderContext) {
 		const q = tile.identifier.q;
 		const r = tile.identifier.r;
 
@@ -271,7 +264,7 @@ export class TilesVertexNode extends VertexRenderNode {
 		cursor.append(1 - this.clamp(0, (tile.base.value.height + 1) * 2 + heightJitter, 1));
 
 		// water border mask
-		const border = BorderBuilder.build(tile, this.tileRepository, false, (ta, tb) => {
+		const border = BorderBuilder.build(tile, context.tileByPosProvider, false, (ta, tb) => {
 			const a = mapHiddenOrNull(ta.base, it => it.terrainType);
 			const b = mapHiddenOrNull(tb.base, it => it.terrainType);
 			return (!a && !b) ? false : a === TerrainType.WATER && b !== null && a !== b;
@@ -286,7 +279,7 @@ export class TilesVertexNode extends VertexRenderNode {
 		return tile.base.visible && tile.base.value.terrainType == TerrainType.LAND;
 	}
 
-	private appendLandInstance(tile: Tile, cursor: MixedArrayBufferCursor) {
+	private appendLandInstance(tile: Tile, cursor: MixedArrayBufferCursor, context: GameWebGLRenderContext) {
 		const q = tile.identifier.q;
 		const r = tile.identifier.r;
 
@@ -297,7 +290,7 @@ export class TilesVertexNode extends VertexRenderNode {
 
 		// color
 		const heightJitter = seedrandom(tile.identifier.id).quick() * 0.1 - 0.5;
-		const color = this.mix(this.renderConfig().land.colorLight, this.renderConfig().land.colorDark, tile.base.value.height * 2 + heightJitter);
+		const color = this.mix(context.renderConfig.land.colorLight, context.renderConfig.land.colorDark, tile.base.value.height * 2 + heightJitter);
 		cursor.append(color);
 	}
 

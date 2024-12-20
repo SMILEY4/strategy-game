@@ -77,7 +77,7 @@ export class WebGLRenderGraphCompiler implements RenderGraphCompiler<WebGLRender
 		return commands;
 	}
 
-	private compileVertex(node: VertexRenderNode, outCommands: WebGLRenderCommand.Base[]) {
+	private compileVertex(node: VertexRenderNode<any>, outCommands: WebGLRenderCommand.Base[]) {
 		outCommands.push(new WebGLRenderCommand.UpdateVertexBufferData(node, this.changeProvider));
 	}
 

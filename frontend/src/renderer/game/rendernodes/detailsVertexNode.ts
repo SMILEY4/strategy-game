@@ -12,6 +12,7 @@ import {NodeOutput} from "../../common/graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import seedrandom from "seedrandom";
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
 interface RenderDetail {
     tileId: string,
@@ -23,7 +24,7 @@ interface RenderDetail {
 /**
  * Adds additional details to tiles, e.g. terrain
  */
-export class DetailsVertexNode extends VertexRenderNode {
+export class DetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
     public static readonly ID = "vertexnode.details"
 
@@ -64,7 +65,7 @@ export class DetailsVertexNode extends VertexRenderNode {
         });
     }
 
-    public execute(): VertexDataResource {
+    public execute(context: GameWebGLRenderContext): VertexDataResource {
 
         const renderDetails = this.collectDetails();
 

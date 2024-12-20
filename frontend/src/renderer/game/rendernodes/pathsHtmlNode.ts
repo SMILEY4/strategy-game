@@ -4,16 +4,13 @@ import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {TilePosition} from "../../../models/base/tilePosition";
-import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
+import {GameHtmlRenderContext} from "../renderGraphContext";
 
-export class PathsHtmlNode extends HtmlRenderNode {
+export class PathsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 	public static readonly ID = "htmlnode.paths";
 
-	private readonly worldObjectRepository: WorldObjectRepository;
-	private readonly camera: () => Camera;
-
-	constructor(worldObjectRepository: WorldObjectRepository, camera: () => Camera) {
+	constructor() {
 		super({
 			id: PathsHtmlNode.ID,
 			changeKey: PathsHtmlNode.ID,
@@ -24,19 +21,17 @@ export class PathsHtmlNode extends HtmlRenderNode {
 				}),
 				new NodeOutput.HtmlData({
 					name: "htmldata.paths",
-					renderFunction: (element: any, html: HTMLElement) => render(this.camera(), element, html),
+					renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
 				}),
 			],
 		});
-		this.worldObjectRepository = worldObjectRepository;
-		this.camera = camera;
 	}
 
-	public execute(): HtmlDataResource {
+	public execute(context: GameHtmlRenderContext): HtmlDataResource {
 
 		const elements: PathsElement[] = [];
 
-		const paths = this.worldObjectRepository.getMovementPaths();
+		const paths = context.movementPaths;
 		for (let i = 0, n = paths.length; i < n; i++) {
 			elements.push({
 				path: paths[i].positions,

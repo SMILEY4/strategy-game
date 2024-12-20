@@ -1,17 +1,12 @@
-import {
-    EMPTY_VERTEX_DATA_RESOURCE,
-    VertexBufferResource,
-    VertexDataResource,
-    VertexRenderNode,
-} from "../../common/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
 import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {MixedArrayBuffer, MixedArrayBufferCursor, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {buildMap} from "../../../common/utils";
 import {NodeOutput} from "../../common/graph/nodeOutput";
-import {SettlementRepository} from "../../../state/repository/settlementRepository";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
 interface RenderEntity {
 	q: number,
@@ -19,7 +14,7 @@ interface RenderEntity {
 	type: "city" | "scout" | "marker"
 }
 
-export class EntitiesVertexNode extends VertexRenderNode {
+export class EntitiesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "vertexnode.entities";
 
@@ -30,9 +25,7 @@ export class EntitiesVertexNode extends VertexRenderNode {
 		...MixedArrayBufferType.VEC2,
 	];
 
-	private readonly settlementRepository: SettlementRepository;
-
-	constructor(settlementRepository: SettlementRepository) {
+	constructor() {
 		super({
 			id: EntitiesVertexNode.ID,
 			changeKey: EntitiesVertexNode.ID,
@@ -60,12 +53,11 @@ export class EntitiesVertexNode extends VertexRenderNode {
 				}),
 			],
 		});
-		this.settlementRepository = settlementRepository;
 	}
 
-	public execute(): VertexDataResource {
+	public execute(context: GameWebGLRenderContext): VertexDataResource {
 
-		const renderEntities = this.collectEntities();
+		const renderEntities = this.collectEntities(context);
 
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(renderEntities.length * 6, EntitiesVertexNode.PATTERN);
 		for (let i = 0; i < renderEntities.length; i++) {
@@ -85,11 +77,11 @@ export class EntitiesVertexNode extends VertexRenderNode {
 		});
 	}
 
-	private collectEntities(): RenderEntity[] {
+	private collectEntities(context: GameWebGLRenderContext): RenderEntity[] {
 
 		const entities: RenderEntity[] = [];
 
-		const settlements = this.settlementRepository.getAll();
+		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
 			entities.push({
@@ -133,7 +125,7 @@ export class EntitiesVertexNode extends VertexRenderNode {
 
 	private texU(entity: RenderEntity): [number, number] {
 		const step = 1 / 8; // todo: load from texture atlas
-		if (entity.type === "city") {	
+		if (entity.type === "city") {
 			return [step * 4, step * 5];
 		}
 		if (entity.type === "scout") {

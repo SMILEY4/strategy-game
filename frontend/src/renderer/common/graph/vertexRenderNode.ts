@@ -7,7 +7,7 @@ import {NodeInput} from "./nodeInput";
  * Requires as output
  * - n vertex-descriptors and all their associated buffers
  */
-export abstract class VertexRenderNode extends AbstractRenderNode {
+export abstract class VertexRenderNode<TContext> extends AbstractRenderNode {
 
     public readonly config: VertexRenderNodeConfig;
 
@@ -21,7 +21,7 @@ export abstract class VertexRenderNode extends AbstractRenderNode {
      * @return updated only the updated vertex buffers. Return an empty map to not modify any data.
      * The keys must be defined in the config of this node
      */
-    public abstract execute(): VertexDataResource
+    public abstract execute(context: TContext): VertexDataResource
 
 }
 

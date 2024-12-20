@@ -2,7 +2,7 @@ import {DrawRenderNode} from "../../common/graph/drawRenderNode";
 import {GLUniformType} from "../../../common/webgl/glTypes";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {NodeInput} from "../../common/graph/nodeInput";
-import {GameWebGLRenderContext} from "../gameWebGLRenderContext";
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
 export class EntitiesDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
 

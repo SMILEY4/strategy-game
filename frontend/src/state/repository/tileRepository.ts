@@ -41,6 +41,10 @@ export class TileRepository {
 		return this.tileDb.queryMany(TileDatabase.QUERY_ALL, null);
 	}
 
+	public getTilesRevId(): string {
+		return this.tileDb.getRevId();
+	}
+
 }
 
 export namespace TileRepository {

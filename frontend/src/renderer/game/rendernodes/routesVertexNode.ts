@@ -1,9 +1,4 @@
-import {
-    EMPTY_VERTEX_DATA_RESOURCE,
-    VertexBufferResource,
-    VertexDataResource,
-    VertexRenderNode,
-} from "../../common/graph/vertexRenderNode";
+import {VertexBufferResource, VertexDataResource, VertexRenderNode} from "../../common/graph/vertexRenderNode";
 import {MixedArrayBuffer, MixedArrayBufferType} from "../../../common/webgl/mixedArrayBuffer";
 import {GLAttributeType} from "../../../common/webgl/glTypes";
 import {LineMesh} from "../../../common/webgl/lines/lineMesh";
@@ -14,11 +9,11 @@ import {buildMap} from "../../../common/utils";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {Route} from "../../../models/base/route";
-import {RouteRepository} from "../../../state/repository/routeRepository";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
-export class RoutesVertexNode extends VertexRenderNode {
+export class RoutesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "vertexbuffer.routes";
 
@@ -33,9 +28,7 @@ export class RoutesVertexNode extends VertexRenderNode {
 		...MixedArrayBufferType.VEC2,
 	];
 
-	private readonly routeRepository: RouteRepository;
-
-	constructor(routeRepository: RouteRepository) {
+	constructor() {
 		super({
 			id: RoutesVertexNode.ID,
 			changeKey: RoutesVertexNode.ID,
@@ -68,12 +61,11 @@ export class RoutesVertexNode extends VertexRenderNode {
 				}),
 			],
 		});
-		this.routeRepository = routeRepository;
 	}
 
-	public execute(): VertexDataResource {
+	public execute(context: GameWebGLRenderContext): VertexDataResource {
 
-		const lines: number[][][] = this.toLines(this.routeRepository.getAll());
+		const lines: number[][][] = this.toLines(context.routes);
 		const [triangleCount, _, lineMeshes] = this.buildLineMeshes(lines);
 
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(triangleCount * 3, RoutesVertexNode.PATTERN);

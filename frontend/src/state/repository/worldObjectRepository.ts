@@ -31,6 +31,10 @@ export class WorldObjectRepository {
 		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_ALL, null);
 	}
 
+	public getWorldObjectsRevId(): string {
+		return this.worldObjectDb.getRevId();
+	}
+
 	public getCurrentMovementModeState(): {
 		worldObjectId: string | null,
 		path: MovementTarget[],

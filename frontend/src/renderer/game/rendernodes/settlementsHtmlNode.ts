@@ -4,19 +4,13 @@ import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
-import {SettlementRepository} from "../../../state/repository/settlementRepository";
+import {GameHtmlRenderContext} from "../gameRenderContext";
 
-export class SettlementsHtmlNode extends HtmlRenderNode {
+export class SettlementsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 	public static readonly ID = "htmlnode.settlements";
 
-	private readonly settlementRepository: SettlementRepository;
-	private readonly camera: () => Camera;
-
-	constructor(
-		settlementRepository: SettlementRepository,
-		camera: () => Camera,
-	) {
+	constructor() {
 		super({
 			id: SettlementsHtmlNode.ID,
 			changeKey: SettlementsHtmlNode.ID,
@@ -27,22 +21,20 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 				}),
 				new NodeOutput.HtmlData({
 					name: "htmldata.settlements",
-					renderFunction: (element: any, html: HTMLElement) => render(this.camera(), element, html),
+					renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
 				}),
 			],
 		});
-		this.settlementRepository = settlementRepository;
-		this.camera = camera;
 	}
 
-	public execute(): HtmlDataResource {
+	public execute(context: GameHtmlRenderContext): HtmlDataResource {
 
 		const elements: SettlementsElement[] = [];
 
-		const settlements = this.settlementRepository.getAll();
+		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
-			if (this.isVisible(settlement.tile, 0)) {
+			if (this.isVisible(settlement.tile, 0, context.camera)) {
 				elements.push({
 					tile: settlement.tile,
 					name: settlement.identifier.name,
@@ -57,8 +49,7 @@ export class SettlementsHtmlNode extends HtmlRenderNode {
 		});
 	}
 
-	private isVisible(tile: TileIdentifier, padding: number): boolean {
-		const camera = this.camera();
+	private isVisible(tile: TileIdentifier, padding: number, camera: Camera): boolean {
 		const cameraMin = Projections.screenToWorld(camera, 0, camera.getClientHeight());
 		const cameraMax = Projections.screenToWorld(camera, camera.getClientWidth(), 0);
 		const tilePos = Projections.hexToWorld(tile.q, tile.r);

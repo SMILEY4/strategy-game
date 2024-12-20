@@ -15,6 +15,10 @@ export class RouteRepository {
 		return this.routeDb.queryMany(RouteDatabase.QUERY_ALL, null);
 	}
 
+	public getRoutesRevId(): string {
+		return this.routeDb.getRevId();
+	}
+
 }
 
 export namespace RouteRepository {

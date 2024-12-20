@@ -4,7 +4,7 @@ import {NodeOutput} from "../../common/graph/nodeOutput";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {GLUniformType} from "../../../common/webgl/glTypes";
 import {mat3} from "../../../common/webgl/mat3";
-import {GameWebGLRenderContext} from "../gameWebGLRenderContext";
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
 /**
  * Combines all individual (non-html) layers into the "final" image.

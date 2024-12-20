@@ -18,4 +18,8 @@ export class SettlementRepository {
 		return this.settlementDb.queryMany(SettlementDatabase.QUERY_ALL, null);
 	}
 
+	public getSettlementsRevId(): string {
+		return this.settlementDb.getRevId();
+	}
+
 }

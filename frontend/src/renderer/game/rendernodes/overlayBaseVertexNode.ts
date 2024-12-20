@@ -5,8 +5,9 @@ import {TilemapUtils} from "../../../common/tilemapUtils";
 import {NodeOutput} from "../../common/graph/nodeOutput";
 import {buildMap, emptyMap} from "../../../common/utils";
 import VertexBuffer = NodeOutput.VertexBuffer;
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
-export class OverlayBaseVertexNode extends VertexRenderNode {
+export class OverlayBaseVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "vertexnode.overlay.base";
 
@@ -58,7 +59,7 @@ export class OverlayBaseVertexNode extends VertexRenderNode {
 		});
 	}
 
-	public execute(): VertexDataResource {
+	public execute(context: GameWebGLRenderContext): VertexDataResource {
 		const [_, baseMeshData] = this.buildBaseMesh();
 		return new VertexDataResource({
 			buffers: buildMap({

@@ -1,6 +1,4 @@
 import {RenderGraph} from "../common/graph/renderGraph";
-import {WebGLRenderCommand} from "../common/webgl/webGLRenderCommand";
-import {HtmlRenderCommand} from "../common/html/htmlRenderCommand";
 import {GameChangeProvider} from "./gameChangeProvider";
 import {WebGLRenderGraphSorter} from "../common/webgl/webGLRenderGraphSorter";
 import {WebGLResourceManager} from "../common/webgl/webGLResourceManager";
@@ -38,29 +36,22 @@ import {RouteRepository} from "../../state/repository/routeRepository";
 import {ChangeProvider} from "../common/graph/changeProvider";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
-import {GameWebGLRenderContext} from "./gameWebGLRenderContext";
+import {GameHtmlRenderContext, GameWebGLRenderContext, RenderContextFactory} from "./gameRenderContext";
 
 export class GameRenderGraph {
 
 	private readonly renderGraphWebGl: RenderGraph<GameWebGLRenderContext>;
-	private readonly renderGraphHtml: RenderGraph<HtmlRenderCommand.Context>;
+	private readonly renderGraphHtml: RenderGraph<GameHtmlRenderContext>;
 
-	private readonly gl: WebGL2RenderingContext;
 	private readonly changeProvider: ChangeProvider;
 	private readonly renderer: BaseRenderer;
-
-	private readonly tileRepository: TileRepository;
-	private readonly sessionRepository: SessionRepository;
-	private readonly worldObjectRepository: WorldObjectRepository;
-	private readonly settlementRepository: SettlementRepository;
-	private readonly routeRepository: RouteRepository;
+	private readonly renderContextFactory: RenderContextFactory;
 
 	private camera: Camera = new Camera();
 
 	constructor(
 		changeProvider: GameChangeProvider,
 		gl: WebGL2RenderingContext,
-		renderConfig: () => GameRenderConfig,
 		tileRepository: TileRepository,
 		sessionRepository: SessionRepository,
 		worldObjectRepository: WorldObjectRepository,
@@ -68,15 +59,18 @@ export class GameRenderGraph {
 		routeRepository: RouteRepository,
 	) {
 
-		this.gl = gl;
 		this.changeProvider = changeProvider;
-		this.renderer = new BaseRenderer(this.gl);
+		this.renderer = new BaseRenderer(gl);
 
-		this.tileRepository = tileRepository;
-		this.sessionRepository = sessionRepository;
-		this.worldObjectRepository = worldObjectRepository;
-		this.settlementRepository = settlementRepository;
-		this.routeRepository = routeRepository;
+		this.renderContextFactory = new RenderContextFactory(
+			gl,
+			this.renderer,
+			tileRepository,
+			sessionRepository,
+			worldObjectRepository,
+			settlementRepository,
+			routeRepository,
+		);
 
 		this.renderGraphWebGl = new RenderGraph<GameWebGLRenderContext>({
 			name: "webgl",
@@ -85,13 +79,13 @@ export class GameRenderGraph {
 			compiler: new WebGLRenderGraphCompiler(changeProvider),
 			nodes: [
 				new VertexFullQuadNode(),
-				new TilesVertexNode(renderConfig, tileRepository),
+				new TilesVertexNode(),
 				new TilesBaseVertexNode(),
 				new OverlayBaseVertexNode(),
-				new OverlayVertexNode(tileRepository, sessionRepository, worldObjectRepository),
-				new EntitiesVertexNode(settlementRepository),
+				new OverlayVertexNode(),
+				new EntitiesVertexNode(),
 				new DetailsVertexNode(),
-				new RoutesVertexNode(routeRepository),
+				new RoutesVertexNode(),
 				new TilesWaterDrawNode(),
 				new TilesLandDrawNode(),
 				new TilesFogDrawNode(),
@@ -103,16 +97,16 @@ export class GameRenderGraph {
 			],
 		});
 
-		this.renderGraphHtml = new RenderGraph<HtmlRenderCommand.Context>({
+		this.renderGraphHtml = new RenderGraph<GameHtmlRenderContext>({
 			name: "html",
 			sorter: new NoOpRenderGraphSorter(),
 			resourceManager: new HtmlResourceManager(),
 			compiler: new HtmlRenderGraphCompiler(changeProvider),
 			nodes: [
-				new PathsHtmlNode(worldObjectRepository, () => this.camera),
-				new ResourceIconsHtmlNode(tileRepository, sessionRepository, () => this.camera),
-				new WorldObjectsHtmlNode(changeProvider, worldObjectRepository, () => this.camera),
-				new SettlementsHtmlNode(settlementRepository, () => this.camera),
+				new PathsHtmlNode(),
+				new ResourceIconsHtmlNode(),
+				new WorldObjectsHtmlNode(),
+				new SettlementsHtmlNode(),
 			],
 		});
 	}
@@ -120,17 +114,10 @@ export class GameRenderGraph {
 	/**
 	 * Initialize the render graph
 	 */
-	public initialize() {
+	public initialize(renderConfig: GameRenderConfig) {
 		this.changeProvider.initialize();
-		this.renderGraphWebGl.initialize({
-			gl: this.gl,
-			renderer: this.renderer,
-			camera: this.camera,
-			mapMode: this.sessionRepository.getMapMode(),
-			timestamp: (Date.now() / 1000) % 10000,
-			selectedTile: this.tileRepository.getSelected()
-		});
-		this.renderGraphHtml.initialize({});
+		this.renderGraphWebGl.initialize(this.renderContextFactory.createWebGLContext(this.camera, renderConfig));
+		this.renderGraphHtml.initialize(this.renderContextFactory.createHtmlContext(this.camera));
 	}
 
 	/**
@@ -145,20 +132,16 @@ export class GameRenderGraph {
 	/**
 	 * Execute this render graph and draw to screen
 	 */
-	public execute(camera: Camera) {
+	public execute(camera: Camera, renderConfig: GameRenderConfig) {
 		this.camera = camera;
-		this.updateContext();
+		this.updateContext(renderConfig);
 		this.changeProvider.prepareFrame(camera);
 		this.renderGraphWebGl.execute();
 		this.renderGraphHtml.execute();
 	}
 
-	private updateContext() {
-		this.renderGraphWebGl.updateContext(ctx => ({
-			...ctx,
-			camera: this.camera,
-			mapMode: this.sessionRepository.getMapMode(),
-		}));
-		this.renderGraphHtml.updateContext(ctx => ctx);
+	private updateContext(renderConfig: GameRenderConfig) {
+		this.renderGraphWebGl.updateContext(ctx => this.renderContextFactory.createWebGLContext(this.camera, renderConfig));
+		this.renderGraphHtml.updateContext(ctx => this.renderContextFactory.createHtmlContext(this.camera));
 	}
 }

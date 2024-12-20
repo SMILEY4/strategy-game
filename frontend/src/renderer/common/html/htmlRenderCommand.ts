@@ -16,17 +16,17 @@ export namespace HtmlRenderCommand {
 
 	export class UpdateData implements Base {
 
-		private readonly node: HtmlRenderNode;
+		private readonly node: HtmlRenderNode<any>;
 		private readonly changeProvider: ChangeProvider;
 
-		constructor(node: HtmlRenderNode, changeProvider: ChangeProvider) {
+		constructor(node: HtmlRenderNode<any>, changeProvider: ChangeProvider) {
 			this.node = node;
 			this.changeProvider = changeProvider;
 		}
 
 		public execute(resourceManager: HtmlResourceManager, context: Context): void {
 			if (this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
-				const modified = this.node.execute();
+				const modified = this.node.execute(context);
 				if (modified.elements.size > 0) {
 					for (let [modifiedId, modifiedData] of modified.elements) {
 						resourceManager.setElements(modifiedId, modifiedData);
@@ -41,9 +41,9 @@ export namespace HtmlRenderCommand {
 	export class Draw implements Base {
 
 		private readonly containerId: string;
-		private readonly nodes: HtmlRenderNode[];
+		private readonly nodes: HtmlRenderNode<any>[];
 
-		constructor(containerId: string, nodes: HtmlRenderNode[]) {
+		constructor(containerId: string, nodes: HtmlRenderNode<any>[]) {
 			this.containerId = containerId;
 			this.nodes = nodes;
 		}
@@ -77,7 +77,7 @@ export namespace HtmlRenderCommand {
 						const elements = resourceManager.getElements(out.name);
 						for (let i = 0; i < elements.length; i++) {
 							const htmlElement = availableHtmlElements[index++];
-							out.renderFunction(elements[i], htmlElement);
+							out.renderFunction(context, elements[i], htmlElement);
 						}
 					}
 				}

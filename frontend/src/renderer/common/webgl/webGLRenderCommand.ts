@@ -27,17 +27,17 @@ export namespace WebGLRenderCommand {
      * Update data of a vertex buffer
      */
     export class UpdateVertexBufferData implements Base {
-        private readonly node: VertexRenderNode;
+        private readonly node: VertexRenderNode<any>;
         private readonly changeProvider: ChangeProvider;
 
-        constructor(node: VertexRenderNode, changeProvider: ChangeProvider) {
+        constructor(node: VertexRenderNode<any>, changeProvider: ChangeProvider) {
             this.node = node;
             this.changeProvider = changeProvider;
         }
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             if(this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
-                const modified = this.node.execute();
+                const modified = this.node.execute(context);
                 if (modified.buffers.size > 0) {
                     for (let [modifiedId, modifiedData] of modified.buffers) {
                         const buffer = resourceManager.getVertexBuffer(modifiedId).buffer;

@@ -54,7 +54,7 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
     }
 
 
-    private getContainerId(node: HtmlRenderNode): string {
+    private getContainerId(node: HtmlRenderNode<any>): string {
         for (const config of node.config.output) {
             if (config instanceof NodeOutput.HtmlContainer) {
                 return config.id;
@@ -63,8 +63,8 @@ export class HtmlRenderGraphCompiler implements RenderGraphCompiler<HtmlRenderCo
         throw new Error("no container configured");
     }
 
-    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlRenderNode[] {
-        const filtered: HtmlRenderNode[] = [];
+    private getNodes(nodes: AbstractRenderNode[], containerId: string): HtmlRenderNode<any>[] {
+        const filtered: HtmlRenderNode<any>[] = [];
         for (let node of nodes) {
             if (node instanceof HtmlRenderNode && this.getContainerId(node) === containerId) {
                 filtered.push(node);

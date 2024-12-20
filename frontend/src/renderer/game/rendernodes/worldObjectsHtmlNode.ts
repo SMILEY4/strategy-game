@@ -5,27 +5,17 @@ import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {WorldObjectType} from "../../../models/base/worldObjectType";
-import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
-import {ChangeProvider} from "../../common/graph/changeProvider";
+import {GameHtmlRenderContext} from "../gameRenderContext";
 
-var dirty = true;
 
-export class WorldObjectsHtmlNode extends HtmlRenderNode {
+export class WorldObjectsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 	public static readonly ID = "htmlnode.worldobjects";
 
-	private readonly changeProvider: ChangeProvider;
-	private readonly worldObjectRepository: WorldObjectRepository;
-	private readonly camera: () => Camera;
-
-	constructor(
-		changeProvider: ChangeProvider,
-		worldObjectRepository: WorldObjectRepository,
-		camera: () => Camera,
-	) {
+	constructor() {
 		super({
 			id: WorldObjectsHtmlNode.ID,
-			changeKey: null,
+			changeKey: WorldObjectsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({
@@ -33,27 +23,19 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 				}),
 				new NodeOutput.HtmlData({
 					name: "htmldata.worldobjects",
-					renderFunction: (element: any, html: HTMLElement) => render(this.camera(), element, html),
+					renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
 				}),
 			],
 		});
-		this.changeProvider = changeProvider;
-		this.worldObjectRepository = worldObjectRepository;
-		this.camera = camera;
 	}
 
-	public execute(): HtmlDataResource {
-		if (!this.changeProvider.hasChange(this.id)) {
-			dirty = false;
-			return EMPTY_HTML_DATA_RESOURCE;
-		}
-
+	public execute(context: GameHtmlRenderContext): HtmlDataResource {
 		const elements: WorldObjectIconElement[] = [];
 
-		const worldObjects = this.worldObjectRepository.getAll();
+		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
-			if (this.isVisible(worldObject.tile, 0)) {
+			if (this.isVisible(worldObject.tile, 0, context.camera)) {
 				elements.push({
 					tile: worldObject.tile,
 					type: worldObject.type,
@@ -61,7 +43,6 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 			}
 		}
 
-		dirty = true;
 		return new HtmlDataResource({
 			outputs: buildMap({
 				"htmldata.worldobjects": elements,
@@ -69,8 +50,7 @@ export class WorldObjectsHtmlNode extends HtmlRenderNode {
 		});
 	}
 
-	private isVisible(tile: TileIdentifier, padding: number): boolean {
-		const camera = this.camera();
+	private isVisible(tile: TileIdentifier, padding: number, camera: Camera): boolean {
 		const cameraMin = Projections.screenToWorld(camera, 0, camera.getClientHeight());
 		const cameraMax = Projections.screenToWorld(camera, camera.getClientWidth(), 0);
 		const tilePos = Projections.hexToWorld(tile.q, tile.r);

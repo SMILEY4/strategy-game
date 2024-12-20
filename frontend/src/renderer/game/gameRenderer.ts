@@ -51,14 +51,14 @@ export class GameRenderer {
 		GameRenderConfig.initialize();
 		this.renderGraph = new GameRenderGraph(
 			this.changeProvider,
-			canvasHandle.getGL(), () => this.renderConfig!,
+			canvasHandle.getGL(),
 			this.tileRepository,
 			this.sessionRepository,
 			this.worldObjectRepository,
 			this.settlementRepository,
 			this.routeRepository,
 		);
-		this.renderGraph.initialize();
+		this.renderGraph.initialize(GameRenderConfig.load());
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class GameRenderer {
 		this.renderConfig = GameRenderConfig.load();
 
 		const camera = this.getRenderCamera(canvasHandle);
-		this.renderGraph?.execute(camera);
+		this.renderGraph?.execute(camera, this.renderConfig!);
 
 		this.checkWebGLErrors(canvasHandle.getGL())
 	}

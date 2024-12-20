@@ -7,16 +7,14 @@ import {BorderBuilder} from "./borderBuilder";
 import {packBorder} from "./packBorder";
 import {MapMode} from "../../../models/base/mapMode";
 import {NodeOutput} from "../../common/graph/nodeOutput";
-import {TileRepository} from "../../../state/repository/tileRepository";
-import {SessionRepository} from "../../../state/repository/sessionRepository";
-import {WorldObjectRepository} from "../../../state/repository/worldObjectRepository";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {buildMap} from "../../../common/utils";
 import {OverlayBaseVertexNode} from "./overlayBaseVertexNode";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {GameWebGLRenderContext} from "../gameRenderContext";
 
-export class OverlayVertexNode extends VertexRenderNode {
+export class OverlayVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "vertexnode.overlay";
 
@@ -41,15 +39,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 		...MixedArrayBufferType.VEC4,
 	];
 
-	private readonly tileRepository: TileRepository;
-	private readonly sessionRepository: SessionRepository;
-	private readonly worldObjectRepository: WorldObjectRepository;
-
-	constructor(
-		tileRepository: TileRepository,
-		sessionRepository: SessionRepository,
-		worldObjectRepository: WorldObjectRepository,
-	) {
+	constructor() {
 		super({
 			id: OverlayVertexNode.ID,
 			changeKey: OverlayVertexNode.ID,
@@ -122,25 +112,21 @@ export class OverlayVertexNode extends VertexRenderNode {
 				}),
 			],
 		});
-		this.tileRepository = tileRepository;
-		this.sessionRepository = sessionRepository;
-		this.worldObjectRepository = worldObjectRepository;
 	}
 
-	public execute(): VertexDataResource {
+	public execute(context: GameWebGLRenderContext): VertexDataResource {
 
-		const tiles = this.tileRepository.getAll();
+		const tiles = context.tiles;
 		const tileCounts = this.countTiles(tiles);
 
 		const [arrayBufferOverlay, cursorOverlay] = MixedArrayBuffer.createWithCursor(tileCounts, OverlayVertexNode.INSTANCE_PATTERN);
 
-		const mapMode = this.sessionRepository.getMapMode();
-		const mapModeContext = mapMode.renderData.context(tiles);
-		const highlightMovementTiles = new Set<string>(this.worldObjectRepository.getMovementTargets().map(it => it.tile.q + "/" + it.tile.r));
+		const mapModeContext = context.mapMode.renderData.context(tiles);
+		const highlightMovementTiles = new Set<string>(context.movementTargets.map(it => it.tile.q + "/" + it.tile.r));
 
 		for (let i = 0, n = tiles.length; i < n; i++) {
 			const tile = tiles[i];
-			this.appendOverlayInstance(tile, mapMode, mapModeContext, highlightMovementTiles, cursorOverlay);
+			this.appendOverlayInstance(tile, context.mapMode, mapModeContext, highlightMovementTiles, cursorOverlay, context);
 		}
 
 		return new VertexDataResource({
@@ -160,7 +146,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 		return tiles.length;
 	}
 
-	private appendOverlayInstance(tile: Tile, mapMode: MapMode, mapModeContext: any, highlightMovementTiles: Set<string>, cursor: MixedArrayBufferCursor) {
+	private appendOverlayInstance(tile: Tile, mapMode: MapMode, mapModeContext: any, highlightMovementTiles: Set<string>, cursor: MixedArrayBufferCursor, context: GameWebGLRenderContext) {
 		const q = tile.identifier.q;
 		const r = tile.identifier.r;
 
@@ -174,7 +160,7 @@ export class OverlayVertexNode extends VertexRenderNode {
 		cursor.append(r);
 
 		// primary border mask
-		const borderData = BorderBuilder.build(tile, this.tileRepository, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
+		const borderData = BorderBuilder.build(tile, context.tileByPosProvider, mapMode.renderData.borderDefault, mapMode.renderData.borderCheck);
 		const borderPacked = packBorder(borderData);
 		cursor.append(borderPacked);
 

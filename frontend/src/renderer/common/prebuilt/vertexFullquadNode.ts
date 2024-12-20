@@ -5,8 +5,9 @@ import {buildMap} from "../../../common/utils";
 import {NodeOutput} from "../graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
+import {GameWebGLRenderContext} from "../../game/gameWebGLRenderContext";
 
-export class VertexFullQuadNode extends VertexRenderNode {
+export class VertexFullQuadNode extends VertexRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "vertexnode.fullquad";
 	public static readonly DATA_ID = "vertexdata.fullquad";
@@ -41,7 +42,7 @@ export class VertexFullQuadNode extends VertexRenderNode {
 		});
 	}
 
-	public execute(): VertexDataResource {
+	public execute(context: GameWebGLRenderContext): VertexDataResource {
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(6, VertexFullQuadNode.PATTERN);
 
 		// corner a, triangle a
