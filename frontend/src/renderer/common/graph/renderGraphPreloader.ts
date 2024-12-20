@@ -31,14 +31,14 @@ export namespace RenderGraphPreloader {
 			new EntitiesVertexNode(null as any),
 			new DetailsVertexNode(),
 			new RoutesVertexNode(null as any),
-			new TilesWaterDrawNode(null as any),
-			new TilesLandDrawNode(null as any),
-			new TilesFogDrawNode(null as any),
-			new OverlayDrawNode(null as any, null as any),
-			new EntitiesDrawNode(null as any),
-			new DetailsDrawNode(null as any),
-			new RoutesDrawNode(null as any),
-			new CombineLayersDrawNode(null as any, null as any),
+			new TilesWaterDrawNode(),
+			new TilesLandDrawNode(),
+			new TilesFogDrawNode(),
+			new OverlayDrawNode(),
+			new EntitiesDrawNode(),
+			new DetailsDrawNode(),
+			new RoutesDrawNode(),
+			new CombineLayersDrawNode(),
 		]);
 	}
 

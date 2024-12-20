@@ -291,7 +291,7 @@ export namespace WebGLRenderCommand {
                     program.setUniform(uniform.binding, uniform.type, uniform.valueConstant);
                 }
                 if (uniform.valueProvider !== null) {
-                    program.setUniform(uniform.binding, uniform.type, uniform.valueProvider());
+                    program.setUniform(uniform.binding, uniform.type, uniform.valueProvider(context));
                 }
             }
         }

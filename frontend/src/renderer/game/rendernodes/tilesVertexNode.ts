@@ -13,7 +13,6 @@ import {packBorder} from "./packBorder";
 import {Visibility} from "../../../models/base/visibility";
 import {mapHiddenOrNull} from "../../../common/hiddenType";
 import {TileRepository} from "../../../state/repository/tileRepository";
-import {ChangeProvider} from "../../common/graph/changeProvider";
 import {NodeInput} from "../../common/graph/nodeInput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;

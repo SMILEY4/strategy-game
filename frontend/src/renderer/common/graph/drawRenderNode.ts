@@ -10,11 +10,11 @@ import {NodeOutput} from "./nodeOutput";
  * Requires as output
  * - 1x render-target (or screen)
  */
-export class DrawRenderNode extends AbstractRenderNode {
+export class DrawRenderNode<TContext> extends AbstractRenderNode {
 
-    public readonly config: DrawRenderNodeConfig;
+    public readonly config: DrawRenderNodeConfig<TContext>;
 
-    constructor(config: DrawRenderNodeConfig) {
+    constructor(config: DrawRenderNodeConfig<TContext>) {
         super(config.id);
         this.config = config;
     }
@@ -24,8 +24,8 @@ export class DrawRenderNode extends AbstractRenderNode {
 /**
  * The configuration of the node
  */
-export interface DrawRenderNodeConfig {
+export interface DrawRenderNodeConfig<TContext> {
     id: string,
-    input: (NodeInput.VertexDescriptor | NodeInput.Shader | NodeInput.Texture | NodeInput.TextureAtlas | NodeInput.RenderTarget | NodeInput.Property | NodeInput.ClearColor | NodeInput.BlendMode)[]
+    input: (NodeInput.VertexDescriptor | NodeInput.Shader | NodeInput.Texture | NodeInput.TextureAtlas | NodeInput.RenderTarget | NodeInput.Property<TContext> | NodeInput.ClearColor | NodeInput.BlendMode)[]
     output: (NodeOutput.RenderTarget | NodeOutput.Screen)[]
 }

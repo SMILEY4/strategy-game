@@ -43,21 +43,27 @@ export class VertexFullQuadNode extends VertexRenderNode {
 
 	public execute(): VertexDataResource {
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(6, VertexFullQuadNode.PATTERN);
+
 		// corner a, triangle a
 		cursor.append(-1);
 		cursor.append(-1);
+
 		// corner b, triangle a
 		cursor.append(+1);
 		cursor.append(-1);
+
 		// corner c, triangle a
 		cursor.append(+1);
 		cursor.append(+1);
+
 		// corner a, triangle b
 		cursor.append(-1);
 		cursor.append(-1);
+
 		// corner d, triangle b
 		cursor.append(-1);
 		cursor.append(+1);
+
 		// corner c, triangle b
 		cursor.append(+1);
 		cursor.append(+1);

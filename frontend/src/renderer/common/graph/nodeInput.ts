@@ -105,15 +105,15 @@ export namespace NodeInput {
     /**
      * Property, usually accessible in the shader
      */
-    export class Property {
+    export class Property<TContext> {
         readonly valueConstant: GLUniformValueType | null;
-        readonly valueProvider: (() => GLUniformValueType) | null;
+        readonly valueProvider: ((context: TContext) => GLUniformValueType) | null;
         readonly type: GLUniformType;
         readonly binding: string;
 
         constructor(props: {
             valueConstant?: GLUniformValueType | null,
-            valueProvider?: (() => GLUniformValueType) | null,
+            valueProvider?: ((context: TContext) => GLUniformValueType) | null,
             type: GLUniformType,
             binding: string
         }) {

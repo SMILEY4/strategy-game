@@ -2,18 +2,13 @@ import {DrawRenderNode} from "../../common/graph/drawRenderNode";
 import {GLUniformType} from "../../../common/webgl/glTypes";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {NodeOutput} from "../../common/graph/nodeOutput";
-import {TileRepository} from "../../../state/repository/tileRepository";
+import {GameWebGLRenderContext} from "../gameWebGLRenderContext";
 
-export class OverlayDrawNode extends DrawRenderNode {
+export class OverlayDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
 
 	public static readonly ID = "drawnode.tilesoverlay";
 
-	private readonly tileRepository: TileRepository;
-
-	constructor(
-		tileRepository: TileRepository,
-		vpMatrixProvider: () => Float32Array,
-	) {
+	constructor() {
 		super({
 			id: OverlayDrawNode.ID,
 			input: [
@@ -31,7 +26,7 @@ export class OverlayDrawNode extends DrawRenderNode {
 					binding: "u_viewProjection",
 					type: GLUniformType.MAT3,
 					valueConstant: null,
-					valueProvider: vpMatrixProvider,
+					valueProvider: context => context.camera.getViewProjectionMatrixOrThrow(),
 				}),
 				new NodeInput.Texture({
 					path: "/textures/noise_watercolor.png",
@@ -41,7 +36,7 @@ export class OverlayDrawNode extends DrawRenderNode {
 					binding: "u_time",
 					type: GLUniformType.FLOAT,
 					valueConstant: null,
-					valueProvider: () => (Date.now() / 1000) % 10000,
+					valueProvider: context => context.timestamp,
 				}),
 				//==== OVERLAY =======================================
 				new NodeInput.Property({
@@ -64,14 +59,7 @@ export class OverlayDrawNode extends DrawRenderNode {
 					binding: "u_tileSelection.position",
 					type: GLUniformType.INT_VEC2,
 					valueConstant: null,
-					valueProvider: () => {
-						const tile = this.tileRepository.getSelected();
-						if (tile) {
-							return [tile.q, tile.r];
-						} else {
-							return [99999, 99999];
-						}
-					},
+					valueProvider: context => context.selectedTile ? [context.selectedTile.q, context.selectedTile.r] : [99999, 99999],
 				}),
 				new NodeInput.Property({
 					binding: "u_tileSelection.thickness",
@@ -81,7 +69,7 @@ export class OverlayDrawNode extends DrawRenderNode {
 				new NodeInput.Property({
 					binding: "u_tileSelection.color0",
 					type: GLUniformType.VEC4,
-					valueConstant: [255/255,215/255,0/255, 1.0],
+					valueConstant: [255 / 255, 215 / 255, 0 / 255, 1.0],
 				}),
 				new NodeInput.Property({
 					binding: "u_tileSelection.color1",
@@ -97,6 +85,5 @@ export class OverlayDrawNode extends DrawRenderNode {
 				}),
 			],
 		});
-		this.tileRepository = tileRepository;
 	}
 }
