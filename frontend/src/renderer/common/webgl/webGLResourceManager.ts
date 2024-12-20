@@ -44,6 +44,14 @@ export class WebGLResourceManager implements ResourceManager {
 		nodes.forEach(node => {
 			console.debug("Initializing webgl resources for node", node.id, node);
 			if (node instanceof VertexRenderNode) {
+				for (let input of node.config.input) {
+					if (input instanceof NodeInput.VertexBuffer) {
+						this.initializeVertexBuffer(input.name, node);
+					}
+					if (input instanceof NodeInput.TextureAtlasData) {
+						this.initializeTextureAtlas(input.path);
+					}
+				}
 				for (let output of node.config.output) {
 					if (output instanceof NodeOutput.VertexDescriptor) {
 						this.initializeVertexDescriptor(output.name, output.type, output.buffers, node, nodes);
@@ -75,7 +83,7 @@ export class WebGLResourceManager implements ResourceManager {
 		});
 	}
 
-	private initializeVertexBuffer(id: string, node: VertexRenderNode): ManagedVertexBuffer {
+	private initializeVertexBuffer(id: string, node: VertexRenderNode<any>): ManagedVertexBuffer {
 		console.debug("Loading vertex-buffer with id", id);
 
 		if (this.vertexBuffers.has(id)) {
@@ -94,7 +102,7 @@ export class WebGLResourceManager implements ResourceManager {
 		return managedBuffer;
 	}
 
-	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode, nodes: AbstractRenderNode[]): ManagedVertexData {
+	private initializeVertexDescriptor(id: string, type: "standart" | "instanced", bufferIds: string[], node: VertexRenderNode<any>, nodes: AbstractRenderNode[]): ManagedVertexData {
 		console.debug("initializing vertex descriptor", id, type, bufferIds);
 
 		// already initialized

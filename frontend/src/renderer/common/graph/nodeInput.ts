@@ -67,6 +67,17 @@ export namespace NodeInput {
     }
 
     /**
+     * Texture Atlas data (data only, no textures)
+     */
+    export class TextureAtlasData {
+        readonly path: string;
+
+        constructor(props: { path: string }) {
+            this.path = props.path;
+        }
+    }
+
+    /**
      * Render target (treated as texture)
      */
     export class RenderTarget {

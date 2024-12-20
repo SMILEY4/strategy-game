@@ -6,6 +6,7 @@ import {VertexRenderNode} from "../graph/vertexRenderNode";
 import {BaseRenderer} from "../../../common/webgl/baseRenderer";
 import {Camera} from "../../../common/webgl/camera";
 import {ChangeProvider} from "../graph/changeProvider";
+import {WebGlProvidedNodeInputs} from "./webGLProvidedNodeInputs";
 
 export namespace WebGLRenderCommand {
 
@@ -37,7 +38,8 @@ export namespace WebGLRenderCommand {
 
         public execute(resourceManager: WebGLResourceManager, context: Context): void {
             if(this.node.config.changeKey == null || this.changeProvider.hasChange(this.node.config.changeKey)) {
-                const modified = this.node.execute(context);
+                const providedInputs = new WebGlProvidedNodeInputs(this.node.config.input, resourceManager);
+                const modified = this.node.execute(context, providedInputs);
                 if (modified.buffers.size > 0) {
                     for (let [modifiedId, modifiedData] of modified.buffers) {
                         const buffer = resourceManager.getVertexBuffer(modifiedId).buffer;

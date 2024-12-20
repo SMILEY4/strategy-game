@@ -37,6 +37,7 @@ import {ChangeProvider} from "../common/graph/changeProvider";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {GameHtmlRenderContext, GameWebGLRenderContext, RenderContextFactory} from "./gameRenderContext";
+import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 
 export class GameRenderGraph {
 

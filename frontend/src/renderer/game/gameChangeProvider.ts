@@ -15,6 +15,7 @@ import {ChangeProvider} from "../common/graph/changeProvider";
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
+import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
 
 interface Changes {
 	initFrame: boolean,
@@ -93,6 +94,9 @@ export class GameChangeProvider implements ChangeProvider {
 		}
 		if (key === VertexFullQuadNode.ID) {
             return this.changes.initFrame;
+		}
+		if(key == MapDetailsVertexNode.ID) {
+			return this.changes.turn;
 		}
 		if (key === DetailsVertexNode.ID) {
 			return this.changes.turn;
