@@ -19,11 +19,13 @@ import ManagedTextureAtlas = WebGLResourceManager.ManagedTextureAtlas;
 import VertexAttribute = NodeOutput.VertexAttribute;
 import VertexBuffer = NodeOutput.VertexBuffer;
 import {TextureAtlas} from "../../../common/webgl/textureAtlas";
+import {WebGLTextureAtlasDataManager} from "./webGLTextureAtlasDataManager";
 
 export class WebGLResourceManager implements ResourceManager {
 
 	private readonly gl: WebGL2RenderingContext;
 	private readonly shaderSourceManager: WebGLShaderSourceManager;
+	private readonly textureAtlasDataManager: WebGLTextureAtlasDataManager;
 
 	private readonly vertexData = new Map<string, ManagedVertexData>();
 	private readonly vertexBuffers = new Map<string, ManagedVertexBuffer>();
@@ -33,9 +35,10 @@ export class WebGLResourceManager implements ResourceManager {
 	private readonly framebuffers = new Map<string, ManagedFramebuffer>();
 
 
-	constructor(gl: WebGL2RenderingContext, shaderSourceManager: WebGLShaderSourceManager) {
+	constructor(gl: WebGL2RenderingContext, shaderSourceManager: WebGLShaderSourceManager, textureAtlasDataManager: WebGLTextureAtlasDataManager) {
 		this.gl = gl;
 		this.shaderSourceManager = shaderSourceManager;
+		this.textureAtlasDataManager = textureAtlasDataManager;
 	}
 
 
@@ -221,7 +224,7 @@ export class WebGLResourceManager implements ResourceManager {
 		}
 		const managedTextureAtlas: ManagedTextureAtlas = {
 			id: path,
-			textureAtlas: TextureAtlas.createFromPath(this.gl, path)
+			textureAtlas: TextureAtlas.createFromData(this.gl, path, this.textureAtlasDataManager.getData(path))
 		}
 		this.textureAtlases.set(managedTextureAtlas.id, managedTextureAtlas)
 		return managedTextureAtlas;

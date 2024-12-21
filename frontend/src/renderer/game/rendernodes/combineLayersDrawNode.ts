@@ -120,15 +120,10 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					type: GLUniformType.VEC4,
 					valueConstant: [0.149, 0.122, 0.082, 0.6],
 				}),
-				//==== DETAILS =======================================
+				//==== MAP DETAILS ===================================
 				new NodeInput.RenderTarget({
-					renderTargetId: "rendertarget.details",
-					binding: "u_details.layer",
-				}),
-				//==== ENTITIES ======================================
-				new NodeInput.RenderTarget({
-					renderTargetId: "rendertarget.entities",
-					binding: "u_entities.layer",
+					renderTargetId: "rendertarget.mapdetails",
+					binding: "u_mapDetails.layer",
 				}),
 				//==== ROUTES ========================================
 				new NodeInput.RenderTarget({

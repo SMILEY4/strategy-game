@@ -12,7 +12,7 @@ export class TextureAtlas implements GLDisposable {
 	}
 
 	public bind(textureUnit: number) {
-		this.texture.bind(textureUnit)
+		this.texture.bind(textureUnit);
 	}
 
 
@@ -22,19 +22,20 @@ export class TextureAtlas implements GLDisposable {
 
 	public getEntry(name: string): TextureAtlasEntry {
 		const entry = this.data.get(name);
-		if(entry) {
+		if (entry) {
 			return entry;
 		} else {
 			throw new Error("Could not find texture atlas entry for name '" + name + "'");
 		}
 	}
 
-	public getEntries(): TextureAtlasEntry[] {
-		return Array.from(this.data.values());
+	public getEntryOrNull(name: string): TextureAtlasEntry | null {
+		const entry = this.data.get(name);
+		return entry ? entry : null;
 	}
 
-	public setData( data: Map<string, TextureAtlasEntry>) {
-		this.data.clear()
+	public setData(data: Map<string, TextureAtlasEntry>) {
+		this.data.clear();
 		data.forEach((value, key) => this.data.set(key, value));
 	}
 
@@ -43,7 +44,9 @@ export class TextureAtlas implements GLDisposable {
 
 export interface TextureAtlasEntry {
 	name: string,
-	triangles: number[][]
+	origin: [number, number],
+	vertices: ([number, number])[],
+	textureCoordinates: ([number, number])[],
 }
 
 export namespace TextureAtlas {
@@ -62,30 +65,30 @@ export namespace TextureAtlas {
 		});
 
 		const data = new Map<string, TextureAtlasEntry>();
-		entries.forEach(entry => data.set(entry.name, entry))
+		entries.forEach(entry => data.set(entry.name, entry));
 
 		return new TextureAtlas(texture, data);
 	}
 
 
 	/**
-	 *
 	 * @param gl the webgl context
 	 * @param path the path to the texture atlas files. E.g. "/texture/myatlas.png" expects two files "/texture/myatlas.png" and "/texture/myatlas.png.json"
 	 */
 	export function createFromPath(gl: WebGL2RenderingContext, path: string) {
-		const atlas =  TextureAtlas.createFromData(gl, path, [])
+		const atlas = TextureAtlas.createFromData(gl, path, []);
 		fetch(path + ".json")
 			.then(response => response.json())
 			.then(json => json as TextureAtlasEntry[])
 			.then(entries => {
 				const data = new Map<string, TextureAtlasEntry>();
-				entries.forEach(entry => data.set(entry.name, entry))
-				atlas.setData(data)
+				entries.forEach(entry => data.set(entry.name, entry));
+				atlas.setData(data);
+				console.log("loaded data for texture atlas", path);
 			})
 			.catch(e => {
 				console.error("Error loading texture atlas data", e);
-			})
+			});
 		return atlas;
 	}
 

@@ -21,8 +21,9 @@ export interface GameWebGLRenderContext extends WebGLRenderCommand.Context {
 	renderConfig: GameRenderConfig,
 	mapMode: MapMode,
 	selectedTile: TileIdentifier | null,
-	settlements: Settlement[],
 	tiles: Tile[],
+	settlements: Settlement[],
+	worldObjects: WorldObject[]
 	movementTargets: MovementTarget[],
 	routes: Route[],
 	tileByPosProvider: (q: number, r: number) => Tile | null
@@ -72,8 +73,9 @@ export class RenderContextFactory {
 			mapMode: this.sessionRepository.getMapMode(),
 			timestamp: (Date.now() / 1000) % 10000,
 			selectedTile: this.tileRepository.getSelected(),
-			settlements: this.getSettlementsAll(),
 			tiles: this.getTilesAll(),
+			settlements: this.getSettlementsAll(),
+			worldObjects: this.getWorldObjectsAll(),
 			movementTargets: this.worldObjectRepository.getMovementTargets(),
 			routes: this.getRoutesAll(),
 			tileByPosProvider: (q, r) => this.tileRepository.getAt(q, r)

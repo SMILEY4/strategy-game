@@ -2,20 +2,16 @@ import {RenderGraph} from "../common/graph/renderGraph";
 import {GameChangeProvider} from "./gameChangeProvider";
 import {WebGLRenderGraphSorter} from "../common/webgl/webGLRenderGraphSorter";
 import {WebGLResourceManager} from "../common/webgl/webGLResourceManager";
-import {GameShaderSourceManager} from "./shaders/gameShaderSourceManager";
+import {GameShaderSourceManager} from "./gameShaderSourceManager";
 import {WebGLRenderGraphCompiler} from "../common/webgl/webGLRenderGraphCompiler";
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
-import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";
-import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
 import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesWaterDrawNode} from "./rendernodes/tilesWaterDrawNode";
 import {TilesLandDrawNode} from "./rendernodes/tilesLandDrawNode";
 import {TilesFogDrawNode} from "./rendernodes/tilesFogDrawNode";
 import {OverlayDrawNode} from "./rendernodes/overlayDrawNode";
-import {EntitiesDrawNode} from "./rendernodes/entitiesDrawNode";
-import {DetailsDrawNode} from "./rendernodes/detailsDrawNode";
 import {RoutesDrawNode} from "./rendernodes/routesDrawNode";
 import {CombineLayersDrawNode} from "./rendernodes/combineLayersDrawNode";
 import {GameRenderConfig} from "./gameRenderConfig";
@@ -25,7 +21,6 @@ import {NoOpRenderGraphSorter} from "../common/prebuilt/NoOpRenderGraphSorter";
 import {HtmlResourceManager} from "../common/html/htmlResourceManager";
 import {HtmlRenderGraphCompiler} from "../common/html/htmlRenderGraphCompiler";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
-import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
 import {TileRepository} from "../../state/repository/tileRepository";
@@ -38,6 +33,8 @@ import {TilesBaseVertexNode} from "./rendernodes/tilesBaseVertexNode";
 import {OverlayBaseVertexNode} from "./rendernodes/overlayBaseVertexNode";
 import {GameHtmlRenderContext, GameWebGLRenderContext, RenderContextFactory} from "./gameRenderContext";
 import {MapDetailsVertexNode} from "./rendernodes/mapDetailsVertexNode";
+import {MapDetailsDrawNode} from "./rendernodes/mapDetailsDrawNode";
+import {GameTextureAtlasDataManager} from "./gameTextureAtlasDataManager";
 
 export class GameRenderGraph {
 
@@ -76,24 +73,28 @@ export class GameRenderGraph {
 		this.renderGraphWebGl = new RenderGraph<GameWebGLRenderContext>({
 			name: "webgl",
 			sorter: new WebGLRenderGraphSorter(),
-			resourceManager: new WebGLResourceManager(gl, new GameShaderSourceManager()),
+			resourceManager: new WebGLResourceManager(gl, new GameShaderSourceManager(), new GameTextureAtlasDataManager()),
 			compiler: new WebGLRenderGraphCompiler(changeProvider),
 			nodes: [
 				new VertexFullQuadNode(),
+
 				new TilesVertexNode(),
 				new TilesBaseVertexNode(),
+
 				new OverlayBaseVertexNode(),
 				new OverlayVertexNode(),
-				new EntitiesVertexNode(),
-				new DetailsVertexNode(),
+				new OverlayDrawNode(),
+
+				new MapDetailsVertexNode(),
+				new MapDetailsDrawNode(),
+
 				new RoutesVertexNode(),
+				new RoutesDrawNode(),
+
 				new TilesWaterDrawNode(),
 				new TilesLandDrawNode(),
 				new TilesFogDrawNode(),
-				new OverlayDrawNode(),
-				new EntitiesDrawNode(),
-				new DetailsDrawNode(),
-				new RoutesDrawNode(),
+
 				new CombineLayersDrawNode(),
 			],
 		});
@@ -106,7 +107,6 @@ export class GameRenderGraph {
 			nodes: [
 				new PathsHtmlNode(),
 				new ResourceIconsHtmlNode(),
-				new WorldObjectsHtmlNode(),
 				new SettlementsHtmlNode(),
 			],
 		});

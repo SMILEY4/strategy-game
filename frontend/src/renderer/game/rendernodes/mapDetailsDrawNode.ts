@@ -4,13 +4,13 @@ import {NodeOutput} from "../../common/graph/nodeOutput";
 import {NodeInput} from "../../common/graph/nodeInput";
 import {GameWebGLRenderContext} from "../gameRenderContext";
 
-export class EntitiesDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
+export class MapDetailsDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
 
-    public static readonly ID = "drawnode.entities"
+    public static readonly ID = "drawnode.mapdetails"
 
     constructor() {
         super({
-            id: EntitiesDrawNode.ID,
+            id: MapDetailsDrawNode.ID,
             input: [
                 new NodeInput.ClearColor({
                     clearColor: [0, 0, 0, 0],
@@ -20,11 +20,11 @@ export class EntitiesDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
                     binding: "u_texture",
                 }),
                 new NodeInput.Shader({
-                    vertexId: "entities.vert",
-                    fragmentId: "entities.frag",
+                    vertexId: "mapdetails.vert",
+                    fragmentId: "mapdetails.frag",
                 }),
                 new NodeInput.VertexDescriptor({
-                    id: "vertexdata.entities",
+                    id: "vertexdata.mapdetails",
                 }),
                 new NodeInput.Property({
                     binding: "u_viewProjection",
@@ -35,7 +35,7 @@ export class EntitiesDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
             ],
             output: [
                 new NodeOutput.RenderTarget({
-                    renderTargetId: "rendertarget.entities",
+                    renderTargetId: "rendertarget.mapdetails",
                     depth: false,
                     scale: 2
                 }),

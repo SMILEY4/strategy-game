@@ -1,12 +1,9 @@
 import {ChangeDetector} from "../../common/changeDetector";
 import {Camera} from "../../common/webgl/camera";
-import {DetailsVertexNode} from "./rendernodes/detailsVertexNode";
-import {EntitiesVertexNode} from "./rendernodes/entitiesVertexNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
 import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
-import {WorldObjectsHtmlNode} from "./rendernodes/worldObjectsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
 import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
 import {SessionRepository} from "../../state/repository/sessionRepository";
@@ -98,12 +95,6 @@ export class GameChangeProvider implements ChangeProvider {
 		if(key == MapDetailsVertexNode.ID) {
 			return this.changes.turn;
 		}
-		if (key === DetailsVertexNode.ID) {
-			return this.changes.turn;
-		}
-		if (key === EntitiesVertexNode.ID) {
-			return this.changes.turn;
-		}
 		if (key === OverlayBaseVertexNode.ID) {
 			return this.changes.initFrame;
 		}
@@ -121,9 +112,6 @@ export class GameChangeProvider implements ChangeProvider {
 		}
 		if (key === ResourceIconsHtmlNode.ID) {
 			return this.changes.turn || this.changes.mapMode || this.changes.camera;
-		}
-		if (key === WorldObjectsHtmlNode.ID) {
-			return this.changes.turn || this.changes.camera;
 		}
 		if (key === PathsHtmlNode.ID) {
 			return this.changes.turn || this.changes.camera || this.changes.movementPaths;
