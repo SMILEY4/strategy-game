@@ -11,12 +11,13 @@ import {SpriteBuffer} from "../../../common/webgl/spriteBuffer";
 import {Settlement} from "../../../models/base/Settlement";
 import {TextureAtlasEntry} from "../../../common/webgl/textureAtlas";
 import {WorldObject} from "../../../models/base/worldObject";
-import VertexBuffer = NodeOutput.VertexBuffer;
-import VertexDescriptor = NodeOutput.VertexDescriptor;
-import TextureAtlasData = NodeInput.TextureAtlasData;
 import {TileIdentifier} from "../../../models/base/tile";
 import {Visibility} from "../../../models/base/visibility";
 import {TerrainType} from "../../../models/base/TerrainType";
+import seedrandom from "seedrandom";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
+import TextureAtlasData = NodeInput.TextureAtlasData;
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -65,8 +66,6 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 	public execute(context: GameWebGLRenderContext, inputs: ProvidedNodeInputs): VertexDataResource {
 
-		// todo: make random numbers stable
-
 		this.spriteBuffer.clear();
 
 		const settlementAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "settlement1");
@@ -99,8 +98,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const tiles = context.tiles;
 		for (let i = 0, n = tiles.length; i < n; i++) {
 			const tile = tiles[i];
-			if(tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
-				this.addTerrain(this.spriteBuffer, tile.identifier, mountainAtlasEntry, hillsAtlasEntry, forestAtlasEntry)
+			if (tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
+				this.addTerrain(this.spriteBuffer, tile.identifier, mountainAtlasEntry, hillsAtlasEntry, forestAtlasEntry);
 			}
 		}
 
@@ -118,12 +117,15 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	private addSettlement(spriteBuffer: SpriteBuffer, settlement: Settlement, atlasEntry: TextureAtlasEntry) {
+
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settlement.tile.q, settlement.tile.r);
 		for (let i = 0; i < 10; i++) {
+			const rngOffsetX = seedrandom(settlement.identifier.id + i + "x").quick();
+			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
 			spriteBuffer.add({
 				atlasEntry: atlasEntry,
-				x: tileCenter[0] + (Math.random() * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2),
-				y: tileCenter[1] + (Math.random() * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2),
+				x: tileCenter[0] + (rngOffsetX * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2),
+				y: tileCenter[1] + (rngOffsetY * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2),
 				scaleX: 20,
 				scaleY: 20,
 				zOffset: 0,
@@ -156,7 +158,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	private addTerrain(spriteBuffer: SpriteBuffer, tile: TileIdentifier, atlasEntryMountain: TextureAtlasEntry, atlasEntryHill: TextureAtlasEntry, atlasEntryForest: TextureAtlasEntry) {
-		const terrainName = this.getRandomTerrainAtlasName();
+		const terrainName = this.getRandomTerrainAtlasName(tile);
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r);
 
 		if (terrainName === "mountain") {
@@ -193,8 +195,9 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		}
 	}
 
-	private getRandomTerrainAtlasName(): string {
-		const value = Math.random();
+	private getRandomTerrainAtlasName(tile: TileIdentifier): string {
+
+		const value = seedrandom(tile.id).quick();
 		if (value > 0.8) {
 			return "mountain";
 		} else if (value > 0.65) {
