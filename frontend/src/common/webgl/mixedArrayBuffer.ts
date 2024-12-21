@@ -176,7 +176,9 @@ export class MixedArrayBufferCursor {
 
     public append(value: number | number[]) {
         if (Array.isArray(value)) {
-            value.forEach(v => this.append(v));
+            for (let i = 0; i < value.length; i++) {
+                this.append(value[i]);
+            }
         } else {
             const type = this.pattern[this.index % this.pattern.length];
             const amountBytes = MixedArrayBuffer.getBytes(type);

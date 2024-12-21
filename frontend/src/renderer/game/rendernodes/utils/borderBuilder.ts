@@ -1,4 +1,4 @@
-import {Tile} from "../../../models/base/tile";
+import {Tile} from "../../../../models/base/tile";
 
 export namespace BorderBuilder {
 

@@ -6,7 +6,7 @@ import {MapMode} from "../../../models/base/mapMode";
 import {Tile, TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {TileResourceType} from "../../../models/base/TileResourceType";
-import {GameHtmlRenderContext} from "../renderGraphContext";
+import {GameHtmlRenderContext} from "../gameRenderContext";
 
 export class ResourceIconsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 

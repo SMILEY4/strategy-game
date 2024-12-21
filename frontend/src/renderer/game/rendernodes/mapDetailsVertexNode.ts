@@ -18,6 +18,8 @@ import seedrandom from "seedrandom";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
 import TextureAtlasData = NodeInput.TextureAtlasData;
+import {Route} from "../../../models/base/route";
+import {RouteSpriteBuilder} from "./utils/routeSpriteBuilder";
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -74,15 +76,16 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const mountainAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "mountains");
 		const forestAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "forest");
 		const hillsAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "hills");
+		const roadAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "road");
 
-		// settlements
+		// // settlements
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
 			this.addSettlement(this.spriteBuffer, settlement, settlementAtlasEntry);
 		}
-
-		// world objects
+		//
+		// // world objects
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
@@ -92,6 +95,13 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			if (worldObject.type === WorldObjectType.SETTLER) {
 				this.addSettler(this.spriteBuffer, worldObject, settlerAtlasEntry);
 			}
+		}
+
+		// routes
+		const routes = context.routes;
+		for (let i = 0, n = routes.length; i < n; i++) {
+			const route = routes[i];
+			this.addRoute(this.spriteBuffer, route, roadAtlasEntry);
 		}
 
 		// terrain todo: temporary until real terrain
@@ -119,7 +129,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	private addSettlement(spriteBuffer: SpriteBuffer, settlement: Settlement, atlasEntry: TextureAtlasEntry) {
 
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settlement.tile.q, settlement.tile.r);
-		for (let i = 0; i < 10; i++) {
+		for (let i = 0; i < settlement.population.size; i++) {
 			const rngOffsetX = seedrandom(settlement.identifier.id + i + "x").quick();
 			const rngOffsetY = seedrandom(settlement.identifier.id + i + "y").quick();
 			spriteBuffer.add({
@@ -155,6 +165,11 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			scaleY: 20,
 			zOffset: 0,
 		});
+	}
+
+	private addRoute(spriteBuffer: SpriteBuffer, route: Route, atlasEntry: TextureAtlasEntry){
+		const vertexData = RouteSpriteBuilder.build(route, atlasEntry);
+		spriteBuffer.addRaw(vertexData)
 	}
 
 	private addTerrain(spriteBuffer: SpriteBuffer, tile: TileIdentifier, atlasEntryMountain: TextureAtlasEntry, atlasEntryHill: TextureAtlasEntry, atlasEntryForest: TextureAtlasEntry) {

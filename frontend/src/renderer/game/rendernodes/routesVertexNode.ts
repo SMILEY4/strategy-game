@@ -65,7 +65,7 @@ export class RoutesVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
 	public execute(context: GameWebGLRenderContext): VertexDataResource {
 
-		const lines: number[][][] = this.toLines(context.routes);
+		const lines: number[][][] = []// this.toLines(context.routes);
 		const [triangleCount, _, lineMeshes] = this.buildLineMeshes(lines);
 
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(triangleCount * 3, RoutesVertexNode.PATTERN);

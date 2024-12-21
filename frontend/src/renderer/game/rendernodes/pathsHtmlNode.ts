@@ -4,7 +4,7 @@ import {Camera} from "../../../common/webgl/camera";
 import {buildMap} from "../../../common/utils";
 import {Projections} from "../../../common/webgl/projections";
 import {TilePosition} from "../../../models/base/tilePosition";
-import {GameHtmlRenderContext} from "../renderGraphContext";
+import {GameHtmlRenderContext} from "../gameRenderContext";
 
 export class PathsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 

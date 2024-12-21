@@ -4,16 +4,37 @@ import {MixedArrayBuffer, MixedArrayBufferType} from "./mixedArrayBuffer";
 export class SpriteBuffer {
 
 	private vertexCount: number = 0;
-	private entries: SpriteBuffer.Entry[] = [];
+	private vertexData: number[] = [];
 
 	public clear() {
 		this.vertexCount = 0;
-		this.entries = [];
+		this.vertexData = [];
 	}
 
 	public add(entry: SpriteBuffer.Entry) {
-		this.vertexCount += entry.atlasEntry.vertices.length;
-		this.entries.push(entry);
+		const atlasEntry = entry.atlasEntry;
+		const origin = atlasEntry.origin;
+
+		const vertexData: number[] = [];
+		for (let i = 0, n = atlasEntry.vertices.length; i < n; i++) {
+			const vertexCoords = atlasEntry.vertices[i];
+			const textureCoords = atlasEntry.textureCoordinates[i];
+			vertexData.push(entry.x + (vertexCoords[0] - origin[0]) * entry.scaleX);
+			vertexData.push(entry.y + (vertexCoords[1] - origin[1]) * entry.scaleY);
+			vertexData.push(entry.y + entry.zOffset);
+			vertexData.push(textureCoords[0]);
+			vertexData.push(textureCoords[1]);
+		}
+
+		this.addRaw(vertexData);
+	}
+
+	public addRaw(vertexData: number[]) {
+		if(vertexData.length % SpriteBuffer.BUFFER_LAYOUT_PATTERN.length !== 0) {
+			throw new Error("Invalid vertex data amount. Expected multiple of " + SpriteBuffer.BUFFER_LAYOUT_PATTERN.length + ". Got " + vertexData.length);
+		}
+		this.vertexCount += Math.floor(vertexData.length / SpriteBuffer.BUFFER_LAYOUT_PATTERN.length)
+		this.vertexData.push(...vertexData)
 	}
 
 	public getVertexCount(): number {
@@ -21,25 +42,8 @@ export class SpriteBuffer {
 	}
 
 	public buildRawBuffer(): ArrayBuffer {
-
 		const [arrayBuffer, cursor] = MixedArrayBuffer.createWithCursor(this.vertexCount, SpriteBuffer.BUFFER_LAYOUT_PATTERN);
-
-		const entries = this.entries;
-		for (let i = 0, n = entries.length; i < n; i++) {
-			const sprite = entries[i];
-			const atlasEntry = sprite.atlasEntry;
-			const origin = atlasEntry.origin;
-
-			for (let j = 0, m = atlasEntry.vertices.length; j < m; j++) {
-				const vertexCoords = atlasEntry.vertices[j];
-				cursor.append(sprite.x + ((vertexCoords[0] - origin[0]) * sprite.scaleX));
-				cursor.append(sprite.y + ((vertexCoords[1] - origin[1]) * sprite.scaleY));
-				cursor.append(sprite.y + sprite.zOffset);
-				cursor.append(atlasEntry.textureCoordinates[j]);
-			}
-
-		}
-
+		cursor.append(this.vertexData) // todo: optimize bulk "copy"/set ?
 		return arrayBuffer.getRawBuffer();
 	}
 
@@ -54,7 +58,7 @@ export namespace SpriteBuffer {
 		y: number,
 		scaleX: number,
 		scaleY: number,
-		zOffset: number
+		zOffset: number,
 	}
 
 	export const BUFFER_LAYOUT_PATTERN = [
