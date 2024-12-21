@@ -34,6 +34,7 @@ export class SpriteBuffer {
 				const vertexCoords = atlasEntry.vertices[j];
 				cursor.append(sprite.x + ((vertexCoords[0] - origin[0]) * sprite.scaleX));
 				cursor.append(sprite.y + ((vertexCoords[1] - origin[1]) * sprite.scaleY));
+				cursor.append(sprite.y + sprite.zOffset);
 				cursor.append(atlasEntry.textureCoordinates[j]);
 			}
 
@@ -53,11 +54,14 @@ export namespace SpriteBuffer {
 		y: number,
 		scaleX: number,
 		scaleY: number,
+		zOffset: number
 	}
 
 	export const BUFFER_LAYOUT_PATTERN = [
 		// vertex position
 		...MixedArrayBufferType.VEC2,
+		// sprite y
+		MixedArrayBufferType.FLOAT,
 		// texture coords
 		...MixedArrayBufferType.VEC2,
 	];

@@ -8,5 +8,9 @@ in vec2 v_textureCoordinates;
 out vec4 outColor;
 
 void main() {
-    outColor = texture(u_texture, v_textureCoordinates);
+    vec4 color = texture(u_texture, v_textureCoordinates);
+    if(color.a < 0.5) {
+        discard; // note: transparency does not work with depth testing
+    }
+    outColor = vec4(color.rgb, 1.0);
 }

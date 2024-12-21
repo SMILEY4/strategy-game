@@ -40,6 +40,11 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 							amountComponents: 2,
 						},
 						{
+							name: "in_originY",
+							type: GLAttributeType.FLOAT,
+							amountComponents: 1,
+						},
+						{
 							name: "in_textureCoordinates",
 							type: GLAttributeType.FLOAT,
 							amountComponents: 2,
@@ -56,6 +61,8 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	public execute(context: GameWebGLRenderContext, inputs: ProvidedNodeInputs): VertexDataResource {
+
+		// todo: make random numbers stable
 
 		this.spriteBuffer.clear();
 
@@ -103,6 +110,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 				y: tileCenter[1] + (Math.random() * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2),
 				scaleX: 20,
 				scaleY: 20,
+				zOffset: 0,
 			});
 		}
 	}
@@ -115,6 +123,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			y: tileCenter[1],
 			scaleX: 20,
 			scaleY: 20,
+			zOffset: 0,
 		});
 	}
 
@@ -126,6 +135,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			y: tileCenter[1],
 			scaleX: 20,
 			scaleY: 20,
+			zOffset: 0,
 		});
 	}
 

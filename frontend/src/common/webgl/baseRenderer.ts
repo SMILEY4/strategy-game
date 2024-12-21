@@ -19,10 +19,12 @@ export class BaseRenderer {
 
 		// depth testing
 		if (depth) {
-			this.gl.depthRange(0, 30);
+			this.gl.depthRange(0, 1);
 			this.gl.depthMask(true);
 			this.gl.enable(this.gl.DEPTH_TEST);
 			this.gl.depthFunc(this.gl.LESS);
+		} else {
+			this.gl.disable(this.gl.DEPTH_TEST);
 		}
 
 		// blending
@@ -37,7 +39,6 @@ export class BaseRenderer {
 		} else {
 			blendFunction(this.gl)
 		}
-
 
 		// check errors
 		GLError.check(this.gl, "[gl-setup]", "preparing current frame");

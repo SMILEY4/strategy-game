@@ -36,7 +36,7 @@ export class MapDetailsDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
             output: [
                 new NodeOutput.RenderTarget({
                     renderTargetId: "rendertarget.mapdetails",
-                    depth: false,
+                    depth: true,
                     scale: 2
                 }),
             ],
