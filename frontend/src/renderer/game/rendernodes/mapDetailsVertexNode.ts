@@ -8,12 +8,15 @@ import {ProvidedNodeInputs} from "../../common/graph/providedNodeInputs";
 import {TilemapUtils} from "../../../common/tilemapUtils";
 import {WorldObjectType} from "../../../models/base/worldObjectType";
 import {SpriteBuffer} from "../../../common/webgl/spriteBuffer";
-import VertexBuffer = NodeOutput.VertexBuffer;
-import VertexDescriptor = NodeOutput.VertexDescriptor;
-import TextureAtlasData = NodeInput.TextureAtlasData;
 import {Settlement} from "../../../models/base/Settlement";
 import {TextureAtlasEntry} from "../../../common/webgl/textureAtlas";
 import {WorldObject} from "../../../models/base/worldObject";
+import VertexBuffer = NodeOutput.VertexBuffer;
+import VertexDescriptor = NodeOutput.VertexDescriptor;
+import TextureAtlasData = NodeInput.TextureAtlasData;
+import {TileIdentifier} from "../../../models/base/tile";
+import {Visibility} from "../../../models/base/visibility";
+import {TerrainType} from "../../../models/base/TerrainType";
 
 export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContext> {
 
@@ -66,8 +69,14 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 		this.spriteBuffer.clear();
 
-		// settlements
 		const settlementAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "settlement1");
+		const scoutAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "eye");
+		const settlerAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "marker");
+		const mountainAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "mountains");
+		const forestAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "forest");
+		const hillsAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "hills");
+
+		// settlements
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
@@ -75,8 +84,6 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		}
 
 		// world objects
-		const scoutAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "eye");
-		const settlerAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "marker");
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
@@ -85,6 +92,15 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			}
 			if (worldObject.type === WorldObjectType.SETTLER) {
 				this.addSettler(this.spriteBuffer, worldObject, settlerAtlasEntry);
+			}
+		}
+
+		// terrain todo: temporary until real terrain
+		const tiles = context.tiles;
+		for (let i = 0, n = tiles.length; i < n; i++) {
+			const tile = tiles[i];
+			if(tile.visibility !== Visibility.UNKNOWN && tile.base.value.terrainType === TerrainType.LAND) {
+				this.addTerrain(this.spriteBuffer, tile.identifier, mountainAtlasEntry, hillsAtlasEntry, forestAtlasEntry)
 			}
 		}
 
@@ -103,7 +119,7 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 
 	private addSettlement(spriteBuffer: SpriteBuffer, settlement: Settlement, atlasEntry: TextureAtlasEntry) {
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settlement.tile.q, settlement.tile.r);
-		for(let i=0; i<10; i++) {
+		for (let i = 0; i < 10; i++) {
 			spriteBuffer.add({
 				atlasEntry: atlasEntry,
 				x: tileCenter[0] + (Math.random() * 2 - 1) * (TilemapUtils.DEFAULT_HEX_LAYOUT.size[0] / 2),
@@ -137,6 +153,57 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 			scaleY: 20,
 			zOffset: 0,
 		});
+	}
+
+	private addTerrain(spriteBuffer: SpriteBuffer, tile: TileIdentifier, atlasEntryMountain: TextureAtlasEntry, atlasEntryHill: TextureAtlasEntry, atlasEntryForest: TextureAtlasEntry) {
+		const terrainName = this.getRandomTerrainAtlasName();
+		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r);
+
+		if (terrainName === "mountain") {
+			spriteBuffer.add({
+				atlasEntry: atlasEntryMountain,
+				x: tileCenter[0],
+				y: tileCenter[1],
+				scaleX: 20,
+				scaleY: 20,
+				zOffset: TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2,
+			});
+		}
+
+		if (terrainName === "hill") {
+			spriteBuffer.add({
+				atlasEntry: atlasEntryHill,
+				x: tileCenter[0],
+				y: tileCenter[1],
+				scaleX: 20,
+				scaleY: 20,
+				zOffset: TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2,
+			});
+		}
+
+		if (terrainName === "forest") {
+			spriteBuffer.add({
+				atlasEntry: atlasEntryForest,
+				x: tileCenter[0],
+				y: tileCenter[1],
+				scaleX: 20,
+				scaleY: 20,
+				zOffset: TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] / 2,
+			});
+		}
+	}
+
+	private getRandomTerrainAtlasName(): string {
+		const value = Math.random();
+		if (value > 0.8) {
+			return "mountain";
+		} else if (value > 0.65) {
+			return "hill";
+		} else if (value > 0.5) {
+			return "forest";
+		} else {
+			return "none";
+		}
 	}
 
 }
