@@ -1,10 +1,11 @@
 import {Route} from "../../../../models/base/route";
-import {TilemapUtils} from "../../../../common/tilemapUtils";
 import {LineMesh} from "../../../../common/webgl/lines/lineMesh";
 import {LineMeshCreator} from "../../../../common/webgl/lines/lineMeshCreator";
 import {LineCapsButt} from "../../../../common/webgl/lines/lineCapsButt";
 import {LineJoinMiter} from "../../../../common/webgl/lines/lineJoinMitter";
 import {TextureAtlasEntry} from "../../../../common/webgl/textureAtlas";
+import {TilemapUtils} from "../../../../common/tilemapUtils";
+import {CurveInterpolator} from "curve-interpolator";
 
 export namespace RouteSpriteBuilder {
 
@@ -20,13 +21,24 @@ export namespace RouteSpriteBuilder {
 	}
 
 	function buildWaypoints(route: Route): ([number, number])[] {
-		const waypoints: ([number, number])[] = [];
+		const pointStep1: ([number, number])[] = [];
 		for (let i = 0; i < route.path.length; i++) {
 			const tile = route.path[i];
-			const waypoint = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r);
-			waypoints.push(waypoint);
+			pointStep1.push(TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, tile.q, tile.r));
 		}
-		return waypoints;
+
+		const pointStep2 = new CurveInterpolator(pointStep1, { tension: 0.2, alpha: 0.5}).getPoints(pointStep1.length * 3)
+
+		const pointStep3: ([number, number])[] = [];
+		for(let i=0; i<pointStep2.length; i++) {
+			const p = pointStep2[i];
+			pointStep3.push([
+				p[0] + (Math.random() * 2 - 1) * 0.4,
+				p[1] + (Math.random() * 2 - 1) * 0.4,
+			])
+		}
+
+		return new CurveInterpolator(pointStep3, { tension: 0.2, alpha: 0.5}).getPoints(pointStep3.length * 3)
 	}
 
 	function buildLineMesh(waypoints: ([number, number])[]): LineMesh {
@@ -65,7 +77,7 @@ export namespace RouteSpriteBuilder {
 		outVertexData.push(vertexData[1]);
 
 		// sprite y
-		outVertexData.push(vertexData[1] + 10);
+		outVertexData.push(vertexData[1] + 10); // todo: temp +10 offset until other sprites' origins are correctly fixed
 
 		// (u,v)
 		const [minU, maxU, minV, maxV] = uvBounds;
@@ -91,6 +103,5 @@ export namespace RouteSpriteBuilder {
 
 		return [minU, maxU, minV, maxV];
 	}
-
 
 }

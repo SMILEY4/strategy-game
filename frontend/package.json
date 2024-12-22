@@ -15,6 +15,7 @@
     "@types/howler": "^2.2.10",
     "@types/seedrandom": "^3.0.8",
     "btreemap": "^0.1.14",
+    "curve-interpolator": "^3.3.1",
     "howler": "^2.2.4",
     "jwt-decode": "^3.1.2",
     "random": "^4.1.0",
