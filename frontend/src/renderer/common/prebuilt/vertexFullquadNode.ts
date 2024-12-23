@@ -5,7 +5,7 @@ import {buildMap} from "../../../common/utils";
 import {NodeOutput} from "../graph/nodeOutput";
 import VertexBuffer = NodeOutput.VertexBuffer;
 import VertexDescriptor = NodeOutput.VertexDescriptor;
-import {GameWebGLRenderContext} from "../../game/gameWebGLRenderContext";
+import {GameWebGLRenderContext} from "../../game/gameRenderContext";
 
 export class VertexFullQuadNode extends VertexRenderNode<GameWebGLRenderContext> {
 

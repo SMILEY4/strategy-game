@@ -7,12 +7,10 @@ import {WebGLRenderGraphCompiler} from "../common/webgl/webGLRenderGraphCompiler
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
-import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesWaterDrawNode} from "./rendernodes/tilesWaterDrawNode";
 import {TilesLandDrawNode} from "./rendernodes/tilesLandDrawNode";
 import {TilesFogDrawNode} from "./rendernodes/tilesFogDrawNode";
 import {OverlayDrawNode} from "./rendernodes/overlayDrawNode";
-import {RoutesDrawNode} from "./rendernodes/routesDrawNode";
 import {CombineLayersDrawNode} from "./rendernodes/combineLayersDrawNode";
 import {GameRenderConfig} from "./gameRenderConfig";
 import {Camera} from "../../common/webgl/camera";
@@ -87,9 +85,6 @@ export class GameRenderGraph {
 
 				new MapDetailsVertexNode(),
 				new MapDetailsDrawNode(),
-
-				new RoutesVertexNode(),
-				new RoutesDrawNode(),
 
 				new TilesWaterDrawNode(),
 				new TilesLandDrawNode(),

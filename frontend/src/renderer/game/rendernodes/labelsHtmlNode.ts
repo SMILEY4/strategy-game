@@ -6,6 +6,7 @@ import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {GameHtmlRenderContext} from "../gameRenderContext";
 import {WorldObjectType} from "../../../models/base/worldObjectType";
+import {TilemapUtils} from "../../../common/tilemapUtils";
 
 export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
@@ -30,15 +31,26 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 	public execute(context: GameHtmlRenderContext): HtmlDataResource {
 
-		const elements: LabelElement[] = [];
+		const elementsByTile = new Map<string, LabelElement[]>();
+
+		function addElement(element: LabelElement) {
+			if(elementsByTile.has(element.tile.id)) {
+				elementsByTile.get(element.tile.id)?.push(element);
+			} else {
+				elementsByTile.set(element.tile.id, [element])
+			}
+		}
 
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
 			if (this.isVisible(settlement.tile, 0, context.camera)) {
-				elements.push({
+				addElement({
+					type: "location",
 					tile: settlement.tile,
 					name: settlement.identifier.name,
+					color: `rgb(${settlement.country.color.red},${settlement.country.color.green},${settlement.country.color.blue})`,
+					index: 0,
 				});
 			}
 		}
@@ -46,15 +58,28 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
-			elements.push({
+			addElement({
+				type: "unit",
 				tile: worldObject.tile,
 				name: worldObject.type.id,
+				color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
+				index: 0,
 			});
 		}
 
+
+
+		const allElements: LabelElement[] = [];
+		elementsByTile.forEach((elements, _) => {
+			elements.forEach((element, index) => { // todo: sort elements by type
+				element.index = index;
+				allElements.push(element)
+			})
+		});
+
 		return new HtmlDataResource({
 			outputs: buildMap({
-				"htmldata.labels": elements,
+				"htmldata.labels": allElements,
 			}),
 		});
 	}
@@ -70,15 +95,25 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 }
 
 interface LabelElement {
-	tile: TileIdentifier,
+	type: "location" | "unit"
 	name: string,
+	color: string,
+	tile: TileIdentifier,
+	index: number,
 }
 
 function render(camera: Camera, element: LabelElement, html: HTMLElement): void {
-	const pos = Projections.hexToScreen(camera, element.tile.q, element.tile.r);
-	pos.y = camera.getClientHeight() - pos.y - 20;
-	html.className = "world-ui__label";
+
+	const pos = Projections.hexToScreen(
+		camera,
+		element.tile.q, element.tile.r,
+		[0, TilemapUtils.DEFAULT_HEX_LAYOUT.size[1] * 0.5]);
+	pos.y = camera.getClientHeight() - pos.y;
+	pos.y = pos.y + (element.index * 20);
+
 	html.style.left = pos.x + "px";
 	html.style.top = pos.y + "px";
-	html.textContent = element.name;
+	html.className = "world-ui__label world-ui__label__" + element.type;
+	html.textContent = "";
+	html.insertAdjacentHTML("afterbegin", "<div class='world-ui__label__outer'><div class='world-ui__label__inner' style='background-color: " + element.color + "'>" + element.name + "</div></div>")
 }

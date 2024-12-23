@@ -3,12 +3,10 @@ import {Preloader} from "../../common/preloader";
 import {VertexFullQuadNode} from "../common/prebuilt/vertexFullquadNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
-import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesWaterDrawNode} from "./rendernodes/tilesWaterDrawNode";
 import {TilesLandDrawNode} from "./rendernodes/tilesLandDrawNode";
 import {TilesFogDrawNode} from "./rendernodes/tilesFogDrawNode";
 import {OverlayDrawNode} from "./rendernodes/overlayDrawNode";
-import {RoutesDrawNode} from "./rendernodes/routesDrawNode";
 import {CombineLayersDrawNode} from "./rendernodes/combineLayersDrawNode";
 import {DrawRenderNode} from "../common/graph/drawRenderNode";
 import {NodeInput} from "../common/graph/nodeInput";
@@ -24,12 +22,10 @@ export namespace RenderGraphPreloader {
 			new TilesBaseVertexNode(),
 			new OverlayVertexNode(),
 			new OverlayBaseVertexNode(),
-			new RoutesVertexNode(),
 			new TilesWaterDrawNode(),
 			new TilesLandDrawNode(),
 			new TilesFogDrawNode(),
 			new OverlayDrawNode(),
-			new RoutesDrawNode(),
 			new CombineLayersDrawNode(),
 		]);
 	}

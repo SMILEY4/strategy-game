@@ -16,8 +16,6 @@ import SHADER_COMBINE_VERT from "./shaders/combine.vsh?raw";
 import SHADER_COMBINE_FRAG from "./shaders/combine.fsh?raw";
 import SHADER_MAPDETAILS_VERT from "./shaders/mapdetails.vsh?raw";
 import SHADER_MAPDETAILS_FRAG from "./shaders/mapdetails.fsh?raw";
-import SHADER_ROUTES_VERT from "./shaders/routes.vsh?raw";
-import SHADER_ROUTES_FRAG from "./shaders/routes.fsh?raw";
 import SHADER_OVERLAY_VERT from "./shaders/overlay.vsh?raw";
 import SHADER_OVERLAY_FRAG from "./shaders/overlay.fsh?raw";
 import SHADER_RT2SCREEN_VERT from "../common/prebuilt/rendertarget2screen.vsh?raw";
@@ -45,9 +43,6 @@ export class GameShaderSourceManager extends WebGLShaderSourceManager {
 
 		this.register("mapdetails.vert", SHADER_MAPDETAILS_VERT);
 		this.register("mapdetails.frag", SHADER_MAPDETAILS_FRAG);
-
-		this.register("routes.vert", SHADER_ROUTES_VERT);
-		this.register("routes.frag", SHADER_ROUTES_FRAG);
 
 		this.register("overlay.vert", SHADER_OVERLAY_VERT);
 		this.register("overlay.frag", SHADER_OVERLAY_FRAG);

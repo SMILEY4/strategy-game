@@ -1,7 +1,6 @@
 import {ChangeDetector} from "../../common/changeDetector";
 import {Camera} from "../../common/webgl/camera";
 import {OverlayVertexNode} from "./rendernodes/overlayVertexNode";
-import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
@@ -100,9 +99,6 @@ export class GameChangeProvider implements ChangeProvider {
 		}
 		if (key === OverlayVertexNode.ID) {
 			return this.changes.turn || this.changes.mapMode || this.changes.movementPaths;
-		}
-		if (key === RoutesVertexNode.ID) {
-			return this.changes.turn;
 		}
 		if (key === TilesBaseVertexNode.ID) {
 			return this.changes.initFrame;

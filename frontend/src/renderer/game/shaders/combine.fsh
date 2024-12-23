@@ -46,12 +46,6 @@ struct MapDetailsData {
 
 uniform MapDetailsData u_mapDetails;
 
-struct RoutesData {
-    sampler2D layer;
-};
-
-uniform RoutesData u_routes;
-
 
 struct OverlayData {
     sampler2D layer;
@@ -184,14 +178,6 @@ vec4 getLayerMapDetails() {
     return framebuffer(u_mapDetails.layer, v_textureCoordinates);
 }
 
-// ==================================//
-//          LAYER: ROUTES            //
-// ==================================//
-
-vec4 getLayerRoutes() {
-    return framebuffer(u_routes.layer, v_textureCoordinates);
-}
-
 
 // ==================================//
 //          LAYER: OVERLAY           //
@@ -243,7 +229,6 @@ void main() {
     vec4 land = getLayerLand();
     vec4 fog = getLayerFog();
     vec4 mapDetails = getLayerMapDetails();
-    vec4 routes = getLayerRoutes();
     vec4 overlay = getLayerOverlay();
 
     // grayscale
@@ -257,7 +242,6 @@ void main() {
     vec4 color = vec4(0.0);
     color = clr_blend(water, color);
     color = clr_blend(land, color);
-    color = clr_blend(routes, color);
     color = clr_blend(mapDetails, color);
     color = clr_blend(fog, color);
     color = clr_blend(overlay, color);

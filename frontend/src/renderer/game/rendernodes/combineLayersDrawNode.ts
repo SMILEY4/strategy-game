@@ -125,11 +125,6 @@ export class CombineLayersDrawNode extends DrawRenderNode<GameWebGLRenderContext
 					renderTargetId: "rendertarget.mapdetails",
 					binding: "u_mapDetails.layer",
 				}),
-				//==== ROUTES ========================================
-				new NodeInput.RenderTarget({
-					renderTargetId: "rendertarget.routes",
-					binding: "u_routes.layer",
-				}),
 				//==== OVERLAY =======================================
 				new NodeInput.RenderTarget({
 					renderTargetId: "rendertarget.overlay",
