@@ -5,7 +5,7 @@ import {RoutesVertexNode} from "./rendernodes/routesVertexNode";
 import {TilesVertexNode} from "./rendernodes/tilesVertexNode";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
-import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
+import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
 import {SessionRepository} from "../../state/repository/sessionRepository";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
 import {ChangeProvider} from "../common/graph/changeProvider";
@@ -116,7 +116,7 @@ export class GameChangeProvider implements ChangeProvider {
 		if (key === PathsHtmlNode.ID) {
 			return this.changes.turn || this.changes.camera || this.changes.movementPaths;
 		}
-		if (key === SettlementsHtmlNode.ID) {
+		if (key === LabelsHtmlNode.ID) {
 			return this.changes.turn || this.changes.camera;
 		}
 		return true;

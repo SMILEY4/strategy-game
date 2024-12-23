@@ -78,14 +78,14 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 		const hillsAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "hills");
 		const roadAtlasEntry = inputs.getTextureAtlasEntry("/icons/tileset.png", "road");
 
-		// // settlements
+		// settlements
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
 			this.addSettlement(this.spriteBuffer, settlement, settlementAtlasEntry);
 		}
-		//
-		// // world objects
+
+		// world objects
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
@@ -127,7 +127,6 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	private addSettlement(spriteBuffer: SpriteBuffer, settlement: Settlement, atlasEntry: TextureAtlasEntry) {
-
 		const tileCenter = TilemapUtils.hexToPixel(TilemapUtils.DEFAULT_HEX_LAYOUT, settlement.tile.q, settlement.tile.r);
 		for (let i = 0; i < settlement.population.size; i++) {
 			const rngOffsetX = seedrandom(settlement.identifier.id + i + "x").quick();

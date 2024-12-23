@@ -5,22 +5,23 @@ import {buildMap} from "../../../common/utils";
 import {TileIdentifier} from "../../../models/base/tile";
 import {Projections} from "../../../common/webgl/projections";
 import {GameHtmlRenderContext} from "../gameRenderContext";
+import {WorldObjectType} from "../../../models/base/worldObjectType";
 
-export class SettlementsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
+export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
-	public static readonly ID = "htmlnode.settlements";
+	public static readonly ID = "htmlnode.labels";
 
 	constructor() {
 		super({
-			id: SettlementsHtmlNode.ID,
-			changeKey: SettlementsHtmlNode.ID,
+			id: LabelsHtmlNode.ID,
+			changeKey: LabelsHtmlNode.ID,
 			input: [],
 			output: [
 				new NodeOutput.HtmlContainer({
 					id: "game-canvas-overlay",
 				}),
 				new NodeOutput.HtmlData({
-					name: "htmldata.settlements",
+					name: "htmldata.labels",
 					renderFunction: (context: GameHtmlRenderContext, element: any, html: HTMLElement) => render(context.camera, element, html),
 				}),
 			],
@@ -29,7 +30,7 @@ export class SettlementsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 	public execute(context: GameHtmlRenderContext): HtmlDataResource {
 
-		const elements: SettlementsElement[] = [];
+		const elements: LabelElement[] = [];
 
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
@@ -42,9 +43,18 @@ export class SettlementsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 			}
 		}
 
+		const worldObjects = context.worldObjects;
+		for (let i = 0, n = worldObjects.length; i < n; i++) {
+			const worldObject = worldObjects[i];
+			elements.push({
+				tile: worldObject.tile,
+				name: worldObject.type.id,
+			});
+		}
+
 		return new HtmlDataResource({
 			outputs: buildMap({
-				"htmldata.settlements": elements,
+				"htmldata.labels": elements,
 			}),
 		});
 	}
@@ -59,12 +69,12 @@ export class SettlementsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 
 }
 
-interface SettlementsElement {
+interface LabelElement {
 	tile: TileIdentifier,
 	name: string,
 }
 
-function render(camera: Camera, element: SettlementsElement, html: HTMLElement): void {
+function render(camera: Camera, element: LabelElement, html: HTMLElement): void {
 	const pos = Projections.hexToScreen(camera, element.tile.q, element.tile.r);
 	pos.y = camera.getClientHeight() - pos.y - 20;
 	html.className = "world-ui__label";

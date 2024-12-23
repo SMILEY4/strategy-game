@@ -22,7 +22,7 @@ import {HtmlResourceManager} from "../common/html/htmlResourceManager";
 import {HtmlRenderGraphCompiler} from "../common/html/htmlRenderGraphCompiler";
 import {ResourceIconsHtmlNode} from "./rendernodes/resourceIconsHtmlNode";
 import {PathsHtmlNode} from "./rendernodes/pathsHtmlNode";
-import {SettlementsHtmlNode} from "./rendernodes/settlementsHtmlNode";
+import {LabelsHtmlNode} from "./rendernodes/labelsHtmlNode";
 import {TileRepository} from "../../state/repository/tileRepository";
 import {SessionRepository} from "../../state/repository/sessionRepository";
 import {WorldObjectRepository} from "../../state/repository/worldObjectRepository";
@@ -107,7 +107,7 @@ export class GameRenderGraph {
 			nodes: [
 				new PathsHtmlNode(),
 				new ResourceIconsHtmlNode(),
-				new SettlementsHtmlNode(),
+				new LabelsHtmlNode(),
 			],
 		});
 	}
