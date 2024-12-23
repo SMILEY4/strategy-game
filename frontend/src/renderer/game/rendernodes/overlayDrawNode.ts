@@ -52,7 +52,7 @@ export class OverlayDrawNode extends DrawRenderNode<GameWebGLRenderContext> {
 				new NodeInput.Property({
 					binding: "u_overlay.fillOpacity",
 					type: GLUniformType.FLOAT,
-					valueConstant: 0.7,
+					valueConstant: 0.5,
 				}),
 				//==== TILE SELECTION ================================
 				new NodeInput.Property({

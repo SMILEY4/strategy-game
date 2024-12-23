@@ -45,7 +45,7 @@ export class MapMode {
 		grayscale: false,
 		context: () => null,
 		fillColor: tile => tile.political.visible && tile.political.value.controlledBy != null
-			? MapMode.toColor(tile.political.value.controlledBy.country.color)
+			? MapMode.toColor(tile.political.value.controlledBy.country.color, 0.7)
 			: MapMode.NO_COLOR,
 		borderColor: tile => tile.political.visible && tile.political.value.controlledBy != null
 			? MapMode.toColor(tile.political.value.controlledBy.country.color)

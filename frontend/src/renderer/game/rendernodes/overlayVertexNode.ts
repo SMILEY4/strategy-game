@@ -173,7 +173,7 @@ export class OverlayVertexNode extends VertexRenderNode<GameWebGLRenderContext> 
 		if (highlightMovementTiles.has(tile.identifier.q + "/" + tile.identifier.r)) {
 			cursor.append(0);
 			cursor.append([0, 0, 0, 0]);
-			cursor.append([0.941, 0.921, 0.686, 0.8]);
+			cursor.append([0.941, 0.921, 0.686, 0.5]);
 		} else {
 			cursor.append(0);
 			cursor.append([0, 0, 0, 0]);

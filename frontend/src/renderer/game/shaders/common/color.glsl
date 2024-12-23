@@ -28,6 +28,20 @@ vec4 clr_reversePremultAlpha(vec4 color) {
 }
 
 /*
+ * Blends the two colors "a over b".
+*/
+vec4 clr_blend(vec4 a, vec4 b) {
+    // https://en.wikipedia.org/wiki/Alpha_compositing
+    float alpha = a.a + b.a * (1.0 - a.a);
+    return vec4(
+        (a.r*a.a + b.r*b.a*(1.0-a.a)) / alpha,
+        (a.g*a.a + b.g*b.a*(1.0-a.a)) / alpha,
+        (a.b*a.a + b.b*b.a*(1.0-a.a)) / alpha,
+        alpha
+    );
+}
+
+/*
  * Convert from rgb to hsv. All values are in range 0 to 1.
  * Source: https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl
 */

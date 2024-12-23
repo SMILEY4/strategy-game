@@ -81,7 +81,6 @@ out vec4 outColor;
 
 
 #include color
-
 #include map
 
 /*
@@ -256,12 +255,12 @@ void main() {
 
     // combine layers
     vec4 color = vec4(0.0);
-    color = mix(color, water, water.a);
-    color = mix(color, land, land.a);
-    color = mix(color, routes, routes.a);
-    color = mix(color, mapDetails, mapDetails.a);
-    color = mix(color, fog, fog.a);
-    color = mix(color, overlay, overlay.a);
+    color = clr_blend(water, color);
+    color = clr_blend(land, color);
+    color = clr_blend(routes, color);
+    color = clr_blend(mapDetails, color);
+    color = clr_blend(fog, color);
+    color = clr_blend(overlay, color);
 
     // apply paper effect
     color = applyEffectPaper(color);

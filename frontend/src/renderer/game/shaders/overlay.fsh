@@ -171,11 +171,11 @@ void main() {
     vec4 colorTileBorder = getTileBorder();
 
     vec4 color = vec4(0.0);
-    color = mix(color, colorPrimaryFill, colorPrimaryFill.a);
-    color = mix(color, colorPrimaryBorder, colorPrimaryBorder.a);
-    color = mix(color, colorHighlightFill, colorHighlightFill.a);
-    color = mix(color, colorSelection, colorSelection.a);
-    // color = mix(color, colorTileBorder, colorTileBorder.a);
+    color = clr_blend(colorPrimaryFill, color);
+    color = clr_blend(colorPrimaryBorder, color);
+    color = clr_blend(colorHighlightFill, color);
+    color = clr_blend(colorSelection, color);
+    // color = clr_blend(colorTileBorder, color);
 
     outColor = color;
 }
