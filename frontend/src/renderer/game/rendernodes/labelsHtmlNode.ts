@@ -44,7 +44,7 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 		const settlements = context.settlements;
 		for (let i = 0, n = settlements.length; i < n; i++) {
 			const settlement = settlements[i];
-			if (this.isVisible(settlement.tile, 0, context.camera)) {
+			if (this.isVisible(settlement.tile, 10, context.camera)) {
 				addElement({
 					type: "location",
 					tile: settlement.tile,
@@ -58,13 +58,15 @@ export class LabelsHtmlNode extends HtmlRenderNode<GameHtmlRenderContext> {
 		const worldObjects = context.worldObjects;
 		for (let i = 0, n = worldObjects.length; i < n; i++) {
 			const worldObject = worldObjects[i];
-			addElement({
-				type: "unit",
-				tile: worldObject.tile,
-				name: worldObject.type.id,
-				color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
-				index: 0,
-			});
+			if (this.isVisible(worldObject.tile, 10, context.camera)) {
+				addElement({
+					type: "unit",
+					tile: worldObject.tile,
+					name: worldObject.type.id,
+					color: `rgb(${worldObject.country.color.red},${worldObject.country.color.green},${worldObject.country.color.blue})`,
+					index: 0,
+				});
+			}
 		}
 
 

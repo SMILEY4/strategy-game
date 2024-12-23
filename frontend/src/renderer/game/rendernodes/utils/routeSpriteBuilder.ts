@@ -62,7 +62,6 @@ export namespace RouteSpriteBuilder {
 		const triangles = lineMesh.triangles;
 		const vertices = lineMesh.vertices;
 		const uvBounds = getUVBounds(atlasEntry);
-		console.log("=========0")
 
 		for (let i = 0, n = triangles.length; i < n; i++) {
 			const triangle = triangles[i];
@@ -70,7 +69,6 @@ export namespace RouteSpriteBuilder {
 			appendVertex(vertexData, vertices[triangle[1]], uvBounds, numTiles);
 			appendVertex(vertexData, vertices[triangle[2]], uvBounds, numTiles);
 		}
-
 
 		return vertexData;
 	}
@@ -82,7 +80,7 @@ export namespace RouteSpriteBuilder {
 		outVertexData.push(vertexData[1]);
 
 		// sprite y
-		outVertexData.push(vertexData[1] + 10); // todo: temp +10 offset until other sprites' origins are correctly fixed
+		outVertexData.push(vertexData[1] + 2); // todo: temp +2 offset until other sprites' origins are correctly fixed
 
 		// (u,v)
 		const u = (triangleFunction(vertexData[2], (numTiles - 1) / 2) + 1) / 2 // remap from "start = 0 -> 1 = end" to oscillate along path, i.e. "start = 0 -> 1 -> 0 -> 1 = end"

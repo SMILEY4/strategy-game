@@ -210,7 +210,6 @@ export class MapDetailsVertexNode extends VertexRenderNode<GameWebGLRenderContex
 	}
 
 	private getRandomTerrainAtlasName(tile: TileIdentifier): string {
-
 		const value = seedrandom(tile.id).quick();
 		if (value > 0.8) {
 			return "mountain";
