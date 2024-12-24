@@ -7,6 +7,7 @@ in vec2 v_textureCoordinates;
 
 out vec4 outColor;
 
+
 void main() {
     vec4 color = texture(u_texture, v_textureCoordinates);
     if(color.a < 0.5) {
