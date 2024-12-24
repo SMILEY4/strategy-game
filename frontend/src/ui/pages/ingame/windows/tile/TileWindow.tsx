@@ -11,7 +11,6 @@ import {WindowSection} from "../../../../components/section/ContentSection";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 
 export interface TileWindowProps {
 	windowId: string;
