@@ -29,25 +29,25 @@ export function MenuBar(): ReactElement {
 			<div className="menubar__inner">
 				<HBox padding_xs gap_xs fillParent className="menubar__content">
 
-					<ButtonPrimary blue round onClick={openDevMenu}>
+					<ButtonPrimary info round onClick={openDevMenu}>
 						<CgDebug/>
 					</ButtonPrimary>
 
-					<ButtonPrimary blue round onClick={openMapMenu}>
+					<ButtonPrimary info round onClick={openMapMenu}>
 						<FiMap/>
 					</ButtonPrimary>
 
-					<ButtonPrimary blue round onClick={openCommandLogMenu}>
+					<ButtonPrimary info round onClick={openCommandLogMenu}>
 						<PiScrollBold/>
 					</ButtonPrimary>
 
-					<ButtonPrimary blue round onClick={() => openTileMenu(null)}>
+					<ButtonPrimary info round onClick={() => openTileMenu(null)}>
 						<FiHexagon/>
 					</ButtonPrimary>
 
 					<Spacer size="fill"/>
 
-					<ButtonPrimary green disabled={endTurnDisabled} onClick={endTurn}>
+					<ButtonPrimary success disabled={endTurnDisabled} onClick={endTurn}>
 						{"End Turn " + currentTurn}
 					</ButtonPrimary>
 				</HBox>

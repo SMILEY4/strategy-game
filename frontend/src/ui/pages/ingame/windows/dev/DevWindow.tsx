@@ -19,17 +19,17 @@ export function DevWindow(props: DevWindowProps): ReactElement {
         <DefaultDecoratedWindowWithHeader windowId={props.windowId} title="Dev / Debug">
 
             <BaseInformation {...data}/>
-            <ButtonPrimary blue onClick={data.open.devStats}>More Statistics</ButtonPrimary>
+            <ButtonPrimary info onClick={data.open.devStats}>More Statistics</ButtonPrimary>
 
             <Spacer size="s"/>
 
-            <ButtonPrimary blue onClick={data.fullscreen.enter}>Enter Fullscreen</ButtonPrimary>
-            <ButtonPrimary blue onClick={data.fullscreen.exit}>Exit Fullscreen</ButtonPrimary>
+            <ButtonPrimary info onClick={data.fullscreen.enter}>Enter Fullscreen</ButtonPrimary>
+            <ButtonPrimary info onClick={data.fullscreen.exit}>Exit Fullscreen</ButtonPrimary>
 
             <Spacer size="xs"/>
 
-            <ButtonPrimary blue onClick={data.webgl.loose}>Loose WebGL-Context</ButtonPrimary>
-            <ButtonPrimary blue onClick={data.webgl.restore}>Restore WebGL-Context</ButtonPrimary>
+            <ButtonPrimary info onClick={data.webgl.loose}>Loose WebGL-Context</ButtonPrimary>
+            <ButtonPrimary info onClick={data.webgl.restore}>Restore WebGL-Context</ButtonPrimary>
 
         </DefaultDecoratedWindowWithHeader>
     );

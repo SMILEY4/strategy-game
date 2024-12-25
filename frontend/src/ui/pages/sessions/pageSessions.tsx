@@ -51,7 +51,7 @@ export function PageSessions(): ReactElement {
 
     return (
         <BackgroundImagePanel fillParent centerContent image="/images/image_2.bmp" className="page-sessions">
-            <DecoratedPanel red floating>
+            <DecoratedPanel floating>
                 <VBox gap_s fillParent centerVertical stretch>
 
                     <Spacer size="xs"/>
@@ -76,10 +76,10 @@ export function PageSessions(): ReactElement {
                     <Spacer size="s"/>
 
                     <HBox gap_s centerVertical right>
-                        <ButtonPrimary green onClick={startCreateSession}>
+                        <ButtonPrimary success onClick={startCreateSession}>
                             Create
                         </ButtonPrimary>
-                        <ButtonPrimary green onClick={startJoinSession}>
+                        <ButtonPrimary success onClick={startJoinSession}>
                             Join
                         </ButtonPrimary>
                     </HBox>
@@ -118,7 +118,7 @@ function GameSessionEntry(props: {
     onDelete: () => void
 }): ReactElement {
     return (
-        <DecoratedPanel blue simpleBorder className="game-session-entry" pattern>
+        <DecoratedPanel simpleBorder className="game-session-entry" pattern>
             <HBox gap_s centerVertical left>
                 <VBox fillParentWidth gap_xs>
                     <Header3>{props.session.name}</Header3>
@@ -137,8 +137,8 @@ function GameSessionEntry(props: {
                         </Text>
                     </HBox>
                 </VBox>
-                <ButtonPrimary blue onClick={props.onConnect}>Connect</ButtonPrimary>
-                <ButtonPrimary red onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</ButtonPrimary>
+                <ButtonPrimary info onClick={props.onConnect}>Connect</ButtonPrimary>
+                <ButtonPrimary warn onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</ButtonPrimary>
             </HBox>
         </DecoratedPanel>
     );
@@ -153,7 +153,7 @@ function ModalJoinGame(props: {
 }): ReactElement {
     return (
         <div className="game-session__modal-surface">
-            <DecoratedPanel red className="game-session__modal-join">
+            <DecoratedPanel className="game-session__modal-join">
                 <VBox centerVertical stretch>
 
                     <Header1>Join</Header1>
@@ -170,11 +170,11 @@ function ModalJoinGame(props: {
                     <Spacer size="m"/>
 
                     <HBox centerVertical right>
-                        <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
+                        <ButtonPrimary warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
                             Cancel
                         </ButtonPrimary>
                         <Spacer size="xs"/>
-                        <ButtonPrimary green onClick={props.onAccept} disabled={props.acceptDisabled}>
+                        <ButtonPrimary success onClick={props.onAccept} disabled={props.acceptDisabled}>
                             Join
                         </ButtonPrimary>
                     </HBox>
@@ -195,7 +195,7 @@ function ModalCreateGame(props: {
 }): ReactElement {
     return (
         <div className="game-session__modal-surface">
-            <DecoratedPanel red className="game-session__modal-create">
+            <DecoratedPanel className="game-session__modal-create">
                 <VBox centerVertical stretch gap_s>
 
                     <Header1>Create</Header1>
@@ -219,11 +219,11 @@ function ModalCreateGame(props: {
                     <Spacer size="m"/>
 
                     <HBox centerVertical right>
-                        <ButtonPrimary red onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
+                        <ButtonPrimary warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
                             Cancel
                         </ButtonPrimary>
                         <Spacer size="xs"/>
-                        <ButtonPrimary green onClick={props.onAccept}>
+                        <ButtonPrimary success onClick={props.onAccept}>
                             Create
                         </ButtonPrimary>
                     </HBox>

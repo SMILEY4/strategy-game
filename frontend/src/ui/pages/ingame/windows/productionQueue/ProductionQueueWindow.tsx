@@ -57,7 +57,7 @@ function QueueEntry(props: {
 					style={{backgroundImage: "url('" + "icons/production/" + props.entry.type + ".png')"}}
 				/>
 			}
-			simpleBorder paddingSmall blue
+			simpleBorder paddingSmall
 		>
 			<HBox centerVertical spaceBetween gap_s>
 				<Text className="queue-entry__name">{props.position + ". " + props.entry.type}</Text>

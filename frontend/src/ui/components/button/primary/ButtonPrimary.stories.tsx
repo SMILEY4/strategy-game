@@ -1,7 +1,7 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {ButtonPrimary, ButtonPrimaryColor, ButtonPrimaryProps} from "./ButtonPrimary";
-import {DecoratedPanel, DecoratedPanelColor} from "../../panels/decorated/DecoratedPanel";
+import {ButtonPrimary, ButtonPrimaryType, ButtonPrimaryProps} from "./ButtonPrimary";
+import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
 import {FaHome, FaSearch} from "react-icons/fa";
 import {HBox} from "../../layout/hbox/HBox";
 import {TextField} from "../../textfield/TextField";
@@ -15,31 +15,26 @@ const meta = {
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<ButtonPrimaryProps & { panelColor: DecoratedPanelColor, buttonColor: ButtonPrimaryColor }>
+type Story = StoryObj<ButtonPrimaryProps & {buttonType: ButtonPrimaryType }>
 export default meta;
 
 
 export const Default: Story = {
     args: {
-        panelColor: "red",
-        buttonColor: "red",
+        buttonType: "warn",
         disabled: false,
         round: false,
     },
     argTypes: {
-        panelColor: {
-            options: ["red", "green", "blue", "paper"],
-            control: {type: "select"},
-        },
-        buttonColor: {
-            options: ["red", "green", "blue"],
+        buttonType: {
+            options: ["info", "success", "warn"],
             control: {type: "select"},
         },
     },
     render: (args) => (
-        <DecoratedPanel color={args.panelColor}>
+        <DecoratedPanel>
             <div style={{padding: "50px"}}>
-                <ButtonPrimary color={args.buttonColor} disabled={args.disabled} round={args.round}>
+                <ButtonPrimary type={args.buttonType} disabled={args.disabled} round={args.round}>
                     Button
                 </ButtonPrimary>
             </div>
@@ -49,9 +44,9 @@ export const Default: Story = {
 
 export const Round: Story = {
     render: () => (
-        <DecoratedPanel red>
+        <DecoratedPanel>
             <div style={{padding: "50px"}}>
-                <ButtonPrimary round blue>
+                <ButtonPrimary round info>
                         <FaHome style={{width: "100%", height: "100%", display: "block"}}/>
                 </ButtonPrimary>
             </div>
@@ -61,11 +56,11 @@ export const Round: Story = {
 
 export const NextToTextField: Story = {
     render: () => (
-        <DecoratedPanel red>
+        <DecoratedPanel>
             <div style={{padding: "50px"}}>
                 <HBox gap_none>
                     <TextField value={""}/>
-                    <ButtonPrimary green>
+                    <ButtonPrimary success>
                         <FaSearch style={{width: "100%", height: "100%", display: "block"}}/>
                     </ButtonPrimary>
                 </HBox>

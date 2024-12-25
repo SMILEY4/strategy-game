@@ -38,7 +38,7 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
 						onChange={data.input.name.set}
 					/>
 
-					<ButtonPrimary blue onClick={data.randomizeName}>
+					<ButtonPrimary info onClick={data.randomizeName}>
 						Random
 					</ButtonPrimary>
 
@@ -47,7 +47,7 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
 
 				<HBox right centerVertical gap_s>
 
-					<ButtonPrimary red onClick={data.cancel}>
+					<ButtonPrimary warn onClick={data.cancel}>
 						Cancel
 					</ButtonPrimary>
 
@@ -56,7 +56,7 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
 						delay={500}
 						content={<ul>{data.input.reasonsInvalid.map(e => (<li>{e}</li>))}</ul>}
 					>
-						<ButtonPrimary green disabled={!data.input.valid} onClick={data.create}>
+						<ButtonPrimary success disabled={!data.input.valid} onClick={data.create}>
 							Create
 						</ButtonPrimary>
 					</BasicTooltip>

@@ -3,14 +3,7 @@ import {useTextField, UseTextFieldProps} from "../headless/useTextField";
 import {joinClassNames} from "../utils";
 import "./textField.scoped.less";
 
-export type TextFieldColor = "blue" | "red" | "green" | "paper"
-
 export interface TextFieldProps extends UseTextFieldProps {
-    red?: boolean,
-    green?: boolean,
-    blue?: boolean,
-    paper?: boolean,
-    color?: TextFieldColor;
     className?: string;
 }
 
@@ -22,7 +15,6 @@ export function TextField(props: TextFieldProps): ReactElement {
         <div
             className={joinClassNames([
                 "text-field",
-                "text-field--" + getColor(props),
                 isDisabled ? "text-field--disabled" : null,
                 isReadOnly ? "text-field--readonly" : null,
                 props.className,
@@ -33,13 +25,4 @@ export function TextField(props: TextFieldProps): ReactElement {
             </div>
         </div>
     );
-
-    function getColor(props: TextFieldProps): TextFieldColor {
-        return props.color
-            || (props.red ? "red" : undefined)
-            || (props.green ? "green" : undefined)
-            || (props.blue ? "blue" : undefined)
-            || (props.paper ? "paper" : undefined)
-            || "red";
-    }
 }

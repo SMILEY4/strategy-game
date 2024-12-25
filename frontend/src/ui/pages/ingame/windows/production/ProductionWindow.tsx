@@ -40,7 +40,7 @@ export function ProductionWindow(props: ProductionWindowProps): ReactElement {
 function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: ProductionOptionAggregate }) {
 	return (
 		<DecoratedPanel
-			simpleBorder paddingSmall blue
+			simpleBorder paddingSmall
 			className={joinClassNames([
 				"production-entry",
 				props.entry.available ? null : "production-entry--disabled",
@@ -62,7 +62,7 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
 					nextValue={formatNumber(props.entry.queueCount + props.entry.commandCount, true, true)}
 				/>
 				<ButtonPrimary
-					blue small
+					info small
 					className={"production-entry__button"}
 					disabled={!props.entry.available}
 					onClick={() => props.data.produce(props.entry)}

@@ -10,7 +10,7 @@ import {Spacer} from "../../components/spacer/Spacer";
 export function PageNotFound(): ReactElement {
     return (
         <BackgroundImagePanel fillParent centerContent image="/images/image_4.bmp">
-            <DecoratedPanel red floating>
+            <DecoratedPanel floating>
                 <VBox gap_s centerVertical left>
                     <Header1>404</Header1>
                     <Spacer size="s"/>

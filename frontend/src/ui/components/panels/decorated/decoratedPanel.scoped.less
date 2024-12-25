@@ -5,6 +5,11 @@
   position:         relative;
   border-radius:    @border-radius-secondary;
 
+  color:      @color-background-content;
+  background: @gradient-background;
+  box-shadow: inset 0 0 30px @color-background-shadow,
+              @base-shadow;
+
   @base-shadow:     inset 0 0 10px rgba(0, 0, 0, 50%),
                     0 0 2px rgba(0, 0, 0, 30%),
                     0 0 5px rgba(0, 0, 0, 40%);
@@ -95,55 +100,8 @@
     padding: @spacing-s;
   }
 
-
-  &.panel--red {
-    color:      @color-red-secondary-content;
-    background: @gradient-red-secondary;
-    box-shadow: inset 0 0 30px @color-red-secondary-shadow,
-                @base-shadow;
-  }
-
-  &.panel--red.decorated-panel--floating {
-    box-shadow: inset 0 0 30px @color-red-secondary-shadow,
-                @base-shadow,
-                @shadow-floating;
-  }
-
-  &.panel--green {
-    color:      @color-green-secondary-content;
-    background: @gradient-green-secondary;
-    box-shadow: inset 0 0 30px @color-green-secondary-shadow,
-                @base-shadow;
-  }
-
-  &.panel--green.decorated-panel--floating {
-    box-shadow: inset 0 0 30px @color-green-secondary-shadow,
-                @base-shadow,
-                @shadow-floating;
-  }
-
-  &.panel--blue {
-    color:      @color-blue-secondary-content;
-    background: @gradient-blue-secondary;
-    box-shadow: inset 0 0 30px @color-blue-secondary-shadow,
-                @base-shadow;
-  }
-
-  &.panel--blue.decorated-panel--floating {
-    box-shadow: inset 0 0 30px @color-blue-secondary-shadow,
-                @base-shadow,
-                @shadow-floating;
-  }
-
-  &.panel--paper {
-    color:      @color-paper-secondary-content;
-    background: @gradient-paper-secondary;
-    box-shadow: inset 0 0 30px @color-paper-secondary-shadow,
-                @base-shadow;
-  }
-
-  &.panel--paper.decorated-panel--floating {
-    box-shadow: inset 0 0 30px @color-paper-secondary-shadow,
+  &.decorated-panel--floating {
+    box-shadow: inset 0 0 30px @color-background-shadow,
                 @base-shadow,
                 @shadow-floating;
   }

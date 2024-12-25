@@ -1,0 +1,124 @@
+//===== COMMON =====//
+
+@color-green-secondary-light:      hsl(115, 32%, 28%);
+@color-green-secondary-dark:       hsl(148, 15%, 25%);
+@gradient-green-secondary:         radial-gradient(ellipse at bottom, @color-green-secondary-light 0%, @color-green-secondary-dark 90%);
+
+@color-decorative-gold:            hsla(35, 44%, 72%, 40%); //hsla(35, 20%, 70%, 40%);
+@color-decorative-white:           hsla(35, 0%, 72%, 30%); //hsla(35, 20%, 70%, 40%);
+
+//===== TYPE =====//
+
+@color-warn-content:               hsl(20, 20%, 85%);
+@color-warn-light:                 hsl(0, 40%, 35%);
+@color-warn-dark:                  hsl(0, 30%, 25%);
+
+@color-warn-content-hover:         hsl(20, 20%, 85%);
+@color-warn-light-hover:           hsl(0, 40%, 40%);
+@color-warn-dark-hover:            hsl(0, 30%, 30%);
+
+@color-warn-content-active:        hsl(20, 20%, 85%);
+@color-warn-light-active:          hsl(0, 40%, 30%);
+@color-warn-dark-active:           hsl(0, 30%, 20%);
+
+@color-warn-content-disabled:      hsl(20, 10%, 70%);
+@color-warn-light-disabled:        hsl(0, 15%, 30%);
+@color-warn-dark-disabled:         hsl(0, 10%, 20%);
+
+@gradient-warn:                    radial-gradient(ellipse at bottom, @color-warn-light 20%, transparent 60%),
+                                   linear-gradient(@color-warn-dark 50%, @color-warn-light);
+
+@gradient-warn-hover:              radial-gradient(ellipse at bottom, @color-warn-light-hover 20%, transparent 60%),
+                                   linear-gradient(@color-warn-dark-hover 50%, @color-warn-light-hover);
+
+@gradient-warn-active:             radial-gradient(ellipse at bottom, @color-warn-light-active 20%, transparent 60%),
+                                   linear-gradient(@color-warn-dark-active 50%, @color-warn-light-active);
+
+@gradient-warn-disabled:           radial-gradient(ellipse at bottom, @color-warn-light-disabled 20%, transparent 60%),
+                                   linear-gradient(@color-warn-dark-disabled 50%, @color-warn-light-disabled);
+
+@color-success-content:            hsl(135, 15%, 85%);
+@color-success-light:              hsl(115, 37%, 33%);
+@color-success-dark:               hsl(115, 30%, 25%);
+
+@color-success-content-hover:      hsl(135, 15%, 85%);
+@color-success-light-hover:        hsl(115, 37%, 38%);
+@color-success-dark-hover:         hsl(115, 30%, 30%);
+
+@color-success-content-active:     hsl(135, 15%, 85%);
+@color-success-light-active:       hsl(115, 37%, 28%);
+@color-success-dark-active:        hsl(115, 30%, 20%);
+
+@color-success-content-disabled:   hsl(135, 5%, 70%);
+@color-success-light-disabled:     hsl(115, 10%, 33%);
+@color-success-dark-disabled:      hsl(115, 10%, 20%);
+
+@gradient-success:                 radial-gradient(ellipse at bottom, @color-success-light 20%, transparent 60%),
+                                   linear-gradient(@color-success-dark 50%, @color-success-light);
+
+@gradient-success-hover:           radial-gradient(ellipse at bottom, @color-success-light-hover 20%, transparent 60%),
+                                   linear-gradient(@color-success-dark-hover 50%, @color-success-light-hover);
+
+@gradient-success-active:          radial-gradient(ellipse at bottom, @color-success-light-active 20%, transparent 60%),
+                                   linear-gradient(@color-success-dark-active 50%, @color-success-light-active);
+
+@gradient-success-disabled:        radial-gradient(ellipse at bottom, @color-success-light-disabled 20%, transparent 60%),
+                                   linear-gradient(@color-success-dark-disabled 50%, @color-success-light-disabled);
+
+@color-info-content:               hsl(225, 15%, 85%);
+@color-info-light:                 hsl(215, 40%, 35%);
+@color-info-dark:                  hsl(215, 30%, 25%);
+
+@color-info-content-hover:         hsl(225, 15%, 85%);
+@color-info-light-hover:           hsl(215, 40%, 40%);
+@color-info-dark-hover:            hsl(215, 30%, 30%);
+
+@color-info-content-active:        hsl(225, 15%, 85%);
+@color-info-light-active:          hsl(215, 40%, 30%);
+@color-info-dark-active:           hsl(215, 30%, 20%);
+
+@color-info-content-disabled:      hsl(225, 5%, 70%);
+@color-info-light-disabled:        hsl(215, 15%, 30%);
+@color-info-dark-disabled:         hsl(215, 10%, 20%);
+
+@gradient-info:                    radial-gradient(ellipse at bottom, @color-info-light 20%, transparent 60%),
+                                   linear-gradient(@color-info-dark 50%, @color-info-light);
+
+@gradient-info-hover:              radial-gradient(ellipse at bottom, @color-info-light-hover 20%, transparent 60%),
+                                   linear-gradient(@color-info-dark-hover 50%, @color-info-light-hover);
+
+@gradient-info-active:             radial-gradient(ellipse at bottom, @color-info-light-active 20%, transparent 60%),
+                                   linear-gradient(@color-info-dark-active 50%, @color-info-light-active);
+
+@gradient-info-disabled:           radial-gradient(ellipse at bottom, @color-info-light-disabled 20%, transparent 60%),
+                                   linear-gradient(@color-info-dark-disabled 50%, @color-info-light-disabled);
+
+
+//===== BORDER =====//
+
+@color-border-light:               hsl(25, 10%, 90%);
+@color-border-dark:                hsl(25, 30%, 60%);
+
+@color-border-light-focus:         hsl(25, 10%, 100%);
+@color-border-dark-focus:          hsl(41, 50%, 70%);
+
+@color-border-light-disabled:      hsl(25, 10%, 80%);
+@color-border-dark-disabled:       hsl(25, 10%, 55%);
+
+@gradient-border-primary:          linear-gradient(90deg, @color-border-dark, @color-border-light, @color-border-dark);
+@gradient-border-primary-focus:    linear-gradient(90deg, @color-border-dark-focus, @color-border-light-focus, @color-border-dark-focus);
+@gradient-border-primary-disabled: linear-gradient(90deg, @color-border-dark-disabled, @color-border-light-disabled, @color-border-dark-disabled);
+
+//===== BACKGROUND =====//
+
+@gradient-background:              radial-gradient(ellipse, hsl(0, 40%, 26%) 0%, hsl(329, 25%, 22%) 100%);
+@color-background-content:         hsl(20, 20%, 85%);
+@color-background-shadow:          hsl(0, 10%, 15%);
+
+@gradient-background-tooltip:                     radial-gradient(ellipse, hsl(0, 30%, 15%) 0%, hsl(329, 15%, 13%) 100%);
+
+
+//===== SCROLLBAR =====//
+
+@color-scrollbar-track:            rgba(0, 0, 0, 20%);
+@color-scrollbar-handle:           @color-decorative-white;

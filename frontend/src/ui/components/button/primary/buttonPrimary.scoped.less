@@ -3,18 +3,18 @@
 .button-primary {
 
   position:      relative;
-
-  height:        @height-0;
+  height:        @height-m;
 
   background:    @gradient-border-primary;
   box-shadow:    @shadow-object;
+
   border-radius: @border-radius-primary;
   border:        1px solid transparent;
   box-sizing:    border-box;
 
   font-size:     @font-size-m;
   font-family:   @font-type-primary-special;
-  font-weight:   @font-weight-1;
+  font-weight:   @font-weight-m;
 
   cursor:        pointer;
   user-select:   none;
@@ -33,16 +33,16 @@
     display:         flex;
     justify-content: center;
     align-items:     center;
-    text-shadow:     @shadow-content;
+    text-shadow:     @shadow-text;
     white-space:     nowrap;
   }
 
   &.button--small {
-    height: @height-1;
+    height: @height-s;
   }
 
   .button-primary__inner /deep/ svg {
-    filter: drop-shadow(@shadow-content);
+    filter: drop-shadow(@shadow-text);
   }
 
   .button-primary__inner {
@@ -85,76 +85,76 @@
     cursor:     default;
   }
 
-  &.button--red {
+  &.button--warn {
 
     &:not(.button--disabled) .button-primary__inner {
-      background: @gradient-red-primary;
-      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light;
-      color:      @color-red-primary-content;
+      background: @gradient-warn;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light;
+      color:      @color-warn-content;
 
       &:hover {
-        background: @gradient-red-primary-hover;
-        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-hover;
+        background: @gradient-warn-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light-hover;
       }
 
       &:active {
-        background: @gradient-red-primary-active;
-        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-active;
+        background: @gradient-warn-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light-active;
       }
     }
 
     &.button--disabled .button-primary__inner {
-      background: @gradient-red-primary-disabled;
-      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-red-primary-light-disabled;
-      color:      @color-red-primary-content-disabled;
+      background: @gradient-warn-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light-disabled;
+      color:      @color-warn-content-disabled;
     }
   }
 
-  &.button--green {
+  &.button--success {
     &:not(.button--disabled) .button-primary__inner {
-      background: @gradient-green-primary;
-      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light;
-      color:      @color-green-primary-content;
+      background: @gradient-success;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light;
+      color:      @color-success-content;
 
       &:hover {
-        background: @gradient-green-primary-hover;
-        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-hover;
+        background: @gradient-success-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light-hover;
       }
 
       &:active {
-        background: @gradient-green-primary-active;
-        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-active;
+        background: @gradient-success-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light-active;
       }
     }
 
     &.button--disabled .button-primary__inner {
-      background: @gradient-green-primary-disabled;
-      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-green-primary-light-disabled;
-      color:      @color-green-primary-content-disabled;
+      background: @gradient-success-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light-disabled;
+      color:      @color-success-content-disabled;
     }
   }
 
-  &.button--blue {
+  &.button--info {
     &:not(.button--disabled) .button-primary__inner {
-      background: @gradient-blue-primary;
-      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light;
-      color:      @color-blue-primary-content;
+      background: @gradient-info;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light;
+      color:      @color-info-content;
 
       &:hover {
-        background: @gradient-blue-primary-hover;
-        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-hover;
+        background: @gradient-info-hover;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light-hover;
       }
 
       &:active {
-        background: @gradient-blue-primary-active;
-        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-active;
+        background: @gradient-info-active;
+        box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light-active;
       }
     }
 
     &.button--disabled .button-primary__inner {
-      background: @gradient-blue-primary-disabled;
-      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-blue-primary-light-disabled;
-      color:      @color-blue-primary-content-disabled;
+      background: @gradient-info-disabled;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light-disabled;
+      color:      @color-info-content-disabled;
     }
   }
 

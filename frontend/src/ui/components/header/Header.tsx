@@ -5,7 +5,6 @@ import "./header.scoped.less";
 export interface HeaderProps {
     level?: 1 | 2 | 3 | 4 | 5,
     centered?: boolean,
-    onLight?: boolean,
     className?: string,
     children?: string
 }
@@ -14,7 +13,6 @@ export function Header(props: HeaderProps): ReactElement {
     const classNames = joinClassNames([
         "header",
         props.centered ? "header--centered" : null,
-        props.onLight ? "header--on-light" : null,
         props.className
     ]);
     const level = props.level || 1

@@ -18,7 +18,7 @@ export function MapWindow(props: MapWindowProps): ReactElement {
                 return (
                     <ButtonPrimary
                         key={mapMode.id}
-                        blue
+                        info
                         onClick={() => data.setMapMode(mapMode)}
                         disabled={data.selectedMapMode === mapMode}
                     >

@@ -3,13 +3,13 @@ import {useButton, UseButtonProps} from "../../headless/useButton";
 import {joinClassNames} from "../../utils";
 import "./buttonPrimary.scoped.less";
 
-export type ButtonPrimaryColor = "red" | "green" | "blue"
+export type ButtonPrimaryType = "info" | "warn" | "success"
 
 export interface ButtonPrimaryProps extends UseButtonProps {
-    red?: boolean,
-    green?: boolean,
-    blue?: boolean,
-    color?: ButtonPrimaryColor,
+    warn?: boolean,
+    info?: boolean,
+    success?: boolean,
+    type?: ButtonPrimaryType,
     round?: boolean,
     square?: boolean,
     small?: boolean,
@@ -24,7 +24,7 @@ export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
     return (
         <div {...elementProps} className={joinClassNames([
             "button-primary",
-            "button--" + getColor(props),
+            "button--" + getType(props),
             isDisabled ? "button--disabled" : null,
             props.round ? "button--round" : null,
             props.square ? "button--square" : null,
@@ -37,11 +37,11 @@ export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
         </div>
     );
 
-    function getColor(props: ButtonPrimaryProps): ButtonPrimaryColor {
-        return props.color
-            || (props.red ? "red" : undefined)
-            || (props.green ? "green" : undefined)
-            || (props.blue ? "blue" : undefined)
-            || "red";
+    function getType(props: ButtonPrimaryProps): ButtonPrimaryType {
+        return props.type
+            || (props.info ? "info" : undefined)
+            || (props.warn ? "warn" : undefined)
+            || (props.success? "success" : undefined)
+            || "info";
     }
 }

@@ -16,7 +16,7 @@ export function PageSignupConfirm(): ReactElement {
 
     return (
         <BackgroundImagePanel fillParent centerContent image="/images/image_2.bmp">
-            <DecoratedPanel red floating>
+            <DecoratedPanel floating>
                 <VBox gap_s centerVertical stretch>
 
                     <Header1>Confirm E-Mail</Header1>
@@ -29,7 +29,7 @@ export function PageSignupConfirm(): ReactElement {
                     <Spacer size="s"/>
 
                     <HBox centerVertical right>
-                        <ButtonPrimary green onClick={gotoLogin}>
+                        <ButtonPrimary info onClick={gotoLogin}>
                             Return to Login
                         </ButtonPrimary>
                     </HBox>

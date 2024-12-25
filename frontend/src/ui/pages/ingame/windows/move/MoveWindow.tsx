@@ -39,8 +39,8 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 					<Header1>Move Unit</Header1>
 					<Text>{data.remainingPoints + "/" + data.totalPoints + "Movement Points left"}</Text>
 					<HBox right gap_s>
-						<ButtonPrimary color="red" onClick={data.cancel}>Cancel</ButtonPrimary>
-						<ButtonPrimary color="green" onClick={data.accept}>Accept</ButtonPrimary>
+						<ButtonPrimary warn onClick={data.cancel}>Cancel</ButtonPrimary>
+						<ButtonPrimary success onClick={data.accept}>Accept</ButtonPrimary>
 					</HBox>
 				</VBox>
 			</DecoratedWindow>

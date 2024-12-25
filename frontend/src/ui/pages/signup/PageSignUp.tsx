@@ -28,7 +28,7 @@ export function PageSignUp(): ReactElement {
 
 	return (
 		<BackgroundImagePanel fillParent centerContent image="/images/image_3.bmp">
-			<DecoratedPanel red floating>
+			<DecoratedPanel floating>
 				<VBox gap_s centerVertical stretch>
 
 					<Header1>Sign-Up</Header1>
@@ -59,10 +59,10 @@ export function PageSignUp(): ReactElement {
 					<Spacer size="s"/>
 
 					<HBox gap_s centerVertical right>
-						<ButtonPrimary blue onClick={gotoLogin}>
+						<ButtonPrimary info onClick={gotoLogin}>
 							Login
 						</ButtonPrimary>
-						<ButtonPrimary green onClick={signUp}>
+						<ButtonPrimary success onClick={signUp}>
 							Sign-Up
 						</ButtonPrimary>
 					</HBox>

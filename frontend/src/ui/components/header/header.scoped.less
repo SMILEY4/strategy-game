@@ -2,7 +2,7 @@
 
 .header {
   position:    relative;
-  text-shadow: @shadow-content;
+  text-shadow: @shadow-text;
   padding:     unset;
   margin:      unset;
 
@@ -18,16 +18,12 @@
     text-align: center;
   }
 
-  &.header--on-light {
-    text-shadow: @shadow-content-light
-  }
-
 }
 
 
 h1.header {
   font-size:   @font-size-xxl;
-  font-weight: @font-weight-2;
+  font-weight: @font-weight-l;
   font-family: @font-type-primary-special;
 
   &::before {
@@ -42,7 +38,7 @@ h1.header {
 
 h2.header {
   font-size:   @font-size-xl;
-  font-weight: @font-weight-2;
+  font-weight: @font-weight-l;
   font-family: @font-type-primary-special;
 
   &::before {
@@ -57,7 +53,7 @@ h2.header {
 
 h3.header {
   font-size:      @font-size-l;
-  font-weight:    @font-weight-2;
+  font-weight:    @font-weight-l;
   font-family:    @font-type-primary-special;
   letter-spacing: 0.07rem;
 
@@ -72,7 +68,7 @@ h3.header {
 
 h4.header {
   font-size:   @font-size-l;
-  font-weight: @font-weight-2;
+  font-weight: @font-weight-l;
   font-family: @font-type-primary;
 
   &::before {
@@ -88,7 +84,7 @@ h4.header {
 
 h5.header {
   font-size:   @font-size-s;
-  font-weight: @font-weight-1;
+  font-weight: @font-weight-m;
   font-family: @font-type-primary-special;
 
 

@@ -12,7 +12,7 @@ export interface ExpandButtonProps {
 export function ExpandButton(props: ExpandButtonProps): ReactElement {
     return (
         <ButtonPrimary
-            small round blue
+            small round info
             className={joinClassNames(["button-expand", props.className])}
             onClick={() => props.setOpen(!props.isOpen)}
         >

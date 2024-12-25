@@ -55,12 +55,12 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 				<When condition={data.movement.possible}>
 					<If condition={data.movement.canCancel}>
 						<Then>
-							<ButtonPrimary color="blue" onClick={data.movement.cancel}>
+							<ButtonPrimary info onClick={data.movement.cancel}>
 								Cancel Movement
 							</ButtonPrimary>
 						</Then>
 						<Else>
-							<ButtonPrimary color="blue" onClick={data.movement.start} disabled={!data.movement.enabled}>
+							<ButtonPrimary info onClick={data.movement.start} disabled={!data.movement.enabled}>
 								Move
 							</ButtonPrimary>
 						</Else>
@@ -68,7 +68,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 				</When>
 
 				<When condition={data.settlement.possible}>
-					<ButtonPrimary color="blue" onClick={data.settlement.start} disabled={!data.settlement.enabled}>
+					<ButtonPrimary info onClick={data.settlement.start} disabled={!data.settlement.enabled}>
 						Found Settlement
 					</ButtonPrimary>
 				</When>

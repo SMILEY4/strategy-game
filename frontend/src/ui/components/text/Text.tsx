@@ -7,7 +7,6 @@ export interface TextProps {
     align?: "left" | "center" | "right"
     type?: "positive" | "negative" | "secondary" | "default"
     strikethrough?: boolean,
-    onLight?: boolean,
     relative?: boolean,
     className?: string,
     children?: any;
@@ -22,7 +21,6 @@ export function Text(props: TextProps): ReactElement {
                 props.fillParent ? "text--fill-parent" : null,
                 props.relative ? "text--relative" : null,
                 props.strikethrough ? "text--strikethrough" : null,
-                props.onLight ? "text--on-light" : null,
                 "text--" + (props.align ?? "left"),
                 props.type ? "text--" + props.type : null,
                 props.className,

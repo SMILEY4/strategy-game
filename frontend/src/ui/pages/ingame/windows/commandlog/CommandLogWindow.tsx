@@ -42,13 +42,13 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
  */
 export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: Command }): ReactElement {
 	return (
-		<DecoratedPanel paper simpleBorder>
+		<DecoratedPanel simpleBorder>
 			<HBox centerVertical spaceBetween>
 				<VBox stretch>
 					{renderCommand(props.command)}
 				</VBox>
 				<ButtonPrimary
-					red round small
+					warn round small
 					onClick={() => props.data.cancel(props.command)}	>
 					<CgClose/>
 				</ButtonPrimary>
@@ -61,10 +61,10 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 			const cmd = command as MoveCommand
 			return (
 				<>
-					<Header4 onLight>{"Move Unit"}</Header4>
+					<Header4>{"Move Unit"}</Header4>
 					<Spacer size="s"/>
-					<Text onLight>{"world-object-id: " + cmd.worldObjectId}</Text>
-					<Text onLight>{"from " + cmd.path[0].q + "," + cmd.path[0].r + " to: " + cmd.path[cmd.path.length-1].q + "," + cmd.path[cmd.path.length-1].r}</Text>
+					<Text>{"world-object-id: " + cmd.worldObjectId}</Text>
+					<Text>{"from " + cmd.path[0].q + "," + cmd.path[0].r + " to: " + cmd.path[cmd.path.length-1].q + "," + cmd.path[cmd.path.length-1].r}</Text>
 				</>
 			)
 		}
@@ -72,11 +72,11 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 			const cmd = command as CreateSettlement
 			return (
 				<>
-					<Header4 onLight>{"Found Settlement"}</Header4>
+					<Header4>{"Found Settlement"}</Header4>
 					<Spacer size="s"/>
-					<Text onLight>{"with name " + cmd.name}</Text>
-					<Text onLight>{"at " + cmd.tile.q + "," + cmd.tile.r}</Text>
-					<Text onLight>{"by settler: " + cmd.worldObjectId}</Text>
+					<Text>{"with name " + cmd.name}</Text>
+					<Text>{"at " + cmd.tile.q + "," + cmd.tile.r}</Text>
+					<Text>{"by settler: " + cmd.worldObjectId}</Text>
 				</>
 			)
 		}
@@ -84,10 +84,10 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 			const cmd = command as ProductionQueueAddCommand
 			return (
 				<>
-					<Header4 onLight>{"Add Production Queue"}</Header4>
+					<Header4>{"Add Production Queue"}</Header4>
 					<Spacer size="s"/>
-					<Text onLight>{"produce " + "todo"}</Text>
-					<Text onLight>{"in settlement " + cmd.settlement.name}</Text>
+					<Text>{"produce " + "todo"}</Text>
+					<Text>{"in settlement " + cmd.settlement.name}</Text>
 				</>
 			)
 		}
@@ -95,18 +95,18 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
 			const cmd = command as ProductionQueueCancelCommand
 			return (
 				<>
-					<Header4 onLight>{"Cancel Production Queue"}</Header4>
+					<Header4>{"Cancel Production Queue"}</Header4>
 					<Spacer size="s"/>
-					<Text onLight>{"cancel " + "todo"}</Text>
-					<Text onLight>{"in settlement " + cmd.settlement.name}</Text>
+					<Text>{"cancel " + "todo"}</Text>
+					<Text>{"in settlement " + cmd.settlement.name}</Text>
 				</>
 			)
 		}
 		return (
 			<>
-				<Header4 onLight>{command.id}</Header4>
+				<Header4>{command.id}</Header4>
 				<Spacer size="s"/>
-				<Text onLight>{command.id}</Text>
+				<Text>{command.id}</Text>
 			</>
 		);
 	}
