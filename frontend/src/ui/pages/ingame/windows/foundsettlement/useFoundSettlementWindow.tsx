@@ -1,10 +1,11 @@
-import {useCloseWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import {Tile, TileIdentifier} from "../../../../../models/base/tile";
 import {FoundSettlementWindow} from "./FoundSettlementWindow";
 import {useDI} from "../../../../../appContext";
 import {useEffect, useState} from "react";
 import {SettlementService} from "../../../../../logic/game/settlementService";
 import {TileRepository} from "../../../../../state/repository/tileRepository";
+import {useCloseWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {WindowStore} from "../../../../components/window/windowStore";
 
 export namespace UseFoundSettlementWindow {
 
@@ -13,15 +14,11 @@ export namespace UseFoundSettlementWindow {
 	 */
 	export function useOpen() {
 		const WINDOW_ID = "found-settlement-window";
-		const addWindow = useOpenWindow();
-		return (tile: TileIdentifier, worldObjectId: string | null) => {
-			addWindow({
+		const open = useOpenWindow();
+		return (tile: TileIdentifier, worldObjectId: string) => {
+			open({
 				id: WINDOW_ID,
-				className: "found-settlement-window",
-				left: 125,
-				top: 160,
-				width: 360,
-				height: 170,
+				anchor: WindowStore.ANCHOR_CENTER_POINT,
 				content: <FoundSettlementWindow windowId={WINDOW_ID} tile={tile} worldObjectId={worldObjectId}/>,
 			});
 		};

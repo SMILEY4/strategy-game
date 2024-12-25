@@ -1,6 +1,6 @@
 import React, {ReactElement} from "react";
 import {UseCommandLogWindow} from "./useCommandLogWindow";
-import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithHeader} from "../../../../components/window/decorated/DecoratedWindow";
 import {
 	Command,
 	CommandType,

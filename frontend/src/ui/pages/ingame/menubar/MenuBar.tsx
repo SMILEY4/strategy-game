@@ -10,10 +10,10 @@ import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseTileWindow} from "../windows/tile/useTileWindow";
 import {PiScrollBold} from "react-icons/pi";
 import {UseCommandLogWindow} from "../windows/commandlog/useCommandLogWindow";
-import {isBlockingWindowOpen} from "../../../components/headless/useWindowData";
 import {useDI} from "../../../../appContext";
 import {TurnEndService} from "../../../../logic/game/turnEndService";
 import {SessionRepository} from "../../../../state/repository/sessionRepository";
+import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 
 export function MenuBar(): ReactElement {
 
@@ -58,7 +58,7 @@ export function MenuBar(): ReactElement {
 }
 
 function useEndTurn(): [boolean, () => void] {
-	const isBlocked = isBlockingWindowOpen();
+	const isBlocked = useIsBlockingWindowOpen();
 	const isWaiting = SessionRepository.useGameTurnState() === "waiting";
 	const isDisabled = isBlocked || isWaiting;
 

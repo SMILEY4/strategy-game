@@ -1,10 +1,11 @@
-import {openWindow, useCloseWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import React, {useEffect} from "react";
 import {MoveWindow} from "./MoveWindow";
 import {useDI} from "../../../../../appContext";
 import {WorldObject} from "../../../../../models/base/worldObject";
 import {WorldObjectRepository} from "../../../../../state/repository/worldObjectRepository";
 import {MovementService} from "../../../../../logic/game/movementService";
+import {openWindow, useCloseWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import { WindowStore} from "../../../../components/window/windowStore";
 
 export namespace UseMoveWindow {
 
@@ -13,16 +14,11 @@ export namespace UseMoveWindow {
 	 */
 	export function useOpen() {
 		const WINDOW_ID = "move-command";
-		const openWindow = useOpenWindow();
+		const open = useOpenWindow();
 		return (worldObjectId: string) => {
-			openWindow({
+			open({
 				id: WINDOW_ID,
-				className: "move-window",
-				bottom: 25,
-				height: 160,
-				width: 370,
-				left: 1000,
-				right: 1000,
+				anchor: WindowStore.ANCHOR_BOTTOM_POINT,
 				blockOthers: true,
 				content: <MoveWindow windowId={WINDOW_ID} identifier={worldObjectId}/>,
 			});
@@ -36,12 +32,7 @@ export namespace UseMoveWindow {
 		const WINDOW_ID = "move-command";
 		openWindow({
 			id: WINDOW_ID,
-			className: "move-window",
-			bottom: 25,
-			height: 160,
-			width: 370,
-			left: 1000,
-			right: 1000,
+			anchor: WindowStore.ANCHOR_BOTTOM_POINT,
 			blockOthers: true,
 			content: <MoveWindow windowId={WINDOW_ID} identifier={worldObjectId}/>,
 		});

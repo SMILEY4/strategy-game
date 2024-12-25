@@ -13,6 +13,15 @@ import {WindowProperties} from "./windowProperties";
 
 export namespace WindowStore {
 
+    export const ANCHOR_LEFT_EDGE = "left-edge"
+    export const ANCHOR_RIGHT_EDGE = "right-edge"
+    export const ANCHOR_BOTTOM_EDGE = "bottom-edge"
+    export const ANCHOR_TOP_EDGE = "top-edge"
+    export const ANCHOR_BOTTOM_RIGHT_AREA = "bottom-right-area"
+    export const ANCHOR_CENTER_POINT = "center-point"
+    export const ANCHOR_BOTTOM_POINT = "bottom-point"
+
+
     interface StateValues {
         windows: WindowData[],
         anchors: WindowAnchor[],
@@ -22,25 +31,25 @@ export namespace WindowStore {
         windows: [],
         anchors: [
             {
-                id: "left-edge",
+                id: ANCHOR_LEFT_EDGE,
                 type: "line_vertical",
-                top: CssValue.px(10),
+                top: CssValue.px(10 + 34),
                 bottom: CssValue.px(10),
                 left: CssValue.px(10),
                 right: null,
                 side: "right",
             } as WindowVerticalLineAnchor,
             {
-                id: "right-edge",
+                id: ANCHOR_RIGHT_EDGE,
                 type: "line_vertical",
-                top: CssValue.px(10),
+                top: CssValue.px(10 + 34),
                 bottom: CssValue.px(10),
                 right: CssValue.px(10),
                 left: null,
                 side: "left",
             } as WindowVerticalLineAnchor,
             {
-                id: "bottom-edge",
+                id: ANCHOR_BOTTOM_EDGE,
                 type: "line_horizontal",
                 left: CssValue.px(10),
                 right: CssValue.px(10),
@@ -49,16 +58,16 @@ export namespace WindowStore {
                 side: "top"
             } as WindowHorizontalLineAnchor,
             {
-                id: "top-edge",
+                id: ANCHOR_TOP_EDGE,
                 type: "line_horizontal",
                 left: CssValue.px(10),
                 right: CssValue.px(10),
-                top: CssValue.px(10 + 22),
+                top: CssValue.px(10 + 34),
                 bottom: null,
                 side: "bottom",
             } as WindowHorizontalLineAnchor,
             {
-                id: "bottom-right",
+                id: ANCHOR_BOTTOM_RIGHT_AREA,
                 type: "area",
                 bottom: CssValue.px(10),
                 right: CssValue.px(10),
@@ -68,13 +77,24 @@ export namespace WindowStore {
                 top: null,
             } as WindowAreaAnchor,
             {
-                id: "center",
+                id: ANCHOR_CENTER_POINT,
                 type: "point",
                 top: CssValue.px(0),
                 left: CssValue.px(0),
                 bottom: CssValue.px(0),
                 right: CssValue.px(0),
-                autoMargin: true
+                autoMargin: true,
+                side: "centered"
+            } as WindowPointAnchor,
+            {
+                id: ANCHOR_BOTTOM_POINT,
+                type: "point",
+                top: null,
+                left: CssValue.px(0),
+                bottom: CssValue.px(10),
+                right: CssValue.px(0),
+                autoMargin: true,
+                side: "above"
             } as WindowPointAnchor,
         ],
     };
@@ -82,6 +102,7 @@ export namespace WindowStore {
     interface StateActions {
         add: (properties: WindowProperties) => void,
         remove: (id: string) => void,
+        modifyPosition: (id: string, action: (position: WindowPosition) => WindowPosition) => void,
     }
 
     export interface State extends StateValues, StateActions {
@@ -109,6 +130,21 @@ export namespace WindowStore {
                     windows: state.windows.filter(it => it.id !== id),
                 };
             }),
+            modifyPosition: (id: string, action: (position: WindowPosition) => WindowPosition) => set((state: State) => {
+                return {
+                    ...state,
+                    windows: state.windows.map(it => {
+                        if(it.id === id) {
+                            return {
+                                ...it,
+                                position: action(it.position)
+                            }
+                        } else {
+                            return it;
+                        }
+                    }),
+                };
+            }),
         };
     }
 
@@ -127,7 +163,6 @@ export namespace WindowStore {
             width: null,
             height: null,
             autoMargin: false,
-            fitContent: false
         };
 
         if (anchor.type === "point") {
@@ -145,6 +180,7 @@ export namespace WindowStore {
 
         return {
             id: properties.id,
+            blockOthers: properties.blockOthers === true,
             content: properties.content,
             position: position,
         };

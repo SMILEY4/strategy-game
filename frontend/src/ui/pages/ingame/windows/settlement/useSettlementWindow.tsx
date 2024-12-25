@@ -1,4 +1,3 @@
-import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import React from "react";
 import {SettlementWindow} from "./SettlementWindow";
 import {useDI} from "../../../../../appContext";
@@ -10,20 +9,18 @@ import {SettlementAggregateAccess} from "../../../../../state/settlementAggregat
 import {UseProductionQueueWindow} from "../productionQueue/useProductionQueueWindow";
 import {SettlementService} from "../../../../../logic/game/settlementService";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
+import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {WindowStore} from "../../../../components/window/windowStore";
 
 export namespace UseSettlementWindow {
 
 	export function useOpen() {
 		const WINDOW_ID = "menubar-window";
-		const openWindow = useOpenWindow();
+		const open = useOpenWindow();
 		return (identifier: string | null) => {
-			openWindow({
+			open({
 				id: WINDOW_ID,
-				className: "settlement-window",
-				left: 25,
-				top: 60,
-				bottom: 25,
-				width: 360,
+				anchor: WindowStore.ANCHOR_LEFT_EDGE,
 				content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
 			});
 		};
@@ -33,11 +30,7 @@ export namespace UseSettlementWindow {
 		const WINDOW_ID = "menubar-window";
 		openWindow({
 			id: WINDOW_ID,
-			className: "settlement-window",
-			left: 25,
-			top: 60,
-			bottom: 25,
-			width: 360,
+			anchor: WindowStore.ANCHOR_LEFT_EDGE,
 			content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
 		});
 	}

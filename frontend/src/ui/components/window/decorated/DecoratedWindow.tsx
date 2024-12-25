@@ -1,5 +1,4 @@
 import React, {CSSProperties, ReactElement} from "react";
-import {useWindow} from "../../headless/useWindowData";
 import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
 import {joinClassNames} from "../../utils";
 import {ButtonPrimary} from "../../button/primary/ButtonPrimary";
@@ -10,6 +9,7 @@ import {VBox} from "../../layout/vbox/VBox";
 import {HeaderBanner} from "../../banner/Banner";
 import {Header} from "../../header/Header";
 import {Spacer} from "../../spacer/Spacer";
+import {useWindowInteractions} from "../windowHooks";
 
 export interface DecoratedWindowProps {
     windowId: string;
@@ -26,9 +26,9 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
     const {
         dragProps,
         resizerProps,
-        refWindow,
-        closeWindow,
-    } = useWindow(props.windowId);
+        refContent,
+        closeWindow
+    } = useWindowInteractions(props.windowId);
 
     function handleClose() {
         props.onClose && props.onClose();
@@ -40,7 +40,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             red
             noPadding={props.noPadding}
             className={joinClassNames(["decorated-window", props.className])}
-            elementRef={refWindow}
+            elementRef={refContent}
             style={props.style}
         >
 

@@ -1,7 +1,7 @@
 import {TileIdentifier} from "../../../../../models/base/tile";
 import React from "react";
 import {TextField} from "../../../../components/textfield/TextField";
-import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithHeader} from "../../../../components/window/decorated/DecoratedWindow";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {BasicTooltip} from "../../../../components/tooltip/BasicTooltip";
@@ -10,7 +10,7 @@ import {UseFoundSettlementWindow} from "./useFoundSettlementWindow";
 export interface FoundSettlementWindowProps {
 	windowId: string;
 	tile: TileIdentifier,
-	worldObjectId: string | null
+	worldObjectId: string
 }
 
 

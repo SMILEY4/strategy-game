@@ -4,7 +4,7 @@ import {UseTileWindow} from "./useTileWindow";
 import {
     DefaultDecoratedWindow,
     DefaultDecoratedWindowWithBanner,
-} from "../../../../components/windows/decorated/DecoratedWindow";
+} from "../../../../components/window/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {WindowSection} from "../../../../components/section/ContentSection";

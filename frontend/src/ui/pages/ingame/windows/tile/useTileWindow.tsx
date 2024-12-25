@@ -1,22 +1,19 @@
-import {openWindow, useOpenWindow} from "../../../../components/headless/useWindowData";
 import {Tile, TileIdentifier} from "../../../../../models/base/tile";
 import React from "react";
 import {TileWindow} from "./TileWindow";
 import {TileRepository} from "../../../../../state/repository/tileRepository";
+import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
+import {WindowStore} from "../../../../components/window/windowStore";
 
 export namespace UseTileWindow {
 
 	export function useOpen() {
 		const WINDOW_ID = "menubar-window";
-		const openWindow = useOpenWindow();
+		const open = useOpenWindow();
 		return (identifier: TileIdentifier | null) => {
-			openWindow({
+			open({
 				id: WINDOW_ID,
-				className: "tile-window",
-				left: 25,
-				top: 60,
-				bottom: 25,
-				width: 360,
+				anchor: WindowStore.ANCHOR_LEFT_EDGE,
 				content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
 			});
 		};
@@ -26,11 +23,7 @@ export namespace UseTileWindow {
 		const WINDOW_ID = "menubar-window";
 		openWindow({
 			id: WINDOW_ID,
-			className: "tile-window",
-			left: 25,
-			top: 60,
-			bottom: 25,
-			width: 360,
+			anchor: WindowStore.ANCHOR_LEFT_EDGE,
 			content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
 		});
 	}

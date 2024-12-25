@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {DefaultDecoratedWindowWithHeader} from "../../../../components/windows/decorated/DecoratedWindow";
+import {DefaultDecoratedWindowWithHeader} from "../../../../components/window/decorated/DecoratedWindow";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {MapMode} from "../../../../../models/base/mapMode";
 import {UseMapWindow} from "./useMapWindow";

@@ -1,11 +1,11 @@
 import React, {ReactElement} from "react";
-import {DecoratedWindow, DefaultDecoratedWindow} from "../../../../components/windows/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
-import {UseMoveWindow} from "./useWorldObjectWindow";
+import {UseMoveWindow} from "./useMoveWindow";
 import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../../components/layout/hbox/HBox";
+import {DecoratedWindow, DefaultDecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 
 export interface MoveWindowProps {
 	windowId: string;

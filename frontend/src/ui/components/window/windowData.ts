@@ -1,8 +1,9 @@
 import {CssValue} from "./cssValue";
 
-export interface WindowData {
+export interface + 34Data {
     id: string,
     content: any,
+    blockOthers: boolean,
     position: WindowPosition
 }
 
