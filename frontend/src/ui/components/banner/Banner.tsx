@@ -2,7 +2,7 @@ import React, {ReactElement} from "react";
 import {joinClassNames} from "../utils";
 import "./banner.scoped.less";
 import {Text} from "../text/Text";
-import {Header1} from "../header/Header";
+import {Header1, Header2} from "../header/Header";
 
 export interface BannerProps {
     spaceAbove?: boolean,
@@ -38,7 +38,7 @@ export function Banner(props: BannerProps): ReactElement {
 export function HeaderBanner(props: { subtitle?: string, title?: string }): ReactElement {
     return (
         <Banner spaceAbove subtitle={props.subtitle}>
-            <Header1 centered>{props.title}</Header1>
+            <Header2 centered>{props.title}</Header2>
         </Banner>
     );
 }
