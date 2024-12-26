@@ -9,6 +9,8 @@ import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {HeaderBanner} from "../../../../components/banner/Banner";
+import {types} from "sass";
+import Color = types.Color;
 
 export interface TileWindowProps {
     windowId: string;
@@ -33,7 +35,10 @@ export function TileWindow(props: TileWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
                 <VBox fillParent>
-                    <HeaderBanner title={mapHiddenOrDefault(data.tile.base, "Undiscovered", base => base.terrainType.id)} subtitle={"Tile"}/>
+                    <HeaderBanner
+						title={mapHiddenOrDefault(data.tile.base, "Undiscovered", base => base.terrainType.id)}
+						subtitle={"Tile"}
+					/>
                     <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
 
                         <WindowSection>

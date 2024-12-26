@@ -31,7 +31,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
                 <VBox fillParent>
-                    <HeaderBanner title={data.worldObject.type.id} subtitle={"World Object"}/>
+                    <HeaderBanner title={data.worldObject.type.id} subtitle={"World Object"} color={data.worldObject.country.color}/>
                     <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
 
                         <WindowSection>

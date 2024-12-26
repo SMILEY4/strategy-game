@@ -2,9 +2,11 @@ import React, {ReactElement} from "react";
 import {joinClassNames} from "../utils";
 import "./banner.scoped.less";
 import {Text} from "../text/Text";
-import {Header1, Header2} from "../header/Header";
+import {Header2} from "../header/Header";
+import {Color} from "../../../models/base/color";
 
 export interface BannerProps {
+    color?: Color
     spaceAbove?: boolean,
     subtitle?: string,
     className?: string,
@@ -12,6 +14,20 @@ export interface BannerProps {
 }
 
 export function Banner(props: BannerProps): ReactElement {
+    let colorLight: Color | null = null;
+    let colorDark: Color | null = null;
+    if (props.color) {
+        colorLight = {
+            red: props.color.red * 0.7,
+            green: props.color.green * 0.7,
+            blue: props.color.blue * 0.7,
+        };
+        colorDark = {
+            red: props.color.red * 0.25,
+            green: props.color.green * 0.25,
+            blue: props.color.blue * 0.25,
+        };
+    }
     return (
         <div className={joinClassNames([
             "banner",
@@ -19,7 +35,9 @@ export function Banner(props: BannerProps): ReactElement {
             props.className,
         ])}>
             <div className="banner__shadow"/>
-            <div className="banner__inner">
+            <div className="banner__inner" style={{
+                background: props.color ? "radial-gradient(ellipse at bottom, " + Color.toCss(colorLight!) + " 0%, " + Color.toCss(colorDark!) + " 90%)" : undefined,
+            }}>
                 {props.children}
                 {props.subtitle && (
                     <Text
@@ -35,9 +53,9 @@ export function Banner(props: BannerProps): ReactElement {
     );
 }
 
-export function HeaderBanner(props: { subtitle?: string, title?: string }): ReactElement {
+export function HeaderBanner(props: { subtitle?: string, title?: string, color?: Color }): ReactElement {
     return (
-        <Banner spaceAbove subtitle={props.subtitle}>
+        <Banner spaceAbove subtitle={props.subtitle} color={props.color}>
             <Header2 centered>{props.title}</Header2>
         </Banner>
     );

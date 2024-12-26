@@ -44,7 +44,7 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
                 <VBox fillParent>
-                    <HeaderBanner title={data.settlement.identifier.name} subtitle={"Settlement"}/>
+                    <HeaderBanner title={data.settlement.identifier.name} subtitle={"Settlement"} color={data.settlement.country.color}/>
                     <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
 
                         <WindowSection>
