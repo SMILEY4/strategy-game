@@ -28,3 +28,7 @@ code {
     cursor:          pointer;
     text-decoration: underline;
 }
+
+* {
+    box-sizing: border-box;
+}

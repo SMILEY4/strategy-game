@@ -5,7 +5,8 @@ import {UseMoveWindow} from "./useMoveWindow";
 import {Header1} from "../../../../components/header/Header";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {DecoratedWindow, DefaultDecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
+import {Spacer} from "../../../../components/spacer/Spacer";
 
 export interface MoveWindowProps {
 	windowId: string;
@@ -18,11 +19,11 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 
 	if (data === null) {
 		return (
-			<DefaultDecoratedWindow windowId={props.windowId}>
+			<DecoratedWindow windowId={props.windowId} withCloseButton>
 				<VBox fillParent center>
 					<Text>No object selected</Text>
 				</VBox>
-			</DefaultDecoratedWindow>
+			</DecoratedWindow>
 		);
 	} else {
 		return (
@@ -31,13 +32,13 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 				withCloseButton={false}
 				noPadding={false}
 				style={{
-					minWidth: "fit-content",
 					minHeight: "160px",
 				}}
 			>
 				<VBox fillParent gap_s top stretch>
 					<Header1>Move Unit</Header1>
-					<Text>{data.remainingPoints + "/" + data.totalPoints + "Movement Points left"}</Text>
+					<Text>{data.remainingPoints + "/" + data.totalPoints + " Movement Points left"}</Text>
+					<Spacer size="s"/>
 					<HBox right gap_s>
 						<ButtonPrimary warn onClick={data.cancel}>Cancel</ButtonPrimary>
 						<ButtonPrimary success onClick={data.accept}>Accept</ButtonPrimary>

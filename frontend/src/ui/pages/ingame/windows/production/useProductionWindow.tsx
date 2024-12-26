@@ -16,6 +16,7 @@ export namespace UseProductionWindow {
             open({
                 id: WINDOW_ID,
                 anchor: WindowStore.ANCHOR_CENTER_POINT,
+                preferredHeight: "40vh",
                 content: <ProductionWindow windowId={WINDOW_ID} settlementId={settlementId}/>,
             });
         };

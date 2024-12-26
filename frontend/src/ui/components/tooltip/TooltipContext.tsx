@@ -3,6 +3,7 @@ import React from "react";
 import {FloatingPortal} from "@floating-ui/react";
 
 export interface TooltipContextProps {
+    enabled?: boolean;
     delay?: number;
     inline?: boolean,
     children?: any;
@@ -17,7 +18,7 @@ export function TooltipContext(props: TooltipContextProps) {
         refTooltip,
         propsTooltip,
         styleTooltip,
-    } = useTooltip(props.delay);
+    } = useTooltip(props.delay === undefined ? 300 : props.delay);
 
     let trigger = null;
     let content = null;
@@ -28,6 +29,10 @@ export function TooltipContext(props: TooltipContextProps) {
         if (child.type.name === "TooltipContent") {
             content = child;
         }
+    }
+
+    if(props.enabled === false) {
+        return trigger
     }
 
     return (

@@ -21,7 +21,7 @@ export namespace UseWorldObjectWindow {
         return (identifier: string | null) => {
             open({
                 id: WINDOW_ID,
-                anchor: WindowStore.ANCHOR_LEFT_EDGE,
+                anchor: WindowStore.ANCHOR_LEFT_SIDE,
                 content: <WorldObjectWindow windowId={WINDOW_ID} identifier={identifier}/>,
             });
         };
@@ -31,7 +31,7 @@ export namespace UseWorldObjectWindow {
         const WINDOW_ID = "menubar-window";
         openWindow({
             id: WINDOW_ID,
-            anchor: WindowStore.ANCHOR_LEFT_EDGE,
+            anchor: WindowStore.ANCHOR_LEFT_SIDE,
             content: <WorldObjectWindow windowId={WINDOW_ID} identifier={identifier}/>,
         });
     }

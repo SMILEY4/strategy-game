@@ -3,6 +3,7 @@ import "./decoratedPanel.scoped.less";
 import {CSSProperties} from "react";
 
 export interface DecoratedPanelProps {
+    accent?: "blue"
     simpleBorder?: boolean,
     pattern?: boolean,
     floating?: boolean,
@@ -21,6 +22,7 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
         <div
             className={joinClassNames([
                 "decorated-panel",
+                props.accent ? "decorated-panel--" + props.accent : "decorated-panel--neutral",
                 props.floating ? "decorated-panel--floating" : null,
                 props.noPadding ? "decorated-panel--no-padding" : null,
                 props.paddingSmall ? "decorated-panel--small-padding" : null,

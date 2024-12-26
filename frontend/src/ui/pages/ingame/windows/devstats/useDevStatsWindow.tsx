@@ -13,7 +13,7 @@ export namespace UseDevStatsWindow {
         return () => {
             open({
                 id: WINDOW_ID,
-                anchor: WindowStore.ANCHOR_LEFT_EDGE,
+                anchor: WindowStore.ANCHOR_LEFT_SIDE,
                 content: <DevStatsWindow windowId={WINDOW_ID}/>,
             });
         };

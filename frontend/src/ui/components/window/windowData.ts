@@ -14,5 +14,5 @@ export interface WindowPosition {
     right: CssValue | null,
     width: CssValue | null,
     height: CssValue | null,
-    autoMargin: boolean,
+    transform: string | null
 }

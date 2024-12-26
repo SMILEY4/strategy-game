@@ -1,6 +1,6 @@
 export interface CssValue {
-    unit: "px" | "%" | "fit-content";
-    value: number;
+    unit: "px" | "%" | "raw";
+    value: number | string;
 }
 
 export namespace CssValue {
@@ -19,10 +19,10 @@ export namespace CssValue {
         };
     }
 
-    export function fitContent(): CssValue {
+    export function raw(value: string): CssValue {
         return {
-            unit: "fit-content",
-            value: 0,
+            unit: "raw",
+            value: value,
         };
     }
 
@@ -33,8 +33,8 @@ export namespace CssValue {
         if (value?.unit === "%") {
             return value.value + "%";
         }
-        if (value?.unit === "fit-content") {
-            return "fit-content";
+        if (value?.unit === "raw") {
+            return value.value + "";
         }
         return undefined;
     }

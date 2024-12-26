@@ -23,8 +23,6 @@ export interface WindowPointAnchor extends WindowAnchor {
     right: CssValue | null,
 
     side: "centered" | "above" | "below" | "left" | "right"
-
-    autoMargin: boolean
 }
 
 export namespace WindowPointAnchor {
@@ -34,33 +32,33 @@ export namespace WindowPointAnchor {
             return {
                 top: anchor.top,
                 bottom: anchor.bottom,
-                left: anchor.right,
-                right: anchor.left,
-                width: CssValue.fitContent(),
-                height: CssValue.fitContent(),
-                autoMargin: anchor.autoMargin,
+                left: anchor.left,
+                right: anchor.right,
+                width: null,
+                height: null,
+                transform: "translate(-50%, -50%)",
             };
         }
         if (anchor.side === "above") {
             return {
                 top: null,
                 bottom: anchor.bottom,
-                left: anchor.right,
-                right: anchor.left,
-                width: CssValue.fitContent(),
-                height: CssValue.fitContent(),
-                autoMargin: anchor.autoMargin,
+                left: anchor.left,
+                right: anchor.right,
+                width: null,
+                height: null,
+                transform: "translate(-50%, -100%)",
             };
         }
         if (anchor.side === "below") {
             return {
                 top: anchor.top,
                 bottom: null,
-                left: anchor.right,
-                right: anchor.left,
-                width: CssValue.fitContent(),
-                height: CssValue.fitContent(),
-                autoMargin: anchor.autoMargin,
+                left: anchor.left,
+                right: anchor.right,
+                width: null,
+                height: null,
+                transform: "translate(-50%, 0)",
             };
         }
         if (anchor.side === "left") {
@@ -68,21 +66,21 @@ export namespace WindowPointAnchor {
                 top: anchor.top,
                 bottom: anchor.bottom,
                 left: null,
-                right: anchor.left,
-                width: CssValue.fitContent(),
-                height: CssValue.fitContent(),
-                autoMargin: anchor.autoMargin,
+                right: anchor.right,
+                width: null,
+                height: null,
+                transform: "translate(-100%, -50%)",
             };
         }
         if (anchor.side === "right") {
             return {
                 top: anchor.top,
                 bottom: anchor.bottom,
-                left: anchor.right,
+                left: anchor.left,
                 right: null,
-                width: CssValue.fitContent(),
-                height: CssValue.fitContent(),
-                autoMargin: anchor.autoMargin,
+                width: null,
+                height: null,
+                transform: "translate(0, -50%)",
             };
         }
         throw new Error("Unexpected side " + anchor.side + " for point-anchor.");
@@ -118,7 +116,7 @@ export namespace WindowVerticalLineAnchor {
                 right: anchor.left ?? anchor.right,
                 width: null,
                 height: null,
-                autoMargin: false,
+                transform: null,
             };
         } else {
             return {
@@ -128,7 +126,7 @@ export namespace WindowVerticalLineAnchor {
                 right: null,
                 width: null,
                 height: null,
-                autoMargin: false,
+                transform: null,
             };
         }
     }
@@ -163,7 +161,7 @@ export namespace WindowHorizontalLineAnchor {
                 right: anchor.left,
                 width: null,
                 height: null,
-                autoMargin: false,
+                transform: null,
             };
         } else {
             return {
@@ -173,7 +171,7 @@ export namespace WindowHorizontalLineAnchor {
                 right: anchor.left,
                 width: null,
                 height: null,
-                autoMargin: false,
+                transform: null,
             };
         }
     }
@@ -206,7 +204,7 @@ export namespace WindowAreaAnchor {
             right: anchor.right,
             width: anchor.width,
             height: anchor.height,
-            autoMargin: false,
+            transform: null,
         };
     }
 

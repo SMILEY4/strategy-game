@@ -19,7 +19,7 @@ export namespace UseCommandLogWindow {
         return () => {
             open({
                 id: WINDOW_ID,
-                anchor: WindowStore.ANCHOR_LEFT_EDGE,
+                anchor: WindowStore.ANCHOR_LEFT_SIDE,
                 content: <CommandLogWindow windowId={WINDOW_ID}/>,
             });
         };

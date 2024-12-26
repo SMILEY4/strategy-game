@@ -18,7 +18,7 @@ export namespace UseMapWindow {
         return () => {
             open({
                 id: WINDOW_ID,
-                anchor: WindowStore.ANCHOR_LEFT_EDGE,
+                anchor: WindowStore.ANCHOR_LEFT_SIDE,
                 content: <MapWindow windowId={WINDOW_ID}/>,
             });
         };

@@ -30,6 +30,27 @@ export const DefaultSimplified: Story = {
     ),
 };
 
+
+export const Accent: Story = {
+    render: () => (
+        <DecoratedPanel>
+            <DecoratedPanel accent="blue">
+                <DummyContent/>
+            </DecoratedPanel>
+        </DecoratedPanel>
+    ),
+};
+
+export const AccentSimplified: Story = {
+    render: () => (
+        <DecoratedPanel>
+            <DecoratedPanel accent="blue" simpleBorder>
+                <DummyContent/>
+            </DecoratedPanel>
+        </DecoratedPanel>
+    ),
+};
+
 // export const Red: Story = {
 //     render: () => (
 //         <DecoratedPanel red>

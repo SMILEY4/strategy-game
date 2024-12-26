@@ -5,10 +5,6 @@ import {ButtonPrimary} from "../../button/primary/ButtonPrimary";
 import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less";
 import {AudioType} from "../../../../common/audioService";
-import {VBox} from "../../layout/vbox/VBox";
-import {HeaderBanner} from "../../banner/Banner";
-import {Header} from "../../header/Header";
-import {Spacer} from "../../spacer/Spacer";
 import {useWindowInteractions} from "../windowHooks";
 
 export interface DecoratedWindowProps {
@@ -40,7 +36,11 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             noPadding={props.noPadding}
             className={joinClassNames(["decorated-window", props.className])}
             elementRef={refContent}
-            style={props.style}
+            style={{
+                minWidth: "min-content",
+                minHeight: "200px",
+                ...props.style
+            }}
         >
 
             <div {...dragProps} className="decorated-window__drag-area"/>
@@ -62,79 +62,79 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
 }
 
 
-export function DefaultDecoratedWindow(props: {
-    windowId: string,
-    minHeight?: string,
-    children?: any,
-    withPadding?: boolean
-}): ReactElement {
-    return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            noPadding={props.withPadding !== true}
-            style={{
-                minWidth: "fit-content",
-                minHeight: props.minHeight ? props.minHeight : "300px",
-            }}
-        >
-            <VBox fillParent gap_s top stretch>
-                {props.children}
-            </VBox>
-        </DecoratedWindow>
-    );
-}
-
-export function DefaultDecoratedWindowWithHeader(props: {
-    windowId: string,
-    minHeight?: string,
-    title: string,
-    header?: 1 | 2 | 3 | 4,
-    withoutScroll?: boolean,
-    children?: any,
-}): ReactElement {
-    return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            style={{
-                minWidth: "fit-content",
-                minHeight: props.minHeight ? props.minHeight : "300px",
-            }}
-        >
-            <VBox fillParent gap_s top stretch scrollable={props.withoutScroll !== true} stableScrollbar={props.withoutScroll !== true}>
-                <Header level={props.header || 1}>{props.title}</Header>
-                <Spacer size="s"/>
-                {props.children}
-            </VBox>
-        </DecoratedWindow>
-    );
-}
-
-
-export function DefaultDecoratedWindowWithBanner(props: {
-    windowId: string,
-    minHeight?: string,
-    title: string,
-    subtitle?: string,
-    children?: any
-}): ReactElement {
-    return (
-        <DecoratedWindow
-            windowId={props.windowId}
-            withCloseButton
-            noPadding
-            style={{
-                minWidth: "fit-content",
-                minHeight: props.minHeight ? props.minHeight : "300px",
-            }}
-        >
-            <VBox fillParent>
-                <HeaderBanner title={props.title} subtitle={props.subtitle}/>
-                <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
-                    {props.children}
-                </VBox>
-            </VBox>
-        </DecoratedWindow>
-    );
-}
+// export function DefaultDecoratedWindow(props: {
+//     windowId: string,
+//     minHeight?: string,
+//     children?: any,
+//     withPadding?: boolean
+// }): ReactElement {
+//     return (
+//         <DecoratedWindow
+//             windowId={props.windowId}
+//             withCloseButton
+//             noPadding={props.withPadding !== true}
+//             style={{
+//                 minWidth: "min-content",
+//                 minHeight: props.minHeight ? props.minHeight : "200px",
+//             }}
+//         >
+//             <VBox fillParent gap_s top stretch>
+//                 {props.children}
+//             </VBox>
+//         </DecoratedWindow>
+//     );
+// }
+//
+// export function DefaultDecoratedWindowWithHeader(props: {
+//     windowId: string,
+//     minHeight?: string,
+//     title: string,
+//     header?: 1 | 2 | 3 | 4,
+//     withoutScroll?: boolean,
+//     children?: any,
+// }): ReactElement {
+//     return (
+//         <DecoratedWindow
+//             windowId={props.windowId}
+//             withCloseButton
+//             style={{
+//                 minWidth: "min-content",
+//                 minHeight: props.minHeight ? props.minHeight : "200px",
+//             }}
+//         >
+//             <Header level={props.header || 1}>{props.title}</Header>
+//             <Spacer size="s"/>
+//             <VBox fillParent gap_s top stretch padding_xs scrollable={props.withoutScroll !== true} stableScrollbar={props.withoutScroll !== true}>
+//                 {props.children}
+//             </VBox>
+//         </DecoratedWindow>
+//     );
+// }
+//
+//
+// export function DefaultDecoratedWindowWithBanner(props: {
+//     windowId: string,
+//     minHeight?: string,
+//     title: string,
+//     subtitle?: string,
+//     children?: any
+// }): ReactElement {
+//     return (
+//         <DecoratedWindow
+//             windowId={props.windowId}
+//             withCloseButton
+//             noPadding
+//             style={{
+//                 minWidth: "fit-content",
+//                 minHeight: props.minHeight ? props.minHeight : "300px",
+//             }}
+//         >
+//             <VBox fillParent>
+//                 <HeaderBanner title={props.title} subtitle={props.subtitle}/>
+//                 <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
+//                     {props.children}
+//                 </VBox>
+//             </VBox>
+//         </DecoratedWindow>
+//     );
+// }

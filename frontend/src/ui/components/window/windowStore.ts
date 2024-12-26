@@ -13,11 +13,8 @@ import {WindowProperties} from "./windowProperties";
 
 export namespace WindowStore {
 
-    export const ANCHOR_LEFT_EDGE = "left-edge"
-    export const ANCHOR_RIGHT_EDGE = "right-edge"
-    export const ANCHOR_BOTTOM_EDGE = "bottom-edge"
-    export const ANCHOR_TOP_EDGE = "top-edge"
-    export const ANCHOR_BOTTOM_RIGHT_AREA = "bottom-right-area"
+    export const ANCHOR_LEFT_SIDE = "left-side"
+    export const ANCHOR_RIGHT_SIDE = "right-side"
     export const ANCHOR_CENTER_POINT = "center-point"
     export const ANCHOR_BOTTOM_POINT = "bottom-point"
 
@@ -31,68 +28,37 @@ export namespace WindowStore {
         windows: [],
         anchors: [
             {
-                id: ANCHOR_LEFT_EDGE,
-                type: "line_vertical",
-                top: CssValue.px(10 + 34),
-                bottom: CssValue.px(10),
-                left: CssValue.px(10),
-                right: null,
-                side: "right",
-            } as WindowVerticalLineAnchor,
-            {
-                id: ANCHOR_RIGHT_EDGE,
-                type: "line_vertical",
-                top: CssValue.px(10 + 34),
-                bottom: CssValue.px(10),
-                right: CssValue.px(10),
-                left: null,
-                side: "left",
-            } as WindowVerticalLineAnchor,
-            {
-                id: ANCHOR_BOTTOM_EDGE,
-                type: "line_horizontal",
-                left: CssValue.px(10),
-                right: CssValue.px(10),
-                bottom: CssValue.px(10),
-                top: null,
-                side: "top"
-            } as WindowHorizontalLineAnchor,
-            {
-                id: ANCHOR_TOP_EDGE,
-                type: "line_horizontal",
-                left: CssValue.px(10),
-                right: CssValue.px(10),
-                top: CssValue.px(10 + 34),
-                bottom: null,
-                side: "bottom",
-            } as WindowHorizontalLineAnchor,
-            {
-                id: ANCHOR_BOTTOM_RIGHT_AREA,
+                id: ANCHOR_LEFT_SIDE,
                 type: "area",
+                top: CssValue.px(10 + 34),
+                bottom: CssValue.px(10),
+                left: CssValue.px(10),
+                right: CssValue.percent(70),
+            } as WindowAreaAnchor,
+            {
+                id: ANCHOR_RIGHT_SIDE,
+                type: "area",
+                top: CssValue.px(10 + 34),
                 bottom: CssValue.px(10),
                 right: CssValue.px(10),
-                width: CssValue.px(200),
-                height: CssValue.px(200),
-                left: null,
-                top: null,
+                left: CssValue.percent(70),
             } as WindowAreaAnchor,
             {
                 id: ANCHOR_CENTER_POINT,
                 type: "point",
-                top: CssValue.px(0),
-                left: CssValue.px(0),
-                bottom: CssValue.px(0),
-                right: CssValue.px(0),
-                autoMargin: true,
+                top: CssValue.percent(50),
+                left: CssValue.percent(50),
+                bottom: null,
+                right: null,
                 side: "centered"
             } as WindowPointAnchor,
             {
                 id: ANCHOR_BOTTOM_POINT,
                 type: "point",
-                top: null,
-                left: CssValue.px(0),
+                left: CssValue.percent(50),
                 bottom: CssValue.px(10),
-                right: CssValue.px(0),
+                top: null,
+                right: null,
                 autoMargin: true,
                 side: "above"
             } as WindowPointAnchor,
@@ -162,11 +128,17 @@ export namespace WindowStore {
             right: null,
             width: null,
             height: null,
-            autoMargin: false,
+            transform: null,
         };
 
         if (anchor.type === "point") {
             position = WindowPointAnchor.buildPosition(anchor as WindowPointAnchor);
+            if(properties.preferredWidth) {
+                position.width = CssValue.raw(properties.preferredWidth)
+            }
+            if(properties.preferredHeight) {
+                position.height = CssValue.raw(properties.preferredHeight)
+            }
         }
         if (anchor.type === "line_vertical") {
             position = WindowVerticalLineAnchor.buildPosition(anchor as WindowVerticalLineAnchor);

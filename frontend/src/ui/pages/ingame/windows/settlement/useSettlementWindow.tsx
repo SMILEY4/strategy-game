@@ -20,7 +20,7 @@ export namespace UseSettlementWindow {
 		return (identifier: string | null) => {
 			open({
 				id: WINDOW_ID,
-				anchor: WindowStore.ANCHOR_LEFT_EDGE,
+				anchor: WindowStore.ANCHOR_LEFT_SIDE,
 				content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
 			});
 		};
@@ -30,7 +30,7 @@ export namespace UseSettlementWindow {
 		const WINDOW_ID = "menubar-window";
 		openWindow({
 			id: WINDOW_ID,
-			anchor: WindowStore.ANCHOR_LEFT_EDGE,
+			anchor: WindowStore.ANCHOR_LEFT_SIDE,
 			content: <SettlementWindow windowId={WINDOW_ID} identifier={identifier}/>,
 		});
 	}

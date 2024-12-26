@@ -118,7 +118,7 @@ function GameSessionEntry(props: {
     onDelete: () => void
 }): ReactElement {
     return (
-        <DecoratedPanel simpleBorder className="game-session-entry" pattern>
+        <DecoratedPanel accent="blue" simpleBorder className="game-session-entry" pattern>
             <HBox gap_s centerVertical left>
                 <VBox fillParentWidth gap_xs>
                     <Header3>{props.session.name}</Header3>

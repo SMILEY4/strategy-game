@@ -1,14 +1,23 @@
 @import "./../common.less";
 
 .divider {
+  position:       relative;
+  width:          100%;
+  flex-shrink:    0;
+}
+
+.divider--simple {
+  height: 1px;
+  margin-bottom: @spacing-s;
+  margin-top: @spacing-s;
+  background: linear-gradient(90deg, transparent 0%, @color-decorative-gold 10%, @color-decorative-gold 90%, transparent 100%);
+}
+
+.divider--ornament {
   @height-arm:    16px;
   @height-center: 12px;
   @width-center:  100px;
   @width-gap:     3px;
-
-  position:       relative;
-  width:          100%;
-  flex-shrink:    0;
 
   display:        flex;
   flex-direction: row;

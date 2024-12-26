@@ -13,7 +13,7 @@ export namespace UseTileWindow {
 		return (identifier: TileIdentifier | null) => {
 			open({
 				id: WINDOW_ID,
-				anchor: WindowStore.ANCHOR_LEFT_EDGE,
+				anchor: WindowStore.ANCHOR_LEFT_SIDE,
 				content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
 			});
 		};
@@ -23,7 +23,7 @@ export namespace UseTileWindow {
 		const WINDOW_ID = "menubar-window";
 		openWindow({
 			id: WINDOW_ID,
-			anchor: WindowStore.ANCHOR_LEFT_EDGE,
+			anchor: WindowStore.ANCHOR_LEFT_SIDE,
 			content: <TileWindow windowId={WINDOW_ID} identifier={identifier}/>,
 		});
 	}

@@ -1,7 +1,6 @@
 import React, {ReactElement} from "react";
 import {UseProductionWindow} from "./useProductionWindow";
-import {DefaultDecoratedWindowWithHeader} from "../../../../components/window/decorated/DecoratedWindow";
-import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {formatNumber, joinClassNames} from "../../../../components/utils";
@@ -11,6 +10,9 @@ import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import "./productionWindow.less";
 import {ProductionOptionAggregate} from "../../../../../models/aggregates/SettlementAggregate";
+import {Header} from "../../../../components/header/Header";
+import {Spacer} from "../../../../components/spacer/Spacer";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 
 export interface ProductionWindowProps {
 	windowId: string;
@@ -20,7 +22,15 @@ export interface ProductionWindowProps {
 export function ProductionWindow(props: ProductionWindowProps): ReactElement {
 	const data: UseProductionWindow.Data = UseProductionWindow.useData(props.settlementId);
 	return (
-		<DefaultDecoratedWindowWithHeader windowId={props.windowId} title="Production" withoutScroll>
+		<DecoratedWindow
+			windowId={props.windowId}
+			withCloseButton
+			style={{
+				minHeight: "200px",
+			}}
+		>
+			<Header level={1}>{"Production"}</Header>
+			<Spacer size="s"/>
 			<InsetPanel fillParent hideOverflow noPadding>
 				<VBox top stretch gap_xs padding_s scrollable fillParent>
 					{data.entries.map(entry => (
@@ -32,7 +42,7 @@ export function ProductionWindow(props: ProductionWindowProps): ReactElement {
 					))}
 				</VBox>
 			</InsetPanel>
-		</DefaultDecoratedWindowWithHeader>
+		</DecoratedWindow>
 	);
 }
 

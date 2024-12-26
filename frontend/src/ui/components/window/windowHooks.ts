@@ -50,7 +50,7 @@ export function useWindowData(id: string) {
                 bottom: CssValue.format(data.position.bottom),
                 width: CssValue.format(data.position.width),
                 height: CssValue.format(data.position.height),
-                margin: data.position.autoMargin ? "auto" : undefined,
+                transform: data.position.transform ? data.position.transform : undefined,
             },
         },
         isBlocked: blockingWindows.length > 0 && blockingWindows.indexOf(id) === -1,
@@ -90,7 +90,7 @@ export function useWindowInteractions(id: string) {
                 height: CssValue.px(bounds.height),
                 bottom: null,
                 right: null,
-                autoMargin: false,
+                transform: null,
             }));
         }
     }
@@ -104,7 +104,7 @@ export function useWindowInteractions(id: string) {
             height: prevPosition.height,
             bottom: null,
             right: null,
-            autoMargin: false,
+            transform: null,
         }));
     }
 
@@ -116,7 +116,7 @@ export function useWindowInteractions(id: string) {
             height: CssValue.px(prevPosition.height?.value!! + dy),
             bottom: null,
             right: null,
-            autoMargin: false,
+            transform: null,
         }));
     }
 
