@@ -32,7 +32,10 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 				withCloseButton={false}
 				noPadding={false}
 				style={{
-					minHeight: "160px",
+					minHeight: "180px",
+					minWidth: "280px",
+					maxHeight: "180px",
+					maxWidth: "280px"
 				}}
 			>
 				<VBox fillParent gap_s top stretch>

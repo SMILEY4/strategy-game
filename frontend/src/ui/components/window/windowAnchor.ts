@@ -47,7 +47,7 @@ export namespace WindowPointAnchor {
                 right: anchor.right,
                 width: null,
                 height: null,
-                transform: "translate(-50%, -100%)",
+                transform: "translate(-50%, 0)",
             };
         }
         if (anchor.side === "below") {
@@ -69,7 +69,7 @@ export namespace WindowPointAnchor {
                 right: anchor.right,
                 width: null,
                 height: null,
-                transform: "translate(-100%, -50%)",
+                transform: "translate(0, -50%)",
             };
         }
         if (anchor.side === "right") {

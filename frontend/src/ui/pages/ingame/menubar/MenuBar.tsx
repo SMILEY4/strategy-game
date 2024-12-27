@@ -22,26 +22,27 @@ export function MenuBar(): ReactElement {
 	const openCommandLogMenu = UseCommandLogWindow.useOpen();
 	const openTileMenu = UseTileWindow.useOpen();
 	const currentTurn = SessionRepository.useTurn();
-	const [endTurnDisabled, endTurn] = useEndTurn();
+	const isBlocked = useIsBlockingWindowOpen();
+	const [endTurnDisabled, endTurn] = useEndTurn(isBlocked);
 
 	return (
 		<div className="menubar">
 			<div className="menubar__inner">
 				<HBox padding_xs gap_xs fillParent className="menubar__content">
 
-					<ButtonPrimary info circle onClick={openDevMenu}>
+					<ButtonPrimary info circle onClick={openDevMenu} disabled={isBlocked}>
 						<CgDebug/>
 					</ButtonPrimary>
 
-					<ButtonPrimary info circle onClick={openMapMenu}>
+					<ButtonPrimary info circle onClick={openMapMenu} disabled={isBlocked}>
 						<FiMap/>
 					</ButtonPrimary>
 
-					<ButtonPrimary info circle onClick={openCommandLogMenu}>
+					<ButtonPrimary info circle onClick={openCommandLogMenu} disabled={isBlocked}>
 						<PiScrollBold/>
 					</ButtonPrimary>
 
-					<ButtonPrimary info circle onClick={() => openTileMenu(null)}>
+					<ButtonPrimary info circle onClick={() => openTileMenu(null)} disabled={isBlocked}>
 						<FiHexagon/>
 					</ButtonPrimary>
 
@@ -57,8 +58,7 @@ export function MenuBar(): ReactElement {
 
 }
 
-function useEndTurn(): [boolean, () => void] {
-	const isBlocked = useIsBlockingWindowOpen();
+function useEndTurn(isBlocked: boolean): [boolean, () => void] {
 	const isWaiting = SessionRepository.useGameTurnState() === "waiting";
 	const isDisabled = isBlocked || isWaiting;
 
