@@ -35,15 +35,12 @@
     align-items:     center;
     text-shadow:     @shadow-text;
     white-space:     nowrap;
+    border-radius: @border-radius-primary;
+    padding:       @spacing-s @spacing-m;
   }
 
   .button-primary__inner /deep/ svg {
     filter: drop-shadow(@shadow-text);
-  }
-
-  .button-primary__inner {
-    border-radius: @border-radius-primary;
-    padding:       @spacing-s @spacing-m;
   }
 
   // SMALL

@@ -1,15 +1,15 @@
 import "./buildingBox.less";
 import React, {ReactElement} from "react";
-import {joinClassNames} from "../../../../components/utils";
 import {Building} from "../../../../../models/base/building";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {If, Then} from "react-if";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {Spacer} from "../../../../components/spacer/Spacer";
-import {Header4} from "../../../../components/header/Header";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
+import {DecoratedPanel, DecoratedPanelImageBackground} from "../../../../components/panels/decorated/DecoratedPanel";
+import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
 
 export function BuildingBox(props: { building: Building }): ReactElement {
     return (
@@ -26,15 +26,20 @@ export function BuildingBox(props: { building: Building }): ReactElement {
 
 
 function Box(props: { building: Building }): ReactElement {
+    const active = (props.building.validity.workTile && props.building.validity.inputResources)
     return (
-        <div
-            className={joinClassNames([
-                "building-box",
-                (props.building.validity.workTile && props.building.validity.inputResources) ? null : "building-box--disabled",
-            ])}
-            style={{
-                backgroundImage: "url('" + "icons/production/" + props.building.type + ".png')",
-            }}
+        <DecoratedPanel
+            className={"building-box"}
+            simpleBorder
+            noPadding
+            pattern
+            accent="blue"
+            background={
+                <DecoratedPanelImageBackground
+                    url={"icons/production/" + props.building.type + ".png"}
+                    desaturated={!active}
+                />
+            }
         />
     );
 }
@@ -44,13 +49,11 @@ function Details(props: { building: Building }): ReactElement {
         <TooltipPanel>
             <VBox padding_m gap_s fillParent>
 
-                <Header4>{props.building.type}</Header4>
-
                 <If condition={props.building.activity.consumed.length > 0}>
                     <Then>
                         {props.building.activity.consumed.map(entry => (
                             <EnrichedText key={entry.type}>
-                                <ETNumber typeAuto signed>{-entry.amount}</ETNumber> {entry.type}
+                                <ETNumber typeAuto signed>{-entry.amount}</ETNumber> <ETImageIcon url={"icons/resources/" + entry.type + ".png"} /> {entry.type}
                             </EnrichedText>
                         ))}
                     </Then>
@@ -60,7 +63,7 @@ function Details(props: { building: Building }): ReactElement {
                     <Then>
                         {props.building.activity.produced.map(entry => (
                             <EnrichedText key={entry.type}>
-                                <ETNumber typeAuto signed>{entry.amount}</ETNumber> {entry.type}
+                                <ETNumber typeAuto signed>{entry.amount}</ETNumber> <ETImageIcon url={"icons/resources/" + entry.type + ".png"} /> {entry.type}
                             </EnrichedText>
                         ))}
                     </Then>
@@ -80,7 +83,7 @@ function Details(props: { building: Building }): ReactElement {
                         )}
                         {props.building.activity.missing.map(entry => (
                             <EnrichedText key={entry.type}>
-                                <ETNumber neg unsigned>{entry.amount}</ETNumber> {entry.type}
+                                <ETNumber neg unsigned>{entry.amount}</ETNumber> <ETImageIcon url={"icons/resources/" + entry.type + ".png"} /> {entry.type}
                             </EnrichedText>
                         ))}
                     </Then>

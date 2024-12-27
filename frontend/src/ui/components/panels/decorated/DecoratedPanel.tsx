@@ -44,26 +44,38 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
     );
 }
 
-export function DecoratedPanelImageBackground(props: { url: string, desaturated?: boolean, reducedOpacity?: boolean }): ReactElement {
+export function DecoratedPanelImageBackground(props: {
+    url: string,
+    gradient?: boolean,
+    desaturated?: boolean,
+    reducedOpacity?: boolean,
+    className?: string
+}): ReactElement {
     return (
         <div
             className={joinClassNames([
                 "decorated-panel-image-background",
+                props.gradient ? "decorated-panel-image-background--gradient" : null,
                 props.desaturated ? "decorated-panel-image-background--desaturated" : null,
-                props.reducedOpacity ? "decorated-panel-image-background--reducedOpacity" : null
+                props.reducedOpacity ? "decorated-panel-image-background--reducedOpacity" : null,
+                props.className
             ])}
             style={{backgroundImage: "url('" + props.url + "')"}}
         />
     )
 }
 
-export function DecoratedPanelColorBackground(props: { color: string }): ReactElement {
+export function DecoratedPanelColorBackground(props: {
+    color: string,
+    className?: string
+}): ReactElement {
     return (
         <div
             className={joinClassNames([
                 "decorated-panel-color-background",
+                props.className
             ])}
-            style={{background: "linear-gradient(to right, transparent 25%, " + props.color + " 75%)"}}
+            style={{background: "linear-gradient(to left, transparent 25%, " + props.color + " 75%)"}}
         />
     )
 }

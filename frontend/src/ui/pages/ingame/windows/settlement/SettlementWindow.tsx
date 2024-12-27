@@ -9,7 +9,7 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import "./settlementWindow.less";
 import {Header2} from "../../../../components/header/Header";
-import {If, Then} from "react-if";
+import {Else, If, Then} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {HeaderBanner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
@@ -21,12 +21,19 @@ import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 import {ETSpacer} from "../../../../components/textenriched/elements/ETSpacer";
 import {ResourceLedgerBox} from "./ResourceLedgerBox";
 import {BuildingBox} from "./BuildingBox";
+import {FiPlus} from "react-icons/fi";
+import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
+import {CgClose} from "react-icons/cg";
+import {CSS_COLOR_SUCCESS_LIGHT, CSS_COLOR_WARN_LIGHT} from "../../../../components/commonColors";
+import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
+import {ProgressCircle} from "./ProgressCircle";
 
 export interface SettlementWindowProps {
     windowId: string;
     identifier: string | null;
 }
 
+// todo: handle non-owner view with limited information -> currently results in errors
 export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
     const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.identifier);
@@ -120,66 +127,6 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
                 </VBox>
 
-
-                {/*<WindowSection title="Routes">*/}
-                {/*    <InsetPanel>*/}
-                {/*        {data.settlement.routes.map(route => {*/}
-                {/*            return route.settlementA.id === data.settlement.identifier.id*/}
-                {/*                ? <EnrichedText key={route.id}>{"-> " + route.settlementB.name}</EnrichedText>*/}
-                {/*                : <EnrichedText key={route.id}>{"-> " + route.settlementA.name}</EnrichedText>;*/}
-                {/*        })}*/}
-                {/*    </InsetPanel>*/}
-                {/*</WindowSection>*/}
-
-                {/*<Spacer size="m"/>*/}
-
-                {/*<WindowSection title={"Population"}>*/}
-                {/*    <InsetPanel>*/}
-                {/*        <InsetKeyValueGrid>*/}
-
-                {/*            <EnrichedText>Size</EnrichedText>*/}
-                {/*            <EnrichedText>{data.settlement.population.size}</EnrichedText>*/}
-
-                {/*            <If condition={data.settlement.population.growth.visible}>*/}
-                {/*                <Then>*/}
-                {/*                    <EnrichedText>Growth Progress</EnrichedText>*/}
-                {/*                    <EnrichedText><ETNumber*/}
-                {/*                        percentage>{data.settlement.population.growth.value.progress}</ETNumber></EnrichedText>*/}
-
-                {/*                    <EnrichedText>Details</EnrichedText>*/}
-                {/*                    <ul>*/}
-                {/*                        {data.settlement.population.growth.value.details.map(detail => (*/}
-                {/*                            <li><EnrichedText>{detail.key} <ETNumber*/}
-                {/*                                percentage>{detail.amount}</ETNumber></EnrichedText></li>*/}
-                {/*                        ))}*/}
-                {/*                    </ul>*/}
-
-
-                {/*                </Then>*/}
-                {/*            </If>*/}
-
-                {/*        </InsetKeyValueGrid>*/}
-                {/*    </InsetPanel>*/}
-                {/*</WindowSection>*/}
-
-                {/*<Spacer size="m"/>*/}
-
-                {/*<WindowSection title={"Resources"}>*/}
-                {/*    <ResourcesSection {...data}/>*/}
-                {/*</WindowSection>*/}
-
-                {/*<Spacer size="m"/>*/}
-
-                {/*<WindowSection title={"Production"}>*/}
-                {/*    <ProductionQueueSection {...data}/>*/}
-                {/*</WindowSection>*/}
-
-                {/*<Spacer size="m"/>*/}
-
-                {/*<WindowSection title={"Buildings"}>*/}
-                {/*    <BuildingList {...data}/>*/}
-                {/*</WindowSection>*/}
-
             </DecoratedWindow>
         );
     }
@@ -204,6 +151,15 @@ function PanelOverview(props: UseSettlementWindow.Data): ReactElement {
 
             <Spacer size="s"/>
             <SectionRoutes {...props}/>
+        </>
+    );
+}
+
+
+function PanelIndustry(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <>
+            <SectionProduction {...props}/>
 
             <Spacer size={"s"}/>
             <SectionResourceBalance {...props}/>
@@ -215,22 +171,12 @@ function PanelOverview(props: UseSettlementWindow.Data): ReactElement {
 }
 
 
-function PanelIndustry(props: UseSettlementWindow.Data): ReactElement {
-    return (
-        <>
-            <Spacer size={"s"}/>
-            <SectionResourceBalance {...props}/>
-        </>
-    );
-}
-
-
 function PanelPopulation(props: UseSettlementWindow.Data): ReactElement {
     return (
         <>
-            {Array.from(Array(100).keys()).map((_, i) => (
-                <Text>{"Population Line " + i}</Text>
-            ))}
+            <SectionPopulationSize {...props}/>
+            <Spacer size={"s"}/>
+            <SectionGrowthOverview {...props}/>
         </>
     );
 }
@@ -263,8 +209,11 @@ function SectionRoutes(props: UseSettlementWindow.Data): ReactElement {
                 <VBox padding_xs gap_xs>
                     {props.settlement.routes.map(route => (
                         <DecoratedPanel
+                            key={route.id}
                             simpleBorder
+                            pattern
                             paddingSmall
+                            accent="blue"
                             background={<DecoratedPanelColorBackground color={Color.toCss(route.targetCountry.color)}/>}
                         >
                             <HBox left gap_s>
@@ -290,11 +239,18 @@ function SectionResourceBalance(props: UseSettlementWindow.Data) {
             <Header2 centered>Resource Balance</Header2>
             <Divider/>
             <InsetPanel>
-                <HBox fillParent gap_s left wrap>
-                    {props.settlement.resources.map(entry => (
-                        <ResourceLedgerBox {...entry}/>
-                    ))}
-                </HBox>
+                <If condition={props.settlement.resources.length > 0}>
+                    <Then>
+                        <HBox fillParent gap_s left wrap>
+                            {props.settlement.resources.map(entry => (
+                                <ResourceLedgerBox {...entry} key={entry.type}/>
+                            ))}
+                        </HBox>
+                    </Then>
+                    <Else>
+                        <Text type="secondary">No resources present.</Text>
+                    </Else>
+                </If>
             </InsetPanel>
         </VBox>
     );
@@ -306,141 +262,121 @@ function SectionBuildings(props: UseSettlementWindow.Data) {
             <Header2 centered>Buildings</Header2>
             <Divider/>
             <InsetPanel>
-                <HBox fillParent gap_s left wrap>
-                    {props.settlement.buildings.map(entry => (
-                        <BuildingBox building={entry}/>
-                    ))}
-                </HBox>
+                <If condition={props.settlement.buildings.length > 0}>
+                    <Then>
+                        <HBox fillParent gap_s left wrap>
+                            {props.settlement.buildings.map((entry, i) => (
+                                <BuildingBox building={entry} key={i}/>
+                            ))}
+                        </HBox>
+                    </Then>
+                    <Else>
+                        <Text type="secondary">No buildings constructed.</Text>
+                    </Else>
+                </If>
             </InsetPanel>
         </VBox>
     );
 }
-// function ProductionQueueSection(props: UseSettlementWindow.Data) {
-//     return (
-//         <HBox centerVertical left gap_s>
-//             <ProductionQueueAddButton {...props}/>
-//             <ProductionQueueProgressBar {...props}/>
-//             <ProductionQueueCancelButton {...props}/>
-//         </HBox>
-//     );
-// }
-//
-// function ProductionQueueAddButton(props: UseSettlementWindow.Data): ReactElement {
-//     return (
-//         <ButtonPrimary square onClick={props.productionQueue.add}>
-//             <FiPlus/>
-//         </ButtonPrimary>
-//     );
-// }
-//
-// function ProductionQueueProgressBar(props: UseSettlementWindow.Data): ReactElement {
-//     return (
-//         <ProgressBar
-//             progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
-//             onClick={props.productionQueue.open}
-//             className="production_queue__progress"
-//         >
-//             <Text relative>
-//                 {props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
-//             </Text>
-//         </ProgressBar>
-//     );
-// }
-//
-// function ProductionQueueCancelButton(props: UseSettlementWindow.Data): ReactElement {
-//     return (
-//         <ButtonPrimary square circle small onClick={props.productionQueue.cancel}>
-//             <CgClose/>
-//         </ButtonPrimary>
-//     );
-// }
-//
-// function BuildingList(props: UseSettlementWindow.Data): ReactElement {
-//     return (
-//         <>
-//             <HBox gap_s centerVertical left>
-//                 <Text>{"Building-Slots: " + props.settlement.buildings.length + "/" + "?"}</Text>
-//             </HBox>
-//             <HBox gap_s top left wrap>
-//                 {props.settlement.buildings.map((building, index) => (
-//                     <BuildingEntry key={index} data={props} building={building}/>
-//                 ))}
-//             </HBox>
-//         </>
-//     );
-// }
-//
-// function BuildingEntry(props: { data: UseSettlementWindow.Data, building: Building }): ReactElement {
-//     return (
-//         <BuildingInfoTooltip building={props.building}>
-//             <div
-//                 className={joinClassNames([
-//                     "settlement-content-box",
-//                     (props.building.validity.workTile && props.building.validity.inputResources) ? null : "settlement-content-box--disabled",
-//                 ])}
-//                 style={{
-//                     backgroundImage: "url('" + "icons/production/" + props.building.type + ".png')",
-//                 }}
-//             />
-//         </BuildingInfoTooltip>
-//     );
-// }
-//
-// function BuildingInfoTooltip(props: { building: Building, children?: any }) {
-//     return (
-//         <TooltipContext>
-//             <TooltipTrigger>
-//                 {props.children}
-//             </TooltipTrigger>
-//             <TooltipContent>
-//                 <TooltipPanel>
-//                     <VBox padding_m gap_s fillParent>
-//
-//                         <Header4>{props.building.type}</Header4>
-//
-//                         <If condition={props.building.activity.consumed.length > 0}>
-//                             <Then>
-//                                 {props.building.activity.consumed.map(entry => (
-//                                     <EnrichedText key={entry.type}>
-//                                         <ETNumber typeAuto signed>{-entry.amount}</ETNumber> {entry.type}
-//                                     </EnrichedText>
-//                                 ))}
-//                             </Then>
-//                         </If>
-//
-//                         <If condition={props.building.activity.produced.length > 0}>
-//                             <Then>
-//                                 {props.building.activity.produced.map(entry => (
-//                                     <EnrichedText key={entry.type}>
-//                                         <ETNumber typeAuto signed>{entry.amount}</ETNumber> {entry.type}
-//                                     </EnrichedText>
-//                                 ))}
-//                             </Then>
-//                         </If>
-//
-//
-//                         <If condition={props.building.activity.missing.length > 0 || !props.building.validity.workTile}>
-//                             <Then>
-//                                 <Spacer size="s"/>
-//                                 <EnrichedText>
-//                                     Missing:
-//                                 </EnrichedText>
-//                                 {!props.building.validity.workTile && (
-//                                     <EnrichedText style={{color: "hsl(0, 87%, 65%)"}}>
-//                                         {"Tile to work on: " + props.building.workTile.requiredTerrain?.id + " " + props.building.workTile.requiredResource?.id}
-//                                     </EnrichedText>
-//                                 )}
-//                                 {props.building.activity.missing.map(entry => (
-//                                     <EnrichedText key={entry.type}>
-//                                         <ETNumber neg unsigned>{entry.amount}</ETNumber> {entry.type}
-//                                     </EnrichedText>
-//                                 ))}
-//                             </Then>
-//                         </If>
-//
-//                     </VBox>
-//                 </TooltipPanel>
-//             </TooltipContent>
-//         </TooltipContext>
-//     );
-// }
+
+function SectionProduction(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <VBox top stretch gap_xs>
+            <Header2 centered>Production</Header2>
+            <Divider/>
+
+            <HBox centerVertical left gap_s>
+
+                <ButtonPrimary square onClick={props.productionQueue.add}>
+                    <FiPlus/>
+                </ButtonPrimary>
+
+                <ProgressBar
+                    progress={props.productionQueue.activeEntry === null ? 0 : props.productionQueue.activeEntry.progress}
+                    onClick={props.productionQueue.open}
+                    className="production_queue__progress"
+                >
+                    <Text relative>
+                        {props.productionQueue.activeEntry === null ? "" : props.productionQueue.activeEntry.type}
+                    </Text>
+                </ProgressBar>
+
+                <ButtonPrimary square circle small onClick={props.productionQueue.cancel}>
+                    <CgClose/>
+                </ButtonPrimary>
+
+            </HBox>
+
+        </VBox>
+    );
+}
+
+function SectionPopulationSize(props: UseSettlementWindow.Data): ReactElement {
+    return (
+        <InsetKeyValueGrid>
+
+            <EnrichedText>Population Size:</EnrichedText>
+            <EnrichedText>{props.settlement.population.size}</EnrichedText>
+
+        </InsetKeyValueGrid>
+    );
+}
+
+
+function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
+    const totalProgress = props.settlement.population.growth.value.progress;
+    const lastProgress = 0.25; // todo: get actual value from server
+    const expectedPopulationChange = totalProgress >= 0 ? +1 : -1;
+
+    return (
+        <VBox top stretch gap_xs>
+
+            <Header2 centered>Growth</Header2>
+            <Divider/>
+
+            <HBox gap_s stretch centerVertical>
+                <ProgressCircle totalProgress={totalProgress} currentChange={lastProgress}/>
+                <InsetPanel growParent>
+                    <VBox left centerVertical gap_xs>
+                        <EnrichedText>
+                            <ETNumber percentage unsigned>{totalProgress}</ETNumber>
+                            <ETText> total progress until </ETText>
+                            <ETNumber signed>{expectedPopulationChange}</ETNumber>
+                            <ETText> population</ETText>
+                        </EnrichedText>
+                        <EnrichedText>
+                            <ETNumber percentage signed>{lastProgress}</ETNumber>
+                            <ETText> Growth last turn</ETText>
+                        </EnrichedText>
+                    </VBox>
+                </InsetPanel>
+            </HBox>
+
+            <InsetPanel>
+                <VBox padding_xs gap_xs>
+                    {props.settlement.population.growth.value.details.map(detail => (
+                        <DecoratedPanel
+                            key={detail.key + "" + detail.amount}
+                            accent="blue"
+                            pattern
+                            simpleBorder
+                            paddingSmall
+                            background={
+                                <DecoratedPanelColorBackground
+                                    color={detail.amount > 0 ? CSS_COLOR_SUCCESS_LIGHT : CSS_COLOR_WARN_LIGHT}
+                                />
+                            }
+                        >
+                            <EnrichedText>
+                                <ETNumber percentage>{detail.amount}</ETNumber>
+                                <ETSpacer size="xs"/>
+                                <ETText>{detail.key}</ETText>
+                            </EnrichedText>
+                        </DecoratedPanel>
+                    ))}
+                </VBox>
+            </InsetPanel>
+
+        </VBox>
+    );
+}

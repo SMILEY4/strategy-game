@@ -57,6 +57,7 @@ function QueueEntry(props: {
             className={joinClassNames(["queue-entry", props.entry.isCommand ? "queue-entry--command" : null])}
             background={
                 <DecoratedPanelImageBackground
+                    gradient
                     url={"url('" + "icons/production/" + props.entry.type + ".png"}
                     desaturated={props.entry.isCommand}
                 />

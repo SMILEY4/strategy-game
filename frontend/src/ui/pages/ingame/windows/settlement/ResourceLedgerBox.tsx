@@ -6,9 +6,12 @@ import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Header4} from "../../../../components/header/Header";
 import {If, Then} from "react-if";
 import "./resourceLedgerBox.less";
+import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
+import {Header4} from "../../../../components/header/Header";
+import {IndentPanel} from "../../../../components/panels/indent/IndentPanel";
 
 export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
 
@@ -26,15 +29,15 @@ export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
 
 function Box(props: ResourceLedgerEntry): ReactElement {
     return (
-        <InsetPanel className="resource-ledger-box">
+        <DecoratedPanel simpleBorder paddingSmall accent="blue" pattern className="resource-ledger-box">
             <div
                 className="resource-ledger-box__icon"
                 style={{backgroundImage: "url('/icons/resources/" + props.type + ".png')"}}
             />
-            <EnrichedText>
+            <EnrichedText className="resource-ledger-box__label">
                 <ETNumber>{props.amount}</ETNumber>
             </EnrichedText>
-        </InsetPanel>
+        </DecoratedPanel>
     );
 }
 
@@ -43,7 +46,10 @@ function Details(props: ResourceLedgerEntry): ReactElement {
         <TooltipPanel>
             <VBox padding_m gap_xs fillParent>
 
-                <Header4>{props.type}</Header4>
+                <EnrichedText>
+                    <ETImageIcon url={"/icons/resources/" + props.type + ".png"}/> <Header4
+                    inline>{props.type}</Header4>
+                </EnrichedText>
 
                 <DetailSection
                     title="Produced"
@@ -87,24 +93,26 @@ function DetailSection(props: {
 }) {
 
     return (
-        <>
+        <IndentPanel>
+
             <EnrichedText>
                 <ETNumber typeAuto format={props.format}>{props.amount * props.amountMod}</ETNumber> {props.title}
             </EnrichedText>
+
             <If condition={props.details.length > 0}>
                 <Then>
                     <InsetPanel>
                         <VBox padding_xs gap_xs>
                             {props.details.map(detail => (
                                 <EnrichedText key={detail.key}>
-                                    <ETNumber type={props.type}
-                                              format={props.format}>{detail.amount * props.amountMod}</ETNumber> {detail.key}
+                                    <ETNumber type={props.type} format={props.format}>{detail.amount * props.amountMod}</ETNumber> {detail.key}
                                 </EnrichedText>
                             ))}
                         </VBox>
                     </InsetPanel>
                 </Then>
             </If>
-        </>
+
+        </IndentPanel>
     );
 }

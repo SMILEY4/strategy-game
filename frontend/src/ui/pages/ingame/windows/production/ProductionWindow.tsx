@@ -57,6 +57,7 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
             ])}
             background={
                 <DecoratedPanelImageBackground
+                    gradient
                     url={"icons/production/" + props.entry.type + ".png"}
 					desaturated={!props.entry.available}
 					reducedOpacity={!props.entry.available}

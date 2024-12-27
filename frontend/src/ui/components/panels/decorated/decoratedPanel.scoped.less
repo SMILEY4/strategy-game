@@ -51,7 +51,7 @@
     border-radius:       @border-radius-secondary;
     background-image:    @background-pattern;
     background-position: 50%;
-    background-size:     15%;
+    background-size:     60px;
     background-repeat:   repeat;
     mix-blend-mode:      overlay;
     opacity:             6%;
@@ -118,24 +118,27 @@
 }
 
 
-
 .decorated-panel-image-background {
   position:            absolute;
   top:                 0;
   bottom:              0;
-  left:                10%;
+  left:                0;
   right:               0;
 
   border-radius:       @border-radius-secondary;
   background-size:     cover;
   background-position: 50% 50%;
 
-  mask-image:          linear-gradient(to right, transparent 25%, black 75%);
+
   opacity:             70%;
 }
 
+.decorated-panel-image-background--gradient {
+  mask-image: linear-gradient(to right, transparent 25%, black 75%);
+}
+
 .decorated-panel-image-background--desaturated {
-  filter:  grayscale(80%);
+  filter: grayscale(80%);
 }
 
 .decorated-panel-image-background--reducedOpacity {
@@ -144,13 +147,13 @@
 
 
 .decorated-panel-color-background {
-  position:            absolute;
-  top:                 0;
-  bottom:              0;
-  left:                10%;
-  right:               0;
+  position:      absolute;
+  top:           0;
+  bottom:        0;
+  left:          0;
+  right:         0;
 
-  border-radius:       @border-radius-secondary;
+  border-radius: @border-radius-secondary;
 
-  opacity:             30%;
+  opacity:       40%;
 }
