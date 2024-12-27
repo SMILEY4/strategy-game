@@ -22,7 +22,7 @@ export function MapWindow(props: MapWindowProps): ReactElement {
             <VBox fillParent gap_s top stretch padding_xs>
                 <Header1>Map</Header1>
                 <Spacer size={"s"}/>
-                <VBox fillParent gap_s top stretch padding_xs scrollable stableScrollbar>
+                <VBox gap_s top stretch padding_xs scrollable stableScrollbar>
                     {MapMode.getValues().map(mapMode => {
                         return (
                             <TooltipContext key={mapMode.id}>

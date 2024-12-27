@@ -29,19 +29,19 @@ export function MenuBar(): ReactElement {
 			<div className="menubar__inner">
 				<HBox padding_xs gap_xs fillParent className="menubar__content">
 
-					<ButtonPrimary info round onClick={openDevMenu}>
+					<ButtonPrimary info circle onClick={openDevMenu}>
 						<CgDebug/>
 					</ButtonPrimary>
 
-					<ButtonPrimary info round onClick={openMapMenu}>
+					<ButtonPrimary info circle onClick={openMapMenu}>
 						<FiMap/>
 					</ButtonPrimary>
 
-					<ButtonPrimary info round onClick={openCommandLogMenu}>
+					<ButtonPrimary info circle onClick={openCommandLogMenu}>
 						<PiScrollBold/>
 					</ButtonPrimary>
 
-					<ButtonPrimary info round onClick={() => openTileMenu(null)}>
+					<ButtonPrimary info circle onClick={() => openTileMenu(null)}>
 						<FiHexagon/>
 					</ButtonPrimary>
 

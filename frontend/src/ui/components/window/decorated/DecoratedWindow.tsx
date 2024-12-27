@@ -48,7 +48,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             <div {...resizerProps} className="decorated-window__resize-area"/>
 
             {props.withCloseButton && (
-                <ButtonPrimary warn round className="decorated-window__close" onClick={handleClose} soundId={AudioType.CLICK_CLOSE.id}>
+                <ButtonPrimary warn circle className="decorated-window__close" onClick={handleClose} soundId={AudioType.CLICK_CLOSE.id}>
                     <CgClose/>
                 </ButtonPrimary>
             )}

@@ -116,3 +116,41 @@
   }
 
 }
+
+
+
+.decorated-panel-image-background {
+  position:            absolute;
+  top:                 0;
+  bottom:              0;
+  left:                10%;
+  right:               0;
+
+  border-radius:       @border-radius-secondary;
+  background-size:     cover;
+  background-position: 50% 50%;
+
+  mask-image:          linear-gradient(to right, transparent 25%, black 75%);
+  opacity:             70%;
+}
+
+.decorated-panel-image-background--desaturated {
+  filter:  grayscale(80%);
+}
+
+.decorated-panel-image-background--reducedOpacity {
+  opacity: 30%;
+}
+
+
+.decorated-panel-color-background {
+  position:            absolute;
+  top:                 0;
+  bottom:              0;
+  left:                10%;
+  right:               0;
+
+  border-radius:       @border-radius-secondary;
+
+  opacity:             30%;
+}

@@ -43,9 +43,14 @@ export namespace UseSettlementWindow {
 			open: () => void,
 			cancel: () => void,
 		};
+		open: {
+			settlement: (settlementId: string) => void,
+		}
 	}
 
 	export function useData(identifier: string | null): UseSettlementWindow.Data | null {
+
+		const openSettlement = UseSettlementWindow.useOpen();
 
 		const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
 
@@ -63,6 +68,9 @@ export namespace UseSettlementWindow {
 					open: () => openProductionQueueWindow(identifier!),
 					cancel: () => settlement.production.queue.length > 0 && service.cancelProductionQueue(settlement.identifier, settlement.production.queue[0]),
 				},
+				open: {
+					settlement: (settlementId) => openSettlement(settlementId)
+				}
 			};
 		} else {
 			return null;

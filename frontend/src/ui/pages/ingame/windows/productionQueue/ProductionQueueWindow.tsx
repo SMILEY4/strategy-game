@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
+import {DecoratedPanel, DecoratedPanelImageBackground} from "../../../../components/panels/decorated/DecoratedPanel";
 import {joinClassNames} from "../../../../components/utils";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
@@ -56,9 +56,9 @@ function QueueEntry(props: {
         <DecoratedPanel
             className={joinClassNames(["queue-entry", props.entry.isCommand ? "queue-entry--command" : null])}
             background={
-                <div
-                    className={"queue-entry-background"}
-                    style={{backgroundImage: "url('" + "icons/production/" + props.entry.type + ".png')"}}
+                <DecoratedPanelImageBackground
+                    url={"url('" + "icons/production/" + props.entry.type + ".png"}
+                    desaturated={props.entry.isCommand}
                 />
             }
             simpleBorder paddingSmall
@@ -68,7 +68,7 @@ function QueueEntry(props: {
                 {!props.entry.isCommand && props.position === 1 && (
                     <ProgressBar progress={props.entry.progress} className="production_queue__progress"/>)}
                 <ButtonPrimary
-                    square round small
+                    square circle small
                     onClick={() => props.data.cancel(props.entry)}
                     soundId={AudioType.CLICK_CLOSE.id}
                 >

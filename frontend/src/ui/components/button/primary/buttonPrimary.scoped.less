@@ -37,10 +37,6 @@
     white-space:     nowrap;
   }
 
-  &.button--small {
-    height: @height-s;
-  }
-
   .button-primary__inner /deep/ svg {
     filter: drop-shadow(@shadow-text);
   }
@@ -50,16 +46,33 @@
     padding:       @spacing-s @spacing-m;
   }
 
-  &.button--round .button-primary__inner {
-    border-radius: 9999px;
-    padding:       @spacing-xs;
+  // SMALL
+
+  &.button--small {
+    height: @height-s;
   }
+
+  // ROUND
 
   &.button--round {
     border-radius: 9999px;
-    border:        2px solid transparent;
+    border:        1.5px solid transparent;
 
     .button-primary__inner {
+      border-radius: 9999px;
+    }
+
+  }
+
+  // CIRCLE
+
+  &.button--circle {
+    border-radius: 9999px;
+    border:        1.5px solid transparent;
+
+    .button-primary__inner {
+      border-radius:   9999px;
+      padding:         @spacing-xs;
       aspect-ratio:    1/1;
       display:         flex;
       justify-content: center;
@@ -68,22 +81,28 @@
 
   }
 
+  // SQUARE
+
   &.button--square {
     aspect-ratio:    1/1;
     display:         flex;
     justify-content: center;
     align-items:     center;
+
+    .button-primary__inner {
+      padding: @spacing-xs;
+    }
+
   }
 
-  &.button--square .button-primary__inner {
-    padding: @spacing-xs;
-  }
-
+  // DISABLED
 
   &.button--disabled {
     background: @gradient-border-primary-disabled;
     cursor:     default;
   }
+
+  // WARN
 
   &.button--warn {
 
@@ -103,12 +122,19 @@
       }
     }
 
+    &.button--active .button-primary__inner {
+      background: @gradient-warn-active;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light-active;
+    }
+
     &.button--disabled .button-primary__inner {
       background: @gradient-warn-disabled;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light-disabled;
       color:      @color-warn-content-disabled;
     }
   }
+
+  // SUCCESS
 
   &.button--success {
     &:not(.button--disabled) .button-primary__inner {
@@ -127,12 +153,19 @@
       }
     }
 
+    &.button--active .button-primary__inner {
+      background: @gradient-success-active;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light-active;
+    }
+
     &.button--disabled .button-primary__inner {
       background: @gradient-success-disabled;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light-disabled;
       color:      @color-success-content-disabled;
     }
   }
+
+  // INFO
 
   &.button--info {
     &:not(.button--disabled) .button-primary__inner {
@@ -149,6 +182,11 @@
         background: @gradient-info-active;
         box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light-active;
       }
+    }
+
+    &.button--active .button-primary__inner {
+      background: @gradient-info-active;
+      box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light-active;
     }
 
     &.button--disabled .button-primary__inner {

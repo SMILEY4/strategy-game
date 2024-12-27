@@ -70,7 +70,7 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
                     {renderCommand(props.command)}
                 </VBox>
                 <ButtonPrimary
-                    warn round small
+                    warn circle small
                     onClick={() => props.data.cancel(props.command)}>
                     <CgClose/>
                 </ButtonPrimary>

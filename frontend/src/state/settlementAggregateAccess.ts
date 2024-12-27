@@ -1,5 +1,5 @@
 import {
-	ProductionOptionAggregate,
+	ProductionOptionAggregate, RouteAggregate,
 	SettlementAggregate,
 } from "../models/aggregates/SettlementAggregate";
 import {AppCtx} from "../appContext";
@@ -11,6 +11,7 @@ import {ProductionQueueEntry} from "../models/base/Settlement";
 import {ProductionOption} from "../models/base/productionOption";
 import {getHiddenOrDefault} from "../common/hiddenType";
 import {RouteDatabase} from "./database/routeDatabase";
+import {Route} from "../models/base/route";
 
 export namespace SettlementAggregateAccess {
 
@@ -48,7 +49,7 @@ export namespace SettlementAggregateAccess {
 			},
 			buildings: getHiddenOrDefault(settlement.buildings, []),
 			resources: getHiddenOrDefault(settlement.resources, []),
-			routes: routes,
+			routes: routes.map(route => buildRoute(route)),
 		};
 
 		function buildQueueEntries(
@@ -118,6 +119,18 @@ export namespace SettlementAggregateAccess {
 			};
 		}
 
+		function buildRoute(route: Route): RouteAggregate {
+			const targetSettlementId = route.settlementA.id === settlementId ? route.settlementB : route.settlementA;
+			const targetSettlement = AppCtx.SettlementDatabase().queryById(targetSettlementId.id)!
+			return {
+				id: route.id,
+				targetSettlement: targetSettlement.identifier,
+				targetCountry: targetSettlement.country,
+				path: route.path
+			}
+		}
+
 	}
+
 
 }

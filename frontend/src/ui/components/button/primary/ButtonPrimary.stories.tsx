@@ -23,7 +23,7 @@ export const Default: Story = {
     args: {
         buttonType: "warn",
         disabled: false,
-        round: false,
+        circle: false,
     },
     argTypes: {
         buttonType: {
@@ -34,7 +34,7 @@ export const Default: Story = {
     render: (args) => (
         <DecoratedPanel>
             <div style={{padding: "50px"}}>
-                <ButtonPrimary type={args.buttonType} disabled={args.disabled} round={args.round}>
+                <ButtonPrimary type={args.buttonType} disabled={args.disabled} circle={args.circle}>
                     Button
                 </ButtonPrimary>
             </div>
@@ -46,7 +46,7 @@ export const Round: Story = {
     render: () => (
         <DecoratedPanel>
             <div style={{padding: "50px"}}>
-                <ButtonPrimary round info>
+                <ButtonPrimary circle info>
                         <FaHome style={{width: "100%", height: "100%", display: "block"}}/>
                 </ButtonPrimary>
             </div>

@@ -1,6 +1,6 @@
 import {joinClassNames} from "../../utils";
 import "./decoratedPanel.scoped.less";
-import {CSSProperties} from "react";
+import React, {CSSProperties, ReactElement} from "react";
 
 export interface DecoratedPanelProps {
     accent?: "blue"
@@ -42,4 +42,28 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
             <div className="border"/>
         </div>
     );
+}
+
+export function DecoratedPanelImageBackground(props: { url: string, desaturated?: boolean, reducedOpacity?: boolean }): ReactElement {
+    return (
+        <div
+            className={joinClassNames([
+                "decorated-panel-image-background",
+                props.desaturated ? "decorated-panel-image-background--desaturated" : null,
+                props.reducedOpacity ? "decorated-panel-image-background--reducedOpacity" : null
+            ])}
+            style={{backgroundImage: "url('" + props.url + "')"}}
+        />
+    )
+}
+
+export function DecoratedPanelColorBackground(props: { color: string }): ReactElement {
+    return (
+        <div
+            className={joinClassNames([
+                "decorated-panel-color-background",
+            ])}
+            style={{background: "linear-gradient(to right, transparent 25%, " + props.color + " 75%)"}}
+        />
+    )
 }

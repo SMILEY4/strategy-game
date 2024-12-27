@@ -20,7 +20,7 @@ export interface SettlementAggregate {
 	},
 	buildings: Building[],
 	resources: ResourceLedgerEntry[],
-	routes: Route[]
+	routes: RouteAggregate[]
 }
 
 
@@ -29,4 +29,11 @@ export interface ProductionOptionAggregate {
 	available: boolean,
 	queueCount: number,
 	commandCount: number,
+}
+
+export interface RouteAggregate {
+	id: string,
+	targetSettlement: SettlementIdentifier,
+	targetCountry: CountryIdentifier,
+	path: TileIdentifier[]
 }

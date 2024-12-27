@@ -10,9 +10,11 @@ export interface ButtonPrimaryProps extends UseButtonProps {
     info?: boolean,
     success?: boolean,
     type?: ButtonPrimaryType,
-    round?: boolean,
+    circle?: boolean,
     square?: boolean,
+    round?: boolean,
     small?: boolean,
+    active?: boolean,
     className?: string;
     children?: any;
 }
@@ -26,9 +28,11 @@ export function ButtonPrimary(props: ButtonPrimaryProps): ReactElement {
             "button-primary",
             "button--" + getType(props),
             isDisabled ? "button--disabled" : null,
-            props.round ? "button--round" : null,
+            props.circle ? "button--circle" : null,
             props.square ? "button--square" : null,
+            props.round ? "button--round" : null,
             props.small ? "button--small" : null,
+            props.active ? "button--active" : null,
             props.className,
         ])}>
             <div className="button-primary__inner">
