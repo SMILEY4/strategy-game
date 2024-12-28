@@ -1,4 +1,4 @@
-import React, {ReactElement, useState} from "react";
+import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
@@ -27,6 +27,7 @@ import {CgClose} from "react-icons/cg";
 import {CSS_COLOR_SUCCESS_LIGHT, CSS_COLOR_WARN_LIGHT} from "../../../../components/commonColors";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {ProgressCircle} from "./ProgressCircle";
+import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 
 export interface SettlementWindowProps {
     windowId: string;
@@ -38,13 +39,11 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
 
     const data: UseSettlementWindow.Data | null = UseSettlementWindow.useData(props.identifier);
 
-    const [selectedPanel, setSelectedPanel] = useState("Overview");
-
     if (data === null) {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton>
                 <VBox center>
-                    <Text>No settlement selected</Text>
+                    <Text>No settlement selected.</Text>
                 </VBox>
             </DecoratedWindow>
         );
@@ -58,74 +57,33 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
                     color={data.settlement.country.color}
                 />
 
-                <VBox gap_s top stretch padding_m>
+                <TabBar initial="Overview">
 
-                    <HBox centerHorizontal gap_xs centerVertical fillParentWidth>
-                        <ButtonPrimary
-                            round small
-                            active={selectedPanel === "Overview"}
-                            onClick={() => setSelectedPanel("Overview")}
-                        >
-                            Overview
-                        </ButtonPrimary>
-                        <ButtonPrimary
-                            round small
-                            active={selectedPanel === "Industry"}
-                            onClick={() => setSelectedPanel("Industry")}
-                        >
-                            Industry
-                        </ButtonPrimary>
-                        <ButtonPrimary
-                            round small
-                            active={selectedPanel === "Population"}
-                            onClick={() => setSelectedPanel("Population")}
-                        >
-                            Population
-                        </ButtonPrimary>
-                        <ButtonPrimary
-                            circle small
-                            active={selectedPanel === "Debug"}
-                            onClick={() => setSelectedPanel("Debug")}
-                        >
-                            D
-                        </ButtonPrimary>
-                    </HBox>
+                    <TabOption name="Overview">
+                        <VBox scrollable gap_s stableScrollbar top stretch>
+                            <PanelOverview {...data}/>
+                        </VBox>
+                    </TabOption>
 
-                    <Divider type="simple"/>
+                    <TabOption name="Industry">
+                        <VBox scrollable gap_s stableScrollbar top stretch>
+                            <PanelIndustry {...data}/>
+                        </VBox>
+                    </TabOption>
 
-                    <If condition={selectedPanel === "Overview"}>
-                        <Then>
-                            <VBox scrollable gap_s stableScrollbar top stretch className="settlement-panel">
-                                <PanelOverview {...data}/>
-                            </VBox>
-                        </Then>
-                    </If>
+                    <TabOption name="Population">
+                        <VBox scrollable gap_s stableScrollbar top stretch>
+                            <PanelPopulation {...data}/>
+                        </VBox>
+                    </TabOption>
 
-                    <If condition={selectedPanel === "Industry"}>
-                        <Then>
-                            <VBox scrollable gap_s stableScrollbar top stretch className="settlement-panel">
-                                <PanelIndustry {...data}/>
-                            </VBox>
-                        </Then>
-                    </If>
+                    <TabOption name="D" circle>
+                        <VBox scrollable gap_s stableScrollbar top stretch>
+                            <PanelDebug {...data}/>
+                        </VBox>
+                    </TabOption>
 
-                    <If condition={selectedPanel === "Population"}>
-                        <Then>
-                            <VBox scrollable gap_s stableScrollbar top stretch className="settlement-panel">
-                                <PanelPopulation {...data}/>
-                            </VBox>
-                        </Then>
-                    </If>
-
-                    <If condition={selectedPanel === "Debug"}>
-                        <Then>
-                            <VBox scrollable gap_s stableScrollbar top stretch className="settlement-panel">
-                                <PanelDebug {...data}/>
-                            </VBox>
-                        </Then>
-                    </If>
-
-                </VBox>
+                </TabBar>
 
             </DecoratedWindow>
         );

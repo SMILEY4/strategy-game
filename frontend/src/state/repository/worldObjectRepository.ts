@@ -7,7 +7,7 @@ import {TilePosition} from "../../models/base/tilePosition";
 import {CommandDatabase} from "../database/commandDatabase";
 import {CommandType, MoveCommand} from "../../models/base/command";
 import {useDI} from "../../appContext";
-import {useQuerySingle} from "../../common/db/adapters/databaseHooks";
+import {useQueryMultiple, useQuerySingle} from "../../common/db/adapters/databaseHooks";
 
 export class WorldObjectRepository {
 
@@ -78,6 +78,11 @@ export namespace WorldObjectRepository {
 	export function useById(worldObjectId: string | null): WorldObject | null {
 		const db = useDI<WorldObjectDatabase>(WorldObjectDatabase.name);
 		return useQuerySingle(db, WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
+	}
+
+	export function useByPosition(pos: [number, number]): WorldObject[] {
+		const db = useDI<WorldObjectDatabase>(WorldObjectDatabase.name);
+		return useQueryMultiple(db, WorldObjectDatabase.QUERY_BY_POSITION, pos);
 	}
 
 	export function useCurrentMovementPath(): MovementTarget[] {

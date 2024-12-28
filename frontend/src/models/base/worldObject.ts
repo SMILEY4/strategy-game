@@ -10,3 +10,8 @@ export interface WorldObject {
 	movementPoints: number,
 	ownedByPlayer: boolean,
 }
+
+export interface WorldObjectIdentifier { // todo: use everywhere
+	id: string;
+	type: WorldObjectType,
+}
