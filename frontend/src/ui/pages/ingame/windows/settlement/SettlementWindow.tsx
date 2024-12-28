@@ -11,7 +11,7 @@ import "./settlementWindow.less";
 import {Header2} from "../../../../components/header/Header";
 import {Else, If, Then} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {HeaderBanner} from "../../../../components/banner/Banner";
+import {Banner} from "../../../../components/banner/Banner";
 import {Divider} from "../../../../components/divider/Divider";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {DecoratedPanel, DecoratedPanelColorBackground} from "../../../../components/panels/decorated/DecoratedPanel";
@@ -21,7 +21,7 @@ import {ETLink} from "../../../../components/textenriched/elements/ETLink";
 import {ETSpacer} from "../../../../components/textenriched/elements/ETSpacer";
 import {ResourceLedgerBox} from "./ResourceLedgerBox";
 import {BuildingBox} from "./BuildingBox";
-import {FiPlus} from "react-icons/fi";
+import {FiHexagon, FiPlus} from "react-icons/fi";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {CgClose} from "react-icons/cg";
 import {CSS_COLOR_SUCCESS_LIGHT, CSS_COLOR_WARN_LIGHT} from "../../../../components/commonColors";
@@ -51,11 +51,16 @@ export function SettlementWindow(props: SettlementWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
 
-                <HeaderBanner
+                <Banner
                     title={data.settlement.identifier.name}
                     subtitle={"Settlement"}
                     color={data.settlement.country.color}
-                />
+                    spaceAbove
+                >
+                    <ButtonPrimary info circle small onClick={data.open.tile}>
+                        <FiHexagon/>
+                    </ButtonPrimary>
+                </Banner>
 
                 <TabBar initial="Overview">
 

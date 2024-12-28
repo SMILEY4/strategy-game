@@ -12,6 +12,7 @@ import {CommandRepository} from "../../../../../state/repository/commandReposito
 import {MovementService} from "../../../../../logic/game/movementService";
 import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {UseTileWindow} from "../tile/useTileWindow";
 
 export namespace UseWorldObjectWindow {
 
@@ -50,6 +51,9 @@ export namespace UseWorldObjectWindow {
             enabled: boolean,
             start: () => void,
         };
+        open: {
+            tile: () => void
+        }
     }
 
     export function useData(identifier: string | null): UseWorldObjectWindow.Data | null {
@@ -60,6 +64,7 @@ export namespace UseWorldObjectWindow {
         const hasCommand = CommandRepository.useAll().some(it => it.worldObjectId === identifier);
         const hasMoveCommand = CommandRepository.useAllByType<MoveCommand>(CommandType.MOVE).some(it => it.worldObjectId === identifier);
 
+        const openTileWindow = UseTileWindow.useOpen();
         const openMoveWindow = UseMoveWindow.useOpen();
         const openFoundSettlementWindow = UseFoundSettlementWindow.useOpen();
 
@@ -78,6 +83,9 @@ export namespace UseWorldObjectWindow {
                     enabled: !hasCommand && (tile?.isValidSettlementLocation ?? false),
                     start: () => openFoundSettlementWindow(worldObject.tile, worldObject.id),
                 },
+                open: {
+                    tile: () => openTileWindow(tile?.identifier ?? null)
+                }
             };
         } else {
             return null;

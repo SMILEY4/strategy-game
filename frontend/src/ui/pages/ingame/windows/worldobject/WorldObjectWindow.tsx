@@ -8,7 +8,8 @@ import {UseWorldObjectWindow} from "./useWorldObjectWindow";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
 import {Else, If, Then, When} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {HeaderBanner} from "../../../../components/banner/Banner";
+import {Banner} from "../../../../components/banner/Banner";
+import {FiHexagon} from "react-icons/fi";
 
 export interface WorldObjectWindowProps {
     windowId: string;
@@ -31,7 +32,18 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
                 <VBox fillParent>
-                    <HeaderBanner title={data.worldObject.type.id} subtitle={"World Object"} color={data.worldObject.country.color}/>
+
+                    <Banner
+                        title={data.worldObject.type.id}
+                        subtitle={"World Object"}
+                        color={data.worldObject.country.color}
+                        spaceAbove
+                    >
+                        <ButtonPrimary info circle small onClick={data.open.tile}>
+                            <FiHexagon/>
+                        </ButtonPrimary>
+                    </Banner>
+
                     <VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>
 
                         <WindowSection>

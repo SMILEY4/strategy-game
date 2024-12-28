@@ -88,14 +88,25 @@ export class GameLoopService {
 					}
 				} else {
 
-					const worldObject = this.worldObjectRepository.getByTile(tile.identifier);
-					if (worldObject) {
+					const worldObjects = this.worldObjectRepository.getByTile(tile.identifier);
+					const settlement = this.settlementRepository.getByTile(tile.identifier);
+
+					let optionCount = 0;
+					optionCount += settlement ? 1 : 0;
+					optionCount += worldObjects.length;
+
+					if(optionCount > 1) {
 						AudioType.CLICK_PRIMARY.play(this.audioService);
-						UseWorldObjectWindow.open(worldObject.id);
+						UseTileWindow.open(tile.identifier)
 						return;
 					}
 
-					const settlement = this.settlementRepository.getByTile(tile.identifier);
+					if (worldObjects.length === 1) {
+						AudioType.CLICK_PRIMARY.play(this.audioService);
+						UseWorldObjectWindow.open(worldObjects[0].id);
+						return;
+					}
+
 					if (settlement) {
 						AudioType.CLICK_PRIMARY.play(this.audioService);
 						UseSettlementWindow.open(settlement.identifier.id);

@@ -5,7 +5,6 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {mapHiddenOrDefault} from "../../../../../common/hiddenType";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {HeaderBanner} from "../../../../components/banner/Banner";
 import {TabBar, TabOption} from "../../../../components/tab/TabBar";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
@@ -19,6 +18,8 @@ import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {DecoratedPanel, DecoratedPanelColorBackground} from "../../../../components/panels/decorated/DecoratedPanel";
 import {Color} from "../../../../../models/base/color";
 import {ETLink} from "../../../../components/textenriched/elements/ETLink";
+import {HBox} from "../../../../components/layout/hbox/HBox";
+import {Banner} from "../../../../components/banner/Banner";
 
 export interface TileWindowProps {
     windowId: string;
@@ -43,9 +44,10 @@ export function TileWindow(props: TileWindowProps): ReactElement {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
 
-                <HeaderBanner
+                <Banner
                     title={mapHiddenOrDefault(data.tile.base, "Undiscovered", base => base.terrainType.id)}
                     subtitle={"Tile"}
+                    spaceAbove
                 />
 
                 <TabBar initial="Overview">
@@ -142,28 +144,35 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
             <Header2 centered>Content</Header2>
             <Divider/>
             <InsetPanel>
-                {props.content.length === 0 && (
-                    <Text type="secondary">No units, settlement, etc on this tile.</Text>
+                {props.tile.objects.length === 0 && (
+                    <Text type="secondary">Nothing on this tile.</Text>
                 )}
-                {props.content.map(content => (
-                    <DecoratedPanel
-                        simpleBorder
-                        paddingSmall
-                        accent="blue"
-                        background={<DecoratedPanelColorBackground color={Color.toCss(content.country.color)}/>}
-                    >
-                        <Switch>
-                            <Case condition={content.settlement != null}>
-                                <VBox left centerVertical fillParentWidth>
-                                    <EnrichedText><ETLink onClick={content.open}>{content.settlement?.name}</ETLink></EnrichedText>
-                                    <Text type="secondary">Settlement</Text>
-                                </VBox>
-                            </Case>
-                            <Case condition={content.worldObject != null}>
-                                <EnrichedText><ETLink onClick={content.open}>{content.worldObject?.type.id}</ETLink></EnrichedText>
-                            </Case>
-                        </Switch>
-                    </DecoratedPanel>
+                {props.tile.objects.map(tileObject => (
+                    <VBox padding_xs gap_xs>
+                        <DecoratedPanel
+                            simpleBorder
+                            paddingSmall
+                            accent="blue"
+                            background={<DecoratedPanelColorBackground color={Color.toCss(tileObject.country.color)}/>}
+                        >
+                            <Switch>
+                                <Case condition={tileObject.settlement != null}>
+                                    <HBox spaceBetween centerVertical fillParentWidth>
+                                        <EnrichedText><ETLink
+                                            onClick={() => props.open.tileObject(tileObject)}>{tileObject.settlement?.name}</ETLink></EnrichedText>
+                                        <Text type="secondary">Settlement</Text>
+                                    </HBox>
+                                </Case>
+                                <Case condition={tileObject.worldObject != null}>
+                                    <HBox spaceBetween centerVertical fillParentWidth>
+                                        <EnrichedText><ETLink
+                                            onClick={() => props.open.tileObject(tileObject)}>{tileObject.worldObject?.type.id}</ETLink></EnrichedText>
+                                        <Text type="secondary">Unit</Text>
+                                    </HBox>
+                                </Case>
+                            </Switch>
+                        </DecoratedPanel>
+                    </VBox>
                 ))}
             </InsetPanel>
         </VBox>

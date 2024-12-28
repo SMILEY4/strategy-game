@@ -11,6 +11,7 @@ import {SettlementService} from "../../../../../logic/game/settlementService";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {UseTileWindow} from "../tile/useTileWindow";
 
 export namespace UseSettlementWindow {
 
@@ -45,12 +46,14 @@ export namespace UseSettlementWindow {
 		};
 		open: {
 			settlement: (settlementId: string) => void,
+			tile: () => void
 		}
 	}
 
 	export function useData(identifier: string | null): UseSettlementWindow.Data | null {
 
 		const openSettlement = UseSettlementWindow.useOpen();
+		const openTile = UseTileWindow.useOpen();
 
 		const settlement = SettlementAggregateAccess.useSettlementAggregate(identifier);
 
@@ -69,7 +72,8 @@ export namespace UseSettlementWindow {
 					cancel: () => settlement.production.queue.length > 0 && service.cancelProductionQueue(settlement.identifier, settlement.production.queue[0]),
 				},
 				open: {
-					settlement: (settlementId) => openSettlement(settlementId)
+					settlement: (settlementId) => openSettlement(settlementId),
+					tile: () => openTile(settlement.tile)
 				}
 			};
 		} else {

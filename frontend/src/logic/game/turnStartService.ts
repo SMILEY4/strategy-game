@@ -1,7 +1,7 @@
 import {
 	CountryMessage,
 	GameStateMessage,
-	SettlementMessage,
+	SettlementMessage, WorldObjectMessage,
 } from "../session/models/gameStateMessage";
 import {ValueHistory} from "../../common/valueHistory";
 import {MonitoringRepository} from "../../state/repository/monitoringRepository";
@@ -9,15 +9,16 @@ import {Tile} from "../../models/base/tile";
 import {TerrainType} from "../../models/base/TerrainType";
 import {TileResourceType} from "../../models/base/TileResourceType";
 import {WorldObjectType} from "../../models/base/worldObjectType";
-import {WorldObject} from "../../models/base/worldObject";
-import {Country} from "../../models/base/country";
+import {WorldObject, WorldObjectIdentifier} from "../../models/base/worldObject";
+import {Country, CountryIdentifier} from "../../models/base/country";
 import {Visibility} from "../../models/base/visibility";
 import {mapHidden} from "../../common/hiddenType";
-import {Settlement} from "../../models/base/Settlement";
+import {Settlement, SettlementIdentifier} from "../../models/base/Settlement";
 import {mapValue} from "../../common/utils";
 import {TurnRepository} from "../../state/repository/turnRepository";
 import {CommandRepository} from "../../state/repository/commandRepository";
 import {Route} from "../../models/base/route";
+import {Color} from "../../models/base/color";
 
 /**
  * Service to handle the start of a new turn
@@ -66,6 +67,7 @@ export class TurnStartService {
 	}
 
 	private buildTiles(game: GameStateMessage): Tile[] {
+		// @ts-ignore
 		return game.tiles.map(tileMsg => ({
 			identifier: tileMsg.identifier,
 			visibility: Visibility.fromString(tileMsg.visibility),
@@ -88,7 +90,40 @@ export class TurnStartService {
 					})),
 				} : null,
 			})),
-			isValidSettlementLocation: tileMsg.createSettlement
+			isValidSettlementLocation: tileMsg.createSettlement,
+			objects: [
+				...game.settlements
+					.filter(it => it.tile.id === tileMsg.identifier.id)
+					.map(it => [it, this.findCountryById(game, it.country)])
+					.map(it => ({
+						country: {
+							id: it[1].id,
+							name: it[1].name,
+							color: it[1].color,
+						},
+						settlement: {
+							id: it[0].id,
+							name: it[0].name,
+							color: it[0].color,
+						},
+						worldObject: null
+					})),
+				...game.worldObjects
+					.filter(it => it.tile.id === tileMsg.identifier.id)
+					.map(it => [it, this.findCountryById(game, it.country)])
+					.map(it => ({
+						country: {
+							id: (it[1] as CountryMessage).id,
+							name: (it[1] as CountryMessage).name,
+							color: (it[1] as CountryMessage).color,
+						},
+						worldObject: {
+							id: (it[0] as WorldObjectMessage).id,
+							type: (it[0] as WorldObjectMessage).type === "scout" ? WorldObjectType.SCOUT : WorldObjectType.SETTLER // todo: remove temp hack
+						},
+						settlement: null
+					})),
+			]
 		}));
 	}
 

@@ -23,8 +23,12 @@ export class WorldObjectRepository {
 		return this.worldObjectDb.querySingle(WorldObjectDatabase.QUERY_BY_ID, worldObjectId);
 	}
 
-	public getByTile(tileId: TileIdentifier): WorldObject | null {
+	public getOneByTile(tileId: TileIdentifier): WorldObject | null {
 		return this.worldObjectDb.querySingle(WorldObjectDatabase.QUERY_BY_POSITION, [tileId.q, tileId.r]);
+	}
+
+	public getByTile(tileId: TileIdentifier): WorldObject[] {
+		return this.worldObjectDb.queryMany(WorldObjectDatabase.QUERY_BY_POSITION, [tileId.q, tileId.r]);
 	}
 
 	public getAll(): WorldObject[] {
