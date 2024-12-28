@@ -80,34 +80,7 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
 
                         </InsetPanel>
 
-                        <Spacer size={"s"}/>
-
-                        <InsetKeyValueGrid>
-                            <EnrichedText>Id</EnrichedText>
-                            <EnrichedText>{data.worldObject.id}</EnrichedText>
-                        </InsetKeyValueGrid>
-
                     </VBox>
-
-                    {/*<VBox scrollable fillParent gap_s stableScrollbar top stretch padding_m>*/}
-
-                    {/*    <WindowSection>*/}
-                    {/*        <InsetKeyValueGrid>*/}
-
-                    {/*            <EnrichedText>Id</EnrichedText>*/}
-                    {/*            <EnrichedText>{data.worldObject.id}</EnrichedText>*/}
-
-                    {/*            <EnrichedText>Position</EnrichedText>*/}
-                    {/*            <EnrichedText>{data.worldObject.tile.q + ", " + data.worldObject.tile.r}</EnrichedText>*/}
-
-                    {/*            <EnrichedText>Country</EnrichedText>*/}
-                    {/*            <EnrichedText>{data.worldObject.country.name}</EnrichedText>*/}
-
-                    {/*        </InsetKeyValueGrid>*/}
-                    {/*    </WindowSection>*/}
-
-
-                    {/*</VBox>*/}
                 </VBox>
             </DecoratedWindow>
         );
