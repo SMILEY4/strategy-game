@@ -4,6 +4,7 @@ import "./text.scoped.less"
 
 export interface TextProps {
     fillParent?: boolean,
+    grow?: boolean,
     align?: "left" | "center" | "right"
     type?: "positive" | "negative" | "secondary" | "default"
     strikethrough?: boolean,
@@ -19,10 +20,11 @@ export function Text(props: TextProps): ReactElement {
             className={joinClassNames([
                 "text",
                 props.fillParent ? "text--fill-parent" : null,
+                props.grow ? "text--grow" : null,
                 props.relative ? "text--relative" : null,
                 props.strikethrough ? "text--strikethrough" : null,
                 "text--" + (props.align ?? "left"),
-                props.type ? "text--" + props.type : null,
+                props.type !== undefined ? "text--" + props.type : null,
                 props.className,
             ])}
         >

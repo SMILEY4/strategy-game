@@ -2,7 +2,6 @@ import React, {ReactElement} from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {DecoratedPanel, DecoratedPanelImageBackground} from "../../../../components/panels/decorated/DecoratedPanel";
-import {joinClassNames} from "../../../../components/utils";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
@@ -31,6 +30,9 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
                 <Spacer size={"s"}/>
                 <InsetPanel fillParent hideOverflow noPadding>
                     <VBox top stretch gap_xs padding_s scrollable fillParent>
+                        {data.entries.length === 0 && (
+                            <Text type="secondary">Nothing in queue.</Text>
+                        )}
                         {data.entries.map((entry, index) => (
                             <QueueEntry
                                 key={entry.entryId}
@@ -54,7 +56,10 @@ function QueueEntry(props: {
 }): ReactElement {
     return (
         <DecoratedPanel
-            className={joinClassNames(["queue-entry", props.entry.isCommand ? "queue-entry--command" : null])}
+            className="queue-entry"
+            simpleDashedBorder={props.entry.isCommand}
+            simpleBorder={!props.entry.isCommand}
+            paddingSmall
             background={
                 <DecoratedPanelImageBackground
                     gradient
@@ -62,19 +67,28 @@ function QueueEntry(props: {
                     desaturated={props.entry.isCommand}
                 />
             }
-            simpleBorder paddingSmall
         >
             <HBox centerVertical spaceBetween gap_s>
-                <Text className="queue-entry__name">{props.position + ". " + props.entry.type}</Text>
+
+                <Text
+                    type={props.entry.isCommand ? "secondary" : "default"}
+                    className="queue-entry__name"
+                >
+                    {props.position + ". " + props.entry.type}
+                </Text>
+
                 {!props.entry.isCommand && props.position === 1 && (
-                    <ProgressBar progress={props.entry.progress} className="production_queue__progress"/>)}
+                    <ProgressBar progress={props.entry.progress} className="queue-entry__progress"/>)}
+
                 <ButtonPrimary
+                    className="queue-entry__add"
                     square circle small
                     onClick={() => props.data.cancel(props.entry)}
                     soundId={AudioType.CLICK_CLOSE.id}
                 >
                     <CgClose/>
                 </ButtonPrimary>
+
             </HBox>
         </DecoratedPanel>
     );

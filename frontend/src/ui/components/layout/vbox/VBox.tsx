@@ -2,6 +2,7 @@ import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
 import {BaseBoxProperties} from "../BaseBoxProperties";
 import "./vbox.scoped.less";
+import "./vbox.less"
 
 export interface VBoxProps extends BaseBoxProperties {
 

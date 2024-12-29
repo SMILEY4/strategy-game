@@ -10,6 +10,8 @@ import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {DecoratedPanel, DecoratedPanelImageBackground} from "../../../../components/panels/decorated/DecoratedPanel";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
+import {Header4} from "../../../../components/header/Header";
+import {Divider} from "../../../../components/divider/Divider";
 
 export function BuildingBox(props: { building: Building }): ReactElement {
     return (
@@ -47,7 +49,13 @@ function Box(props: { building: Building }): ReactElement {
 function Details(props: { building: Building }): ReactElement {
     return (
         <TooltipPanel>
-            <VBox padding_m gap_s fillParent>
+            <VBox padding_s gap_s fillParent>
+
+                <EnrichedText>
+                    <Header4 inline>{props.building.type}</Header4>
+                </EnrichedText>
+
+                <Divider type="simple"/>
 
                 <If condition={props.building.activity.consumed.length > 0}>
                     <Then>

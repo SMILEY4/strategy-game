@@ -2,6 +2,7 @@ import {ReactElement} from "react";
 import {joinClassNames} from "../../utils";
 import {BaseBoxProperties} from "../BaseBoxProperties";
 import "./hbox.scoped.less";
+import "./hbox.less"
 
 export interface HBoxProps extends BaseBoxProperties  {
 

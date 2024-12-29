@@ -71,28 +71,52 @@
     height: 100%;
   }
 
-  &.decorated-panel--simplified > .content {
-    padding: @spacing-m;
+  &.decorated-panel--simplified {
+
+    .content {
+      padding: @spacing-m;
+    }
+
+    .border {
+      border-image:  unset;
+      border-width:  1px;
+      border-radius: @border-radius-secondary;
+      border-color:  @color-decorative-gold;
+      opacity:       100%;
+    }
+
   }
 
-  &.decorated-panel--simplified > .border {
-    border-image:  unset;
-    border-width:  1px;
-    border-radius: @border-radius-secondary;
-    border-color:  @color-decorative-gold;
-    opacity:       100%;
+  &.decorated-panel--simplified-dashed {
+
+    .content {
+      padding: @spacing-m;
+    }
+
+    .border {
+      border-image:  unset;
+      border-width:  1px;
+      border-radius: @border-radius-secondary;
+      border-color:  @color-decorative-gold;
+      border-style:  dashed;
+      opacity:       100%;
+    }
+
   }
 
   &.decorated-panel--no-padding > .content {
     padding: unset;
   }
 
-  &.decorated-panel--small-padding:not(.decorated-panel--no-padding):not(.decorated-panel--simplified) > .content {
+  &.decorated-panel--small-padding:not(.decorated-panel--no-padding):not(.decorated-panel--simplified):not(.decorated-panel--simplified-dashed) > .content {
     padding: @spacing-m;
   }
 
-  &.decorated-panel--small-padding.decorated-panel--simplified:not(.decorated-panel--no-padding) > .content {
-    padding: @spacing-s;
+  &.decorated-panel--small-padding.decorated-panel--simplified:not(.decorated-panel--no-padding),
+  &.decorated-panel--small-padding.decorated-panel--simplified-dashed:not(.decorated-panel--no-padding) {
+    .content {
+      padding: @spacing-s;
+    }
   }
 
   &.decorated-panel--neutral {

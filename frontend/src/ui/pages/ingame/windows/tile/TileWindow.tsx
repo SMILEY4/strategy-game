@@ -148,7 +148,7 @@ function SectionContent(props: UseTileWindow.Data): ReactElement {
                     <Text type="secondary">Nothing on this tile.</Text>
                 )}
                 {props.tile.objects.map(tileObject => (
-                    <VBox padding_xs gap_xs>
+                    <VBox padding_xs gap_xs key={tileObject.settlement?.id + "/" + tileObject.worldObject?.id}>
                         <DecoratedPanel
                             simpleBorder
                             paddingSmall

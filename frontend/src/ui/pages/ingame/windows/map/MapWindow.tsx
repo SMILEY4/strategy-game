@@ -8,6 +8,8 @@ import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {Header1} from "../../../../components/header/Header";
+import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
+import {Divider} from "../../../../components/divider/Divider";
 
 export interface MapWindowProps {
     windowId: string;
@@ -19,32 +21,34 @@ export function MapWindow(props: MapWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox fillParent gap_s top stretch padding_xs>
+            {/*<VBox fillParent gap_s top stretch padding_xs>*/}
                 <Header1>Map</Header1>
-                <Spacer size={"s"}/>
-                <VBox gap_s top stretch padding_xs scrollable stableScrollbar>
-                    {MapMode.getValues().map(mapMode => {
-                        return (
-                            <TooltipContext key={mapMode.id}>
-                                <TooltipTrigger>
-                                    <ButtonPrimary
-                                        info
-                                        onClick={() => data.setMapMode(mapMode)}
-                                        disabled={data.selectedMapMode === mapMode}
-                                    >
-                                        {mapMode.displayString}
-                                    </ButtonPrimary>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <TooltipPanel>
-                                        {mapMode.description}
-                                    </TooltipPanel>
-                                </TooltipContent>
-                            </TooltipContext>
-                        );
-                    })}
-                </VBox>
-            </VBox>
+                <Divider type={"simple"}/>
+                <InsetPanel>
+                    <VBox gap_s top stretch padding_xs scrollable stableScrollbar>
+                        {MapMode.getValues().map(mapMode => {
+                            return (
+                                <TooltipContext key={mapMode.id}>
+                                    <TooltipTrigger>
+                                        <ButtonPrimary
+                                            info
+                                            onClick={() => data.setMapMode(mapMode)}
+                                            disabled={data.selectedMapMode === mapMode}
+                                        >
+                                            {mapMode.displayString}
+                                        </ButtonPrimary>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <TooltipPanel>
+                                            {mapMode.description}
+                                        </TooltipPanel>
+                                    </TooltipContent>
+                                </TooltipContext>
+                            );
+                        })}
+                    </VBox>
+                </InsetPanel>
+            {/*</VBox>*/}
         </DecoratedWindow>
     );
 }

@@ -8,9 +8,8 @@ import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
 import {ChangeInfoText} from "../../../../components/info/ChangeInfoText";
 import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import "./productionWindow.less";
 import {ProductionOptionAggregate} from "../../../../../models/aggregates/SettlementAggregate";
-import {Header} from "../../../../components/header/Header";
+import {Header1} from "../../../../components/header/Header";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 
@@ -25,13 +24,14 @@ export function ProductionWindow(props: ProductionWindowProps): ReactElement {
         <DecoratedWindow
             windowId={props.windowId}
             withCloseButton
-            style={{
-                minHeight: "200px",
-            }}
+            style={{minHeight: "200px",}}
         >
-            <Header level={1}>{"Production"}</Header>
+            <Header1>{"Production"}</Header1>
+
             <Spacer size="s"/>
+
             <InsetPanel fillParent hideOverflow noPadding>
+
                 <VBox top stretch gap_xs padding_s scrollable fillParent>
                     {data.entries.map(entry => (
                         <ProductionListEntry
@@ -41,7 +41,9 @@ export function ProductionWindow(props: ProductionWindowProps): ReactElement {
                         />
                     ))}
                 </VBox>
+
             </InsetPanel>
+
         </DecoratedWindow>
     );
 }
@@ -50,11 +52,13 @@ export function ProductionWindow(props: ProductionWindowProps): ReactElement {
 function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: ProductionOptionAggregate }) {
     return (
         <DecoratedPanel
-            simpleBorder paddingSmall
             className={joinClassNames([
                 "production-entry",
                 props.entry.available ? null : "production-entry--disabled",
             ])}
+            simpleBorder
+            paddingSmall
+            accent={props.entry.available ? "blue" : undefined}
             background={
                 <DecoratedPanelImageBackground
                     gradient
@@ -65,10 +69,11 @@ function ProductionListEntry(props: { data: UseProductionWindow.Data, entry: Pro
             }
         >
             <HBox centerVertical gap_s>
-                <Text className="production-entry__name">
+                <Text className="production-entry__name" grow>
                     {props.entry.type}
                 </Text>
                 <ChangeInfoText
+                    secondary
                     className={"production-entry__count"}
                     prevValue={formatNumber(props.entry.queueCount, true, true)}
                     nextValue={formatNumber(props.entry.queueCount + props.entry.commandCount, true, true)}

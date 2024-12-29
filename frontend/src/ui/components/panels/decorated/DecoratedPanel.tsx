@@ -5,6 +5,7 @@ import React, {CSSProperties, ReactElement} from "react";
 export interface DecoratedPanelProps {
     accent?: "blue"
     simpleBorder?: boolean,
+    simpleDashedBorder?: boolean,
     pattern?: boolean,
     floating?: boolean,
     fillParent?: boolean,
@@ -27,6 +28,7 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
                 props.noPadding ? "decorated-panel--no-padding" : null,
                 props.paddingSmall ? "decorated-panel--small-padding" : null,
                 props.simpleBorder ? "decorated-panel--simplified" : null,
+                props.simpleDashedBorder ? "decorated-panel--simplified-dashed" : null,
                 props.fillParent ? "decorated-panel--fill-parent" : null,
                 props.className,
             ])}

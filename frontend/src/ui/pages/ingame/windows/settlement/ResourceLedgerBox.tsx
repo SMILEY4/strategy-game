@@ -11,7 +11,8 @@ import "./resourceLedgerBox.less";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
 import {Header4} from "../../../../components/header/Header";
-import {IndentPanel} from "../../../../components/panels/indent/IndentPanel";
+import {Divider} from "../../../../components/divider/Divider";
+import {ETText} from "../../../../components/textenriched/elements/ETText";
 
 export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
 
@@ -36,6 +37,12 @@ function Box(props: ResourceLedgerEntry): ReactElement {
             />
             <EnrichedText className="resource-ledger-box__label">
                 <ETNumber>{props.amount}</ETNumber>
+                {props.missing.amount > 0 && (
+                    <>
+                        <ETText>/</ETText>
+                        <ETNumber neg unsigned>{props.missing.amount}</ETNumber>
+                    </>
+                )}
             </EnrichedText>
         </DecoratedPanel>
     );
@@ -44,12 +51,14 @@ function Box(props: ResourceLedgerEntry): ReactElement {
 function Details(props: ResourceLedgerEntry): ReactElement {
     return (
         <TooltipPanel>
-            <VBox padding_m gap_xs fillParent>
+            <VBox padding_s gap_xs fillParent>
 
                 <EnrichedText>
                     <ETImageIcon url={"/icons/resources/" + props.type + ".png"}/> <Header4
                     inline>{props.type}</Header4>
                 </EnrichedText>
+
+                <Divider type="simple"/>
 
                 <DetailSection
                     title="Produced"
@@ -72,7 +81,7 @@ function Details(props: ResourceLedgerEntry): ReactElement {
                 <DetailSection
                     title="Missing"
                     format="unsigned"
-                    amountMod={+1}
+                    amountMod={1}
                     type="neg"
                     amount={props.missing.amount}
                     details={props.missing.details}
@@ -93,10 +102,10 @@ function DetailSection(props: {
 }) {
 
     return (
-        <IndentPanel>
-
+        <>
             <EnrichedText>
-                <ETNumber typeAuto format={props.format}>{props.amount * props.amountMod}</ETNumber> {props.title}
+                <ETNumber typeAuto format={props.format}
+                          type={props.type}>{props.amount * props.amountMod}</ETNumber> {props.title}
             </EnrichedText>
 
             <If condition={props.details.length > 0}>
@@ -105,14 +114,14 @@ function DetailSection(props: {
                         <VBox padding_xs gap_xs>
                             {props.details.map(detail => (
                                 <EnrichedText key={detail.key}>
-                                    <ETNumber type={props.type} format={props.format}>{detail.amount * props.amountMod}</ETNumber> {detail.key}
+                                    <ETNumber type={props.type}
+                                              format={props.format}>{detail.amount * props.amountMod}</ETNumber> {detail.key}
                                 </EnrichedText>
                             ))}
                         </VBox>
                     </InsetPanel>
                 </Then>
             </If>
-
-        </IndentPanel>
+        </>
     );
 }

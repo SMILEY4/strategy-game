@@ -2,25 +2,29 @@
 
 .queue-entry {
 
-
-	&.queue-entry--command {
-
-		& > .border {
-			border-style: dashed;
-		}
-
-		.queue-entry__name {
-			opacity: 80%;
-		}
-
+	.queue-entry__name {
+		flex-grow: 1;
+		flex-shrink: 0;
 	}
 
-	.production_queue__progress {
-		flex-grow:        1;
-		padding-left:     @spacing-m;
-		padding-right:    @spacing-m;
-		border:           1px solid @color-decorative-gold;
-		background-color: rgba(0, 0, 0, 0.4);
+	.queue-entry__progress {
+		flex-grow: 0;
+		flex-shrink: 0;
+		width: 100px;
 	}
+
+	.queue-entry__add {
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
+
+	//
+	//.production_queue__progress {
+	//	flex-grow:        1;
+	//	padding-left:     @spacing-m;
+	//	padding-right:    @spacing-m;
+	//	border:           1px solid @color-decorative-gold;
+	//	background-color: rgba(0, 0, 0, 0.4);
+	//}
 
 }
