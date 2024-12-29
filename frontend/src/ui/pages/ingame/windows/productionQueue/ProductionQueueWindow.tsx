@@ -9,11 +9,9 @@ import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {AudioType} from "../../../../../common/audioService";
 import {CgClose} from "react-icons/cg";
-import "./productionQueueWindow.less";
 import {ProductionQueueEntry} from "../../../../../models/base/Settlement";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Header1} from "../../../../components/header/Header";
-import {Spacer} from "../../../../components/spacer/Spacer";
 
 export interface ProductionQueueWindowProps {
     windowId: string;
@@ -89,7 +87,15 @@ function QueueEntry(props: {
                 </Text>
 
                 {!props.entry.isCommand && props.position === 1 && (
-                    <ProgressBar progress={props.entry.progress} className="queue-entry__progress"/>)}
+                    <ProgressBar
+                        dontGrow
+                        dontShrink
+                        small
+                        border
+                        progress={props.entry.progress}
+                        className="queue-entry__progress"
+                    />
+                )}
 
                 <Button
                     className="queue-entry__add"

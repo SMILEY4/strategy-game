@@ -1,6 +1,6 @@
 import {StoryObj} from "@storybook/react";
 import React from "react";
-import {Button, ButtonType, ButtonProps} from "./Button";
+import {Button, ButtonProps} from "./Button";
 import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
 import {FaHome, FaSearch} from "react-icons/fa";
 import {HBox} from "../../layout/hbox/HBox";
@@ -15,7 +15,7 @@ const meta = {
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<ButtonProps & {buttonType: ButtonType }>
+type Story = StoryObj<ButtonProps & {buttonType: "info" | "warn" | "success" }>
 export default meta;
 
 

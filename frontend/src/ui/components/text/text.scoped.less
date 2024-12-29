@@ -9,13 +9,15 @@
   font-weight: @font-weight-m;
   font-family: @font-type-primary;
 
+  white-space: nowrap;
+
   &.text--strikethrough {
     text-decoration: line-through;
   }
 
-  //&.text--relative {
-  //  position: relative;
-  //}
+  &.text--wrap {
+    white-space: unset;
+  }
 
   &.text--left {
     text-align: left;

@@ -16,7 +16,9 @@ export interface TextProps extends BaseProps {
     secondary?: boolean,
 
     strikethrough?: boolean,
-    // relative?: boolean,
+
+    wrap?: boolean,
+
     children?: any;
 }
 
@@ -27,8 +29,8 @@ export function Text(props: TextProps): ReactElement {
                 "text",
                 "text--" + getAlignment(),
                 "text--" + getType(),
+                props.wrap ? "text--wrap" : null,
                 props.strikethrough ? "text--strikethrough" : null,
-                // props.relative ? "text--relative" : null,
                 ...BaseProps.buildBaseClassNames(props)
             ])}
         >
