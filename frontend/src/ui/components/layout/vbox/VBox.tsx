@@ -1,10 +1,11 @@
 import {ReactElement} from "react";
-import {joinClassNames} from "../../utils";
-import {BaseBoxProperties} from "../BaseBoxProperties";
+import {joinClassNames} from "../../window/utils";
+import {BaseBoxProps} from "../BaseBoxProps";
 import "./vbox.scoped.less";
-import "./vbox.less"
+import {BaseProps} from "../../base/base";
+import {BaseListBoxProps} from "../BaseListBoxProps";
 
-export interface VBoxProps extends BaseBoxProperties {
+export interface VBoxProps extends BaseListBoxProps, BaseProps {
 
     // vertical alignment
     centerVertical?: boolean,
@@ -20,13 +21,14 @@ export interface VBoxProps extends BaseBoxProperties {
     right?: boolean,
     stretch?: boolean,
 
-    className?: string,
+    center?: boolean,
+
     children?: any,
 }
 
 export function VBox(props: VBoxProps): ReactElement {
-    const gap = BaseBoxProperties.gap(props)
-    const padding = BaseBoxProperties.padding(props)
+    const gap = BaseListBoxProps.gap(props);
+    const padding = BaseBoxProps.padding(props);
     return (
         <div
             className={joinClassNames([
@@ -35,55 +37,32 @@ export function VBox(props: VBoxProps): ReactElement {
                 "vbox-hor-" + horizontal(props),
                 gap ? "vbox--gap-" + gap : null,
                 padding ? "vbox--padding-" + padding : null,
-                props.fillParent ? "vbox--fill" : null,
-                props.fillParentWidth ? "vbox--fill-width" : null,
-                props.fillParentHeight ? "vbox--fill-height" : null,
                 props.scrollable ? "vbox--scrollable" : null,
-                props.stableScrollbar ? "vbox--stable-scrollbar" : null,
                 props.wrap ? "vbox--wrap" : null,
-                props.className,
+                ...BaseProps.buildBaseClassNames(props),
             ])}
+            style={props.style}
         >
             {props.children}
         </div>
     );
 
     function vertical(props: VBoxProps) {
-        if (props.centerVertical || props.center) {
-            return "center";
-        }
-        if (props.top) {
-            return "top";
-        }
-        if (props.bottom) {
-            return "bottom";
-        }
-        if (props.spaceBetween) {
-            return "space-between";
-        }
-        if (props.spaceEvenly) {
-            return "space-evenly";
-        }
-        if (props.spaceAround) {
-            return "space-around";
-        }
-        return "unknown";
+        if (props.centerVertical || props.center) return "center";
+        if (props.top) return "top";
+        if (props.bottom) return "bottom";
+        if (props.spaceBetween) return "space-between";
+        if (props.spaceEvenly) return "space-evenly";
+        if (props.spaceAround) return "space-around";
+        return "top";
     }
 
     function horizontal(props: VBoxProps) {
-        if (props.centerHorizontal || props.center) {
-            return "center";
-        }
-        if (props.left) {
-            return "left";
-        }
-        if (props.right) {
-            return "right";
-        }
-        if (props.stretch) {
-            return "stretch";
-        }
-        return "unknown";
+        if (props.centerHorizontal || props.center) return "center";
+        if (props.left) return "left";
+        if (props.right) return "right";
+        if (props.stretch) return "stretch";
+        return "stretch";
     }
 
 }

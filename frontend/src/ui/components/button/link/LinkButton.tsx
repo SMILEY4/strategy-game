@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {joinClassNames} from "../../utils";
+import {joinClassNames} from "../../window/utils";
 import "./linkButton.scoped.less"
 import {useButton, UseButtonProps} from "../../headless/useButton";
 

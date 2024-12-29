@@ -1,14 +1,13 @@
 import {CSSProperties, ReactElement} from "react";
-import {joinClassNames} from "../utils";
+import {joinClassNames} from "../window/utils";
 import "./header.scoped.less";
+import {BaseProps} from "../base/base";
 
-export interface HeaderProps {
+export interface HeaderProps extends BaseProps {
     level?: 1 | 2 | 3 | 4 | 5,
     centered?: boolean,
     inline?: boolean,
-    className?: string,
     children?: string
-    style?: CSSProperties;
 }
 
 export function Header(props: HeaderProps): ReactElement {
@@ -16,7 +15,7 @@ export function Header(props: HeaderProps): ReactElement {
         "header",
         props.centered ? "header--centered" : null,
         props.inline ? "header--inline" : null,
-        props.className
+        ...BaseProps.buildBaseClassNames(props)
     ]);
     const level = props.level || 1
     if (level === 1) return <h1 className={classNames} style={props.style}>{props.children}</h1>;

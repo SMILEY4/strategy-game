@@ -1,7 +1,7 @@
 import React, {ReactElement, useState} from "react";
 import {VBox} from "../layout/vbox/VBox";
 import {HBox} from "../layout/hbox/HBox";
-import {ButtonPrimary} from "../button/primary/ButtonPrimary";
+import {Button} from "../button/primary/Button";
 import {Divider} from "../divider/Divider";
 
 export interface TabBarProps {
@@ -36,16 +36,16 @@ export function TabBar(props: TabBarProps): ReactElement {
 
             <HBox centerHorizontal gap_xs centerVertical fillParentWidth>
                 {options.map(option => (
-                    <ButtonPrimary
+                    <Button
                         key={option.name}
                         small
-                        round={!option.circle}
+                        rounded={!option.circle}
                         circle={option.circle}
                         active={selected === option.name}
                         onClick={() => setSelected(option.name)}
                     >
                         {option.name}
-                    </ButtonPrimary>
+                    </Button>
                 ))}
             </HBox>
 

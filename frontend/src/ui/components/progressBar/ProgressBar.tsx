@@ -1,6 +1,6 @@
 import React, {ReactElement} from "react";
 import {Text} from "../text/Text";
-import {formatPercentage, joinClassNames} from "../utils";
+import {formatPercentage, joinClassNames} from "../window/utils";
 import "./progressBar.scoped.less";
 
 export interface ProgressBarProps {

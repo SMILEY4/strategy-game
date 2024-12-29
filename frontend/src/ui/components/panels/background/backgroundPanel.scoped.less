@@ -2,37 +2,44 @@
 
 .background-panel {
 
-  position:   relative;
-  background: radial-gradient(ellipse at top, #262b33, #101010);
+  background:      radial-gradient(ellipse at top, #262b33, #101010);
+  background-size: cover;
 
-  &.background-panel--fill {
-    width:           100%;
-    height:          100%;
-  }
+  position:        relative;
+  width:           100%;
+  height:          100%;
 
-  &.background-panel--center-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .background {
+  & > .background-panel__texture {
     position:          absolute;
     bottom:            0;
     left:              0;
     right:             0;
     top:               0;
     background-image:  @background-texture-paper;
-    background-size:   140%;
+    background-size:   @background-texture-paper-size;
+    opacity:           @background-texture-paper-opacity;
     background-repeat: repeat;
     mix-blend-mode:    multiply;
-    opacity:           70%;
     pointer-events:    none;
   }
 
-  .content {
-    position: relative;
-    padding:  16px;
+  & > .background-panel__vignette {
+    position:       absolute;
+    bottom:         0;
+    left:           0;
+    right:          0;
+    top:            0;
+    pointer-events: none;
+    background:     radial-gradient(transparent, rgba(0, 0, 0, 20%));
+  }
+
+  .background-panel__content {
+    position:        relative;
+    width:           100%;
+    height:          100%;
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
   }
 
 }

@@ -1,6 +1,6 @@
 import React, {ReactElement} from "react";
 import "./progressCircle.scoped.less";
-import {joinClassNames} from "../../../../components/utils";
+import {joinClassNames} from "../../../../components/window/utils";
 import {FaArrowUp} from "react-icons/fa6";
 import {FaArrowDown} from "react-icons/fa";
 import {TbPointFilled} from "react-icons/tb";

@@ -8,10 +8,10 @@ import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {ETNumber} from "../../../../components/textenriched/elements/ETNumber";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
-import {DecoratedPanel, DecoratedPanelImageBackground} from "../../../../components/panels/decorated/DecoratedPanel";
 import {ETImageIcon} from "../../../../components/textenriched/elements/ETImageIcon";
 import {Header4} from "../../../../components/header/Header";
 import {Divider} from "../../../../components/divider/Divider";
+import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 
 export function BuildingBox(props: { building: Building }): ReactElement {
     return (
@@ -32,12 +32,10 @@ function Box(props: { building: Building }): ReactElement {
     return (
         <DecoratedPanel
             className={"building-box"}
-            simpleBorder
-            noPadding
+            blue
             pattern
-            accent="blue"
             background={
-                <DecoratedPanelImageBackground
+                <DecoratedPanel.ImageBackground
                     url={"icons/production/" + props.building.type + ".png"}
                     desaturated={!active}
                 />
@@ -49,13 +47,13 @@ function Box(props: { building: Building }): ReactElement {
 function Details(props: { building: Building }): ReactElement {
     return (
         <TooltipPanel>
-            <VBox padding_s gap_s fillParent>
+            <VBox padding_s gap_s>
 
                 <EnrichedText>
                     <Header4 inline>{props.building.type}</Header4>
                 </EnrichedText>
 
-                <Divider type="simple"/>
+                <Divider line/>
 
                 <If condition={props.building.activity.consumed.length > 0}>
                     <Then>
@@ -80,7 +78,6 @@ function Details(props: { building: Building }): ReactElement {
 
                 <If condition={props.building.activity.missing.length > 0 || !props.building.validity.workTile}>
                     <Then>
-                        <Spacer size="s"/>
                         <EnrichedText>
                             Missing:
                         </EnrichedText>

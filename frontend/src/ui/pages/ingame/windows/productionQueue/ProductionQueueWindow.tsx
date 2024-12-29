@@ -1,10 +1,10 @@
 import React, {ReactElement} from "react";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {DecoratedPanel, DecoratedPanelImageBackground} from "../../../../components/panels/decorated/DecoratedPanel";
+import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {Text} from "../../../../components/text/Text";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../../components/button/primary/Button";
 import {UseProductionQueueWindow} from "./useProductionQueueWindow";
 import {ProgressBar} from "../../../../components/progressBar/ProgressBar";
 import {AudioType} from "../../../../../common/audioService";
@@ -25,14 +25,20 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox fillParent gap_s top stretch padding_xs>
-                <Header1>Production Queue</Header1>
-                <Spacer size={"s"}/>
-                <InsetPanel fillParent hideOverflow noPadding>
-                    <VBox top stretch gap_xs padding_s scrollable fillParent>
+            <VBox padding_l gap_m fullSize>
+
+                <VBox dontShrink dontGrow>
+                    <Header1>Production</Header1>
+                    <Text>{data.settlement.name}</Text>
+                </VBox>
+
+                <InsetPanel shrink grow>
+                    <VBox fullSize gap_s padding_s scrollable>
+
                         {data.entries.length === 0 && (
-                            <Text type="secondary">Nothing in queue.</Text>
+                            <Text secondary>Nothing in queue.</Text>
                         )}
+
                         {data.entries.map((entry, index) => (
                             <QueueEntry
                                 key={entry.entryId}
@@ -41,8 +47,10 @@ export function ProductionQueueWindow(props: ProductionQueueWindowProps): ReactE
                                 position={index + 1}
                             />
                         ))}
+
                     </VBox>
                 </InsetPanel>
+
             </VBox>
         </DecoratedWindow>
     );
@@ -57,21 +65,24 @@ function QueueEntry(props: {
     return (
         <DecoratedPanel
             className="queue-entry"
-            simpleDashedBorder={props.entry.isCommand}
-            simpleBorder={!props.entry.isCommand}
-            paddingSmall
+            dontGrow
+            dontShrink
+            simpleDashed={props.entry.isCommand}
+            simple={!props.entry.isCommand}
             background={
-                <DecoratedPanelImageBackground
+                <DecoratedPanel.ImageBackground
                     gradient
-                    url={"url('" + "icons/production/" + props.entry.type + ".png"}
+                    url={"icons/production/" + props.entry.type + ".png"}
                     desaturated={props.entry.isCommand}
                 />
             }
         >
-            <HBox centerVertical spaceBetween gap_s>
+            <HBox fullSize centerVertical spaceBetween gap_s padding_s>
 
                 <Text
-                    type={props.entry.isCommand ? "secondary" : "default"}
+                    grow
+                    shrink
+                    secondary={props.entry.isCommand}
                     className="queue-entry__name"
                 >
                     {props.position + ". " + props.entry.type}
@@ -80,14 +91,14 @@ function QueueEntry(props: {
                 {!props.entry.isCommand && props.position === 1 && (
                     <ProgressBar progress={props.entry.progress} className="queue-entry__progress"/>)}
 
-                <ButtonPrimary
+                <Button
                     className="queue-entry__add"
                     square circle small
                     onClick={() => props.data.cancel(props.entry)}
                     soundId={AudioType.CLICK_CLOSE.id}
                 >
                     <CgClose/>
-                </ButtonPrimary>
+                </Button>
 
             </HBox>
         </DecoratedPanel>

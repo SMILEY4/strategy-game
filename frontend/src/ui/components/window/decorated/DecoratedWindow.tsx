@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactElement} from "react";
 import {DecoratedPanel} from "../../panels/decorated/DecoratedPanel";
-import {joinClassNames} from "../../utils";
-import {ButtonPrimary} from "../../button/primary/ButtonPrimary";
+import {joinClassNames} from "../utils";
+import {Button} from "../../button/primary/Button";
 import {CgClose} from "react-icons/cg";
 import "./decoratedWindow.less";
 import {AudioType} from "../../../../common/audioService";
@@ -33,7 +33,7 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
 
     return (
         <DecoratedPanel
-            noPadding={props.noPadding}
+            ornament
             className={joinClassNames(["decorated-window", props.className])}
             elementRef={refContent}
             style={{
@@ -48,9 +48,9 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             <div {...resizerProps} className="decorated-window__resize-area"/>
 
             {props.withCloseButton && (
-                <ButtonPrimary warn circle className="decorated-window__close" onClick={handleClose} soundId={AudioType.CLICK_CLOSE.id}>
+                <Button warn circle className="decorated-window__close" onClick={handleClose} soundId={AudioType.CLICK_CLOSE.id}>
                     <CgClose/>
-                </ButtonPrimary>
+                </Button>
             )}
 
             <div className="decorated-window__content">

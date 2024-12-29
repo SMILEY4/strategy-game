@@ -1,15 +1,13 @@
 @import "./../../common.less";
 
-
 .inset-panel {
   position:      relative;
-  box-sizing:    border-box;
 
   border-radius: @border-radius-secondary;
   border:        @border-inset;
   box-shadow:    @shadow-inset-back;
 
-  padding:       @spacing-s;
+  min-height: 0;
 
   &::after {
     content:        "";
@@ -22,21 +20,8 @@
     pointer-events: none;
   }
 
-  &.inset-panel--fill-parent {
-    width:  100%;
-    height: 100%;
-  }
+}
 
-  &.inset-panel--grow-parent {
-    flex-grow: 1;
-  }
-
-  &.inset-panel--no-padding {
-    padding: unset;
-  }
-
-  &.inset-panel--hide-overflow {
-    overflow: hidden;
-  }
-
+.inset-panel--no-padding {
+  padding: unset;
 }

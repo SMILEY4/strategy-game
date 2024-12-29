@@ -4,8 +4,8 @@
 
   @gradient-default: radial-gradient(ellipse at bottom, hsl(210, 34%, 32%) 0%, hsl(220, 20%, 15%) 90%);
 
-  position:   relative;
-  box-sizing: border-box;
+  position:          relative;
+  box-sizing:        border-box;
 
   .banner__inner {
     position:            relative;
@@ -21,34 +21,33 @@
     background:          @gradient-default;
 
     /deep/ .banner__subtitle {
-      width: 100%;
+      width:      100%;
       margin-top: @spacing-xs;
     }
 
     /deep/ .banner__children-container {
       position: absolute;
-      right: @spacing-s;
-      top: 0;
-      bottom: 0;
+      right:    @spacing-s;
+      top:      0;
+      bottom:   0;
     }
 
   }
 
   .banner__inner::before {
-    content:             "";
-    position:            absolute;
-    bottom:              0;
-    left:                0;
-    right:               0;
-    top:                 0;
-    border-radius:       @border-radius-secondary;
-    background-image:    @background-texture-stone;
-    background-size:     400%;
-    background-position: 50%;
-    background-repeat:   repeat;
-    mix-blend-mode:      multiply;
-    opacity:             40%;
-    pointer-events:      none;
+    content:           "";
+    position:          absolute;
+    bottom:            0;
+    left:              0;
+    right:             0;
+    top:               0;
+    border-radius:     @border-radius-secondary;
+    background-image:  @background-texture-stone;
+    background-size:   @background-texture-stone-size;
+    opacity:           @background-texture-stone-opacity;
+    background-repeat: repeat;
+    mix-blend-mode:    multiply;
+    pointer-events:    none;
   }
 
   .banner__shadow {

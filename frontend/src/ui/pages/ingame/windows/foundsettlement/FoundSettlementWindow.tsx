@@ -3,7 +3,7 @@ import React from "react";
 import {TextField} from "../../../../components/textfield/TextField";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {HBox} from "../../../../components/layout/hbox/HBox";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../../components/button/primary/Button";
 import {UseFoundSettlementWindow} from "./useFoundSettlementWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
@@ -45,23 +45,23 @@ export function FoundSettlementWindow(props: FoundSettlementWindowProps) {
                             type="text"
                             onChange={data.input.name.set}
                         />
-                        <ButtonPrimary info onClick={data.randomizeName}>
+                        <Button info onClick={data.randomizeName}>
                             Random
-                        </ButtonPrimary>
+                        </Button>
                     </HBox>
 
                     <Spacer size="s"/>
 
                     <HBox right centerVertical gap_s>
-                        <ButtonPrimary warn onClick={data.cancel}>
+                        <Button warn onClick={data.cancel}>
                             Cancel
-                        </ButtonPrimary>
+                        </Button>
 
                         <TooltipContext enabled={!data.input.valid}>
                             <TooltipTrigger>
-                                <ButtonPrimary success disabled={!data.input.valid} onClick={data.create}>
+                                <Button success disabled={!data.input.valid} onClick={data.create}>
                                     Create
-                                </ButtonPrimary>
+                                </Button>
                             </TooltipTrigger>
                             <TooltipContent>
                                 <TooltipPanel>

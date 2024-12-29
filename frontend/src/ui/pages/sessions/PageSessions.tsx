@@ -1,18 +1,18 @@
 import React, {ReactElement, useEffect, useState} from "react";
-import {BackgroundImagePanel} from "../../components/panels/backgroundimage/BackgroundImagePanel";
 import {DecoratedPanel} from "../../components/panels/decorated/DecoratedPanel";
 import {VBox} from "../../components/layout/vbox/VBox";
 import {Header1, Header3} from "../../components/header/Header";
 import {HBox} from "../../components/layout/hbox/HBox";
-import {ButtonPrimary} from "../../components/button/primary/ButtonPrimary";
+import {Button} from "../../components/button/primary/Button";
 import {InsetPanel} from "../../components/panels/inset/InsetPanel";
 import {TextField} from "../../components/textfield/TextField";
-import {Spacer} from "../../components/spacer/Spacer";
-import "./pageSessions.less";
+import {Spacer, VSpacer} from "../../components/spacer/Spacer";
 import {AudioType} from "../../../common/audioService";
 import {Text} from "../../components/text/Text";
 import {GameSessionMeta} from "../../../models/base/gameSessionMeta";
 import {SessionHooks} from "./sessions";
+import {BackgroundPanel} from "../../components/panels/background/BackgroundPanel";
+import {ModalWindow} from "../../components/modal/ModalWindow";
 
 
 export function PageSessions(): ReactElement {
@@ -50,18 +50,20 @@ export function PageSessions(): ReactElement {
     }, []);
 
     return (
-        <BackgroundImagePanel fillParent centerContent image="/images/image_2.bmp" className="page-sessions">
-            <DecoratedPanel floating>
-                <VBox gap_s fillParent centerVertical stretch>
+        <BackgroundPanel image="/images/image_2.bmp">
 
-                    <Spacer size="xs"/>
+            <DecoratedPanel ornament style={{
+                width: "min(70%, 700px)",
+                height: "min(80%, 600px)",
+            }}>
+                <VBox fullSize padding_l centerVertical stretch gap_s>
 
                     <Header1>Game Sessions</Header1>
 
-                    <Spacer size="m"/>
+                    <VSpacer size_s/>
 
-                    <InsetPanel noPadding fillParent className="page-sessions__list__container">
-                        <VBox padding_s gap_s fillParent top stretch className="page-sessions__list__content">
+                    <InsetPanel grow shrink>
+                        <VBox scrollable padding_s fullSize>
                             {sessions.map(session => (
                                 <GameSessionEntry
                                     key={session.id}
@@ -70,18 +72,15 @@ export function PageSessions(): ReactElement {
                                     onDelete={() => deleteSession(session.id)}
                                 />
                             ))}
+
                         </VBox>
                     </InsetPanel>
 
-                    <Spacer size="s"/>
+                    <VSpacer size_s/>
 
-                    <HBox gap_s centerVertical right>
-                        <ButtonPrimary success onClick={startCreateSession}>
-                            Create
-                        </ButtonPrimary>
-                        <ButtonPrimary success onClick={startJoinSession}>
-                            Join
-                        </ButtonPrimary>
+                    <HBox right gap_s dontGrow dontShrink>
+                        <Button success onClick={startCreateSession}>Create</Button>
+                        <Button success onClick={startJoinSession}>Join</Button>
                     </HBox>
 
                 </VBox>
@@ -108,7 +107,7 @@ export function PageSessions(): ReactElement {
                 />
             )}
 
-        </BackgroundImagePanel>
+        </BackgroundPanel>
     );
 }
 
@@ -118,9 +117,9 @@ function GameSessionEntry(props: {
     onDelete: () => void
 }): ReactElement {
     return (
-        <DecoratedPanel accent="blue" simpleBorder className="game-session-entry" pattern>
-            <HBox gap_s centerVertical left>
-                <VBox fillParentWidth gap_xs>
+        <DecoratedPanel pattern blue>
+            <HBox padding_m gap_s>
+                <VBox grow shrink gap_xs>
                     <Header3>{props.session.name}</Header3>
                     <HBox gap_xs wrap>
                         <Text style={{marginRight: "16px"}} type="secondary">
@@ -137,8 +136,8 @@ function GameSessionEntry(props: {
                         </Text>
                     </HBox>
                 </VBox>
-                <ButtonPrimary info onClick={props.onConnect}>Connect</ButtonPrimary>
-                <ButtonPrimary warn onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</ButtonPrimary>
+                <Button info onClick={props.onConnect}>Connect</Button>
+                <Button warn onClick={props.onDelete} soundId={AudioType.CLICK_CLOSE.id}>Delete</Button>
             </HBox>
         </DecoratedPanel>
     );
@@ -152,13 +151,11 @@ function ModalJoinGame(props: {
     acceptDisabled: boolean
 }): ReactElement {
     return (
-        <div className="game-session__modal-surface">
-            <DecoratedPanel className="game-session__modal-join">
-                <VBox centerVertical stretch>
+        <ModalWindow>
+            <DecoratedPanel ornament>
+                <VBox padding_l gap_m>
 
                     <Header1>Join</Header1>
-
-                    <Spacer size="m"/>
 
                     <TextField
                         value={props.sessionId}
@@ -167,21 +164,14 @@ function ModalJoinGame(props: {
                         onChange={props.onSessionId}
                     />
 
-                    <Spacer size="m"/>
-
-                    <HBox centerVertical right>
-                        <ButtonPrimary warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
-                            Cancel
-                        </ButtonPrimary>
-                        <Spacer size="xs"/>
-                        <ButtonPrimary success onClick={props.onAccept} disabled={props.acceptDisabled}>
-                            Join
-                        </ButtonPrimary>
+                    <HBox right gap_xs>
+                        <Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
+                        <Button success onClick={props.onAccept} disabled={props.acceptDisabled}>Join</Button>
                     </HBox>
 
                 </VBox>
             </DecoratedPanel>
-        </div>
+        </ModalWindow>
     );
 }
 
@@ -194,43 +184,38 @@ function ModalCreateGame(props: {
     onAccept: () => void,
 }): ReactElement {
     return (
-        <div className="game-session__modal-surface">
-            <DecoratedPanel className="game-session__modal-create">
-                <VBox centerVertical stretch gap_s>
+        <ModalWindow>
+            <DecoratedPanel ornament>
+                <VBox padding_l gap_m>
 
                     <Header1>Create</Header1>
 
-                    <Spacer size="m"/>
+                    <VBox gap_s>
 
-                    <TextField
-                        value={props.name}
-                        placeholder={"Name"}
-                        type="text"
-                        onChange={props.setName}
-                    />
+                        <TextField
+                            value={props.name}
+                            placeholder={"Name"}
+                            type="text"
+                            onChange={props.setName}
+                        />
 
-                    <TextField
-                        value={props.seed}
-                        placeholder={"Seed (Optional)"}
-                        type="text"
-                        onChange={props.onSeed}
-                    />
+                        <TextField
+                            value={props.seed}
+                            placeholder={"Seed (Optional)"}
+                            type="text"
+                            onChange={props.onSeed}
+                        />
 
-                    <Spacer size="m"/>
+                    </VBox>
 
-                    <HBox centerVertical right>
-                        <ButtonPrimary warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>
-                            Cancel
-                        </ButtonPrimary>
-                        <Spacer size="xs"/>
-                        <ButtonPrimary success onClick={props.onAccept}>
-                            Create
-                        </ButtonPrimary>
+                    <HBox right gap_xs>
+                        <Button warn onClick={props.onCancel} soundId={AudioType.CLICK_CLOSE.id}>Cancel</Button>
+                        <Button success onClick={props.onAccept}>Create</Button>
                     </HBox>
 
                 </VBox>
             </DecoratedPanel>
-        </div>
+        </ModalWindow>
     );
 }
 
@@ -282,7 +267,7 @@ function useCreateSession(reloadSessions: () => void) {
         seed: seed,
         setSeed: setSeed,
         name: name,
-        setName: setName
+        setName: setName,
     };
 
 }

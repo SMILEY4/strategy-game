@@ -1,6 +1,6 @@
 import React, {ReactElement} from "react";
 import "./etElements.scoped.less";
-import {joinClassNames} from "../../utils";
+import {joinClassNames} from "../../window/utils";
 
 export interface ETColorBoxProps {
     color: string,

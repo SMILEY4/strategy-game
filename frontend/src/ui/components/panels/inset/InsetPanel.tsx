@@ -1,25 +1,23 @@
-import {joinClassNames} from "../../utils";
+import {joinClassNames} from "../../window/utils";
 import "./insetPanel.scoped.less";
+import {BaseProps} from "../../base/base";
 
-export interface InsetPanelProps {
-    noPadding?: boolean,
-    fillParent?: boolean,
-    growParent?: boolean,
-    hideOverflow?: boolean
-    className?: string,
+export interface InsetPanelProps extends BaseProps {
     children?: any;
 }
 
+/**
+ * Panel that looks "inset" into the parent container.
+ */
 export function InsetPanel(props: InsetPanelProps) {
     return (
-        <div className={joinClassNames([
-            "inset-panel",
-            props.fillParent ? "inset-panel--fill-parent" : null,
-            props.growParent ? "inset-panel--grow-parent" : null,
-            props.noPadding ? "inset-panel--no-padding": null,
-            props.hideOverflow ? "inset-panel--hide-overflow" : null,
-            props.className,
-        ])}>
+        <div
+            className={joinClassNames([
+                "inset-panel",
+                ...BaseProps.buildBaseClassNames(props),
+            ])}
+            style={props.style}
+        >
             {props.children}
         </div>
     );

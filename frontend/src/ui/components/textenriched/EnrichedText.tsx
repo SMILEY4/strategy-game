@@ -1,5 +1,5 @@
 import {CSSProperties, ReactElement} from "react";
-import {joinClassNames} from "../utils";
+import {joinClassNames} from "../window/utils";
 import "./enrichedText.scoped.less"
 
 export interface EnrichedTextProps {

@@ -17,31 +17,31 @@ const meta = {
 type Story = StoryObj<typeof Banner>
 export default meta;
 
-export const Default: Story = {
-    render: () => (
-        <DecoratedPanel red noPadding>
-            <VBox fillParent top stretch>
-                <Banner>
-                    <Header1 centered>Banner</Header1>
-                </Banner>
-                <DummyContent width="100%"/>
-            </VBox>
-        </DecoratedPanel>
-    ),
-};
-
-export const SpaceAbove: Story = {
-    render: () => (
-        <DecoratedPanel red noPadding>
-            <VBox fillParent top stretch>
-                <Banner spaceAbove>
-                    <Header1 centered>Banner</Header1>
-                </Banner>
-                <DummyContent width="100%"/>
-            </VBox>
-        </DecoratedPanel>
-    ),
-};
+// export const Default: Story = {
+//     render: () => (
+//         <DecoratedPanel red paddingNone>
+//             <VBox fillParent top stretch>
+//                 <Banner>
+//                     <Header1 centered>Banner</Header1>
+//                 </Banner>
+//                 <DummyContent width="100%"/>
+//             </VBox>
+//         </DecoratedPanel>
+//     ),
+// };
+//
+// export const SpaceAbove: Story = {
+//     render: () => (
+//         <DecoratedPanel red paddingNone>
+//             <VBox fillParent top stretch>
+//                 <Banner spaceAbove>
+//                     <Header1 centered>Banner</Header1>
+//                 </Banner>
+//                 <DummyContent width="100%"/>
+//             </VBox>
+//         </DecoratedPanel>
+//     ),
+// };
 
 
 function DummyContent(props: { width?: string, height?: string }) {

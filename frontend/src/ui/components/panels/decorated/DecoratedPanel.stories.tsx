@@ -1,6 +1,11 @@
-import {DecoratedPanel} from "./DecoratedPanel";
+import {
+    DecoratedPanel,
+    DecoratedPanelProps,
+} from "./DecoratedPanel";
 import {StoryObj} from "@storybook/react";
 import React from "react";
+import {VBox} from "../../layout/vbox/VBox";
+import {CSS_COLOR_SUCCESS_LIGHT, CSS_COLOR_WARN_LIGHT} from "../../commonColors";
 
 const meta = {
     title: "Panels/Decorated",
@@ -11,111 +16,75 @@ const meta = {
     tags: ["autodocs"],
     argTypes: {},
 };
-type Story = StoryObj<typeof DecoratedPanel>
+type Story = StoryObj<DecoratedPanelProps & {
+    border: undefined | "ornament" | "simple" | "simpleDashed"
+
+}>
 export default meta;
 
 export const Default: Story = {
-    render: () => (
-        <DecoratedPanel>
-            <DummyContent/>
-        </DecoratedPanel>
-    ),
-};
-
-export const DefaultSimplified: Story = {
-    render: () => (
-        <DecoratedPanel simpleBorder>
-            <DummyContent/>
-        </DecoratedPanel>
-    ),
-};
-
-
-export const Accent: Story = {
-    render: () => (
-        <DecoratedPanel>
-            <DecoratedPanel accent="blue">
-                <DummyContent/>
-            </DecoratedPanel>
-        </DecoratedPanel>
-    ),
-};
-
-export const AccentSimplified: Story = {
-    render: () => (
-        <DecoratedPanel>
-            <DecoratedPanel accent="blue" simpleBorder>
-                <DummyContent/>
-            </DecoratedPanel>
-        </DecoratedPanel>
-    ),
-};
-
-// export const Red: Story = {
-//     render: () => (
-//         <DecoratedPanel red>
-//             <DummyContent/>
-//         </DecoratedPanel>
-//     ),
-// };
-//
-// export const RedSimplified: Story = {
-//     render: () => (
-//         <DecoratedPanel red simpleBorder>
-//             <DummyContent/>
-//         </DecoratedPanel>
-//     ),
-// };
-//
-// export const Green: Story = {
-//     render: () => (
-//         <DecoratedPanel green>
-//             <DummyContent/>
-//         </DecoratedPanel>
-//     ),
-// };
-//
-// export const Blue: Story = {
-//     render: () => (
-//         <DecoratedPanel blue>
-//             <DummyContent/>
-//         </DecoratedPanel>
-//     ),
-// };
-//
-// export const Paper: Story = {
-//     render: () => (
-//         <DecoratedPanel paper>
-//             <DummyContent/>
-//         </DecoratedPanel>
-//     ),
-// };
-//
-//
-// export const Stacked: Story = {
-//     render: () => (
-//         <DecoratedPanel red>
-//             <DecoratedPanel green simpleBorder>
-//                 <DecoratedPanel blue simpleBorder>
-//                     <DecoratedPanel paper simpleBorder>
-//                         <DummyContent/>
-//                     </DecoratedPanel>
-//                 </DecoratedPanel>
-//             </DecoratedPanel>
-//         </DecoratedPanel>
-//     ),
-// };
-
-function DummyContent(props: { width?: string, height?: string }) {
-    return (
-        <div style={{
-            width: props.width || "150px",
-            height: props.height || "150px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-        }}>
+    render: (args) => (
+        <DecoratedPanel
+            ornament={args.ornament}
+            simple={args.simple}
+            simpleDashed={args.simpleDashed}
+            paddingNone={args.paddingNone}
+            blue={args.blue}
+            pattern={args.pattern}
+        >
             Content
-        </div>
-    );
-}
+        </DecoratedPanel>
+    ),
+};
+
+
+export const ExampleListEntries: Story = {
+    render: (args) => (
+        <DecoratedPanel ornament>
+            <VBox gap_s>
+                <DecoratedPanel simple blue>Simple Item</DecoratedPanel>
+                <DecoratedPanel simple blue pattern>Item with pattern</DecoratedPanel>
+                <DecoratedPanel
+                    simple
+                    blue
+                    background={<DecoratedPanel.ColorBackground color={CSS_COLOR_SUCCESS_LIGHT}/>}
+                >
+                    Item with color 1
+                </DecoratedPanel>
+                <DecoratedPanel
+                    simple
+                    blue
+                    background={<DecoratedPanel.ColorBackground color={CSS_COLOR_WARN_LIGHT}/>}
+                >
+                    Item with color 2
+                </DecoratedPanel>
+                <DecoratedPanel
+                    simple
+                    blue
+                    background={
+                        <DecoratedPanel.ImageBackground
+                            gradient
+                            url="icons/production/building.FARM.png"
+                        />
+                    }
+                >
+                    Item with image 1
+                </DecoratedPanel>
+                <DecoratedPanel
+                    simple
+                    blue
+                    background={
+                        <DecoratedPanel.ImageBackground
+                            gradient
+                            url="icons/production/building.WOODCUTTER.png"
+                            desaturated
+                            reducedOpacity
+                        />
+                    }
+                >
+                    Item with image 2
+                </DecoratedPanel>
+            </VBox>
+        </DecoratedPanel>
+    ),
+};

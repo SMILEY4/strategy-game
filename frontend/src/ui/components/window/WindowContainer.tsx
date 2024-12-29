@@ -2,7 +2,7 @@ import {ReactElement} from "react";
 import {useWindowData} from "./windowHooks";
 import "./windowContainer.scoped.less"
 import "./windowContainer.less"
-import {joinClassNames} from "../utils";
+import {joinClassNames} from "./utils";
 
 export interface WindowContainerProps {
     windowId: string

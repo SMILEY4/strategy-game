@@ -1,12 +1,11 @@
 import React, {ReactElement} from "react";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../../components/button/primary/Button";
 import {MapMode} from "../../../../../models/base/mapMode";
 import {UseMapWindow} from "./useMapWindow";
 import {TooltipContent, TooltipContext, TooltipTrigger} from "../../../../components/tooltip/TooltipContext";
 import {TooltipPanel} from "../../../../components/panels/tooltip/TooltipPanel";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {Header1} from "../../../../components/header/Header";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Divider} from "../../../../components/divider/Divider";
@@ -21,22 +20,26 @@ export function MapWindow(props: MapWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            {/*<VBox fillParent gap_s top stretch padding_xs>*/}
+            <VBox padding_l top gap_s fullSize>
+
                 <Header1>Map</Header1>
-                <Divider type={"simple"}/>
-                <InsetPanel>
-                    <VBox gap_s top stretch padding_xs scrollable stableScrollbar>
+
+                <Divider line/>
+
+                <InsetPanel shrink>
+                    <VBox scrollable padding_s gap_s fullSize>
+
                         {MapMode.getValues().map(mapMode => {
                             return (
                                 <TooltipContext key={mapMode.id}>
                                     <TooltipTrigger>
-                                        <ButtonPrimary
+                                        <Button
                                             info
                                             onClick={() => data.setMapMode(mapMode)}
                                             disabled={data.selectedMapMode === mapMode}
                                         >
                                             {mapMode.displayString}
-                                        </ButtonPrimary>
+                                        </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <TooltipPanel>
@@ -46,9 +49,11 @@ export function MapWindow(props: MapWindowProps): ReactElement {
                                 </TooltipContext>
                             );
                         })}
+
                     </VBox>
                 </InsetPanel>
-            {/*</VBox>*/}
+
+            </VBox>
         </DecoratedWindow>
     );
 }

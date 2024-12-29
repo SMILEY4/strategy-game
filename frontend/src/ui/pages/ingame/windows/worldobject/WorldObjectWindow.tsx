@@ -2,15 +2,12 @@ import React, {ReactElement} from "react";
 import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {UseWorldObjectWindow} from "./useWorldObjectWindow";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../../components/button/primary/Button";
 import {Else, If, Then, When} from "react-if";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Banner} from "../../../../components/banner/Banner";
 import {FiHexagon} from "react-icons/fi";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
-import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
-import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
-import {Spacer} from "../../../../components/spacer/Spacer";
 
 export interface WorldObjectWindowProps {
     windowId: string;
@@ -24,15 +21,15 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
     if (data === null) {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton>
-                <VBox fillParent center>
-                    <Text>No object selected</Text>
+                <VBox fullSize center>
+                    <Text secondary>No object selected</Text>
                 </VBox>
             </DecoratedWindow>
         );
     } else {
         return (
             <DecoratedWindow windowId={props.windowId} withCloseButton noPadding>
-                <VBox fillParent>
+                <VBox fullSize>
 
                     <Banner
                         title={data.worldObject.type.id}
@@ -40,44 +37,38 @@ export function WorldObjectWindow(props: WorldObjectWindowProps): ReactElement {
                         color={data.worldObject.country.color}
                         spaceAbove
                     >
-                        <ButtonPrimary info circle small onClick={data.open.tile}>
-                            <FiHexagon/>
-                        </ButtonPrimary>
+                        <Button circle small onClick={data.open.tile}><FiHexagon/></Button>
                     </Banner>
 
-                    <VBox scrollable gap_s stableScrollbar top stretch padding_m>
+                    <VBox grow shrink scrollable gap_s padding_m>
 
                         <Text>Available Actions:</Text>
 
-                        <InsetPanel>
-
-                            <VBox gap_s top stretch>
+                        <InsetPanel dontShrink dontGrow>
+                            <VBox  fullSize padding_s gap_s>
 
                                 <When condition={data.movement.possible}>
                                     <If condition={data.movement.canCancel}>
                                         <Then>
-                                            <ButtonPrimary info onClick={data.movement.cancel}>
+                                            <Button onClick={data.movement.cancel}>
                                                 Cancel Movement
-                                            </ButtonPrimary>
+                                            </Button>
                                         </Then>
                                         <Else>
-                                            <ButtonPrimary info onClick={data.movement.start}
-                                                           disabled={!data.movement.enabled}>
+                                            <Button onClick={data.movement.start} disabled={!data.movement.enabled}>
                                                 Move
-                                            </ButtonPrimary>
+                                            </Button>
                                         </Else>
                                     </If>
                                 </When>
 
                                 <When condition={data.settlement.possible}>
-                                    <ButtonPrimary info onClick={data.settlement.start}
-                                                   disabled={!data.settlement.enabled}>
+                                    <Button onClick={data.settlement.start} disabled={!data.settlement.enabled}>
                                         Found Settlement
-                                    </ButtonPrimary>
+                                    </Button>
                                 </When>
 
                             </VBox>
-
                         </InsetPanel>
 
                     </VBox>

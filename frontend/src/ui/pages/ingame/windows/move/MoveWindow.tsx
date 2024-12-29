@@ -3,7 +3,7 @@ import {VBox} from "../../../../components/layout/vbox/VBox";
 import {Text} from "../../../../components/text/Text";
 import {UseMoveWindow} from "./useMoveWindow";
 import {Header1} from "../../../../components/header/Header";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../../components/button/primary/Button";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
 import {Spacer} from "../../../../components/spacer/Spacer";
@@ -43,8 +43,8 @@ export function MoveWindow(props: MoveWindowProps): ReactElement {
 					<Text>{data.remainingPoints + "/" + data.totalPoints + " Movement Points left"}</Text>
 					<Spacer size="s"/>
 					<HBox right gap_s>
-						<ButtonPrimary warn onClick={data.cancel}>Cancel</ButtonPrimary>
-						<ButtonPrimary success onClick={data.accept}>Accept</ButtonPrimary>
+						<Button warn onClick={data.cancel}>Cancel</Button>
+						<Button success onClick={data.accept}>Accept</Button>
 					</HBox>
 				</VBox>
 			</DecoratedWindow>

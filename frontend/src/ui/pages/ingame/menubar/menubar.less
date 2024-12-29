@@ -1,13 +1,11 @@
 @import "./../../../components/common.less";
 
-
 .menubar {
   position:      absolute;
   left:          0;
   right:         0;
   top:           0;
-  height:        22px;
-  box-sizing:    border-box;
+  height:        @height-s;
   border-bottom: 1px solid transparent;
   background:    @gradient-border-primary;
 
@@ -17,15 +15,11 @@
     right:      0;
     top:        0;
     bottom:     0;
-
     background: @gradient-background;
+  }
 
-    display: flex;
-
-    /deep/ .button-primary {
-      flex-shrink: 0;
-    }
-
+  .menubar__content {
+    transform: translate(0, 50%);
   }
 
 }

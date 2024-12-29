@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
-import {ButtonPrimary} from "../primary/ButtonPrimary";
+import {Button} from "../primary/Button";
 import {BiChevronDown, BiChevronRight} from "react-icons/bi";
-import {joinClassNames} from "../../utils";
+import {joinClassNames} from "../../window/utils";
 
 export interface ExpandButtonProps {
     isOpen: boolean,
@@ -11,13 +11,13 @@ export interface ExpandButtonProps {
 
 export function ExpandButton(props: ExpandButtonProps): ReactElement {
     return (
-        <ButtonPrimary
+        <Button
             small circle info
             className={joinClassNames(["button-expand", props.className])}
             onClick={() => props.setOpen(!props.isOpen)}
         >
             {!props.isOpen && <BiChevronRight/>}
             {props.isOpen && <BiChevronDown/>}
-        </ButtonPrimary>
+        </Button>
     );
 }

@@ -1,20 +1,40 @@
 import {ReactElement} from "react";
-import {joinClassNames} from "../utils";
+import {joinClassNames} from "../window/utils";
 import "./divider.scoped.less";
+import {BaseProps} from "../base/base";
 
-export interface DividerProps {
-    type?: "ornament" | "simple";
-    className?: string;
+export interface DividerProps extends BaseProps {
+    type?: "ornament" | "line";
+    ornament?: boolean;
+    line?: boolean,
 }
 
 export function Divider(props: DividerProps): ReactElement {
-    if (props.type === "simple") {
+    const type = getType();
+
+    if (type === "line") {
         return (
-            <div className={joinClassNames(["divider", "divider--simple", props.className])}/>
+            <div
+                className={joinClassNames([
+                    "divider",
+                    "divider--line",
+                    ...BaseProps.buildBaseClassNames(props),
+                ])}
+                style={props.style}
+            />
         );
-    } else {
+    }
+
+    if (type === "ornament") {
         return (
-            <div className={joinClassNames(["divider", "divider--ornament", props.className])}>
+            <div
+                className={joinClassNames([
+                    "divider",
+                    "divider--ornament",
+                    ...BaseProps.buildBaseClassNames(props)
+                ])}
+                style={props.style}
+            >
                 <div className="divider__arm-left"/>
                 <div className="divider__center"/>
                 <div className="divider__arm-right"/>
@@ -22,4 +42,12 @@ export function Divider(props: DividerProps): ReactElement {
         );
     }
 
+    return <></>;
+
+    function getType(): "ornament" | "line" {
+        if (props.type) return props.type;
+        if (props.line) return "line";
+        if (props.ornament) return "ornament";
+        return "line";
+    }
 }

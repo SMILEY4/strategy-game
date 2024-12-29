@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {joinClassNames} from "../utils";
+import {joinClassNames} from "../window/utils";
 import "./simpleDivider.scoped.less";
 
 export interface SimpleDividerProps {

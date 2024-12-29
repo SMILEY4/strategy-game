@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {joinClassNames} from "../../utils";
+import {joinClassNames} from "../../window/utils";
 import "./etElements.scoped.less";
 
 export interface ETSpacerProps {

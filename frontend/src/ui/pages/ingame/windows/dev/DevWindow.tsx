@@ -1,6 +1,6 @@
 import React, {ReactElement} from "react";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
-import {Spacer} from "../../../../components/spacer/Spacer";
+import {Button} from "../../../../components/button/primary/Button";
+import {Spacer, VSpacer} from "../../../../components/spacer/Spacer";
 import {UseDevWindow} from "./useDevWindow";
 import {InsetKeyValueGrid} from "../../../../components/keyvalue/KeyValueGrid";
 import {EnrichedText} from "../../../../components/textenriched/EnrichedText";
@@ -19,24 +19,24 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox fillParent gap_s top stretch padding_xs scrollable stableScrollbar>
+            <VBox fullSize gap_s padding_l scrollable>
 
                 <Header1>Dev / Debug</Header1>
 
-                <Spacer size="s"/>
+                <VSpacer size_s/>
 
                 <BaseInformation {...data}/>
-                <ButtonPrimary info onClick={data.open.devStats}>More Statistics</ButtonPrimary>
+                <Button onClick={data.open.devStats}>More Statistics</Button>
 
-                <Spacer size="s"/>
+                <VSpacer size_s/>
 
-                <ButtonPrimary info onClick={data.fullscreen.enter}>Enter Fullscreen</ButtonPrimary>
-                <ButtonPrimary info onClick={data.fullscreen.exit}>Exit Fullscreen</ButtonPrimary>
+                <Button onClick={data.fullscreen.enter}>Enter Fullscreen</Button>
+                <Button onClick={data.fullscreen.exit}>Exit Fullscreen</Button>
 
-                <Spacer size="xs"/>
+                <VSpacer size_s/>
 
-                <ButtonPrimary info onClick={data.webgl.loose}>Loose WebGL-Context</ButtonPrimary>
-                <ButtonPrimary info onClick={data.webgl.restore}>Restore WebGL-Context</ButtonPrimary>
+                <Button onClick={data.webgl.loose}>Loose WebGL-Context</Button>
+                <Button onClick={data.webgl.restore}>Restore WebGL-Context</Button>
 
             </VBox>
         </DecoratedWindow>
@@ -46,7 +46,8 @@ export function DevWindow(props: DevWindowProps): ReactElement {
 
 function BaseInformation(props: UseDevWindow.Data): ReactElement {
     return (
-        <InsetKeyValueGrid>
+        <InsetKeyValueGrid dontShrink dontGrow>
+
             <EnrichedText>Camera.Pos</EnrichedText>
             <EnrichedText>
                 <ETNumber unstyled decPlaces={2}>{props.camera.x}</ETNumber>, <ETNumber unstyled

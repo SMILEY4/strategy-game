@@ -1,5 +1,5 @@
 import React, {ReactElement} from "react";
-import {Spacer} from "../../../../components/spacer/Spacer";
+import {Spacer, VSpacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {UseDevStatsWindow} from "./useDevStatsWindow";
 import {Area, Bar, BarChart, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, YAxis} from "recharts";
@@ -21,11 +21,11 @@ export function DevStatsWindow(props: DevStatsWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <VBox fillParent gap_s top stretch padding_xs scrollable stableScrollbar>
+            <VBox fullSize gap_s padding_l scrollable>
                 <Header1>Dev Statistics</Header1>
-                <Spacer size={"s"}/>
+                <VSpacer size_s/>
                 <MonitoringInformation {...data}/>
-                <Spacer size="s"/>
+                <VSpacer size_s/>
                 <FPSChart {...data}/>
                 <NextTurnDurationChart {...data}/>
             </VBox>
@@ -35,7 +35,7 @@ export function DevStatsWindow(props: DevStatsWindowProps): ReactElement {
 
 function MonitoringInformation(props: UseDevStatsWindow.Data): ReactElement {
     return (
-        <InsetPanel>
+        <InsetPanel dontGrow dontShrink>
 
             <KeyValueGrid>
 
@@ -81,7 +81,7 @@ function FPSChart(props: UseDevStatsWindow.Data): ReactElement {
     }));
 
     return (
-        <InsetPanel>
+        <InsetPanel dontGrow dontShrink>
             <Text>Performance</Text>
             <ResponsiveContainer width="100%" height={200}>
                 <ComposedChart
@@ -120,7 +120,7 @@ function NextTurnDurationChart(props: UseDevStatsWindow.Data): ReactElement {
     }));
 
     return (
-        <InsetPanel>
+        <InsetPanel dontGrow dontShrink>
             <Text>Next-Turn Durations</Text>
             <ResponsiveContainer width="100%" height={200}>
                 <BarChart

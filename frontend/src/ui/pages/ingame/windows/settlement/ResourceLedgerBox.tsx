@@ -30,7 +30,7 @@ export function ResourceLedgerBox(props: ResourceLedgerEntry): ReactElement {
 
 function Box(props: ResourceLedgerEntry): ReactElement {
     return (
-        <DecoratedPanel simpleBorder paddingSmall accent="blue" pattern className="resource-ledger-box">
+        <DecoratedPanel blue pattern className="resource-ledger-box">
             <div
                 className="resource-ledger-box__icon"
                 style={{backgroundImage: "url('/icons/resources/" + props.type + ".png')"}}
@@ -51,14 +51,14 @@ function Box(props: ResourceLedgerEntry): ReactElement {
 function Details(props: ResourceLedgerEntry): ReactElement {
     return (
         <TooltipPanel>
-            <VBox padding_s gap_xs fillParent>
+            <VBox fullSize padding_s gap_xs>
 
                 <EnrichedText>
                     <ETImageIcon url={"/icons/resources/" + props.type + ".png"}/> <Header4
                     inline>{props.type}</Header4>
                 </EnrichedText>
 
-                <Divider type="simple"/>
+                <Divider line/>
 
                 <DetailSection
                     title="Produced"

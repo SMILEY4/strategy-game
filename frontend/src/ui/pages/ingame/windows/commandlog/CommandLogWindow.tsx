@@ -13,14 +13,14 @@ import {Header1, Header4} from "../../../../components/header/Header";
 import {DecoratedPanel} from "../../../../components/panels/decorated/DecoratedPanel";
 import {HBox} from "../../../../components/layout/hbox/HBox";
 import {VBox} from "../../../../components/layout/vbox/VBox";
-import {ButtonPrimary} from "../../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../../components/button/primary/Button";
 import {CgClose} from "react-icons/cg";
 import {Divider} from "../../../../components/divider/Divider";
-import {IndentPanel} from "../../../../components/panels/indent/IndentPanel";
+import {IndentBox} from "../../../../components/layout/indent/IndentBox";
 import {DecoratedWindow} from "../../../../components/window/decorated/DecoratedWindow";
-import {Spacer} from "../../../../components/spacer/Spacer";
 import {InsetPanel} from "../../../../components/panels/inset/InsetPanel";
 import {Else, If, Then} from "react-if";
+import {arrayOfSize} from "../../../../../common/utils";
 
 export interface CommandLogWindowProps {
     windowId: string;
@@ -35,25 +35,30 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
 
     return (
         <DecoratedWindow windowId={props.windowId} withCloseButton>
-            <Header1>{"Commands"}</Header1>
-            <Spacer size="s"/>
+            <VBox padding_l gap_s fullSize>
 
-            <If condition={data.commands.length > 0}>
-                <Then>
-                    <InsetPanel fillParent hideOverflow noPadding>
-                        <VBox fillParent gap_s top stretch padding_xs>
-                            {data.commands.map(command => (
-                                <CommandEntry data={data} command={command} key={command.id}/>
-                            ))}
+                <Header1>Commands</Header1>
+
+                <Divider line/>
+
+                <If condition={data.commands.length > 0}>
+                    <Then>
+                        <InsetPanel shrink>
+                            <VBox scrollable padding_s gap_s fullSize>
+                                {data.commands.map(command => (
+                                    <CommandEntry data={data} command={command} key={command.id}/>
+                                ))}
+                            </VBox>
+                        </InsetPanel>
+                    </Then>
+                    <Else>
+                        <VBox fullSize>
+                            <Text secondary>No commands given this turn.</Text>
                         </VBox>
-                    </InsetPanel>
-                </Then>
-                <Else>
-                    <VBox center fillParent>
-                        <Text type="secondary">No commands given this turn.</Text>
-                    </VBox>
-                </Else>
-            </If>
+                    </Else>
+                </If>
+
+            </VBox>
         </DecoratedWindow>
     );
 }
@@ -64,16 +69,18 @@ export function CommandLogWindow(props: CommandLogWindowProps): ReactElement {
  */
 export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: Command }): ReactElement {
     return (
-        <DecoratedPanel simpleBorder accent="blue">
-            <HBox centerVertical gap_s>
-                <VBox stretch fillParentWidth>
+        <DecoratedPanel blue pattern>
+            <HBox padding_m gap_s>
+                <VBox grow shrink>
                     {renderCommand(props.command)}
                 </VBox>
-                <ButtonPrimary
+                <Button
                     warn circle small
-                    onClick={() => props.data.cancel(props.command)}>
+                    dontGrow dontShrink
+                    onClick={() => props.data.cancel(props.command)}
+                >
                     <CgClose/>
-                </ButtonPrimary>
+                </Button>
             </HBox>
         </DecoratedPanel>
     );
@@ -84,11 +91,11 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
             return (
                 <>
                     <Header4>{"Move Unit"}</Header4>
-                    <Divider type="simple"/>
-                    <IndentPanel>
+                    <Divider line/>
+                    <IndentBox>
                         <Text>{"world-object-id: " + cmd.worldObjectId}</Text>
                         <Text>{"from " + cmd.path[0].q + "," + cmd.path[0].r + " to: " + cmd.path[cmd.path.length - 1].q + "," + cmd.path[cmd.path.length - 1].r}</Text>
-                    </IndentPanel>
+                    </IndentBox>
                 </>
             );
         }
@@ -97,12 +104,12 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
             return (
                 <>
                     <Header4>{"Found Settlement"}</Header4>
-                    <Divider type="simple"/>
-                    <IndentPanel>
+                    <Divider line/>
+                    <IndentBox>
                         <Text>{"with name " + cmd.name}</Text>
                         <Text>{"at " + cmd.tile.q + "," + cmd.tile.r}</Text>
                         <Text>{"by settler: " + cmd.worldObjectId}</Text>
-                    </IndentPanel>
+                    </IndentBox>
                 </>
             );
         }
@@ -111,11 +118,11 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
             return (
                 <>
                     <Header4>{"Add Production Queue"}</Header4>
-                    <Divider type="simple"/>
-                    <IndentPanel>
+                    <Divider line/>
+                    <IndentBox>
                         <Text>{"produce " + "todo"}</Text>
                         <Text>{"in settlement " + cmd.settlement.name}</Text>
-                    </IndentPanel>
+                    </IndentBox>
                 </>
             );
         }
@@ -124,21 +131,21 @@ export function CommandEntry(props: { data: UseCommandLogWindow.Data, command: C
             return (
                 <>
                     <Header4>{"Cancel Production Queue"}</Header4>
-                    <Divider type="simple"/>
-                    <IndentPanel>
+                    <Divider line/>
+                    <IndentBox>
                         <Text>{"cancel " + "todo"}</Text>
                         <Text>{"in settlement " + cmd.settlement.name}</Text>
-                    </IndentPanel>
+                    </IndentBox>
                 </>
             );
         }
         return (
             <>
                 <Header4>{command.id}</Header4>
-                <Divider type="simple"/>
-                <IndentPanel>
+                <Divider line/>
+                <IndentBox>
                     <Text>{command.id}</Text>
-                </IndentPanel>
+                </IndentBox>
             </>
         );
     }

@@ -6,6 +6,7 @@ import {SettlementAggregateAccess} from "../../../../../state/settlementAggregat
 import {SettlementService} from "../../../../../logic/game/settlementService";
 import {openWindow, useOpenWindow} from "../../../../components/window/windowHooks";
 import {WindowStore} from "../../../../components/window/windowStore";
+import {SettlementIdentifier} from "../../../../../models/base/Settlement";
 
 export namespace UseProductionWindow {
 
@@ -33,6 +34,7 @@ export namespace UseProductionWindow {
 
     export interface Data {
         entries: ProductionOptionAggregate[];
+        settlement: SettlementIdentifier,
         produce: (entry: ProductionOptionAggregate) => void;
     }
 
@@ -41,6 +43,7 @@ export namespace UseProductionWindow {
         const settlement = SettlementAggregateAccess.useSettlementAggregate(settlementId)!;
         const service = useDI<SettlementService>(SettlementService.name);
         return {
+            settlement: settlement.identifier,
             entries: settlement.production.options,
             produce: (entry: ProductionOptionAggregate) => service.addProductionQueue(settlement.identifier, entry.type),
         };

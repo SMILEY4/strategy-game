@@ -1,4 +1,4 @@
-import {UIAudio} from "../audio";
+import {UIAudio} from "../window/audio";
 import {AudioType} from "../../../common/audioService";
 
 export interface UseButtonProps {

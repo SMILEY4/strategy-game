@@ -1,10 +1,10 @@
 import React, {ReactElement} from "react";
-import {ButtonPrimary} from "../../../components/button/primary/ButtonPrimary";
+import {Button} from "../../../components/button/primary/Button";
 import {HBox} from "../../../components/layout/hbox/HBox";
-import {Spacer} from "../../../components/spacer/Spacer";
+import {HSpacer} from "../../../components/spacer/Spacer";
 import {CgDebug} from "react-icons/cg";
 import {FiHexagon, FiMap} from "react-icons/fi";
-import "./menubar.scoped.less";
+import "./menubar.less";
 import {UseDevWindow} from "../windows/dev/useDevWindow";
 import {UseMapWindow} from "../windows/map/useMapWindow";
 import {UseTileWindow} from "../windows/tile/useTileWindow";
@@ -17,56 +17,44 @@ import {useIsBlockingWindowOpen} from "../../../components/window/windowHooks";
 
 export function MenuBar(): ReactElement {
 
-	const openDevMenu = UseDevWindow.useOpen();
-	const openMapMenu = UseMapWindow.useOpen();
-	const openCommandLogMenu = UseCommandLogWindow.useOpen();
-	const openTileMenu = UseTileWindow.useOpen();
-	const currentTurn = SessionRepository.useTurn();
-	const isBlocked = useIsBlockingWindowOpen();
-	const [endTurnDisabled, endTurn] = useEndTurn(isBlocked);
+    const openDevMenu = UseDevWindow.useOpen();
+    const openMapMenu = UseMapWindow.useOpen();
+    const openCommandLogMenu = UseCommandLogWindow.useOpen();
+    const openTileMenu = UseTileWindow.useOpen();
+    const currentTurn = SessionRepository.useTurn();
+    const isBlocked = useIsBlockingWindowOpen();
+    const [endTurnDisabled, endTurn] = useEndTurn(isBlocked);
 
-	return (
-		<div className="menubar">
-			<div className="menubar__inner">
-				<HBox padding_xs gap_xs fillParent className="menubar__content">
+    return (
+        <div className="menubar">
+            <div className="menubar__inner">
+                <HBox fullSize padding_xs gap_xs className="menubar__content">
 
-					<ButtonPrimary info circle onClick={openDevMenu} disabled={isBlocked}>
-						<CgDebug/>
-					</ButtonPrimary>
+                    <Button circle onClick={openDevMenu} disabled={isBlocked}><CgDebug/></Button>
+                    <Button circle onClick={openMapMenu} disabled={isBlocked}><FiMap/></Button>
+                    <Button circle onClick={openCommandLogMenu} disabled={isBlocked}><PiScrollBold/></Button>
+                    <Button circle onClick={() => openTileMenu(null)} disabled={isBlocked}><FiHexagon/></Button>
 
-					<ButtonPrimary info circle onClick={openMapMenu} disabled={isBlocked}>
-						<FiMap/>
-					</ButtonPrimary>
+                    <HSpacer fullWidth/>
 
-					<ButtonPrimary info circle onClick={openCommandLogMenu} disabled={isBlocked}>
-						<PiScrollBold/>
-					</ButtonPrimary>
+                    <Button success disabled={endTurnDisabled} onClick={endTurn}>{"End Turn " + currentTurn}</Button>
 
-					<ButtonPrimary info circle onClick={() => openTileMenu(null)} disabled={isBlocked}>
-						<FiHexagon/>
-					</ButtonPrimary>
-
-					<Spacer size="fill"/>
-
-					<ButtonPrimary success disabled={endTurnDisabled} onClick={endTurn}>
-						{"End Turn " + currentTurn}
-					</ButtonPrimary>
-				</HBox>
-			</div>
-		</div>
-	);
+                </HBox>
+            </div>
+        </div>
+    );
 
 }
 
 function useEndTurn(isBlocked: boolean): [boolean, () => void] {
-	const isWaiting = SessionRepository.useGameTurnState() === "waiting";
-	const isDisabled = isBlocked || isWaiting;
+    const isWaiting = SessionRepository.useGameTurnState() === "waiting";
+    const isDisabled = isBlocked || isWaiting;
 
-	const endTurnService = useDI<TurnEndService>(TurnEndService.name);
+    const endTurnService = useDI<TurnEndService>(TurnEndService.name);
 
-	function endTurn() {
-		endTurnService.endTurn();
-	}
+    function endTurn() {
+        endTurnService.endTurn();
+    }
 
-	return [isDisabled, endTurn];
+    return [isDisabled, endTurn];
 }

@@ -1,6 +1,6 @@
 @import "./../../common.less";
 
-.button-primary {
+.button {
 
   position:      relative;
   height:        @height-m;
@@ -8,7 +8,7 @@
   background:    @gradient-border-primary;
   box-shadow:    @shadow-object;
 
-  border-radius: @border-radius-primary;
+  border-radius: @border-radius;
   border:        1px solid transparent;
   box-sizing:    border-box;
 
@@ -25,7 +25,7 @@
                  inset 0 0 7px rgba(0, 0, 0, 80%);
 
 
-  .button-primary__inner {
+  .button__inner {
     position:        relative;
     width:           100%;
     height:          100%;
@@ -35,11 +35,11 @@
     align-items:     center;
     text-shadow:     @shadow-text;
     white-space:     nowrap;
-    border-radius: @border-radius-primary;
-    padding:       @spacing-s @spacing-m;
+    border-radius:   @border-radius;
+    padding:         @spacing-s @spacing-m;
   }
 
-  .button-primary__inner /deep/ svg {
+  .button__inner /deep/ svg {
     filter: drop-shadow(@shadow-text);
   }
 
@@ -49,13 +49,13 @@
     height: @height-s;
   }
 
-  // ROUND
+  // ROUNDED
 
-  &.button--round {
+  &.button--rounded {
     border-radius: 9999px;
     border:        1.5px solid transparent;
 
-    .button-primary__inner {
+    .button__inner {
       border-radius: 9999px;
     }
 
@@ -67,7 +67,7 @@
     border-radius: 9999px;
     border:        1.5px solid transparent;
 
-    .button-primary__inner {
+    .button__inner {
       border-radius:   9999px;
       padding:         @spacing-xs;
       aspect-ratio:    1/1;
@@ -86,7 +86,7 @@
     justify-content: center;
     align-items:     center;
 
-    .button-primary__inner {
+    .button__inner {
       padding: @spacing-xs;
     }
 
@@ -103,7 +103,7 @@
 
   &.button--warn {
 
-    &:not(.button--disabled) .button-primary__inner {
+    &:not(.button--disabled) .button__inner {
       background: @gradient-warn;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light;
       color:      @color-warn-content;
@@ -119,12 +119,12 @@
       }
     }
 
-    &.button--active .button-primary__inner {
+    &.button--active .button__inner {
       background: @gradient-warn-active;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light-active;
     }
 
-    &.button--disabled .button-primary__inner {
+    &.button--disabled .button__inner {
       background: @gradient-warn-disabled;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-warn-light-disabled;
       color:      @color-warn-content-disabled;
@@ -134,7 +134,7 @@
   // SUCCESS
 
   &.button--success {
-    &:not(.button--disabled) .button-primary__inner {
+    &:not(.button--disabled) .button__inner {
       background: @gradient-success;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light;
       color:      @color-success-content;
@@ -150,12 +150,12 @@
       }
     }
 
-    &.button--active .button-primary__inner {
+    &.button--active .button__inner {
       background: @gradient-success-active;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light-active;
     }
 
-    &.button--disabled .button-primary__inner {
+    &.button--disabled .button__inner {
       background: @gradient-success-disabled;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-success-light-disabled;
       color:      @color-success-content-disabled;
@@ -165,7 +165,7 @@
   // INFO
 
   &.button--info {
-    &:not(.button--disabled) .button-primary__inner {
+    &:not(.button--disabled) .button__inner {
       background: @gradient-info;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light;
       color:      @color-info-content;
@@ -181,12 +181,12 @@
       }
     }
 
-    &.button--active .button-primary__inner {
+    &.button--active .button__inner {
       background: @gradient-info-active;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light-active;
     }
 
-    &.button--disabled .button-primary__inner {
+    &.button--disabled .button__inner {
       background: @gradient-info-disabled;
       box-shadow: @inset-shadow, inset 0 0 10px 3px @color-info-light-disabled;
       color:      @color-info-content-disabled;
