@@ -1,6 +1,6 @@
 import {WebGLTextureAtlasDataManager} from "../common/webgl/webGLTextureAtlasDataManager";
 
-import ATLAS_DATA_TILESET from "./../../../public/icons/tileset.json?raw";
+import ATLAS_DATA_TILESET from "./textureatlas/tileset.json?raw";
 
 
 export class GameTextureAtlasDataManager extends WebGLTextureAtlasDataManager {
