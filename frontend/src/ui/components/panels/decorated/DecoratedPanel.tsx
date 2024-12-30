@@ -45,11 +45,11 @@ export function DecoratedPanel(props: DecoratedPanelProps) {
 
             {props.background}
 
+            <div className="decorated-panel__border"/>
+
             <div className="decorated-panel__content">
                 {props.children}
             </div>
-
-            <div className="decorated-panel__border"/>
 
         </div>
     );

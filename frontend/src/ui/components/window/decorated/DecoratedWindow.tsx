@@ -43,6 +43,10 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
             }}
         >
 
+            <div className="decorated-window__content">
+                {props.children}
+            </div>
+
             <div {...dragProps} className="decorated-window__drag-area"/>
 
             <div {...resizerProps} className="decorated-window__resize-area"/>
@@ -53,9 +57,6 @@ export function DecoratedWindow(props: DecoratedWindowProps): ReactElement {
                 </Button>
             )}
 
-            <div className="decorated-window__content">
-                {props.children}
-            </div>
 
         </DecoratedPanel>
     );
