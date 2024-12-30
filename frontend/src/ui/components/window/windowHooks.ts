@@ -25,6 +25,13 @@ export function useCloseWindow(): (windowId: string) => void {
     }
 }
 
+export function useBringWindowToFront(): (windowId: string) => void {
+    const bringToFront = WindowStore.useState(state => state.bringToFront);
+    return (windowId) => {
+        bringToFront(windowId);
+    }
+}
+
 export function useIsBlockingWindowOpen(): boolean {
     return WindowStore
         .useState(state => state.windows.map(it => it.blockOthers))
@@ -66,6 +73,7 @@ export function useWindowInteractions(id: string) {
     }
 
     const modifyPosition = WindowStore.useState(state => state.modifyPosition);
+    const bringToFront = WindowStore.useState(state => state.bringToFront);
 
     const close = useCloseWindow()
     const refContent = useRef<HTMLDivElement>(null);
@@ -82,6 +90,7 @@ export function useWindowInteractions(id: string) {
 
     function onPrepare() {
         if (refContent.current) {
+            bringToFront(id);
             const bounds = getAbsoluteBounds();
             modifyPosition(id, _ => ({
                 top: CssValue.px(bounds.top),
@@ -112,8 +121,8 @@ export function useWindowInteractions(id: string) {
         modifyPosition(id, prevPosition => ({
             top: prevPosition.top,
             left: prevPosition.left,
-            width: CssValue.px(prevPosition.width?.value!! + dx),
-            height: CssValue.px(prevPosition.height?.value!! + dy),
+            width: CssValue.px((prevPosition.width?.value!! as number) + dx),
+            height: CssValue.px((prevPosition.height?.value!! as number) + dy),
             bottom: null,
             right: null,
             transform: null,

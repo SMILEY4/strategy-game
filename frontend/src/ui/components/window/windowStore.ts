@@ -69,6 +69,7 @@ export namespace WindowStore {
         add: (properties: WindowProperties) => void,
         remove: (id: string) => void,
         modifyPosition: (id: string, action: (position: WindowPosition) => WindowPosition) => void,
+        bringToFront: (id: string) => void,
     }
 
     export interface State extends StateValues, StateActions {
@@ -110,6 +111,16 @@ export namespace WindowStore {
                         }
                     }),
                 };
+            }),
+            bringToFront: (id: string) => set((state: State) => {
+                const window = state.windows.find(it => it.id === id)
+                if(!window) {
+                    return state;
+                }
+                return {
+                    ...state,
+                    windows: [...state.windows.filter(it => it.id !== id), window]
+                }
             }),
         };
     }
