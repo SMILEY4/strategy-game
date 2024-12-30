@@ -114,7 +114,7 @@ export class TurnStartService {
                         },
                         worldObject: {
                             id: (it[0] as WorldObjectMessage).id,
-                            type: (it[0] as WorldObjectMessage).type === "scout" ? WorldObjectType.SCOUT : WorldObjectType.SETTLER, // todo: remove temp hack
+                            type: WorldObjectType.fromString((it[0] as WorldObjectMessage).type)
                         },
                         settlement: null,
                     })),
