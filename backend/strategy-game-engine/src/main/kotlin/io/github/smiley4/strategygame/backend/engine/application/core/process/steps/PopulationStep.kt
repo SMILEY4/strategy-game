@@ -37,22 +37,20 @@ class PopulationStep : ProcessStep<EconomyUpdatedEvent> {
     }
 
     private fun updateProgress(report: EconomyReport, settlement: Settlement) {
+
         settlement.population.growthDetails.clear()
-        settlement.population.growthProgress +=
-            if (hasConsumedBase(report, settlement)) {
-                settlement.population.growthDetails["base"] = 0.05f
-                0.05f
-            } else {
-                settlement.population.growthDetails["base"] = -0.2f
-                -0.2f
-            }
-        settlement.population.growthProgress +=
-            if (hasConsumedGrowth(report, settlement)) {
-                settlement.population.growthDetails["growth"] = 0.15f
-                0.15f
-            } else {
-                0f
-            }
+        if (hasConsumedBase(report, settlement)) {
+            settlement.population.growthDetails["base"] = 0.05f
+        } else {
+            settlement.population.growthDetails["base"] = -0.2f
+        }
+        if (hasConsumedGrowth(report, settlement)) {
+            settlement.population.growthDetails["growth"] = 0.15f
+        }
+
+        val amount = settlement.population.growthDetails.map { it.value }.sum()
+        settlement.population.growthAmount = amount
+        settlement.population.growthProgress += amount
     }
 
     private fun abandon(game: GameExtended, settlement: Settlement) {

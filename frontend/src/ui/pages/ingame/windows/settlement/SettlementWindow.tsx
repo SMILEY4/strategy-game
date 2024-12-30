@@ -306,7 +306,7 @@ function SectionPopulationSize(props: UseSettlementWindow.Data): ReactElement {
 
 function SectionGrowthOverview(props: UseSettlementWindow.Data): ReactElement {
     const totalProgress = props.settlement.population.growth.value?.progress ?? 0;
-    const lastProgress = 0.25; // todo: get actual value from server
+    const lastProgress = props.settlement.population.growth.value?.amount ?? 0;
     const expectedPopulationChange = totalProgress >= 0 ? +1 : -1;
 
     return (

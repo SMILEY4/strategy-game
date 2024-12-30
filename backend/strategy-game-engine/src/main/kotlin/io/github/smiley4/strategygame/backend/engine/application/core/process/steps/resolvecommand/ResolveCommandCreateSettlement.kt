@@ -40,6 +40,7 @@ internal class ResolveCommandCreateSettlement(
             population = Settlement.Population(
                 size = 1,
                 growthProgress = 0f,
+                growthAmount = 0f,
                 growthDetails = mutableMapOf()
             ),
             infrastructure = Settlement.Infrastructure(
